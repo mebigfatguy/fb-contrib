@@ -1,0 +1,81 @@
+import java.nio.ByteBuffer;
+import java.util.Calendar;
+import java.util.Date;
+
+@SuppressWarnings("all")
+public class PRMC_Sample 
+{
+	String data;
+	
+	public boolean test1(Calendar c)
+	{
+		Date d = c.getTime();
+		long l = d.getTime();
+		Date e = c.getTime();
+		long j = e.getTime();
+		return l == j;
+	}
+    
+    public void rmcFP(ByteBuffer bb)
+    {
+        int i = bb.getInt();
+        int j = bb.getInt();
+    }
+    
+    @Override
+    public boolean equals(Object o)
+    {
+    	PRMC_Sample rmc = (PRMC_Sample)o;
+    	if (data.equals("INF") || rmc.data.equals("INF"))
+    		return false;
+    	
+    	return data.equals(rmc.data);
+    }
+    
+    public void staticPRMC()
+    {
+    	Factory.getInstance().fee();
+    	Factory.getInstance().fi();
+    	Factory.getInstance().fo();
+    	Factory.getInstance().fum();
+    }
+    
+    static class Factory
+    {
+    	private static Factory f = new Factory();
+    	
+    	private Factory()
+    	{
+    	}
+    	
+    	public static Factory getInstance()
+    	{
+    		return f;
+    	}
+    	
+    	public void fee()
+    	{
+    	}
+    	
+    	public void fi()
+    	{
+    	}
+    	
+    	public void fo()
+    	{
+    	}
+    	
+    	public void fum()
+    	{
+    	}
+    }
+    
+    public long fpCurrentTimeMillis(Object o)
+    {
+    	long time = -System.currentTimeMillis();
+    	o.hashCode();
+    	time += System.currentTimeMillis();
+    	
+    	return time;
+    }
+}

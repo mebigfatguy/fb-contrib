@@ -1,0 +1,32 @@
+#mbfg_div {
+	float:right;
+}
+			
+#mbfg_menu {
+	margin-right: 20px;
+}
+			
+#mbfg_projects {
+	position: absolute;
+	display: none;
+	z-order: 2;
+}
+			
+#mbfg_projects ul li {
+	list-style-type: none;
+}
+			
+#mbfg_projects ul li a {
+	display:block;
+	border-color: #404040;
+	border-width: 1px;	
+	border-style: solid;
+	padding: 6px 40px 6px 40px;
+	background-color: #DDDDFF;
+	margin-right: 20px;
+	text-decoration: none;
+}
+			
+#mbfg_projects ul li a:hover {
+	background-color: #FFDDDD;
+}

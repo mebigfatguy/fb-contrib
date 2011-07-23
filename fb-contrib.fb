@@ -1,0 +1,18 @@
+[Jar files]
+./classes
+[Source dirs]
+./src
+[Aux classpath entries]
+./lib/annotations.jar
+./lib/asm-3.0.jar
+./lib/asm-3.1.jar
+./lib/asm-tree-3.0.jar
+./lib/asm-tree-3.1.jar
+./lib/bcel.jar
+./lib/dom4j-1.6.1.jar
+./lib/dom4j-full.jar
+./lib/findbugs-ant.jar
+./lib/findbugs.jar
+./lib/jsr305.jar
+[Options]
+relative_paths=true

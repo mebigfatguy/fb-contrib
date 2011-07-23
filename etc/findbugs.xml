@@ -1,0 +1,394 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Plugin descriptor for fb-contrib plugin. This plugin is enabled by default. -->
+<FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="findbugsplugin.xsd" pluginid="com.mebigfatguy.fbcontrib" defaultenabled="true"
+	provider="fb-contrib project" website="http://fb-contrib.sourceforge.net">
+
+	<!-- Passes -->
+
+	<OrderingConstraints>
+		<SplitPass>
+			<Earlier class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" />
+			<LaterCategory name="reporting" spanplugins="true" />
+		</SplitPass>
+	</OrderingConstraints>
+
+	<!-- Detectors -->
+
+	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.InefficientStringBuffering" speed="fast" reports="ISB_INEFFICIENT_STRING_BUFFERING,ISB_EMPTY_STRING_APPENDING" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SyncCollectionIterators" speed="slow" reports="SCI_SYNCHRONIZED_COLLECTION_ITERATORS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CyclomaticComplexity" speed="slow" reports="CC_CYCLOMATIC_COMPLEXITY" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyConcreteParameter" speed="slow" reports="OCP_OVERLY_CONCRETE_PARAMETER" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ListIndexedIterating" speed="moderate" reports="LII_LIST_INDEXED_ITERATING" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents" speed="fast" reports="UCC_UNRELATED_COLLECTION_CONTENTS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.DeclaredRuntimeException" speed="fast" reports="DRE_DECLARED_RUNTIME_EXCEPTION" />
+<!--
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="fast" reports="CE_CLASS_ENVY" disabled="true" />
+-->
+	<Detector class="com.mebigfatguy.fbcontrib.detect.LiteralStringComparison" speed="fast" reports="LSC_LITERAL_STRING_COMPARISON" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.PartiallyConstructedObjectAccess" speed="fast" reports="PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.DubiousListCollection" speed="fast" reports="DLC_DUBIOUS_LIST_COLLECTION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ParallelLists" speed="fast" reports="PL_PARALLEL_LISTS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.FinalParameters" speed="slow" reports="FP_FINAL_PARAMETERS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.AbstractClassEmptyMethods" speed="fast" reports="ACEM_ABSTRACT_CLASS_EMPTY_METHODS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ManualArrayCopy" speed="fast" reports="MAC_MANUAL_ARRAY_COPY" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.FloatingPointLoops" speed="fast" reports="FPL_FLOATING_POINT_LOOPS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.NonCollectionMethodUse" speed="fast" reports="NCMU_NON_COLLECTION_METHOD_USE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ConfusingAutoboxedOverloading" speed="fast" reports="CAO_CONFUSING_AUTOBOXED_OVERLOADING" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.AbnormalFinallyBlockReturn" speed="fast" reports="AFBR_ABNORMAL_FINALLY_BLOCK_RETURN" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.StaticMethodInstanceInvocation" speed="fast" reports="SMII_STATIC_METHOD_INSTANCE_INVOCATION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SpuriousThreadStates" speed="fast" reports="STS_SPURIOUS_THREAD_STATES" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.NeedlessAutoboxing" speed="fast"
+		reports="NAB_NEEDLESS_AUTOBOXING_CTOR,NAB_NEEDLESS_BOXING_STRING_CTOR,NAB_NEEDLESS_AUTOBOXING_VALUEOF,NAB_NEEDLESS_BOXING_PARSE,NAB_NEEDLESS_BOXING_VALUEOF,NAB_NEEDLESS_BOX_TO_UNBOX,NAB_NEEDLESS_BOX_TO_CAST,NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryStoreBeforeReturn" speed="fast" reports="USBR_UNNECESSARY_STORE_BEFORE_RETURN" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CopiedOverriddenMethod" speed="fast" reports="COM_COPIED_OVERRIDDEN_METHOD" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ArrayBasedCollections" speed="fast" reports="ABC_ARRAY_BASED_COLLECTIONS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.OrphanedDOMNode" speed="fast" reports="ODN_ORPHANED_DOM_NODE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.AbstractOverriddenMethod" speed="fast" reports="AOM_ABSTRACT_OVERRIDDEN_METHOD" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CustomBuiltXML" speed="fast" reports="CBX_CUSTOM_BUILT_XML" />
+<!-- 
+	<Detector class="com.mebigfatguy.fbcontrib.detect.BloatedSynchronizedBlock" speed="fast" reports="BSB_BLOATED_SYNCHRONIZED_BLOCK" hidden="true" /> 
+-->
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ConstantListIndex" speed="fast" reports="CLI_CONSTANT_LIST_INDEX" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SloppyClassReflection" speed="fast" reports="SCR_SLOPPY_CLASS_REFLECTION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ArrayWrappedCallByReference" speed="fast" reports="AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SluggishGui" speed="fast" reports="SG_SLUGGISH_GUI" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.NeedlessInstanceRetrieval" speed="fast" reports="NIR_NEEDLESS_INSTANCE_RETRIEVAL" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.DateComparison" speed="fast" reports="DDC_DOUBLE_DATE_COMPARISON" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousWaitOnConcurrentObject" speed="fast" reports="SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.JDBCVendorReliance" speed="fast" reports="JVR_JDBC_VENDOR_RELIANCE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.PossibleMemoryBloat" speed="fast" reports="PMB_POSSIBLE_MEMORY_BLOAT" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" speed="moderate" reports="LSYC_LOCAL_SYNCHRONIZED_COLLECTION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.FieldCouldBeLocal" speed="slow" reports="FCBL_FIELD_COULD_BE_LOCAL" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.NonOwnedSynchronization" speed="fast" reports="NOS_NON_OWNED_SYNCHRONIZATION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.NonRecycleableTaglibs" speed="fast" reports="NRTL_NON_RECYCLEABLE_TAG_LIB" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.Section508Compliance" speed="fast"
+		reports="S508C_NULL_LAYOUT,S508C_NO_SETLABELFOR,S508C_NO_SETSIZE,S508C_NON_ACCESSIBLE_JCOMPONENT,S508C_SET_COMP_COLOR,S508C_NON_TRANSLATABLE_STRING,S508C_APPENDED_STRING" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UseEnumCollections" speed="fast" reports="UEC_USE_ENUM_COLLECTIONS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SQLInLoop" speed="fast" reports="SIL_SQL_IN_LOOP" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.NeedlessMemberCollectionSynchronization" speed="moderate" reports="NMCS_NEEDLESS_MEMBER_COLLECTION_SYNCHRONIZATION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.InheritanceTypeChecking" speed="moderate" reports="ITC_INHERITANCE_TYPE_CHECKING" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.StaticArrayCreatedInMethod" speed="fast" reports="SACM_STATIC_ARRAY_CREATED_IN_METHOD" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.PossiblyRedundantMethodCalls" speed="fast" reports="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UseToArray" speed="fast" reports="UTA_USE_TO_ARRAY" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.LostExceptionStackTrace" speed="moderate" reports="LEST_LOST_EXCEPTION_STACK_TRACE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UseCharacterParameterizedMethod" speed="fast" reports="UCPM_USE_CHARACTER_PARAMETERIZED_METHOD" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.TailRecursion" speed="fast" reports="TR_TAIL_RECURSION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UnrelatedReturnValues" speed="fast" reports="URV_UNRELATED_RETURN_VALUES,URV_CHANGE_RETURN_TYPE,URV_INHERITED_METHOD_WITH_RELATED_TYPES" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.PossibleIncompleteSerialization" speed="fast" reports="PIS_POSSIBLE_INCOMPLETE_SERIALIZATION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousComparatorReturnValues" speed="fast" reports="SC_SUSPICIOUS_COMPARATOR_RETURN_VALUES" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" speed="fast"
+		reports="SPP_NEGATIVE_BITSET_ITEM,SPP_INTERN_ON_CONSTANT,SPP_NO_CHAR_SB_CTOR,SPP_USE_MATH_CONSTANT,SPP_STUTTERED_ASSIGNMENT,SPP_USE_ISNAN,SPP_USE_BIGDECIMAL_STRING_CTOR,SPP_STRINGBUFFER_WITH_EMPTY_STRING,SPP_EQUALS_ON_ENUM,SPP_INVALID_BOOLEAN_NULL_CHECK,SPP_USE_CHARAT,SPP_USELESS_TRINARY,SPP_SUSPECT_STRING_TEST,SPP_USE_STRINGBUILDER_LENGTH,SPP_INVALID_CALENDAR_COMPARE,SPP_USE_CONTAINSKEY,SPP_USE_ISEMPTY,SPP_USE_GETPROPERTY,SPP_USELESS_CASING,SPP_NON_ARRAY_PARM,SPP_EMPTY_CASING,SPP_TEMPORARY_TRIM" />
+ 
+	<Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SpoiledChildInterfaceImplementor" speed="fast" reports="SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" speed="fast" reports="DWI_DELETING_WHILE_ITERATING,DWI_MODIFYING_WHILE_ITERATING" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UseSplit" speed="fast" reports="USS_USE_STRING_SPLIT" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousJDKVersionUse" speed="slow" reports="SJVU_SUSPICIOUS_JDK_VERSION_USE" disabled="true" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UseAddAll" speed="fast" reports="UAA_USE_ADD_ALL" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.MethodReturnsConstant" speed="fast" reports="MRC_METHOD_RETURNS_CONSTANT" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.NeedlessCustomSerialization" speed="fast" reports="NCS_NEEDLESS_CUSTOM_SERIALIZATION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.MisleadingOverloadModel" speed="fast" reports="MOM_MISLEADING_OVERLOAD_MODEL" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ExceptionSoftening" speed="moderate" reports="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS,EXS_EXCEPTION_SOFTENING_HAS_CHECKED,EXS_EXCEPTION_SOFTENING_NO_CHECKED" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ConfusingFunctionSemantics" speed="fast" reports="CFS_CONFUSING_FUNCTION_SEMANTICS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.JUnitAssertionOddities" speed="fast"
+		reports="JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT,JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE,JAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT,JAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousCloneAlgorithm" speed="fast" reports="SCA_SUSPICIOUS_CLONE_ALGORITHM" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.WeakExceptionMessaging" speed="fast" reports="WEM_WEAK_EXCEPTION_MESSAGING" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousClusteredSessionSupport" speed="fast" reports="SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.LoggerOddities" speed="fast" reports="LO_SUSPECT_LOG_CLASS,LO_SUSPECT_LOG_PARAMETER,LO_STUTTERED_MESSAGE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.IncorrectInternalClassUse" speed="fast" reports="IICU_INCORRECT_INTERNAL_CLASS_USE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.DubiousSetOfCollections" speed="moderate" reports="DSOC_DUBIOUS_SET_OF_COLLECTIONS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.BogusExceptionDeclaration" speed="moderate" reports="BED_BOGUS_EXCEPTION_DECLARATION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryNewNullCheck" speed="fast" reports="UNNC_UNNECESSARY_NEW_NULL_CHECK" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.DeprecatedTypesafeEnumPattern" speed="fast" reports="DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN" />
+<!-- 
+	<Detector class="com.mebigfatguy.fbcontrib.detect.StutteredMethodArguments" speed="fast" reports="SMA_STUTTERED_METHOD_ARGUMENTS" hidden="true" /> 
+-->
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.TristateBooleanPattern" speed="fast" reports="TBP_TRISTATE_BOOLEAN_PATTERN" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousUninitializedArray" speed="fast" reports="SUA_SUSPICIOUS_UNINITIALIZED_ARRAY" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.InappropriateToStringUse" speed="fast" reports="ITU_INAPPROPRIATE_TOSTRING_USE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.InconsistentKeyNameCasing" speed="fast" reports="IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING,IKNC_INCONSISTENT_HTTP_PARAM_CASING" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.OverzealousCasting" speed="fast" reports="OC_OVERZEALOUS_CASTING" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.PoorlyDefinedParameter" speed="fast" reports="PDP_POORLY_DEFINED_PARAMETER" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.NonSymmetricEquals" speed="fast" reports="NSE_NON_SYMMETRIC_EQUALS" />
+<!--  
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ContraVariantArrayAssignment" speed="fast" hidden="true" reports="CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT,CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT" />
+-->
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.NonFunctionalField" speed="fast" reports="NFF_NON_FUNCTIONAL_FIELD" />
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousNullGuard" speed="fast" reports="SNG_SUSPICIOUS_NULL_FIELD_GUARD,SNG_SUSPICIOUS_NULL_LOCAL_GUARD" />
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.MoreDumbMethods" speed="fast"
+		reports="MDM_RUNTIME_EXIT_OR_HALT,MDM_RUNFINALIZATION,MDM_BIGDECIMAL_EQUALS,MDM_INETADDRESS_GETLOCALHOST,MDM_PROMISCUOUS_SERVERSOCKET,MDM_RANDOM_SEED,MDM_SECURERANDOM_CTOR,MDM_SECURERANDOM_GETSEED,MDM_THREAD_PRIORITIES,MDM_THREAD_YIELD,MDM_WAIT_WITHOUT_TIMEOUT,MDM_THREAD_FAIRNESS,MDM_REENTRANTLOCK_HELDBY,MDM_STRING_BYTES_ENCODING,MDM_SETDEFAULTLOCALE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ReflectionOnObjectMethods" speed="fast" reports="ROOM_REFLECTION_ON_OBJECT_METHODS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ImproperPropertiesUse" speed="fast" reports="IPU_IMPROPER_PROPERTIES_USE,IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.PossibleConstantAllocationInLoop" speed="fast" reports="PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" speed="fast" reports="WOC_WRITE_ONLY_COLLECTION_LOCAL,WOC_WRITE_ONLY_COLLECTION_FIELD" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UseVarArgs" speed="fast" reports="UVA_USE_VAR_ARGS" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.PossibleUnsuspectedSerialization" speed="fast" reports="PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SideEffectConstructor" speed="fast" reports="SEC_SIDE_EFFECT_CONSTRUCTOR" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousGetterSetterUse" speed="fast" reports="SGSU_SUSPICIOUS_GETTER_SETTER_USE" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.LingeringGraphicsObjects" speed="fast" reports="LGO_LINGERING_GRAPHICS_OBJECT" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
+
+	<!-- BugPattern -->
+
+	<BugPattern abbrev="ISB" type="ISB_INEFFICIENT_STRING_BUFFERING" category="PERFORMANCE" />
+	<BugPattern abbrev="ISB" type="ISB_EMPTY_STRING_APPENDING" category="PERFORMANCE" />
+	<BugPattern abbrev="SCI" type="SCI_SYNCHRONIZED_COLLECTION_ITERATORS" category="CORRECTNESS" />
+	<BugPattern abbrev="CC" type="CC_CYCLOMATIC_COMPLEXITY" category="STYLE" />
+	<BugPattern abbrev="OCP" type="OCP_OVERLY_CONCRETE_PARAMETER" category="STYLE" />
+	<BugPattern abbrev="LII" type="LII_LIST_INDEXED_ITERATING" category="STYLE" />
+	<BugPattern abbrev="UCC" type="UCC_UNRELATED_COLLECTION_CONTENTS" category="STYLE" />
+	<BugPattern abbrev="DRE" type="DRE_DECLARED_RUNTIME_EXCEPTION" category="STYLE" />
+	<BugPattern abbrev="CE" type="CE_CLASS_ENVY" category="STYLE" experimental="true" />
+	<BugPattern abbrev="LSC" type="LSC_LITERAL_STRING_COMPARISON" category="STYLE" />
+	<BugPattern abbrev="PCOA" type="PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS" category="CORRECTNESS" />
+	<BugPattern abbrev="DLC" type="DLC_DUBIOUS_LIST_COLLECTION" category="PERFORMANCE" />
+	<BugPattern abbrev="PL" type="PL_PARALLEL_LISTS" category="STYLE" />
+	<BugPattern abbrev="FP" type="FP_FINAL_PARAMETERS" category="STYLE" />
+	<BugPattern abbrev="ACEM" type="ACEM_ABSTRACT_CLASS_EMPTY_METHODS" category="STYLE" />
+	<BugPattern abbrev="MAC" type="MAC_MANUAL_ARRAY_COPY" category="PERFORMANCE" />
+	<BugPattern abbrev="FPL" type="FPL_FLOATING_POINT_LOOPS" category="CORRECTNESS" />
+	<BugPattern abbrev="NCMU" type="NCMU_NON_COLLECTION_METHOD_USE" category="STYLE" />
+	<BugPattern abbrev="CAO" type="CAO_CONFUSING_AUTOBOXED_OVERLOADING" category="CORRECTNESS" />
+	<BugPattern abbrev="AFBR" type="AFBR_ABNORMAL_FINALLY_BLOCK_RETURN" category="CORRECTNESS" />
+	<BugPattern abbrev="SMII" type="SMII_STATIC_METHOD_INSTANCE_INVOCATION" category="STYLE" />
+	<BugPattern abbrev="STS" type="STS_SPURIOUS_THREAD_STATES" category="MT_CORRECTNESS" />
+	<BugPattern abbrev="NAB" type="NAB_NEEDLESS_AUTOBOXING_CTOR" category="PERFORMANCE" />
+	<BugPattern abbrev="NAB" type="NAB_NEEDLESS_BOXING_STRING_CTOR" category="PERFORMANCE" />
+	<BugPattern abbrev="NAB" type="NAB_NEEDLESS_AUTOBOXING_VALUEOF" category="PERFORMANCE" />
+	<BugPattern abbrev="NAB" type="NAB_NEEDLESS_BOXING_PARSE" category="PERFORMANCE" />
+	<BugPattern abbrev="NAB" type="NAB_NEEDLESS_BOXING_VALUEOF" category="PERFORMANCE" />
+	<BugPattern abbrev="NAB" type="NAB_NEEDLESS_BOX_TO_UNBOX" category="PERFORMANCE" />
+	<BugPattern abbrev="NAB" type="NAB_NEEDLESS_BOX_TO_CAST" category="PERFORMANCE" />
+	<BugPattern abbrev="NAB" type="NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" category="PERFORMANCE" />
+	<BugPattern abbrev="USBR" type="USBR_UNNECESSARY_STORE_BEFORE_RETURN" category="STYLE" />
+	<BugPattern abbrev="COM" type="COM_COPIED_OVERRIDDEN_METHOD" category="STYLE" />
+	<BugPattern abbrev="ABC" type="ABC_ARRAY_BASED_COLLECTIONS" category="CORRECTNESS" />
+	<BugPattern abbrev="ODN" type="ODN_ORPHANED_DOM_NODE" category="CORRECTNESS" />
+	<BugPattern abbrev="AOM" type="AOM_ABSTRACT_OVERRIDDEN_METHOD" category="CORRECTNESS" />
+	<BugPattern abbrev="CBX" type="CBX_CUSTOM_BUILT_XML" category="STYLE" />
+	<BugPattern abbrev="BSB" type="BSB_BLOATED_SYNCHRONIZED_BLOCK" category="PERFORMANCE" experimental="true" />
+	<BugPattern abbrev="CLI" type="CLI_CONSTANT_LIST_INDEX" category="CORRECTNESS" />
+	<BugPattern abbrev="SCR" type="SCR_SLOPPY_CLASS_REFLECTION" category="STYLE" />
+	<BugPattern abbrev="AWCBR" type="AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE" category="STYLE" />
+	<BugPattern abbrev="SG" type="SG_SLUGGISH_GUI" category="PERFORMANCE" />
+	<BugPattern abbrev="NIR" type="NIR_NEEDLESS_INSTANCE_RETRIEVAL" category="PERFORMANCE" />
+	<BugPattern abbrev="DDC" type="DDC_DOUBLE_DATE_COMPARISON" category="PERFORMANCE" />
+	<BugPattern abbrev="SWCO" type="SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT" category="CORRECTNESS" />
+	<BugPattern abbrev="JVR" type="JVR_JDBC_VENDOR_RELIANCE" category="CORRECTNESS" />
+	<BugPattern abbrev="PMB" type="PMB_POSSIBLE_MEMORY_BLOAT" category="CORRECTNESS" />
+	<BugPattern abbrev="LSYC" type="LSYC_LOCAL_SYNCHRONIZED_COLLECTION" category="CORRECTNESS" />
+	<BugPattern abbrev="FCBL" type="FCBL_FIELD_COULD_BE_LOCAL" category="CORRECTNESS" />
+	<BugPattern abbrev="NRTL" type="NRTL_NON_RECYCLEABLE_TAG_LIB" category="CORRECTNESS"/>
+	<BugPattern abbrev="NOS" type="NOS_NON_OWNED_SYNCHRONIZATION" category="STYLE" />
+	<BugPattern abbrev="S508C" type="S508C_NULL_LAYOUT" category="CORRECTNESS" />
+	<BugPattern abbrev="S508C" type="S508C_NO_SETLABELFOR" category="CORRECTNESS" />
+	<BugPattern abbrev="S508C" type="S508C_NO_SETSIZE" category="CORRECTNESS" />
+	<BugPattern abbrev="S508C" type="S508C_NON_ACCESSIBLE_JCOMPONENT" category="CORRECTNESS" />
+	<BugPattern abbrev="S508C" type="S508C_SET_COMP_COLOR" category="CORRECTNESS" />
+	<BugPattern abbrev="S508C" type="S508C_NON_TRANSLATABLE_STRING" category="CORRECTNESS" />
+	<BugPattern abbrev="S508C" type="S508C_APPENDED_STRING" category="CORRECTNESS" />
+	<BugPattern abbrev="UEC" type="UEC_USE_ENUM_COLLECTIONS" category="PERFORMANCE" />
+	<BugPattern abbrev="SIL" type="SIL_SQL_IN_LOOP" category="PERFORMANCE" />
+	<BugPattern abbrev="NMCS" type="NMCS_NEEDLESS_MEMBER_COLLECTION_SYNCHRONIZATION" category="PERFORMANCE" />
+	<BugPattern abbrev="ITC" type="ITC_INHERITANCE_TYPE_CHECKING" category="STYLE" />
+	<BugPattern abbrev="SACM" type="SACM_STATIC_ARRAY_CREATED_IN_METHOD" category="PERFORMANCE" />
+	<BugPattern abbrev="PRMC" type="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" category="PERFORMANCE" />
+	<BugPattern abbrev="UTA" type="UTA_USE_TO_ARRAY" category="STYLE" />
+	<BugPattern abbrev="LEST" type="LEST_LOST_EXCEPTION_STACK_TRACE" category="CORRECTNESS" />
+	<BugPattern abbrev="UCPM" type="UCPM_USE_CHARACTER_PARAMETERIZED_METHOD" category="PERFORMANCE" />
+	<BugPattern abbrev="TR" type="TR_TAIL_RECURSION" category="PERFORMANCE" />
+	<BugPattern abbrev="URV" type="URV_UNRELATED_RETURN_VALUES" category="STYLE" />
+	<BugPattern abbrev="URV" type="URV_CHANGE_RETURN_TYPE" category="STYLE" />
+	<BugPattern abbrev="URV" type="URV_INHERITED_METHOD_WITH_RELATED_TYPES" category="STYLE" />
+	<BugPattern abbrev="PIS" type="PIS_POSSIBLE_INCOMPLETE_SERIALIZATION" category="CORRECTNESS" />
+	<BugPattern abbrev="SCRV" type="SC_SUSPICIOUS_COMPARATOR_RETURN_VALUES" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_NEGATIVE_BITSET_ITEM" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_INTERN_ON_CONSTANT" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_NO_CHAR_SB_CTOR" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_USE_MATH_CONSTANT" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_STUTTERED_ASSIGNMENT" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_USE_ISNAN" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_USE_BIGDECIMAL_STRING_CTOR" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_STRINGBUFFER_WITH_EMPTY_STRING" category="PERFORMANCE" />
+	<BugPattern abbrev="SPP" type="SPP_EQUALS_ON_ENUM" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_INVALID_BOOLEAN_NULL_CHECK" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_USE_CHARAT" category="PERFORMANCE" />
+	<BugPattern abbrev="SPP" type="SPP_USELESS_TRINARY" category="PERFORMANCE" />
+	<BugPattern abbrev="SPP" type="SPP_SUSPECT_STRING_TEST" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_USE_STRINGBUILDER_LENGTH" category="PERFORMANCE" />
+	<BugPattern abbrev="SPP" type="SPP_INVALID_CALENDAR_COMPARE" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_USE_CONTAINSKEY" category="STYLE" />
+	<BugPattern abbrev="SPP" type="SPP_USE_ISEMPTY" category="STYLE" />
+	<BugPattern abbrev="SPP" type="SPP_USE_GETPROPERTY" category="STYLE" />
+	<BugPattern abbrev="SPP" type="SPP_USELESS_CASING" category="PERFORMANCE" />
+	<BugPattern abbrev="SPP" type="SPP_SERIALVER_SHOULD_BE_PRIVATE" category="STYLE" />
+	<BugPattern abbrev="SPP" type="SPP_NON_ARRAY_PARM" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_EMPTY_CASING" category="STYLE" />
+	<BugPattern abbrev="SPP" type="SPP_TEMPORARY_TRIM" category="STYLE" />
+	<BugPattern abbrev="BAS" type="BAS_BLOATED_ASSIGNMENT_SCOPE" category="PERFORMANCE" />
+	<BugPattern abbrev="SCII" type="SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTATOR" category="STYLE" />
+	<BugPattern abbrev="DWI" type="DWI_DELETING_WHILE_ITERATING" category="CORRECTNESS" />
+	<BugPattern abbrev="DWI" type="DWI_MODIFYING_WHILE_ITERATING" category="CORRECTNESS" />
+	<BugPattern abbrev="USS" type="USS_USE_STRING_SPLIT" category="STYLE" />
+	<BugPattern abbrev="SJVU" type="SJVU_SUSPICIOUS_JDK_VERSION_USE" category="CORRECTNESS" />
+	<BugPattern abbrev="UAA" type="UAA_USE_ADD_ALL" category="STYLE" />
+	<BugPattern abbrev="MRC" type="MRC_METHOD_RETURNS_CONSTANT" category="STYLE" />
+	<BugPattern abbrev="NCS" type="NCS_NEEDLESS_CUSTOM_SERIALIZATION" category="CORRECTNESS" />
+	<BugPattern abbrev="MOM" type="MOM_MISLEADING_OVERLOAD_MODEL" category="STYLE" />
+	<BugPattern abbrev="EXS" type="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" category="STYLE" />
+	<BugPattern abbrev="EXS" type="EXS_EXCEPTION_SOFTENING_HAS_CHECKED" category="STYLE" />
+	<BugPattern abbrev="EXS" type="EXS_EXCEPTION_SOFTENING_NO_CHECKED" category="STYLE" />
+	<BugPattern abbrev="CFS" type="CFS_CONFUSING_FUNCTION_SEMANTICS" category="STYLE" />
+	<BugPattern abbrev="JAO" type="JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT" category="STYLE" />
+	<BugPattern abbrev="JAO" type="JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE" category="STYLE" />
+	<BugPattern abbrev="JAO" type="JAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT" category="STYLE" />
+	<BugPattern abbrev="JAO" type="JAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL" category="CORRECTNESS" />
+	<BugPattern abbrev="SCA" type="SCA_SUSPICIOUS_CLONE_ALGORITHM" category="CORRECTNESS" />
+	<BugPattern abbrev="WEM" type="WEM_WEAK_EXCEPTION_MESSAGING" category="STYLE" />
+	<BugPattern abbrev="SCSS" type="SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT" category="CORRECTNESS" />
+	<BugPattern abbrev="LO" type="LO_SUSPECT_LOG_CLASS" category="CORRECTNESS" />
+	<BugPattern abbrev="LO" type="LO_SUSPECT_LOG_PARAMETER" category="CORRECTNESS" />
+	<BugPattern abbrev="LO" type="LO_STUTTERED_MESSAGE" category="STYLE" />
+	<BugPattern abbrev="IICU" type="IICU_INCORRECT_INTERNAL_CLASS_USE" category="CORRECTNESS" />
+	<BugPattern abbrev="DSOC" type="DSOC_DUBIOUS_SET_OF_COLLECTIONS" category="PERFORMANCE" />
+	<BugPattern abbrev="BED" type="BED_BOGUS_EXCEPTION_DECLARATION" category="CORRECTNESS" />
+	<BugPattern abbrev="UNNC" type="UNNC_UNNECESSARY_NEW_NULL_CHECK" category="CORRECTNESS" />
+	<BugPattern abbrev="DTEP" type="DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN" category="STYLE" />
+	<BugPattern abbrev="SMA" type="SMA_STUTTERED_METHOD_ARGUMENTS" category="STYLE" />
+	<BugPattern abbrev="TBP" type="TBP_TRISTATE_BOOLEAN_PATTERN" category="STYLE" />
+	<BugPattern abbrev="SUA" type="SUA_SUSPICIOUS_UNINITIALIZED_ARRAY" category="CORRECTNESS" />
+	<BugPattern abbrev="ITU" type="ITU_INAPPROPRIATE_TOSTRING_USE" category="CORRECTNESS" />
+	<BugPattern abbrev="IKNC" type="IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING" category="STYLE" />
+	<BugPattern abbrev="IKNC" type="IKNC_INCONSISTENT_HTTP_PARAM_CASING" category="STYLE" />
+	<BugPattern abbrev="OC" type="OC_OVERZEALOUS_CASTING" category="CORRECTNESS" />
+	<BugPattern abbrev="PDP" type="PDP_POORLY_DEFINED_PARAMETER" category="CORRECTNESS" />
+	<BugPattern abbrev="NSE" type="NSE_NON_SYMMETRIC_EQUALS" category="CORRECTNESS" />
+	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="NFF" type="NFF_NON_FUNCTIONAL_FIELD" category="CORRECTNESS" />
+	<BugPattern abbrev="SNG" type="SNG_SUSPICIOUS_NULL_FIELD_GUARD" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="SNG" type="SNG_SUSPICIOUS_NULL_LOCAL_GUARD" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="MDM" type="MDM_RUNTIME_EXIT_OR_HALT" category="CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_RUNFINALIZATION" category="CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_INETADDRESS_GETLOCALHOST" category="CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_PROMISCUOUS_SERVERSOCKET" category="CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_THREAD_PRIORITIES" category="MT_CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_THREAD_YIELD" category="MT_CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_WAIT_WITHOUT_TIMEOUT" category="MT_CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_SIGNAL_NOT_SIGNALALL" category="MT_CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_THREAD_FAIRNESS" category="MT_CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_LOCK_ISLOCKED" category="MT_CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_STRING_BYTES_ENCODING" category="CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_SETDEFAULTLOCALE" category="MT_CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_BIGDECIMAL_EQUALS" category="CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_RANDOM_SEED" category="CORRECTNESS" />
+	<BugPattern abbrev="MDM" type="MDM_SECURERANDOM" category="CORRECTNESS" />
+	<BugPattern abbrev="ROOM" type="ROOM_REFLECTION_ON_OBJECT_METHODS" category="CORRECTNESS" />
+	<BugPattern abbrev="IPU" type="IPU_IMPROPER_PROPERTIES_USE" category="CORRECTNESS" />
+	<BugPattern abbrev="IPU" type="IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY" category="CORRECTNESS" />
+	<BugPattern abbrev="PCAIL" type="PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP" category="PERFORMANCE" />
+	<BugPattern abbrev="WOC" type="WOC_WRITE_ONLY_COLLECTION_LOCAL" category="CORRECTNESS" />
+	<BugPattern abbrev="WOC" type="WOC_WRITE_ONLY_COLLECTION_FIELD" category="CORRECTNESS" />
+	<BugPattern abbrev="UVA" type="UVA_USE_VAR_ARGS" category="STYLE" />
+	<BugPattern abbrev="PUS" type="PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="SEC" type="SEC_SIDE_EFFECT_CONSTRUCTOR" category="STYLE" experimental="true" />
+	<BugPattern abbrev="SGSU" type="SGSU_SUSPICIOUS_GETTER_SETTER_USE" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="LGO" type="LGO_LINGERING_GRAPHICS_OBJECT" category="PERFORMANCE" experimental="true" />
+	<BugPattern abbrev="STB" type="STB_STACKED_TRY_BLOCKS" category="STYLE" experimental="true" />
+</FindbugsPlugin>

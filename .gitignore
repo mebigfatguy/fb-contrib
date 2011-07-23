@@ -1,0 +1,10 @@
+
+target
+classes
+.svn
+.svnignore
+.cvsignore
+*.*~
+*.xlr
+*.jar
+*.zip

@@ -1,0 +1,13 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: FB-Contrib Plug-in
+Bundle-SymbolicName: fb-contrib;singleton:=true
+Bundle-Version: 4.5.0.qualifier
+Bundle-ClassPath: .
+Bundle-Vendor: FB-Contrib Project
+Require-Bundle: 
+  edu.umd.cs.findbugs.plugin.eclipse,
+  findbugs;resolution:=optional
+Bundle-RequiredExecutionEnvironment: J2SE-1.5
+Bundle-ActivationPolicy: lazy
+

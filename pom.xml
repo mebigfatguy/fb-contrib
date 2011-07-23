@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- pom.xml developed by Grzegorz Slowikowski -->
+<project
+    xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.mebigfatguy.fb-contrib</groupId>
+    <artifactId>fb-contrib</artifactId>
+    <version>4.7.0</version>
+    
+    <parent>
+        <groupId>org.sonatype.oss</groupId>
+        <artifactId>oss-parent</artifactId>
+        <version>5</version>
+    </parent>
+
+    <name>FindBugs Contrib plugin library</name>
+    <description>An auxiliary findbugs.sourceforge.net plugin for java bug detectors that fall outside the narrow scope of detectors to be packaged with the product itself.</description>
+    <url>http://fb-contrib.mebigfatguy.com</url>
+    <inceptionYear>2005</inceptionYear>
+    
+    <developers>
+        <developer>
+            <id>dbrosius</id>
+            <name>Dave Brosius</name>
+            <email>dbrosius@mebigfatguy.com</email>
+        </developer>
+    </developers>
+
+    <contributors>
+        <contributor>
+            <name>Bhaskar Maddala</name>
+        </contributor>
+        <contributor>
+            <name>Chris Peterson</name>
+        </contributor>
+        <contributor>
+            <name>Grzegorz Slowikowski</name>
+            <email>gslowikowski@gmail.com</email>
+            <properties>
+                <gtalk>gslowikowski@gmail.com</gtalk>
+            </properties>
+            <timezone>+1</timezone>
+        </contributor>
+    </contributors>
+
+    <licenses>
+        <license>
+            <name>GNU Library or Lesser General Public License (LGPL)</name>
+            <url>http://www.gnu.org/licenses/lgpl.txt</url>
+        </license>
+    </licenses>
+    
+    <scm>
+        <connection>scm:svn:https://fb-contrib.svn.sourceforge.net/svnroot/fb-contrib/trunk/</connection>
+        <developerConnection>scm:svn:https://fb-contrib.svn.sourceforge.net/svnroot/fb-contrib/trunk/</developerConnection>
+        <url>http://fb-contrib.svn.sourceforge.net/viewvc/fb-contrib/trunk/</url>    
+    </scm>
+    
+    <mailingLists>
+        <mailingList>
+            <name>fb-contrib-commit</name>
+            <subscribe>https://lists.sourceforge.net/mailman/listinfo/fb-contrib-commit</subscribe>
+            <unsubscribe>https://lists.sourceforge.net/lists/options/fb-contrib-commit/</unsubscribe>
+            <post>fb-contrib-commit@lists.sourceforge.net</post>
+            <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=fb-contrib-commit</archive>
+        </mailingList>
+        
+        <mailingList>
+            <name>fb-contrib-discuss</name>
+            <subscribe>https://lists.sourceforge.net/mailman/listinfo/fb-contrib-discuss</subscribe>
+            <unsubscribe>https://lists.sourceforge.net/lists/options/fb-contrib-discuss/</unsubscribe>
+            <post>fb-contrib-discuss@lists.sourceforge.net</post>
+            <archive>http://sourceforge.net/mailarchive/forum.php?forum_name=fb-contrib-discuss</archive>
+        </mailingList>
+    </mailingLists>
+    
+    <issueManagement>
+        <system>SourceForge.net Tracker</system>
+        <url>http://sourceforge.net/tracker/?group_id=147536</url>
+    </issueManagement>
+    
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>findbugs</artifactId>
+            <version>1.3.9</version>
+            <scope>provided</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <sourceDirectory>${basedir}/src</sourceDirectory>
+        <resources>
+            <resource>
+                <directory>${basedir}</directory>
+                <includes>
+                    <include>license.txt</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/etc</directory>
+                <excludes>
+                    <exclude>*.xsd</exclude>
+                    <exclude>*.xsl</exclude>
+                </excludes>
+            </resource>
+        </resources>
+
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>2.3</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <version>2.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-deploy-plugin</artifactId>
+                    <version>2.5</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-install-plugin</artifactId>
+                    <version>2.3</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-jar-plugin</artifactId>
+                    <version>2.3</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-project-info-reports-plugin</artifactId>
+                    <version>2.1.2</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-resources-plugin</artifactId>
+                    <version>2.4.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-site-plugin</artifactId>
+                    <version>2.0.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-source-plugin</artifactId>
+                    <version>2.1.1</version>
+                </plugin>
+
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>2.4.3</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.5</source>
+                    <target>1.5</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

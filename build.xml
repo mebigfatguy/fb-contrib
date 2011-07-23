@@ -1,0 +1,180 @@
+<!--
+	fb-contrib Ant build script.
+	Dave Brosius
+-->
+
+<project name="fb-contrib" default="install">
+
+	<property file="build.properties"/>
+
+	<property name="src.dir" value="${basedir}/src"/>
+	<property name="classes.dir" value="${basedir}/classes"/>
+	<property name="lib.dir" value="${basedir}/lib"/>
+	<property name="etc.dir" value="${basedir}/etc"/>
+	<property name="samples.dir" value="${basedir}/samples"/>
+	<property name="sampleslib.dir" value="${samples.dir}/lib"/>
+	<property name="javadoc.dir" value="${basedir}/javadoc"/>
+	<property name="htdocs.dir" value="${basedir}/htdocs"/>
+	<property name="javac.source" value="1.5"/>
+	<property name="javac.target" value="1.5"/>
+	<property name="javac.deprecation" value="on"/>
+	<property name="javac.debug" value="on"/>
+
+	<property name="fb-contrib.version" value="4.7.0"/>
+
+	<target name="clean" description="removes all generated collateral">
+		<delete dir="${classes.dir}"/>
+		<delete dir="${javadoc.dir}"/>
+		<delete file="${htdocs.dir}/bugdescriptions.html"/>
+		<delete file="${basedir}/fb-contrib-${fb-contrib.version}.jar"/>
+		<delete file="${basedir}/fb-contrib-src-${fb-contrib.version}.zip"/>
+		<delete>
+			<fileset dir="${samples.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+		</delete>
+		<delete dir="${basedir}/plugin"/>
+	</target>
+
+	<target name="-init" description="prepares repository for a build">
+		<mkdir dir="${classes.dir}"/>
+		<mkdir dir="${javadoc.dir}"/>
+		<path id="fb-contrib.classpath">
+			<pathelement location="${lib.dir}/findbugs.jar"/>
+			<pathelement location="${lib.dir}/bcel.jar"/>
+		</path>
+		<path id="fb-contrib.samples.classpath">
+			<pathelement location="${sampleslib.dir}/jsp-api.jar"/>
+			<pathelement location="${sampleslib.dir}/junit.jar"/>
+			<pathelement location="${sampleslib.dir}/servlet-api.jar"/>
+			<pathelement location="${sampleslib.dir}/log4j.jar"/>
+		</path>
+		<mkdir dir="${classes.dir}/com"/>
+		<mkdir dir="${classes.dir}/com/mebigfatguy"/>
+		<mkdir dir="${classes.dir}/com/mebigfatguy/fbcontrib"/>
+		<mkdir dir="${classes.dir}/com/mebigfatguy/fbcontrib/detect"/>
+		<echo message="*.class" file="${classes.dir}/com/mebigfatguy/fbcontrib/detect/.cvsignore"/>
+	</target>
+
+	<target name="validate_xml" depends="-init" description="validates the xml files">
+		<xmlvalidate lenient="false" failonerror="yes">
+			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
+			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
+			<fileset dir="${etc.dir}" includes="*.xml"/>
+		</xmlvalidate>
+	</target>
+
+	<target name="compile" depends="-init" description="compiles java files">
+		<javac  srcdir="${src.dir}"
+				destdir="${classes.dir}"
+				source="${javac.source}"
+				target="${javac.target}"
+				deprecation="${javac.deprecation}"
+				debug="${javac.debug}"
+			    includeantruntime="false">
+			<classpath refid="fb-contrib.classpath"/>
+		</javac>
+	</target>
+
+	<target name="compile_samples" depends="-init" description="compiles sample problem files">
+		<javac srcdir="${samples.dir}"
+				destdir="${samples.dir}"
+				source="1.5"
+				target="1.5"
+				deprecation="${javac.deprecation}"
+				debug="${javac.debug}"
+			    includeantruntime="false">
+			<classpath refid="fb-contrib.classpath"/>
+			<classpath refid="fb-contrib.samples.classpath"/>
+		</javac>
+		<delete file="${samples.dir}/SJVU_Sample.class"/>
+		<javac srcdir="${samples.dir}"
+               destdir="${samples.dir}"
+               source="1.4"
+               target="1.4"
+               deprecation="${javac.deprecation}"
+			   debug="${javac.debug}"
+			   includeantruntime="false">
+    		<include name="SJVU_Sample.java"/>
+			<classpath refid="fb-contrib.classpath"/>
+			<classpath refid="fb-contrib.samples.classpath"/>
+		</javac>
+	</target>
+
+	<target name="jar" depends="compile" description="produces the fb-contrib jar file">
+		<jar destfile="${basedir}/fb-contrib-${fb-contrib.version}.jar">
+			<fileset dir="etc">
+				<include name="findbugs.xml"/>
+				<include name="messages*.xml"/>
+				<include name="bugrank.txt"/>
+				<include name="*.license"/>
+			</fileset>
+			<fileset dir="${classes.dir}">
+				<include name="**/*.class"/>
+			</fileset>
+			<fileset dir="${basedir}">
+				<include name="plugin.xml"/>
+				<include name="license.txt"/>
+			</fileset>
+			<manifest>
+				<attribute name="fb-contrib-version" value="${fb-contrib.version}"/>
+				<attribute name="Main-Class" value="com.mebigfatguy.fbcontrib.FBContrib"/>
+				<attribute name="Eclipse-RegisterBuddy" value="edu.umd.cs.findbugs.plugin.eclipse"/>
+				<attribute name="Bundle-ManifestVersion" value="2"/>
+				<attribute name="Bundle-Name" value="fb-contrib plugin"/>
+				<attribute name="Bundle-SymbolicName" value="fb-contrib; singleton:=true"/>
+				<attribute name="Bundle-Version" value="${fb-contrib.version}"/>				
+				<attribute name="Bundle-ClassPath" value="."/>
+				<attribute name="Bundle-Vendor" value="FB-Contrib Project"/>
+				<attribute name="Require-Bundle" value="edu.umd.cs.findbugs.plugin.eclipse"/>
+				<attribute name="Bundle-ActivationPolicy" value="lazy"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="html" depends="-init" description="generates dynamic html">
+		<xslt basedir="${etc.dir}"
+			  destdir="${htdocs.dir}"
+			  style="${etc.dir}/bugdescriptions.xsl"
+			  in="${etc.dir}/messages.xml" out="${htdocs.dir}/bugdescriptions.html"/>
+	</target>
+
+	<target name="srczip" description="builds the source distribution zip file">
+		<zip destfile="${basedir}/fb-contrib-src-${fb-contrib.version}.zip" basedir="${basedir}">
+			<fileset dir="${src.dir}">
+				<include name="**/*.java"/>
+				<include name="**/*.xml"/>
+				<include name="**/*.xsd"/>
+				<include name="**/*.license"/>
+				<include name="**/*.txt"/>
+				<include name="lib/*.jar"/>
+			</fileset>
+		</zip>
+	</target>
+
+	<target name="javadoc" depends="-init" description="build the javadoc for the project">
+		<javadoc packagenames="com.mebigfatguy.*"
+				 sourcepath="${src.dir}"
+				 classpathref="fb-contrib.classpath"
+				 destdir="${javadoc.dir}"
+				 windowtitle="fb-contrib api">
+		    <doctitle><![CDATA[<h1>fb-contrib javadoc</h1>]]></doctitle>
+		    <bottom><![CDATA[<i>Copyright &#169; 2005-2011 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
+		</javadoc>
+	</target>
+
+	<target name="build" depends="clean, -init, validate_xml, compile, compile_samples, jar" description="builds the plugin jar">
+	</target>
+
+    	<target name="install" depends="build" description="installs the plugin into FindBugs">
+		<property environment="env"/>
+		<copy todir="${env.FINDBUGS_HOME}/plugin">
+			<fileset dir="${basedir}">
+				<include name="fb-contrib-${fb-contrib.version}.jar"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release"/>
+
+</project>

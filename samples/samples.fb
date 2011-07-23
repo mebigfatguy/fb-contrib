@@ -1,0 +1,10 @@
+[Jar files]
+.
+[Source dirs]
+.
+[Aux classpath entries]
+./lib/jsp-api.jar
+./lib/junit.jar
+./lib/servlet-api.jar
+[Options]
+relative_paths=true

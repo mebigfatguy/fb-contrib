@@ -1,0 +1,639 @@
+<html>
+<head>
+<meta name="keywords" content="findbugs,plugin,detector,bug,static,jar"/>
+<title>fb-contrib&trade;: A FindBugs&trade; auxiliary detector plugin</title>
+<script src="mbfg.js">
+</script>
+<link rel="stylesheet" type="text/css" href="mbfg.css" />
+<script language="javascript">
+
+var flip1 = new Image;
+flip1.src = "flip1.gif";
+var flip2 = new Image;
+flip2.src = "flip2.gif";
+
+function toggleBlock(divId, imgId)
+{
+    var el = document.getElementById(divId);
+	if (el.style.display=="block")
+    { 
+        el.style.display="none";
+        el = document.getElementById(imgId);
+        el.src=flip1.src;
+    }
+    else
+    {
+        el.style.display="block";
+        el = document.getElementById(imgId);
+        el.src=flip2.src;
+    }
+}
+
+</script>
+</head>
+<body background>
+	<div style="position:absolute;top:0;left:0;width:256;height:65535;z-index:1;background-image:url(blend.jpg);">
+	</div>
+
+	<div style="position:absolute;top:20;left:20;z-index:2;">
+		<h1>fb-contrib&trade;: A FindBugs&trade; auxiliary detector plugin</h1>
+	
+		<p>fb-contrib&trade; is an extra detector plugin to be used with the static bug
+		finder FindBugs&trade; (findbugs.sourceforge.net). Just download the fb-contrib.jar
+		file, and place it in the appropriate location based on how you wish to use it. (See below). FindBugs&trade; will
+		automatically pick up the jar file, and incorporate these detectors with its
+		own.
+		</p>
+		<a href="http://www.sourceforge.net/projects/fb-contrib">Project Page</a>
+		<img src="vbar.gif" height="12"/>
+		<a href="javadoc/index.html">JavaDoc</a>
+		<img src="vbar.gif" height="12"/>
+		<a href="bugdescriptions.html">Bug Descriptions</a>
+		<img src="vbar.gif" height="12"/>
+		<a href="repository.html">Maven Repository</a>
+		<!--#include virtual="mbfg_menu.shtml" --> 
+		<hr/>
+
+		<div style="margin: 15px; padding: 10px 5px 10px 5px; font-size: 14px; color: #4444FF;">
+		<p>
+			fb-contrib can be used from the Findbugs&trade; Gui, Ant, or the eclipse plugin.<br/>
+			<ul>
+			<li style="margin-left: -10px; padding-bottom: 10px;">
+				To run fb-contrib from the gui, or ant, just place the fb-contrib jar in the plugins directory inside of the
+				Findbugs&trade; directory.
+			</li>
+			<li style="margin-left: -10px;">
+				To run fb-contrib from eclipse, assuming that the main FindBugs plugin is installed, 
+				simply drop the fb-contrib.jar in the plugins directory of eclipse, and restart eclipse.
+			</li>
+			</ul>
+		</p>
+		<p style="font-weight: bold;">The latest version of fb-contrib is 4.6.1 available for download 
+		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-4.6.1.jar/download">here</a>.</p>
+		</div>
+
+		<hr/>
+		<img id="svn_image" src="flip2.gif" onClick="toggleBlock('svn', 'svn_image');" align="top"/>
+		Detectors added in svn<br/>
+		<div id="svn" style="display:block;">
+			<ul>
+				<li><b>[CVAA] ContraVariant Array Assignment</b><br/>
+				Looks for contravariant array assignments. Since arrays are mutable data structures, their use 
+				must be restricted to covariant or invariant usage.
+				<span style="color: #0000FF;">--contributed by Bhaskar Maddala - THANKS!</span></li>
+				<li><b>[LGO] Lingering Graphics Object</b><br/>
+				Looks for creation of java.awt.Graphics object that do not have the
+				.dispose() method called on them when finished. These objects will be cleaned up by 
+				the Garbage collector, bug given the likelyhood that large numbers of these objects can
+				be created in a short period of time, it is better to dispose them as soon as possible.</li>
+				<li><b>[STB] Stacked Try Blocks</b><br/>
+				Looks for two or more try catch blocks that are consecutive and catch the
+				same kind of exception, and throw the same exception always. These blocks can
+				be coalesced into one.
+				</li>
+			</ul>
+		</div>
+		<hr/>
+		<img id="v4_6_0_image" src="flip1.gif" onClick="toggleBlock('v4_6_0', 'v4_6_0_image');" align="top"/>
+		Detectors added in v4.6.0<br/>
+		<div id="v4_6_0" style="display:none;">
+			<ul>
+				<li><b>[SNG] Suspicious Null Guard</b><br/>
+				Looks for code that checks to see if a field or local variable is not null 
+				before entering a code block either an if, or while statement, and reassigns
+				that field or variable. It seems that perhaps the guard should check if the field
+				or variable is null.</li>
+				<li><b>[PUS] Possible Unsuspected Serialization</b><br/>
+				Looks for serialization of non-static inner classes. As this serializes
+				the enclosing class, it may unintentionally bring in more to the serialization
+				than is wanted.</li>
+				<li><b>[SEC] Side Effect Constructor</b><br/>
+				Looks for constructors that operate through side effects, specifically
+				constructors that aren't assigned to any variable or field. This makes
+				the code more difficult to maintain as it has a tendency to increase cohesion
+				between classes.
+				</li>
+				<li><b>[SGSU] Suspicious Getter Setter Use</b><br/>
+				Looks for the setting of a java bean property with a value retrieved from the same
+				bean's getter method for that property. This is usually a copy/paste typo.
+				</li>
+			</ul>
+			<ul>
+				<li><span style="color: #0000FF;">Eclipse plugin support by Andrei Loskutov - THANKS!</span></li>
+			</ul>
+		</div>
+		<hr/>
+		<img id="v4_4_0_image" src="flip1.gif" onClick="toggleBlock('v4_4_0', 'v4_4_0_image');" align="top"/>
+		Detectors added in v4.4.0<br/>
+		<div id="v4_4_0" style="display:none;">
+			<ul>
+				<li><b>[ROOM] Reflection on Object Methods</b><br/>
+				Looks for method calls through reflection on methods found in java.lang.Object. 
+				As these methods are always available, there's no reason to do this.</li>
+				<li><b>[IPU] Improper Properties Use</b><br/>
+				Looks for java.util.Properties use where values other than String are placed in 
+				the properties object. As the Properties object was intended to be a String to 
+				String only collection, putting other types in the Properties object is incorrect, 
+				and takes advantage of a poor design decision by the original Properties class 
+				designers to derive from Hashtable, rather than using aggregation.</li>
+				<li><b>[PCAIL] Possible Constant Allocation in Loop</b><br/>
+				Looks for allocations of objects using the default constructor in a loop, where
+	 			the object allocated is never assigned to any object that is used outside the loop.
+	 			It is possible that this allocation can be done outside the loop to avoid excessive garbage.</li>
+				<li><b>[WOC] Write Only Collection</b><br/>
+				Looks for allocations and initializations of java collections, but that are never
+	 			read from or accessed to gain information. This represents a collection of no use, and most probably
+	 			can be removed. It is similar to a dead local store.</li>
+	 			<li><b>[UVA] Use Var Args</b><br/>
+	 			Looks for definitions of methods that have an array as the last parameter.
+	 			Since this class is compiled with java 1.5 or better, it would be more flexible for clients of this
+	 			method to define this parameter as a vararg parameter.</li>
+			</ul>
+		</div>
+		<hr/>
+		<img id="v4_2_0_image" src="flip1.gif" onClick="toggleBlock('v4_2_0', 'v4_2_0_image');" align="top"/>
+		Detectors added in v4.2.0<br/>
+		<div id="v4_2_0" style="display:none;">	
+			<ul>
+				<li><b>[PDP] Poorly Defined Parameter</b><br/>
+				Looks for non derivable methods that declare parameters and then cast those
+				parameters to more specific types in the method. This is misleading and dangerous
+				as you are not documenting through parameter types what is necessary for these
+				parameters to function correctly.</li>
+				<li><b>[OC] Overzealous Casting</b><br/>
+				Looks for manual casts of objects that are more specific then needed as the value is assigned
+				to a class or interface higher up in the inheritance chain. You only need to cast to that class
+				or interface.</li>
+				<li><b>[IKNC] Inconsistent Key Name Casing</b><br/>
+				Looks for calls to HttpRequest.getParameter and HttpRequest.getAttribute with parameters 
+				of the same name with different cases like 'id' and 'Id'.</li>
+				<li><b>[NSE] Non Symmetric Equals</b><br/>
+				Looks for classes that break the fundamental rule of equivalence, which is
+				symmetry. If a equals b, then b equals a. While it is usually wrong to allow
+				equals to compare different types, at the very least you should make sure that
+				each class knows about each other and is able to compare themselves with each other.</li>
+				<li><b>[NFF] Non Functional Field</b><br/>
+				Looks for fields in serializable classes that are defined as both final and
+				transient. As a transient field is not initialized when streamed, and is not 
+				initialized in a constructor, it will remain null because it is defined final.</li>
+				<li><b>[MDM] More Dumb Methods</b><br/>
+				Looks for a variety of questionable method calls that will cause problems, are unsafe
+				or use practices that might lead to bugs.
+				<span style="color: #0000FF;">--contributed by Chris Peterson - THANKS!</span></li>
+			</ul>
+			<ul>
+				<li><span style="color: #0000FF;">Maven pom file contributed by Grzegorz Slowikowski - THANKS!</span></li>
+			</ul>
+		</div>	
+		<hr/>
+		<img id="v4_0_0_image" src="flip1.gif" onClick="toggleBlock('v4_0_0', 'v4_0_0_image');" align="top"/>
+		Detectors added in v4.0.0<br/>
+		<div id="v4_0_0" style="display:none;">
+			<ul>
+				<li><b>[TBP] Tristate Boolean Pattern</b><br/>
+				Looks for methods that are defined to return Boolean, but return null. This thus
+				allows three return values, Boolean.FALSE, Boolean.TRUE and null. If three values are
+				intended, it would be more clear to just create an enumeration with three values
+				and return that type.</li>
+				<li><b>[SUA] Suspicious Uninitialized Array</b><br/>
+				Looks for creation of arrays, that are not populated before being returned
+				for a method. While it is possible that the method that called this method
+				will do the work of populated the array, it seems odd that this would be the case.</li>
+				<li><b>[ITU] Inappropriate ToString Use</b><br/>
+				Looks for methods that rely on the format of the string fetched from another object's toString
+				method, when that method appears not to be owned by the author of the calling method.
+				As the implementation of toString() is often considered a private implementation detail of a class, 
+				and not something that should be relied on, depending on it's format is dangerous.</li>
+				<li><b>[BED] Bogus Exception Declaration</b><br/>
+				Looks for constructors, private methods or static methods that declare that they
+				throw specific checked exceptions, but that do not. This just causes callers of 
+				these methods to do extra work to handle an exception that will never be thrown.</li>
+				<li><b>[DTEP] Deprecated Typesafe Enum Pattern</b><br/>
+				Looks for classes that appear to implement the old style type safe enum pattern 
+				that was used before java added Enum support to the language. Since this class is 
+				compiled with java 1.5 or later, it would be simpler to just use java enums.</li>
+				<li><b>[UNNC] Unnecessary New Null Check</b><br/>
+				Looks for construction of new objects, and then the immediate testing
+				whether the object is null or not. As the new operator will always succeed,
+				or through an exception, this test is unnecessary and represents a misunderstanding
+				as to how the jvm works.</li>
+			</ul>
+		</div>
+		<hr/>
+		<img id="v3_8_0_image" src="flip1.gif" onClick="toggleBlock('v3_8_0', 'v3_8_0_image');" align="top"/>
+		Detectors added in v3.8.0<br/>
+		<div id="v3_8_0" style="display:none;">
+			<ul>
+				<li><b>[DSOC] Dubious Set of Collections</b><br/>
+				Looks for sets or keySets of maps that contain other collections. As typically collections calculate
+				their hashCode, equals and compareTo methods by iterating the collection and evaluating the same function
+				on each item in the collection, this can be costly from a performance point of view.
+				In addition, using a set, or keySet of a map, infers that you will be looking for items based on 
+				the value of a collection, which seems dubious at best.
+				Finally, as collections are often modified, This may cause problems if the collection is modified,
+				thus changing hashCodes, etc, while the collection is in the set.
+				If you wish to keep a collection of collections, the outer collection should probably be a list
+				to avoid these problems</li>
+				<li><b>[IICU] Incorrect Internal Class Use</b><br/>
+				Looks for classes that use objects from internal sun, xerces or xalan packages. As these are internal
+				to the respective products and subject to change or removal, these should not be used.</li>
+				<li><b>[LO] Logger Oddities</b><br/>
+				Looks for uses of log4j or slf4j where the class specified when creating the logger
+				is not the same as the class in which this logger is used.</li>
+				<li><b>[SCSS] Suspicious Clustered Session Support</b><br/>
+				Looks for methods that access objects in http sessions, that are complex objects,
+				modifies those objects, but does not call setAttribute to signify a change so that
+				cluster replication can happens correctly.</li>
+			</ul>
+		</div>
+		<hr/>
+		<img id="v3_6_0_image" src="flip1.gif" onClick="toggleBlock('v3_6_0', 'v3_6_0_image');" align="top"/>
+		Detectors added in v3.6.0<br/>
+		<div id="v3_6_0" style="display:none;">
+			<ul>
+				<li><b>[CFS] Confusing Function Semantics</b><br/>
+				Looks for methods that return a parameter after making what looks like
+				modifications to that parameter. This leads to confusion for the user of this
+				method as it isn't obvious that the 'original' object is modified. If the
+				point of this method is to modify the parameter, it is probably better just
+				to have the method be a void method, to avoid confusion.</li>
+				<li><b>[SCA] Suspicious Clone Algorithm</b><br/>
+				Looks for implementation of clone where an assignment is made to a field of the
+				source object. It is likely that that store should have occurred on the cloned object, as
+				the clone operation is almost always considered read only.</li>
+				<li><b>[JAO] JUnit Assertion Oddities</b><br/>
+				Looks for junit test case methods that use assertions with odd parameters. Things such as,
+				passing a constant as the second (actual) parameter, not using the three parameter version of 
+				asserts for doubles, or passing true or false as the first parameter instead of using assertTrue, 
+				or assertFalse.</li>
+				<li><b>[WEM] Weak Exception Messaging</b><br/>
+				Looks for exceptions that are thrown with static strings as messages. Using static strings
+				doesn't differentiate one use of this method versus another, and so it may be difficult
+				to determine how this exception occurred without showing context.</li>
+			</ul>
+		</div>
+		<hr/>
+		<img id="v3_4_0_image" src="flip1.gif" onClick="toggleBlock('v3_4_0', 'v3_4_0_image');" align="top"/>
+		Detectors added in v3.4.0<br/>
+		<div id="v3_4_0" style="display:none;">
+			<ul>
+				<li><b>[SJVU] Suspicious JDK Version Use</b><br/>
+				Looks for calls to classes and methods that do not exist in the JDK for which this class is
+				compiled. This can happen if you specify the -source and -target options of the javac compiler, and
+				specify a target that is less than the jdk version of the javac compiler.</li>
+				<li><b>[UAA] Use Add All</b><br/>
+				Looks for loops that transfers the contents of one collection to another. These collection sources
+				might be local variables or member fields, including sets, maps key/values, lists, or arrays. 
+				It is simpler to just use the addAll method of the collection class. In the case where the 
+				source is an array, you can use Arrays.asList(array), and use that as the source to addAll.</li>
+				<li><b>[MRC] Method returns Constant</b><br/>
+				Looks for private methods that can only return one constant value. 
+				Either the class should not return a value, or perhaps a branch was missed.</li>
+				<li><b>[NCS] Needless Custom Serialization</b><br/>
+				Looks for classes that implement Serializable and implements readObject and writeObject
+ 				by just calling the readDefaultObject or writeDefaultObject of the stream parameter.
+ 				As this is the standard behavior, implementing these methods is not needed.</li>
+ 				<li><b>[EXS] Exception Softening</b><br/>
+ 				looks for methods that catch checked exceptions, and throw unchecked exceptions in their 
+ 				place. There are several levels of concern. Least important are methods constrained by 
+ 				interface or super class contracts not to throw checked exceptions but appear owned by 
+ 				the same author. Next are methods constrained by interface or super class contracts and 
+ 				throw other types of checked exceptions. Lastly are method not constrained by any interface
+ 				or superclass contract.<br/>
+			</ul>
+		</div>
+		<hr/>	
+		<img id="v3_2_0_image" src="flip1.gif" onClick="toggleBlock('v3_2_0', 'v3_2_0_image');" align="top"/>
+		Detectors added in v3.2.0<br/>
+		<div id="v3_2_0" style="display:none;">
+			<ul>
+				<li><b>[SCRV] Suspicious Comparator Return Values</b><br/>
+				Looks for classes that implement Comparator or Comparable, and whose compare or compareTo
+ 				methods return constant values only, but that don't represent the three possible choices
+				(a negative number, 0, and a positive number).</li>
+				<li><b>[SPP] Sillyness Pot Pourri</b><br/>
+				Looks for various small problems that don't fall into any particular category.</li>
+				<li><b>[SCII] Spoiled Child Interface Implementor</b><br/>
+				Looks for classes that implement interfaces by relying on methods being 
+				implemented in superclasses, even though the superclass knows nothing about
+				the interface being implemented by the child.</li>
+				<li><b>[DWI] Deleting While Iterating</b><br/>
+				Looks for deletion of items from a collection using the remove method
+				of the collection at the same time that the collection is being iterated on. If
+				this occurs the iterator will become invalid and throw a ConcurrentModificationException.
+				Instead, the remove should be called on the iterator itself.</li>
+				<li><b>[USS] Use String Split</b><br/>
+				Looks for code that builds an array by using a StringTokenizer to break up
+				a string and place individual elements into an array. It is simpler to use
+				String.split instead.</li>
+			</ul>
+		</div>
+		<hr/>	
+		<img id="v3_0_0_image" src="flip1.gif" onClick="toggleBlock('v3_0_0', 'v3_0_0_image');" align="top"/>
+		Detectors added in v3.0.0<br/>
+		<div id="v3_0_0" style="display:none;">
+			<ul>
+				<li><b>[LEST] Lost Exception Stack Trace</b><br/>
+				Looks for methods that catch exceptions, and rethrow another exception without encapsulating
+				the original exception within it. Doing this loses the stack history, and where the original
+ 				problem occurred. This makes finding and fixing errors difficult.</li>
+				<li><b>[UCPM] Use Character Parameterized Method</b><br/>
+				Looks for methods that pass single character string constants as parameters to 
+				methods that alternatively have an overridden method that accepts a character instead.
+				It is easier for the method to handle a single character than a String.</li>
+				<li><b>[TR] Tail Recursion</b><br/>
+				Looks for methods that make a recursive call to itself as the last statement in 
+				the method. This tail recursion could be converted into a simple loop which would 
+				improve the performance and stack requirements.</li>
+				<li><b>[URV] Unrelated Return Values</b><br/>
+				Looks for methods that return Object, and who's code body returns two or more
+				different types of objects that are unrelated (other than by Object).</li>
+				<li><b>[PIS] Possible Incomplete Synchronization</b><br/>
+				Looks for classes that don't handle serialization of parent class member fields 
+				when the class in question is serializable but is derived from non serializable
+				classes.<br/>
+			</ul>
+		</div>
+		<hr/>
+		<img id="v2_8_0_image" src="flip1.gif" onClick="toggleBlock('v2_8_0', 'v2_8_0_image');" align="top"/>
+		Detectors added in v2.8.0<br/>
+		<div id="v2_8_0" style="display:none;">
+			<ul>
+				<li><b>[NMCS] Needless Member Collection Synchronization</b><br/>
+				Looks for private collection members, either static or instance, that are only initialized in
+				the clinit or init, but are synchronized. This is not necessary as the constructor or static 
+ 				initializer are guaranteed to be thread safe.</li>
+ 				<li><b>[ITC] Inheritance Type Checking</b><br/>
+ 				Looks for if/else blocks where a series of them use instanceof on the same 
+				variable to determine what to do. If these classes are related by inheritance,
+				this often is better handled through calling a single overridden method.</li>
+				<li><b>[PRMC] Possibly Redundant Method Calls</b><br/>
+				Looks for calls of the same method on the same object when that object hasn't changed.
+				This often is redundant, and the second call can be removed, or combined.</li>
+				<li><b>[UTA] Use toArray</b><br/>
+				Looks for code that builds an array of values from a collection, by manually looping
+				over the elements of the collection, and adding them to the array. It is simpler and
+				cleaner to use mycollection.toArray(new type[mycollection.size()].</li>
+			</ul>
+		</div>
+		<hr/>
+		<img id="v2_6_0_image" src="flip1.gif" onClick="toggleBlock('v2_6_0', 'v2_6_0_image');" align="top"/>
+		Detectors added in v2.6.0<br/>
+		<div id="v2_6_0" style="display:none;">
+			<ul>
+				<li><b>[FCBL] Field could be Local</b><br/>
+				Looks for classes that declare fields that are used in a locals-only fashion, specifically private fields 
+				that are accessed first in each method with a store vs. a load. These fields can be declared as one or more 
+				locals.</li>
+				<li><b>[NOS] Non Owned Synchronization</b><br/>
+				looks for methods that synchronize on variables that are not owned by the
+				current class. Doing this causes confusion when two classes use the same variable
+				for their own synchronization purposes. For cleanest separation of interests, only
+				synchronize on private fields of the class. Note that 'this' is not owned by
+				the current class and synchronization on 'this' should be avoided as well.</li>
+				<li><b>[S508C] Section 508 Compliance</b><br/>
+				looks for classes and methods that do not support coding styles that allow Accessibility
+				software to make full use of the gui for people with visual impediments. Commonly known as
+				'Section 508 Compliance' this detector finds a varied list of issues that hamper screen readers,
+				and make color/size adjustments difficult.</li>
+				<li><b>[UEC] Use Enum Collections</b><br/>
+				looks for uses of sets or maps where the key is an enum. In these cases, it is 
+				more efficient to use EnumSet or EnumMap. It is a jdk1.5 only detector.</li>
+			</ul>
+		</div>
+		<hr/>
+		<img id="v2_4_0_image" src="flip1.gif" onClick="toggleBlock('v2_4_0', 'v2_4_0_image');" align="top"/>
+		Detectors added in v2.4.0<br/>
+		<div id="v2_4_0" style="display:none;">
+			<ul>
+				<li><b>[DDC] Double Date Compare</b><br/>
+				Looks for methods that compare two dates using .equals and after or before. 
+				This combination of two comparisons can be accomplished with just one comparison.</li>
+				<li><b>[JVR] JDBC Vendor Reliance</b><br/>
+				Looks for uses of jdbc vendor specific classes and methods making the database access code
+				non portable.</li>
+				<li><b>[PMB] Possible Memory Bloat</b><br/>
+				Looks for classes that maintain collections or StringBuffer/StringBuilders in static member
+				variables, and that do not appear to provide a way to clear or remove items from these members.
+				Such class fields are likely causes of memory bloat.</li>
+				<li><b>[LSYC] Local Synchronized Collection</b><br/>
+				looks for allocations of synchronized collections that are stored in local variables, and 
+				never stored in fields or returned from methods. As local variables are by definition
+				thread safe, using synchronized collections in this context makes no sense.</li>
+			</ul>
+		</div>
+		
+		<hr/>
+		<img id="v2_2_0_image" src="flip1.gif" onClick="toggleBlock('v2_2_0', 'v2_2_0_image');" align="top"/>
+		Detectors added in v2.2.0<br/>
+		<div id="v2_2_0" style="display:none;">
+			<ul>
+				<li><b>[CLI] Constant List Index</b><br/>
+				Looks for methods that access an array or list using a constant integer index. Often,
+				this is a typo where a loop variable is intended to be used. If however, specific
+				list indices mean different specific things, then perhaps replacing the list with
+				a first-class object with meaningful accessors would make the code less brittle.</li>
+				<li><b>[SCR] Sloppy Class Reflection</b><br/>
+				Looks for methods that use Class.forName("XXX") to load a class object
+				for a class that is already referenced by this class. It is simpler to just use
+				XXX.class, and doing so protects the integrity of this code from such transformations
+				as obfuscation. Use of Class.forName should only be used when the class in question
+				isn't already statically bound to this context.</li>
+				<li><b>[AWCBR] Array Wrapped Call By Reference</b><br/>
+				Looks for methods that use an array of length one to pass a variable to achieve call
+				by pointer ala C++. It is better to define a proper return class type that holds all
+				the relevant information retrieved from the called method.</li>
+				<li><b>[SG] Sluggish Gui</b><br/>
+				Looks for methods that implement awt or swing listeners and perform time 
+				consuming operations. Doing these operations in the gui thread will cause the
+				interface to appear sluggish and non-responsive to the user. It is better to 
+				use a separate thread to do the time consuming work so that the user
+				has a better experience.</li>
+				<li><b>[NIR] Needless Instance Retrieval</b><br/>
+				Looks for methods that call a method to retrieve a reference to an object
+				only to then load a static field of that object's class. It is simpler and more
+				performant to just directly load the field from the class itself.</li>
+			</ul>		
+		</div>
+		
+		<hr/>
+		<img id="v2_0_0_image" src="flip1.gif" onClick="toggleBlock('v2_0_0', 'v2_0_0_image');" align="top"/>
+		Detectors added in v2.0.0<br/>
+		<div id="v2_0_0" style="display:none;">
+			<ul>
+				<li><b>[ABC] Array Based Collections</b><br/>
+				Looks for methods that use arrays for items in the keyset of a map, or as
+				an element of a set, or in a list when using the contains method. Since arrays
+				do not, and cannot define an equals method, reference equality is used for these
+				collections, which is probably not desired. If it is, consider using the IdentityHashMap
+				class when using Maps in this case, to better document your intentions.</li>
+				<li><b>[ODN] Orphaned DOM Nodes</b><br/>
+				Looks for methods that create DOM nodes but do not append them to any Document.</li>
+				<li><b>[A0M] Abstract Overridden Method</b><br/>
+				Looks for abstract methods that override a concrete method in a super class.
+				Doing this casts away the implementation of the super class, and breaks
+				the implied contract as set forth by the parent class.</li>
+				<li><b>[CBX] Custom Built XML</b><br/>
+				Looks for methods that build xml based strings by concatenation strings
+				and custom values together. Doing so makes brittle code, that is difficult to 
+				modify, validate and understand. It is cleaner to create external xml files that are
+				transformed at runtime, using parameters set through Transformer.setParameter.</li>
+			</ul>
+		</div>
+
+		<hr/>
+		<img id="v1_8_0_image" src="flip1.gif" onClick="toggleBlock('v1_8_0', 'v1_8_0_image');" align="top"/>
+		Detectors added in v1.8.0<br/>
+		<div id="v1_8_0" style="display:none;">
+			<ul>
+				<li><b>[STS] Spurious Thread States</b><br/>
+				Finds methods that call wait, notify or notifyAll on an instance of a 
+				java.lang.Thread. Since the internal workings of the thread is to synchronize on the
+				thread itself, introducing client calls will confuse the thread state of the object
+				in question, and will cause spurious thread state changes, either waking threads up
+				when not intended, or removing the thread from the runnable state.</li>
+				<li><b>[NAB] Needless Autoboxing</b><br/>
+				Finds methods that pass an instance of a primitive wrapper class, to a constructor
+				of the same class. Since wrapper classes are immutable, you can just use the original
+				instance, instead of creating a new one. This bug is a misuse of autoboxing.</li>
+				<li><b>[USBR] UnnecessaryStoreBeforeReturn</b><br/>
+				Finds methods that store the return result in a local variable, and
+				then immediately returns that local variable.</li>
+				<li><b>[COM] CopiedOverriddenMethod</b><br/>
+				Finds methods that are implemented with an exact copy of their super class method's 
+				implementation. In most cases, this means that this method can just be removed.</li>
+			</ul>
+		</div>
+
+		<hr/>
+		<img id="v1_6_0_image" src="flip1.gif" onClick="toggleBlock('v1_6_0', 'v1_6_0_image');" align="top"/>
+		Detectors added in v1.6.0<br/>
+		<div id="v1_6_0" style="display:none;">
+			<ul>
+				<li><b>[SMII] Static Method Instance Invocation</b><br/>
+				Finds methods that make static method calls using an instance reference.
+				For documentation purposes, it is better to call the method using the class name.
+				This may represent a change in definition that should be noticed.</li>
+				<li><b>[AFBR] Abnormal Finally Block Return</b><br/>
+				Finds methods that return or throw an exception from a finally block. Since a finally block is 
+				executed after any return or throw statements that are present in the try or catch block, these exit
+				values are swallowed by the finally block's actions.</li>
+				<li><b>[NCMU] Non Collections Method Use</b><br/>
+				Finds calls to collections objects using methods that are not defined in the Collections interfaces,
+				but that have equivalent methods defined in such. By using the new methods, it allows for the 
+				replacement of concrete classes with interfaces, and simplifies changing collection types if 
+				desired.</li>
+				<li><b>[CAO] Confusing Autoboxed Overloading</b><br/>
+				Finds classes that define overloaded methods where the only difference is a parameter being
+				of type java.lang.Character, and int, long, float or double. Due to autoboxing, one might conclude 
+				that a parameter of 'a' would autobox to Character, but would instead be cast to a double.</li>
+			</ul>
+		</div>
+
+		<hr/>
+		<img id="v1_4_0_image" src="flip1.gif" onClick="toggleBlock('v1_4_0', 'v1_4_0_image');" align="top"/>
+		Detectors added in v1.4.0<br/>
+		<div id="v1_4_0" style="display:none;">
+			<ul>
+				<li><b>[FP] Final Parameters</b><br/>
+				Finds parameters that could be marked as final, but aren't. Doing so helps document the method, keeps
+				unwanted changes to creep in, and may help the jvm jit compiler to optimize better.</li>
+				<li><b>[ACEM] Abstract Class Empty Methods</b><br/>
+				Finds empty methods, or methods that just throw an exception in abstract classes. In these cases, it
+				probably is more correct to just define the method to be abstract as well, so that proper subclass
+				implementation is enforced.</li>
+				<li><b>[MAC] Manual Array Copy</b><br/>
+				Finds methods that copy elements from one array to another manually using a loop. It is better 
+				performing to use System.arraycopy, as this method is native.</li>
+				<li><b>[FPL] Floating Point Loops</b><br/>
+				Finds methods that use floating point variables as the index to loops. Since floating point math is inprecise,
+				errors will accumulate each time through the loop, making the logic suspect. It is better to use an 
+				integer index, and calculate the desired floating point value from this integer.</li>
+			</ul>
+		</div>
+
+		<hr/>
+		<img id="v1_2_0_image" src="flip1.gif" onClick="toggleBlock('v1_2_0', 'v1_2_0_image');" align="top"/>
+		Detectors added in v1.2.0<br/>
+		<div id="v1_2_0" style="display:none;">
+			<ul>
+				<li><b>[PL] Parallel Lists</b><br/>
+				Finds classes that maintain two or more lists or arrays that appear to share a one-to-one relationship
+				through a common index. It is usually better to create a separate class that holds all corresponding attributes,
+				and add instances of this class to just one list or array.</li>
+				<li><b>[DLC] Dubious List Collection</b><br/>
+				Finds fields that are implementations of java.util.List, but that are used in a set-like fashion.
+				Since lookup type operations are performed using a linear search for Lists, the performance for large
+				Lists will be poor. Consideration should be made as to whether these fields should be sets.</li>
+				<li><b>[PCOA] Partially Constructed Object Access</b><br/>
+				Finds constructors that call non-final methods in non-final classes. If this class is derived from, and the
+				method is overridden, then that method will be executing on an object that hasn't been constructed in regards 
+				to the subclass implementation. These methods should probably be defined as final.</li>
+				<li><b>[LSC] Literal String Comparison</b><br/>
+				Finds methods that call the equals or compareTo methods on a String variable passing in a String literal.
+				A NullPointerException may occur if the string variable is null. If instead the method was called on
+				the string literal, and the variable was passed as an argument, this exception could never happen</li>
+			</ul>
+		</div>
+
+		<hr/>
+		<img id="v1_0_0_image" src="flip1.gif" onClick="toggleBlock('v1_0_0', 'v1_0_0_image');" align="top"/>
+		Detectors added in v1.0.0<br/>
+		<div id="v1_0_0" style="display:none;">
+			<ul>
+				<li><b>[OCP] Overly Concrete Parameters</b><br/>
+				Finds parameters to methods that are defined as concrete classes, 
+				when they're usage pattern can be defined by an implemented interface. 
+				By switching to the interface, you can reduce coupling, which helps making
+				the code more testable and changeable.</li>
+				<li><b>[LII] List Indexed Iterating</b><br/>
+				Looks for uses of using loop indexed variables to 'iterate' over a List by calling get(i) 
+				each time thru the loop. Depending on the List implementation, using Iterators can be 
+				significantly faster. Using Iterators also makes it easier to substitute other collection types.</li>
+				<li><b>[UCC] Unrelated Collection Contents</b><br/>
+				Looks for collections that hold objects that are unrelated by class or interface inheritance, other 
+				than java.lang.Object. Doing so, leads to brittle code, either by 'encoding' type knowledge in the position
+				of an element, or using instanceof tests. It is usually better to create a separate class, add the individual
+				types as members to it, and add an instance of this class to the collection.</li>
+				<li><b>[DRE] Declared Runtime Exception</b><br/>
+				Finds methods that declare RuntimeExceptions in their throws clause. While not illegal,
+				this may indicate a misunderstanding as to how unchecked exceptions are handled.
+				If is felt that a RuntimeException is so prevalent that it should be declared, it 
+				is probably a better idea to prevent the occurance in code.</li>
+			</ul>
+		</div>
+
+		<hr/>
+		<img id="v0_9_3_image" src="flip1.gif" onClick="toggleBlock('v0_9_3', 'v0_9_3_image');" align="top"/>
+		Detectors added in v0.9.3
+		<div id="v0_9_3" style="display:none;">
+			<ul>
+				<li><b>[ISB] Inefficient String Buffering</b><br/>
+				Finds Concatenation inside of a StringBuffer.append call, which
+				creates temporary StringBuffers.</li>
+				<li><b>[SCI] Synchronized Collection Iterators</b><br/>
+				Finds use of iterators on collections built from Collection.synchronizedXXX()
+				calls. As iterators are by default not multithread safe, there use with a 
+				synchronized collections seems dubious.</li>
+				<li><b>[CC] Cyclomatic Complexity</b><br/>
+				Finds methods that are overly complex based on the McCabe algorithm for 
+				counting number of unique branches in the method</li>
+			</ul>
+		</div>
+		<span align="bottom">
+			<p align="right">
+			fb-contrib is a trademark of MeBigFatGuy.com<br/>
+			FindBugs is a trademark of University of Maryland<br/>
+			</p>
+		</span>
+	</div>
+
+<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+</script>
+<script type="text/javascript">
+_uacct = "UA-249537-3";
+urchinTracker();
+</script>
+
+</body>
+</html>

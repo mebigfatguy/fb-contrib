@@ -1,0 +1,206 @@
+/*
+ * fb-contrib - Auxiliary detectors for Java programs
+ * Copyright (C) 2005-2011 Dave Brosius
+ * 
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ * 
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ * 
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
+package com.mebigfatguy.fbcontrib.detect;
+
+import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Unknown;
+import org.apache.bcel.generic.Type;
+
+import edu.umd.cs.findbugs.BugInstance;
+import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.ClassContext;
+
+/** looks for odd uses of the Assert class of the JUnit framework */
+public class JUnitAssertionOddities extends BytecodeScanningDetector 
+{
+	private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
+	private static final String TEST_ANNOTATION_SIGNATURE = "Lorg/junit/Test;";
+	private static final String OLD_ASSERT_CLASS = "junit/framework/Assert";
+	private static final String NEW_ASSERT_CLASS = "org/junit/Assert";
+	private static JavaClass testCaseClass;
+	private static JavaClass testAnnotationClass;
+	static {
+		try {
+			testCaseClass = Repository.lookupClass("junit.framework.TestCase");
+		} catch (ClassNotFoundException cnfe) {
+			testCaseClass = null;
+		}
+		try {
+			testAnnotationClass = Repository.lookupClass("org.junit.Test");
+		} catch (ClassNotFoundException cnfe) {
+			testAnnotationClass = null;
+		}
+	}
+	private BugReporter bugReporter;
+	private OpcodeStack stack;
+	private boolean isTestCaseDerived;
+	private boolean isAnnotationCapable;
+	
+	/**
+     * constructs a JOA detector given the reporter to report bugs on
+     * @param bugReporter the sync of bug reports
+	 */
+	public JUnitAssertionOddities(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+	}
+	
+	/**
+	 * override the visitor to see if this class could be a test class
+	 * 
+	 * @param classContext the context object of the currently parsed class
+	 */
+	@Override
+	public void visitClassContext(ClassContext classContext) {
+		try {
+			JavaClass cls = classContext.getJavaClass();
+			isTestCaseDerived = ((testCaseClass != null) && cls.instanceOf(testCaseClass));
+			isAnnotationCapable = (cls.getMajor() >= 5) && (testAnnotationClass != null);
+			if (isTestCaseDerived || isAnnotationCapable) {
+				stack = new OpcodeStack();
+				super.visitClassContext(classContext);
+			}
+		} catch (ClassNotFoundException cnfe) {
+			bugReporter.reportMissingClass(cnfe);
+		} finally {
+			stack = null;
+		}
+	}
+	
+	@Override
+	public void visitCode(Code obj) {
+		Method m = getMethod();
+		boolean isTestMethod = isTestCaseDerived && m.getName().startsWith("test");
+		
+		if (!isTestMethod && isAnnotationCapable) {
+			Attribute[] atts = m.getAttributes();
+			for (Attribute att : atts) {
+				ConstantPool cp = att.getConstantPool();
+				Constant c = cp.getConstant(att.getNameIndex());
+				if (c instanceof ConstantUtf8) {
+					String name = ((ConstantUtf8) c).getBytes();
+					if (RUNTIME_VISIBLE_ANNOTATIONS.equals(name)) {
+						if (att instanceof Unknown) {
+							Unknown unAtt = (Unknown)att;
+							byte[] bytes = unAtt.getBytes();
+							int constantPoolIndex = bytes[3] & 0x000000FF;
+							c = cp.getConstant(constantPoolIndex);
+							if (c instanceof ConstantUtf8) {
+								name = ((ConstantUtf8) c).getBytes();
+								if (TEST_ANNOTATION_SIGNATURE.equals(name)) {
+									isTestMethod = true;
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		if (isTestMethod) {
+			stack.resetForMethodEntry(this);
+			super.visitCode(obj);
+		}
+	}
+	
+	@Override
+	public void sawOpcode(int seen) {
+		String userValue = null;
+		
+		try {
+			stack.mergeJumps(this);
+			
+			if (seen == INVOKESTATIC) {
+				String clsName = getClassConstantOperand();
+				if (OLD_ASSERT_CLASS.equals(clsName) || NEW_ASSERT_CLASS.equals(clsName)) {
+					String methodName = getNameConstantOperand();
+					if ("assertEquals".equals(methodName)) {
+						String signature = getSigConstantOperand();
+						Type[] argTypes = Type.getArgumentTypes(signature);
+						if (argTypes.length == 2) {
+    						if (argTypes[0].equals(Type.STRING) && argTypes[1].equals(Type.STRING))
+    							return;
+    						
+    						if (stack.getStackDepth() >= 2) {
+    							OpcodeStack.Item item1 = stack.getStackItem(1);
+    							Object cons1 = item1.getConstant();
+    							if ((cons1 != null) && (argTypes[argTypes.length-1].equals(Type.BOOLEAN)) && (argTypes[argTypes.length-2].equals(Type.BOOLEAN))) {
+    								bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT", NORMAL_PRIORITY)
+    								   .addClass(this)
+    								   .addMethod(this)
+    								   .addSourceLine(this));
+    								return;
+    							} 
+    							OpcodeStack.Item item0 = stack.getStackItem(0);
+    							if (item0.getConstant() != null) {
+    								bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT", NORMAL_PRIORITY)
+    										   .addClass(this)
+    										   .addMethod(this)
+    										   .addSourceLine(this));
+    								return;
+    							}
+    							if (argTypes[0].equals(Type.OBJECT) && argTypes[1].equals(Type.OBJECT)) {
+    								if ("Ljava/lang/Double;".equals(item0.getSignature()) && "Ljava/lang/Double;".equals(item1.getSignature())) {
+    									bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE", NORMAL_PRIORITY)
+    									   .addClass(this)
+    									   .addMethod(this)
+    									   .addSourceLine(this));
+    									return;
+    								}
+    							}
+    						}
+						}
+					} else if ("assertNotNull".equals(methodName)) {
+						if (stack.getStackDepth() > 0) {
+							if ("valueOf".equals(stack.getStackItem(0).getUserValue())) {
+								bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL", NORMAL_PRIORITY)
+										   .addClass(this)
+										   .addMethod(this)
+										   .addSourceLine(this));
+							}
+						}
+					}
+				} else {
+					String methodName = getNameConstantOperand();
+					String sig = getSigConstantOperand();
+					if (clsName.startsWith("java/lang/")
+					&&  "valueOf".equals(methodName)
+					&&  (sig.indexOf(")Ljava/lang/") >= 0)) {
+						userValue = "valueOf";
+					}
+				}
+			}
+		} finally {
+			stack.sawOpcode(this, seen);
+			if ((userValue != null) && (stack.getStackDepth() > 0)) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				item.setUserValue(userValue);
+			}
+		}
+	}
+}
