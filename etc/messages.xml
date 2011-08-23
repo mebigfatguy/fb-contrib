@@ -3073,7 +3073,7 @@
 		<LongDescription>Method {1} calls InetAddress.getLocalHost(), which may be a security risk</LongDescription>
 		<Details>
 		  <![CDATA[
-		  <p>Do not call <code>InetAddress.getLocalHost()</code> on multihomed servers. On a multihomed server, <code>InetAddress.getLocalHost()</code> simply returns the IP address associated with the server's internal hostname. This could any of the network interfaces, which could expose the machine to security risks. Server applications that need to listen on sockets should add configurable properties to define which network interfaces the server should bind.</p>
+		  <p>Do not call <code>InetAddress.getLocalHost()</code> on multihomed servers. On a multihomed server, <code>InetAddress.getLocalHost()</code> simply returns the IP address associated with the server's internal hostname. This could be any of the network interfaces, which could expose the machine to security risks. Server applications that need to listen on sockets should add configurable properties to define which network interfaces the server should bind.</p>
 		  ]]>
 		</Details>
 	</BugPattern>
