@@ -707,6 +707,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector
 					stores.keySet().removeAll(loads.keySet());
 				}
 				stores.keySet().removeAll(parentUsedRegs);
+				stores.keySet().removeAll(ignoreRegs);
 
 				if (stores.size() > 0) {
 					if (children != null) {
