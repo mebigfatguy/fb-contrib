@@ -314,6 +314,15 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector
 					ScopeBlock sb = findScopeBlock(rootScopeBlock, getPC());
 					if (sb != null)
 					{
+						ScopeBlock parentSB = sb.getParent();
+						while (parentSB != null) {
+							if (parentSB.getStart() >= target) {
+								sb = parentSB;
+								parentSB = parentSB.getParent();
+							} else {
+								break;
+							}
+						}
 						sb.setLoop();
 					}
 				}
@@ -651,7 +660,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector
 
 			if (children != null) {
 				for (ScopeBlock child : children) {
-					if ((newChild.startLocation > child.startLocation) && (newChild.finishLocation < child.finishLocation)) {
+					if ((newChild.startLocation > child.startLocation) && (newChild.finishLocation <= child.finishLocation)) {
 						child.addChild(newChild);
 						return;
 					}
