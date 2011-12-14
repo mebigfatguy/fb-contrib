@@ -29,6 +29,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -184,7 +185,9 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
 		} finally {
+			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
+			TernaryPatcher.post(stack, seen);
 			if (methodPackage != null) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);

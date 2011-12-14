@@ -38,6 +38,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -291,7 +292,9 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 			lastWasExitPoint = seen >= IRETURN && seen <= RETURN || seen == GOTO || seen == GOTO_W || seen == ATHROW;
 		}
 		finally {
+			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
+			TernaryPatcher.post(stack, seen);
 			if (markAsValid) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item itm = stack.getStackItem(0);

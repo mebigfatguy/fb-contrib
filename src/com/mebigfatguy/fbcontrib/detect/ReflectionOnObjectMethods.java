@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -244,7 +245,9 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 				break;
 			}
 		} finally {
+			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
+			TernaryPatcher.post(stack, seen);
 			if (arraySize != null) {
 				if (stack.getStackDepth() >= 1) {
 					OpcodeStack.Item item = stack.getStackItem(0);

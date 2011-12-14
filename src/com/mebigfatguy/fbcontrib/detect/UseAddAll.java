@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -274,7 +275,9 @@ public class UseAddAll extends BytecodeScanningDetector {
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
 		} finally {
+			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
+			TernaryPatcher.post(stack, seen);
 			if (sawAlias) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item itm = stack.getStackItem(0);

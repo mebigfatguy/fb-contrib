@@ -30,6 +30,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -162,7 +164,9 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
 		} finally {
+			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
+			TernaryPatcher.post(stack, seen);
 			if ((sawConstant || allConstantStrings) && (stack.getStackDepth() > 0)) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				item.setUserValue(Boolean.TRUE);

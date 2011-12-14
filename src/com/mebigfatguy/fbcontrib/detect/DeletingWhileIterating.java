@@ -35,6 +35,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -301,7 +302,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 				}
 			}
 		} finally {
+			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
+			TernaryPatcher.post(stack, seen);
 			if ((groupId >= 0) && (stack.getStackDepth() > 0)) {
 				OpcodeStack.Item itm = stack.getStackItem(0);
 				itm.setUserValue(Integer.valueOf(groupId));

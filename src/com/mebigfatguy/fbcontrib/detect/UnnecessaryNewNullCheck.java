@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.CodeException;
 
 import com.mebigfatguy.fbcontrib.utils.AttributesUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -180,7 +181,9 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 				break;
 			}
 		} finally {
+			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
+			TernaryPatcher.post(stack, seen);
 			if (sawAlloc) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);

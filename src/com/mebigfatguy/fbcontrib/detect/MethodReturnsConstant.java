@@ -22,6 +22,8 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -133,7 +135,9 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 				}
 			}
 		} finally {
+			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
+			TernaryPatcher.post(stack, seen);
 			if (sawSBToString && (stack.getStackDepth() > 0)) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				item.setUserValue(Boolean.TRUE);
