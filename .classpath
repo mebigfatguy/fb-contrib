@@ -5,18 +5,15 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/4"/>
-	<classpathentry kind="lib" path="lib/annotations.jar"/>
-	<classpathentry kind="lib" path="lib/asm-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/asm-tree-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/bcel.jar"/>
-	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="lib/findbugs-ant.jar"/>
-	<classpathentry kind="lib" path="lib/findbugs.jar" sourcepath="/findbugs"/>
-	<classpathentry kind="lib" path="lib/jsr305.jar"/>
 	<classpathentry kind="lib" path="samples/lib/jsp-api.jar"/>
 	<classpathentry kind="lib" path="samples/lib/junit.jar"/>
 	<classpathentry kind="lib" path="samples/lib/log4j.jar" sourcepath="/home/dave/.m2/repository/log4j/log4j/1.2.15/log4j-1.2.15-sources.jar"/>
 	<classpathentry kind="lib" path="samples/lib/servlet-api.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
+	<classpathentry kind="lib" path="lib/bcel-2.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/findbugs-2.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/jsr305-2.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/annotations-2.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/asm-tree-3.3.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

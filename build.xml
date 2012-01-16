@@ -21,6 +21,16 @@
 	<property name="javac.debug" value="on"/>
 
 	<property name="fb-contrib.version" value="4.7.0"/>
+	
+	<property name="findbugs.version" value="2.0.0"/>
+	<property name="findbugs-bcel.version" value="2.0.0"/>
+	<property name="annotations.version" value="2.0.0"/>
+	<property name="asm-tree.version" value="3.3.1"/>
+	
+    <property name="findbugs-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/findbugs/${findbugs.version}/findbugs-${findbugs.version}.jar"/> 
+    <property name="findbugs-bcel-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/bcel/${findbugs-bcel.version}/bcel-${findbugs-bcel.version}.jar"/> 
+    <property name="annotations-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/annotations/${annotations.version}/annotations-${annotations.version}.jar"/> 
+    <property name="asm-tree-url" value="http://repo1.maven.org/maven2/asm/asm-tree/${asm-tree.version}/asm-tree-${asm-tree.version}.jar"/> 
 
 	<target name="clean" description="removes all generated collateral">
 		<delete dir="${classes.dir}"/>
@@ -37,11 +47,14 @@
 	</target>
 
 	<target name="-init" description="prepares repository for a build">
+		<mkdir dir="${lib.dir}"/>
 		<mkdir dir="${classes.dir}"/>
 		<mkdir dir="${javadoc.dir}"/>
 		<path id="fb-contrib.classpath">
-			<pathelement location="${lib.dir}/findbugs.jar"/>
-			<pathelement location="${lib.dir}/bcel.jar"/>
+			<pathelement location="${lib.dir}/findbugs-${findbugs.version}.jar"/>
+			<pathelement location="${lib.dir}/bcel-${findbugs-bcel.version}.jar"/>
+			<pathelement location="${lib.dir}/annotations-${annotations.version}.jar"/>
+			<pathelement location="${lib.dir}/asm-tree-${asm-tree.version}.jar"/>
 		</path>
 		<path id="fb-contrib.samples.classpath">
 			<pathelement location="${sampleslib.dir}/jsp-api.jar"/>
@@ -55,6 +68,40 @@
 		<mkdir dir="${classes.dir}/com/mebigfatguy/fbcontrib/detect"/>
 		<echo message="*.class" file="${classes.dir}/com/mebigfatguy/fbcontrib/detect/.cvsignore"/>
 	</target>
+	
+	<target name="findbugs-check">
+        <available file="${basedir}/lib/findbugs-${findbugs.version}.jar" property="findbugs-exists"/>
+    </target>
+
+	<target name="findbugs-bcel-check">
+        <available file="${basedir}/lib/bcel-${findbugs-bcel.version}.jar" property="findbugs-bcel-exists"/>
+    </target>
+
+	<target name="annotations-check">
+        <available file="${basedir}/lib/annotations-${annotations.version}.jar" property="annotations-exists"/>
+    </target>
+	
+	<target name="asm-tree-check">
+        <available file="${basedir}/lib/asm-tree-${asm-tree.version}.jar" property="asm-tree-exists"/>
+    </target>
+
+	<target name="install-findbugs" depends="findbugs-check" unless="findbugs-exists" description="installs findbugs.jar into lib">
+        <get src="${findbugs-url}" dest="${basedir}/lib/findbugs-${findbugs.version}.jar" verbose="true" ignoreerrors="true"/>
+    </target>
+	
+    <target name="install-findbugs-bcel" depends="findbugs-bcel-check" unless="findbugs-bcel-exists" description="installs findbugs-bcel.jar into lib">
+        <get src="${findbugs-bcel-url}" dest="${basedir}/lib/bcel-${findbugs-bcel.version}.jar" verbose="true" ignoreerrors="true"/>
+    </target>
+
+    <target name="install-annotations" depends="annotations-check" unless="annotations-exists" description="installs annotations.jar into lib">
+        <get src="${annotations-url}" dest="${basedir}/lib/annotations-${annotations.version}.jar" verbose="true" ignoreerrors="true"/>
+    </target>
+
+    <target name="install-asm-tree" depends="asm-tree-check" unless="asm-tree-exists" description="installs asm-tree.jar into lib">
+        <get src="${asm-tree-url}" dest="${basedir}/lib/asm-tree-${asm-tree.version}.jar" verbose="true" ignoreerrors="true"/>
+    </target>
+
+    <target name="pull" depends="install-findbugs, install-findbugs-bcel, install-annotations, install-asm-tree" description="pull 3rdparty jars to the lib directory"/>
 
 	<target name="validate_xml" depends="-init" description="validates the xml files">
 		<xmlvalidate lenient="false" failonerror="yes">
@@ -64,7 +111,7 @@
 		</xmlvalidate>
 	</target>
 
-	<target name="compile" depends="-init" description="compiles java files">
+	<target name="compile" depends="-init, pull" description="compiles java files">
 		<javac  srcdir="${src.dir}"
 				destdir="${classes.dir}"
 				source="${javac.source}"
