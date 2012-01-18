@@ -61,6 +61,7 @@
 			<pathelement location="${sampleslib.dir}/junit.jar"/>
 			<pathelement location="${sampleslib.dir}/servlet-api.jar"/>
 			<pathelement location="${sampleslib.dir}/log4j.jar"/>
+			<pathelement location="${sampleslib.dir}/commons-lang3-3.1.jar"/>
 		</path>
 		<mkdir dir="${classes.dir}/com"/>
 		<mkdir dir="${classes.dir}/com/mebigfatguy"/>
