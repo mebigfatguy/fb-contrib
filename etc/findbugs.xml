@@ -224,7 +224,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
 	
-	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsEqualsBuilderToEquals" speed="fast" reports="CEBE_COMMONS_EQUAL_BUILDER_TOEQUALS" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsEqualsBuilderToEquals" speed="fast" reports="CEBE_COMMONS_EQUALS_BUILDER_TOEQUALS" />
 
 	<!-- BugPattern -->
 

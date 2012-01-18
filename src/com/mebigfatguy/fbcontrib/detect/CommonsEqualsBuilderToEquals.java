@@ -65,7 +65,7 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 			    || "org/apache/commons/lang/builder/EqualsBuilder"
 				    .equals(calledClass)) {
 			bugReporter.reportBug(new BugInstance(this,
-				"CEBE_COMMONS_EQUALS_BUILDER_EQUALS",
+				"CEBE_COMMONS_EQUALS_BUILDER_TOEQUALS",
 				HIGH_PRIORITY).addClass(this).addMethod(this)
 				.addSourceLine(this));
 		    }

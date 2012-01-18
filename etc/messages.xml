@@ -3355,7 +3355,7 @@
         <LongDescription>Method {1} returns the result of invoking equals() in EqualsBuilder</LongDescription>
         <Details>
             <![CDATA[
-            <p>This method reuturns the result of equals on the EqualsBuilder type
+            <p>This method returns the result of equals on the EqualsBuilder type
             instead of calling the method isEqual().</p>
             ]]>
         </Details>
