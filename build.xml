@@ -105,7 +105,7 @@
     </target>
 
     <target name="commons-lang3-check">
-        <available file="${basedir}/samples/lib/commons-lang3-${commons-lang3.version}.jar" property="common-lang3-exists"/>
+        <available file="${basedir}/samples/lib/commons-lang3-${commons-lang3.version}.jar" property="commons-lang3-exists"/>
     </target>
 
     <target name="servlet-api-check">
