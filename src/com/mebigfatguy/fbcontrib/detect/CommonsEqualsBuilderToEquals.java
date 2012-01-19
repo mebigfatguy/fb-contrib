@@ -10,11 +10,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 
 /**
  * Find usage of EqualsBuilder from Apache commons, where the code invoke
-<<<<<<< HEAD
  * equals() on the constructed object rather than isEquals()
-=======
- * equals() on the constructed object rather than toEquals()
->>>>>>> 19d108717805f1eb89a73b061555c441eb728449
  * 
  * <pre>
  * new EqualsBuilder().append(this.name, other.name).equals(other);
@@ -22,66 +18,62 @@ import edu.umd.cs.findbugs.OpcodeStack;
  */
 public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 
-    private final OpcodeStack stack;
-    private final BugReporter bugReporter;
+	private final OpcodeStack stack;
+	private final BugReporter bugReporter;
 
-    /**
-     * constructs a CEBE detector given the reporter to report bugs on.
-     * 
-     * @param bugReporter
-     *            the sync of bug reports
-     */
-    public CommonsEqualsBuilderToEquals(final BugReporter bugReporter) {
-	stack = new OpcodeStack();
-	this.bugReporter = bugReporter;
-    }
-
-    /**
-     * implements the visitor to pass through constructors and static
-     * initializers to the byte code scanning code. These methods are not
-     * reported, but are used to build SourceLineAnnotations for fields, if
-     * accessed.
-     * 
-     * @param obj
-     *            the context object of the currently parsed code attribute
-     */
-    @Override
-    public void visitCode(Code obj) {
-	stack.resetForMethodEntry(this);
-	LocalVariableTable lvt = getMethod().getLocalVariableTable();
-	if (lvt != null) {
-	    super.visitCode(obj);
+	/**
+	 * constructs a CEBE detector given the reporter to report bugs on.
+	 * 
+	 * @param bugReporter
+	 *            the sync of bug reports
+	 */
+	public CommonsEqualsBuilderToEquals(final BugReporter bugReporter) {
+		stack = new OpcodeStack();
+		this.bugReporter = bugReporter;
 	}
-    }
 
-    @Override
-    public void sawOpcode(int seen) {
-	try {
-	    switch (seen) {
-	    case INVOKEVIRTUAL:
-		String methodName = getNameConstantOperand();
-		if ("equals".equals(methodName)
-			&& "(Ljava/lang/Object;)Z"
-				.equals(getSigConstantOperand())) {
-		    String calledClass = stack.getStackItem(1).getSignature();
-		    if ("Lorg/apache/commons/lang3/builder/EqualsBuilder;"
-			    .equals(calledClass)
-			    || "org/apache/commons/lang/builder/EqualsBuilder"
-				    .equals(calledClass)) {
-			bugReporter.reportBug(new BugInstance(this,
-<<<<<<< HEAD
-				"CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS",
-=======
-				"CEBE_COMMONS_EQUALS_BUILDER_TOEQUALS",
->>>>>>> 19d108717805f1eb89a73b061555c441eb728449
-				HIGH_PRIORITY).addClass(this).addMethod(this)
-				.addSourceLine(this));
-		    }
+	/**
+	 * implements the visitor to pass through constructors and static
+	 * initializers to the byte code scanning code. These methods are not
+	 * reported, but are used to build SourceLineAnnotations for fields, if
+	 * accessed.
+	 * 
+	 * @param obj
+	 *            the context object of the currently parsed code attribute
+	 */
+	@Override
+	public void visitCode(Code obj) {
+		stack.resetForMethodEntry(this);
+		LocalVariableTable lvt = getMethod().getLocalVariableTable();
+		if (lvt != null) {
+			super.visitCode(obj);
 		}
-	    }
-	} finally {
-	    super.sawOpcode(seen);
-	    stack.sawOpcode(this, seen);
 	}
-    }
+
+	@Override
+	public void sawOpcode(int seen) {
+		try {
+			switch (seen) {
+			case INVOKEVIRTUAL:
+				String methodName = getNameConstantOperand();
+				if ("equals".equals(methodName)
+						&& "(Ljava/lang/Object;)Z"
+								.equals(getSigConstantOperand())) {
+					String calledClass = stack.getStackItem(1).getSignature();
+					if ("Lorg/apache/commons/lang3/builder/EqualsBuilder;"
+							.equals(calledClass)
+							|| "org/apache/commons/lang/builder/EqualsBuilder"
+									.equals(calledClass)) {
+						bugReporter.reportBug(new BugInstance(this,
+								"CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS",
+								HIGH_PRIORITY).addClass(this).addMethod(this)
+								.addSourceLine(this));
+					}
+				}
+			}
+		} finally {
+			super.sawOpcode(seen);
+			stack.sawOpcode(this, seen);
+		}
+	}
 }
