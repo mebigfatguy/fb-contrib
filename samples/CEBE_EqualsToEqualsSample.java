@@ -12,7 +12,11 @@ public class CEBE_EqualsToEqualsSample {
 
     @Override
     public int hashCode() {
+<<<<<<< HEAD
 	return new HashCodeBuilder().append(name).append(age).toHashCode();
+=======
+	return new HashCodeBuilder().append(name).append(age).hashCode();
+>>>>>>> 19d108717805f1eb89a73b061555c441eb728449
     }
 
     @Override

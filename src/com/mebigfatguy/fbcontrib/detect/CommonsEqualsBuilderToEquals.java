@@ -10,7 +10,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 
 /**
  * Find usage of EqualsBuilder from Apache commons, where the code invoke
+<<<<<<< HEAD
  * equals() on the constructed object rather than isEquals()
+=======
+ * equals() on the constructed object rather than toEquals()
+>>>>>>> 19d108717805f1eb89a73b061555c441eb728449
  * 
  * <pre>
  * new EqualsBuilder().append(this.name, other.name).equals(other);
@@ -65,7 +69,11 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 			    || "org/apache/commons/lang/builder/EqualsBuilder"
 				    .equals(calledClass)) {
 			bugReporter.reportBug(new BugInstance(this,
+<<<<<<< HEAD
 				"CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS",
+=======
+				"CEBE_COMMONS_EQUALS_BUILDER_TOEQUALS",
+>>>>>>> 19d108717805f1eb89a73b061555c441eb728449
 				HIGH_PRIORITY).addClass(this).addMethod(this)
 				.addSourceLine(this));
 		    }

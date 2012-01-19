@@ -395,6 +395,10 @@
 	<BugPattern abbrev="SGSU" type="SGSU_SUSPICIOUS_GETTER_SETTER_USE" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="LGO" type="LGO_LINGERING_GRAPHICS_OBJECT" category="PERFORMANCE" experimental="true" />
 	<BugPattern abbrev="STB" type="STB_STACKED_TRY_BLOCKS" category="STYLE" experimental="true" />
+<<<<<<< HEAD
 	<BugPattern abbrev="CEBE" type="CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS" category="CORRECTNESS" />
 	<BugPattern abbrev="CHTH" type="CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE" category="CORRECTNESS" />
+=======
+	<BugPattern abbrev="CEBE" type="CEBE_COMMONS_EQUALS_BUILDER_TOEQUALS" category="CORRECTNESS" />
+>>>>>>> 19d108717805f1eb89a73b061555c441eb728449
 </FindbugsPlugin>
