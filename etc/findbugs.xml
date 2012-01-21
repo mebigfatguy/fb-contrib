@@ -223,6 +223,10 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LingeringGraphicsObjects" speed="fast" reports="LGO_LINGERING_GRAPHICS_OBJECT" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsEqualsBuilderToEquals" speed="fast" reports="CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS" />
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsHashcodeBuilderToHashcode" speed="fast" reports="CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE" />
 
 	<!-- BugPattern -->
 
@@ -391,4 +395,6 @@
 	<BugPattern abbrev="SGSU" type="SGSU_SUSPICIOUS_GETTER_SETTER_USE" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="LGO" type="LGO_LINGERING_GRAPHICS_OBJECT" category="PERFORMANCE" experimental="true" />
 	<BugPattern abbrev="STB" type="STB_STACKED_TRY_BLOCKS" category="STYLE" experimental="true" />
+	<BugPattern abbrev="CEBE" type="CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS" category="CORRECTNESS" />
+	<BugPattern abbrev="CHTH" type="CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE" category="CORRECTNESS" />
 </FindbugsPlugin>

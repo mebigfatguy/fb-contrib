@@ -1217,6 +1217,26 @@
 		</Details>
 	</Detector>
 
+    <Detector class="com.mebigfatguy.fbcontrib.detect.CommonsEqualsBuilderToEquals">
+        <Details>
+            <![CDATA[
+            <p>This detector looks for uses for Commons-lang EqualsBuilder where the
+            result of equals() is returned instead of calling the method isEquals().</p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+    
+   <Detector class="com.mebigfatguy.fbcontrib.detect.CommonsHashcodeBuilderToHashcode">
+        <Details>
+            <![CDATA[
+            <p>This detector looks for uses for Commons-lang HashCodeBuilder where the
+            result of hashCode() is returned instead of calling the method toHashCode().</p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+    
 	<!-- BugPattern -->
 
 	<BugPattern type="ISB_INEFFICIENT_STRING_BUFFERING">
@@ -3340,6 +3360,28 @@
 		</Details>
 	</BugPattern>
 
+    <BugPattern type="CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS">
+        <ShortDescription>Method returns the result of invoking equals() on EqualsBuilder</ShortDescription>
+        <LongDescription>Method {1} returns the result of invoking equals() in EqualsBuilder</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method returns the result of equals on the EqualsBuilder type
+            instead of calling the method isEqual().</p>
+            ]]>
+        </Details>
+    </BugPattern>
+
+    <BugPattern type="CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE">
+        <ShortDescription>Method returns the result of invoking hashCode() on HashCodeBuilder</ShortDescription>
+        <LongDescription>Method {1} returns the result of invoking hashCode() in HashCodeBuilder</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method returns the result of hashCode on the HashCodeBuilder type
+            instead of calling the method toHashCode().</p>
+            ]]>
+        </Details>
+    </BugPattern>            
+    
 	<!-- BugCode -->
 
 	<BugCode abbrev="ISB">Inefficient String Buffering</BugCode>
@@ -3442,4 +3484,5 @@
 	<BugCode abbrev="SGSU">Suspicious Getter Setter Use</BugCode>
 	<BugCode abbrev="LGO">Lingering Graphics Object</BugCode>
 	<BugCode abbrev="STB">Stacked Try Blocks</BugCode>
+	<BugCode abbrev="CEBE">Commons EqualsBuilder To Equals</BugCode>
 </MessageCollection>
