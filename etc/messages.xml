@@ -1237,6 +1237,16 @@
         </Details>
     </Detector>
     
+   <Detector class="com.mebigfatguy.fbcontrib.detect.CommonsStringBuilderToString">
+        <Details>
+            <![CDATA[
+            <p>This detector looks for uses for Commons-lang ToStringBuilder where the
+            result of toString() is returned without an intermediate invocation of toString().</p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+    
 	<!-- BugPattern -->
 
 	<BugPattern type="ISB_INEFFICIENT_STRING_BUFFERING">
@@ -3380,8 +3390,19 @@
             instead of calling the method toHashCode().</p>
             ]]>
         </Details>
-    </BugPattern>            
+    </BugPattern>
     
+    <BugPattern type="CSBTS_COMMONS_STRING_BUILDER_TOSTRING">
+        <ShortDescription>Method returns the result of invoking toString() without intermediate invocation of append() in ToStringBuilder</ShortDescription>
+        <LongDescription>Method {1} returns the result of invoking toString() without intermediate invocation of append() in ToStringBuilder</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method returns the result of toString() on ToStringBuilder without an
+            intermediate invocation of append()</p>
+            ]]>
+        </Details>
+    </BugPattern>
+        
 	<!-- BugCode -->
 
 	<BugCode abbrev="ISB">Inefficient String Buffering</BugCode>
@@ -3485,4 +3506,6 @@
 	<BugCode abbrev="LGO">Lingering Graphics Object</BugCode>
 	<BugCode abbrev="STB">Stacked Try Blocks</BugCode>
 	<BugCode abbrev="CEBE">Commons EqualsBuilder To Equals</BugCode>
+	<BugCode abbrev="CHTH">Commons HashCodeBuilder To hashCode</BugCode>
+	<BugCode abbrev="CSBTS">Commons ToStringBuilder To String</BugCode>
 </MessageCollection>
