@@ -205,9 +205,6 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 				break;
 				
 				case ARETURN:
-					allocations.remove(Integer.valueOf(getRegisterOperand()));
-				break;
-				
 				case ATHROW:
 					if (stack.getStackDepth() > 0) {
 						OpcodeStack.Item item = stack.getStackItem(0);
