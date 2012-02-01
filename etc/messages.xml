@@ -1247,6 +1247,19 @@
         </Details>
     </Detector>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.CompareClassNameEquals">
+        <Details>
+            <![CDATA[
+            <p> In a JVM, Two classes are the same class (and consequently the same type) if
+            they are loaded by the same class loader, and they have the same fully
+            qualified name [JVMSpec 1999].
+            
+            Comparing class name ignores the class loader.
+            </p>
+            ]]>
+        </Details>
+    </Detector>
+    
 	<!-- BugPattern -->
 
 	<BugPattern type="ISB_INEFFICIENT_STRING_BUFFERING">
@@ -3402,6 +3415,21 @@
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="CCNE_COMPARE_CLASS_EQUALS_NAME">
+        <ShortDescription>Method compare class name instead of comparing class</ShortDescription>
+        <LongDescription>Method {1} compares class name instead of comparing the class</LongDescription>
+        <Details>
+            <![CDATA[
+            <p> In a JVM, Two classes are the same class (and consequently the same type) if
+            they are loaded by the same class loader, and they have the same fully
+            qualified name [JVMSpec 1999].
+            
+            Comparing class name ignores the class loader.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
         
 	<!-- BugCode -->
 
@@ -3508,4 +3536,5 @@
 	<BugCode abbrev="CEBE">Commons EqualsBuilder To Equals</BugCode>
 	<BugCode abbrev="CHTH">Commons HashCodeBuilder To hashCode</BugCode>
 	<BugCode abbrev="CSBTS">Commons ToStringBuilder To String</BugCode>
+    <BugCode abbrev="CCNE">Compare class name equals</BugCode>
 </MessageCollection>

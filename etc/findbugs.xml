@@ -229,6 +229,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsHashcodeBuilderToHashcode" speed="fast" reports="CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE" />
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsStringBuilderToString" speed="fast" reports="CSBTS_COMMONS_STRING_BUILDER_TOSTRING" />
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CompareClassNameEquals" speed="fast" reports="CCNE_COMPARE_CLASS_EQUALS_NAME" />
 
 	<!-- BugPattern -->
 
@@ -400,4 +402,5 @@
 	<BugPattern abbrev="CEBE" type="CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS" category="CORRECTNESS" />
 	<BugPattern abbrev="CHTH" type="CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE" category="CORRECTNESS" />
 	<BugPattern abbrev="CSBTS" type="CSBTS_COMMONS_STRING_BUILDER_TOSTRING" category="CORRECTNESS" />
+	<BugPattern abbrev="CCNE" type="CCNE_COMPARE_CLASS_EQUALS_NAME" category="CORRECTNESS" />
 </FindbugsPlugin>
