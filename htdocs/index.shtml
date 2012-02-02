@@ -104,9 +104,8 @@ function toggleBlock(divId, imgId)
 				method
 
 				<pre>
-				new ToStringBuilder(this).toString();
-				</pre><br/>
-				<span style="color: #0000FF;">--contributed by Bhaskar Maddala - THANKS!</span>
+		new ToStringBuilder(this).toString();
+				</pre><span style="color: #0000FF;">--contributed by Bhaskar Maddala - THANKS!</span>
 				</li>
 				<li><b>[CHTH] CommonsHashcodeBuilderToHashcode</b><br/>
 				Looks for uses for Commons-lang HashCodeBuilder where the result of hashCode() is 
