@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<BugCollection version="2.0.0" sequence="0" timestamp="1326913749000" analysisTimestamp="1326914562879" release="">
+<BugCollection version="2.0.0" sequence="0" timestamp="1328194198000" analysisTimestamp="1328194339381" release="">
   <Project projectName="Samples">
     <Jar>/home/bhaskar/workspace/fb2/fb-contrib/samples</Jar>
     <AuxClasspathEntry>/home/bhaskar/workspace/fb2/fb-contrib/samples/lib/commons-lang3-3.1.jar</AuxClasspathEntry>
@@ -8,15 +8,8 @@
     <AuxClasspathEntry>/home/bhaskar/workspace/fb2/fb-contrib/samples/lib/junit-4.10.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/home/bhaskar/workspace/fb2/fb-contrib/samples/lib/log4j-1.2.16.jar</AuxClasspathEntry>
     <AuxClasspathEntry>/home/bhaskar/workspace/fb2/fb-contrib/samples/lib/servlet-api-3.0.1.jar</AuxClasspathEntry>
+    <AuxClasspathEntry>/home/bhaskar/workspace/fb2/fb-contrib/samples/lib/backport-util-concurrent-3.1.jar</AuxClasspathEntry>
     <SrcDir>/home/bhaskar/workspace/fb2/fb-contrib/samples</SrcDir>
     <WrkDir>/home/bhaskar/workspace/fb2/fb-contrib</WrkDir>
   </Project>
-  <Errors errors="0" missingClasses="0"></Errors>
-  <FindBugsSummary timestamp="Thu, 26 Jan 2012 13:23:04 -0800" total_classes="0" referenced_classes="0" total_bugs="0" total_size="0" num_packages="1" vm_version="20.0-b11" cpu_seconds="61.07" clock_seconds="30.03" peak_mbytes="376.02" alloc_mbytes="1214.25" gc_seconds="0.62">
-    <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.SAXBugCollectionHandler" totalMilliseconds="21" invocations="1" avgMicrosecondsPerInvocation="21291" maxMicrosecondsPerInvocation="21291" standardDeviationMircosecondsPerInvocation="0"/>
-    </FindBugsProfile>
-  </FindBugsSummary>
-  <ClassFeatures></ClassFeatures>
-  <History></History>
 </BugCollection>
