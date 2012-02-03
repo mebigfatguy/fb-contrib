@@ -9,10 +9,13 @@ import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -29,6 +32,15 @@ import edu.umd.cs.findbugs.ba.XMethod;
 
 public class StackedTryBlocks extends BytecodeScanningDetector {
 
+    private static JavaClass THROWABLE_CLASS;
+    
+    static {
+        try {
+            THROWABLE_CLASS = Repository.lookupClass("java.lang.Throwable");
+        } catch (ClassNotFoundException cnfe) {
+            THROWABLE_CLASS = null;
+        }
+    }
 	private final BugReporter bugReporter;
 	private List<TryBlock> blocks;
 	private List<TryBlock> inBlocks;
@@ -41,8 +53,10 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			stack = new OpcodeStack();
-			super.visitClassContext(classContext);
+		    if (THROWABLE_CLASS != null) {
+    			stack = new OpcodeStack();
+    			super.visitClassContext(classContext);
+		    }
 		} finally {
 			stack = null;
 		}
@@ -54,8 +68,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		try {
 			XMethod xMethod = getXMethod();
 			String[] tes = xMethod.getThrownExceptions();
-			Set<String> thrownExceptions = new HashSet<String>(Arrays.<String> asList((tes == null) ? new String[0]
-					: tes));
+			Set<String> thrownExceptions = new HashSet<String>(Arrays.<String> asList((tes == null) ? new String[0] : tes));
 
 			blocks = new ArrayList<TryBlock>();
 			inBlocks = new ArrayList<TryBlock>();
@@ -91,8 +104,9 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 						TryBlock secondBlock = blocks.get(i);
 
 						if ((firstBlock.getCatchType() == secondBlock.getCatchType())
-								&& (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
-								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature())))) {
+                                && (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
+                                && (firstBlock.getMessage().equals(secondBlock.getMessage())
+								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature()))))) {
 							bugReporter.reportBug(new BugInstance(this, "STB_STACKED_TRY_BLOCKS", NORMAL_PRIORITY)
 									.addClass(this).addMethod(this)
 									.addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
@@ -113,6 +127,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 
+	    String message = null;
 		try {
 			int pc = getPC();
 			TryBlock block = findBlockWithStart(pc);
@@ -152,15 +167,39 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 							    innerBlock.setThrowSignature(xm.getSignature());
 							}
                             innerBlock.setExceptionSignature(item.getSignature());
+                            innerBlock.setMessage((String) item.getUserValue());
 						} else {
 							inBlocks.remove(inBlocks.size() - 1);
 							innerBlock.setState(TryBlock.State.AFTER);
 						}
+					} else if ((seen == INVOKESPECIAL) && "<init>".equals(getNameConstantOperand())) {
+					    String cls = getClassConstantOperand();
+					    JavaClass exCls = Repository.lookupClass(cls);
+					    if (exCls.instanceOf(THROWABLE_CLASS)) {
+					        String signature = getSigConstantOperand();
+					        Type[] types = Type.getArgumentTypes(signature);
+					        if ((types.length > 0) && "Ljava/lang/String;".equals(types[0].getSignature())) {
+					            if (stack.getStackDepth() >= types.length) {
+					                OpcodeStack.Item item = stack.getStackItem(types.length - 1);
+					                message = (String)item.getConstant();
+					                if (message == null) {
+					                    message = "____UNKNOWN____" + System.currentTimeMillis();
+					                }
+					            }
+					        }
+					        
+					    }
 					}
 				}
 			}
+		} catch (ClassNotFoundException cnfe) {
+		    bugReporter.reportMissingClass(cnfe);
 		} finally {
 			stack.sawOpcode(this, seen);
+			if ((message != null) && (stack.getStackDepth() > 0)) {
+			    OpcodeStack.Item item = stack.getStackItem(0);
+			    item.setUserValue(message);
+			}
 		}
 	}
 
@@ -188,6 +227,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		BitSet catchTypes;
 		String exSig;
 		String throwSig;
+		String message;
 		State state;
 
 		public TryBlock(CodeException ce) {
@@ -241,6 +281,10 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		public void setThrowSignature(String sig) {
 			throwSig = sig;
 		}
+		
+		public void setMessage(String m) {
+		    message = m;
+		}
 
 		public String getExceptionSignature() {
 		    return (exSig == null) ? String.valueOf(System.identityHashCode(this)) : exSig;
@@ -248,6 +292,10 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		
 		public String getThrowSignature() {
 			return (throwSig == null) ? String.valueOf(System.identityHashCode(this)) : throwSig;
+		}
+		
+		public String getMessage() {
+            return (message == null) ? String.valueOf(System.identityHashCode(this)) : message;		    
 		}
 
 		public int getStartPC() {
