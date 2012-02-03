@@ -91,7 +91,8 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 						TryBlock secondBlock = blocks.get(i);
 
 						if ((firstBlock.getCatchType() == secondBlock.getCatchType())
-								&& (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature()))) {
+								&& (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
+								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature())))) {
 							bugReporter.reportBug(new BugInstance(this, "STB_STACKED_TRY_BLOCKS", NORMAL_PRIORITY)
 									.addClass(this).addMethod(this)
 									.addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
@@ -146,7 +147,11 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 					} else if (seen == ATHROW) {
 						if (stack.getStackDepth() > 0) {
 							OpcodeStack.Item item = stack.getStackItem(0);
-							innerBlock.setThrowSignature(item.getSignature());
+							XMethod xm = item.getReturnValueOf();
+							if (xm != null) {
+							    innerBlock.setThrowSignature(xm.getSignature());
+							}
+                            innerBlock.setExceptionSignature(item.getSignature());
 						} else {
 							inBlocks.remove(inBlocks.size() - 1);
 							innerBlock.setState(TryBlock.State.AFTER);
@@ -181,6 +186,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		int handlerPC;
 		int endHandlerPC;
 		BitSet catchTypes;
+		String exSig;
 		String throwSig;
 		State state;
 
@@ -228,10 +234,18 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 			endHandlerPC = end;
 		}
 
+		public void setExceptionSignature(String sig) {
+		    exSig = sig;
+		}
+		
 		public void setThrowSignature(String sig) {
 			throwSig = sig;
 		}
 
+		public String getExceptionSignature() {
+		    return (exSig == null) ? String.valueOf(System.identityHashCode(this)) : exSig;
+		}
+		
 		public String getThrowSignature() {
 			return (throwSig == null) ? String.valueOf(System.identityHashCode(this)) : throwSig;
 		}
