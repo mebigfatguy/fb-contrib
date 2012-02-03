@@ -31,7 +31,42 @@ public class STB_Sample {
 			throw new STBException();
 		}
 	}
+	
+	public void fpTestDiffMessages(File f1, File f2) throws STBException {
+       try {
+            InputStream is = new FileInputStream(f1);
+        } catch (IOException ioe) {
+            throw new STBException("Couldn't open file 1");
+        }
+
+        try {
+            InputStream is = new FileInputStream(f2);
+        } catch (IOException ioe) {
+            throw new STBException("Couldn't open file 2");
+        }
+	}
+	
+	   public void fpTestDiffMessagesByAppending(File f1, File f2) throws STBException {
+	       try {
+	            InputStream is = new FileInputStream(f1);
+	        } catch (IOException ioe) {
+	            throw new STBException("Couldn't open file: " + f1);
+	        }
+
+	        try {
+	            InputStream is = new FileInputStream(f2);
+	        } catch (IOException ioe) {
+	            throw new STBException("Couldn't open file: " + f2);
+	        }
+	    }
 
 	static class STBException extends Exception {
+	    
+	    public STBException() {
+	    }
+	    
+	    public STBException(String message) {
+	        super(message);
+	    }
 	}
 }
