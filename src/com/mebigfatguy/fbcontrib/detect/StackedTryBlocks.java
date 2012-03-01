@@ -105,7 +105,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
 						if ((firstBlock.getCatchType() == secondBlock.getCatchType())
                                 && (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
-                                && (firstBlock.getMessage().equals(secondBlock.getMessage())
+                                && ((firstBlock.getMessage().length() > 0) && firstBlock.getMessage().equals(secondBlock.getMessage())
 								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature()))))) {
 							bugReporter.reportBug(new BugInstance(this, "STB_STACKED_TRY_BLOCKS", NORMAL_PRIORITY)
 									.addClass(this).addMethod(this)
