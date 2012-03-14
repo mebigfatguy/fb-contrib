@@ -65,6 +65,28 @@ public class PCAIL_Sample
 		}
 	}
 	
+	public List<PCAIL_Sample> fpAnonymousMethodParm() 
+	{
+	    List<PCAIL_Sample> col = new ArrayList<PCAIL_Sample>();
+        for (int i = 0; i < 10; i++)
+        {
+            col.add(new PCAIL_Sample());
+        }
+        
+        return col;
+	}
+	
+	   public List<PCAIL_Sample> fpAnonymousBuilder() 
+	    {
+	        List<PCAIL_Sample> col = new ArrayList<PCAIL_Sample>();
+	        for (int i = 0; i < 10; i++)
+	        {
+	            col.add(new PCAIL_Sample().builder());
+	        }
+	        
+	        return col;
+	    }
+	
 	public void fpArrayStore()
 	{
 		PCAIL_Sample[] samples = new PCAIL_Sample[3];
@@ -103,6 +125,11 @@ public class PCAIL_Sample
 		{
 			list.add(new Foo().withNumber(i));
 		}
+	}
+	
+	private PCAIL_Sample builder() 
+	{
+	    return this;
 	}
 	
 	static class Foo
