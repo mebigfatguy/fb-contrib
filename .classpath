@@ -21,10 +21,7 @@
 	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/jFormatString.jar"/>
 	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/jsr305.jar"/>
 	<classpathentry kind="lib" path="samples/lib/commons-lang3-3.1.jar"/>
-	<classpathentry kind="lib" path="samples/lib/backport-util-concurrent-3.1.jar"/>
-	<classpathentry kind="lib" path="samples/lib/jsp-api.jar"/>
-	<classpathentry kind="lib" path="samples/lib/junit.jar"/>
-	<classpathentry kind="lib" path="samples/lib/log4j.jar"/>
-	<classpathentry kind="lib" path="samples/lib/servlet-api.jar"/>
+	<classpathentry kind="lib" path="samples/lib/backport-concurrent-3.1.jar"/>
+	<classpathentry kind="lib" path="samples/lib/commons-collection-${commons-collection.version}.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

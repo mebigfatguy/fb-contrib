@@ -1,294 +1,224 @@
-<!--
-	fb-contrib Ant build script.
-	Dave Brosius
--->
+<!-- fb-contrib Ant build script. Dave Brosius -->
 
 <project name="fb-contrib" default="install">
 
-	<property file="build.properties"/>
+	<property file="build.properties" />
 
-	<property name="src.dir" value="${basedir}/src"/>
-	<property name="classes.dir" value="${basedir}/classes"/>
-	<property name="lib.dir" value="${basedir}/lib"/>
-	<property name="etc.dir" value="${basedir}/etc"/>
-	<property name="samples.dir" value="${basedir}/samples"/>
-	<property name="sampleslib.dir" value="${samples.dir}/lib"/>
-	<property name="javadoc.dir" value="${basedir}/javadoc"/>
-	<property name="htdocs.dir" value="${basedir}/htdocs"/>
-	<property name="javac.source" value="1.5"/>
-	<property name="javac.target" value="1.5"/>
-	<property name="javac.deprecation" value="on"/>
-	<property name="javac.debug" value="on"/>
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="classes.dir" value="${basedir}/classes" />
+	<property name="lib.dir" value="${basedir}/lib" />
+	<property name="etc.dir" value="${basedir}/etc" />
+	<property name="samples.dir" value="${basedir}/samples" />
+	<property name="sampleslib.dir" value="${samples.dir}/lib" />
+	<property name="javadoc.dir" value="${basedir}/javadoc" />
+	<property name="htdocs.dir" value="${basedir}/htdocs" />
+	<property name="javac.source" value="1.5" />
+	<property name="javac.target" value="1.5" />
+	<property name="javac.deprecation" value="on" />
+	<property name="javac.debug" value="on" />
 
-	<property name="fb-contrib.version" value="4.7.0"/>
-	
-	<property name="findbugs.version" value="2.0.0"/>
-	<property name="findbugs-bcel.version" value="2.0.0"/>
-	<property name="annotations.version" value="2.0.0"/>
-	<property name="asm-tree.version" value="3.3.1"/>
-	
-    <property name="findbugs-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/findbugs/${findbugs.version}/findbugs-${findbugs.version}.jar"/> 
-    <property name="findbugs-bcel-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/bcel/${findbugs-bcel.version}/bcel-${findbugs-bcel.version}.jar"/> 
-    <property name="annotations-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/annotations/${annotations.version}/annotations-${annotations.version}.jar"/> 
-    <property name="asm-tree-url" value="http://repo1.maven.org/maven2/asm/asm-tree/${asm-tree.version}/asm-tree-${asm-tree.version}.jar"/> 
+	<property name="fb-contrib.version" value="4.7.0" />
 
-    <!-- properties for samples lib dependencies -->
-    <property name="commons-lang3.version" value="3.1"/>
-    <property name="jsp-api.version" value="2.2.1" />
-    <property name="junit.version" value="4.10" />
-    <property name="log4j.version" value="1.2.16" />
-    <property name="servlet-api.version" value="3.0.1" />
+	<property name="findbugs.version" value="2.0.0" />
+	<property name="findbugs-bcel.version" value="2.0.0" />
+	<property name="annotations.version" value="2.0.0" />
+	<property name="asm-tree.version" value="3.3.1" />
+
+	<property name="findbugs-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/findbugs/${findbugs.version}/findbugs-${findbugs.version}.jar" />
+	<property name="findbugs-bcel-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/bcel/${findbugs-bcel.version}/bcel-${findbugs-bcel.version}.jar" />
+	<property name="annotations-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/annotations/${annotations.version}/annotations-${annotations.version}.jar" />
+	<property name="asm-tree-url" value="http://repo1.maven.org/maven2/asm/asm-tree/${asm-tree.version}/asm-tree-${asm-tree.version}.jar" />
+
+	<!-- properties for samples lib dependencies -->
+	<property name="commons-lang3.version" value="3.1" />
+	<property name="jsp-api.version" value="2.2.1" />
+	<property name="junit.version" value="4.10" />
+	<property name="log4j.version" value="1.2.16" />
+	<property name="servlet-api.version" value="3.0.1" />
     <property name="backport-concurrent.version" value="3.1" />
+    <property name="commons-collections.version" value="3.2.1" />
 
-    <property name="commons-lang3-url" value="http://repo1.maven.org/maven2/org/apache/commons/commons-lang3/${commons-lang3.version}/commons-lang3-${commons-lang3.version}.jar"/> 
-    <property name="jsp-api-url" value="http://repo1.maven.org/maven2/javax/servlet/jsp/javax.servlet.jsp-api/${jsp-api.version}/javax.servlet.jsp-api-${jsp-api.version}.jar" />
-    <property name="junit-url" value="http://repo1.maven.org/maven2/junit/junit/${junit.version}/junit-${junit.version}.jar"/> 
-    <property name="log4j-url" value="http://repo1.maven.org/maven2/log4j/log4j/${log4j.version}/log4j-${log4j.version}.jar"/> 
-    <property name="servlet-api-url" value="http://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/${servlet-api.version}/javax.servlet-api-${servlet-api.version}.jar"/>
-	<property name="backport-concurrent-url" value="http://repo1.maven.org/maven2/backport-util-concurrent/backport-util-concurrent/${backport-concurrent.version}/backport-util-concurrent-${backport-concurrent.version}.jar" />
+	<property name="commons-lang3-url" value="http://repo1.maven.org/maven2/org/apache/commons/commons-lang3/${commons-lang3.version}/commons-lang3-${commons-lang3.version}.jar" />
+	<property name="jsp-api-url" value="http://repo1.maven.org/maven2/javax/servlet/jsp/javax.servlet.jsp-api/${jsp-api.version}/javax.servlet.jsp-api-${jsp-api.version}.jar" />
+	<property name="junit-url" value="http://repo1.maven.org/maven2/junit/junit/${junit.version}/junit-${junit.version}.jar" />
+	<property name="log4j-url" value="http://repo1.maven.org/maven2/log4j/log4j/${log4j.version}/log4j-${log4j.version}.jar" />
+	<property name="servlet-api-url" value="http://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/${servlet-api.version}/javax.servlet-api-${servlet-api.version}.jar" />
+    <property name="backport-concurrent-url" value="http://repo1.maven.org/maven2/backport-util-concurrent/backport-util-concurrent/${backport-concurrent.version}/backport-util-concurrent-${backport-concurrent.version}.jar" />
+    <property name="commons-collection-url" value="http://repo1.maven.org/maven2/commons-collections/commons-collections/${commons-collections.version}/commons-collections-${commons-collections.version}.jar" />
+
+	<target name="check">
+		<available file="${dest}/${name}-${version}.jar" property="jar-exists" />
+	</target>
+
+	<target name="_pull" depends="check" unless="jar-exists">
+		<get src="${url}" dest="${dest}/${name}-${version}.jar" verbose="true" ignoreerrors="true" />
+	</target>
+
+	<macrodef name="pull">
+		<attribute name="url" />
+		<attribute name="dest" />
+		<attribute name="name" />
+		<attribute name="version" />
+
+		<sequential>
+			<antcall target="_pull">
+				<param name="url" value="@{url}" />
+				<param name="dest" value="@{dest}" />
+				<param name="name" value="@{name}" />
+				<param name="version" value="@{version}" />
+			</antcall>
+		</sequential>
+	</macrodef>
+
+	<target name="pullall">
+        <pull url="${findbugs-url}" dest="${lib.dir}" name="findbugs" version="${findbugs.version}" />
+        <pull url="${findbugs-bcel-url}" dest="${lib.dir}" name="findbugs-bcel" version="${findbugs-bcel.version}" />
+        <pull url="${annotations-url}" dest="${lib.dir}" name="annotations" version="${annotations.version}" />
+        <pull url="${asm-tree-url}" dest="${lib.dir}" name="asm-tree" version="${asm-tree.version}" />
+        <pull url="${commons-lang3-url}" dest="${sampleslib.dir}" name="commons-lang3" version="${commons-lang3.version}" />
+        <pull url="${jsp-api-url}" dest="${sampleslib.dir}" name="jsp-api" version="${jsp-api.version}" />
+        <pull url="${junit-url}" dest="${sampleslib.dir}" name="junit" version="${junit.version}" />
+        <pull url="${log4j-url}" dest="${sampleslib.dir}" name="log4j" version="${log4j.version}" />
+        <pull url="${servlet-api-url}" dest="${sampleslib.dir}" name="servlet-api" version="${servlet-api.version}" />
+        <pull url="${backport-concurrent-url}" dest="${sampleslib.dir}" name="backport-concurrent" version="${backport-concurrent.version}" />
+        <pull url="${commons-collection-url}" dest="${sampleslib.dir}" name="commons-collection" version="${commons-collection.version}" />
+	</target>
 
 	<target name="clean" description="removes all generated collateral">
-		<delete dir="${classes.dir}"/>
-		<delete dir="${javadoc.dir}"/>
-		<delete file="${htdocs.dir}/bugdescriptions.html"/>
-		<delete file="${basedir}/fb-contrib-${fb-contrib.version}.jar"/>
-		<delete file="${basedir}/fb-contrib-src-${fb-contrib.version}.zip"/>
+		<delete dir="${classes.dir}" />
+		<delete dir="${javadoc.dir}" />
+		<delete file="${htdocs.dir}/bugdescriptions.html" />
+		<delete file="${basedir}/fb-contrib-${fb-contrib.version}.jar" />
+		<delete file="${basedir}/fb-contrib-src-${fb-contrib.version}.zip" />
 		<delete>
 			<fileset dir="${samples.dir}">
-				<include name="**/*.class"/>
+				<include name="**/*.class" />
 			</fileset>
 		</delete>
-		<delete dir="${basedir}/plugin"/>
+		<delete dir="${basedir}/plugin" />
 	</target>
 
 	<target name="-init" description="prepares repository for a build">
-		<mkdir dir="${lib.dir}"/>
-		<mkdir dir="${sampleslib.dir}"/>
-		<mkdir dir="${classes.dir}"/>
-		<mkdir dir="${javadoc.dir}"/>
+		<mkdir dir="${lib.dir}" />
+		<mkdir dir="${sampleslib.dir}" />
+		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${javadoc.dir}" />
 		<path id="fb-contrib.classpath">
-			<pathelement location="${lib.dir}/findbugs-${findbugs.version}.jar"/>
-			<pathelement location="${lib.dir}/bcel-${findbugs-bcel.version}.jar"/>
-			<pathelement location="${lib.dir}/annotations-${annotations.version}.jar"/>
-			<pathelement location="${lib.dir}/asm-tree-${asm-tree.version}.jar"/>
+			<pathelement location="${lib.dir}/findbugs-${findbugs.version}.jar" />
+			<pathelement location="${lib.dir}/bcel-${findbugs-bcel.version}.jar" />
+			<pathelement location="${lib.dir}/annotations-${annotations.version}.jar" />
+			<pathelement location="${lib.dir}/asm-tree-${asm-tree.version}.jar" />
 		</path>
 		<path id="fb-contrib.samples.classpath">
-			<pathelement location="${sampleslib.dir}/jsp-api-${jsp-api.version}.jar"/>
-			<pathelement location="${sampleslib.dir}/junit-${junit.version}.jar"/>
-			<pathelement location="${sampleslib.dir}/servlet-api-${servlet-api.version}.jar"/>
-			<pathelement location="${sampleslib.dir}/log4j-${log4j.version}.jar"/>
-			<pathelement location="${sampleslib.dir}/commons-lang3-${commons-lang3.version}.jar"/>
-			<pathelement location="${sampleslib.dir}/commons-lang3-${commons-lang3.version}.jar"/>
-			<pathelement location="${sampleslib.dir}/backport-util-concurrent-${backport-concurrent.version}.jar"/>
+			<pathelement location="${sampleslib.dir}/jsp-api-${jsp-api.version}.jar" />
+			<pathelement location="${sampleslib.dir}/junit-${junit.version}.jar" />
+			<pathelement location="${sampleslib.dir}/servlet-api-${servlet-api.version}.jar" />
+			<pathelement location="${sampleslib.dir}/log4j-${log4j.version}.jar" />
+			<pathelement location="${sampleslib.dir}/commons-lang3-${commons-lang3.version}.jar" />
+			<pathelement location="${sampleslib.dir}/commons-lang3-${commons-lang3.version}.jar" />
+			<pathelement location="${sampleslib.dir}/backport-util-concurrent-${backport-concurrent.version}.jar" />
 		</path>
-		<mkdir dir="${classes.dir}/com"/>
-		<mkdir dir="${classes.dir}/com/mebigfatguy"/>
-		<mkdir dir="${classes.dir}/com/mebigfatguy/fbcontrib"/>
-		<mkdir dir="${classes.dir}/com/mebigfatguy/fbcontrib/detect"/>
-		<echo message="*.class" file="${classes.dir}/com/mebigfatguy/fbcontrib/detect/.cvsignore"/>
+		<mkdir dir="${classes.dir}/com" />
+		<mkdir dir="${classes.dir}/com/mebigfatguy" />
+		<mkdir dir="${classes.dir}/com/mebigfatguy/fbcontrib" />
+		<mkdir dir="${classes.dir}/com/mebigfatguy/fbcontrib/detect" />
+		<echo message="*.class" file="${classes.dir}/com/mebigfatguy/fbcontrib/detect/.cvsignore" />
 	</target>
-	
-    <target name="findbugs-check">
-        <available file="${basedir}/lib/findbugs-${findbugs.version}.jar" property="findbugs-exists"/>
-    </target>
-
-    <target name="findbugs-bcel-check">
-        <available file="${basedir}/lib/bcel-${findbugs-bcel.version}.jar" property="findbugs-bcel-exists"/>
-    </target>
-
-    <target name="annotations-check">
-        <available file="${basedir}/lib/annotations-${annotations.version}.jar" property="annotations-exists"/>
-    </target>
-	
-    <target name="asm-tree-check">
-        <available file="${basedir}/lib/asm-tree-${asm-tree.version}.jar" property="asm-tree-exists"/>
-    </target>
-
-    <target name="commons-lang3-check">
-        <available file="${basedir}/samples/lib/commons-lang3-${commons-lang3.version}.jar" property="commons-lang3-exists"/>
-    </target>
-
-    <target name="servlet-api-check">
-        <available file="${basedir}/samples/lib/servlet-api-${servlet-api.version}.jar" property="servlet-api-exists"/>
-    </target>
-	
-	<target name="backport-concurrent-check">
-		<available file="${basedir}/samples/lib/backport-util-concurrent-${backport-concurrent.version}.jar" property="backport-concurrent-exists" />
-	</target>
-
-    <target name="jsp-api-check">
-        <available file="${basedir}/samples/lib/jsp-api-${jsp-api.version}.jar" property="jsp-api-exists"/>
-    </target>
-
-    <target name="log4j-check">
-        <available file="${basedir}/samples/lib/log4j-${log4j.version}.jar" property="log4j-exists"/>
-    </target>
-
-    <target name="junit-check">
-        <available file="${basedir}/samples/lib/junit-${junit.version}.jar" property="junit-exists"/>
-    </target>
-
-    <target name="install-findbugs" depends="findbugs-check" unless="findbugs-exists" description="installs findbugs.jar into lib">
-        <get src="${findbugs-url}" dest="${basedir}/lib/findbugs-${findbugs.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>
-
-    <target name="install-findbugs-bcel" depends="findbugs-bcel-check" unless="findbugs-bcel-exists" description="installs findbugs-bcel.jar into lib">
-        <get src="${findbugs-bcel-url}" dest="${basedir}/lib/bcel-${findbugs-bcel.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>
-
-    <target name="install-annotations" depends="annotations-check" unless="annotations-exists" description="installs annotations.jar into lib">
-        <get src="${annotations-url}" dest="${basedir}/lib/annotations-${annotations.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>
-
-    <target name="install-asm-tree" depends="asm-tree-check" unless="asm-tree-exists" description="installs asm-tree.jar into lib">
-        <get src="${asm-tree-url}" dest="${basedir}/lib/asm-tree-${asm-tree.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>
-
-    <target name="install-commons-lang3" depends="commons-lang3-check" unless="commons-lang3-exists" description="installs commons-lang3 into samples/lib">
-        <get src="${commons-lang3-url}" dest="${basedir}/samples/lib/commons-lang3-${commons-lang3.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>
-
-    <target name="install-servlet-api" depends="servlet-api-check" unless="servlet-api-exists" description="installs servlet-api into samples/lib">
-        <get src="${servlet-api-url}" dest="${basedir}/samples/lib/servlet-api-${servlet-api.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>
-    
-	<target name="install-backport-concurrent" depends="backport-concurrent-check" unless="backport-concurrent-exists" description="installs backport-concurrent into samples/lib">
-        <get src="${backport-concurrent-url}" dest="${basedir}/samples/lib/backport-util-concurrent-${backport-concurrent.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>	
-	
-    <target name="install-jsp-api" depends="jsp-api-check" unless="jsp-api-exists" description="installs jsp-api into samples/lib">
-        <get src="${jsp-api-url}" dest="${basedir}/samples/lib/jsp-api-${jsp-api.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>
-
-    <target name="install-log4j" depends="log4j-check" unless="log4j-exists" description="installs log4j into samples/lib">
-        <get src="${log4j-url}" dest="${basedir}/samples/lib/log4j-${log4j.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>
-
-    <target name="install-junit" depends="junit-check" unless="junit-exists" description="installs junit into samples/lib">
-        <get src="${junit-url}" dest="${basedir}/samples/lib/junit-${junit.version}.jar" verbose="true" ignoreerrors="true"/>
-    </target>
-
-    <target name="pull" depends="install-findbugs, install-findbugs-bcel, install-annotations, install-asm-tree, install-commons-lang3, install-servlet-api, install-backport-concurrent, install-jsp-api, install-log4j, install-junit" description="pull 3rdparty jars to the lib directory"/>
 
 	<target name="validate_xml" depends="-init" description="validates the xml files">
 		<xmlvalidate lenient="false" failonerror="yes">
-			<attribute name="http://apache.org/xml/features/validation/schema" value="true"/>
-			<attribute name="http://xml.org/sax/features/namespaces" value="true"/>
-			<fileset dir="${etc.dir}" includes="*.xml"/>
+			<attribute name="http://apache.org/xml/features/validation/schema" value="true" />
+			<attribute name="http://xml.org/sax/features/namespaces" value="true" />
+			<fileset dir="${etc.dir}" includes="*.xml" />
 		</xmlvalidate>
 	</target>
 
-	<target name="compile" depends="-init, pull" description="compiles java files">
-		<javac  srcdir="${src.dir}"
-				destdir="${classes.dir}"
-				source="${javac.source}"
-				target="${javac.target}"
-				deprecation="${javac.deprecation}"
-				debug="${javac.debug}"
-			    includeantruntime="false">
-			<classpath refid="fb-contrib.classpath"/>
+	<target name="compile" depends="-init, pullall" description="compiles java files">
+		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
+			<classpath refid="fb-contrib.classpath" />
 		</javac>
 	</target>
 
 	<target name="compile_samples" depends="-init" description="compiles sample problem files">
-		<javac srcdir="${samples.dir}"
-				destdir="${samples.dir}"
-				source="1.5"
-				target="1.5"
-				deprecation="${javac.deprecation}"
-				debug="${javac.debug}"
-			    includeantruntime="false">
-			<classpath refid="fb-contrib.classpath"/>
-			<classpath refid="fb-contrib.samples.classpath"/>
+		<javac srcdir="${samples.dir}" destdir="${samples.dir}" source="1.5" target="1.5" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
+			<classpath refid="fb-contrib.classpath" />
+			<classpath refid="fb-contrib.samples.classpath" />
 		</javac>
-		<delete file="${samples.dir}/SJVU_Sample.class"/>
-		<javac srcdir="${samples.dir}"
-               destdir="${samples.dir}"
-               source="1.4"
-               target="1.4"
-               deprecation="${javac.deprecation}"
-			   debug="${javac.debug}"
-			   includeantruntime="false">
-    		<include name="SJVU_Sample.java"/>
-			<classpath refid="fb-contrib.classpath"/>
-			<classpath refid="fb-contrib.samples.classpath"/>
+		<delete file="${samples.dir}/SJVU_Sample.class" />
+		<javac srcdir="${samples.dir}" destdir="${samples.dir}" source="1.4" target="1.4" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
+			<include name="SJVU_Sample.java" />
+			<classpath refid="fb-contrib.classpath" />
+			<classpath refid="fb-contrib.samples.classpath" />
 		</javac>
 	</target>
 
 	<target name="jar" depends="compile" description="produces the fb-contrib jar file">
 		<jar destfile="${basedir}/fb-contrib-${fb-contrib.version}.jar">
 			<fileset dir="etc">
-				<include name="findbugs.xml"/>
-				<include name="messages*.xml"/>
-				<include name="bugrank.txt"/>
-				<include name="*.license"/>
+				<include name="findbugs.xml" />
+				<include name="messages*.xml" />
+				<include name="bugrank.txt" />
+				<include name="*.license" />
 			</fileset>
 			<fileset dir="${classes.dir}">
-				<include name="**/*.class"/>
+				<include name="**/*.class" />
 			</fileset>
 			<fileset dir="${basedir}">
-				<include name="plugin.xml"/>
-				<include name="license.txt"/>
+				<include name="plugin.xml" />
+				<include name="license.txt" />
 			</fileset>
 			<manifest>
-				<attribute name="fb-contrib-version" value="${fb-contrib.version}"/>
-				<attribute name="Main-Class" value="com.mebigfatguy.fbcontrib.FBContrib"/>
-				<attribute name="Eclipse-RegisterBuddy" value="edu.umd.cs.findbugs.plugin.eclipse"/>
-				<attribute name="Bundle-ManifestVersion" value="2"/>
-				<attribute name="Bundle-Name" value="fb-contrib plugin"/>
-				<attribute name="Bundle-SymbolicName" value="fb-contrib; singleton:=true"/>
-				<attribute name="Bundle-Version" value="${fb-contrib.version}"/>				
-				<attribute name="Bundle-ClassPath" value="."/>
-				<attribute name="Bundle-Vendor" value="FB-Contrib Project"/>
-				<attribute name="Require-Bundle" value="edu.umd.cs.findbugs.plugin.eclipse"/>
-				<attribute name="Bundle-ActivationPolicy" value="lazy"/>
+				<attribute name="fb-contrib-version" value="${fb-contrib.version}" />
+				<attribute name="Main-Class" value="com.mebigfatguy.fbcontrib.FBContrib" />
+				<attribute name="Eclipse-RegisterBuddy" value="edu.umd.cs.findbugs.plugin.eclipse" />
+				<attribute name="Bundle-ManifestVersion" value="2" />
+				<attribute name="Bundle-Name" value="fb-contrib plugin" />
+				<attribute name="Bundle-SymbolicName" value="fb-contrib; singleton:=true" />
+				<attribute name="Bundle-Version" value="${fb-contrib.version}" />
+				<attribute name="Bundle-ClassPath" value="." />
+				<attribute name="Bundle-Vendor" value="FB-Contrib Project" />
+				<attribute name="Require-Bundle" value="edu.umd.cs.findbugs.plugin.eclipse" />
+				<attribute name="Bundle-ActivationPolicy" value="lazy" />
 			</manifest>
 		</jar>
 	</target>
 
 	<target name="html" depends="-init" description="generates dynamic html">
-		<xslt basedir="${etc.dir}"
-			  destdir="${htdocs.dir}"
-			  style="${etc.dir}/bugdescriptions.xsl"
-			  in="${etc.dir}/messages.xml" out="${htdocs.dir}/bugdescriptions.html"/>
+		<xslt basedir="${etc.dir}" destdir="${htdocs.dir}" style="${etc.dir}/bugdescriptions.xsl" in="${etc.dir}/messages.xml" out="${htdocs.dir}/bugdescriptions.html" />
 	</target>
 
 	<target name="srczip" description="builds the source distribution zip file">
 		<zip destfile="${basedir}/fb-contrib-src-${fb-contrib.version}.zip" basedir="${basedir}">
 			<fileset dir="${src.dir}">
-				<include name="**/*.java"/>
-				<include name="**/*.xml"/>
-				<include name="**/*.xsd"/>
-				<include name="**/*.license"/>
-				<include name="**/*.txt"/>
-				<include name="lib/*.jar"/>
+				<include name="**/*.java" />
+				<include name="**/*.xml" />
+				<include name="**/*.xsd" />
+				<include name="**/*.license" />
+				<include name="**/*.txt" />
+				<include name="lib/*.jar" />
 			</fileset>
 		</zip>
 	</target>
 
 	<target name="javadoc" depends="-init" description="build the javadoc for the project">
-		<javadoc packagenames="com.mebigfatguy.*"
-				 sourcepath="${src.dir}"
-				 classpathref="fb-contrib.classpath"
-				 destdir="${javadoc.dir}"
-				 windowtitle="fb-contrib api">
-		    <doctitle><![CDATA[<h1>fb-contrib javadoc</h1>]]></doctitle>
-		    <bottom><![CDATA[<i>Copyright &#169; 2005-2012 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
+		<javadoc packagenames="com.mebigfatguy.*" sourcepath="${src.dir}" classpathref="fb-contrib.classpath" destdir="${javadoc.dir}" windowtitle="fb-contrib api">
+			<doctitle><![CDATA[<h1>fb-contrib javadoc</h1>]]></doctitle>
+			<bottom><![CDATA[<i>Copyright &#169; 2005-2012 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
 		</javadoc>
 	</target>
 
 	<target name="build" depends="clean, -init, validate_xml, compile, compile_samples, jar" description="builds the plugin jar">
 	</target>
 
-    	<target name="install" depends="build" description="installs the plugin into FindBugs">
-		<property environment="env"/>
+	<target name="install" depends="build" description="installs the plugin into FindBugs">
+		<property environment="env" />
 		<copy todir="${env.FINDBUGS_HOME}/plugin">
 			<fileset dir="${basedir}">
-				<include name="fb-contrib-${fb-contrib.version}.jar"/>
+				<include name="fb-contrib-${fb-contrib.version}.jar" />
 			</fileset>
 		</copy>
 	</target>
 
-	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release"/>
+	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release" />
 
 </project>
