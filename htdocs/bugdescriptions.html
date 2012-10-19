@@ -1,0 +1,728 @@
+<html>
+<head>
+<META http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>fb-contrib: Bug Descriptions</title>
+<style type="text/css">
+					h1 { font-size: 30px; }
+					ul { display: block; list-style-type: none; width: 60%; }
+					.bugcode { font-weight: bold; font-size: 18px; padding-left: 10px; border-left: 0.5em solid #6666FF; }
+					.bugdetail { font-size: 16px; margin: 4px; padding: 5px 20px 15px 40px; border-left: 1px solid #6666FF; }
+				</style>
+</head>
+<body background="true">
+<div style="position:absolute;top:0;left:0;width:256;height:65535;z-index:1;background-image:url(blend.jpg);"></div>
+<div style="position:absolute;top:20;left:20;z-index:2;">
+<h1>fb-contrib: Bug Descriptions</h1>
+<ul>
+<li>
+<div class="bugcode">ABC_ARRAY_BASED_COLLECTIONS</div>
+<div class="bugdetail"><p>This method passes an array as the key to a Map, element in a Set, or item in a List when the contains method is used on the List. Since arrays do not, and cannot override the equals method, collection inclusion is based on the reference's address, which is probably not desired. In the case that this is a TreeMap or TreeSet, consider passing a Comparator to the map's constructor. </p></div>
+</li>
+<li>
+<div class="bugcode">ACEM_ABSTRACT_CLASS_EMPTY_METHODS</div>
+<div class="bugdetail"><p>This method is empty or merely throws an exception. Since the class it is defined in is abstract, it may be more correct to define this method as abstract instead, so that proper subclass behavior is enforced.</p></div>
+</li>
+<li>
+<div class="bugcode">AFBR_ABNORMAL_FINALLY_BLOCK_RETURN</div>
+<div class="bugdetail"><p>This class returns or throws exceptions from a finally block. This will mask real program logic in the try block, and short-circuit normal method termination. </p></div>
+</li>
+<li>
+<div class="bugcode">AOM_ABSTRACT_OVERRIDDEN_METHOD</div>
+<div class="bugdetail"><p>This abstract method is derived from a concrete method implementation. It is highly suspect that the super class method's implementation would be cast away. </p></div>
+</li>
+<li>
+<div class="bugcode">AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE</div>
+<div class="bugdetail"><p>This method uses a one element array to wrap an object that is to be passed to a method as an argument to simulate call by pointer ala C++. It is better to define a proper return class type that holds all the relevant information retrieved from the called method.</p></div>
+</li>
+<li>
+<div class="bugcode">BAS_BLOATED_ASSIGNMENT_SCOPE</div>
+<div class="bugdetail"><p><em>THIS DETECTOR IS HIGHLY EXPERIMENTAL AND IS LIKELY TO CREATE A LOT OF FUD</em> This method assigns a value to a variable in an outer scope compared to where the variable is actually used. Assuming this evaluation does not have side effects, the assignment can be moved into the inner scope (if block) so that its execution time isn't taken up if the if guard is false. Care should be taken however that the right hand side of the assignment does not contain side effects that are required to happen, or that changes are not made further down that will effect the execution of the assignment when done later on.</p></div>
+</li>
+<li>
+<div class="bugcode">BED_BOGUS_EXCEPTION_DECLARATION</div>
+<div class="bugdetail"><p>This method declares that it throws a checked exception that it does not throw. As this method is either a constructor, static method or private method, there is no reason for this method to declare the exception in its throws clause, and just causes calling methods to unnecessarily handle an exception that will never be thrown. The exception in question should be removed from the throws clause.</p></div>
+</li>
+<li>
+<div class="bugcode">BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS</div>
+<div class="bugdetail"><p> This class usees Backport Utils concurrent classes. Updated/Efficient version of these classes are available in versions of the JDK 5.0 and higher, and these classes should only be used if you are targeting JDK 1.4 and lower. </p></div>
+</li>
+<li>
+<div class="bugcode">BSB_BLOATED_SYNCHRONIZED_BLOCK</div>
+<div class="bugdetail"><p>This methods implements a synchronized block, but the code found at the beginning of this block only accesses local variables, and not member variables, or this. To be better performance move the code that access local variables only, above the synchronized block, and leave the synchronized block only for field accesses, or access to this object.</p></div>
+</li>
+<li>
+<div class="bugcode">CAO_CONFUSING_AUTOBOXED_OVERLOADING</div>
+<div class="bugdetail"><p>This class defines two methods that differ only by a parameter being defined as Character vs. int, long, float or double. As autoboxing is present, it may be assumed that a parameter of 'a' would map to the Character version, but does not.</p></div>
+</li>
+<li>
+<div class="bugcode">CBX_CUSTOM_BUILT_XML</div>
+<div class="bugdetail"><p>This method generates an xml based string by concatenating together various xml fragments, and variable values. Doing so makes the code difficult to read, modify and validate. It is much more clean to built xml structures in external files that are read in and transformed into the final product, thru modification by Transformer.setParameter. </p></div>
+</li>
+<li>
+<div class="bugcode">CCNE_COMPARE_CLASS_EQUALS_NAME</div>
+<div class="bugdetail"><p> In a JVM, Two classes are the same class (and consequently the same type) if they are loaded by the same class loader, and they have the same fully qualified name [JVMSpec 1999]. Comparing class name ignores the class loader. </p></div>
+</li>
+<li>
+<div class="bugcode">CC_CYCLOMATIC_COMPLEXITY</div>
+<div class="bugdetail"><p> This method has a high cyclomatic complexity figure, which calculates the number of branch points. It is likely difficult to test, and is brittle to change. Consider refactoring this method into several to reduce the risk.</p></div>
+</li>
+<li>
+<div class="bugcode">CCNE_COMPARE_CLASS_EQUALS_NAME</div>
+<div class="bugdetail"><p> In a JVM, Two classes are the same class (and consequently the same type) if they are loaded by the same class loader, and they have the same fully qualified name [JVMSpec 1999]. Comparing class name ignores the class loader. </p></div>
+</li>
+<li>
+<div class="bugcode">CE_CLASS_ENVY</div>
+<div class="bugdetail"><p><em>THIS DETECTOR IS HIGHLY EXPERIMENTAL AND IS LIKELY TO CREATE A LOT OF FUD</em></p> <p>This method makes extensive use of methods from another class over methods of it's own class. Typically this means that the functionality that is accomplished by this method most likely belongs with the class that is being used so liberally. Consider refactoring this method to be contained in that class, and to accept all the parameters needed in the method signature.</p></div>
+</li>
+<li>
+<div class="bugcode">CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS</div>
+<div class="bugdetail"><p>This method returns the result of equals on the EqualsBuilder type instead of calling the method isEqual().</p></div>
+</li>
+<li>
+<div class="bugcode">CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS</div>
+<div class="bugdetail"><p>This method returns the result of equals on the EqualsBuilder type instead of calling the method isEqual().</p></div>
+</li>
+<li>
+<div class="bugcode">CFS_CONFUSING_FUNCTION_SEMANTICS</div>
+<div class="bugdetail"><p>This method appears to modify a parameter, and then return this parameter as the methods return value. This will be confusing to callers of this method, as it won't be apparent that the 'original' passed in parameter will be changed as well. If the purpose of this method is to change the parameter, it would be more clear to change the method to a have a void return value. If a return type is required due to interface or superclass contract, perhaps a clone of the parameter should be made.</p></div>
+</li>
+<li>
+<div class="bugcode">CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE</div>
+<div class="bugdetail"><p>This method returns the result of hashCode on the HashCodeBuilder type instead of calling the method toHashCode().</p></div>
+</li>
+<li>
+<div class="bugcode">CLI_CONSTANT_LIST_INDEX</div>
+<div class="bugdetail"><p>This method accesses an array or list using a constant integer index. Often, this is a typo where a loop variable is intended to be used. If however, specific list indices mean different specific things, then perhaps replacing the list with a first-class object with meaningful accessors would make the code less brittle.</p></div>
+</li>
+<li>
+<div class="bugcode">COM_COPIED_OVERRIDDEN_METHOD</div>
+<div class="bugdetail"><p>This method is implemented using an exact copy of it's super class method's implementation, which usually means that this method can just be removed. </p></div>
+</li>
+<li>
+<div class="bugcode">CSBTS_COMMONS_STRING_BUILDER_TOSTRING</div>
+<div class="bugdetail"><p>This method returns the result of toString() on ToStringBuilder without an intermediate invocation of append()</p></div>
+</li>
+<li>
+<div class="bugcode">CU_CLONE_USABILITY_OBJECT_RETURN</div>
+<div class="bugdetail"><p> This class implements the Cloneable interface but defines its clone method to return an Object. Since most likely users of this method will need to cast it to the real type, this will be more painful than necessary. Just declare the return value to be the type of this class. </p></div>
+</li>
+<li>
+<div class="bugcode">CU_CLONE_USABILITY_THROWS</div>
+<div class="bugdetail"><p> This class implements the Cloneable interface but defines its clone method to still return a CloneNotSupportedException. Since you are implementing clone() it would make sense that the method in question will _not_ throw that exception, so annotating your method with it just makes client use of your more painful as they have to handle an exception that will never happen. Just remove the throws clause from your method. </p></div>
+</li>
+<li>
+<div class="bugcode">CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT</div>
+<div class="bugdetail"><p>This method contains a contravariant array assignment. Since arrays are mutable data structures, their use must be restricted to covariant or invariant usage</p> <pre> class A {} class B extends A {} B[] b = new B[2]; A[] a = b; </pre></div>
+</li>
+<li>
+<div class="bugcode">CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT</div>
+<div class="bugdetail"><p>This method contains a contravariant array element assignment. Since arrays are mutable data structures, their use must be restricted to covariant or invariant usage</p> <pre> class A {} class B extends A {} B[] b = new B[2]; A[] a = b; a[0] = new A(); // results in ArrayStoreException (Runtime) </pre></div>
+</li>
+<li>
+<div class="bugcode">DDC_DOUBLE_DATE_COMPARISON</div>
+<div class="bugdetail"><p>This method compares dates with two comparisons, rather than using the reverse comparison. So This pattern <pre> if ((date1.equals( date2 )) || (date1.after( date2 ))) </pre> could become <pre> if (date1.compareTo( date2 ) >= 0) </pre> and <pre> if ((date1.equals( date2 )) || (date1.before( date2 ))) </pre> could become <pre> if (date1.compareTo( date2 ) <= 0) </pre> and <pre> if ((date1.before( date2 )) || (date1.after( date2 ))) </pre> could become <pre> if (!date1.equals( date2 )) </pre></div>
+</li>
+<li>
+<div class="bugcode">DLC_DUBIOUS_LIST_COLLECTION</div>
+<div class="bugdetail"><p>This class defines a field based on java.util.List, but uses it to some extent like a Set. Since lookup type operations are performed using a linear search for Lists, the performance for large Lists will be poor. Consider changing this fields implementation to a set based one. If order of iteration is important to maintain insert order, perhaps consider a LinkedHashSet.</p></div>
+</li>
+<li>
+<div class="bugcode">DRE_DECLARED_RUNTIME_EXCEPTION</div>
+<div class="bugdetail"><p>This method declares a RuntimeException derived class in it's throws clause. This may indicate a misunderstanding as to how unchecked exceptions are handled. If is felt that a RuntimeException is so prevalent that it should be declared, it is probably a better idea to prevent the occurance in code.</p></div>
+</li>
+<li>
+<div class="bugcode">DSOC_DUBIOUS_SET_OF_COLLECTIONS</div>
+<div class="bugdetail"><p>This method creates a set that contains other collections, or a Map whose keySet is another collection. As collections tend to calculate hashCode, equals and compareTo by iterating the contents of the collection, this can perform poorly.</p> <p>In addition, when a set is used, you typically are using it to do 'contains', or 'find' type functionality, which seems dubious when done on a collection</p> <p>Finally, as a collection is often modified, problems will occur if the collection is contained in a set, because the hashCode, equals or compareTo values will change while the collection is in the set</p> <p>If you wish to maintain a collection of collections, it is probably better to use a List as the outer collection</p></div>
+</li>
+<li>
+<div class="bugcode">DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN</div>
+<div class="bugdetail"><p>This class appears to implement the old style type safe enum pattern that was used in place of real enums. Since this class is compiled with java 1.5 or better, it would be simpler and more easy to understand if it was just switched over to an enum.</p></div>
+</li>
+<li>
+<div class="bugcode">DWI_DELETING_WHILE_ITERATING</div>
+<div class="bugdetail"><p>This method removes items from a collection using the remove method of the collection, while at the same time iterating across the collection. Doing this will invalidate the iterator, and further use of it, will cause ConcurrentModificationExceptions to be thrown. To avoid this, the remove method of the iterator should be used. </p></div>
+</li>
+<li>
+<div class="bugcode">DWI_MODIFYING_WHILE_ITERATING</div>
+<div class="bugdetail"><p>This method modifies the contents of a collection using the collection api methods, while at the same time iterating across the collection. Doing this will invalidate the iterator, and further use of it, will cause ConcurrentModificationExceptions to be thrown. </p></div>
+</li>
+<li>
+<div class="bugcode">EXS_EXCEPTION_SOFTENING_NO_CHECKED</div>
+<div class="bugdetail"><p>This method's exception signature is constrained by an interface or super class to not throw any checked exceptions. Therefore a caught checked exception was converted to an unchecked exception and thrown. However it appears that the class in question is owned by the same author as the constraining interface or superclass. Consider changes the signature of this method to include the checked exception.</p></div>
+</li>
+<li>
+<div class="bugcode">EXS_EXCEPTION_SOFTENING_HAS_CHECKED</div>
+<div class="bugdetail"><p>This method's exception signature is constrained by an interface of super class to not throw a checked exception that was caught. Therefore this exception was converted to an unchecked exception and thrown. It would probably be better to throw the closest checked exception allowed, and to annotate the new exception with the original exception using the initial cause field.</p></div>
+</li>
+<li>
+<div class="bugcode">EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS</div>
+<div class="bugdetail"><p>This method is not constrained by an interface or superclass, but converts a caught checked exception to unchecked exception and thrown. It would be more appropriate just throw the checked exception, adding the exception to the throws clause of the method.</div>
+</li>
+<li>
+<div class="bugcode">FCBL_FIELD_COULD_BE_LOCAL</div>
+<div class="bugdetail"><p>This class defines fields that are used in a locals only fashion, specifically private fields or protected fields in final classes that are accessed first in each method with a store vs. a load. This field could be replaced by one or more local variables.</p></div>
+</li>
+<li>
+<div class="bugcode">FP_FINAL_PARAMETERS</div>
+<div class="bugdetail"><p>This method correctly does not write to a parameter. To help document this, and to perhaps help the jvm optimize the invocation of this method, you should consider defining these parameters as final.</p></div>
+</li>
+<li>
+<div class="bugcode">FPL_FLOATING_POINT_LOOPS</div>
+<div class="bugdetail"><p>This method uses floating point variables to index a loop. Since floating point math is inprecise, rounding errors will accumulate over time each time the loop is executed. It is usually better to use integer indexing, and calculate the new value of the floating point number at the top of the loop body.</p></div>
+</li>
+<li>
+<div class="bugcode">FPL_FLOATING_POINT_LOOPS</div>
+<div class="bugdetail"><p>This method uses floating point variables to index a loop. Since floating point math is inprecise, rounding errors will accumulate over time each time the loop is executed. It is usually better to use integer indexing, and calculate the new value of the floating point number at the top of the loop body.</p></div>
+</li>
+<li>
+<div class="bugcode">IICU_INCORRECT_INTERNAL_CLASS_USE</div>
+<div class="bugdetail"><p>This class makes use of internal api classes. As these classes are not documented, nor externally released as part of the api, they are subject to change or removal. You should not be using these classes.</p> Packages that shouldn't be used are: <ul> <li>com.sun.xxx</li> <li>org.apache.xerces.xxx</li> <li>org.apache.xalan.xxx</li> </ul></div>
+</li>
+<li>
+<div class="bugcode">IKNC_INCONSISTENT_HTTP_PARAM_CASING</div>
+<div class="bugdetail"><p>This method fetches an HttpServletRequest parameter with a parameter name that was used in other locations but with a different casing. As HttpServletRequest parameters are case sensitive, this will be very confusing.</div>
+</li>
+<li>
+<div class="bugcode">IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING</div>
+<div class="bugdetail"><p>This method sets or gets an HttpSession attribute with a parmeter name that was used in other locations but with a different casing. As HttpSession attribute are case sensitive, this will be very confusing.</div>
+</li>
+<li>
+<div class="bugcode">IPU_IMPROPER_PROPERTIES_USE</div>
+<div class="bugdetail"><p>This method places non-String objects into a Properties object. As the Properties object is intented to be a String to String map, putting non String objects is wrong, and takes advantage of a design flaw in the Properties class by deriving from Hashtable instead of using aggregation. If you want a collection that holds other types of objects, use a Hashtable, or better still newer collections like HashMap or TreeMap.</div>
+</li>
+<li>
+<div class="bugcode">IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY</div>
+<div class="bugdetail"><p>This method uses the inherited method from Hashtable put(String key, Object value) in a Properties object. Since the Properties object was intended to be only a String to String map, use of the derived put method is discouraged. Use the Properties.setProperty method instead.</div>
+</li>
+<li>
+<div class="bugcode">ISB_EMPTY_STRING_APPENDING</div>
+<div class="bugdetail"><p> This method concatenates an empty string with a literal value, in order to convert the literal value into a string. It is more efficient to use String.valueOf() to do the same thing as you do not incur the cost of creating a StringBuffer/Builder and calling methods on it to accomplish this.</p></div>
+</li>
+<li>
+<div class="bugcode">ISB_INEFFICIENT_STRING_BUFFERING</div>
+<div class="bugdetail"><p> This method uses StringBuffer or StringBuilder append to concatenate strings. However, it passes the result of doing a simple String concatenation to one of these append calls, thus removing any performance gains of using the StringBuffer or StringBuilder class.</p></div>
+</li>
+<li>
+<div class="bugcode">ITC_INHERITANCE_TYPE_CHECKING</div>
+<div class="bugdetail"><p>This method uses the instanceof operator in a series of if/else statements to differentiate blocks of code based on type. If these types are related by inheritance, it is cleaner to just define a method in the base class, and use overridden methods in these classes.</p></div>
+</li>
+<li>
+<div class="bugcode">ITU_INAPPROPRIATE_TOSTRING_USE</div>
+<div class="bugdetail"><p>This method calls algorithmic operations on a String that was returned from a toString() method. As these methods are for debugging/logging purposes, it shouldn't be the basis of core logic in your code.</div>
+</li>
+<li>
+<div class="bugcode">JAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL</div>
+<div class="bugdetail"><p>This method asserts that a primitive value that was autoboxed into a boxed primitive was not null. This will never happen, as primitives are never null, and thus the autoboxed value isn't either.</p></div>
+</li>
+<li>
+<div class="bugcode">JAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT</div>
+<div class="bugdetail"><p>This method asserts that a value is equal to true or false. It is simpler to just use assertTrue, or assertFalse, instead.</p></div>
+</li>
+<li>
+<div class="bugcode">JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE</div>
+<div class="bugdetail"><p>This method calls assert with two doubles or Doubles. Due to the inprecision of doubles, you should be using the assert method that takes a range parameter that gives a range of error.</p></div>
+</li>
+<li>
+<div class="bugcode">JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT</div>
+<div class="bugdetail"><p>This method calls assert passing a constant value as the second of the two values. The assert method assumes that the expected value is the first parameter, and so it appears that the order of values has been swapped here.</p></div>
+</li>
+<li>
+<div class="bugcode">JVR_JDBC_VENDOR_RELIANCE</div>
+<div class="bugdetail"><p>This method uses jdbc vendor specific classes and method to perform database work. This makes the code specific to this vendor, and unable to run on other databases.</p></div>
+</li>
+<li>
+<div class="bugcode">LEST_LOST_EXCEPTION_STACK_TRACE</div>
+<div class="bugdetail"><p>This method catches an exception, and throws a different exception, without incorporating the original exception. Doing so hides the original source of the exception making debugging and fixing these problems difficult. It is better to use the constructor of this new exception that takes an original exception so that this detail can be passed along to the user.</p></div>
+</li>
+<li>
+<div class="bugcode">LGO_LINGERING_GRAPHICS_OBJECT</div>
+<div class="bugdetail"><p>This method allocates a java.awt.Graphics object but doesn't dispose of it when done. While the garbage collecter will clean this up, given that a large number of Graphics objects can be created in a short period of time, it is recommended that you explicitly dispose() of them. </p></div>
+</li>
+<li>
+<div class="bugcode">LII_LIST_INDEXED_ITERATING</div>
+<div class="bugdetail"><p>This method uses an integer based for loop to iterator over a java.util.List, by calling List.get(i) each time thru the loop. The integer is not used for other reasons. It is better to use an Iterator instead, as depending on List implementation, iterators can perform better, and they also allow for exchanging of other collection types without issue.</p></div>
+</li>
+<li>
+<div class="bugcode">LO_SUSPECT_LOG_PARAMETER</div>
+<div class="bugdetail"><p>This constructor declares a parameter that is a Logger. As loggers are meant to be created statically per class, it doesn't make sense that you would pass a Logger from one class to another. Declare the Logger static in each class instead.</p></div>
+</li>
+<li>
+<div class="bugcode">LO_SUSPECT_LOG_CLASS</div>
+<div class="bugdetail"><p>This method creates a Logger by passing in a specification for a class that is unrelated to the class in which the logger is going to be used. This is likely caused by copy/paste code.</div>
+</li>
+<li>
+<div class="bugcode">LO_STUTTERED_MESSAGE</div>
+<div class="bugdetail">This method uses a logger method that takes an exception, and passes the result of the getMessage() method on the exception that occurred as the log message. Since you are already passing in the exception, that message is already present in the logs, and by passing it in as the message, you are just stuttering information. It would be more helpful to provide a hand written message that describes the error in this method, possibly including the values of key variables.</div>
+</li>
+<li>
+<div class="bugcode">LSC_LITERAL_STRING_COMPARISON</div>
+<div class="bugdetail"><p>This method calls the equals or compareTo methods on a String variable passing in a String literal. A NullPointerException may occur if the string variable is null. If instead the method was called on the string literal, and the variable was passed as an argument, this exception could never happen.</p></div>
+</li>
+<li>
+<div class="bugcode">LSYC_LOCAL_SYNCHRONIZED_COLLECTION</div>
+<div class="bugdetail"><p>This method creates a synchronized collection and store the reference to it in a local variable. As local variables are by definition threadsafe, it seems questionable that this collection needs to be synchronized.</p> <p> <table> <tr><th>If you are using</th><th>consider using</th></tr> <tr><td>java.util.Vector</td><td>java.util.ArrayList</td></tr> <tr><td>java.util.Hashtable</td><td>java.util.HashMap</td></tr> <tr><td>java.lang.StringBuffer</td><td>java.lang.StringBuilder</td></tr> </table> </p></div>
+</li>
+<li>
+<div class="bugcode">MAC_MANUAL_ARRAY_COPY</div>
+<div class="bugdetail"><p>This method copies data from one array to another manually using a loop. It is much better performing to use System.arraycopy as this method is native.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_THREAD_YIELD</div>
+<div class="bugdetail"><p>Manual thread scheduling with <code>Thread.sleep()</code> or <code>Thread.yield()</code> has no guaranteed semantics and is often used to mask race conditions.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_BIGDECIMAL_EQUALS</div>
+<div class="bugdetail"><p><code>equals()</code> being called to compare two <code>java.math.BigDecimal</code> numbers. This is normally a mistake, as two <code>BigDecimal</code> objects are only equal if they are equal in both value and scale, so that <i>2.0</i> is not equal to <i>2.00</i>. To compare <code>BigDecimal</code> objects for mathematical equality, use <code>compareTo()</code> instead.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_SIGNAL_NOT_SIGNALALL</div>
+<div class="bugdetail"><p><code>Condition.signalAll()</code> is prefered over <code>Condition.signal()</code>. Calling <code>signal()</code> only wakes up one thread, meaning that the thread woken up might not be the one waiting for the condition that the caller just satisfied.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_SECURERANDOM</div>
+<div class="bugdetail"><p>The <code>SecureRandom()</code> constructors and <code>SecureRandom.getSeed()</code> method are deprecated. Call <code>SecureRandom.getInstance()</code> and <code>SecureRandom.getInstance().generateSeed()</code> instead.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_INETADDRESS_GETLOCALHOST</div>
+<div class="bugdetail"><p>Do not call <code>InetAddress.getLocalHost()</code> on multihomed servers. On a multihomed server, <code>InetAddress.getLocalHost()</code> simply returns the IP address associated with the server's internal hostname. This could be any of the network interfaces, which could expose the machine to security risks. Server applications that need to listen on sockets should add configurable properties to define which network interfaces the server should bind.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_SETDEFAULTLOCALE</div>
+<div class="bugdetail"><p>Do not use the <code>Locale.setDefault()</code> method to change the default locale. It changes the JVM's default locale for all threads and makes your applications unsafe to threads. It does not affect the host locale. Since changing the JVM's default locale may affect many different areas of functionality, this method should only be used if the caller is prepared to reinitialize locale-sensitive code running within the same Java Virtual Machine, such as the user interface.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_RUNTIME_EXIT_OR_HALT</div>
+<div class="bugdetail"><p>Calling <code>Runtime.exit()</code> or <code>Runtime.halt()</code> shuts down the entire Java virtual machine. This should only been done when it is appropriate. Such calls make it hard or impossible for your code to be invoked by other code. Consider throwing a RuntimeException instead.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_RANDOM_SEED</div>
+<div class="bugdetail"><p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: <code>System.currentTimeMillis()</code>. Initialize seed with <code>Random(SecureRandom.getInstance().generateSeed())</code> or use <code>SecureRandom</code> instead.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_PROMISCUOUS_SERVERSOCKET</div>
+<div class="bugdetail"><p>Do not use the <code>ServerSocket</code> constructor or <code>ServerSocketFactory.createServerSocket()</code> factory methods that accepts connections on any network interface. By default, an application that listens on a socket will listen for connection attempts on any network interface, which can be a security risk. Only the long form the <code>ServerSocket</code> constructor or <code>ServerSocketFactory.createServerSocket()</code> factory methods take a specific local address to define which network interface the socket should bind.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_STRING_BYTES_ENCODING</div>
+<div class="bugdetail"><p>The behavior of the <code>String(byte[] bytes)</code> and <code>String.getBytes()</code> is undefined if the string cannot be encoded in the platform's default charset. Instead, use the <code>String(byte[] bytes, String encoding)</code> or <code>String.getBytes(String encoding)></code> constructor which accepts the string's encoding as an argument. Be sure to specify the encoding used for the user's locale.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_THREAD_FAIRNESS</div>
+<div class="bugdetail"><p>Calling <code>Lock.tryLock()</code> or <code>ReentrantLock.tryLock()</code> without a timeout does not honor the lock's fairness setting. If you want to honor the fairness setting for this lock, then use <code>tryLock(0, TimeUnit.SECONDS)</code> which is almost equivalent (it also detects interruption).</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_WAIT_WITHOUT_TIMEOUT</div>
+<div class="bugdetail"><p>Calling <code>{2}</code> without timeout could block forever. Consider using a timeout to detect deadlocks or performance problems. Thread.join() Object.wait() Condition.await() Lock.lock() Lock.lockInterruptibly()</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_LOCK_ISLOCKED</div>
+<div class="bugdetail"><p>Calling <code>ReentrantLock.isLocked()</code> or <code>ReentrantLock.isHeldByCurrentThread()</code> might indicate race conditions or incorrect locking. These methods are designed for use in debug code or monitoring of the system state, not for synchronization control.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_RUNFINALIZATION</div>
+<div class="bugdetail"><p>Manually triggering finalization can result in serious performance problems and may be masking resource cleanup bugs.</p></div>
+</li>
+<li>
+<div class="bugcode">MDM_THREAD_PRIORITIES</div>
+<div class="bugdetail"><p>Getting or setting thread priorities is not portable and could cause or mask race conditions.</p></div>
+</li>
+<li>
+<div class="bugcode">MOM_MISLEADING_OVERLOAD_MODEL</div>
+<div class="bugdetail"><p>This class 'overloads' the same method with both an instance and static version. As the use of these two models is different, it will be confusing to the users of these methods.</p></div>
+</li>
+<li>
+<div class="bugcode">MRC_METHOD_RETURNS_CONSTANT</div>
+<div class="bugdetail"><p>This private or static method only returns one constant value. As this method is private or static, it's behavior can't be overridden, and thus the return of a constant value seems dubious. Either the method should be changed to return no value, or perhaps another return value was expected to be returned in another code path in this method.</p></div>
+</li>
+<li>
+<div class="bugcode">NAB_NEEDLESS_BOXING_VALUEOF</div>
+<div class="bugdetail"><p>This method passes a String to a wrapped primitive object's parse method, which in turn calls the valueOf() method to convert to a boxed primitive. When it is desired to convert from a String to a boxed primitive object, it is simpler to use the BoxedPrimitive.valueOf(myString) method. </p></div>
+</li>
+<li>
+<div class="bugcode">NAB_NEEDLESS_BOXING_PARSE</div>
+<div class="bugdetail"><p>This method passes a String to a wrapped primitive object's valueOf method, which in turn calls the boxedValue() method to convert to a primitive. When it is desired to convert from a String to a primitive value, it is simpler to use the BoxedPrimitive.parseBoxedPrimitive(myString) method. </p></div>
+</li>
+<li>
+<div class="bugcode">NAB_NEEDLESS_BOX_TO_CAST</div>
+<div class="bugdetail"><p>This method constructs a Boxed Primitive from a primitive only to call the primitiveValue() method to cast the value to another primitive typee. It is simpler to just use casting</p> <pre> primitive i = new BoxedPrimitive(1.0).primitiveValue(); or primitive i = BoxedPrimitive.valueOf(1.0).primitiveValue(); should just use primitive i = (primitive)1.0; </pre></div>
+</li>
+<li>
+<div class="bugcode">NAB_NEEDLESS_BOX_TO_UNBOX</div>
+<div class="bugdetail"><p>This method constructs a Boxed Primitive from a primitive only to call the primitiveValue() method to convert it back to a primitive. Just use the primitive value instead.</p> <pre> primitive i = new BoxedPrimitive(1).primitiveValue(); or primitive i = BoxedPrimitive.valueOf(1).primitiveValue(); should just use primitive i = 1; </pre></div>
+</li>
+<li>
+<div class="bugcode">NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION</div>
+<div class="bugdetail"><p>This method assigns a Boxed boolean constant to a primitive boolean variable, or assigns a primitive boolean constant to a Boxed boolean variable. Use the correct constant for the variable desired. Use</p> <pre> boolean b = true; boolean b = false; or Boolean b = Boolean.TRUE; Boolean b = Boolean.FALSE; </pre></div>
+</li>
+<li>
+<div class="bugcode">NAB_NEEDLESS_BOXING_STRING_CTOR</div>
+<div class="bugdetail"><p>This method passes a primitive value retrieved from a BoxedPrimitive.parseBoxedPrimitive("1") call to the same class's constructor. It is simpler to just pass the string to the BoxedPrimitives constructor. </p></div>
+</li>
+<li>
+<div class="bugcode">NAB_NEEDLESS_AUTOBOXING_CTOR</div>
+<div class="bugdetail"><p>This method passes a wrapped primitive object to the same class's constructor. Since wrapper classes are immutable, you can just use the original object, rather than constructing a new one. This code works because of an abuse of autoboxing. </p></div>
+</li>
+<li>
+<div class="bugcode">NAB_NEEDLESS_AUTOBOXING_VALUEOF</div>
+<div class="bugdetail"><p>This method passes a wrapped primitive object to the same class's .valueOf method. Since wrapper classes are immutable, you can just use the original object, rather than calling valueOf to create a new one. This code works because of an abuse of autoboxing. </p></div>
+</li>
+<li>
+<div class="bugcode">NCMU_NON_COLLECTION_METHOD_USE</div>
+<div class="bugdetail"><p>This method makes calls to collection classes where the method is not defined by the Collections interface, and an equivalent method exists in the interface. By using the new methods, you can define this object by the Collections interface and allow better decoupling.</p></div>
+</li>
+<li>
+<div class="bugcode">NCS_NEEDLESS_CUSTOM_SERIALIZATION</div>
+<div class="bugdetail"><p>This method implements the Serializable interface by performing the same operations that would be done if this method did not exist. Since this is the case, this method is not needed.</p></div>
+</li>
+<li>
+<div class="bugcode">NFF_NON_FUNCTIONAL_FIELD</div>
+<div class="bugdetail"><p>This serializable class defines a field as both transient and final. As transient fields are not serialized across the stream, it is required that some piece of code reinitialize that field when it is deserialized. But since constructors aren't called when deserialization, the field is not initialized. And since the field is final, no other method can initialize it as well.</p></div>
+</li>
+<li>
+<div class="bugcode">NIR_NEEDLESS_INSTANCE_RETRIEVAL</div>
+<div class="bugdetail"><p>This method calls a method to load a reference to an object, and then only uses it to load a static member of that instance's class. It is simpler and better performant to just load the static field from the class itself.</p></div>
+</li>
+<li>
+<div class="bugcode">NMCS_NEEDLESS_MEMBER_COLLECTION_SYNCHRONIZATION</div>
+<div class="bugdetail"><p>This class defines a private collection member as synchronized. It appears however that this collection isn't only modified in a static initializer, or constructor. As these two areas are guaranteed to be thread safe, defining this collection as synchronized is unnecessary and a potential performance bottleneck.</p></div>
+</li>
+<li>
+<div class="bugcode">NOS_NON_OWNED_SYNCHRONIZATION</div>
+<div class="bugdetail"><p>This method uses a synchronize block where the object that is being synchronized on, is not owned by this current instance. This means that other instances may use this same object for synchronization for its own purposes causing synchronization confusion. It is always cleaner and safer to only synchronize on private fields of this class. Note that 'this' is not owned by the current instance, but is owned by whomever assigns it to a field of its class. Synchronizing on 'this' is also not a good idea.</p></div>
+</li>
+<li>
+<div class="bugcode">NRTL_NON_RECYCLEABLE_TAG_LIB</div>
+<div class="bugdetail"><p>This Tag library class implements an attribute who's associated backing store field is modified at another point in the tag library. In order for a taglibrary to be recycleable, only the container is allowed to change this attribute, through the use of the setXXX method of the taglib. By modifying the value programmatically, the container will not initialize the attribute correctly on reuse.</p></div>
+</li>
+<li>
+<div class="bugcode">NSE_NON_SYMMETRIC_EQUALS</div>
+<div class="bugdetail"><p>This class implements an equals method that compares this object against another type of object. This is almost always a bad thing to do, but if it is to be done, you must make sure that the basic symmetry rule of equivalence is maintained, that being if a equals b, then b equals a. It does not appear that the class that is being compared to this class knows about this class, and doesn't compare itself to this.</p></div>
+</li>
+<li>
+<div class="bugcode">OC_OVERZEALOUS_CASTING</div>
+<div class="bugdetail"><p>This method casts the right hand side of an expression to a class that is more specific than the variable on the left hand side of the assignment. The cast only has to be as specific as what the variable that is on the left. Using a more specific type on the right hand side just increases cohesion.</div>
+</li>
+<li>
+<div class="bugcode">OCP_OVERLY_CONCRETE_PARAMETER</div>
+<div class="bugdetail"><p> This method uses concrete classes for parameters when only methods defined in an implemented interface or super class are used. Consider increasing the abstraction of the interface to make low impact changes easier to accomplish in the future.</p></div>
+</li>
+<li>
+<div class="bugcode">OCP_OVERLY_CONCRETE_PARAMETER</div>
+<div class="bugdetail"><p> This method uses concrete classes for parameters when only methods defined in an implemented interface or super class are used. Consider increasing the abstraction of the interface to make low impact changes easier to accomplish in the future.</p></div>
+</li>
+<li>
+<div class="bugcode">ODN_ORPHANED_DOM_NODE</div>
+<div class="bugdetail"><p>This method creates a DOM node but does not attach it to a DOM document. </p></div>
+</li>
+<li>
+<div class="bugcode">PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP</div>
+<div class="bugdetail"><p>This method allocates an object using the default constructor in a loop, and then only uses it in a quasi-static way. It is never assigned to anything that lives outside the loop, and could potentially be allocated once outside the loop. Often this can be achieved by calling a clear() like method in the loop, to reset the state of the object in the loop.</div>
+</li>
+<li>
+<div class="bugcode">PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS</div>
+<div class="bugdetail"><p>This constructor makes a call to a non-final method. Since this method can be overriden, a subclasses implementation will be executing against an object that has not been initialized at the subclass level. You should mark all methods called from the constructor as final to avoid this problem.</p></div>
+</li>
+<li>
+<div class="bugcode">PDP_POORLY_DEFINED_PARAMETER</div>
+<div class="bugdetail"><p>This method defines parameters at a more abstract level than is actually needed to function correctly, as the code casts these parameters to more concrete types. Since this method is not derivable, you should just define the parameters with the type that is needed.</div>
+</li>
+<li>
+<div class="bugcode">PIS_POSSIBLE_INCOMPLETE_SERIALIZATION</div>
+<div class="bugdetail"><p>This method implements Serializable but is derived from a class that does not. The super class has fields that are not serialized because this class does not take the responsibility of writing these fields out either using Serializable's writeObject method, or Externalizable's writeExternal method. Therefore when this class is read from a stream, the superclass fields will only be initialized to the values specified in it's default constructor. If possible, change the superclass to implement Serializable, or implement Serializable or Externalizable methods in the child class.</p></div>
+</li>
+<li>
+<div class="bugcode">PL_PARALLEL_LISTS</div>
+<div class="bugdetail"><p>This class appears to maintain two or more lists or arrays who's contains is related one-for-one through the index of the list or array. Consider creating a separate class to hold all the related pieces of information, and adding instances of this class to just one list or array, or if just two values, use a Map to associate one value with the other.</p></div>
+</li>
+<li>
+<div class="bugcode">PMB_POSSIBLE_MEMORY_BLOAT</div>
+<div class="bugdetail"><p>This class defines static fields that are collections or StringBuffers that do not appear to have any way to clear or reduce their size. This is a potential cause of memory bloat.</p></div>
+</li>
+<li>
+<div class="bugcode">PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS</div>
+<div class="bugdetail"><p>This method makes two consecutive calls to the same method using the same constant parameters, on the same instance without any intervening changes to the objects. If this method does not make changes to the object, which it appears it doesn't, then making two calls is just a waste. These method calls could be combined by assigning the result into a temporary, and using the temporary the second time.</div>
+</li>
+<li>
+<div class="bugcode">PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION</div>
+<div class="bugdetail"><p>This method serializes an instance of a non-static inner class. Since this class has a reference to the containing class, this outer class will be serialized as well. This is often not intentional, and will make the amount of data that is serialized much more than is needed. If the outer classes is not desired to be serialized, either make the inner class, static, or pull it out into a separate "first class" class.</div>
+</li>
+<li>
+<div class="bugcode">ROOM_REFLECTION_ON_OBJECT_METHODS</div>
+<div class="bugdetail"><p>This method uses reflection to call a method that is defined in java.lang.Object. As these methods are always available, it is not necessary to call these methods with reflection.</div>
+</li>
+<li>
+<div class="bugcode">S508C_NON_ACCESSIBLE_JCOMPONENT</div>
+<div class="bugdetail"><p>This class extends the JComponent gui control but does not implement the Accessibility interface. This makes this control unable to be processed by screen readers, etc, for people with reading/vision difficulties</p></div>
+</li>
+<li>
+<div class="bugcode">S508C_NULL_LAYOUT</div>
+<div class="bugdetail"><p>This class passes null to setLayout, which specifies that components are to be laid out using absolute coordinates. This makes making changes for font sizes, etc, difficult as items will not reposition </p></div>
+</li>
+<li>
+<div class="bugcode">S508C_NO_SETLABELFOR</div>
+<div class="bugdetail"><p>This class uses JLabels that do not specify what fields are being labeled. This hampers screen readers from given appropriate feed back to users. Use the JLabel.setLabelFor method to accomplish this. </p></div>
+</li>
+<li>
+<div class="bugcode">S508C_SET_COMP_COLOR</div>
+<div class="bugdetail"><p>This method sets a Components explicitly foreground or background color which may cause difficulty with people with vision problems from using this application. Colors should be allowed to be set from the operating system.</p></div>
+</li>
+<li>
+<div class="bugcode">S508C_APPENDED_STRING</div>
+<div class="bugdetail"><p>This method creates a component and passes a string that was build up from a number of strings through appending multiple strings together. As foreign languages may order phrases differently, this will make translations difficult.</p></div>
+</li>
+<li>
+<div class="bugcode">S508C_NON_TRANSLATABLE_STRING</div>
+<div class="bugdetail"><p>This method creates a component and passes a string literal to the title or label of the component. As this string will be shown to users, it should be internationalizable through the use of a resource bundle.</p></div>
+</li>
+<li>
+<div class="bugcode">S508C_NO_SETSIZE</div>
+<div class="bugdetail"><p>This class creates a window, and sizes the window using setSize. It is better to handle font size changes to use the pack method. </p></div>
+</li>
+<li>
+<div class="bugcode">SACM_STATIC_ARRAY_CREATED_IN_METHOD</div>
+<div class="bugdetail"><p>This method creates an array initialized by constants. Each time this method is called this array will be recreated. It would be more performant to define the array as a static field of the class instead.</p></div>
+</li>
+<li>
+<div class="bugcode">SCA_SUSPICIOUS_CLONE_ALGORITHM</div>
+<div class="bugdetail"><p>The clone method stores a value to a member field of the source object. Normally, all changes are made to the cloned object, and given that cloning is almost always considered a read-only operation, this seems incorrect.</p></div>
+</li>
+<li>
+<div class="bugcode">SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTATOR</div>
+<div class="bugdetail"><p>This class declares that it implements an interface, but does so by relying on methods supplied by superclasses, even though those superclasses know nothing about the interface in question. If you wish to have the child not implement all the methods of the interface, it would probably be better to declare the superclass as implementing the interface, and if that class does not provide all the methods, then declare that superclass abstract.</p></div>
+</li>
+<li>
+<div class="bugcode">SCI_SYNCHRONIZED_COLLECTION_ITERATORS</div>
+<div class="bugdetail"><p> This method uses a synchronized collection, built from Collections.synchronizedXXXX, but accesses it through an iterator. Since an iterator is by definition, multithreaded unsafe, this is a conflict in concept. When using iterators, you should do the synchronization manually.</p></div>
+</li>
+<li>
+<div class="bugcode">SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTATOR</div>
+<div class="bugdetail"><p>This class declares that it implements an interface, but does so by relying on methods supplied by superclasses, even though those superclasses know nothing about the interface in question. If you wish to have the child not implement all the methods of the interface, it would probably be better to declare the superclass as implementing the interface, and if that class does not provide all the methods, then declare that superclass abstract.</p></div>
+</li>
+<li>
+<div class="bugcode">SCR_SLOPPY_CLASS_REFLECTION</div>
+<div class="bugdetail"><p>This method accesses the class object of a class that is already statically bound in this context, with Class.forName. Using Class.forName makes reflection more fragile in regards to code transformations such as obfuscation, and is unneeded here, since the class in question is already 'linked' to this class.</p></div>
+</li>
+<li>
+<div class="bugcode">SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT</div>
+<div class="bugdetail"><p>This method fetches a complex object from an HttpSession object, modifies this object, but does not call setAttribute, to inform the application server that this attribute has been changed. This will cause this attribute not to be updated in other servers in a clustered environment, as only changes marked by a call to setAttribute are replicated.</p></div>
+</li>
+<li>
+<div class="bugcode">SEC_SIDE_EFFECT_CONSTRUCTOR</div>
+<div class="bugdetail"><p>This method creates an object but does not assign this object to any variable or field. This implies that the class operates through side effects in the constructor, which is a bad pattern to use, as it adds unnecessary coupling. Consider pulling the side effect out of the constructor, into a separate method, or into the calling method.</div>
+</li>
+<li>
+<div class="bugcode">SG_SLUGGISH_GUI</div>
+<div class="bugdetail"><p>This method implements an awt or swing listener and performs time consuming operations. Doing these operations in the gui thread will cause the interface to appear sluggish and non-responsive to the user. Consider using a separate thread to do the time consuming work so that the user has a better experience.</p></div>
+</li>
+<li>
+<div class="bugcode">SGSU_SUSPICIOUS_GETTER_SETTER_USE</div>
+<div class="bugdetail"><p>This method retrieves the property of a java bean, only to use it in the setter for the same property of the same bean. This is usually a copy/paste typo.</div>
+</li>
+<li>
+<div class="bugcode">SGSU_SUSPICIOUS_GETTER_SETTER_USE</div>
+<div class="bugdetail"><p>This method retrieves the property of a java bean, only to use it in the setter for the same property of the same bean. This is usually a copy/paste typo.</div>
+</li>
+<li>
+<div class="bugcode">SIL_SQL_IN_LOOP</div>
+<div class="bugdetail"><p>This method executes sql queries inside of a loop. This pattern is often inefficient as the number of queries may mushroom in fencepost cases. It is probably more performant to loop over the input and collect the key data needed for the query for all items, and issue one query using an in clause, or similar construct, and then loop over this result set, and fetch all the data at once.</p></div>
+</li>
+<li>
+<div class="bugcode">SJVU_SUSPICIOUS_JDK_VERSION_USE</div>
+<div class="bugdetail"><p>This method calls a method that does not exist, on a class that does not exist in the jdk that this class has been compiled for. This can happen if you compile the class specifying the -source and -target options, and use a version that is before the version of the compiler's JDK.</p></div>
+</li>
+<li>
+<div class="bugcode">SMA_STUTTERED_METHOD_ARGUMENTS</div>
+<div class="bugdetail"><p>This method calls a method passing the same value for two or more of the parameters. Often this is a cut/paste bug, but if not, it is confusing why you would pass the same value for two different parameters. Perhaps an alternative method that just takes one parameter should be overridden in this case.</p></div>
+</li>
+<li>
+<div class="bugcode">SMII_STATIC_METHOD_INSTANCE_INVOCATION</div>
+<div class="bugdetail"><p>This method makes a static method call on an instance reference. For reading comprehension of the code is better to call the method on the class, rather than an instance. Perhaps this method's static nature has changed since this code was written, and should be revisited. </p></div>
+</li>
+<li>
+<div class="bugcode">SNG_SUSPICIOUS_NULL_FIELD_GUARD</div>
+<div class="bugdetail"><p>This method tests a field to make sure it's not null before executing a conditional block of code. However in the conditional block is reassigns the field. It is likely that the guard should have been a check to see if the field is null, not that the field was not null.</p></div>
+</li>
+<li>
+<div class="bugcode">SNG_SUSPICIOUS_NULL_LOCAL_GUARD</div>
+<div class="bugdetail"><p>This method tests a local variable to make sure it's not null before executing a conditional block of code. However in the conditional block is reassigns the local variable. It is likely that the guard should have been a check to see if the local variable is null, not that the local variable was not null.</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_SERIALVER_SHOULD_BE_PRIVATE</div>
+<div class="bugdetail">This class defines a static field 'serialVersionUID' to define the serialization version for this class. This field is marked as non private. As the serialVersionUID only controls the current class, and doesn't effect any derived classes, defining it as non private is confusing. It is suggested you change this variable to be private.</div>
+</li>
+<li>
+<div class="bugcode">SPP_NO_CHAR_SB_CTOR</div>
+<div class="bugdetail"><p>This method constructs a StringBuffer or a StringBuilder using the constructor that takes an integer, but appears to pass a character instead. It is probable that the author assumed that character would be appended to the StringBuffer/Builder, but instead the integer value of the character is used as an initial size for the buffer. </p></div>
+</li>
+<li>
+<div class="bugcode">SPP_STUTTERED_ASSIGNMENT</div>
+<div class="bugdetail"><p>This method assigns a value twice in a row in a stuttered way such as <code>a = a = 5;</code> This is most probably a cut and paste error where the duplicate assignment can be removed.</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_EQUALS_ON_ENUM</div>
+<div class="bugdetail"><p>This method calls the equals(Object) method on an enum instance. Since enums values are singletons, you can use == to safely compare two enum values. In fact, the implementation for Enum.equals does just that.</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_USE_GETPROPERTY</div>
+<div class="bugdetail"><table> <tr><td>This method uses</td></tr> <tr><td>String prop = System.getProperties().getProperty("foo");</td></tr <tr><td>instead of simply using</td></tr> <tr><td>String prop = System.getProperty("foo");</td></tr> </table></div>
+</li>
+<li>
+<div class="bugcode">SPP_INTERN_ON_CONSTANT</div>
+<div class="bugdetail"><p>This method calls intern on a constant string. As constant strings are already interned, this call is superfluous</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_USE_CONTAINSKEY</div>
+<div class="bugdetail"><p>This method calls mySet.keySet().contains("foo") when mySet.containsKey("foo") is simpler</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_USE_ISEMPTY</div>
+<div class="bugdetail"><p>This method calls the size() method on a collection and compares the result to zero to see if the collection is empty. For better code clarity, it is better to just use col.isEmpty() or !col.isEmpty()</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_USE_ISNAN</div>
+<div class="bugdetail"><p>This method compares a douhle or float to the constant Double.NaN or Float.NaN. You should use Double.isNaN(d) or Float.isNaN(f) if a primitive; or d.isNaN() or f.isNaN() if a boxed double, instead.</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_USELESS_CASING</div>
+<div class="bugdetail">This method compares two strings with compareToIgnoreCase or equalsIgnoreCase, after having called toUpperCase or toLowerCase on the string in question. As you are comparing with out concern to case, the toUpperCase or toLowerCase calls are pointless and can be removed.</div>
+</li>
+<li>
+<div class="bugcode">SPP_USE_STRINGBUILDER_LENGTH</div>
+<div class="bugdetail"><p>This method calls the toString method on a StringBuffer or StringBuilder only to call length() on the resulting string. It is faster, and less memory intensive to just call the length method directly on the StringBuffer or StringBuilder itself.</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_USE_CHARAT</div>
+<div class="bugdetail"><p>This method calls the toCharArray method on a String the fetch an array of characters, only to retrieve one of those characters by index. It is more performant to just use the charAt method. </p></div>
+</li>
+<li>
+<div class="bugcode">SPP_NEGATIVE_BITSET_ITEM</div>
+<div class="bugdetail"><p>This method passes a constant negative value as a bit position to a java.util.BitSet. The BitSet class doesn't support negative values, and thus this method call will not work as expected.</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_EMPTY_CASING</div>
+<div class="bugdetail">This method passes the empty string "" to equalsIgnoreCase or compareToIgnoreCase, as the empty string is not case sensitive using equals is simpler. It would be even simpler to do a length() == 0 test.</div>
+</li>
+<li>
+<div class="bugcode">SPP_NON_ARRAY_PARM</div>
+<div class="bugdetail">This method expects an array to be passed as one of its parameters, but unfortunately defines the parameter as Object. This invocation of this method does not pass an array and will throw an exception when run.</div>
+</li>
+<li>
+<div class="bugcode">SPP_INVALID_CALENDAR_COMPARE</div>
+<div class="bugdetail"><p>This method passes a non calendar object to the java.util.Calendar.after or java.util.Calendar.before methods. Even though these methods take an Object as a parameter type, only Calendar type objects are supported, otherwise false is returned</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_USE_BIGDECIMAL_STRING_CTOR</div>
+<div class="bugdetail"><p>This method calls the BigDecimal constructor that takes a double, and passes a literal double constant value. Since the use of BigDecimal is to get better precision than double, by passing a double, you only get the precision of double number space. To take advantage of the BigDecimal space, pass the number as a string. </p></div>
+</li>
+<li>
+<div class="bugcode">SPP_STRINGBUFFER_WITH_EMPTY_STRING</div>
+<div class="bugdetail"><p>This method calls the StringBuffer of StringBuilder constructor passing in a constant empty string (""). This is the same as calling the default constructor, but makes the code work harder. Consider passing in a default size instead.</div>
+</li>
+<li>
+<div class="bugcode">SPP_SUSPECT_STRING_TEST</div>
+<div class="bugdetail"><p>This method tests a string, and groups null values with real strings, leaving empty strings as another case. This might be perfectly valid, but normally, null strings and empty strings are logically handled the same way, and so this test may be flawed.</p> <p>Pattern found is one of the following <pre>if ((s == null) || (s.length() > 0))</pre> -- did you mean ((s == null) || (s.length() == 0))? <pre>if ((s == null) || (s.length() != 0))</pre> -- did you mean ((s == null) || (s.length() == 0))? <pre>if ((s != null) && (s.length() == 0))</pre> -- did you mean ((s != null) && (s.length() > 0))? or perhaps ((s == null) || (s.length() == 0))? </p></div>
+</li>
+<li>
+<div class="bugcode">SPP_TEMPORARY_TRIM</div>
+<div class="bugdetail">This method calls trim() on a String without assigning the new string to another variable. It then calls length() or equals on this trimmed string. If trimming the string was important for determining it's length of it's equality, it should be trimmed when you actually go to use it. It would make more sense to first trim the String, store the trimmed value in a variable, and then continue to test and use that trimmed string.</div>
+</li>
+<li>
+<div class="bugcode">SPP_USELESS_TRINARY</div>
+<div class="bugdetail"><p>This method tests the value of a boolean and using a trinary operator to return either true or false. The trinary operator is completely unecessary, just use the original boolean value.</p></div>
+</li>
+<li>
+<div class="bugcode">SPP_INVALID_BOOLEAN_NULL_CHECK</div>
+<div class="bugdetail"><p>This method attempts to check for null by just refering to the variable name as would be done in C++. This ordinarily would be considered a compile error, except the variable in question is a Boolean, which does an auto unbox to boolean.</p> <pre> if (b && b.booleanValue()) should be if ((b != null) && b.booleanValue()) </pre></div>
+</li>
+<li>
+<div class="bugcode">SPP_USE_MATH_CONSTANT</div>
+<div class="bugdetail"><p>This method defines its own version of <em>PI</em> or <em>e</em> and the value is not as precise as the one defined in the constants Math.PI or Math.E. Use these constants instead.</p></div>
+</li>
+<li>
+<div class="bugcode">STB_STACKED_TRY_BLOCKS</div>
+<div class="bugdetail"><P>This method declares two try catch blocks one after another, where each catch block catches the same type of exception. They also throw uniformly the same type of exception. These two catch blocks can be combined into one to simplify the method.</p></div>
+</li>
+<li>
+<div class="bugcode">STS_SPURIOUS_THREAD_STATES</div>
+<div class="bugdetail"><p>This method invokes the methods wait, notify or notifyAll on a Thread instance. Doing so will confuse the internal thread state behaviour causing spurious thread wakeups/sleeps because the internal mechanism also uses the thread instance for it's notifications. </p></div>
+</li>
+<li>
+<div class="bugcode">SUA_SUSPICIOUS_UNINITIALIZED_ARRAY</div>
+<div class="bugdetail"><p>This method returns an array that was allocated but apparently not initialized. It is possible that the caller of this method will do the work of initializing this array, but that is not a common pattern, and it is assumed that this array has just been forgotten to be initialized.</p></div>
+</li>
+<li>
+<div class="bugcode">SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT</div>
+<div class="bugdetail"><p>This method calls wait() on a on mutex defined in the java.util.concurrent package. These classes, define await, instead of wait, and it is most likely that await was intended.</p></div>
+</li>
+<li>
+<div class="bugcode">TBP_TRISTATE_BOOLEAN_PATTERN</div>
+<div class="bugdetail"><p>This method declares that it returns a Boolean value. However the code can return a null value. As this is now three values that can be returned; Boolean.TRUE, Boolean.FALSE, null; you have changed what a Boolean means. It would be clearer to just create a new Enum that has the three values you want, and define that the method returns that type.</p></div>
+</li>
+<li>
+<div class="bugcode">TR_TAIL_RECURSION</div>
+<div class="bugdetail"><p>This method recursively calls itself as the last statement of the method (Tail Recursion). This method can be easily refactored into a simple loop, which will make it more performant, and reduce the stack size requirements.</p></div>
+</li>
+<li>
+<div class="bugcode">UAA_USE_ADD_ALL</div>
+<div class="bugdetail"><p>This method uses a simple for loop to copy the contents of a set, list, map key/value, array or other collection to another collection. It is simpler and more straight forward to just call the addAll method of the destination collection passing in the source collection. In the case that the source is an array, you can use Array.asList method to massage the array into a collection</p></div>
+</li>
+<li>
+<div class="bugcode">UCC_UNRELATED_COLLECTION_CONTENTS</div>
+<div class="bugdetail"><p>This method adds unrelated objects to a collection or array, requiring careful and brittle data access to that collection. Create a separate class with properties needed, and add an instance of this class to the collection or array, if possible.</p></div>
+</li>
+<li>
+<div class="bugcode">UCPM_USE_CHARACTER_PARAMETERIZED_METHOD</div>
+<div class="bugdetail"><p>This method passes a constant literal String of length 1 as a parameter to a method, that exposes a similar method that takes a character. It is simpler and more expedient to handle one character, rather than pass a string.</p></div>
+</li>
+<li>
+<div class="bugcode">UEC_USE_ENUM_COLLECTIONS</div>
+<div class="bugdetail"><p>This class uses an ordinary set or map collection and uses an enum class as the key type. It is better performant to use the jdk 1.5 EnumSet or EnumMap classes.</p></div>
+</li>
+<li>
+<div class="bugcode">UNNC_UNNECESSARY_NEW_NULL_CHECK</div>
+<div class="bugdetail"><p>This method allocations an object with new, and then checks that the object is null or non null. As the new operator is guaranteed to either succeed or throw an exception, this null check is unnecessary and can be removed.</div>
+</li>
+<li>
+<div class="bugcode">URV_INHERITED_METHOD_WITH_RELATED_TYPES</div>
+<div class="bugdetail"><p>This inherited method is defined to return a java.lang.Object. However, the return types returned from this method can be defined by a more specific class or interface. If possible consider changing the return type in the inheritance hierarchy of this method, otherwise the caller of this method will be brittle in handling of the return type.</p></div>
+</li>
+<li>
+<div class="bugcode">URV_UNRELATED_RETURN_VALUES</div>
+<div class="bugdetail"><p>This method returns two or more unrelated types of objects (Related only through java.lang.Object). This will be very confusing to the code that must call it.</p></div>
+</li>
+<li>
+<div class="bugcode">URV_CHANGE_RETURN_TYPE</div>
+<div class="bugdetail"><p>This method is defined to return a java.lang.Object. However, the return types returned from this method can be defined by a more specific class or interface. Since this method is not derived from a superclass or interface, it would be more clear to change the return type of this method.</p></div>
+</li>
+<li>
+<div class="bugcode">USBR_UNNECESSARY_STORE_BEFORE_RETURN</div>
+<div class="bugdetail"><p>This method stores the return result in a local variable, and then immediately returns the local variable. It would be simpler just to return the value that is assigned to the local variable, directly. </p></div>
+</li>
+<li>
+<div class="bugcode">USS_USE_STRING_SPLIT</div>
+<div class="bugdetail"><p>This method uses a StringTokenizer to split up a String and then walks thru the separated elements and builds an array from these enumerated values. It is simpler and easier to use the String.split method.</p> <p>PLEASE NOTE: String.split will return an array of 1 element when passed the empty string, as opposed to using StringTokenizer which returns false on the first hasMoreElements/hasMoreTokens call. So you may need to use</p> <pre> if (s.length() > 0) return s.split(";"); return new String[0]; </pre></div>
+</li>
+<li>
+<div class="bugcode">UTA_USE_TO_ARRAY</div>
+<div class="bugdetail"><p>This method manually loops over a collection, pulling each element out and storing it in an array to build an array from the collection. It is easier, and clearer to use the built in collections method toArray. Given a collection 'mycollection' of type T, use mycollection.toArray(new T[mycollection.size()]);</div>
+</li>
+<li>
+<div class="bugcode">UVA_USE_VAR_ARGS</div>
+<div class="bugdetail"><p>This method defines a parameter list that ends with an array. As this class is compiled with Java 1.5 or better, this parameter could be defined as a vararg parameter instead, which can be more convienent for client developers to use. This is not a bug, per se, just an improvement.</div>
+</li>
+<li>
+<div class="bugcode">WEM_WEAK_EXCEPTION_MESSAGING</div>
+<div class="bugdetail"><p>This method creates and throws an exception using a static string as the exceptions message. Without any specific context of this particular exception invocation, such as the value of parameters, key member variables, or local variables, it may be difficult to infer how this exception occurred. Consider adding context to the exception message.</p></div>
+</li>
+<li>
+<div class="bugcode">WOC_WRITE_ONLY_COLLECTION_FIELD</div>
+<div class="bugdetail"><p>This class creates and initializes a collection as a field but then never access this collection to gain information, or fetch items from the collection. It is likely that this collection is left over from a past effort, and can be removed.</div>
+</li>
+<li>
+<div class="bugcode">WOC_WRITE_ONLY_COLLECTION_LOCAL</div>
+<div class="bugdetail"><p>This method creates and initializes a collection but then never access this collection to gain information, or fetch items from the collection. It is likely that this collection is left over from a past effort, and can be removed.</div>
+</li>
+</ul>
+</div>
+</body>
+</html>

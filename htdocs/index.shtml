@@ -72,25 +72,32 @@ function toggleBlock(divId, imgId)
 		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-4.6.1.jar/download">here</a>.</p>
 		</div>
 
+        <hr/>
+        <img id="svn_image" src="flip1.gif" onClick="toggleBlock('svn', 'svn_image');" align="top"/>
+        Detectors added in svn<br/>
+        <div id="svn" style="display:none;">
+            <ul>
+                <li><b>[CVAA] ContraVariant Array Assignment</b><br/>
+                Looks for contravariant array assignments. Since arrays are mutable data structures, their use 
+                must be restricted to covariant or invariant usage.<br/>
+                <span style="color: #0000FF;">--contributed by Bhaskar Maddala - THANKS!</span></li>
+                <li><b>[STB] Stacked Try Blocks</b><br/>
+                Looks for two or more try catch blocks that are consecutive and catch the
+                same kind of exception, and throw the same exception always. These blocks can
+                be coalesced into one.
+                </li>
+            </ul>             
+        </div>
 		<hr/>
-		<img id="svn_image" src="flip2.gif" onClick="toggleBlock('svn', 'svn_image');" align="top"/>
-		Detectors added in svn<br/>
-		<div id="svn" style="display:block;">
+		<img id="v4_8_0_image" src="flip2.gif" onClick="toggleBlock('v4_8_0', 'v4_8_0_image');" align="top"/>
+		Detectors added in v4.8.0<br/>
+		<div id="v4_8_0" style="display:block;">
 			<ul>
-				<li><b>[CVAA] ContraVariant Array Assignment</b><br/>
-				Looks for contravariant array assignments. Since arrays are mutable data structures, their use 
-				must be restricted to covariant or invariant usage.<br/>
-				<span style="color: #0000FF;">--contributed by Bhaskar Maddala - THANKS!</span></li>
 				<li><b>[LGO] Lingering Graphics Object</b><br/>
 				Looks for creation of java.awt.Graphics object that do not have the
 				.dispose() method called on them when finished. These objects will be cleaned up by 
 				the Garbage collector, bug given the likelyhood that large numbers of these objects can
 				be created in a short period of time, it is better to dispose them as soon as possible.</li>
-				<li><b>[STB] Stacked Try Blocks</b><br/>
-				Looks for two or more try catch blocks that are consecutive and catch the
-				same kind of exception, and throw the same exception always. These blocks can
-				be coalesced into one.
-				</li>
 				<li><b>[CCNE] Compare Class Name Equals</b><br/>
 				Looks for code that compares to classes by name, rather than by just comparing the
 				classes with ==<br/>

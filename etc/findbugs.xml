@@ -221,9 +221,9 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousGetterSetterUse" speed="fast" reports="SGSU_SUSPICIOUS_GETTER_SETTER_USE" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LingeringGraphicsObjects" speed="fast" reports="LGO_LINGERING_GRAPHICS_OBJECT" />
-
+<!-- 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
-	
+ -->
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsEqualsBuilderToEquals" speed="fast" reports="CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS" />
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsHashcodeBuilderToHashcode" speed="fast" reports="CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE" />
