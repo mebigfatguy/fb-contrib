@@ -1,12 +1,11 @@
-<Project projectName="">
+<Project projectName="sample">
   <Jar>.</Jar>
-  <AuxClasspathEntry>./lib/jsp-api.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>./lib/junit.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>./lib/log4j.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>./lib/servlet-api.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>./lib/jsp-api-2.2.1.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>./lib/junit-4.10.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>./lib/log4j-1.2.16.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>./lib/servlet-api-3.0.1.jar</AuxClasspathEntry>
   <SrcDir>.</SrcDir>
   <SuppressionFilter>
     <LastVersion value="-1" relOp="NEQ"/>
   </SuppressionFilter>
-  <Cloud id="1"></Cloud>
 </Project>

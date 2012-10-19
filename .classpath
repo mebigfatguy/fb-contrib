@@ -16,12 +16,13 @@
 	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/asm-util-3.3.jar"/>
 	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/bcel.jar"/>
 	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/findbugs.jar"/>
+	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/findbugs.jar" sourcepath="/findbugs"/>
 	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/jaxen-1.1.1.jar"/>
 	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/jFormatString.jar"/>
 	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/jsr305.jar"/>
 	<classpathentry kind="lib" path="samples/lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="samples/lib/backport-concurrent-3.1.jar"/>
-	<classpathentry kind="lib" path="samples/lib/commons-collection-${commons-collection.version}.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
+	<classpathentry kind="lib" path="samples/lib/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
