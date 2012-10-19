@@ -1275,7 +1275,7 @@
         <Details>
             <![CDATA[
             <p> Looks for classes that implement clone() that do not specialize the return value, and do
-            not swallow CloneNotFoundException. Not doing so makes the clone method not as simple to use, 
+            not swallow CloneNotSupportedException. Not doing so makes the clone method not as simple to use, 
             and should be harmless to do so.
             </p>
             ]]>
