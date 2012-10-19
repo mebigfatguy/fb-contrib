@@ -1271,6 +1271,17 @@
         </Details>
     </Detector>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.CloneUsability">
+        <Details>
+            <![CDATA[
+            <p> Looks for classes that implement clone() that do not specialize the return value, and do
+            not swallow CloneNotFoundException. Not doing so makes the clone method not as simple to use, 
+            and should be harmless to do so.
+            </p>
+            ]]>
+        </Details>
+    </Detector>
+    
 	<!-- BugPattern -->
 
 	<BugPattern type="ISB_INEFFICIENT_STRING_BUFFERING">
@@ -3447,14 +3458,42 @@
         <LongDescription>Method {1} backport concurrency utils</LongDescription>
         <Details>
             <![CDATA[
-            <p> Detects use of Backport Utils concurrent classes. Updated/Efficient version of these
+            <p> This class usees Backport Utils concurrent classes. Updated/Efficient version of these
             classes are available in versions of the JDK 5.0 and higher, and these
             classes should only be used if you are targeting JDK 1.4 and lower.
             </p>
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="CU_CLONE_USABILITY_OBJECT_RETURN">
+        <ShortDescription>Clone method declares it returns an Object</ShortDescription>
+        <LongDescription>Clone method {1} declares it returns an Object</LongDescription>
+        <Details>
+            <![CDATA[
+            <p> This class implements the Cloneable interface but defines its clone method to return an 
+            Object. Since most likely users of this method will need to cast it to the real type, this will
+            be more painful than necessary. Just declare the return value to be the type of this class.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
         
+    <BugPattern type="CU_CLONE_USABILITY_THROWS">
+        <ShortDescription>Clone method declares it throws CloneNotSupportedException</ShortDescription>
+        <LongDescription>Clone method {1} declares it throws CloneNotSupportedException</LongDescription>
+        <Details>
+            <![CDATA[
+            <p> This class implements the Cloneable interface but defines its clone method to still return
+            a CloneNotSupportedException. Since you are implementing clone() it would make sense that the method
+            in question will _not_ throw that exception, so annotating your method with it just makes client use
+            of your more painful as they have to handle an exception that will never happen. Just remove the 
+            throws clause from your method.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>   
+         
 	<!-- BugCode -->
 
 	<BugCode abbrev="ISB">Inefficient String Buffering</BugCode>
@@ -3562,4 +3601,5 @@
 	<BugCode abbrev="CSBTS">Commons ToStringBuilder To String</BugCode>
     <BugCode abbrev="CCNE">Compare class name equals</BugCode>
     <BugCode abbrev="BRPI">Backport concurrent reuse of public identifiers</BugCode>
+    <BugCode abbrev="CU">Clone Usability</BugCode>
 </MessageCollection>

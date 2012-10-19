@@ -234,6 +234,8 @@
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.BackportReusePublicIdentifiers" speed="fast" reports="BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS" />
 
+    <Detector class="com.mebigfatguy.fbcontrib.detect.CloneUsability" speed="fast" reports="CU_CLONE_USABILITY_OBJECT_RETURN,CU_CLONE_USABILITY_THROWS" />
+
 	<!-- BugPattern -->
 
 	<BugPattern abbrev="ISB" type="ISB_INEFFICIENT_STRING_BUFFERING" category="PERFORMANCE" />
@@ -406,4 +408,6 @@
 	<BugPattern abbrev="CSBTS" type="CSBTS_COMMONS_STRING_BUILDER_TOSTRING" category="CORRECTNESS" />
 	<BugPattern abbrev="CCNE" type="CCNE_COMPARE_CLASS_EQUALS_NAME" category="CORRECTNESS" />
 	<BugPattern abbrev="BRPI" type="BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS" category ="PERFORMANCE" />
+    <BugPattern abbrev="CU" type="CU_CLONE_USABILITY_OBJECT_RETURN" category="STYLE" />
+    <BugPattern abbrev="CU" type="CU_CLONE_USABILITY_THROWS" category="STYLE" />
 </FindbugsPlugin>

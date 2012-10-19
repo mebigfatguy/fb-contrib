@@ -118,6 +118,11 @@ function toggleBlock(divId, imgId)
             			classes should only be used if you are targeting JDK 1.4 and lower.<br/>
 				<span style="color: #0000FF;">--contributed by Bhaskar Maddala - THANKS!</span>
 				</li>
+				<li><b>[CU] Clone Usability</b><br/>
+				Looks for classes that implement clone() that do not specialize the return value, and do
+                not swallow CloneNotFoundException. Not doing so makes the clone method not as simple
+                to use, and should be harmless to do.
+                </li>
 			</ul>
 		</div>
 		<hr/>
