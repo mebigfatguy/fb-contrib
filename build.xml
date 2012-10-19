@@ -44,7 +44,7 @@
 	<property name="log4j-url" value="http://repo1.maven.org/maven2/log4j/log4j/${log4j.version}/log4j-${log4j.version}.jar" />
 	<property name="servlet-api-url" value="http://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/${servlet-api.version}/javax.servlet-api-${servlet-api.version}.jar" />
     <property name="backport-concurrent-url" value="http://repo1.maven.org/maven2/backport-util-concurrent/backport-util-concurrent/${backport-concurrent.version}/backport-util-concurrent-${backport-concurrent.version}.jar" />
-    <property name="commons-collection-url" value="http://repo1.maven.org/maven2/commons-collections/commons-collections/${commons-collections.version}/commons-collections-${commons-collections.version}.jar" />
+    <property name="commons-collections-url" value="http://repo1.maven.org/maven2/commons-collections/commons-collections/${commons-collections.version}/commons-collections-${commons-collections.version}.jar" />
 
 	<target name="check">
 		<available file="${dest}/${name}-${version}.jar" property="jar-exists" />
@@ -81,7 +81,7 @@
         <pull url="${log4j-url}" dest="${sampleslib.dir}" name="log4j" version="${log4j.version}" />
         <pull url="${servlet-api-url}" dest="${sampleslib.dir}" name="servlet-api" version="${servlet-api.version}" />
         <pull url="${backport-concurrent-url}" dest="${sampleslib.dir}" name="backport-concurrent" version="${backport-concurrent.version}" />
-        <pull url="${commons-collection-url}" dest="${sampleslib.dir}" name="commons-collection" version="${commons-collection.version}" />
+        <pull url="${commons-collections-url}" dest="${sampleslib.dir}" name="commons-collections" version="${commons-collections.version}" />
 	</target>
 
 	<target name="clean" description="removes all generated collateral">
