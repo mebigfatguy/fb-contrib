@@ -43,7 +43,7 @@
 	<property name="junit-url" value="http://repo1.maven.org/maven2/junit/junit/${junit.version}/junit-${junit.version}.jar" />
 	<property name="log4j-url" value="http://repo1.maven.org/maven2/log4j/log4j/${log4j.version}/log4j-${log4j.version}.jar" />
 	<property name="servlet-api-url" value="http://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/${servlet-api.version}/javax.servlet-api-${servlet-api.version}.jar" />
-    <property name="backport-concurrent-url" value="http://repo1.maven.org/maven2/backport-util-concurrent/backport-util-concurrent/${backport-concurrent.version}/backport-util-concurrent-${backport-concurrent.version}.jar" />
+    <property name="backport-concurrent-url" value="http://repo1.maven.org/maven2/backport-concurrent/backport-concurrent/${backport-concurrent.version}/backport-concurrent-${backport-concurrent.version}.jar" />
     <property name="commons-collections-url" value="http://repo1.maven.org/maven2/commons-collections/commons-collections/${commons-collections.version}/commons-collections-${commons-collections.version}.jar" />
 
 	<target name="check">
@@ -116,7 +116,7 @@
 			<pathelement location="${sampleslib.dir}/log4j-${log4j.version}.jar" />
 			<pathelement location="${sampleslib.dir}/commons-lang3-${commons-lang3.version}.jar" />
 			<pathelement location="${sampleslib.dir}/commons-lang3-${commons-lang3.version}.jar" />
-			<pathelement location="${sampleslib.dir}/backport-util-concurrent-${backport-concurrent.version}.jar" />
+			<pathelement location="${sampleslib.dir}/backport-concurrent-${backport-concurrent.version}.jar" />
 		</path>
 		<mkdir dir="${classes.dir}/com" />
 		<mkdir dir="${classes.dir}/com/mebigfatguy" />
