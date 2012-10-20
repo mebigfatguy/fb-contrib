@@ -53,12 +53,15 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class LostExceptionStackTrace extends BytecodeScanningDetector
 {
-	private static JavaClass errorClass;
+    private static JavaClass errorClass;
+    private static JavaClass throwableClass;
 	static {
 		try {
-			errorClass = Repository.lookupClass("java/lang/Error");
+            errorClass = Repository.lookupClass("java/lang/Error");
+            throwableClass = Repository.lookupClass("java/lang/Throwable");
 		} catch (ClassNotFoundException cnfe) {
-			errorClass = null;
+            errorClass = null;
+            throwableClass = null;
 		}
 	}
 
@@ -86,7 +89,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			if (errorClass != null && !isPre14Class(classContext.getJavaClass())) {
+			if (errorClass != null && throwableClass != null && !isPre14Class(classContext.getJavaClass())) {
 				stack = new OpcodeStack();
 				catchInfos = new HashSet<CatchInfo>();
 				exReg = new HashMap<Integer, Boolean>();
@@ -204,7 +207,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 							if ("<init>".equals(getNameConstantOperand())) {
 								String className = getClassConstantOperand();
 								JavaClass exClass = Repository.lookupClass(className);
-								if (exClass.instanceOf(errorClass)) {
+								if (exClass.instanceOf(errorClass) || (exClass.instanceOf(throwableClass))) {
 									String sig = getSigConstantOperand();
 									if (sig.indexOf("Exception") >= 0
 									||  sig.indexOf("Throwable") >= 0

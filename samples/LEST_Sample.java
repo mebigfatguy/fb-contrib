@@ -4,7 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @SuppressWarnings("all")
-public class LEST_Sample 
+public class LEST_Sample
 {
 	public Date testLest1(String input)
 	{
@@ -12,33 +12,33 @@ public class LEST_Sample
 		{
 			DateFormat df = new SimpleDateFormat("YYYY");
 			return df.parse(input);
-		} 
+		}
 		catch (ParseException pe)
 		{
 			throw new IllegalArgumentException(pe.getMessage());
 		}
 	}
-	
+
 	public Date testLest2(String input)
 	{
 		try
 		{
 			DateFormat df = new SimpleDateFormat("YYYY");
 			return df.parse(input);
-		} 
+		}
 		catch (ParseException pe)
 		{
 			throw new IllegalArgumentException(pe.getMessage(), pe);
 		}
 	}
-	
+
 	public Date testLestFP1(String input) throws ParseException
 	{
 		try
 		{
 			DateFormat df = new SimpleDateFormat("YYYY");
 			return df.parse(input);
-		} 
+		}
 		catch (ParseException pe)
 		{
 			throw pe;
@@ -51,7 +51,7 @@ public class LEST_Sample
 		{
 			DateFormat df = new SimpleDateFormat("YYYY");
 			return df.parse(input);
-		} 
+		}
 		catch (ParseException pe)
 		{
 			IllegalArgumentException iae = new IllegalArgumentException(pe.getMessage());
@@ -59,7 +59,7 @@ public class LEST_Sample
 			throw iae;
 		}
 	}
-	
+
 	public void testLestFP3(String s)
 	{
 		double d;
@@ -69,11 +69,11 @@ public class LEST_Sample
 		}
 		catch (NumberFormatException nfe)
 		{
-			
+
 		}
 		throw new RuntimeException("ok");
 	}
-	
+
 	public void testLestFP4(String s) throws Exception
 	{
 		double d;
@@ -87,7 +87,7 @@ public class LEST_Sample
 			throw e;
 		}
 	}
-	
+
 	public void testLestFP5(String s) throws Exception
 	{
 		double d;
@@ -101,7 +101,7 @@ public class LEST_Sample
 			throw e;
 		}
 	}
-	
+
 	public void testLestFP6(String s) throws Exception
 	{
 		double d;
@@ -114,11 +114,23 @@ public class LEST_Sample
 			throw new Exception("Yikes");
 		}
 	}
-	
+
+	public void testLestFP7(String s)
+	{
+	    try
+        {
+            double d = Double.parseDouble(s);
+        }
+	    catch (NumberFormatException e)
+	    {
+	        throw new RuntimeException(e);
+	    }
+	}
+
 	private Exception wrap(Exception e) {
 		return new Exception(e);
 	}
-	
+
 	private static Exception wrapStatic(Exception e) {
 		return new Exception(e);
 	}
