@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2012 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -51,42 +51,42 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * the original exception within it. Doing this loses the stack history, and where the original
  * problem occurred. This makes finding and fixing errors difficult.
  */
-public class LostExceptionStackTrace extends BytecodeScanningDetector 
+public class LostExceptionStackTrace extends BytecodeScanningDetector
 {
-	private static JavaClass throwableClass;
+	private static JavaClass errorClass;
 	static {
 		try {
-			throwableClass = Repository.lookupClass("java/lang/Throwable");
+			errorClass = Repository.lookupClass("java/lang/Error");
 		} catch (ClassNotFoundException cnfe) {
-			throwableClass = null;
+			errorClass = null;
 		}
 	}
-	
+
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private CodeException[] exceptions;
 	private Set<CatchInfo> catchInfos;
 	private Map<Integer, Boolean> exReg;
 	private boolean lastWasExitPoint = false;
-	
+
     /**
      * constructs a LEST detector given the reporter to report bugs on
 
      * @param bugReporter the sync of bug reports
-     */	
+     */
 	public LostExceptionStackTrace(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	/**
 	 * implements the visitor to make sure the jdk is 1.4 or better
-	 * 
+	 *
 	 * @param classContext the context object of the currently parsed class
 	 */
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			if (throwableClass != null && !isPre14Class(classContext.getJavaClass())) {
+			if (errorClass != null && !isPre14Class(classContext.getJavaClass())) {
 				stack = new OpcodeStack();
 				catchInfos = new HashSet<CatchInfo>();
 				exReg = new HashMap<Integer, Boolean>();
@@ -99,10 +99,10 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 			exReg = null;
 		}
 	}
-	
+
     /**
 	 * looks for methods that contain a catch block and an ATHROW opcode
-	 * 
+	 *
 	 * @param code the context object of the current code block
 	 * @param method the context object of the current method
 	 * @return if the class throws exceptions
@@ -112,7 +112,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
         {
             return false;
         }
-		
+
 		CodeException[] ce = code.getExceptionTable();
 		if (ce == null || ce.length == 0)
         {
@@ -125,7 +125,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 
 	/**
 	 * implements the visitor to filter out methods that don't throw exceptions
-	 * 
+	 *
 	 * @param obj the context object of the currently parsed code block
 	 */
 	@Override
@@ -139,10 +139,10 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 			super.visitCode(obj);
 		}
 	}
-	
+
 	/**
 	 * collects all the valid exception objects (ones where start and finish are before the target
-	 * 
+	 *
 	 * @param exs the exceptions from the class file
 	 * @return the filtered exceptions
 	 */
@@ -155,7 +155,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 		}
 		return filteredEx.toArray(new CodeException[filteredEx.size()]);
 	}
-	
+
 	/**
 	 * implements the visitor to find throwing alternative exceptions from a catch block, without
 	 * forwarding along the original exception
@@ -163,7 +163,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		boolean markAsValid = false;
-		
+
 		try {
 			stack.mergeJumps(this);
 			int pc = getPC();
@@ -185,7 +185,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
                     removePreviousHandlers(pc);
                 }
 			}
-			
+
 			Iterator<CatchInfo> it = catchInfos.iterator();
 			while (it.hasNext()) {
 				try {
@@ -204,10 +204,11 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 							if ("<init>".equals(getNameConstantOperand())) {
 								String className = getClassConstantOperand();
 								JavaClass exClass = Repository.lookupClass(className);
-								if (exClass.instanceOf(throwableClass)) {
+								if (exClass.instanceOf(errorClass)) {
 									String sig = getSigConstantOperand();
 									if (sig.indexOf("Exception") >= 0
-									||  sig.indexOf("Throwable") >= 0) {
+									||  sig.indexOf("Throwable") >= 0
+									||  sig.indexOf("Error") >= 0) {
 										markAsValid = true;
 										break;
 									}
@@ -219,7 +220,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
                             if ("initCause".equals(getNameConstantOperand())) {
     							String className = getClassConstantOperand();
     							JavaClass exClass = Repository.lookupClass(className);
-    							if (exClass.instanceOf(throwableClass)) {
+    							if (exClass.instanceOf(errorClass)) {
     								if (stack.getStackDepth() > 1) {
     									OpcodeStack.Item itm = stack.getStackItem(1);
     									int reg = itm.getRegisterNumber();
@@ -254,7 +255,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
     													.addSourceLine(this));
                                     }
 									it.remove();
-									break;		
+									break;
 								}
 							}
 						} else if (seen == ASTORE || seen >= ASTORE_0 && seen <= ASTORE_3) {
@@ -263,7 +264,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 						        catchInfos.clear();
 						        break;
 						    }
-						    
+
 							if (stack.getStackDepth() > 0) {
 								OpcodeStack.Item itm = stack.getStackItem(0);
 								int reg = RegisterUtils.getAStoreReg(this, seen);
@@ -282,13 +283,13 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 						    removeIndeterminateHandlers(pc);
 						    break;
 						}
-					} 
+					}
 				} catch (ClassNotFoundException cnfe) {
 					bugReporter.reportMissingClass(cnfe);
 					it.remove();
 				}
 			}
-			
+
 			lastWasExitPoint = seen >= IRETURN && seen <= RETURN || seen == GOTO || seen == GOTO_W || seen == ATHROW;
 		}
 		finally {
@@ -303,7 +304,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 			}
 		}
 	}
-	
+
 	/** returns whether the method called might be a method that builds an exception using
 	 * the original exception. It does so by looking to see if the method returns an exception,
 	 * and if one of the parameters is the original exception
@@ -317,7 +318,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 		if (returnSig.startsWith("L")) {
 			returnSig = returnSig.substring(1, returnSig.length() - 1);
 			JavaClass retCls = Repository.lookupClass(returnSig);
-			if (retCls.instanceOf(throwableClass)) {
+			if (retCls.instanceOf(errorClass)) {
 				int numParms = Type.getArgumentTypes(sig).length;
 				if (stack.getStackDepth() >= numParms) {
 					for (int p = 0; p < numParms; p++) {
@@ -332,15 +333,15 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 		}
 		return false;
 	}
-	
+
     /** returns whether the class in question was compiled with a jdk less than 1.4
-     * 
+     *
      * @param cls the class to check
      * @return whether the class is compiled with a jdk less than 1.4
      */
     private boolean isPre14Class(JavaClass cls)
     {
-        return cls != null && cls.getMajor() < Constants.MAJOR_1_4; 
+        return cls != null && cls.getMajor() < Constants.MAJOR_1_4;
     }
 
     private void removePreviousHandlers(int pc)
@@ -355,7 +356,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
             }
         }
     }
-    
+
     private void removeIndeterminateHandlers(int pc)
     {
         Iterator<CatchInfo> it = catchInfos.iterator();
@@ -367,16 +368,16 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
             }
         }
     }
-    
+
     /**
-     * looks to update the catchinfo block with the register used for the 
+     * looks to update the catchinfo block with the register used for the
      * exception variable. If their is a local variable table, but the local
      * variable can't be found return false, signifying an empty catch block.
-     * 
+     *
      * @param ci the catchinfo record for the catch starting at this pc
      * @param seen the opcode of the currently visited instruction
      * @param pc the current pc
-     * 
+     *
      * @return whether the catch block is empty
      */
     private boolean updateExceptionRegister(CatchInfo ci, int seen, int pc) {
@@ -402,11 +403,11 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
         }
         return true;
     }
-    
+
     /**
      * add a catch block info record for the catch block that is guessed to be
      * in the range of start to finish
-     * 
+     *
      * @param start the handler pc
      * @param finish the guessed end of the catch block
      */
@@ -414,34 +415,34 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 		CatchInfo ci = new CatchInfo(start, finish);
 		catchInfos.add(ci);
 	}
-	
+
 	private static class CatchInfo {
 		private final int catchStart;
 		private int catchFinish;
 		private int exReg;
-		
+
 		public CatchInfo(int start, int finish) {
 			catchStart = start;
 			catchFinish = finish;
 			exReg = -1;
 		}
-		
+
 		public void setReg(int reg) {
 			exReg = reg;
 		}
-		
+
 		public int getStart() {
 			return catchStart;
 		}
-		
+
 		public int getFinish() {
 			return catchFinish;
 		}
-		
+
 		public void setFinish(int finish) {
 			catchFinish = finish;
 		}
-		
+
 		public int getRegister() {
 			return exReg;
 		}
