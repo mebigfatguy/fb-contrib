@@ -127,6 +127,18 @@ public class LEST_Sample
 	    }
 	}
 
+	public void testLestFP8()
+	{
+	    try
+        {
+            Thread.sleep(10L);
+        }
+        catch (Exception ex)
+        {
+            throw new AssertionError(ex);
+        }
+    }
+
 	private Exception wrap(Exception e) {
 		return new Exception(e);
 	}

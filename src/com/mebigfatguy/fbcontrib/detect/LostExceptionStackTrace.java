@@ -55,10 +55,13 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 {
     private static JavaClass errorClass;
     private static JavaClass throwableClass;
+    private static JavaClass assertionClass;
+
 	static {
 		try {
             errorClass = Repository.lookupClass("java/lang/Error");
             throwableClass = Repository.lookupClass("java/lang/Throwable");
+            assertionClass = Repository.lookupClass("java/lang/AssertionError");
 		} catch (ClassNotFoundException cnfe) {
             errorClass = null;
             throwableClass = null;
@@ -215,6 +218,11 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 										markAsValid = true;
 										break;
 									}
+									if (exClass.instanceOf(assertionClass)) {
+	                                    //just ignore LEST for AssertionErrors
+	                                    markAsValid = true;
+	                                    break;
+	                                }
 								}
 							} else if (isPossibleExBuilder(catchInfo.getRegister())) {
 								markAsValid = true;
