@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -90,7 +91,10 @@ public class CloneUsability extends PreorderVisitor implements Detector {
                             .addClass(this)
                             .addMethod(this));
             }
-            if (obj.getExceptionTable().getLength() > 0) {
+
+            ExceptionTable et = obj.getExceptionTable();
+
+            if ((et != null) && (et.getLength() > 0)) {
                 bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_THROWS", NORMAL_PRIORITY)
                 .addClass(this)
                 .addMethod(this));
