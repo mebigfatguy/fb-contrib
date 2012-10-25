@@ -81,7 +81,7 @@ public class CloneUsability extends PreorderVisitor implements Detector {
      */
     @Override
     public void visitMethod(Method obj) {
-        if (obj.isPublic() && obj.getName().equals("clone") && (obj.getArgumentTypes().length == 0)) {
+        if (obj.isPublic() && !obj.isSynthetic() && obj.getName().equals("clone") && (obj.getArgumentTypes().length == 0)) {
 
             String returnClsName = obj.getReturnType().getSignature();
             returnClsName = returnClsName.substring(1, returnClsName.length() - 1).replaceAll("/", ".");
