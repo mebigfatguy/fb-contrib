@@ -30,9 +30,9 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents" speed="fast" reports="UCC_UNRELATED_COLLECTION_CONTENTS" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.DeclaredRuntimeException" speed="fast" reports="DRE_DECLARED_RUNTIME_EXCEPTION" />
-<!-- COMMENT OUT FOR RELEASE 
+<!-- COMMENT OUT FOR RELEASE -->
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="fast" reports="CE_CLASS_ENVY" disabled="true" />
- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE -->
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LiteralStringComparison" speed="fast" reports="LSC_LITERAL_STRING_COMPARISON" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.PartiallyConstructedObjectAccess" speed="fast" reports="PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS" />
@@ -73,9 +73,9 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.AbstractOverriddenMethod" speed="fast" reports="AOM_ABSTRACT_OVERRIDDEN_METHOD" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CustomBuiltXML" speed="fast" reports="CBX_CUSTOM_BUILT_XML" />
-<!-- COMMENT OUT FOR RELEASE
+<!-- COMMENT OUT FOR RELEASE -->
 	<Detector class="com.mebigfatguy.fbcontrib.detect.BloatedSynchronizedBlock" speed="fast" reports="BSB_BLOATED_SYNCHRONIZED_BLOCK" hidden="true" /> 
- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE -->
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ConstantListIndex" speed="fast" reports="CLI_CONSTANT_LIST_INDEX" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SloppyClassReflection" speed="fast" reports="SCR_SLOPPY_CLASS_REFLECTION" />
@@ -176,9 +176,9 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryNewNullCheck" speed="fast" reports="UNNC_UNNECESSARY_NEW_NULL_CHECK" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.DeprecatedTypesafeEnumPattern" speed="fast" reports="DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN" />
-<!-- COMMENT OUT FOR RELEASE 
+<!-- COMMENT OUT FOR RELEASE -->
 	<Detector class="com.mebigfatguy.fbcontrib.detect.StutteredMethodArguments" speed="fast" reports="SMA_STUTTERED_METHOD_ARGUMENTS" hidden="true" /> 
- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.TristateBooleanPattern" speed="fast" reports="TBP_TRISTATE_BOOLEAN_PATTERN" />
 
@@ -193,9 +193,9 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.PoorlyDefinedParameter" speed="fast" reports="PDP_POORLY_DEFINED_PARAMETER" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.NonSymmetricEquals" speed="fast" reports="NSE_NON_SYMMETRIC_EQUALS" />
-<!-- COMMENT OUT FOR RELEASE  
+<!-- COMMENT OUT FOR RELEASE --> 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ContraVariantArrayAssignment" speed="fast" hidden="true" reports="CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT,CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT" />
- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.NonFunctionalField" speed="fast" reports="NFF_NON_FUNCTIONAL_FIELD" />
 	
@@ -221,9 +221,9 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousGetterSetterUse" speed="fast" reports="SGSU_SUSPICIOUS_GETTER_SETTER_USE" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LingeringGraphicsObjects" speed="fast" reports="LGO_LINGERING_GRAPHICS_OBJECT" />
-<!-- COMMENT OUT FOR RELEASE 
+<!-- COMMENT OUT FOR RELEASE -->
 	<Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE -->
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsEqualsBuilderToEquals" speed="fast" reports="CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS" />
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsHashcodeBuilderToHashcode" speed="fast" reports="CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE" />
