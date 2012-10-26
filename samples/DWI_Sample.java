@@ -3,10 +3,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-public class DWI_Sample 
+public class DWI_Sample
 {
 	Set<String> avail;
-	
+
 	public void deleteOdds(Set<Integer> bagOInts)
 	{
 		Iterator<Integer> it = bagOInts.iterator();
@@ -17,7 +17,7 @@ public class DWI_Sample
 				bagOInts.remove(i);
 		}
 	}
-	
+
 	public void addIf(Set<String> s, Collection<String> c) {
 		for (String ss : s)
 		{
@@ -25,7 +25,7 @@ public class DWI_Sample
 				s.addAll(c);
 		}
 	}
-	
+
 	public void fpUnaliased()
 	{
         Iterator<String> it = avail.iterator();
@@ -36,7 +36,7 @@ public class DWI_Sample
         	avail.add(it.next() + "booya");
         }
 	}
-	
+
 	public void fpWithBreak(Set<String> ss)
 	{
 		for (String s : ss)
@@ -47,4 +47,15 @@ public class DWI_Sample
 			}
 		}
 	}
+
+	   public void fpClearWithBreak(Set<String> ss)
+	    {
+	        for (String s : ss)
+	        {
+	            if (s.equals("foo")) {
+	                ss.clear();
+	                break;
+	            }
+	        }
+	    }
 }
