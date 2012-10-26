@@ -70,7 +70,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 	/**
 	 * constructs a BAS detector given the reporter to report bugs on
-	 * 
+	 *
 	 * @param bugReporter
 	 *            the sync of bug reports
 	 */
@@ -81,7 +81,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	/**
 	 * implements the visitor to create and the clear the register to location
 	 * map
-	 * 
+	 *
 	 * @param classContext
 	 *            the context object of the currently parsed class
 	 */
@@ -105,7 +105,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 	/**
 	 * implements the visitor to reset the register to location map
-	 * 
+	 *
 	 * @param obj
 	 *            the context object of the currently parsed code block
 	 */
@@ -152,7 +152,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	/**
 	 * implements the visitor to look for variables assigned below the scope in
 	 * which they are used.
-	 * 
+	 *
 	 * @param seen
 	 *            the opcode of the currently parsed instruction
 	 */
@@ -372,7 +372,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	/**
 	 * returns either a register number of a field reference of the object that
 	 * a method is being called on, or null, if it can't be determined.
-	 * 
+	 *
 	 * @return either an Integer for a register, or a String for the field name,
 	 *         or null
 	 */
@@ -407,7 +407,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	/**
 	 * returns the scope block in which this register was assigned, by
 	 * traversing the scope block tree
-	 * 
+	 *
 	 * @param sb
 	 *            the scope block to start searching in
 	 * @param pc
@@ -433,12 +433,12 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	/**
 	 * returns an existing scope block that has the same target as the one
 	 * looked for
-	 * 
+	 *
 	 * @param sb
 	 *            the scope block to start with
 	 * @param target
 	 *            the target to look for
-	 * 
+	 *
 	 * @return the scope block found or null
 	 */
 	private ScopeBlock findScopeBlockWithTarget(ScopeBlock sb, int start,
@@ -479,7 +479,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * construts a new scope block
-		 * 
+		 *
 		 * @param start
 		 *            the beginning of the block
 		 * @param finish
@@ -499,7 +499,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * returns a string representation of the scope block
-		 * 
+		 *
 		 * @returns a string representation
 		 */
 		@Override
@@ -511,7 +511,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * returns the scope blocks parent
-		 * 
+		 *
 		 * @return the parent of this scope block
 		 */
 		public ScopeBlock getParent() {
@@ -520,7 +520,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * returns the start of the block
-		 * 
+		 *
 		 * @return the start of the block
 		 */
 		public int getStart() {
@@ -529,7 +529,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * returns the end of the block
-		 * 
+		 *
 		 * @return the end of the block
 		 */
 		public int getFinish() {
@@ -538,7 +538,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * sets the start pc of the block
-		 * 
+		 *
 		 * @param start
 		 *            the start pc
 		 */
@@ -548,7 +548,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * sets the finish pc of the block
-		 * 
+		 *
 		 * @param finish
 		 *            the finish pc
 		 */
@@ -569,7 +569,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * returns whether this scope block is a loop
-		 * 
+		 *
 		 * @returns whether this block is a loop
 		 */
 		public boolean isLoop() {
@@ -585,7 +585,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * returns whether this block was caused from a goto
-		 * 
+		 *
 		 * @returns whether this block was caused by a goto
 		 */
 		public boolean isGoto() {
@@ -594,7 +594,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * adds the register as a store in this scope block
-		 * 
+		 *
 		 * @param reg
 		 *            the register that was stored
 		 * @param pc
@@ -615,7 +615,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		/**
 		 * removes stores to registers that where retrieved from method calls on
 		 * assocObject
-		 * 
+		 *
 		 * @param assocObject
 		 *            the object that a method call was just performed on
 		 */
@@ -635,7 +635,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * adds the register as a load in this scope block
-		 * 
+		 *
 		 * @param reg
 		 *            the register that was loaded
 		 * @param pc
@@ -652,7 +652,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		/**
 		 * adds a scope block to this subtree by finding the correct place in
 		 * the hierarchy to store it
-		 * 
+		 *
 		 * @param newChild
 		 *            the scope block to add to the tree
 		 */
@@ -684,7 +684,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		/**
 		 * removes a child from this node
-		 * 
+		 *
 		 * @param child
 		 *            the child to remove
 		 */
@@ -760,10 +760,10 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		/**
 		 * returns whether this block either loads or stores into the register
 		 * in question
-		 * 
+		 *
 		 * @param reg
 		 *            the register to look for loads or stores
-		 * 
+		 *
 		 * @return whether the block uses the register
 		 */
 		public boolean usesReg(Integer reg) {
@@ -823,7 +823,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		return dangerousAssignmentMethodSources.contains(key);
 	}
 
-	class UserObject {
+	static class UserObject {
 		Comparable<?> caller;
 		boolean isRisky;
 	}
