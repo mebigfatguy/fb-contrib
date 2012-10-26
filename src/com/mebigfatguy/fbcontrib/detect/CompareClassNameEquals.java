@@ -2,17 +2,17 @@
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2012 Bhaskar Maddala
  * Copyright (C) 2005-2012 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -31,13 +31,13 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  * In a JVM, Two classes are the same class (and consequently the same type) if
  * they are loaded by the same class loader, and they have the same fully
  * qualified name [JVMSpec 1999].
- * 
+ *
  * Two classes with the same name but different package names are distinct, as
  * are two classes with the same fully qualified name loaded by different class
  * loaders.
- * 
+ *
  * Find usage involving comparison of class names, rather than the class itself.
- * 
+ *
  */
 public class CompareClassNameEquals extends OpcodeStackDetector {
     private boolean flag = false;
@@ -76,7 +76,7 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
                     && "java/lang/String".equals(getClassConstantOperand())) {
                 Item item = stack.getItemMethodInvokedOn(this);
                 Object userValue = item.getUserValue();
-                if (userValue != null && userValue == Boolean.TRUE) {
+                if (userValue != null && Boolean.TRUE.equals(userValue)) {
                     bugReporter
                             .reportBug(new BugInstance(this,
                                     "CCNE_COMPARE_CLASS_EQUALS_NAME",
