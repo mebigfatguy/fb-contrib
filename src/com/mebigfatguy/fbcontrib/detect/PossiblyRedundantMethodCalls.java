@@ -199,8 +199,6 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 			} else if (seen == PUTFIELD) {
 				fieldMethodCalls.remove(getNameConstantOperand());
 			} else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
-                String className = getClassConstantOperand();
-				String methodName = getNameConstantOperand();
 				String signature = getSigConstantOperand();
 				int parmCount = Type.getArgumentTypes(signature).length;
 				int neededStackSize = parmCount - ((seen == INVOKESTATIC) ? 1 : 0);
@@ -214,6 +212,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 						}
 					}
 
+	                String className = getClassConstantOperand();
 
 					MethodCall mc;
 					int reg = -1;
@@ -236,6 +235,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 						}
 					}
 
+	                String methodName = getNameConstantOperand();
 					if (mc != null) {
 						if (!signature.endsWith("V") && methodName.equals(mc.getName()) && signature.equals(mc.getSignature()) && !isRiskyName(className, methodName)) {
 							Object[] parms = mc.getParms();

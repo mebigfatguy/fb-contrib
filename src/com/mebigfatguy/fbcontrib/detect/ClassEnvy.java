@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2012 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -87,7 +87,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 
 	/**
 	 * overrides the visitor to collect package and class names
-	 * 
+	 *
 	 * @param classContext the context object that holds the JavaClass being parsed
 	 */
 	@Override
@@ -106,7 +106,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 
 	/**
 	 * overrides the visitor to check whether the method is static
-	 * 
+	 *
 	 * @param obj the method currently being parsed
 	 */
 	@Override
@@ -118,7 +118,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 	/**
 	 * overrides the visitor to look for the method that uses another class the most, and
 	 * if it exceeds the threshold reports it
-	 * 
+	 *
 	 * @param obj the code that is currently being parsed
 	 */
 	@Override
@@ -147,11 +147,11 @@ public class ClassEnvy extends BytecodeScanningDetector
 			if (bestEnvyCount < envyMin) {
 				return;
 			}
-			String bestEnvy = bestEnvyEntry.getKey();
 
 			double bestPercent = ((double)bestEnvyCount) / ((double) (bestEnvyCount + thisClsAccessCount));
 
 			if (bestPercent > envyPercent) {
+	            String bestEnvy = bestEnvyEntry.getKey();
 				if (implementsCommonInterface(bestEnvy)) {
 					return;
 				}
@@ -168,7 +168,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 	/**
 	 * overrides the visitor to look for method calls, and populate a class access count map
 	 * based on the owning class of methods called.
-	 * 
+	 *
 	 * @param seen the opcode currently being parsed
 	 */
 	@Override
@@ -204,9 +204,9 @@ public class ClassEnvy extends BytecodeScanningDetector
 
 	/**
 	 * return whether or not a class implements a common or marker interface
-	 * 
+	 *
 	 * @param name the class name to check
-	 * 
+	 *
 	 * @return if this class implements a common or marker interface
 	 */
 	private boolean implementsCommonInterface(String name) {
@@ -233,9 +233,9 @@ public class ClassEnvy extends BytecodeScanningDetector
 
 	/**
 	 * increment the count of class access of the class on the stack
-	 * 
+	 *
 	 * @param classAtStackIndex the position on the stack of the class in question
-	 * 
+	 *
 	 * @return true if the class is counted
 	 */
 	private boolean countClassAccess(final int classAtStackIndex) {
@@ -261,7 +261,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 	/**
 	 * increment the count of class access of the specified class if it is in a similar
 	 * package to the caller, and is not general purpose
-	 * 
+	 *
 	 * @param calledClass the class to check
 	 */
 	private void countClassAccess(final String calledClass) {
@@ -284,7 +284,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 
 	/**
 	 * add the current line number to a set of line numbers
-	 * 
+	 *
 	 * @param lineNumbers the current set of line numbers
 	 */
 	private void addLineNumber(Set<Integer> lineNumbers) {
@@ -303,9 +303,9 @@ public class ClassEnvy extends BytecodeScanningDetector
 
 	/**
 	 * checks to see if the specified class is a built in class, or implements a simple interface
-	 * 
+	 *
 	 * @param className the class in question
-	 * 
+	 *
 	 * @return whether or not the class is general purpose
 	 */
 	private boolean generalPurpose(final String className) {
