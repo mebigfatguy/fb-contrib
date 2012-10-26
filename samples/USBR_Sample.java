@@ -10,17 +10,17 @@ public class USBR_Sample
 		{
 			sum += Integer.parseInt(s);
 		}
-		
+
 		int ave = sum / tokens.length;
 		return ave;
 	}
-	
+
 	public int dontReport(int j)
 	{
 		int i;
 		try
 		{
-			i = 0; 
+			i = 0;
 			i = i / j;
 		}
 		catch (Exception e)
@@ -29,7 +29,7 @@ public class USBR_Sample
 		}
 		return i;
 	}
-	
+
 	public Exception fpReturnException(String num)
 	{
 		try
@@ -42,12 +42,18 @@ public class USBR_Sample
 			return e;
 		}
 	}
-	
+
 	public int fpPlusEquals()
 	{
 		int i = 0;
 		i += 4;
 		i+= dontReport(i);
 		return i;
+	}
+
+	public boolean fpOrEquals(boolean b)
+	{
+	    b |= fpOrEquals(b);
+	    return b;
 	}
 }
