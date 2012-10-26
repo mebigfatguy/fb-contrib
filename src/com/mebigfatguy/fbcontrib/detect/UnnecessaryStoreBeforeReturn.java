@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2012 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 {
 	enum State {SEEN_NOTHING, SEEN_STORE, SEEN_LOAD }
-	
+
 	private static final BitSet branchInstructions = new BitSet();
 	private static final BitSet binaryOps = new BitSet();
 	static {
@@ -64,7 +64,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 		branchInstructions.set(IF_ACMPNE);
 		branchInstructions.set(IFNULL);
 		branchInstructions.set(IFNONNULL);
-		
+
 		binaryOps.set(IADD);
 		binaryOps.set(LADD);
 		binaryOps.set(FADD);
@@ -80,20 +80,23 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 		binaryOps.set(IDIV);
 		binaryOps.set(LDIV);
 		binaryOps.set(FDIV);
-		binaryOps.set(DDIV);		
+		binaryOps.set(DDIV);
 		binaryOps.set(IREM);
 		binaryOps.set(LREM);
 		binaryOps.set(FREM);
 		binaryOps.set(DREM);
+		binaryOps.set(IOR);
+	    binaryOps.set(IAND);
+	    binaryOps.set(IXOR);
 	}
-	
+
 	private final BugReporter bugReporter;
 	private Set<Integer> branchTargets;
 	private Set<Integer> catchTargets;
 	private OpcodeStack stack;
 	private State state;
 	private int storeReg;
-	
+
 	/**
      * constructs a USBR detector given the reporter to report bugs on
      * @param bugReporter the sync of bug reports
@@ -101,10 +104,10 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 	public UnnecessaryStoreBeforeReturn(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	/**
 	 * implements the visitor to create and clear the branchTargets
-	 * 
+	 *
 	 * @param classContext the context object for the currently parsed class
 	 */
 	@Override
@@ -122,7 +125,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 	}
 	/**
 	 * implements the visitor to make sure method returns a value, and then clears the targets
-	 * 
+	 *
 	 * @param obj the context object of the currently parsed code block
 	 */
 	@Override
@@ -144,11 +147,11 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 			super.visitCode(obj);
 		}
 	}
-	
+
 	/**
 	 * implements the visitor to look for store of registers immediately before returns
 	 * of that register
-	 * 
+	 *
 	 * @param seen the opcode of the currently parsed instruction
 	 */
 	@Override
@@ -166,20 +169,20 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 									state = State.SEEN_STORE;
 								}
 							}
-							
+
 						}
 					}
 				break;
-				
+
 				case SEEN_STORE:
 					if (branchTargets.contains(Integer.valueOf(getPC()))) {
 						state = State.SEEN_NOTHING;
 						break;
 					}
-	
+
 					state = lookForLoad(seen) ? State.SEEN_LOAD : State.SEEN_NOTHING;
 				break;
-				
+
 				case SEEN_LOAD:
 					if ((seen >= IRETURN) && (seen <= ARETURN)) {
 						bugReporter.reportBug(new BugInstance(this, "USBR_UNNECESSARY_STORE_BEFORE_RETURN", NORMAL_PRIORITY)
@@ -190,13 +193,13 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 					state = State.SEEN_NOTHING;
 				break;
 			}
-			
+
 			if (branchInstructions.get(seen)) {
 				branchTargets.add(Integer.valueOf(getBranchTarget()));
 			}
-			
+
 			lhsReg = processBinOp(seen);
-			
+
 		} finally {
 			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
@@ -206,12 +209,12 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 				item.setUserValue(Integer.valueOf(lhsReg));
 			}
 		}
-		
+
 	}
-	
+
 	/**
 	 * checks if the current opcode is a store, if so saves the register
-	 * 
+	 *
 	 * @param seen the opcode of the currently parsed instruction
 	 * @return if a store was seen
 	 */
@@ -232,10 +235,10 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 			return false;
 		return true;
 	}
-	
+
 	/**
 	 * looks for a load of the register that was just stored
-	 * 
+	 *
 	 * @param seen the opcode of the currently parsed instruction
 	 * @return if the load was seen
 	 */
@@ -255,14 +258,14 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 			loadReg = seen - ALOAD_0;
 		else
 			return false;
-		
+
 		return (storeReg == loadReg);
 	}
-	
+
 	/**
-	 * looks for instructions that are binary operators, and if it is 
+	 * looks for instructions that are binary operators, and if it is
 	 * saves the left hand side register (if it exists) in the userValue.
-	 * 
+	 *
 	 * @param seen the opcode of the currently parsed instruction
 	 * @return the lhs register number if it exists or -1
 	 */
