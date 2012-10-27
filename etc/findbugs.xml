@@ -334,7 +334,7 @@
 	<BugPattern abbrev="SPP" type="SPP_EMPTY_CASING" category="STYLE" />
 	<BugPattern abbrev="SPP" type="SPP_TEMPORARY_TRIM" category="STYLE" />
 	<BugPattern abbrev="BAS" type="BAS_BLOATED_ASSIGNMENT_SCOPE" category="PERFORMANCE" />
-	<BugPattern abbrev="SCII" type="SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTATOR" category="STYLE" />
+	<BugPattern abbrev="SCII" type="SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR" category="STYLE" />
 	<BugPattern abbrev="DWI" type="DWI_DELETING_WHILE_ITERATING" category="CORRECTNESS" />
 	<BugPattern abbrev="DWI" type="DWI_MODIFYING_WHILE_ITERATING" category="CORRECTNESS" />
 	<BugPattern abbrev="USS" type="USS_USE_STRING_SPLIT" category="STYLE" />

@@ -2547,7 +2547,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTATOR">
+	<BugPattern type="SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR">
 		<ShortDescription>Class implements interface by relying on unknowing superclass methods</ShortDescription>
 		<LongDescription>Class {0} implements interface by relying on unknowing superclass methods</LongDescription>
 		<Details>
