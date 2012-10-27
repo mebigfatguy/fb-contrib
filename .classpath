@@ -9,17 +9,6 @@
 	<classpathentry kind="lib" path="samples/lib/junit-4.10.jar"/>
 	<classpathentry kind="lib" path="samples/lib/log4j-1.2.16.jar"/>
 	<classpathentry kind="lib" path="samples/lib/servlet-api-3.0.1.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/asm-3.3.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/asm-analysis-3.3.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/asm-commons-3.3.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/asm-tree-3.3.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/asm-util-3.3.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/bcel.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/dom4j-1.6.1.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/findbugs.jar" sourcepath="/findbugs"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/jaxen-1.1.1.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/jFormatString.jar"/>
-	<classpathentry kind="lib" path="/home/dave/dev/avondale/3rdparty/findbugs/lib/jsr305.jar"/>
 	<classpathentry kind="lib" path="samples/lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="samples/lib/backport-concurrent-3.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
