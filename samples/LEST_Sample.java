@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -138,6 +139,26 @@ public class LEST_Sample
             throw new AssertionError(ex);
         }
     }
+
+	public void testLestFP3510540() throws Exception
+	{
+        boolean bool = true;
+        if (bool)
+        {
+            try
+            {
+                throw new IOException();
+            }
+            catch (IOException ioe)
+            {
+                throw new Exception(ioe);
+            }
+        }
+        else
+        {
+            throw new Exception("message");
+        }
+	}
 
 	private Exception wrap(Exception e) {
 		return new Exception(e);

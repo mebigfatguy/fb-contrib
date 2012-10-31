@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2012 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
-	
+
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	/** allocation number, info where allocated */
@@ -42,11 +42,11 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 	/** reg, allocation number */
 	private Map<Integer, Integer> storedAllocations;
 	private int nextAllocationNumber;
-	
+
 	public PossibleConstantAllocationInLoop(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
@@ -60,7 +60,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 			storedAllocations = null;
 		}
 	}
-	
+
 	@Override
 	public void visitCode(Code obj) {
 		stack.resetForMethodEntry(this);
@@ -68,7 +68,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 		storedAllocations.clear();
 		nextAllocationNumber = 1;
 		super.visitCode(obj);
-		
+
 		for (AllocationInfo info : allocations.values()) {
 			if (info.loopBottom != -1) {
 				bugReporter.reportBug(new BugInstance(this, "PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP", NORMAL_PRIORITY)
@@ -78,12 +78,12 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 			}
 		}
 	}
-    
+
 	@Override
 	public void sawOpcode(int seen) {
 		boolean sawAllocation = false;
 		Integer sawAllocationNumber = null;
-		
+
 		try {
 			switch (seen)  {
 				case IFEQ:
@@ -115,7 +115,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						}
 					}
 				break;
-				
+
 				case INVOKESPECIAL:
 					if ("<init>".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
 						String clsName = getClassConstantOperand();
@@ -126,11 +126,12 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						}
 					}
 				//$FALL-THROUGH$
-				
+
 				case INVOKEINTERFACE:
 				case INVOKEVIRTUAL:
 				case INVOKESTATIC:
-					Type[] types = Type.getArgumentTypes(getSigConstantOperand());
+				    String signature = getSigConstantOperand();
+					Type[] types = Type.getArgumentTypes(signature);
 					if (stack.getStackDepth() >= types.length) {
 						for (int i = 0; i < types.length; i++) {
 							OpcodeStack.Item item = stack.getStackItem(i);
@@ -139,9 +140,21 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 								allocations.remove(allocation);
 							}
 						}
+		                if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || ((seen == INVOKESPECIAL))) {
+		                    //ignore possible method chaining
+		                    OpcodeStack.Item item = stack.getStackItem(types.length);
+		                    Integer allocation = (Integer)item.getUserValue();
+                            if (allocation != null) {
+                                String retType = Type.getReturnType(signature).getSignature();
+                                if (!"V".equals(retType) && retType.equals(item.getSignature())) {
+                                    sawAllocationNumber = allocation;
+                                    sawAllocation = true;
+                                }
+                            }
+		                }
 					}
 				break;
-				
+
 				case ASTORE:
 				case ASTORE_0:
 				case ASTORE_1:
@@ -151,9 +164,9 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						Integer allocation = (Integer)item.getUserValue();
 						if (allocation != null) {
-							Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));	
+							Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
 							if (storedAllocations.values().contains(allocation)) {
-								allocations.remove(allocation);			
+								allocations.remove(allocation);
 								storedAllocations.remove(reg);
 							} else if (storedAllocations.containsKey(reg)) {
 								allocations.remove(allocation);
@@ -165,7 +178,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						}
 					}
 				break;
-				
+
 				case AASTORE:
 					if (stack.getStackDepth() >= 2) {
 						OpcodeStack.Item item = stack.getStackItem(0);
@@ -175,7 +188,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						}
 					}
 				break;
-				
+
 				case ALOAD:
 				case ALOAD_0:
 				case ALOAD_1:
@@ -195,7 +208,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 					}
 				}
 				break;
-				
+
 				case PUTFIELD:
 					if (stack.getStackDepth() > 1) {
 						OpcodeStack.Item item = stack.getStackItem(0);
@@ -203,7 +216,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						allocations.remove(allocation);
 					}
 				break;
-				
+
 				case ARETURN:
 				case ATHROW:
 					if (stack.getStackDepth() > 0) {
@@ -212,7 +225,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						if (allocation != null) {
 							allocations.remove(allocation);
 						}
-					}	
+					}
 				break;
 			}
 		} finally {
@@ -224,19 +237,19 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					item.setUserValue(sawAllocationNumber);
 				}
-				
+
 				if (seen == INVOKESPECIAL)
 					nextAllocationNumber++;
 			}
 		}
 	}
-	
+
 	static class AllocationInfo {
-		
+
 		int allocationPC;
 		int loopTop;
 		int loopBottom;
-		
+
 		public AllocationInfo(int pc) {
 			allocationPC = pc;
 			loopTop = -1;
