@@ -5,8 +5,7 @@ import java.util.List;
 
 
 public class UNNC_Sample {
-	
-	@SuppressWarnings("null")
+
 	public void testPosNEW()
 	{
 		UNNC_Sample sample = new UNNC_Sample();
@@ -16,7 +15,6 @@ public class UNNC_Sample {
 		}
 	}
 
-	@SuppressWarnings("null")
 	public void testNegNEW()
 	{
 		UNNC_Sample sample = new UNNC_Sample();
@@ -28,7 +26,6 @@ public class UNNC_Sample {
 		System.out.println("OK");
 	}
 
-	@SuppressWarnings("null")
 	public void testPosANEWARAY()
 	{
 		String[] s = new String[10];
@@ -37,7 +34,6 @@ public class UNNC_Sample {
 		}
 	}
 
-	@SuppressWarnings("null")
 	public void testNegANEWARRAY()
 	{
 		String[] s = new String[10];
@@ -48,7 +44,6 @@ public class UNNC_Sample {
 		System.out.println("OK");
 	}
 
-	@SuppressWarnings("null")
 	public void testPosMULTIANEWARRAY()
 	{
 		String[][] s = new String[10][5];
@@ -57,7 +52,6 @@ public class UNNC_Sample {
 		}
 	}
 
-	@SuppressWarnings("null")
 	public void testNegMULTIANEWARRAY()
 	{
 		String[][] s = new String[10][5];
