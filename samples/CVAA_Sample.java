@@ -1,3 +1,4 @@
+import java.util.HashSet;
 import java.util.Set;
 
 
@@ -29,5 +30,9 @@ public class CVAA_Sample
 
 	public String fpVarArgs(String s1, Set<String> s2) {
 	    return String.format("s1=%s s2=%s", s1, s2);
+	}
+
+	public void fpGenerics() {
+		Set<String>[] myStringSets = new HashSet[2];
 	}
 }
