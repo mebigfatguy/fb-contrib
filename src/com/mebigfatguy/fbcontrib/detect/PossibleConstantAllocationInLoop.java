@@ -142,15 +142,17 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						}
 		                if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || ((seen == INVOKESPECIAL))) {
 		                    //ignore possible method chaining
-		                    OpcodeStack.Item item = stack.getStackItem(types.length);
-		                    Integer allocation = (Integer)item.getUserValue();
-                            if (allocation != null) {
-                                String retType = Type.getReturnType(signature).getSignature();
-                                if (!"V".equals(retType) && retType.equals(item.getSignature())) {
-                                    sawAllocationNumber = allocation;
-                                    sawAllocation = true;
+		                    if (stack.getStackDepth() > types.length) {
+    		                    OpcodeStack.Item item = stack.getStackItem(types.length);
+    		                    Integer allocation = (Integer)item.getUserValue();
+                                if (allocation != null) {
+                                    String retType = Type.getReturnType(signature).getSignature();
+                                    if (!"V".equals(retType) && retType.equals(item.getSignature())) {
+                                        sawAllocationNumber = allocation;
+                                        sawAllocation = true;
+                                    }
                                 }
-                            }
+		                    }
 		                }
 					}
 				break;
