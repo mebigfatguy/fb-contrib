@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2012 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -51,14 +51,14 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
 	private Map<Integer, Integer> regPriorities;
-	
+
 	/**
      * constructs a NOS detector given the reporter to report bugs on
      * @param bugReporter the sync of bug reports
 	 */	public NonOwnedSynchronization(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-    
+
     /**
      * implements the visitor to set and clear the stack and priorities
      */
@@ -73,10 +73,10 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
             regPriorities = null;
         }
     }
-	
+
 	/**
 	 * looks for methods that contain a MONITORENTER opcode
-	 * 
+	 *
 	 * @param method the context object of the current method
 	 * @return if the class uses synchronization
 	 */
@@ -84,10 +84,10 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 		BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
 		return bytecodeSet != null && (bytecodeSet.get(Constants.MONITORENTER));
 	}
-	
+
 	/**
 	 * implements the visitor to reset the opcode stack
-	 * 
+	 *
 	 * @param obj the context object of the currently parsed code block
 	 */
 	@Override
@@ -104,10 +104,10 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 			super.visitCode(obj);
 		}
 	}
-	
+
 	/**
 	 * implements the visitor to look for synchronization on non-owned objects
-	 * 
+	 *
 	 * @param seen the opcode of the currently parsed instruction
 	 */
 	@Override
@@ -115,12 +115,12 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 		Integer tosIsPriority = null;
 		try {
 			stack.mergeJumps(this);
-			
+
 			switch (seen) {
 				case GETFIELD:
 					tosIsPriority = OWNED;
 				break;
-				
+
 				case ALOAD:
 				case ALOAD_0:
 				case ALOAD_1:
@@ -136,7 +136,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 					}
 				}
 				break;
-				
+
 				case ASTORE:
 				case ASTORE_0:
 				case ASTORE_1:
@@ -149,14 +149,14 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 					}
 				}
 				break;
-				
+
 				case INVOKEVIRTUAL:
 				case INVOKEINTERFACE: {
 					String sig = getSigConstantOperand();
 					Type t = Type.getReturnType(sig);
 					if (t.getSignature().startsWith("L")) {
 						int parmCnt = Type.getArgumentTypes(sig).length;
-						if (stack.getStackDepth() >= parmCnt) {
+						if (stack.getStackDepth() > parmCnt) {
 							OpcodeStack.Item itm = stack.getStackItem(parmCnt);
 							Integer priority = (Integer)itm.getUserValue();
 							if ((priority != null) && OWNED.equals(priority)) {
@@ -172,7 +172,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 					}
 				}
 				break;
-				
+
 				case INVOKESTATIC: {
 					String sig = getSigConstantOperand();
 					Type t = Type.getReturnType(sig);
@@ -180,7 +180,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 						tosIsPriority = OWNED; // can't be sure
 				}
 				break;
-				
+
 				case INVOKESPECIAL: {
 					String name = getNameConstantOperand();
 					if ("<init>".equals(name)) {
@@ -188,7 +188,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 					}
 				}
 				break;
-				
+
 				case MONITORENTER: {
 					if (stack.getStackDepth() > 0) {
 						OpcodeStack.Item itm = stack.getStackItem(0);
