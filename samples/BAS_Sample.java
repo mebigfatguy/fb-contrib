@@ -1,5 +1,7 @@
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -150,5 +152,20 @@ public class BAS_Sample
 			long delta = System.currentTimeMillis() - start;
 			System.out.println(delta);
 		}
+	}
+
+	public String testFPIteratorNext(Collection<String> c, boolean b) {
+	    Iterator<String> it = c.iterator();
+
+	    String s = it.next();
+
+	    if (b) {
+	        if (s == null) {
+	            return "yay";
+	        }
+	    }
+
+	    return it.next();
+
 	}
 }
