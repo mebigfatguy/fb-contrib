@@ -3577,7 +3577,7 @@
 	<BugCode abbrev="SMA">Stuttered Method Arguments</BugCode>
 	<BugCode abbrev="TBP">Tristate Boolean Pattern</BugCode>
 	<BugCode abbrev="SUA">Suspicious Uninitialized Array</BugCode>
-	<BugCode abbrev="ITU">Inappropriate ToString Use</BugCode>
+	<BugCode abbrev="ITU">Inappropriate toString Use</BugCode>
 	<BugCode abbrev="IKNC">Inconsistent Key Name Casing</BugCode>
 	<BugCode abbrev="OC">Overzealous Casting</BugCode>
 	<BugCode abbrev="PDP">Poorly Defined Parameter</BugCode>
