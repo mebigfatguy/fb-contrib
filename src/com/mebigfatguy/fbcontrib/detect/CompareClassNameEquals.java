@@ -75,8 +75,10 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
                     && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())
                     && "java/lang/String".equals(getClassConstantOperand())) {
                 Item item = stack.getItemMethodInvokedOn(this);
-                Object userValue = item.getUserValue();
-                if (userValue != null && Boolean.TRUE.equals(userValue)) {
+                Object srcValue = item.getUserValue();
+                item = stack.getStackItem(0);
+                Object dstValue = item.getUserValue();
+                if (Boolean.TRUE.equals(srcValue) && Boolean.TRUE.equals(dstValue)) {
                     bugReporter
                             .reportBug(new BugInstance(this,
                                     "CCNE_COMPARE_CLASS_EQUALS_NAME",

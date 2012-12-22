@@ -5,4 +5,11 @@ public class CCNE_Sample {
         System.out.println(o.getClass().getName()
                 .equals(p.getClass().getName()));
     }
+
+    public void fpCompareAgainstString(String name) {
+        Object o = new CCNE_Sample();
+
+        if (o.getClass().getName().equals(name))
+            System.out.println("booya");
+    }
 }
