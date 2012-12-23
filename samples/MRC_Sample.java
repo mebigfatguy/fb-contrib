@@ -1,23 +1,24 @@
+import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
 
 @SuppressWarnings("all")
-public class MRC_Sample 
+public class MRC_Sample
 {
 	private int getValue() {
 		return 1;
 	}
-	
+
 	private String getStringValue() {
 		return "Hello";
 	}
-	
+
 	public float getFP()
 	{
 		return 0.0f;
 	}
-	
+
 	private double getTwoValuesFP(boolean b)
 	{
 		if (b)
@@ -25,23 +26,23 @@ public class MRC_Sample
 		else
 			return 0.0;
 	}
-	
+
 	private String getTwoDupsBySwitch(int i)
 	{
 		switch (i)
 		{
 		case 1:
 			return "Hello";
-		
+
 		case 2:
 			return "Hello";
-			
+
 		default:
 			return "Hello";
 		}
 	}
-	
-	
+
+
 	private String fpStringBuilder()
 	{
 		StringBuilder sb = new StringBuilder();
@@ -49,12 +50,12 @@ public class MRC_Sample
 
 	    return sb.toString();
 	}
-	
+
 	private void fooIt(StringBuilder sb)
 	{
 		sb.append("Foo");
 	}
-	
+
 	private int getCount(List<String> l)
 	{
 	  	int count = 0;
@@ -66,14 +67,24 @@ public class MRC_Sample
 	  			count += 1;
 	  		}
 	  	}
-	
+
 	  	return count;
 	}
-	
+
 	private int fpInc()
 	{
 		int i = 0;
 		i++;
 		return i;
 	}
+
+    private long fpCountChars(Collection<String> c)
+    {
+        long totLength = 0;
+        for (String s : c)
+        {
+            totLength += s.length();
+        }
+        return totLength;
+    }
 }
