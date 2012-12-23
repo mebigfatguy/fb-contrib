@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2012 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -39,27 +39,26 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for methods that return Object, and who's code body returns two or more
- * different types of objects that are unrelated (other than by Object). 
+ * different types of objects that are unrelated (other than by Object).
  */
-public class UnrelatedReturnValues extends BytecodeScanningDetector 
+public class UnrelatedReturnValues extends BytecodeScanningDetector
 {
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private JavaClass currentClass;
 	private Map<JavaClass, Integer> returnTypes;
-	private boolean isInherited;
-	
+
 	/**
      * constructs a URV detector given the reporter to report bugs on
      * @param bugReporter the sync of bug reports
-	 */	
+	 */
 	public UnrelatedReturnValues(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	/**
 	 * implements the visitor to create and destroy the stack and return types
-	 * 
+	 *
 	 * @param classContext the context object of the currently parsed class
 	 */
 	@Override
@@ -79,7 +78,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 	/**
 	 * implements the visitor to see if the method returns Object, and if the method
 	 * is defined in a superclass, or interface.
-	 * 
+	 *
 	 * @param obj the context object of the currently parsed code block
 	 */
 	@Override
@@ -89,7 +88,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 			String methodName = m.getName();
 			String signature = m.getSignature();
 			if (signature.endsWith(")Ljava/lang/Object;")) {
-				isInherited = SignatureUtils.isInheritedMethod(currentClass, methodName, signature);
+				boolean isInherited = SignatureUtils.isInheritedMethod(currentClass, methodName, signature);
 				stack.resetForMethodEntry(this);
 				returnTypes.clear();
 				super.visitCode(obj);
@@ -101,7 +100,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 							break;
 						}
 					}
-					
+
 					JavaClass cls = findCommonType(returnTypes.keySet());
 					BugInstance bug;
 					if ((cls != null) && !isInherited) {
@@ -112,11 +111,11 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 					} else if (!isInherited) {
 						bug = new BugInstance(this, "URV_UNRELATED_RETURN_VALUES", priority)
 								.addClass(this)
-								.addMethod(this);					
+								.addMethod(this);
 					} else {
 						bug = new BugInstance(this, "URV_INHERITED_METHOD_WITH_RELATED_TYPES", priority)
 						.addClass(this)
-						.addMethod(this);		
+						.addMethod(this);
 						if (cls != null)
 							bug.addString(cls.getClassName());
 					}
@@ -132,11 +131,11 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 			bugReporter.reportMissingClass(cnfe);
 		}
 	}
-	
+
 	/**
-	 * implements the visitor to find return values where the types of objects returned from the 
+	 * implements the visitor to find return values where the types of objects returned from the
 	 * method are related only by object.
-	 * 
+	 *
 	 * @param seen the opcode of the currently parsed instruction
 	 */
 	@Override
@@ -156,10 +155,10 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 			stack.sawOpcode(this, seen);
 		}
 	}
-	
+
 	/**
 	 * looks for a common superclass or interface for all the passed in types
-	 * 
+	 *
 	 * @param classes the set of classes to look for a common super class or interface
 	 * @return the type that is the common interface or superclass (not Object, tho).
 	 */
@@ -170,10 +169,10 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 		for (JavaClass cls : classes) {
 			if (cls == null) //array
 				return null;
-			
+
 			if ("java/lang/Object".equals(cls.getClassName()))
 				continue;
-			
+
 			JavaClass[] infs = cls.getAllInterfaces();
 			JavaClass[] supers = cls.getSuperClasses();
 			if (populate) {
@@ -188,10 +187,10 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 				possibleCommonTypes.retainAll(retain);
 			}
 		}
-		
+
 		if (possibleCommonTypes.isEmpty())
 			return null;
-		
+
 		for (JavaClass cls : possibleCommonTypes) {
 			if (cls.isInterface())
 				return cls;
