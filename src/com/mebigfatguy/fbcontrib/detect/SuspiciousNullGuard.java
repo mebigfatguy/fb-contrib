@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2012 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -40,11 +40,11 @@ import edu.umd.cs.findbugs.ba.XField;
  * or variable is null.
  */
 public class SuspiciousNullGuard extends BytecodeScanningDetector {
-	
+
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private Map<Integer, NullGuard> nullGuards;
-	
+
 	/**
      * constructs a SNG detector given the reporter to report bugs on
      * @param bugReporter the sync of bug reports
@@ -52,10 +52,10 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 	public SuspiciousNullGuard(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	/**
 	 * overrides the visitor to initialize and tear down the opcode stack
-	 * 
+	 *
 	 * @param classContext the context object of the currently parsed class
 	 */
 	@Override
@@ -68,10 +68,10 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 			stack = null;
 		}
 	}
-	
+
 	/**
 	 * overrides the visitor to reset the stack
-	 * 
+	 *
 	 * @param obj the context object of the currently parsed code block
 	 */
 	@Override
@@ -80,10 +80,10 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 		nullGuards.clear();
 		super.visitCode(obj);
 	}
-	
+
 	/**
 	 * overrides the visitor to look for bad null guards
-	 * 
+	 *
 	 * @param seen the opcode of the currently visited instruction
 	 */
 	@Override
@@ -91,7 +91,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 		try {
 			Integer pc = Integer.valueOf(getPC());
 			nullGuards.remove(pc);
-			
+
 			switch (seen) {
 				case IFNULL: {
 					if (stack.getStackDepth() > 0) {
@@ -109,7 +109,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 					}
 				}
 				break;
-					
+
 				case ASTORE:
 				case ASTORE_0:
 				case ASTORE_1:
@@ -130,7 +130,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 					}
 				}
 				break;
-				
+
 				case ALOAD:
 				case ALOAD_0:
 				case ALOAD_1:
@@ -142,7 +142,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 					}
 				}
 				break;
-				
+
 				case PUTFIELD: {
 					if (stack.getStackDepth() > 1) {
 						OpcodeStack.Item item = stack.getStackItem(0);
@@ -162,7 +162,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 					}
 				}
 				break;
-				
+
 				case GETFIELD: {
 					if (stack.getStackDepth() > 0) {
 						XField xf = getXFieldOperand();
@@ -175,7 +175,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 					}
 				}
 				break;
-					
+
 				case IFEQ:
 				case IFNE:
 				case IFLT:
@@ -200,27 +200,27 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 			stack.sawOpcode(this, seen);
 		}
 	}
-	
+
 	private NullGuard findNullGuardWithRegister(int reg) {
 		for (NullGuard guard : nullGuards.values()) {
 			if (guard.getRegister() == reg) {
 				return guard;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private NullGuard findNullGuardWithField(XField field) {
 		for (NullGuard guard : nullGuards.values()) {
 			if (field.equals(guard.getField())) {
 				return guard;
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private void removeNullGuard(NullGuard guard) {
 		Iterator<NullGuard> it = nullGuards.values().iterator();
 		while (it.hasNext()) {
@@ -231,14 +231,13 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 			}
 		}
 	}
-	
+
 	static class NullGuard {
 		int register;
 		XField field;
 		int location;
 		String signature;
-		boolean sawSignature = false;
-		
+
 		public NullGuard(int reg, int start, String guardSignature) {
 			register = reg;
 			field = null;
@@ -257,15 +256,15 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 		public int getRegister() {
 			return register;
 		}
-		
+
 		public XField getField() {
 			return field;
 		}
-		
+
 		public int getLocation() {
 			return location;
 		}
-		
+
 		public String getSignature() {
 			return signature;
 		}
