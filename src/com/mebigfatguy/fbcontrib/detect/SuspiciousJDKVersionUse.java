@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2012 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -67,16 +67,15 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 	}
 	private static final Pattern jarPattern = Pattern.compile("jar:file:/*([^!]*)");
 	private static final String SJVU_JDKHOME = "fb-contrib.sjvu.jdkhome";
-	
+
 	private final Map<String, File> versionPaths;
 	private final Map<Integer, Map<String, Set<String>>> validMethodsByVersion;
 	private final Map<String, String> superNames;
 	private File jdksRoot = null;
 	private ZipFile jdkZip;
-	private JavaClass cls;
 	private Integer clsMajorVersion;
-	private final BugReporter bugReporter;	
-	
+	private final BugReporter bugReporter;
+
 	public SuspiciousJDKVersionUse(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		versionPaths = new HashMap<String, File>();
@@ -87,12 +86,11 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			cls = classContext.getJavaClass();
-			clsMajorVersion = Integer.valueOf(cls.getMajor());
+			clsMajorVersion = Integer.valueOf(classContext.getJavaClass().getMajor());
 			File rtJar = getRTJarFile();
 			if (rtJar == null)
 				rtJar = getRTJarFromProperty();
-			
+
 			if (rtJar != null) {
 				jdkZip = new ZipFile(rtJar);
 				super.visitClassContext(classContext);
@@ -109,7 +107,6 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		} catch (IOException ioe) {
 			//Hmm What to do
 		} finally {
-			cls = null;
 			clsMajorVersion = null;
 			try {
 				if (jdkZip != null)
@@ -119,10 +116,10 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 			jdkZip = null;
 		}
 	}
-	
+
 	@Override
 	public void sawOpcode(int seen) {
-		
+
 		String clsName;
 		try {
 			if ((seen == INVOKEVIRTUAL) //Interfaces are more difficult, ignore for now
@@ -134,13 +131,13 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 					Method m = findCalledMethod();
 					if (m == null)
 						return;
-					
+
 					Map<String, Set<String>> validMethods = validMethodsByVersion.get(clsMajorVersion);
 					if (validMethods == null) {
 						validMethods = new HashMap<String, Set<String>>();
 						validMethodsByVersion.put(clsMajorVersion, validMethods);
 					}
-					
+
 					if (!isValid(validMethods, clsName)) {
 						bugReporter.reportBug(new BugInstance(this, "SJVU_SUSPICIOUS_JDK_VERSION_USE", HIGH_PRIORITY)
 								   .addClass(this)
@@ -156,7 +153,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 			//Hmm what do do.
 		}
 	}
-	
+
 	private Method findCalledMethod() {
 		try {
 			JavaClass clss = Repository.lookupClass(getClassConstantOperand());
@@ -168,7 +165,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 					return m;
 				}
 			}
-			
+
 			return null;
 		} catch (ClassNotFoundException cnfe) {
 			bugReporter.reportMissingClass(cnfe);
@@ -178,23 +175,23 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 
 	private boolean isValid(Map<String, Set<String>> validMethods, String clsName) throws IOException, ClassNotFoundException {
 		InputStream is = null;
-		
+
 		try {
 			Set<String> methodInfos = validMethods.get(clsName);
 			if (methodInfos == null) {
-				
+
 				ZipEntry ze = jdkZip.getEntry(clsName + ".class");
 				if (ze != null) {
 					is = new BufferedInputStream(jdkZip.getInputStream(ze));
 					ClassParser parser = new ClassParser(is, clsName);
 					JavaClass calledClass = parser.parse();
-					
+
 					superNames.put(clsName, calledClass.getSuperclassName().replace('.', '/'));
 					Method[] methods = calledClass.getMethods();
-					
+
 					methodInfos = new HashSet<String>();
 					validMethods.put(clsName, methodInfos);
-	
+
 					for (Method m : methods) {
 						methodInfos.add(m.getName() + m.getSignature());
 					}
@@ -206,7 +203,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 							   .addClass(clsName));
 				}
 			}
-			
+
 			if (methodInfos != null) {
 				String wantedMethod = getNameConstantOperand() + getSigConstantOperand();
 				if (methodInfos.contains(wantedMethod))
@@ -216,7 +213,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 				else
 					return isValid(validMethods, superNames.get(clsName));
 			}
-			
+
 			return true;
 		}
 		finally {
@@ -228,21 +225,21 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 			}
 		}
 	}
-	
+
 	private File getRTJarFile(){
 		String versionStr = verRegEx.get(clsMajorVersion);
 		if (versionStr == null)
 			return null;
-		
+
 		File rtPath = versionPaths.get(versionStr);
 		if (rtPath != null)
 			return rtPath;
-		
+
 		if (jdksRoot == null) {
 			URL jdkUrl = SuspiciousJDKVersionUse.class.getResource("/java/lang/Object.class");
 			if (jdkUrl != null) {
 				Matcher m = jarPattern.matcher(jdkUrl.toExternalForm());
-				
+
 				if (m.find()) {
 					String path = m.group(1);
 					jdksRoot = new File(path);
@@ -252,10 +249,10 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 						jdksRoot = jdksRoot.getParentFile();
 						m = verPat.matcher(jdksRoot.getName());
 					}
-					
+
 					if (jdksRoot.getParentFile() == null)
 						return null;
-					
+
 					try {
 						String encoding = System.getProperty("file.encoding");
 						jdksRoot = new File(URLDecoder.decode(jdksRoot.getParentFile().getPath(), encoding));
@@ -265,7 +262,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 				}
 			}
 		}
-		
+
 		if (jdksRoot != null) {
 			File[] possibleJdks = jdksRoot.listFiles();
 			for (File possibleJdk : possibleJdks) {
@@ -283,22 +280,22 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 				}
 			}
 		}
-		
+
 		return null;
 	}
-	
+
 	private File getRTJarFromProperty() {
 		String jdkHome = System.getProperty(SJVU_JDKHOME);
 		if (jdkHome == null)
 			return null;
-		
+
 		File rtJar = new File(jdkHome, "lib/rt.jar");
 		if (rtJar.exists())
 			return rtJar;
 		rtJar = new File(jdkHome, "jre/lib/rt.jar");
 		if (rtJar.exists())
 			return rtJar;
-		
+
 		return null;
 	}
 }
