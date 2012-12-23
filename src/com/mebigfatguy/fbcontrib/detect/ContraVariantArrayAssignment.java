@@ -90,10 +90,10 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 			case ASTORE_3:
 				if(stack.getStackDepth() > 0){
 					OpcodeStack.Item item = stack.getStackItem(0);
-					String sourceSignature = item.getSignature();
 					LocalVariable lv = getMethod().getLocalVariableTable()
 					   .getLocalVariable(RegisterUtils.getAStoreReg(this, seen), getNextPC());
 					if(lv != null){
+	                    String sourceSignature = item.getSignature();
 						String targetSignature = lv.getSignature();
 						checkSignatures(sourceSignature, targetSignature);
 					}
