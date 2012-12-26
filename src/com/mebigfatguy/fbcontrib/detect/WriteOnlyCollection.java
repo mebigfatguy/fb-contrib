@@ -84,6 +84,7 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 		writeMethods.add("clone");
 		writeMethods.add("ensureCapacity");
 		writeMethods.add("insertElementAt");
+		writeMethods.add("iterator");
 		writeMethods.add("put");
 		writeMethods.add("putAll");
 		writeMethods.add("remove");
