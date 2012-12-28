@@ -19,9 +19,9 @@
 
 	<property name="fb-contrib.version" value="4.9.0" />
 
-	<property name="findbugs.version" value="2.0.0" />
-	<property name="findbugs-bcel.version" value="2.0.0" />
-	<property name="annotations.version" value="2.0.0" />
+	<property name="findbugs.version" value="2.0.1" />
+	<property name="findbugs-bcel.version" value="2.0.1" />
+	<property name="annotations.version" value="2.0.1" />
 	<property name="asm-tree.version" value="3.3.1" />
 
 	<property name="findbugs-url" value="http://repo1.maven.org/maven2/com/google/code/findbugs/findbugs/${findbugs.version}/findbugs-${findbugs.version}.jar" />
