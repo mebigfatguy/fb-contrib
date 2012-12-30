@@ -18,6 +18,9 @@
 	<property name="javac.debug" value="on" />
 
 	<property name="fb-contrib.version" value="4.9.0" />
+	
+	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
+	
 
 	<property name="findbugs.version" value="2.0.1" />
 	<property name="findbugs-bcel.version" value="2.0.1" />
@@ -221,4 +224,38 @@
 
 	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release" />
 
+    <target name="sonatype" depends="release" description="prepare an artifact bundle for sonatype">
+        <mkdir dir="${sonatype.dir}"/>
+        <copy todir="${sonatype.dir}" file="${basedir}/fb-contrib-${fb-contrib.version}.jar"/>
+        <copy tofile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-sources.jar" file="${basedir}/fb-contrib-src-${fb-contrib.version}.zip"/>
+        <jar destfile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" basedir="${basedir}" includes="javadoc/**"/>
+        <copy tofile="${sonatype.dir}/fb-contrib-${fb-contrib.version}.pom" file="${basedir}/pom.xml"/>
+        
+        <exec executable="gpg">
+            <arg value="-abi" />
+            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}.jar" />
+        </exec>
+        <exec executable="gpg">
+            <arg value="-abi" />
+            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}.pom" />
+        </exec>
+        <exec executable="gpg">
+            <arg value="-abi" />
+            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}-sources.jar" />
+        </exec>        
+        <exec executable="gpg">
+            <arg value="-abi" />
+            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" />
+        </exec>
+        <jar destfile="${sonatype.dir}/bundle.jar" basedir="${sonatype.dir}" includes="fb-contrib*">
+        </jar>
+        <echo message="" />
+        <echo message="" />
+        <echo message="====================================================================================================================================" />
+        <echo message="sonatype update bundle produced at ${sonatype.dir}/bundle.jar" />
+        <echo message="upload this jar at https://oss.sonatype.org" />
+        <echo message="" />
+        <echo message="see link for details-> https://docs.sonatype.org/display/Repository/Uploading+3rd-party+Artifacts+to+The+Central+Repository" />
+        <echo message="====================================================================================================================================" />
+    </target>
 </project>
