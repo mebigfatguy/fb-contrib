@@ -8,8 +8,9 @@ classes
 *.xlr
 *.jar
 *.zip
+*.fbp
+htdocs/bugdescriptions.html
 samples/*.class
 .settings/org.eclipse.core.resources.prefs
 .settings/org.eclipse.m2e.core.prefs
-samples/*.class
 javadoc
