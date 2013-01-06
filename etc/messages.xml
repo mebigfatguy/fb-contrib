@@ -2815,6 +2815,19 @@
 		</Details>
 	</BugPattern>
 
+   <BugPattern type="LO_LOGGER_LOST_EXCEPTION_STACK_TRACE">
+      <ShortDescription>Method incorrectly passes exception as first argument to logger method</ShortDescription>
+      <LongDescription>Method {1} incorrectly passes exception as first argument to logger method</LongDescription>
+      <Details>
+         <![CDATA[
+         <p>This method passes an exception as the first argument to a logger method. The stack
+         trace is potentially lost due to the logger emitting the exception using toString(). It
+         is better to construct a log message with sufficient context and pass the exception as
+         the second argument to capture the stack trace.</p>
+         ]]>
+      </Details>
+   </BugPattern>
+
 	<BugPattern type="LO_SUSPECT_LOG_CLASS">
 		<ShortDescription>Method specifies an unrelated class when allocating a Logger</ShortDescription>
 		<LongDescription>Method {1} specifies an unrelated class when allocating a Logger</LongDescription>
