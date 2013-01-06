@@ -3109,7 +3109,7 @@
 		<Details>
     			<![CDATA[
     			<p>This method tests a field to make sure it's not null before executing a conditional block of
-    			code. However in the conditional block is reassigns the field. It is likely that the guard
+    			code. However in the conditional block it reassigns the field. It is likely that the guard
     			should have been a check to see if the field is null, not that the field was not null.</p>
     			]]>
     		</Details>
@@ -3121,7 +3121,7 @@
 		<Details>
     			<![CDATA[
     			<p>This method tests a local variable to make sure it's not null before executing a conditional block of
-    			code. However in the conditional block is reassigns the local variable. It is likely that the guard
+    			code. However in the conditional block it reassigns the local variable. It is likely that the guard
     			should have been a check to see if the local variable is null, not that the local variable was not null.</p>
     			]]>
     		</Details>
