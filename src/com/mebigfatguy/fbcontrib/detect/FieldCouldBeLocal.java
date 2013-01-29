@@ -124,8 +124,9 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 			return;
 
 		try {
-			cpg = new ConstantPoolGen(getConstantPool());
+
 			cfg = clsContext.getCFG(obj);
+			cpg = cfg.getMethodGen().getConstantPool();
 			BasicBlock bb = cfg.getEntry();
 			Set<String> uncheckedFields = new HashSet<String>(localizableFields.keySet());
 			visitedBlocks.clear();
