@@ -3,6 +3,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -33,7 +34,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 public class StackedTryBlocks extends BytecodeScanningDetector {
 
     private static JavaClass THROWABLE_CLASS;
-    
+
     static {
         try {
             THROWABLE_CLASS = Repository.lookupClass("java.lang.Throwable");
@@ -44,6 +45,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 	private final BugReporter bugReporter;
 	private List<TryBlock> blocks;
 	private List<TryBlock> inBlocks;
+	private List<Integer> transitionPoints;
 	private OpcodeStack stack;
 
 	public StackedTryBlocks(BugReporter bugReporter) {
@@ -72,6 +74,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
 			blocks = new ArrayList<TryBlock>();
 			inBlocks = new ArrayList<TryBlock>();
+			transitionPoints = new ArrayList<Integer>();
 
 			CodeException[] ces = obj.getExceptionTable();
 			for (CodeException ce : ces) {
@@ -99,19 +102,23 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 				super.visitCode(obj);
 
 				if (blocks.size() > 1) {
-					TryBlock firstBlock = blocks.get(0);
+                    Collections.sort(transitionPoints);
+
+                    TryBlock firstBlock = blocks.get(0);
 					for (int i = 1; i < blocks.size(); i++) {
 						TryBlock secondBlock = blocks.get(i);
 
-						if ((firstBlock.getCatchType() == secondBlock.getCatchType())
-                                && (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
-                                && ((firstBlock.getMessage().length() > 0) && firstBlock.getMessage().equals(secondBlock.getMessage())
-								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature()))))) {
-							bugReporter.reportBug(new BugInstance(this, "STB_STACKED_TRY_BLOCKS", NORMAL_PRIORITY)
-									.addClass(this).addMethod(this)
-									.addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
-									.addSourceLineRange(this, secondBlock.getStartPC(), secondBlock.getEndHandlerPC()));
+						if (!blocksSplitAcrossTransitions(firstBlock, secondBlock)) {
+    						if ((firstBlock.getCatchType() == secondBlock.getCatchType())
+                                    && (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
+                                    && ((firstBlock.getMessage().length() > 0) && firstBlock.getMessage().equals(secondBlock.getMessage())
+    								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature()))))) {
+    							bugReporter.reportBug(new BugInstance(this, "STB_STACKED_TRY_BLOCKS", NORMAL_PRIORITY)
+    									.addClass(this).addMethod(this)
+    									.addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
+    									.addSourceLineRange(this, secondBlock.getStartPC(), secondBlock.getEndHandlerPC()));
 
+    						}
 						}
 
 						firstBlock = secondBlock;
@@ -121,6 +128,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		} finally {
 			blocks = null;
 			inBlocks = null;
+			transitionPoints = null;
 		}
 	}
 
@@ -129,6 +137,12 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
 	    String message = null;
 		try {
+		    if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+		        for (int offset : getSwitchOffsets()) {
+		            transitionPoints.add(Integer.valueOf(offset));
+		        }
+		    }
+
 			int pc = getPC();
 			TryBlock block = findBlockWithStart(pc);
 			if (block != null) {
@@ -187,7 +201,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 					                }
 					            }
 					        }
-					        
+
 					    }
 					}
 				}
@@ -212,6 +226,22 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		}
 
 		return null;
+	}
+
+	private boolean blocksSplitAcrossTransitions(TryBlock firstBlock, TryBlock secondBlock) {
+	    if (!transitionPoints.isEmpty()) {
+    	    Iterator<Integer> it = transitionPoints.iterator();
+    	    while (it.hasNext()) {
+    	        Integer transitionPoint = it.next();
+    	        if (transitionPoint.intValue() < firstBlock.handlerPC) {
+    	            it.remove();
+    	        } else {
+    	            return transitionPoint.intValue() < secondBlock.handlerPC;
+    	        }
+    	    }
+	    }
+
+	    return false;
 	}
 
 	static class TryBlock {
@@ -277,11 +307,11 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		public void setExceptionSignature(String sig) {
 		    exSig = sig;
 		}
-		
+
 		public void setThrowSignature(String sig) {
 			throwSig = sig;
 		}
-		
+
 		public void setMessage(String m) {
 		    message = m;
 		}
@@ -289,13 +319,13 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		public String getExceptionSignature() {
 		    return (exSig == null) ? String.valueOf(System.identityHashCode(this)) : exSig;
 		}
-		
+
 		public String getThrowSignature() {
 			return (throwSig == null) ? String.valueOf(System.identityHashCode(this)) : throwSig;
 		}
-		
+
 		public String getMessage() {
-            return (message == null) ? String.valueOf(System.identityHashCode(this)) : message;		    
+            return (message == null) ? String.valueOf(System.identityHashCode(this)) : message;
 		}
 
 		public int getStartPC() {
