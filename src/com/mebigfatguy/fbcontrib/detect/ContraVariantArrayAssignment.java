@@ -88,11 +88,11 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 			case ASTORE_1:
 			case ASTORE_2:
 			case ASTORE_3:
-				if(stack.getStackDepth() > 0){
-					OpcodeStack.Item item = stack.getStackItem(0);
+				if(stack.getStackDepth() > 0) {
 					LocalVariable lv = getMethod().getLocalVariableTable()
 					   .getLocalVariable(RegisterUtils.getAStoreReg(this, seen), getNextPC());
-					if(lv != null){
+					if(lv != null) {
+	                    OpcodeStack.Item item = stack.getStackItem(0);
 	                    String sourceSignature = item.getSignature();
 						String targetSignature = lv.getSignature();
 						checkSignatures(sourceSignature, targetSignature);
@@ -101,7 +101,7 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 				break;
 			case PUTFIELD:
 			case PUTSTATIC:
-				if(stack.getStackDepth() > 0){
+				if(stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					String sourceSignature = item.getSignature();
 					String targetSignature = getSigConstantOperand();

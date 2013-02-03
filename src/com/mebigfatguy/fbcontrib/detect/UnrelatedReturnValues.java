@@ -85,14 +85,15 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 	public void visitCode(Code obj) {
 		try {
 			Method m = getMethod();
-			String methodName = m.getName();
 			String signature = m.getSignature();
 			if (signature.endsWith(")Ljava/lang/Object;")) {
-				boolean isInherited = SignatureUtils.isInheritedMethod(currentClass, methodName, signature);
 				stack.resetForMethodEntry(this);
 				returnTypes.clear();
 				super.visitCode(obj);
 				if (returnTypes.size() > 1) {
+		            String methodName = m.getName();
+	                boolean isInherited = SignatureUtils.isInheritedMethod(currentClass, methodName, signature);
+
 					int priority = NORMAL_PRIORITY;
 					for (JavaClass cls : returnTypes.keySet()) {
 						if ((cls != null) && "java.lang.Object".equals(cls.getClassName())) {
