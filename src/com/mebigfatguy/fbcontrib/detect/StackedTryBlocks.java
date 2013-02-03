@@ -111,7 +111,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 						if (!blocksSplitAcrossTransitions(firstBlock, secondBlock)) {
     						if ((firstBlock.getCatchType() == secondBlock.getCatchType())
                                     && (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
-                                    && ((firstBlock.getMessage().length() > 0) && firstBlock.getMessage().equals(secondBlock.getMessage())
+                                    && (firstBlock.getMessage().equals(secondBlock.getMessage())
     								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature()))))) {
     							bugReporter.reportBug(new BugInstance(this, "STB_STACKED_TRY_BLOCKS", NORMAL_PRIORITY)
     									.addClass(this).addMethod(this)
@@ -192,16 +192,19 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 					    if (exCls.instanceOf(THROWABLE_CLASS)) {
 					        String signature = getSigConstantOperand();
 					        Type[] types = Type.getArgumentTypes(signature);
-					        if ((types.length > 0) && "Ljava/lang/String;".equals(types[0].getSignature())) {
-					            if (stack.getStackDepth() >= types.length) {
-					                OpcodeStack.Item item = stack.getStackItem(types.length - 1);
-					                message = (String)item.getConstant();
-					                if (message == null) {
-					                    message = "____UNKNOWN____" + System.identityHashCode(item);
-					                }
+					        if (types.length > 0) {
+					            if ("Ljava/lang/String;".equals(types[0].getSignature())) {
+    					            if (stack.getStackDepth() >= types.length) {
+    					                OpcodeStack.Item item = stack.getStackItem(types.length - 1);
+    					                message = (String)item.getConstant();
+    					                if (message == null) {
+    					                    message = "____UNKNOWN____" + System.identityHashCode(item);
+    					                }
+    					            }
 					            }
+					        } else {
+					            message = "";
 					        }
-
 					    }
 					}
 				}
