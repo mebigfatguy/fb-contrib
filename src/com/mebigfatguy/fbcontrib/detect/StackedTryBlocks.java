@@ -197,7 +197,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 					                OpcodeStack.Item item = stack.getStackItem(types.length - 1);
 					                message = (String)item.getConstant();
 					                if (message == null) {
-					                    message = "____UNKNOWN____" + System.currentTimeMillis();
+					                    message = "____UNKNOWN____" + System.identityHashCode(item);
 					                }
 					            }
 					        }
