@@ -19,7 +19,9 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
@@ -34,6 +36,13 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
+
+    private static final Set<String> SYNTHETIC_ALLOCATION_CLASSES = new HashSet<String>();
+    static {
+        SYNTHETIC_ALLOCATION_CLASSES.add("java/lang/StringBuffer");
+        SYNTHETIC_ALLOCATION_CLASSES.add("java/lang/StringBuilder");
+        SYNTHETIC_ALLOCATION_CLASSES.add("java/lang/AssertionError");
+    }
 
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
@@ -119,7 +128,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 				case INVOKESPECIAL:
 					if ("<init>".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
 						String clsName = getClassConstantOperand();
-						if (!"java/lang/StringBuffer".equals(clsName) && !"java/lang/StringBuilder".equals(clsName)) {
+						if (!SYNTHETIC_ALLOCATION_CLASSES.contains(clsName)) {
 							sawAllocationNumber = Integer.valueOf(nextAllocationNumber);
 							allocations.put(sawAllocationNumber, new AllocationInfo(getPC()));
 							sawAllocation = true;
