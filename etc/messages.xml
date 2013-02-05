@@ -1281,6 +1281,17 @@
             ]]>
         </Details>
     </Detector>
+        
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ConfusingArrayAsList">
+        <Details>
+            <![CDATA[
+            <p> Looks for calls to Arrays.asList where the parameter is a primitive array.
+            This does not produce a list that holds the primitive boxed values, but a list of
+            one item, the array itself.
+            </p>
+            ]]>
+        </Details>
+    </Detector>
     
 	<!-- BugPattern -->
 
@@ -3493,7 +3504,21 @@
             ]]>
         </Details>
     </BugPattern>   
-         
+    
+    <BugPattern type="CAAL_CONFUSING_ARRAY_AS_LIST">
+        <ShortDescription>Method calls Array.asList on an array of primitive values</ShortDescription>
+        <LongDescription>Method {1} calls Array.asList on an array of primitive values</LongDescription>
+        <Details>
+            <![CDATA[
+            <p> This method passes an array of primitive values to the Array.asList call. As primitive
+            values in arrays aren't automatically promoted to boxed primitives in arrays, the asList call
+            cannot convert this array in a list of boxed primitives. It therefore just creates an array
+            with one item in it, the array itself. This is rarely what is desired.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern> 
+   
 	<!-- BugCode -->
 
 	<BugCode abbrev="ISB">Inefficient String Buffering</BugCode>
@@ -3602,4 +3627,5 @@
     <BugCode abbrev="CCNE">Compare class name equals</BugCode>
     <BugCode abbrev="BRPI">Backport concurrent reuse of public identifiers</BugCode>
     <BugCode abbrev="CU">Clone Usability</BugCode>
+    <BugCode abbrev="CAAL">Confusing Array asList</BugCode>
 </MessageCollection>
