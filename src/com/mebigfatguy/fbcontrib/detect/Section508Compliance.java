@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2013 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -51,7 +51,7 @@ public class Section508Compliance extends BytecodeScanningDetector
     private static final String SAW_TEXT_LABEL = "SAW_TEXT_LABEL";
     private static final String FROM_UIMANAGER = "FROM_UIMANAGER";
     private static final String APPENDED_STRING = "APPENDED_STRING";
-    
+
 	private static JavaClass windowClass;
 	private static JavaClass componentClass;
 	private static JavaClass jcomponentClass;
@@ -83,16 +83,16 @@ public class Section508Compliance extends BytecodeScanningDetector
 			clsNFException = cnfe;
 		}
 	}
-	
+
 	private static final Map<String, Integer> displayTextMethods = new HashMap<String, Integer>();
 	static {
-		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;)", Integer.valueOf(0));		
+		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;)", Integer.valueOf(0));
 		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;Ljavax/swing/Icon;I)", Integer.valueOf(1));
 		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;I)", Integer.valueOf(2));
-		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;)", Integer.valueOf(0));		
-		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Integer.valueOf(1));		
-		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;)", Integer.valueOf(0));		
-		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)", Integer.valueOf(1));		
+		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;)", Integer.valueOf(0));
+		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Integer.valueOf(1));
+		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;)", Integer.valueOf(0));
+		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)", Integer.valueOf(1));
 		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;)", Integer.valueOf(0));
 		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;Z)", Integer.valueOf(1));
 		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", Integer.valueOf(2));
@@ -102,12 +102,12 @@ public class Section508Compliance extends BytecodeScanningDetector
 		displayTextMethods.put("java/awt/Dialog#setTitle(Ljava/lang/String;)", Integer.valueOf(0));
 		displayTextMethods.put("java/awt/Frame#setTitle(Ljava/lang/String;)", Integer.valueOf(0));
 		displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;Z)", Integer.valueOf(1));	
-		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;)", Integer.valueOf(0));		
+		displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;Z)", Integer.valueOf(1));
+		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;)", Integer.valueOf(0));
 		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Integer.valueOf(1));
 		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;I)", Integer.valueOf(1));
 	}
-	
+
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private Set<XField> fieldLabels;
@@ -125,7 +125,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 
 	/**
 	 * implements the visitor to create and clear the stack
-	 * 
+	 *
 	 * @param classContext the context object of the currently visited class
 	 */
 	@Override
@@ -161,7 +161,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 
 	/**
 	 * looks for fields that are JLabels and stores them in a set
-	 * 
+	 *
 	 * @param obj the field object of the current field
 	 */
 	@Override
@@ -176,7 +176,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 
 	/**
 	 * implements the visitor to reset the stack
-	 * 
+	 *
 	 * @param obj the context object for the currently visited code block
 	 */
 	@Override
@@ -199,7 +199,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 
 	/**
 	 * implements the visitor to find 508 compliance concerns
-	 * 
+	 *
 	 * @param seen the opcode of the currently parsed instruction
 	 */
 	@Override
@@ -239,7 +239,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 			} else if (seen == INVOKEVIRTUAL) {
 				String className = getClassConstantOperand();
 				String methodName = getNameConstantOperand();
-			
+
 				if ("javax/swing/JLabel".equals(className)) {
 					if ("setLabelFor".equals(methodName)) {
 						if (stack.getStackDepth() > 1) {
@@ -276,7 +276,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 				        }
 				    }
 				}
-				
+
 				processSetSizeOps(methodName);
                 processNullLayouts(className, methodName);
 				processSetColorOps(methodName);
@@ -285,7 +285,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 			        sawUIManager = true;
 			    }
 			}
-			
+
 			if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE)) {
 			    processFaultyGuiStrings();
 			}
@@ -304,7 +304,7 @@ public class Section508Compliance extends BytecodeScanningDetector
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     item.setUserValue(FROM_UIMANAGER);
-                }			    
+                }
 			} else if (sawAppend) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
@@ -313,7 +313,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 			}
 		}
 	}
-	
+
 	/**
 	 * looks for calls to set a readable string that is generated from a static constant, as these strings
 	 * are not translatable. also looks for setting readable strings that are appended together. This is
@@ -329,7 +329,7 @@ public class Section508Compliance extends BytecodeScanningDetector
         methodInfo.append(signature);
         Integer parmIndex = displayTextMethods.get(methodInfo.toString());
         if (parmIndex != null) {
-            if (stack.getStackDepth() >= parmIndex.intValue()) {
+            if (stack.getStackDepth() > parmIndex.intValue()) {
                 OpcodeStack.Item item = stack.getStackItem(parmIndex.intValue());
                 if (item.getConstant() != null) {
                     bugReporter.reportBug(new BugInstance(this, "S508C_NON_TRANSLATABLE_STRING", NORMAL_PRIORITY)
@@ -341,15 +341,15 @@ public class Section508Compliance extends BytecodeScanningDetector
                     .addClass(this)
                     .addMethod(this)
                     .addSourceLine(this));
-                    
+
                 }
             }
         }
 	}
-	
+
 	/**
 	 * looks for containers where a null layout is installed
-	 * 
+	 *
 	 * @param className class that a method call is made on
 	 * @param methodName name of the method that is called
 	 */
@@ -368,12 +368,12 @@ public class Section508Compliance extends BytecodeScanningDetector
             }
         }
 	}
-	
+
 	/**
 	 * looks for calls to set the color of components where the color isn't from UIManager
-	 * 
+	 *
 	 * @param methodName the method that is called
-	 * 
+	 *
 	 * @throws ClassNotFoundException if the gui component class can't be found
 	 */
 	private void processSetColorOps(String methodName) throws ClassNotFoundException {
@@ -396,12 +396,12 @@ public class Section508Compliance extends BytecodeScanningDetector
             }
         }
 	}
-	
+
 	/**
 	 * looks for calls to setSize on components, rather than letting the layout manager set them
-	 * 
+	 *
 	 * @param methodName the method that was called on a component
-	 * 
+	 *
 	 * @throws ClassNotFoundException if the gui class wasn't found
 	 */
 	private void processSetSizeOps(String methodName) throws ClassNotFoundException {
