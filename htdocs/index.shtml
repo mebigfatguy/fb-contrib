@@ -86,11 +86,6 @@ function toggleBlock(divId, imgId)
                 same kind of exception, and throw the same exception always. These blocks can
                 be coalesced into one.
                 </li>
-                <li><b>[CAAL] Confusing Array asList</b><br/>
-                Looks for calls to Arrays.asList where the parameter is a primitive array.
-                This does not produce a list that holds the primitive boxed values, but a list of
-                one item, the array itself.
-                </li>
             </ul>             
         </div>
 		<hr/>
