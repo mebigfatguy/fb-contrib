@@ -101,6 +101,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		boolean sawSBToString = false;
+		boolean sawIINC = false;
 		try {
 			if (!methodSuspect) {
 				return;
@@ -110,12 +111,17 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 
+					if (Boolean.FALSE.equals(item.getUserValue())) {
+                        methodSuspect = false;
+                        return;
+                    }
+
 					Object constant = item.getConstant();
 					if (constant == null) {
 						methodSuspect = false;
 						return;
 					}
-					if ((item.getUserValue() != null) && ("".equals(constant))) {
+					if (Boolean.TRUE.equals(item.getUserValue()) && ("".equals(constant))) {
 						methodSuspect = false;
 						return;
 					}
@@ -140,7 +146,10 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 			    if ((returnRegister != -1) && (getRegisterOperand() == returnRegister)) {
 			        methodSuspect = false;
 			    }
+			    sawIINC = seen == IINC;
 			}
+
+
 		} finally {
 			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
@@ -148,6 +157,9 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 			if (sawSBToString && (stack.getStackDepth() > 0)) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				item.setUserValue(Boolean.TRUE);
+			} else if (sawIINC && (stack.getStackDepth() > 0)) {
+			    OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(Boolean.FALSE);
 			}
 		}
 	}
