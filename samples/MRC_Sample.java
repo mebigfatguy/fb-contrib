@@ -87,4 +87,14 @@ public class MRC_Sample
         }
         return totLength;
     }
+
+    private int getFPLoopVar(List<String> c) {
+        for (int i = 0; i < c.size(); i++) {
+            if (c.get(i) == null) {
+                return i;
+            }
+        }
+
+        throw new RuntimeException();
+    }
 }

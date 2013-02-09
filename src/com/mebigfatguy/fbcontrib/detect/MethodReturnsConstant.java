@@ -38,6 +38,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 {
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
+	private int returnRegister;
 	private Object returnConstant;
 	private boolean methodSuspect;
 	private int returnPC;
@@ -73,6 +74,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 		&&  ((aFlags & Constants.ACC_SYNTHETIC) == 0)
 		&&  (!m.getSignature().endsWith(")Z"))) {
 			stack.resetForMethodEntry(this);
+			returnRegister = -1;
 			returnConstant = null;
 			methodSuspect = true;
 			returnPC = -1;
@@ -122,6 +124,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 						return;
 					}
 
+					returnRegister = item.getRegisterNumber();
 					returnConstant = constant;
 				}
 			} else if ((seen == GOTO) || (seen == GOTO_W)) {
@@ -133,6 +136,10 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 				if (clsName.startsWith("java/lang/StringB")) {
 					sawSBToString = "toString".equals(getNameConstantOperand());
 				}
+			} else if (((seen >= ISTORE) && (seen <= ASTORE_3)) || (seen == IINC)) {
+			    if ((returnRegister != -1) && (getRegisterOperand() == returnRegister)) {
+			        methodSuspect = false;
+			    }
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);
