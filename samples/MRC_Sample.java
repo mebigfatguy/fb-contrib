@@ -1,3 +1,4 @@
+import java.awt.Component;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -6,6 +7,8 @@ import java.util.List;
 @SuppressWarnings("all")
 public class MRC_Sample
 {
+    private Component[] components;
+
 	private int getValue() {
 		return 1;
 	}
@@ -96,5 +99,16 @@ public class MRC_Sample
         }
 
         throw new RuntimeException();
+    }
+
+    private int fpFindComponent(Component component) {
+        int index = 0;
+        while (this.components[index] != component) {
+            index++;
+            if (index >= this.components.length) {
+                return 0;
+            }
+        }
+        return index;
     }
 }

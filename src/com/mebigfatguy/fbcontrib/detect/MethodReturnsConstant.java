@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
@@ -39,6 +42,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private int returnRegister;
+	private Map<Integer, Object> registerConstants;
 	private Object returnConstant;
 	private boolean methodSuspect;
 	private int returnPC;
@@ -55,9 +59,11 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
+			registerConstants = new HashMap<Integer, Object>();
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;
+			registerConstants = null;
 		}
 	}
 
@@ -76,6 +82,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 			stack.resetForMethodEntry(this);
 			returnRegister = -1;
 			returnConstant = null;
+			registerConstants.clear();
 			methodSuspect = true;
 			returnPC = -1;
 			super.visitCode(obj);
@@ -101,7 +108,6 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		boolean sawSBToString = false;
-		boolean sawIINC = false;
 		try {
 			if (!methodSuspect) {
 				return;
@@ -111,7 +117,8 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 
-					if (Boolean.FALSE.equals(item.getUserValue())) {
+					int register = item.getRegisterNumber();
+					if (registerConstants.containsKey(register) && (registerConstants.get(register) == null)) {
                         methodSuspect = false;
                         return;
                     }
@@ -142,11 +149,32 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 				if (clsName.startsWith("java/lang/StringB")) {
 					sawSBToString = "toString".equals(getNameConstantOperand());
 				}
-			} else if (((seen >= ISTORE) && (seen <= ASTORE_3)) || (seen == IINC)) {
-			    if ((returnRegister != -1) && (getRegisterOperand() == returnRegister)) {
+			} else if ((seen >= ISTORE) && (seen <= ASTORE_3) || (seen == IINC)) {
+			    int register = getRegisterOperand();
+			    if ((returnRegister != -1) && (register == returnRegister)) {
 			        methodSuspect = false;
 			    }
-			    sawIINC = seen == IINC;
+
+			    if (stack.getStackDepth() > 0) {
+			        OpcodeStack.Item item = stack.getStackItem(0);
+			        Object constant = item.getConstant();
+			        if (registerConstants.containsKey(register)) {
+			            if ((constant == null) || !constant.equals(registerConstants.get(register))) {
+			                registerConstants.put(register, null);
+			            }
+			        } else {
+			            registerConstants.put(register, constant);
+			        }
+			    } else {
+			        registerConstants.put(register, null);
+			    }
+
+			    if (returnRegister == register) {
+			        Object constant = registerConstants.get(returnRegister);
+			        if (constant != null) {
+			            methodSuspect = false;
+			        }
+			    }
 			}
 
 
@@ -157,9 +185,6 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 			if (sawSBToString && (stack.getStackDepth() > 0)) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				item.setUserValue(Boolean.TRUE);
-			} else if (sawIINC && (stack.getStackDepth() > 0)) {
-			    OpcodeStack.Item item = stack.getStackItem(0);
-                item.setUserValue(Boolean.FALSE);
 			}
 		}
 	}
