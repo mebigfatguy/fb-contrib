@@ -81,7 +81,7 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 					String calledClass = stack.getStackItem(1).getSignature();
 					if ("Lorg/apache/commons/lang3/builder/EqualsBuilder;"
 							.equals(calledClass)
-							|| "org/apache/commons/lang/builder/EqualsBuilder"
+							|| "Lorg/apache/commons/lang/builder/EqualsBuilder;"
 									.equals(calledClass)) {
 						bugReporter.reportBug(new BugInstance(this,
 								"CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS",

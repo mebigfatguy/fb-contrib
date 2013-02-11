@@ -81,7 +81,7 @@ public class CommonsHashcodeBuilderToHashcode extends BytecodeScanningDetector {
 					String calledClass = stack.getStackItem(0).getSignature();
 					if ("Lorg/apache/commons/lang3/builder/HashCodeBuilder;"
 							.equals(calledClass)
-							|| "org/apache/commons/lang/builder/HashCodeBuilder"
+							|| "Lorg/apache/commons/lang/builder/HashCodeBuilder;"
 									.equals(calledClass)) {
 						bugReporter.reportBug(new BugInstance(this,
 								"CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE",
