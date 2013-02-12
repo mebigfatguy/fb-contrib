@@ -2815,6 +2815,19 @@
 		</Details>
 	</BugPattern>
 
+   <BugPattern type="LO_LOGGER_LOST_EXCEPTION_STACK_TRACE">
+      <ShortDescription>Method incorrectly passes exception as first argument to logger method</ShortDescription>
+      <LongDescription>Method {1} incorrectly passes exception as first argument to logger method</LongDescription>
+      <Details>
+         <![CDATA[
+         <p>This method passes an exception as the first argument to a logger method. The stack
+         trace is potentially lost due to the logger emitting the exception using toString(). It
+         is better to construct a log message with sufficient context and pass the exception as
+         the second argument to capture the stack trace.</p>
+         ]]>
+      </Details>
+   </BugPattern>
+
 	<BugPattern type="LO_SUSPECT_LOG_CLASS">
 		<ShortDescription>Method specifies an unrelated class when allocating a Logger</ShortDescription>
 		<LongDescription>Method {1} specifies an unrelated class when allocating a Logger</LongDescription>
@@ -3096,7 +3109,7 @@
 		<Details>
     			<![CDATA[
     			<p>This method tests a field to make sure it's not null before executing a conditional block of
-    			code. However in the conditional block is reassigns the field. It is likely that the guard
+    			code. However in the conditional block it reassigns the field. It is likely that the guard
     			should have been a check to see if the field is null, not that the field was not null.</p>
     			]]>
     		</Details>
@@ -3108,7 +3121,7 @@
 		<Details>
     			<![CDATA[
     			<p>This method tests a local variable to make sure it's not null before executing a conditional block of
-    			code. However in the conditional block is reassigns the local variable. It is likely that the guard
+    			code. However in the conditional block it reassigns the local variable. It is likely that the guard
     			should have been a check to see if the local variable is null, not that the local variable was not null.</p>
     			]]>
     		</Details>
