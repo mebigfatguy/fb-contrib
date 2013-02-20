@@ -74,7 +74,10 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 		riskyMethodNameContents.add("clone");
 		riskyMethodNameContents.add("close");
 		riskyMethodNameContents.add("copy");
-		riskyMethodNameContents.add("currentTimeMillis");
+        riskyMethodNameContents.add("currentTimeMillis");
+        riskyMethodNameContents.add("newInstance");
+        riskyMethodNameContents.add("noneOf");
+        riskyMethodNameContents.add("allOf");
 
 		String userNameProp = System.getProperty(PRMC_RISKY_FIELD_USER_KEY);
 		if (userNameProp != null) {
