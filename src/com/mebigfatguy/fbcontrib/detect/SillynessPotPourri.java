@@ -463,6 +463,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				            OpcodeStack.Item item = stack.getStackItem(1);
 				            if (item.getRegisterNumber() > -1)
 				                userValue = "append:" + item.getRegisterNumber();
+				            else
+				                userValue = (String) item.getUserValue();
 				        }
 				    }
 				} else if ("java/lang/String".equals(className)) {

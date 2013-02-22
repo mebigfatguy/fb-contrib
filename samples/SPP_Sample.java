@@ -335,5 +335,6 @@ public class SPP_Sample implements Serializable
 
     public void testSBAssigning(StringBuilder sb) {
         sb = sb.append("foo");
+        sb = sb.append("foo").append("boo").append("hoo");
     }
 }
