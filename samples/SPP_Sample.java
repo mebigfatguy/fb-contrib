@@ -18,40 +18,40 @@ import java.util.StringTokenizer;
 public class SPP_Sample implements Serializable
 {
     public static final long serialVersionUID = -2766574418713802220L;
-    
+
     private static final double pi = 3.14;
 	private static final double e = 2.72;
 	public static final String FALSE_POSITIVE = "INTERN_OK_HERE".intern();
-	
+
 	static enum Flap { Smack, Jack };
-	
+
 	public void testSPPBitSet(BitSet b)
 	{
 		b.set(-1);
 	}
-	
+
 	public String testSPPIntern()
 	{
 		return "FOO".intern(); //and yes i've seen this!
 	}
-	
+
 	public String testSBWithChars()
 	{
 		StringBuffer sb = new StringBuffer('v');
 		sb.append("ictory");
 		return sb.toString();
 	}
-	
+
 	public double area(double radius)
 	{
 		return pi * radius * radius;
 	}
-	
+
 	public void testStutter(String s)
 	{
 		String a = a = s;
 	}
-	
+
 	public void testNAN(double d)
 	{
 		if (d == Double.NaN)
@@ -59,7 +59,7 @@ public class SPP_Sample implements Serializable
             System.out.println("It's a nan");
         }
 	}
-	
+
 	public void testNAN(float f)
 	{
 		if (f == Float.NaN)
@@ -67,17 +67,17 @@ public class SPP_Sample implements Serializable
             System.out.println("It's a nan");
         }
 	}
-	
+
 	public void testBigDecimal()
 	{
 		BigDecimal d = new BigDecimal(2.1);
 	}
-    
+
     public void testEmptySB()
     {
         StringBuffer sb = new StringBuffer("");
     }
-    
+
     public void equalsOnEnum(Flap f)
     {
     	if (f.equals(Flap.Jack))
@@ -85,7 +85,7 @@ public class SPP_Sample implements Serializable
             System.out.println("Flap Jacks");
         }
     }
-    
+
     public void testCPPBoolean(Boolean a, Boolean b, Boolean c, Boolean d, Boolean e)
 	{
 		if (b && b.booleanValue())
@@ -97,7 +97,7 @@ public class SPP_Sample implements Serializable
             System.out.println("Booya");
         }
 	}
-    
+
     public char usechatAt(String s)
     {
     	if (s.length() > 0)
@@ -106,32 +106,32 @@ public class SPP_Sample implements Serializable
         }
     	return ' ';
     }
-    
+
     public boolean testUselessTrinary(boolean b)
     {
     	return (b ? true : false);
     }
-    
+
     public boolean testFPUselessTrinary(boolean a, boolean b)
     {
     	if (a && b)
         {
             return a || b;
         }
-    	
+
     	return a && b;
     }
-    
+
     public boolean testFPTrinaryOnInt(String s)
     {
     	return (s.length() != 0);
     }
-    
+
     public void testSuspiciousStringTests(String s)
     {
         int a = 0, b = 0, c = 0, d = 0;
         String e = "Foo";
-        
+
     	if ((s == null) || (s.length() > 0))
         {
             System.out.println("Booya");
@@ -144,7 +144,7 @@ public class SPP_Sample implements Serializable
         {
             System.out.println("Booya");
         }
-    	
+
         if ((e == null) || (e.length() > 0))
         {
             System.out.println("Booya");
@@ -158,42 +158,42 @@ public class SPP_Sample implements Serializable
             System.out.println("Booya");
         }
     }
-    
+
     public void testFPSST(String s)
     {
         int a = 0, b = 0, c = 0, d = 0;
         String e = "Foo";
-        
+
         if ((s == null) || (s.length() == 0))
         {
             System.out.println("Booya");
         }
-        
+
         if ((s != null) && (s.length() >= 0))
         {
             System.out.println("Booya");
         }
-        
+
         if ((s != null) && (s.length() != 0))
         {
             System.out.println("Booya");
         }
-            
+
         if ((e == null) || (e.length() == 0))
         {
             System.out.println("Booya");
         }
-        
+
         if ((e != null) && (e.length() >= 0))
         {
             System.out.println("Booya");
         }
-        
+
         if ((e != null) && (e.length() != 0))
         {
             System.out.println("Booya");
         }
-        
+
         Set<String> m = new HashSet<String>();
         Iterator<String> it = m.iterator();
         while (it.hasNext())
@@ -203,11 +203,11 @@ public class SPP_Sample implements Serializable
             {
                 continue;
             }
-            
+
             System.out.println("Booya");
         }
     }
-    
+
     public void sbToString(StringBuffer sb)
     {
     	if (sb.toString().length() == 0)
@@ -219,7 +219,7 @@ public class SPP_Sample implements Serializable
             System.out.println("Booya");
         }
     }
-    
+
     public String cpNullOrZero(StringTokenizer tokenizer)
     {
     	while (tokenizer.hasMoreTokens())
@@ -233,15 +233,15 @@ public class SPP_Sample implements Serializable
 
             return sField;
         }
-    	
+
     	return null;
     }
-    
+
     public boolean testCalBeforeAfter(Calendar c, Date d)
     {
     	return c.after(d) || c.before(d);
     }
-    
+
     public void testUseContainsKey(Map m)
     {
     	if (m.keySet().contains("Foo"))
@@ -249,87 +249,91 @@ public class SPP_Sample implements Serializable
             System.out.println("Yup");
         }
     }
-    
+
     public void testCollectionSizeEqualsZero(Set<String> s)
     {
     	if (s.size() == 0)
         {
             System.out.println("empty");
         }
-    	
+
     	if (s.size() <= 0)
     	{
     		System.out.println("empty");
     	}
     }
-    
+
     public boolean testDerivedGregorianCalendar()
     {
     	Calendar c = new GregorianCalendar() {};
     	Calendar s = new GregorianCalendar();
-    	
+
     	return s.after(c);
     }
-    
+
     public void testGetProperties()
     {
     	String lf = System.getProperties().getProperty("line.separator");
     }
-    
+
     public boolean testCasing(String a, String b)
     {
     	if (a.toUpperCase().equalsIgnoreCase(b)) {
 			return true;
 		}
-    	
+
     	if (a.toLowerCase().compareToIgnoreCase(b) == 0) {
 			return true;
 		}
-    	
+
     	return false;
     }
-    
+
     public void castRandomToInt() {
     	int i = (int)Math.random();
-    	
+
     	Random r = new Random();
     	i = (int) r.nextDouble();
-    	
+
     	i = (int) r.nextFloat();
     }
-    
+
     public void testSAC(List<String> input)
     {
     	String[] copy = new String[input.size()];
     	System.arraycopy(input, 0, copy, 0, copy.length);
-    	
+
     	System.arraycopy(copy, 0, input, 0, copy.length);
     }
-    
+
     public void testArray()
     {
     	List<String> notAnArray = new ArrayList<String>();
-    	
+
     	Array.getLength(notAnArray);
-    	
+
     	Array.getBoolean(notAnArray, 0);
-    	
+
     	Array.setInt(notAnArray, 0, 1);
     }
-    
+
     public boolean testEmptyIgnoreCase(String s)
     {
     	return (s.equalsIgnoreCase(""));
     }
-    
+
     public void testTrim(String s)
     {
     	if (s.trim().length() > 0)
     		System.out.println(s);
-    	
+
     	if (s.trim().equals("Booyah"))
     	{
     		System.out.println("Booyah->" + s);
     	}
+    }
+
+    public void testSBAssigning(StringBuilder sb) {
+        sb = sb.append("foo");
     }
 }

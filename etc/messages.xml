@@ -2542,6 +2542,19 @@
 		</Details>
 	</BugPattern>
 	
+	<BugPattern type="SPP_STRINGBUILDER_IS_MUTABLE">
+        <ShortDescription>Method needlessly assigns a StringBuilder to itself, as it's mutable</ShortDescription>
+        <LongDescription>Method {1} needlessly assigns a StringBuilder to itself, as it's mutable</LongDescription>
+        <Details>
+            <![CDATA[
+                This method calls StringBuilder.append and assigns the results to the same StringBuilder as
+                <pre>sb = sb.append("foo")</pre>
+                As StringBuilder is mutable this is not necessary.
+                This is also true of StringBuffer.
+            ]]>
+        </Details>
+    </BugPattern>
+	
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
 		<ShortDescription>Method assigns a variable in a larger scope then is needed</ShortDescription>
 		<LongDescription>Method {1} assigns a variable in a larger scope then is needed</LongDescription>
