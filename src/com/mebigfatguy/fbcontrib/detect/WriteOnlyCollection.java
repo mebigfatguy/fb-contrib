@@ -28,6 +28,7 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -44,12 +45,12 @@ import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
-public class WriteOnlyCollection extends BytecodeScanningDetector {
+public class WriteOnlyCollection extends OpcodeStackDetector {
 
 	private static Set<String> collectionClasses = new HashSet<String>();
 	static
@@ -70,6 +71,7 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 		collectionClasses.add(Vector.class.getName());
 		collectionClasses.add(ArrayList.class.getName());
 		collectionClasses.add(LinkedList.class.getName());
+		collectionClasses.add(Queue.class.getName());
 	}
 
 	private static Set<String> writeMethods = new HashSet<String>();
@@ -163,10 +165,10 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 	 * @param obj the context object of the currently parsed code block
 	 */
 	@Override
-	public void visitCode(Code obj) {
+	public void visit(Code obj) {
 		stack.resetForMethodEntry(this);
 		localWOCollections.clear();
-		super.visitCode(obj);
+		super.visit(obj);
 
 		for (Integer pc : localWOCollections.values()) {
 			bugReporter.reportBug(new BugInstance(this, "WOC_WRITE_ONLY_COLLECTION_LOCAL", NORMAL_PRIORITY)
