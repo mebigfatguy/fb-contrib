@@ -101,4 +101,22 @@ public class WOC_Sample
 	{
 		return ws.fpList;
 	}
+
+	public static class FpContains {
+		private List<String> fpSet;
+		
+		public FpContains() {
+			fpSet = new ArrayList<String>();
+		}
+		public void add() {
+			fpSet.add("Foo");
+		}
+		protected void contains() {
+			for (int i = 0; i < 10; i++) {
+				if (fpSet.get(i) != null) {
+					System.out.println("Contains");
+				}
+			}
+		}
+	}
 }
