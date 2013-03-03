@@ -1256,6 +1256,7 @@
             
             Comparing class name ignores the class loader.
             </p>
+            <p>It is a fast detector</p>
             ]]>
         </Details>
     </Detector>
@@ -1267,6 +1268,7 @@
             classes are available in versions of the JDK 5.0 and higher, and these
             classes should only be used if you are targeting JDK 1.4 and lower.
             </p>
+            <p>It is a fast detector</p>
             ]]>
         </Details>
     </Detector>
@@ -1278,6 +1280,7 @@
             not swallow CloneNotSupportedException. Not doing so makes the clone method not as simple to use, 
             and should be harmless to do so.
             </p>
+            <p>It is a fast detector</p>
             ]]>
         </Details>
     </Detector>
@@ -1289,6 +1292,20 @@
             This does not produce a list that holds the primitive boxed values, but a list of
             one item, the array itself.
             </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections">
+            <Details>
+            <![CDATA[
+            <p> Looks for methods that create collections using the default constructor,
+            even though the number of elements that will be placed in the collection is known
+            apriori, and thus could be pre-allocated. Not doing so just causes more intermediate
+            reallocations which is unnecessary.
+            </p>
+            <p>It is a fast detector</p>
             ]]>
         </Details>
     </Detector>
@@ -3544,6 +3561,19 @@
             ]]>
         </Details>
     </BugPattern> 
+    
+    <BugPattern type="PSC_PRESIZE_COLLECTIONS">
+        <ShortDescription>Method does not presize the allocation of a collection</ShortDescription>
+        <LongDescription>Method {1} does not presize the allocation of a collection</LongDescription>
+        <Details>
+            <![CDATA[
+            <p> This method allocates a collection using the default constructor even though it is known
+            apriori how many items are going to be placed in the collection (or at least a reasonable guess)
+            and thus needlessly causes intermediate reallocations of the collection.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>"
    
 	<!-- BugCode -->
 
@@ -3654,4 +3684,5 @@
     <BugCode abbrev="BRPI">Backport concurrent reuse of public identifiers</BugCode>
     <BugCode abbrev="CU">Clone Usability</BugCode>
     <BugCode abbrev="CAAL">Confusing Array asList</BugCode>
+    <BugCode abbrev="PSC">Presize Collection</BugCode>
 </MessageCollection>
