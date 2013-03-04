@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -90,6 +91,15 @@ public class PresizeCollections extends BytecodeScanningDetector {
         allocNumber = 0;
         allocToAddPCs.clear();
         super.visitCode(obj);
+
+        for (List<Integer> pcs : allocToAddPCs.values()) {
+            if (pcs.size() > 16) {
+                bugReporter.reportBug(new BugInstance(this, "PSC_PRESIZE_COLLECTIONS", NORMAL_PRIORITY)
+                .addClass(this)
+                .addMethod(this)
+                .addSourceLine(this, pcs.get(0)));
+            }
+        }
     }
 
     /**
@@ -140,13 +150,16 @@ public class PresizeCollections extends BytecodeScanningDetector {
             case GOTO_W:
                 if (getBranchOffset() < 0) {
                     int target = getBranchTarget();
-                    for (List<Integer> pcs : allocToAddPCs.values()) {
+                    Iterator<List<Integer>> it = allocToAddPCs.values().iterator();
+                    while (it.hasNext()) {
+                        List<Integer> pcs = it.next();
                         for (Integer pc : pcs) {
                             if (pc > target) {
                                 bugReporter.reportBug(new BugInstance(this, "PSC_PRESIZE_COLLECTIONS", NORMAL_PRIORITY)
                                             .addClass(this)
                                             .addMethod(this)
                                             .addSourceLine(this, pc));
+                                it.remove();
                                 break;
                             }
                         }
