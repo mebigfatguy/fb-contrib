@@ -145,9 +145,10 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.DubiousListCollection">
 		<Details>
 			<![CDATA[
-			<p> Looks for constructors of non final classes that make method calls to non final methods.
-			As these methods could be overridden, the overridden method will be accessing an object that
-			is only partially constructed, perhaps causing problems.</p>
+			<p> looks for fields that are implementations of java.util.List, but that are used in a set-like fashion.
+			Since lookup type operations are performed using a linear search for Lists, the performance for large
+			Lists will be poor. Consideration should be made as to whether these fields should be sets. In the
+			case that order is important, consider using LinkedHashSet.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -284,8 +285,7 @@
 			thread itself, introducing client calls will confuse the thread state of the object
 			in question, and will cause spurious thread state changes, either waking threads up
 			when not intended, or removing the the thread from the runnable state.</p>
-			</p>
-			<p>It is a fast detector</p>			
+			<p>It is a fast detector</p>
 			]]>
 		</Details>
 	</Detector>
@@ -319,8 +319,7 @@
 			<![CDATA[
 			<p>Looks for methods that store the return result in a local variable, and
 			then immediately returns that local variable.</p>
-			</p>
-			<p>It is a fast detector</p>			
+			<p>It is a fast detector</p>
 			]]>
 		</Details>
 	</Detector>
@@ -329,8 +328,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that are direct copies of the implementation in the super class</p>
-			</p>
-			<p>It is a fast detector</p>			
+			<p>It is a fast detector</p>
 			]]>
 		</Details>
 	</Detector>
@@ -343,8 +341,7 @@
 			do not, and cannot define an equals method, reference equality is used for these
 			collections, which is probably not desired. If it is, consider using the IdentityHashMap
 			class when using Maps in this case, to better document your intentions.</p>
-			</p>
-			<p>It is a fast detector</p>			
+			<p>It is a fast detector</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1516,7 +1513,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method uses floating point variables to index a loop. Since floating point
-			math is inprecise, rounding errors will accumulate over time each time the loop is
+			math is imprecise, rounding errors will accumulate over time each time the loop is
 			executed. It is usually better to use integer indexing, and calculate the new value
 			of the floating point number at the top of the loop body.</p>
 			]]>
