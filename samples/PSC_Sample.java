@@ -1,8 +1,11 @@
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -36,10 +39,30 @@ public class PSC_Sample {
         commonWords.add("them");
     }
 
-    public void testFPDontHaveCollectionForSizing(Iterator<Long> it) {
+    public void fpDontHaveCollectionForSizing(Iterator<Long> it) {
         Deque<Long> ad = new ArrayDeque<Long>();
         while (it.hasNext()) {
             ad.add(it.next());
+        }
+    }
+
+    public void fpConditionalInLoop(Set<String> source) {
+        List<String> dest = new ArrayList<String>();
+        for (String s : source) {
+            if (s.length() > 0) {
+                dest.add(s);
+            }
+        }
+    }
+
+    public void fpAllocationInLoop(Map<String, String> source) {
+        Map<String, List<String>> dest = new HashMap<String, List<String>>();
+
+        for (Map.Entry<String, String> entry : source.entrySet()) {
+
+            List<String> l = new ArrayList<String>();
+            l.add(entry.getValue());
+            dest.put(entry.getKey(), l);
         }
     }
 }
