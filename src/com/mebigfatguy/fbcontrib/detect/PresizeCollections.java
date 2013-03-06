@@ -178,6 +178,8 @@ public class PresizeCollections extends BytecodeScanningDetector {
             case IF_ICMPLE:
             case IF_ACMPEQ:
             case IF_ACMPNE:
+            case IFNULL:
+            case IFNONNULL:
             case GOTO:
             case GOTO_W:
                 if (getBranchOffset() < 0) {
