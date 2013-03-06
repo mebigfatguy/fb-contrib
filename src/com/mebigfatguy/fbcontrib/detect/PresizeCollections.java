@@ -60,6 +60,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private int allocNumber;
     private Map<Integer, List<Integer>> allocToAddPCs;
+    private List<DownBranch> downBranches;
 
     public PresizeCollections(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -74,10 +75,12 @@ public class PresizeCollections extends BytecodeScanningDetector {
         try {
             stack = new OpcodeStack();
             allocToAddPCs = new HashMap<Integer, List<Integer>>();
+            downBranches = new ArrayList<DownBranch>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
             allocToAddPCs = null;
+            downBranches = null;
         }
     }
 
@@ -90,6 +93,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
         allocNumber = 0;
         allocToAddPCs.clear();
+        downBranches.clear();
         super.visitCode(obj);
 
         for (List<Integer> pcs : allocToAddPCs.values()) {
@@ -146,6 +150,20 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 }
                 break;
 
+            case IFEQ:
+            case IFNE:
+            case IFLT:
+            case IFGE:
+            case IFGT:
+            case IFLE:
+            case IF_ICMPEQ:
+            case IF_ICMPNE:
+            case IF_ICMPLT:
+            case IF_ICMPGE:
+            case IF_ICMPGT:
+            case IF_ICMPLE:
+            case IF_ACMPEQ:
+            case IF_ACMPNE:
             case GOTO:
             case GOTO_W:
                 if (getBranchOffset() < 0) {
@@ -155,15 +173,21 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         List<Integer> pcs = it.next();
                         for (Integer pc : pcs) {
                             if (pc > target) {
-                                bugReporter.reportBug(new BugInstance(this, "PSC_PRESIZE_COLLECTIONS", NORMAL_PRIORITY)
-                                            .addClass(this)
-                                            .addMethod(this)
-                                            .addSourceLine(this, pc));
-                                it.remove();
+                                int numDownBranches = countDownBranches(target, pc);
+                                if (numDownBranches <= 1) {
+                                    bugReporter.reportBug(new BugInstance(this, "PSC_PRESIZE_COLLECTIONS", NORMAL_PRIORITY)
+                                                .addClass(this)
+                                                .addMethod(this)
+                                                .addSourceLine(this, pc));
+                                    it.remove();
+                                }
                                 break;
                             }
                         }
                     }
+                } else {
+                    DownBranch db = new DownBranch(getPC(), getBranchTarget());
+                    downBranches.add(db);
                 }
             }
         } finally {
@@ -174,6 +198,32 @@ public class PresizeCollections extends BytecodeScanningDetector {
                     item.setUserValue(Integer.valueOf(++allocNumber));
                 }
             }
+        }
+    }
+
+    private int countDownBranches(int loopTop, int addPC) {
+        int numDownBranches = 0;
+        for (DownBranch db : downBranches) {
+            if ((db.fromPC > loopTop) && (db.toPC > addPC)) {
+                numDownBranches++;
+            }
+        }
+
+        return numDownBranches;
+    }
+
+    static class DownBranch {
+        public int fromPC;
+        public int toPC;
+
+        public DownBranch(int from, int to) {
+            fromPC = from;
+            toPC = to;
+        }
+
+        @Override
+        public String toString() {
+            return "DownBranch[From: " + fromPC + " To: " + toPC + "]";
         }
     }
 }
