@@ -55,6 +55,20 @@ public class PSC_Sample {
         }
     }
 
+    public void fpSwitchInLoop(Set<Integer> source) {
+        List<Integer> dest = new ArrayList<Integer>();
+        for (Integer s : source) {
+            switch (s.intValue()) {
+                case 0:
+                    dest.add(s);
+                break;
+                case 1:
+                    dest.remove(s);
+                break;
+            }
+        }
+    }
+
     public void fpAllocationInLoop(Map<String, String> source) {
         Map<String, List<String>> dest = new HashMap<String, List<String>>();
 

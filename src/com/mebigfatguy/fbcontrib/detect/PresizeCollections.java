@@ -154,6 +154,16 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 }
                 break;
 
+            case LOOKUPSWITCH:
+            case TABLESWITCH:
+                int[] offsets = getSwitchOffsets();
+                if (offsets.length > 1) {
+                    int secondCase = offsets[1] + getPC();
+                    DownBranch db = new DownBranch(getPC(), secondCase);
+                    downBranches.add(db);
+                }
+                break;
+
             case IFEQ:
             case IFNE:
             case IFLT:
@@ -214,7 +224,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     private int countDownBranches(int loopTop, int addPC) {
         int numDownBranches = 0;
         for (DownBranch db : downBranches) {
-            if ((db.fromPC > loopTop) && (db.toPC > addPC)) {
+            if ((db.fromPC > loopTop) && (db.fromPC < addPC) && (db.toPC > addPC)) {
                 numDownBranches++;
             }
         }
