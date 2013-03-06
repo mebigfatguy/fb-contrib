@@ -59,6 +59,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private int allocNumber;
+    private Map<Integer, Integer> allocLocation;
     private Map<Integer, List<Integer>> allocToAddPCs;
     private List<DownBranch> downBranches;
 
@@ -74,11 +75,13 @@ public class PresizeCollections extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
+            allocLocation = new HashMap<Integer, Integer>();
             allocToAddPCs = new HashMap<Integer, List<Integer>>();
             downBranches = new ArrayList<DownBranch>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
+            allocLocation = null;
             allocToAddPCs = null;
             downBranches = null;
         }
@@ -92,6 +95,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         allocNumber = 0;
+        allocLocation.clear();
         allocToAddPCs.clear();
         downBranches.clear();
         super.visitCode(obj);
@@ -168,20 +172,24 @@ public class PresizeCollections extends BytecodeScanningDetector {
             case GOTO_W:
                 if (getBranchOffset() < 0) {
                     int target = getBranchTarget();
-                    Iterator<List<Integer>> it = allocToAddPCs.values().iterator();
+                    Iterator<Map.Entry<Integer, List<Integer>>> it = allocToAddPCs.entrySet().iterator();
                     while (it.hasNext()) {
-                        List<Integer> pcs = it.next();
-                        for (Integer pc : pcs) {
-                            if (pc > target) {
-                                int numDownBranches = countDownBranches(target, pc);
-                                if (numDownBranches <= 1) {
-                                    bugReporter.reportBug(new BugInstance(this, "PSC_PRESIZE_COLLECTIONS", NORMAL_PRIORITY)
-                                                .addClass(this)
-                                                .addMethod(this)
-                                                .addSourceLine(this, pc));
-                                    it.remove();
+                        Map.Entry<Integer, List<Integer>> entry = it.next();
+                        Integer allocLoc = allocLocation.get(entry.getKey());
+                        if ((allocLoc != null) && (allocLoc.intValue() < target)) {
+                            List<Integer> pcs = entry.getValue();
+                            for (Integer pc : pcs) {
+                                if (pc > target) {
+                                    int numDownBranches = countDownBranches(target, pc);
+                                    if (numDownBranches <= 1) {
+                                        bugReporter.reportBug(new BugInstance(this, "PSC_PRESIZE_COLLECTIONS", NORMAL_PRIORITY)
+                                                    .addClass(this)
+                                                    .addMethod(this)
+                                                    .addSourceLine(this, pc));
+                                        it.remove();
+                                    }
+                                    break;
                                 }
-                                break;
                             }
                         }
                     }
@@ -195,7 +203,9 @@ public class PresizeCollections extends BytecodeScanningDetector {
             if (sawAlloc) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(Integer.valueOf(++allocNumber));
+                    ++allocNumber;
+                    item.setUserValue(Integer.valueOf(allocNumber));
+                    allocLocation.put(Integer.valueOf(allocNumber), Integer.valueOf(getPC()));
                 }
             }
         }
