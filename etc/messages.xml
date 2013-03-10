@@ -1295,7 +1295,7 @@
     </Detector>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections">
-            <Details>
+        <Details>
             <![CDATA[
             <p> Looks for methods that create collections using the default constructor,
             even though the number of elements that will be placed in the collection is known
@@ -1303,6 +1303,18 @@
             reallocations which is unnecessary.
             </p>
             <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.UnboundMethodTemplateParameter">
+        <Details>
+            <![CDATA[
+            <p> Looks for methods that declare method level template parameter(s) that are not bound to any of the
+            method's parameters, and thus is not adding any validation/type safety to the method, and is
+            just confusing.
+            </p>
+            <p>It is a fast detector</p>            
             ]]>
         </Details>
     </Detector>
@@ -3570,7 +3582,19 @@
             </p>
             ]]>
         </Details>
-    </BugPattern>"
+    </BugPattern>
+    
+    <BugPattern type="UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER">
+        <ShortDescription>Method declares unbound method template parameter(s)</ShortDescription>
+        <LongDescription>Method {1} declares unbound method template parameter(s)</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method declares a method level template parameter that is not bound by any parameter of this
+            method. Therefore the template parameter adds no validation or type safety and can be removed, as it's 
+            just confusing to the reader.
+            ]]>
+        </Details>
+    </BugPattern>
    
 	<!-- BugCode -->
 
@@ -3682,4 +3706,5 @@
     <BugCode abbrev="CU">Clone Usability</BugCode>
     <BugCode abbrev="CAAL">Confusing Array asList</BugCode>
     <BugCode abbrev="PSC">Presize Collection</BugCode>
+    <BugCode abbrev="UMTP">Unbound Method Template Parameter</BugCode>
 </MessageCollection>

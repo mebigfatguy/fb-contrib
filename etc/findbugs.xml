@@ -240,6 +240,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections" speed="fast" reports="PSC_PRESIZE_COLLECTIONS" />
 
+    <Detector class="com.mebigfatguy.fbcontrib.detect.UnboundMethodTemplateParameter" speed="fast" reports="UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER" />
+
 	<!-- BugPattern -->
 
 	<BugPattern abbrev="ISB" type="ISB_INEFFICIENT_STRING_BUFFERING" category="PERFORMANCE" />
@@ -418,4 +420,5 @@
     <BugPattern abbrev="CU" type="CU_CLONE_USABILITY_THROWS" category="STYLE" />
     <BugPattern abbrev="CAAL" type="CAAL_CONFUSING_ARRAY_AS_LIST" category="CORRECTNESS" />
     <BugPattern abbrev="PSC" type="PSC_PRESIZE_COLLECTIONS" category="PERFORMANCE" />
+    <BugPattern abbrev="UMTP" type="UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER" category="CORRECTNESS" />
 </FindbugsPlugin>
