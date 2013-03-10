@@ -16,6 +16,11 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
+/**
+ * Looks for methods that declare method level template parameter(s) that are not bound to any of the
+ * method's parameters, and thus is not adding any validation/type safety to the method, and is
+ * just confusing.
+ */
 public class UnboundMethodTemplateParameter extends PreorderVisitor implements Detector {
 
     private static final Pattern TEMPLATED_SIGNATURE = Pattern.compile("(\\<[^\\>]+\\>)(.+)");
@@ -27,11 +32,22 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * implements the visitor to accept the class for visiting
+     *
+     * @param classContext the context object of the currently parsed class
+     */
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
         cls.accept(this);
     }
 
+    /**
+     * implements the visitor to find methods that declare template parameters
+     * that are not bound to any parameter.
+     *
+     * @param obj the context object of the currently parsed method
+     */
     @Override
     public void visitMethod(Method obj) {
         Attribute[] attributes = obj.getAttributes();
@@ -57,6 +73,12 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     public void report() {
     }
 
+    /**
+     * builds a template signature object based on the signature attribute of the method
+     *
+     * @param signatureAttribute the signature attribute
+     * @return a template signature if there are templates defined, otherwise null
+     */
     private TemplateSignature parseSignatureAttribute(Signature signatureAttribute) {
 
         Matcher m = TEMPLATED_SIGNATURE.matcher(signatureAttribute.getSignature());
@@ -79,6 +101,9 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
         return null;
     }
 
+    /**
+     * a simple data only class for holding the template parameters and method signature
+     */
     static class TemplateSignature {
         String[] templateParameters;
         String signature;
