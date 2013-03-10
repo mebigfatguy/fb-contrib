@@ -86,6 +86,17 @@ function toggleBlock(divId, imgId)
                 same kind of exception, and throw the same exception always. These blocks can
                 be coalesced into one.
                 </li>
+                <li><b>[PSC] Presize Collections</b><br/>
+                Looks for methods that create and populate collections, and while knowing
+                the end size of those collections, does not pre allocate the collection
+                to be big enough. This just causes unneeded reallocations putting strain
+                on the garbage collector.
+                </li>
+                <li><b>[UMTP] Unbound Method Template Parameter</b><br/>
+                Looks for methods that declare method level template parameter(s) that are not bound to any of 
+                the method's parameters, and thus is not adding any validation/type safety to the method, 
+                and is just confusing.
+                </li>
             </ul>             
         </div>
 		<hr/>
