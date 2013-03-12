@@ -56,7 +56,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
                 TemplateSignature ts = parseSignatureAttribute((Signature) a);
                 if (ts != null) {
                     for (String templateParm : ts.templateParameters) {
-                        if (!ts.signature.contains("<T" + templateParm + ";>") && !ts.signature.contains("[T" + templateParm + ";")&& !ts.signature.contains("(T" + templateParm + ";")) {
+                        if (!ts.signature.contains("T" + templateParm + ";") && !ts.signature.contains("[T" + templateParm + ";")) {
                             bugReporter.reportBug(new BugInstance(this, "UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER", NORMAL_PRIORITY)
                                         .addClass(this)
                                         .addMethod(this)

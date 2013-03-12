@@ -1,3 +1,6 @@
+import java.util.HashMap;
+import java.util.Map;
+
 
 public class UMTP_Sample {
 
@@ -18,6 +21,15 @@ public class UMTP_Sample {
 
     public <T> String fpUseArray(T[] t) {
         return t[0].toString();
+    }
+
+    private <K, V> Map<V, K> fpKVReverseMap(Map<K, V> map) {
+        Map<V, K> m = new HashMap<V, K>();
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            m.put(entry.getValue(), entry.getKey());
+        }
+
+        return m;
     }
 
     public Object getFoo() {
