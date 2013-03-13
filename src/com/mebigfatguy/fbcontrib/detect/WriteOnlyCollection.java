@@ -20,15 +20,17 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.IdentityHashMap;
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
@@ -61,7 +63,10 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 		collectionClasses.add(SortedSet.class.getName());
 		collectionClasses.add(SortedMap.class.getName());
 		collectionClasses.add(Collection.class.getName());
-		collectionClasses.add(HashSet.class.getName());
+        collectionClasses.add(EnumSet.class.getName());
+        collectionClasses.add(EnumMap.class.getName());
+        collectionClasses.add(HashSet.class.getName());
+        collectionClasses.add(IdentityHashMap.class.getName());
 		collectionClasses.add(TreeSet.class.getName());
 		collectionClasses.add(LinkedHashSet.class.getName());
 		collectionClasses.add(HashMap.class.getName());
@@ -71,32 +76,44 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 		collectionClasses.add(Vector.class.getName());
 		collectionClasses.add(ArrayList.class.getName());
 		collectionClasses.add(LinkedList.class.getName());
-		collectionClasses.add(Queue.class.getName());
+		/* these are java 6 classes */
+        collectionClasses.add("java.util.Deque");
+        collectionClasses.add("java.util.Queue");
+        collectionClasses.add("java.util.ArrayDeque");
+        collectionClasses.add("java.util.LinkedBlockingDeque");
+        collectionClasses.add("java.util.NavigableMap");
+        collectionClasses.add("java.util.concurrent.ConcurrentMap");
+        collectionClasses.add("java.util.concurrent.ConcurrentNavigableMap");
+        collectionClasses.add("java.util.concurrent.ConcurrentSkipListMap");
+        collectionClasses.add("java.util.concurrent.ConcurrentHashMap");
+        collectionClasses.add("java.util.concurrent.ConcurrentSkipListSet");
+        collectionClasses.add("java.util.concurrent.CopyOnWriteArrayList");
 	}
 
-	private static Set<String> writeMethods = new HashSet<String>();
+	private static Set<String> nonInformationalMethods = new HashSet<String>();
 	static
 	{
-		writeMethods.add("add");
-		writeMethods.add("addAll");
-		writeMethods.add("addElement");
-		writeMethods.add("addFirst");
-		writeMethods.add("addLast");
-		writeMethods.add("clear");
-		writeMethods.add("clone");
-		writeMethods.add("ensureCapacity");
-		writeMethods.add("insertElementAt");
-		writeMethods.add("put");
-		writeMethods.add("putAll");
-		writeMethods.add("remove");
-		writeMethods.add("removeAll");
-		writeMethods.add("removeElement");
-		writeMethods.add("removeElementAt");
-		writeMethods.add("removeRange");
-		writeMethods.add("set");
-		writeMethods.add("setElementAt");
-		writeMethods.add("setSize");
-		writeMethods.add("trimToSize");
+		nonInformationalMethods.add("add");
+		nonInformationalMethods.add("addAll");
+		nonInformationalMethods.add("addElement");
+		nonInformationalMethods.add("addFirst");
+		nonInformationalMethods.add("addLast");
+		nonInformationalMethods.add("clear");
+		nonInformationalMethods.add("clone");
+		nonInformationalMethods.add("ensureCapacity");
+		nonInformationalMethods.add("insertElementAt");
+		nonInformationalMethods.add("push");
+		nonInformationalMethods.add("put");
+		nonInformationalMethods.add("putAll");
+		nonInformationalMethods.add("remove");
+		nonInformationalMethods.add("removeAll");
+		nonInformationalMethods.add("removeElement");
+		nonInformationalMethods.add("removeElementAt");
+		nonInformationalMethods.add("removeRange");
+		nonInformationalMethods.add("set");
+		nonInformationalMethods.add("setElementAt");
+		nonInformationalMethods.add("setSize");
+		nonInformationalMethods.add("trimToSize");
 	}
 
 	private final BugReporter bugReporter;
@@ -212,7 +229,7 @@ access to
 						Object uo = item.getUserValue();
 						if (uo != null) {
 							String name = getNameConstantOperand();
-							if (!writeMethods.contains(name)) {
+							if (!nonInformationalMethods.contains(name)) {
 								clearUserValue(item);
 							} else if (!"clone".equals(name)) {
 							    Type t = Type.getReturnType(sig);
