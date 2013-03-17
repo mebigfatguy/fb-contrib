@@ -1,3 +1,5 @@
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Deque;
@@ -78,5 +80,16 @@ public class PSC_Sample {
             l.add(entry.getValue());
             dest.put(entry.getKey(), l);
         }
+    }
+
+    public List<String> fpUnknownSrcSize(BufferedReader br) throws IOException {
+        List<String> l = new ArrayList<String>();
+        String line;
+        while ((line = br.readLine()) != null) {
+            l.add(line);
+        }
+
+        return l;
+
     }
 }
