@@ -74,8 +74,8 @@
 		<Details>
 			<![CDATA[
 			<p> Looks for for loops that iterate over a java.util.List using an integer index, and get,
-			rather than using an Iterator. An iterator may perform better depending List implementation, 
-			but more importantly will allow the code to be converted to other collections type.</p>
+			rather than using an Iterator. An iterator may perform better depending on List implementation, 
+			but more importantly will allow the code to be converted to other collection types.</p>
 			<p>It is a moderately fast detector</p>
 			]]>
 		</Details>
@@ -85,7 +85,7 @@
 		<Details>
 			<![CDATA[
 			<p> Looks for collections or arrays that hold objects that are unrelated thru class or
-			interface inheritance other than java.lang.Object. Doing so, makes for brittle code,
+			interface inheritance other than java.lang.Object. Doing so makes for brittle code,
 			relying either on positional correspondence for type, or a reliance on instanceof to
 			determine type. A better design usually can be had by creating a seperate class,
 			which defines the different types required, and add an instance of that class to the
@@ -101,7 +101,7 @@
 			<p> Looks for methods that declare Runtime exceptions in their throws clause. While doing
 			so is not illegal, it may represent a misunderstanding as to the exception in question.
 			If a RuntimeException is declared, it implies that this exception type is expected to happen,
-			which if true, should be handled in code, and not propogated. </p>
+			which if true should be handled in code, and not propagated. </p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -159,7 +159,8 @@
 			<![CDATA[
 			<p> Looks for classes that maintain two or more lists or arrays associated one-for-one through the same index
 			to hold two or more pieces of related information. It would be better to create a new class that holds
-			all of these pieces of information, and place instances of this class in one list.</p>
+			all of these pieces of information, and place instances of this class in one list. Or if the two list are
+			related in key/value fashion, then a map.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -293,8 +294,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.NeedlessAutoboxing">
 		<Details>
 			<![CDATA[
-			<p> Looks for methods that pass a primitive wrapper class object, to the
-			same classes Constructor. Patterns found are:
+			<p> Looks for methods that pass a primitive wrapper class object to the
+			same class' Constructor. Patterns found are:
 			<ul>
 				<li>new Boolean(Boolean)</li>
 				<li>new Byte(Byte)</li>
@@ -317,7 +318,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryStoreBeforeReturn">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that store the return result in a local variable, and
+			<p>Looks for methods that store the return result in a local variable and
 			then immediately returns that local variable.</p>
 			<p>It is a fast detector</p>
 			]]>
