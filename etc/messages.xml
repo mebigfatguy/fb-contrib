@@ -2817,6 +2817,18 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	   <BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED">
+        <ShortDescription>Method uses java asserts rather than a junit assertion</ShortDescription>
+        <LongDescription>Method {1} uses java asserts rather than a junit assertion</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method uses a java assert to assure that a certain state is in effect. As this is
+            a junit test it makes more sense to either check this condition with a junit assert, or allow
+            a following exception to occur.</p>
+            ]]>
+        </Details>
+    </BugPattern>
 
 	<BugPattern type="SCA_SUSPICIOUS_CLONE_ALGORITHM">
 		<ShortDescription>Clone method stores a new value to member field of source object</ShortDescription>

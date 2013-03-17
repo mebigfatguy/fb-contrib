@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2013 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /** looks for odd uses of the Assert class of the JUnit framework */
-public class JUnitAssertionOddities extends BytecodeScanningDetector 
+public class JUnitAssertionOddities extends BytecodeScanningDetector
 {
 	private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
 	private static final String TEST_ANNOTATION_SIGNATURE = "Lorg/junit/Test;";
@@ -62,7 +62,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	private OpcodeStack stack;
 	private boolean isTestCaseDerived;
 	private boolean isAnnotationCapable;
-	
+
 	/**
      * constructs a JOA detector given the reporter to report bugs on
      * @param bugReporter the sync of bug reports
@@ -70,10 +70,10 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	public JUnitAssertionOddities(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	/**
 	 * override the visitor to see if this class could be a test class
-	 * 
+	 *
 	 * @param classContext the context object of the currently parsed class
 	 */
 	@Override
@@ -92,12 +92,12 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 			stack = null;
 		}
 	}
-	
+
 	@Override
 	public void visitCode(Code obj) {
 		Method m = getMethod();
 		boolean isTestMethod = isTestCaseDerived && m.getName().startsWith("test");
-		
+
 		if (!isTestMethod && isAnnotationCapable) {
 			Attribute[] atts = m.getAttributes();
 			for (Attribute att : atts) {
@@ -123,20 +123,20 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 				}
 			}
 		}
-		
+
 		if (isTestMethod) {
 			stack.resetForMethodEntry(this);
 			super.visitCode(obj);
 		}
 	}
-	
+
 	@Override
 	public void sawOpcode(int seen) {
 		String userValue = null;
-		
+
 		try {
 			stack.mergeJumps(this);
-			
+
 			if (seen == INVOKESTATIC) {
 				String clsName = getClassConstantOperand();
 				if (OLD_ASSERT_CLASS.equals(clsName) || NEW_ASSERT_CLASS.equals(clsName)) {
@@ -147,7 +147,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 						if (argTypes.length == 2) {
     						if (argTypes[0].equals(Type.STRING) && argTypes[1].equals(Type.STRING))
     							return;
-    						
+
     						if (stack.getStackDepth() >= 2) {
     							OpcodeStack.Item item1 = stack.getStackItem(1);
     							Object cons1 = item1.getConstant();
@@ -157,7 +157,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
     								   .addMethod(this)
     								   .addSourceLine(this));
     								return;
-    							} 
+    							}
     							OpcodeStack.Item item0 = stack.getStackItem(0);
     							if (item0.getConstant() != null) {
     								bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT", NORMAL_PRIORITY)
@@ -196,6 +196,17 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 						userValue = "valueOf";
 					}
 				}
+			} else if (seen == ATHROW) {
+			    if (stack.getStackDepth() > 0) {
+			        OpcodeStack.Item item = stack.getStackItem(0);
+    			    String throwClass = item.getSignature();
+    			    if ("Ljava/lang/AssertionError;".equals(throwClass)) {
+    			        bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED", NORMAL_PRIORITY)
+    			                                .addClass(this)
+    			                                .addMethod(this)
+    			                                .addSourceLine(this));
+    			    }
+			    }
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);
