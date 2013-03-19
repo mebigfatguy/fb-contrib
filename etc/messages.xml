@@ -623,7 +623,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LostExceptionStackTrace">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that catch exceptions, and then throw a different exception,
+			<p>Looks for methods that catch exceptions, and then throw a different exception
 			without embedding the original exception in the thrown one. Doing so, hides the real
 			source of the exception, making debugging and fixing these problems difficult.</p>
 			<p>It is a moderately fast detector</p>
@@ -711,7 +711,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for classes that implement interfaces by relying on methods being 
-			implemented in superclasses, even tho the superclass knows nothing about
+			implemented in superclasses, even though the superclass knows nothing about
 			the interface being implemented by the child.</p>
 			<p>It is a fast detector.</p>
 			]]>
@@ -837,6 +837,7 @@
 				<li>Passing a constant as the second (actual) parameter</li>
 				<li>not using the three parameter version of asserts for doubles</li>
 				<li>Passing true or false as the first parameter instead of using assertTrue, or assertFalse</li>
+                <li>Using the assert keyword</li>
 			</ul>
 			</p>
 			<p>It is a fast detector</p>
@@ -1099,7 +1100,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ReflectionOnObjectMethods">
 		<Details>
 	 		<![CDATA[
-	 		<p>This detector looks for reflective calls on methods that are found java.lang.Object.
+	 		<p>This detector looks for reflective calls on methods that are found in the class java.lang.Object.
 	 		As these methods are always available, there is no reason to use reflection to call them.
 	 		</p>
 	 		<p>It is a fast detector</p>
@@ -1327,7 +1328,7 @@
 		<LongDescription>Method {1} passes simple concatenating string in StringBuffer or StringBuilder append</LongDescription>
 		<Details>
 			<![CDATA[
-			<p> This method uses StringBuffer or StringBuilder append to concatenate strings. However, it passes the result
+			<p> This method uses StringBuffer or StringBuilder's append method to concatenate strings. However, it passes the result
 			of doing a simple String concatenation to one of these append calls, thus removing any performance gains
 			of using the StringBuffer or StringBuilder class.</p>
 			]]>
