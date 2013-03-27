@@ -675,6 +675,24 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 							}
 						}
 					}
+				} else if ("java/util/List".equals(className)) {
+				    String method = getNameConstantOperand();
+                    if ("iterator".equals(method)) {
+                            userValue = "iterator";
+                    }
+				} else if ("java/util/Iterator".equals(className)) {
+				    String method = getNameConstantOperand();
+                    if ("next".equals(method)) {
+                        if (stack.getStackDepth() >= 1) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            if ("iterator".equals(item.getUserValue())) {
+                                bugReporter.reportBug(new BugInstance(this, "SPP_USE_GET0", NORMAL_PRIORITY)
+                                            .addClass(this)
+                                            .addMethod(this)
+                                            .addSourceLine(this));
+                            }
+                        }
+                    }
 				}
 
 				if (collectionInterfaces.contains(className)) {
@@ -689,10 +707,15 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
 			TernaryPatcher.post(stack, seen);
-			if ((userValue != null) && (stack.getStackDepth() > 0)) {
-				OpcodeStack.Item item = stack.getStackItem(0);
-				item.setUserValue(userValue);
+			if ((stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+    			if (userValue != null) {
+    				item.setUserValue(userValue);
+    			} else if ("iterator".equals(item.getUserValue()) && (seen == GETFIELD) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+    			    item.setUserValue(null);
+    			}
 			}
+
 			lastOpcode = seen;
 			lastReg = reg;
 			System.arraycopy(lastPCs, 1, lastPCs, 0, 3);

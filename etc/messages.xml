@@ -2582,6 +2582,17 @@
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="SPP_USE_GET0">
+        <ShortDescription>Method uses iterator().next() on a List to get the first item</ShortDescription>
+        <LongDescription>Method {1} uses iterator().next() on a List to get the first item</LongDescription>
+        <Details>
+            <![CDATA[
+                This Method calls myList.iterator().next() on a List to get the first item. It is more performant 
+                to just use myList.get(0).
+            ]]>
+        </Details>
+    </BugPattern> 
 	
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
 		<ShortDescription>Method assigns a variable in a larger scope then is needed</ShortDescription>

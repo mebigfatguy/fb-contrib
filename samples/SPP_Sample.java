@@ -337,4 +337,8 @@ public class SPP_Sample implements Serializable
         sb = sb.append("foo");
         sb = sb.append("foo").append("boo").append("hoo");
     }
+
+    public String testListFirst(List<String> l) {
+        return l.iterator().next();
+    }
 }
