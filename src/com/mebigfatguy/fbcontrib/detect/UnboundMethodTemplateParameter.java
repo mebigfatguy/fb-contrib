@@ -107,7 +107,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
             String template = m.group(1);
 
             m = TEMPLATE.matcher(template);
-            List<String> templates = new ArrayList<String>();
+            List<String> templates = new ArrayList<String>(4);
             while (m.find()) {
                 templates.add(m.group(1));
             }

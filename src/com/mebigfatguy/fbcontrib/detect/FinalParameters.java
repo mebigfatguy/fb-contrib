@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2013 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -60,8 +60,8 @@ public class FinalParameters extends BytecodeScanningDetector
 	private boolean srcInited;
 	private SourceLineAnnotation srcLineAnnotation;
 	private String[] sourceLines;
-	
-	
+
+
 	/**
      * constructs a FP detector given the reporter to report bugs on
      * @param bugReporter the sync of bug reports
@@ -69,10 +69,10 @@ public class FinalParameters extends BytecodeScanningDetector
 	public FinalParameters(final BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	/**
 	 * overrides the visitor to initialize the 'has source' flag
-	 * 
+	 *
 	 * @param classContext the context object for the currently parsed class
 	 */
 	@Override
@@ -80,14 +80,14 @@ public class FinalParameters extends BytecodeScanningDetector
 		srcInited = false;
 		super.visitClassContext(classContext);
 	}
-	
+
 	/**
 	 * overrides the visitor capture source lines for the method
-	 * 
+	 *
 	 * @param obj the method object for the currently parsed method
 	 */
 	@Override
-	public void visitMethod(final Method obj) {		
+	public void visitMethod(final Method obj) {
 		methodName = obj.getName();
 		if ("<clinit>".equals(methodName) || "<init>".equals(methodName))
 			return;
@@ -97,35 +97,35 @@ public class FinalParameters extends BytecodeScanningDetector
 		isStatic = (obj.getAccessFlags() & Constants.ACC_STATIC) != 0;
 		isAbstract = (obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0;
 		parmCount = Type.getArgumentTypes(obj.getSignature()).length;
-		
+
 		super.visitMethod(obj);
         srcLineAnnotation = null;
         sourceLines = null;
 	}
-	
+
 	/**
 	 * reads the sourcefile based on the source line annotation for the method
-	 * 
+	 *
 	 * @param obj the method object for the currently parsed method
-	 * 
+	 *
 	 * @return an array of source lines for the method
 	 */
 	private String[] getSourceLines(Method obj) {
-		
+
 		BufferedReader sourceReader = null;
-		
+
 		if (srcInited)
 			return sourceLines;
-		
+
 		try {
 			srcLineAnnotation = SourceLineAnnotation.forEntireMethod(getClassContext().getJavaClass(), obj);
 			if (srcLineAnnotation != null)
-			{			
+			{
 				SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
 				SourceFile sourceFile = sourceFinder.findSourceFile(srcLineAnnotation.getPackageName(), srcLineAnnotation.getSourceFile());
 				sourceReader = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
-				
-				List<String> lines = new ArrayList<String>();
+
+				List<String> lines = new ArrayList<String>(100);
 				String line;
 				while ((line = sourceReader.readLine()) != null)
 					lines.add(line);
@@ -145,20 +145,20 @@ public class FinalParameters extends BytecodeScanningDetector
 		srcInited = true;
 		return sourceLines;
 	}
-	
+
 	/**
 	 * overrides the visitor to find the source lines for the method header, to find non final parameters
-	 * 
+	 *
 	 * @param obj the code object for the currently parsed method
 	 */
 	@Override
 	public void visitCode(final Code obj) {
 		if (sourceLines == null)
 			return;
-		
+
 		if (isAbstract)
 			return;
-		
+
 		if ("<clinit>".equals(methodName) || "<init>".equals(methodName))
 			return;
 
@@ -174,7 +174,7 @@ public class FinalParameters extends BytecodeScanningDetector
 
 		if (methodLine < 0)
 			return;
-		
+
 		for (int i = methodLine; i <= methodStart; i++) {
 			if ((i < 0) || (i >= sourceLines.length))
 				return;
@@ -182,21 +182,21 @@ public class FinalParameters extends BytecodeScanningDetector
 			if (line.indexOf("final") >= 0)
 				return;
 		}
-		
+
 		changedParms = new HashSet<Integer>();
 		super.visitCode(obj);
-		
+
 		BugInstance bi = null;
 		for (int i = 0; i < parmCount; i++) {
 			if (changedParms.remove(Integer.valueOf(i)))
 				continue;
-			
+
 			int reg;
 			if (!isStatic)
 				reg = i + 1;
 			else
 				reg = i;
-			
+
 			String parmName = getRegisterName(obj, reg);
 			if (bi == null) {
 				bi = new BugInstance(this, "FP_FINAL_PARAMETERS", LOW_PRIORITY)
@@ -209,10 +209,10 @@ public class FinalParameters extends BytecodeScanningDetector
 		}
         changedParms = null;
 	}
-	
+
 	/**
 	 * overrides the visitor to find local variable reference stores to store them as changed
-	 * 
+	 *
 	 * @param seen the currently parsed opcode
 	 */
 	@Override
@@ -223,13 +223,13 @@ public class FinalParameters extends BytecodeScanningDetector
 				changedParms.add(Integer.valueOf(parm));
 		}
 	}
-	
+
 	/**
 	 * returns the variable name of the specified register slot
-	 * 
+	 *
 	 * @param obj the currently parsed code object
 	 * @param reg the variable register of interest
-	 * 
+	 *
 	 * @return the variable name of the specified register
 	 */
 	private String getRegisterName(final Code obj, final int reg) {
@@ -241,25 +241,25 @@ public class FinalParameters extends BytecodeScanningDetector
 		}
 		return String.valueOf(reg);
 	}
-	
+
 	/**
 	 * return the register number that is be stored
-	 * 
+	 *
 	 * @param seen the opcode of the currently parsed statement
-	 * 
+	 *
 	 * @return the register number being stored
 	 */
 	private int getAStoreParameter(final int seen) {
 		int reg = RegisterUtils.getAStoreReg(this, seen);
-		
+
 		if (!isStatic)
 			reg--;
-		
+
 		if (reg >= parmCount)
 			reg = -1;
-		
+
 		return reg;
-		
+
 	}
 
 }

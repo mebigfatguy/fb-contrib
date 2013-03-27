@@ -189,7 +189,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 					superNames.put(clsName, calledClass.getSuperclassName().replace('.', '/'));
 					Method[] methods = calledClass.getMethods();
 
-					methodInfos = new HashSet<String>();
+					methodInfos = new HashSet<String>(methods.length);
 					validMethods.put(clsName, methodInfos);
 
 					for (Method m : methods) {

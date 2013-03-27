@@ -308,7 +308,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 			} else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
 				int pc = getPC();
 				int[] offsets = getSwitchOffsets();
-				List<Integer> targets = new ArrayList<Integer>();
+				List<Integer> targets = new ArrayList<Integer>(offsets.length);
 				for (int offset : offsets) {
 					targets.add(Integer.valueOf(offset + pc));
 				}
