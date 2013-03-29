@@ -3566,6 +3566,18 @@
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="CU_CLONE_USABILITY_MISMATCHED_RETURN">
+        <ShortDescription>Clone method declares it returns an type different then the owning class</ShortDescription>
+        <LongDescription>Clone method {1} declares it returns an type different then the owning class</LongDescription>
+        <Details>
+            <![CDATA[
+            <p> This class implements the Cloneable interface but defines its clone method to return a type 
+            that is different than the class itself, or any interfaces that the class implements.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
         
     <BugPattern type="CU_CLONE_USABILITY_THROWS">
         <ShortDescription>Clone method declares it throws CloneNotSupportedException</ShortDescription>

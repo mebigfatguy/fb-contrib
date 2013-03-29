@@ -47,6 +47,7 @@ public class CloneUsability extends PreorderVisitor implements Detector {
     }
 
     private BugReporter bugReporter;
+    private JavaClass cls;
     private String clsName;
 
     /**
@@ -64,13 +65,15 @@ public class CloneUsability extends PreorderVisitor implements Detector {
      */
     public void visitClassContext(ClassContext classContext) {
         try {
-            JavaClass cls = classContext.getJavaClass();
+            cls = classContext.getJavaClass();
             if (cls.implementationOf(CLONE_CLASS)) {
                 clsName = cls.getClassName();
                 cls.accept(this);
             }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
+        } finally {
+            cls = null;
         }
     }
 
@@ -81,24 +84,37 @@ public class CloneUsability extends PreorderVisitor implements Detector {
      */
     @Override
     public void visitMethod(Method obj) {
-        if (obj.isPublic() && !obj.isSynthetic() && obj.getName().equals("clone") && (obj.getArgumentTypes().length == 0)) {
+        try {
+            if (obj.isPublic() && !obj.isSynthetic() && obj.getName().equals("clone") && (obj.getArgumentTypes().length == 0)) {
 
-            String returnClsName = obj.getReturnType().getSignature();
-            returnClsName = returnClsName.substring(1, returnClsName.length() - 1).replaceAll("/", ".");
-            if (!clsName.equals(returnClsName))
-            {
-                bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_OBJECT_RETURN", NORMAL_PRIORITY)
+                String returnClsName = obj.getReturnType().getSignature();
+                returnClsName = returnClsName.substring(1, returnClsName.length() - 1).replaceAll("/", ".");
+                if (!clsName.equals(returnClsName))
+                {
+                    if ("java.lang.Object".equals(returnClsName)) {
+                        bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_OBJECT_RETURN", NORMAL_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(this));
+                    } else {
+                        JavaClass cloneClass = Repository.lookupClass(returnClsName);
+                        if (!cls.instanceOf(cloneClass)) {
+                            bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_MISMATCHED_RETURN", HIGH_PRIORITY)
                             .addClass(this)
                             .addMethod(this));
-            }
+                        }
+                    }
+                }
 
-            ExceptionTable et = obj.getExceptionTable();
+                ExceptionTable et = obj.getExceptionTable();
 
-            if ((et != null) && (et.getLength() > 0)) {
-                bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_THROWS", NORMAL_PRIORITY)
-                .addClass(this)
-                .addMethod(this));
+                if ((et != null) && (et.getLength() > 0)) {
+                    bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_THROWS", NORMAL_PRIORITY)
+                    .addClass(this)
+                    .addMethod(this));
+                }
             }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
         }
     }
 

@@ -14,4 +14,27 @@ public class CU_Sample implements Cloneable {
             }
         }
     }
+
+    class Unrelated implements Cloneable {
+        public String clone() {
+            try {
+                return (String) super.clone();
+            } catch (CloneNotSupportedException cnse) {
+                throw new Error("Won't happen");
+            }
+        }
+    }
+
+    class FPCloneInterface implements Cloneable, Runnable {
+        public Runnable clone() {
+            try {
+                return (Runnable) super.clone();
+            } catch (CloneNotSupportedException cnse) {
+                throw new Error("Won't happen");
+            }
+        }
+
+        public void run() {
+        }
+    }
 }
