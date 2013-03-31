@@ -92,4 +92,14 @@ public class PRMC_Sample
     }
 
     enum FPEnum { fee, fi, fo, fum };
+
+    public boolean fpChainedFieldsOfDiffBases(Chain c1, Chain c2)
+    {
+        return c1.chainedField.toString().equals(c2.chainedField.toString());
+    }
+
+    class Chain
+    {
+        public Date chainedField;
+    }
 }
