@@ -182,6 +182,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 	 */
 	@Override
 	public void sawOpcode(int seen) {
+	    String userValue = null;
+
 		try {
 			stack.mergeJumps(this);
 			if (branchTargets.remove(Integer.valueOf(getPC()))) {
@@ -200,7 +202,31 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 			} else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
 				localMethodCalls.remove(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)));
 			} else if (seen == PUTFIELD) {
-				fieldMethodCalls.remove(getNameConstantOperand());
+			    String fieldSource = "";
+
+			    if (stack.getStackDepth() > 0) {
+			        OpcodeStack.Item item = stack.getStackItem(0);
+			        fieldSource = (String) item.getUserValue();
+			        if (fieldSource == null)
+			            fieldSource = "";
+			    }
+				fieldMethodCalls.remove(fieldSource + ":" + getNameConstantOperand());
+			} else if (seen == GETFIELD) {
+			    if (stack.getStackDepth() > 0) {
+			        OpcodeStack.Item item = stack.getStackItem(0);
+			        userValue = (String) item.getUserValue();
+			        if (userValue == null) {
+			            int reg = item.getRegisterNumber();
+			            if (reg >= 0) {
+			                userValue = String.valueOf(reg);
+			            } else {
+			                XField xf = item.getXField();
+			                if (xf != null) {
+			                    userValue = xf.getName();
+			                }
+			            }
+			        }
+			    }
 			} else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
 				String signature = getSigConstantOperand();
 				int parmCount = Type.getArgumentTypes(signature).length;
@@ -232,7 +258,10 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 						if (reg >= 0) {
 							mc = localMethodCalls.get(Integer.valueOf(reg));
 						} else if (field != null) {
-							mc = fieldMethodCalls.get(field.getName());
+						    String fieldSource = (String) obj.getUserValue();
+						    if (fieldSource == null)
+						        fieldSource = "";
+							mc = fieldMethodCalls.get(fieldSource + ":" + field.getName());
 						} else {
 							return;
 						}
@@ -267,7 +296,16 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 							if (reg >= 0) {
 								localMethodCalls.remove(Integer.valueOf(reg));
 							} else if (field != null) {
-								fieldMethodCalls.remove(field.getName());
+				                String fieldSource = "";
+
+				                if (stack.getStackDepth() > 0) {
+				                    OpcodeStack.Item item = stack.getStackItem(0);
+				                    fieldSource = (String) item.getUserValue();
+				                    if (fieldSource == null)
+				                        fieldSource = "";
+				                }
+
+								fieldMethodCalls.remove(fieldSource + ":" + field.getName());
 							}
 						}
 					} else {
@@ -277,7 +315,11 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 							if (reg >= 0) {
 								localMethodCalls.put(Integer.valueOf(reg), new MethodCall(methodName, signature, parmConstants));
 							} else if (field != null) {
-								fieldMethodCalls.put(field.getName(), new MethodCall(methodName, signature, parmConstants));
+							    OpcodeStack.Item obj = stack.getStackItem(parmCount);
+							    String fieldSource = (String) obj.getUserValue();
+	                            if (fieldSource == null)
+	                                fieldSource = "";
+								fieldMethodCalls.put(fieldSource + ":" + field.getName(), new MethodCall(methodName, signature, parmConstants));
 							}
 						}
 					}
@@ -285,6 +327,12 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 			}
 		} finally {
 			stack.sawOpcode(this, seen);
+			if (userValue != null) {
+			    if (stack.getStackDepth() > 0) {
+			        OpcodeStack.Item item = stack.getStackItem(0);
+			        item.setUserValue(userValue);
+			    }
+			}
 		}
 	}
 
