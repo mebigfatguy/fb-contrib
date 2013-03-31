@@ -93,6 +93,11 @@ public class PRMC_Sample
 
     enum FPEnum { fee, fi, fo, fum };
 
+
+    public boolean validChainedFields(Chain c1) {
+        return c1.chainedField.toString().equals(c1.chainedField.toString());
+    }
+
     public boolean fpChainedFieldsOfDiffBases(Chain c1, Chain c2)
     {
         return c1.chainedField.toString().equals(c2.chainedField.toString());
@@ -100,6 +105,22 @@ public class PRMC_Sample
 
     class Chain
     {
-        public Date chainedField;
+        public Chain chainedField;
+
+        public String toString() {
+            StringBuilder sb = new StringBuilder();
+            sb.append("--");
+            sb.append("XX");
+            sb.append("--");
+            sb.append("XX");
+            sb.append("--");
+            sb.append("XX");
+            sb.append("--");
+            sb.append("XX");
+            sb.append("--");
+            sb.append("XX");
+            sb.append("--");
+            return sb.toString();
+        }
     }
 }
