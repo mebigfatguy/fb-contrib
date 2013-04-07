@@ -55,7 +55,8 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 	/**
      * constructs a NOS detector given the reporter to report bugs on
      * @param bugReporter the sync of bug reports
-	 */	public NonOwnedSynchronization(BugReporter bugReporter) {
+	 */
+	public NonOwnedSynchronization(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
