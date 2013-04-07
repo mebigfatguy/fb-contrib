@@ -1321,6 +1321,18 @@
         </Details>
     </Detector>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.NonProductiveMethodCall">
+        <Details>
+            <![CDATA[
+            <p> Looks for common methods that are non mutating where the return value is ignored. As these methods
+            do not change the object they are called on, calling this methods is pointless. They can be removed.
+            </p>
+            <p>It is a fast detector</p>  
+            ]]>
+        </Details>
+    </Detector>
+    
+    
 	<!-- BugPattern -->
 
 	<BugPattern type="ISB_INEFFICIENT_STRING_BUFFERING">
@@ -3632,6 +3644,18 @@
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="NPMC_NON_PRODUCTIVE_METHOD_CALL">
+        <ShortDescription>Method ignores return value of a non mutating method</ShortDescription>
+        <LongDescription>Method {1} ignores return value of a non mutating method</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method ignores the return value of a common method that is assumed to be none mutating.
+            If this method does in fact not modify the object it is called on, there is no reason to call 
+            this method, and it can be removed.
+            ]]>
+        </Details>
+    </BugPattern>
    
 	<!-- BugCode -->
 
@@ -3744,4 +3768,5 @@
     <BugCode abbrev="CAAL">Confusing Array asList</BugCode>
     <BugCode abbrev="PSC">Presize Collection</BugCode>
     <BugCode abbrev="UMTP">Unbound Method Template Parameter</BugCode>
+    <BugCode abbrev="NPMC">Non Productive Method Call</BugCode>
 </MessageCollection>
