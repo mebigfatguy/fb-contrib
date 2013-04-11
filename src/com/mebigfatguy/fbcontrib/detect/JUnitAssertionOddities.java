@@ -40,6 +40,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 /** looks for odd uses of the Assert class of the JUnit framework */
 public class JUnitAssertionOddities extends BytecodeScanningDetector
 {
+    private enum State {SAW_NOTHING, SAW_IF_ICMPNE, SAW_ICONST_1, SAW_GOTO, SAW_ICONST_0, SAW_EQUALS};
+    
 	private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
 	private static final String TEST_ANNOTATION_SIGNATURE = "Lorg/junit/Test;";
 	private static final String OLD_ASSERT_CLASS = "junit/framework/Assert";
@@ -62,6 +64,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	private OpcodeStack stack;
 	private boolean isTestCaseDerived;
 	private boolean isAnnotationCapable;
+	private State state;
 
 	/**
      * constructs a JOA detector given the reporter to report bugs on
@@ -126,6 +129,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 
 		if (isTestMethod) {
 			stack.resetForMethodEntry(this);
+			state = State.SAW_NOTHING;
 			super.visitCode(obj);
 		}
 	}
@@ -186,6 +190,13 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 										   .addSourceLine(this));
 							}
 						}
+					} else if ("assertTrue".equals(methodName)) {
+					    if ((state == State.SAW_ICONST_0) || (state == State.SAW_EQUALS)) {
+					        bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS", NORMAL_PRIORITY)
+					                        .addClass(this)
+					                        .addMethod(this)
+					                        .addSourceLine(this));
+					    }
 					}
 				} else {
 					String methodName = getNameConstantOperand();
@@ -208,6 +219,51 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
     			    }
 			    }
 			}
+			
+			switch (state) {
+			case SAW_NOTHING:
+			case SAW_EQUALS:
+			    if (seen == IF_ICMPNE)
+			        state = State.SAW_IF_ICMPNE;
+			    else
+			        state = State.SAW_NOTHING;
+			    break;
+			
+			case SAW_IF_ICMPNE:
+			    if (seen == ICONST_1)
+			        state = State.SAW_ICONST_1;
+			    else
+			        state = State.SAW_NOTHING;
+			    break;
+			    
+			case SAW_ICONST_1:
+			    if (seen == GOTO)
+			        state = State.SAW_GOTO;
+			    else
+			        state = State.SAW_NOTHING;
+			            break;
+			    
+			case SAW_GOTO:
+			    if (seen == ICONST_0)
+			        state = State.SAW_ICONST_0;
+		        else
+		            state = State.SAW_NOTHING;
+		        break;
+			    
+			    default:
+			        state = State.SAW_NOTHING;
+			    break;
+			}
+			
+			if (seen == INVOKEVIRTUAL) {
+			    String methodName = getNameConstantOperand();
+			    String sig = getSigConstantOperand();
+			    if ("equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(sig)) {
+			        state = State.SAW_EQUALS;
+			    }
+			}
+			
+			
 		} finally {
 			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);

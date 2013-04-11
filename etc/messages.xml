@@ -2853,6 +2853,18 @@
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
+        <ShortDescription>Method passes boolean expression to Assert.assertTrue</ShortDescription>
+        <LongDescription>Method {1} passes boolean expression to Assert.assertTrue</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method evaluates a boolean expression and passes that to Assert.assertTrue. It is better 
+            to pass the two values that are being equated to the Assert.assertEquals method so that the
+            junit failure method is more meaningful of the intended test.</p>
+            ]]>
+        </Details>
+    </BugPattern>
 
 	<BugPattern type="SCA_SUSPICIOUS_CLONE_ALGORITHM">
 		<ShortDescription>Clone method stores a new value to member field of source object</ShortDescription>

@@ -36,6 +36,11 @@ public class JAO_Sample extends TestCase
 	{
 	    assert s != null;
 	}
+	
+	public void testUseAssertEquals(String s, String s2) {
+	    Assert.assertTrue(s.equals(s2));
+	    Assert.assertTrue(s.length() == s.length());
+	}
 
 	public void test3ArgNP(float foo)
 	{
