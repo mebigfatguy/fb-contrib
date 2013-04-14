@@ -347,16 +347,18 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					String mName = (String) item.getUserValue();
-					if ("trim".equals(mName)) {
-						item.setUserValue(null);
-					} else if ((mName != null) && (mName.startsWith("append:"))) {
-					    int appendReg = Integer.parseInt(mName.substring("append:".length()));
-					    if (reg == appendReg) {
-					        bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUILDER_IS_MUTABLE", NORMAL_PRIORITY)
-					                    .addClass(this)
-					                    .addMethod(this)
-					                    .addSourceLine(this));
-					    }
+					if (mName != null) {
+    					if (mName.equals("trim")) {
+    						item.setUserValue(null);
+    					} else if (mName.startsWith("append:")) {
+    					    int appendReg = Integer.parseInt(mName.substring("append:".length()));
+    					    if (reg == appendReg) {
+    					        bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUILDER_IS_MUTABLE", NORMAL_PRIORITY)
+    					                    .addClass(this)
+    					                    .addMethod(this)
+    					                    .addSourceLine(this));
+    					    }
+    					}
 					}
 				}
 			} else if (((seen >= ALOAD_0) && (seen <= ASTORE_3)) || (seen == ALOAD)) {
