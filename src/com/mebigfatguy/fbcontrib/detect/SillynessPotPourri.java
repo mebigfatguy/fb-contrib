@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -62,6 +64,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		collectionInterfaces.add("java/util/Map");
 		collectionInterfaces.add("java/util/SortedMap");
 	}
+	
+	private static final Pattern APPEND_PATTERN = Pattern.compile("append:([0-9]+):(literal)?");
 
 	private static JavaClass calendarClass;
 	static {
@@ -350,13 +354,16 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					if (mName != null) {
     					if (mName.equals("trim")) {
     						item.setUserValue(null);
-    					} else if (mName.startsWith("append:")) {
-    					    int appendReg = Integer.parseInt(mName.substring("append:".length()));
-    					    if (reg == appendReg) {
-    					        bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUILDER_IS_MUTABLE", NORMAL_PRIORITY)
-    					                    .addClass(this)
-    					                    .addMethod(this)
-    					                    .addSourceLine(this));
+    					} else {
+    					    Matcher m = APPEND_PATTERN.matcher(mName);
+    					    if (m.matches()) {
+        					    int appendReg = Integer.parseInt(m.group(1));
+        					    if (reg == appendReg) {
+        					        bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUILDER_IS_MUTABLE", NORMAL_PRIORITY)
+        					                    .addClass(this)
+        					                    .addMethod(this)
+        					                    .addSourceLine(this));
+        					    }
     					    }
     					}
 					}
@@ -462,11 +469,36 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				} else if ("java/lang/StringBuilder".equals(className) || "java/lang/StringBuffer".equals(className)) {
 				    if ("append".equals(methodName)) {
 				        if (stack.getStackDepth() > 1) {
-				            OpcodeStack.Item item = stack.getStackItem(1);
-				            if (item.getRegisterNumber() > -1)
-				                userValue = "append:" + item.getRegisterNumber();
-				            else
-				                userValue = (String) item.getUserValue();
+				            OpcodeStack.Item valItem = stack.getStackItem(0);
+				            OpcodeStack.Item sbItem = stack.getStackItem(1);
+				            boolean argIsLiteralString = (valItem.getConstant() instanceof String);
+				            
+				            if (argIsLiteralString) {
+    				            String existingAppend = (String) sbItem.getUserValue();
+    				            if (existingAppend != null) {
+    				                Matcher m = APPEND_PATTERN.matcher(existingAppend);
+    				                if (m.matches()) {
+    				                    bugReporter.reportBug(new BugInstance(this, "SPP_DOUBLE_APPENDED_LITERALS", NORMAL_PRIORITY)
+    				                                .addClass(this)
+    				                                .addMethod(this)
+    				                                .addSourceLine(this));
+    				                    argIsLiteralString = false;
+    				                }
+    				            }
+				            }
+				            
+				            String literal = argIsLiteralString ? "literal" : "";
+				            if (sbItem.getRegisterNumber() > -1) {
+				                userValue = "append:" + sbItem.getRegisterNumber() + ":" + literal;
+				            } else {
+				                userValue = (String) sbItem.getUserValue();
+				                if (userValue != null) {
+				                    Matcher m = APPEND_PATTERN.matcher(userValue);
+				                    if (m.matches()) {
+				                        userValue = "append:" + m.group(1) + ":" + literal;
+				                    }
+				                }
+				            }
 				        }
 				    }
 				} else if ("java/lang/String".equals(className)) {

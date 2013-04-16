@@ -2604,6 +2604,17 @@
                 to just use myList.get(0).
             ]]>
         </Details>
+    </BugPattern>
+    
+    <BugPattern type="SPP_DOUBLE_APPENDED_LITERALS">
+        <ShortDescription>Method appends to literal strings back to back to a StringBuilder</ShortDescription>
+        <LongDescription>Method {1} appends to literal strings back to back to a StringBuilder</LongDescription>
+        <Details>
+            <![CDATA[
+                This method appends two literal strings to a StringBuilder back to back. This can be done with just
+                one append call, and may avoid intermediate reallocations of the StringBuilders backing store.
+            ]]>
+            </Details>
     </BugPattern> 
 	
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">

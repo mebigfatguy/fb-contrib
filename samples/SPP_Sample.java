@@ -111,6 +111,12 @@ public class SPP_Sample implements Serializable
     {
     	return (b ? true : false);
     }
+    
+    public void testDoubleAppendLiteral(StringBuilder sb)
+    {
+        sb.append("hello").append("there");
+    }
+    
 
     public boolean testFPUselessTrinary(boolean a, boolean b)
     {
