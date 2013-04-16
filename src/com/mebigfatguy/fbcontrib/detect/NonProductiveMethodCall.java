@@ -20,6 +20,8 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Code;
 
@@ -36,15 +38,15 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class NonProductiveMethodCall extends BytecodeScanningDetector {
 
-    private static final Set<String> IMMUTABLE_METHODS = new HashSet<String>();
+    private static final Set<Pattern> IMMUTABLE_METHODS = new HashSet<Pattern>();
 
     static {
-        IMMUTABLE_METHODS.add(".*@toString\\(\\)Ljava/lang/String;");
-        IMMUTABLE_METHODS.add("java/lang/.+@.+Value\\(\\)[BCDFIJSZ]");
-        IMMUTABLE_METHODS.add(".*@equals\\(Ljava/lang/Object;\\)Z");
-        IMMUTABLE_METHODS.add(".*@hashCode\\(\\)I");
-        IMMUTABLE_METHODS.add(".*@clone\\(\\).+");
-        IMMUTABLE_METHODS.add("java/util/.+@toArray\\(\\)\\[.+");
+        IMMUTABLE_METHODS.add(Pattern.compile(".*@toString\\(\\)Ljava/lang/String;"));
+        IMMUTABLE_METHODS.add(Pattern.compile("java/lang/.+@.+Value\\(\\)[BCDFIJSZ]"));
+        IMMUTABLE_METHODS.add(Pattern.compile(".*@equals\\(Ljava/lang/Object;\\)Z"));
+        IMMUTABLE_METHODS.add(Pattern.compile(".*@hashCode\\(\\)I"));
+        IMMUTABLE_METHODS.add(Pattern.compile(".*@clone\\(\\).+"));
+        IMMUTABLE_METHODS.add(Pattern.compile("java/util/.+@toArray\\(\\)\\[.+"));
     }
 
     private BugReporter bugReporter;
@@ -105,8 +107,10 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     String mInfo = (String) item.getUserValue();
                     if (mInfo != null) {
-                        for (String im : IMMUTABLE_METHODS) {
-                            if (mInfo.matches(im)) {
+                        for (Pattern p : IMMUTABLE_METHODS) {
+                            Matcher m = p.matcher(mInfo);
+                            
+                            if (m.matches()) {
                                 bugReporter.reportBug(new BugInstance(this, "NPMC_NON_PRODUCTIVE_METHOD_CALL", NORMAL_PRIORITY)
                                             .addClass(this)
                                             .addMethod(this)
