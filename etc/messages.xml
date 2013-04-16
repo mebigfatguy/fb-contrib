@@ -2607,8 +2607,8 @@
     </BugPattern>
     
     <BugPattern type="SPP_DOUBLE_APPENDED_LITERALS">
-        <ShortDescription>Method appends to literal strings back to back to a StringBuilder</ShortDescription>
-        <LongDescription>Method {1} appends to literal strings back to back to a StringBuilder</LongDescription>
+        <ShortDescription>Method appends two literal strings back to back to a StringBuilder</ShortDescription>
+        <LongDescription>Method {1} appends two literal strings back to back to a StringBuilder</LongDescription>
         <Details>
             <![CDATA[
                 This method appends two literal strings to a StringBuilder back to back. This can be done with just

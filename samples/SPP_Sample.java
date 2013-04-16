@@ -112,9 +112,10 @@ public class SPP_Sample implements Serializable
     	return (b ? true : false);
     }
     
-    public void testDoubleAppendLiteral(StringBuilder sb)
+    public void testDoubleAppendLiteral(StringBuilder sb, String s)
     {
         sb.append("hello").append("there");
+        sb.append("Hello").append(s).append("there");
     }
     
 

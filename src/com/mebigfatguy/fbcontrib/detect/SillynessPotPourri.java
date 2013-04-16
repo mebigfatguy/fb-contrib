@@ -65,7 +65,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		collectionInterfaces.add("java/util/SortedMap");
 	}
 	
-	private static final Pattern APPEND_PATTERN = Pattern.compile("append:([0-9]+):(literal)?");
+	private static final Pattern APPEND_PATTERN = Pattern.compile("append:([0-9]+):(.*)");
 
 	private static JavaClass calendarClass;
 	static {
@@ -477,7 +477,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
     				            String existingAppend = (String) sbItem.getUserValue();
     				            if (existingAppend != null) {
     				                Matcher m = APPEND_PATTERN.matcher(existingAppend);
-    				                if (m.matches()) {
+    				                if (m.matches() && "literal".equals(m.group(2))) {
     				                    bugReporter.reportBug(new BugInstance(this, "SPP_DOUBLE_APPENDED_LITERALS", NORMAL_PRIORITY)
     				                                .addClass(this)
     				                                .addMethod(this)
