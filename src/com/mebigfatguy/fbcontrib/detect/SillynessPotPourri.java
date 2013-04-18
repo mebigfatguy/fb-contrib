@@ -471,7 +471,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				        if (stack.getStackDepth() > 1) {
 				            OpcodeStack.Item valItem = stack.getStackItem(0);
 				            OpcodeStack.Item sbItem = stack.getStackItem(1);
-				            boolean argIsLiteralString = (valItem.getConstant() instanceof String);
+				            boolean argIsLiteralString = (valItem.getConstant() instanceof String) && (((String) valItem.getConstant()).length() > 0);
 				            
 				            if (argIsLiteralString) {
     				            String existingAppend = (String) sbItem.getUserValue();
