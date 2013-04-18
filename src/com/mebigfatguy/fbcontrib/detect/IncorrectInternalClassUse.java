@@ -44,6 +44,7 @@ public class IncorrectInternalClassUse implements Detector
         internalPackages.add("org/apache/xerces/");
         internalPackages.add("org/apache/xalan/");
         externalPackages.add("com/sun/jersey");
+        externalPackages.add("com/sun/xsom");
         externalPackages.add("org/apache/xerces/xni/");
         externalPackages.add("org/apache/xerces/xs/");
         externalPackages.add("org/apache/xalan/extensions");
