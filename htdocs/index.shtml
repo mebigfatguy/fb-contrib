@@ -73,9 +73,9 @@ function toggleBlock(divId, imgId)
 		</div>
 
         <hr/>
-        <img id="svn_image" src="flip1.gif" onClick="toggleBlock('svn', 'svn_image');" align="top"/>
+        <img id="svn_image" src="flip2.gif" onClick="toggleBlock('svn', 'svn_image');" align="top"/>
         Detectors added in svn<br/>
-        <div id="svn" style="display:none;">
+        <div id="svn" style="display:block;">
             <ul>
                 <li><b>[CVAA] ContraVariant Array Assignment</b><br/>
                 Looks for contravariant array assignments. Since arrays are mutable data structures, their use 
@@ -110,9 +110,9 @@ function toggleBlock(divId, imgId)
             </ul>             
         </div>
 		<hr/>
-		<img id="v4_8_0_image" src="flip2.gif" onClick="toggleBlock('v4_8_0', 'v4_8_0_image');" align="top"/>
+		<img id="v4_8_0_image" src="flip1.gif" onClick="toggleBlock('v4_8_0', 'v4_8_0_image');" align="top"/>
 		Detectors added in v4.8.0<br/>
-		<div id="v4_8_0" style="display:block;">
+		<div id="v4_8_0" style="display:none;">
 			<ul>
 				<li><b>[LGO] Lingering Graphics Object</b><br/>
 				Looks for creation of java.awt.Graphics object that do not have the
