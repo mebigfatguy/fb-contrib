@@ -79,7 +79,7 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
     /**
      * implements the visitor to clear the opcode stack
      *
-     * @param seen the currently code block
+     * @param obj the currently code block
      */
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
