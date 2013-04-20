@@ -86,6 +86,11 @@ function toggleBlock(divId, imgId)
                 same kind of exception, and throw the same exception always. These blocks can
                 be coalesced into one.
                 </li>
+				<li><b>[CAAL] Confusing Array As List</b><br/>
+				Looks for calls to Arrays.asList where the parameter is a primitive array.
+				This does not produce a list that holds the primitive boxed value, but a list of
+				one item, the array itself.
+				</li>
                 <li><b>[PSC] Presize Collections</b><br/>
                 Looks for methods that create and populate collections, and while knowing
                 the end size of those collections, does not pre allocate the collection
