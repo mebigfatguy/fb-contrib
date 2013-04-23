@@ -191,8 +191,8 @@
 	</target>
 
 	<target name="srczip" description="builds the source distribution zip file">
-		<zip destfile="${basedir}/fb-contrib-src-${fb-contrib.version}.zip" basedir="${basedir}">
-			<fileset dir="${src.dir}">
+		<zip destfile="${basedir}/fb-contrib-src-${fb-contrib.version}.zip">
+			<fileset dir="${basedir}">
 				<include name="**/*.java" />
 				<include name="**/*.xml" />
 				<include name="**/*.xsd" />
