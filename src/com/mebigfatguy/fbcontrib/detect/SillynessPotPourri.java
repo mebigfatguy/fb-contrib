@@ -288,7 +288,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
                         }
 
 						if (bug) {
-							bugReporter.reportBug(new BugInstance(this, "SPP_USELESS_TRINARY", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, "SPP_USELESS_TERNARY", NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this));

@@ -142,7 +142,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 				}
 			} else if ((seen == GOTO) || (seen == GOTO_W)) {
 				if (stack.getStackDepth() > 0) {
-					methodSuspect = false; //Trinaries confuse us too much, if the code has a trinary well - oh well
+					methodSuspect = false; //Trinaries confuse us too much, if the code has a ternary well - oh well
 				}
 			} else if (seen == INVOKEVIRTUAL) {
 				String clsName = getClassConstantOperand();

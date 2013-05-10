@@ -2431,13 +2431,13 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="SPP_USELESS_TRINARY">
-		<ShortDescription>Method uses a trinary operator to cast a boolean to true or false</ShortDescription>
-		<LongDescription>Method {1} uses a trinary operator to cast a boolean to true or false</LongDescription>
+	<BugPattern type="SPP_USELESS_TERNARY">
+		<ShortDescription>Method uses a ternary operator to cast a boolean to true or false</ShortDescription>
+		<LongDescription>Method {1} uses a ternary operator to cast a boolean to true or false</LongDescription>
 		<Details>
 			<![CDATA[
-				<p>This method tests the value of a boolean and using a trinary operator to return either true or false.
-				The trinary operator is completely unecessary, just use the original boolean value.</p>
+				<p>This method tests the value of a boolean and using a ternary operator to return either true or false.
+				The ternary operator is completely unecessary, just use the original boolean value.</p>
 			]]>
 		</Details>
 	</BugPattern>
