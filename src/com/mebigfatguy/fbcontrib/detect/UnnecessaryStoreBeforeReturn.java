@@ -86,8 +86,17 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 		binaryOps.set(FREM);
 		binaryOps.set(DREM);
 		binaryOps.set(IOR);
+	    binaryOps.set(LOR);
 	    binaryOps.set(IAND);
+	    binaryOps.set(LAND);
 	    binaryOps.set(IXOR);
+	    binaryOps.set(LXOR);
+	    binaryOps.set(ISHL);
+	    binaryOps.set(LSHL);
+        binaryOps.set(ISHR);  
+        binaryOps.set(LSHR);  
+        binaryOps.set(IUSHR);
+        binaryOps.set(LUSHR);
 	}
 
 	private final BugReporter bugReporter;
