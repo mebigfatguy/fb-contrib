@@ -76,7 +76,7 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 			CodeException[] ce = obj.getExceptionTable();
 			if (ce != null) {
 				for (CodeException element : ce) {
-					transitionPoints.add(Integer.valueOf(element.getHandlerPC()));
+					transitionPoints.add(Integer.valueOf(element.getEndPC()));
 				}
 			}
 			super.visitCode(obj);
@@ -103,6 +103,12 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 			case MULTIANEWARRAY:
 				sawAlloc = true;
 				break;
+				
+			case INVOKESPECIAL:
+			    if ("<init>".equals(getNameConstantOperand())) {
+			        sawAlloc = true;
+			    }
+			    break;
 
 			case ASTORE:
 			case ASTORE_0:
@@ -126,9 +132,7 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 			case ALOAD_2:
 			case ALOAD_3:
 				int reg = RegisterUtils.getALoadReg(this, seen);
-				if (allocationRegs.contains(Integer.valueOf(reg))) {
-					sawAlloc = true;
-				}
+				sawAlloc = (allocationRegs.contains(Integer.valueOf(reg)));
 				break;
 
 			case IFNONNULL:
@@ -184,11 +188,10 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
 			TernaryPatcher.post(stack, seen);
-			if (sawAlloc) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					item.setUserValue(Boolean.TRUE);
-				}
+
+			if (stack.getStackDepth() > 0) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				item.setUserValue(sawAlloc ? Boolean.TRUE : null);
 			}
 		}
 	}
