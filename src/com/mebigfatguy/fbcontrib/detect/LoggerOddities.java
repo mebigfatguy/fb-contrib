@@ -267,12 +267,14 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 				}
                 			}
                      } else if ("(Ljava/lang/Object;)V".equals(sig)) {
-                        final JavaClass clazz = stack.getStackItem(0).getJavaClass();
-                        if(clazz.instanceOf(THROWABLE_CLASS)) {
-                           bugReporter.reportBug(new BugInstance(this, "LO_LOGGER_LOST_EXCEPTION_STACK_TRACE", NORMAL_PRIORITY)
-                                 .addClass(this)
-                                 .addMethod(this)
-                                 .addSourceLine(this));
+                        if (stack.getStackDepth() > 0) {
+                            final JavaClass clazz = stack.getStackItem(0).getJavaClass();
+                            if(clazz.instanceOf(THROWABLE_CLASS)) {
+                               bugReporter.reportBug(new BugInstance(this, "LO_LOGGER_LOST_EXCEPTION_STACK_TRACE", NORMAL_PRIORITY)
+                                     .addClass(this)
+                                     .addMethod(this)
+                                     .addSourceLine(this));
+                            }
                         }
                      }
                 	}
