@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class InefficientStringBuffering extends BytecodeScanningDetector
 {
-    private enum AppendType { NONE, NESTED, TOSTRING };
+    private enum AppendType { NONE, CLEAR, NESTED, TOSTRING };
     
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
@@ -162,8 +162,6 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 					} else if ("toString".equals(methodName)) {
 						OpcodeStack.Item itm = getStringBufferItemAt(0);
 						apType = (itm == null) ? AppendType.NONE : (AppendType)itm.getUserValue();
-						if (apType == AppendType.NONE)
-						    apType = AppendType.TOSTRING;
 					}
 				} else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())) {
 				    apType = AppendType.TOSTRING;
@@ -182,6 +180,8 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 					if (s.length() == 0)
 						sawLDCEmpty = true;
 				}
+			} else if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+			    apType = AppendType.CLEAR;
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);
