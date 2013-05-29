@@ -26,6 +26,8 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.LineNumber;
+import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.collect.Statistics;
@@ -272,21 +274,26 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 						if (!signature.endsWith("V") && methodName.equals(mc.getName()) && signature.equals(mc.getSignature()) && !isRiskyName(className, methodName)) {
 							Object[] parms = mc.getParms();
 							if (Arrays.equals(parms, parmConstants)) {
-								Statistics statistics = Statistics.getStatistics();
-								Statistics.MethodInfo mi = statistics.getMethodStatistics(getClassConstantOperand(), methodName, signature);
-
-								bugReporter.reportBug(new BugInstance(this, "PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS",
-																	  ((mi.numBytes >= highByteCountLimit) || (mi.numMethodCalls >= highMethodCallLimit)) ?
-																			  HIGH_PRIORITY :
-																		      ((mi.numBytes >= normalByteCountLimit) || (mi.numMethodCalls >= normalMethodCallLimit)) ?
-																		    		  NORMAL_PRIORITY :
-																		    			  ((mi.numBytes == 0) || (mi.numMethodCalls == 0)) ?
-																		    					  LOW_PRIORITY :
-																		    				      EXP_PRIORITY)
-											.addClass(this)
-											.addMethod(this)
-											.addSourceLine(this)
-											.addString(methodName + signature));
+			                    int pc = getPC();
+			                    int ln = getLineNumber(pc);
+			                    
+			                    if ((ln != mc.getLineNumber()) || (Math.abs(pc - mc.getPC()) < 10)) {
+    								Statistics statistics = Statistics.getStatistics();
+    								Statistics.MethodInfo mi = statistics.getMethodStatistics(getClassConstantOperand(), methodName, signature);
+    
+    								bugReporter.reportBug(new BugInstance(this, "PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS",
+    																	  ((mi.numBytes >= highByteCountLimit) || (mi.numMethodCalls >= highMethodCallLimit)) ?
+    																			  HIGH_PRIORITY :
+    																		      ((mi.numBytes >= normalByteCountLimit) || (mi.numMethodCalls >= normalMethodCallLimit)) ?
+    																		    		  NORMAL_PRIORITY :
+    																		    			  ((mi.numBytes == 0) || (mi.numMethodCalls == 0)) ?
+    																		    					  LOW_PRIORITY :
+    																		    				      EXP_PRIORITY)
+    											.addClass(this)
+    											.addMethod(this)
+    											.addSourceLine(this)
+    											.addString(methodName + signature));
+			                    }
 							}
 						}
 
@@ -309,17 +316,19 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 							}
 						}
 					} else {
+					    int pc = getPC();
+					    int ln = getLineNumber(pc);
 						if (seen == INVOKESTATIC) {
-							staticMethodCalls.put(className, new MethodCall(methodName, signature, parmConstants));
+							staticMethodCalls.put(className, new MethodCall(methodName, signature, parmConstants, pc, ln));
 						} else {
 							if (reg >= 0) {
-								localMethodCalls.put(Integer.valueOf(reg), new MethodCall(methodName, signature, parmConstants));
+								localMethodCalls.put(Integer.valueOf(reg), new MethodCall(methodName, signature, parmConstants, pc, ln));
 							} else if (field != null) {
 							    OpcodeStack.Item obj = stack.getStackItem(parmCount);
 							    String fieldSource = (String) obj.getUserValue();
 	                            if (fieldSource == null)
 	                                fieldSource = "";
-								fieldMethodCalls.put(fieldSource + ":" + field.getName(), new MethodCall(methodName, signature, parmConstants));
+								fieldMethodCalls.put(fieldSource + ":" + field.getName(), new MethodCall(methodName, signature, parmConstants, pc, ln));
 							}
 						}
 					}
@@ -355,6 +364,42 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 		}
 		return false;
 	}
+	
+	/**
+	 * returns the source line number for the pc, or just the pc if the line number table
+	 * doesn't exist
+	 * 
+	 * @param pc current pc
+	 * @return the line number
+	 */
+	private int getLineNumber(int pc) {
+	    LineNumberTable lnt = getMethod().getLineNumberTable();
+	    if (lnt == null)
+	        return pc;
+	    
+	    LineNumber[] lns = lnt.getLineNumberTable();
+	    if (lns == null)
+	        return pc;
+	    
+	    if (pc > lns[lns.length-1].getStartPC())
+	        return lns[lns.length-1].getLineNumber();
+	    
+	    int lo = 0;
+	    int hi = lns.length - 2;
+	    int mid = 0;
+	    while (lo <= hi) {
+	        mid = (lo + hi) / 2;
+	        if (pc < lns[mid].getStartPC()) {
+	            hi = mid - 1;
+	        } else if (pc >= lns[mid+1].getStartPC()) {
+	            lo = mid + 1;
+	        } else {
+	            break;
+	        }
+	    }
+	    
+	    return lns[mid].getLineNumber();
+	}
 
 	/**
 	 * contains information about a method call
@@ -364,11 +409,15 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 		private final String methodName;
 		private final String methodSignature;
 		private final Object[] methodParms;
+		private final int methodPC;
+		private final int methodLineNumber;
 
-		public MethodCall(String name, String signature, Object[] parms) {
+		public MethodCall(String name, String signature, Object[] parms, int pc, int lineNumber) {
 			methodName = name;
 			methodSignature = signature;
 			methodParms = parms;
+			methodPC = pc;
+			methodLineNumber = lineNumber;
 		}
 
 		public String getName() {
@@ -381,6 +430,14 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 
 		public Object[] getParms() {
 			return methodParms;
+		}
+		
+		public int getPC() {
+		    return methodPC;
+		}
+		
+		public int getLineNumber() {
+		    return methodLineNumber;
 		}
 	}
 }
