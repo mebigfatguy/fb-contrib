@@ -35,6 +35,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class InefficientStringBuffering extends BytecodeScanningDetector
 {
+    private enum AppendType { NONE, NESTED, TOSTRING };
+    
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
 	private boolean sawLDCEmpty;
@@ -77,7 +79,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 	
 	@Override
 	public void sawOpcode(final int seen) {
-		Boolean nestedSB = null;
+		AppendType apType = AppendType.NONE;
 		try {
 			stack.mergeJumps(this);
 			
@@ -90,13 +92,13 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 					if ("()V".equals(signature)) {
 						OpcodeStack.Item itm = getStringBufferItemAt(2);
 						if (itm != null) {
-							nestedSB = Boolean.TRUE;
+							apType = AppendType.NESTED;
 						}
 					} else if ("(Ljava/lang/String;)V".equals(signature)) {
 						if (stack.getStackDepth() > 0) {
 							OpcodeStack.Item itm = stack.getStackItem(0);
-							nestedSB = (Boolean)itm.getUserValue();
-							if ((nestedSB != null) && nestedSB.booleanValue()) {
+							apType = (AppendType)itm.getUserValue();
+							if (apType == AppendType.NESTED) {
 								bugReporter.reportBug( 
 										new BugInstance(this, "ISB_INEFFICIENT_STRING_BUFFERING", NORMAL_PRIORITY)
 												.addClass(this)
@@ -138,31 +140,40 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 					String methodName = getNameConstantOperand();
 					if ("append".equals(methodName)) {
 						OpcodeStack.Item itm = getStringBufferItemAt(1);
-						nestedSB = (itm == null) ? null : (Boolean)itm.getUserValue();
+						apType = (itm == null) ? AppendType.NONE : (AppendType )itm.getUserValue();
 						
 						if (stack.getStackDepth() > 0) {
 							itm = stack.getStackItem(0);
-							Boolean uValue = (Boolean)itm.getUserValue();
-							if ((uValue != null) && uValue.booleanValue()) {
+							AppendType apValue = (AppendType)itm.getUserValue();
+							if (apValue == AppendType.NESTED) {
 								bugReporter.reportBug( 
 										new BugInstance(this, "ISB_INEFFICIENT_STRING_BUFFERING", "toString".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY)
 												.addClass(this)
 												.addMethod(this)
 												.addSourceLine(this));
-								
+							} else if (apValue == AppendType.TOSTRING){
+	                             bugReporter.reportBug( 
+	                                        new BugInstance(this, "ISB_TOSTRING_APPENDING", NORMAL_PRIORITY)
+	                                                .addClass(this)
+	                                                .addMethod(this)
+	                                                .addSourceLine(this));
 							}
 						}
 					} else if ("toString".equals(methodName)) {
 						OpcodeStack.Item itm = getStringBufferItemAt(0);
-						nestedSB = (itm == null) ? null : (Boolean)itm.getUserValue();
+						apType = (itm == null) ? AppendType.NONE : (AppendType)itm.getUserValue();
+						if (apType == AppendType.NONE)
+						    apType = AppendType.TOSTRING;
 					}
+				} else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())) {
+				    apType = AppendType.TOSTRING;
 				}
 
 			} else if ((seen == GOTO) || (seen == GOTO_W)) {
 				int depth = stack.getStackDepth();
 				for (int i = 0; i < depth; i++) {
 					OpcodeStack.Item itm = stack.getStackItem(i);
-					itm.setUserValue(Boolean.FALSE);
+					itm.setUserValue(AppendType.NONE);
 				}
 			} else if ((seen == LDC) || (seen == LDC_W)) {
 				Constant c = getConstantRefOperand();
@@ -176,10 +187,10 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
 			TernaryPatcher.post(stack, seen);
-			if (nestedSB != null) {
+			if (apType != AppendType.NONE) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item itm = stack.getStackItem(0);
-					itm.setUserValue(nestedSB);
+					itm.setUserValue(apType);
 				}
 			}
 		}

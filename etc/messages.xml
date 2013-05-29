@@ -1359,6 +1359,18 @@
 			]]>
 	    </Details>
 	</BugPattern>
+	
+	<BugPattern type="ISB_TOSTRING_APPENDING">
+	   <ShortDescription>Method concatenates the result of a toString() call</ShortDescription>
+	   <LongDescription>Method {1} concatenates the result of a toString() call</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p> This method concatenates the output of a toString() call into a StringBuffer/Builder.
+	       It is simpler just pass the object you want to append to the to append call, as that form
+	       does not suffer the potential for NullPointerExceptions, and is easier to read.</p>
+	       ]]>
+	   </Details>
+	</BugPattern>
 
 	<BugPattern type="SCI_SYNCHRONIZED_COLLECTION_ITERATORS">
 		<ShortDescription>Method creates iterators on synchronized collections</ShortDescription>

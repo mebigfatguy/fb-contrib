@@ -17,7 +17,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.InefficientStringBuffering" speed="fast" reports="ISB_INEFFICIENT_STRING_BUFFERING,ISB_EMPTY_STRING_APPENDING" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.InefficientStringBuffering" speed="fast" reports="ISB_INEFFICIENT_STRING_BUFFERING,ISB_EMPTY_STRING_APPENDING,ISB_TOSTRING_APPENDING" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SyncCollectionIterators" speed="slow" reports="SCI_SYNCHRONIZED_COLLECTION_ITERATORS" />
 
@@ -248,6 +248,7 @@
 
 	<BugPattern abbrev="ISB" type="ISB_INEFFICIENT_STRING_BUFFERING" category="PERFORMANCE" />
 	<BugPattern abbrev="ISB" type="ISB_EMPTY_STRING_APPENDING" category="PERFORMANCE" />
+	<BugPattern abbrev="ISB" type="ISB_TOSTRING_APPENDING" category="CORRECTNESS" />
 	<BugPattern abbrev="SCI" type="SCI_SYNCHRONIZED_COLLECTION_ITERATORS" category="CORRECTNESS" />
 	<BugPattern abbrev="CC" type="CC_CYCLOMATIC_COMPLEXITY" category="STYLE" />
 	<BugPattern abbrev="OCP" type="OCP_OVERLY_CONCRETE_PARAMETER" category="STYLE" />

@@ -68,6 +68,12 @@ public class ISB_Sample
 		return sb.toString();
 	}
 	
+	public String testTOStringAppending() {
+	    StringBuilder sb = new StringBuilder();
+	    sb.append(this.toString());
+	    return sb.toString();
+	}
+	
 	@Override
 	public String toString()
 	{
