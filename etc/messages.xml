@@ -40,7 +40,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SyncCollectionIterators">
 		<Details>
 			<![CDATA[
-			<p> Looks for use of iterators on synchronized collections built from the Collections class</p>
+			<p> Looks for use of iterators on synchronized collections built from the java.util.Collections class</p>
 			<p> As the collection in question was built thru Collections.synchronizedXXX, an assumption
 			is made that this collection must be multithreaded safe. However, iterator access is used, 
 			which is explicitly unsafe. When iterators are to be used, synchronization should be done manually.</p>
@@ -350,7 +350,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OrphanedDOMNode">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that create DOM Nodes but do not add them to any DOM Document.</p>
+			<p>Looks for methods that create DOM nodes but do not add them to any DOM Document.</p>
 			<p>It is a fast Detector</p>
 			]]>
 		</Details>
