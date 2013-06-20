@@ -319,7 +319,8 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that store the return result in a local variable and
-			then immediately returns that local variable.</p>
+			then immediately returns that local variable. It is simpler to just return
+			the method (or assignment) result directly.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
