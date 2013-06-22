@@ -3485,7 +3485,7 @@
 				<p>This method serializes an instance of a non-static inner class. Since this class has a
 				reference to the containing class, this outer class will be serialized as well. This is often
 				not intentional, and will make the amount of data that is serialized much more than is needed.
-				If the outer classes is not desired to be serialized, either make the inner class, static, or 
+				If the outer classes is not desired to be serialized, either make the inner class static, or 
 				pull it out into a separate "first class" class.
 			]]>
 		</Details>
@@ -3634,7 +3634,7 @@
             <![CDATA[
             <p> This class implements the Cloneable interface but defines its clone method to still return
             a CloneNotSupportedException. Since you are implementing clone() it would make sense that the method
-            in question will _not_ throw that exception, so annotating your method with it just makes client use
+            in question will <em>not</em> throw that exception, so annotating your method with it just makes client use
             of your more painful as they have to handle an exception that will never happen. Just remove the 
             throws clause from your method.
             </p>
