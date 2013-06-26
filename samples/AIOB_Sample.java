@@ -1,5 +1,5 @@
 
-public class AOB_Sample 
+public class AIOB_Sample 
 {
     public void testAOB()
     {
