@@ -3604,7 +3604,7 @@
         <LongDescription>Method {1} backport concurrency utils</LongDescription>
         <Details>
             <![CDATA[
-            <p> This class usees Backport Utils concurrent classes. Updated/Efficient version of these
+            <p> This class uses Backport Utils concurrent classes. Updated/Efficient version of these
             classes are available in versions of the JDK 5.0 and higher, and these
             classes should only be used if you are targeting JDK 1.4 and lower.
             </p>
