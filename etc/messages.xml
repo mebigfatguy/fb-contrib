@@ -1333,6 +1333,16 @@
         </Details>
     </Detector>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds">
+        <Details>
+            <![CDATA[
+            <p> Looks for accesses to array elements using literal values that are known to be outside the bounds of the array.
+            This mistake will cause an ArrayIndexOutOfBoundsException to occur at runtime.</p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+    
     
 	<!-- BugPattern -->
 
@@ -3692,6 +3702,17 @@
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS">
+        <ShortDescription>Method attempts to access an array element outside the array's size</ShortDescription>
+        <LongDescription>Method {1} attempts to access an array element outside the array's size</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method access an array element using a literal index that is know to be outside the size of the specified 
+            array. This will cause an ArrayIndexOutOfBoundsException at runtime</p>
+            ]]>
+        </Details>
+    </BugPattern>
    
 	<!-- BugCode -->
 
@@ -3805,4 +3826,5 @@
     <BugCode abbrev="PSC">Presize Collection</BugCode>
     <BugCode abbrev="UMTP">Unbound Method Template Parameter</BugCode>
     <BugCode abbrev="NPMC">Non Productive Method Call</BugCode>
+    <BugCode abbrev="AIOB">Array Index Out Of Bounds</BugCode>
 </MessageCollection>

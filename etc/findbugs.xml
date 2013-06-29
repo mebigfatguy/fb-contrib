@@ -244,6 +244,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.NonProductiveMethodCall" speed="fast" reports="NPMC_NON_PRODUCTIVE_METHOD_CALL" />
 
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" speed="fast" reports="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS" />
+    
 	<!-- BugPattern -->
 
 	<BugPattern abbrev="ISB" type="ISB_INEFFICIENT_STRING_BUFFERING" category="PERFORMANCE" />
@@ -430,4 +432,5 @@
     <BugPattern abbrev="PSC" type="PSC_PRESIZE_COLLECTIONS" category="PERFORMANCE" />
     <BugPattern abbrev="UMTP" type="UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER" category="CORRECTNESS" />
     <BugPattern abbrev="NPMC" type="NPMC_NON_PRODUCTIVE_METHOD_CALL" category="CORRECTNESS" />
+    <BugPattern abbrev="AIOB" type="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS" category="CORRECTNESS" />
 </FindbugsPlugin>
