@@ -3826,5 +3826,5 @@
     <BugCode abbrev="PSC">Presize Collection</BugCode>
     <BugCode abbrev="UMTP">Unbound Method Template Parameter</BugCode>
     <BugCode abbrev="NPMC">Non Productive Method Call</BugCode>
-    <BugCode abbrev="AIOB">Array Index Out Of Bounds</BugCode>
+    <BugCode abbrev="AIOB">Array Index Out of Bounds</BugCode>
 </MessageCollection>
