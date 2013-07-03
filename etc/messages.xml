@@ -1336,8 +1336,14 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds">
         <Details>
             <![CDATA[
-            <p> Looks for accesses to array elements using literal values that are known to be outside the bounds of the array.
-            This mistake will cause an ArrayIndexOutOfBoundsException to occur at runtime.</p>
+            <p>Looks for questionable load/stores to array elements.<ul>
+            <li>
+            Looks for accesses to array elements using literal values that are known to be outside the bounds of the array.
+            This mistake will cause an ArrayIndexOutOfBoundsException to occur at runtime.</li>
+            <li>
+            Looks for stores to array elements where the array itself appears to have not been allocated.
+            </li>
+            </p>
             <p>It is a fast detector</p>
             ]]>
         </Details>
@@ -3710,6 +3716,16 @@
             <![CDATA[
             <p>This method access an array element using a literal index that is know to be outside the size of the specified 
             array. This will cause an ArrayIndexOutOfBoundsException at runtime</p>
+            ]]>
+        </Details>
+    </BugPattern>
+    
+    <BugPattern type="AIOB_ARRAY_STORE_TO_NULL_REFERENCE">
+        <ShortDescription>Method attempts to store an array element to an array that does not appear to be allocated</ShortDescription>
+        <LongDescription>Method {1} attempts to store an array element to an array that does not appear to be allocated</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method attempts to store an array element into an an array that appears to not have been allocated.
             ]]>
         </Details>
     </BugPattern>

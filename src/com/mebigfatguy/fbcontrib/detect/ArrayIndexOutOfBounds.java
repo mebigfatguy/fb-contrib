@@ -18,11 +18,13 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.BitSet;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -34,6 +36,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
+    private Set<Integer> initializedRegs;
     
     /**
      * constructs an AIOB detector given the reporter to report bugs on
@@ -47,17 +50,28 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
+            initializedRegs = new HashSet<Integer>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
+            initializedRegs = null;
         }
     }
     
     public void visitCode(Code obj) {
-        if (prescreen(getMethod())) {
-            stack.resetForMethodEntry(this);
-            super.visitCode(obj);
+        Method m = getMethod();
+        stack.resetForMethodEntry(this);
+        initializedRegs.clear();
+        Type[] argTypes = m.getArgumentTypes();
+        int arg = ((m.getAccessFlags() & Constants.ACC_STATIC) != 0) ? 0 : 1;
+        for (Type argType : argTypes) {
+            String argSig = argType.getSignature();
+            initializedRegs.add(Integer.valueOf(arg));
+            arg += ("J".equals(argSig) || "D".equals(argSig)) ? 2 : 1;
         }
+        super.visitCode(obj);
+        
+        initializedRegs.clear();
     }
     
     public void sawOpcode(int seen) {
@@ -94,6 +108,14 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                                             .addSourceLine(this));
                             }
                         }
+                        
+                        int reg = arrayItem.getRegisterNumber();
+                        if ((reg >= 0) && !initializedRegs.contains(Integer.valueOf(reg))) {
+                            bugReporter.reportBug(new BugInstance(this, "AIOB_ARRAY_STORE_TO_NULL_REFERENCE", HIGH_PRIORITY)
+                            .addClass(this)
+                            .addMethod(this)
+                            .addSourceLine(this));
+                        }
                     }
                 }
                 break;
@@ -123,6 +145,20 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                     }
                 }
                 break;
+                
+            case ASTORE_0:
+            case ASTORE_1:
+            case ASTORE_2:
+            case ASTORE_3:
+            case ASTORE:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item value = stack.getStackItem(0);
+                    if (!value.isNull())
+                        initializedRegs.add(Integer.valueOf(getRegisterOperand()));
+                } else {
+                    initializedRegs.add(Integer.valueOf(getRegisterOperand()));
+                } 
+                break;
             }
              
         } finally {
@@ -134,17 +170,5 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                 }
             }
         }
-    }
-    
-    
-    /**
-     * looks for methods that contain a NEWARRAY or ANEWARRAY opcodes
-     * 
-     * @param method the context object of the current method
-     * @return if the class uses synchronization
-     */
-    public boolean prescreen(Method method) {
-        BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.NEWARRAY) || bytecodeSet.get(Constants.ANEWARRAY));
     }
 }
