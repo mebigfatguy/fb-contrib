@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantInteger;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
@@ -78,11 +80,32 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         Integer size = null;
         try {
             switch (seen) {
+            case ICONST_0:
+            case ICONST_1:
+            case ICONST_2:
+            case ICONST_3:
+            case ICONST_4:
+            case ICONST_5:
+                size = Integer.valueOf(seen - ICONST_0);
+            break;
+            
+            case BIPUSH:
+            case SIPUSH:
+                size = getIntConstant();
+            break;
+                
+            case LDC:
+                Constant c = getConstantRefOperand();
+                if (c instanceof ConstantInteger) {
+                    size = Integer.valueOf(((ConstantInteger) c).getBytes());
+                }
+            break;
+            
             case NEWARRAY:
             case ANEWARRAY:
                 if (stack.getStackDepth() >= 1) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    size = (Integer) item.getConstant();
+                    size = (Integer) item.getUserValue();
                 }
                 break;
             
