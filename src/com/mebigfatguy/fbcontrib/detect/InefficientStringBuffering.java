@@ -85,10 +85,10 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 			
 			if (seen == INVOKESPECIAL) {
 				String calledClass = getClassConstantOperand();
-				String signature = getSigConstantOperand();
 				if (("java/lang/StringBuffer".equals(calledClass)
 				||  "java/lang/StringBuilder".equals(calledClass))
 				&&  "<init>".equals(getNameConstantOperand())) {
+	                String signature = getSigConstantOperand();
 					if ("()V".equals(signature)) {
 						OpcodeStack.Item itm = getStringBufferItemAt(2);
 						if (itm != null) {
