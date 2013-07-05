@@ -82,13 +82,14 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	}
 	private static final Map<String, Integer> modifyingMethods = new HashMap<String, Integer>();
 	static {
-		modifyingMethods.put("add(Ljava/lang/Object;)Z", Integer.valueOf(1));
-		modifyingMethods.put("addAll(Ljava/util/Collection;)Z", Integer.valueOf(1));
+	    Integer ONE = Integer.valueOf(1);
+		modifyingMethods.put("add(Ljava/lang/Object;)Z", ONE);
+		modifyingMethods.put("addAll(Ljava/util/Collection;)Z", ONE);
 		modifyingMethods.put("addAll(ILjava/util/Collection;)Z", Integer.valueOf(2));
 		modifyingMethods.put("clear()V", Integer.valueOf(0));
-		modifyingMethods.put("remove(I)Ljava/lang/Object;", Integer.valueOf(1));
-		modifyingMethods.put("removeAll(Ljava/util/Collection;)Z", Integer.valueOf(1));
-		modifyingMethods.put("retainAll(Ljava/util/Collection;)Z", Integer.valueOf(1));
+		modifyingMethods.put("remove(I)Ljava/lang/Object;", ONE);
+		modifyingMethods.put("removeAll(Ljava/util/Collection;)Z", ONE);
+		modifyingMethods.put("retainAll(Ljava/util/Collection;)Z", ONE);
 	}
 
 	private BugReporter bugReporter;
