@@ -365,7 +365,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 
 		@Override
 		public String toString() {
-			return basicBlock.toString() + "|" + uncheckedFields;
+			return basicBlock + "|" + uncheckedFields;
 		}
 	}
 }
