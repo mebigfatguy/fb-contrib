@@ -235,36 +235,37 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 				byte[] bytes = getCode().getCode();
 				if (lastPCs[1] != -1) {
-					int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
-					if ((CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL)
-					&&  ((loadIns == LDC) || (loadIns == LDC_W))
-					&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == INVOKEVIRTUAL)) {
-						ConstantPool pool = getConstantPool();
-						int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[1]+1);
-						ConstantMethodref toStringMR = (ConstantMethodref)pool.getConstant(toStringIndex);
-						String toStringCls = toStringMR.getClass(pool);
-						if (toStringCls.startsWith("java.lang.StringBu")) {
-							int consIndex = CodeByteUtils.getbyte(bytes, lastPCs[2]+1);
-							Constant c = pool.getConstant(consIndex);
-							if (c instanceof ConstantString) {
-								if ("".equals(((ConstantString) c).getBytes(pool))) {
-									int nandtIndex = toStringMR.getNameAndTypeIndex();
-									ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-									if ("toString".equals(cnt.getName(pool))) {
-										int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
-										ConstantMethodref lengthMR = (ConstantMethodref)pool.getConstant(lengthIndex);
-										nandtIndex = lengthMR.getNameAndTypeIndex();
-										cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-										if ("equals".equals(cnt.getName(pool))) {
-											bugReporter.reportBug(new BugInstance(this, "SPP_USE_STRINGBUILDER_LENGTH", NORMAL_PRIORITY)
-														.addClass(this)
-														.addMethod(this)
-														.addSourceLine(this));
-										}
-									}
-								}
-							}
-						}
+					if (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL) {
+	                    int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
+    					if  ((loadIns == LDC) || (loadIns == LDC_W)
+    					&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == INVOKEVIRTUAL)) {
+    						ConstantPool pool = getConstantPool();
+    						int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[1]+1);
+    						ConstantMethodref toStringMR = (ConstantMethodref)pool.getConstant(toStringIndex);
+    						String toStringCls = toStringMR.getClass(pool);
+    						if (toStringCls.startsWith("java.lang.&&StringBu")) {
+    							int consIndex = CodeByteUtils.getbyte(bytes, lastPCs[2]+1);
+    							Constant c = pool.getConstant(consIndex);
+    							if (c instanceof ConstantString) {
+    								if ("".equals(((ConstantString) c).getBytes(pool))) {
+    									int nandtIndex = toStringMR.getNameAndTypeIndex();
+    									ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+    									if ("toString".equals(cnt.getName(pool))) {
+    										int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
+    										ConstantMethodref lengthMR = (ConstantMethodref)pool.getConstant(lengthIndex);
+    										nandtIndex = lengthMR.getNameAndTypeIndex();
+    										cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+    										if ("equals".equals(cnt.getName(pool))) {
+    											bugReporter.reportBug(new BugInstance(this, "SPP_USE_STRINGBUILDER_LENGTH", NORMAL_PRIORITY)
+    														.addClass(this)
+    														.addMethod(this)
+    														.addSourceLine(this));
+    										}
+    									}
+    								}
+    							}
+    						}
+    					}
 					}
 				}
 			} else if ((seen == IRETURN) && lastIfEqWasBoolean) {
