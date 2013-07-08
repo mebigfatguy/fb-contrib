@@ -7,6 +7,7 @@ public final class FCBL_Sample
 	protected int boo;
 	int hoo;
 	private int fp;
+	private int multiMethodFP;
 	private String test;
 	private int x = 1;
 	private int y = 2;
@@ -56,5 +57,18 @@ public final class FCBL_Sample
 		}
 		
 		test = "woowoo";
+	}
+	
+	public void mm1FP(int i) {
+	    multiMethodFP = i;
+	    mm2FP(3);
+	    
+	    if (multiMethodFP == i) {
+	        System.out.println("FP");
+	    }   
+	}
+	
+	public void mm2FP(int i) {
+	    multiMethodFP = i;
 	}
 }
