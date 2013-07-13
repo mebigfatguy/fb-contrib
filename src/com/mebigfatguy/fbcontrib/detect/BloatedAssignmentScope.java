@@ -54,6 +54,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		dangerousAssignmentClassSources.add("java/io/InputStream");
 		dangerousAssignmentClassSources.add("java/io/ObjectInput");
         dangerousAssignmentMethodSources.add("java/lang/System.currentTimeMillis()J");
+        dangerousAssignmentMethodSources.add("java/lang/System.nanoTime()J");
         dangerousAssignmentMethodSources.add("java/util/Iterator.next()Ljava/lang/Object;");
         dangerousAssignmentMethodSources.add("java/util/regex/Matcher.start()I");
 	}
