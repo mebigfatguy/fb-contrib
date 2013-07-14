@@ -237,7 +237,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				if (lastPCs[1] != -1) {
 					if (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL) {
 	                    int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
-    					if  ((loadIns == LDC) || (loadIns == LDC_W)
+    					if  (((loadIns == LDC) || (loadIns == LDC_W))
     					&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == INVOKEVIRTUAL)) {
     						ConstantPool pool = getConstantPool();
     						int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[1]+1);
