@@ -51,8 +51,13 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	private static final Set<String> dangerousAssignmentMethodSources = new HashSet<String>();
 
 	static {
-		dangerousAssignmentClassSources.add("java/io/InputStream");
-		dangerousAssignmentClassSources.add("java/io/ObjectInput");
+        dangerousAssignmentClassSources.add("java/io/BufferedInputStream");
+        dangerousAssignmentClassSources.add("java/io/DataInputStream");
+        dangerousAssignmentClassSources.add("java/io/InputStream");
+        dangerousAssignmentClassSources.add("java/io/ObjectInputStream");
+        dangerousAssignmentClassSources.add("java/io/BufferedReader");
+        dangerousAssignmentClassSources.add("java/io/FileReader");
+        dangerousAssignmentClassSources.add("java/io/Reader");
         dangerousAssignmentMethodSources.add("java/lang/System.currentTimeMillis()J");
         dangerousAssignmentMethodSources.add("java/lang/System.nanoTime()J");
         dangerousAssignmentMethodSources.add("java/util/Iterator.next()Ljava/lang/Object;");
