@@ -21,6 +21,12 @@ package com.mebigfatguy.fbcontrib.collect;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * holds statistics about classes collected in the first pass.
+ * To cut down on the size of the database, class, method, signature is not stored as a key
+ * only a hash of that data is stored. This will allow some false positives, but hopefully not 
+ * enough to cause issues.
+ */
 public class Statistics {
 
 	private static Statistics statistics = new Statistics();
