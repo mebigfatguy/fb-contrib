@@ -62,8 +62,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyConcreteParameter">
 		<Details>
 			<![CDATA[
-			<p> Looks for parameters that are defined by classes, but only use methods defined by an
-			implemented interface or super class. Relying on concrete classes in public signatures causes cohesion,
+			<p> Looks for parameters that are defined by classes, but where the method only use methods defined by an
+			implemented interface or super class of that class. Relying on concrete classes in public signatures causes cohesion,
 			and makes low impact changes more difficult.</p>
 			<p>It is a slow detector</p>
 			]]>
