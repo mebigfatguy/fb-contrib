@@ -129,6 +129,10 @@ public class NeedlessCustomSerialization extends BytecodeScanningDetector
 			case SEEN_RETURN:
 				state = State.SEEN_INVALID;
 			break;
+			
+			case SEEN_INVALID:
+			    //if you reach here, never leave
+			break;
 		}
 	}
 	
