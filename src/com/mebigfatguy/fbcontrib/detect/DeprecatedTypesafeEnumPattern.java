@@ -77,7 +77,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector
 					}
 					firstEnumPC = 0;
 					enumCount = 0;
-					enumConstNames = new HashSet<String>();
+					enumConstNames = new HashSet<String>(10);
 					super.visitClassContext(context);
 				}
 			}

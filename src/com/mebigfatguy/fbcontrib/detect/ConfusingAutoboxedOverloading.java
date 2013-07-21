@@ -50,7 +50,7 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 {
 	private static final int JDK15_MAJOR = 49;
 
-	private static final Set<String> primitiveSigs = new HashSet<String>();
+	private static final Set<String> primitiveSigs = new HashSet<String>(4);
 	static {
 		primitiveSigs.add("I");
 		primitiveSigs.add("J");
@@ -158,7 +158,7 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 				String name = m.getName();				
 				Set<String> sigs = methodInfo.get(name);
 				if (sigs == null) {
-					sigs = new HashSet<String>();
+					sigs = new HashSet<String>(3);
 					methodInfo.put(name, sigs);
 				}
 				sigs.add(m.getSignature());

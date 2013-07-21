@@ -44,7 +44,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 	enum State {SAW_NOTHING, SAW_CONSTANT_0, SAW_CONSTANT}
 	
 	private static final String MAX_ICONST0_LOOP_DISTANCE_PROPERTY = "fb-contrib.cli.maxloopdistance";
-	private static final Set<String> ubiquitousMethods = new HashSet<String>();
+	private static final Set<String> ubiquitousMethods = new HashSet<String>(2);
 	static {
 		ubiquitousMethods.add("java.lang.String.split(Ljava/lang/String;)[Ljava/lang/String;");
 	}
@@ -73,7 +73,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			iConst0Looped = new HashSet<Integer>();
+			iConst0Looped = new HashSet<Integer>(10);
 			stack = new OpcodeStack();
 			super.visitClassContext(classContext);
 		} finally {

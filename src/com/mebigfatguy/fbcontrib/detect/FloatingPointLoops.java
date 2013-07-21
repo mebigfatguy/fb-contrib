@@ -40,7 +40,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector
 	enum State {SAW_LOAD, SAW_CMPX, SAW_IFX, SAW_STORE}
 	
 	BugReporter bugReporter;
-	private Set<FloatForLoop> forLoops = new HashSet<FloatForLoop>();
+	private Set<FloatForLoop> forLoops = new HashSet<FloatForLoop>(5);
 	
 	/**
      * constructs a FPL detector given the reporter to report bugs on

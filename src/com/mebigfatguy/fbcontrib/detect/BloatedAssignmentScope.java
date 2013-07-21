@@ -47,8 +47,8 @@ import edu.umd.cs.findbugs.ba.XField;
  * performance impact of that assignment.
  */
 public class BloatedAssignmentScope extends BytecodeScanningDetector {
-	private static final Set<String> dangerousAssignmentClassSources = new HashSet<String>();
-	private static final Set<String> dangerousAssignmentMethodSources = new HashSet<String>();
+	private static final Set<String> dangerousAssignmentClassSources = new HashSet<String>(7);
+	private static final Set<String> dangerousAssignmentMethodSources = new HashSet<String>(4);
 
 	static {
         dangerousAssignmentClassSources.add("java/io/BufferedInputStream");
@@ -95,10 +95,10 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			ignoreRegs = new HashSet<Integer>();
-			catchHandlers = new HashSet<Integer>();
-			switchTargets = new HashSet<Integer>();
-			monitorSyncPCs = new ArrayList<Integer>();
+			ignoreRegs = new HashSet<Integer>(10);
+			catchHandlers = new HashSet<Integer>(10);
+			switchTargets = new HashSet<Integer>(10);
+			monitorSyncPCs = new ArrayList<Integer>(5);
 			stack = new OpcodeStack();
 			super.visitClassContext(classContext);
 		} finally {
@@ -609,12 +609,12 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		 */
 		public void addStore(int reg, int pc, UserObject assocObject) {
 			if (stores == null) {
-				stores = new HashMap<Integer, Integer>();
+				stores = new HashMap<Integer, Integer>(6);
 			}
 
 			stores.put(Integer.valueOf(reg), Integer.valueOf(pc));
 			if (assocs == null) {
-				assocs = new HashMap<UserObject, Integer>();
+				assocs = new HashMap<UserObject, Integer>(6);
 			}
 			assocs.put(assocObject, Integer.valueOf(reg));
 		}
@@ -650,7 +650,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		 */
 		public void addLoad(int reg, int pc) {
 			if (loads == null) {
-				loads = new HashMap<Integer, Integer>();
+				loads = new HashMap<Integer, Integer>(10);
 			}
 
 			loads.put(Integer.valueOf(reg), Integer.valueOf(pc));

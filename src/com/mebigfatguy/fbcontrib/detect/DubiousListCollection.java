@@ -46,8 +46,8 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 public class DubiousListCollection extends BytecodeScanningDetector
 {
-	private static Set<String> setMethods = new HashSet<String>();
-	private static Set<String> listMethods = new HashSet<String>();
+	private static Set<String> setMethods = new HashSet<String>(6);
+	private static Set<String> listMethods = new HashSet<String>(8);
 	static {
 		setMethods.add("contains(Ljava/lang/Object;)Z");
 		setMethods.add("containsAll(Ljava/util/Collection;)Z");
@@ -68,7 +68,7 @@ public class DubiousListCollection extends BytecodeScanningDetector
 	}
 	private BugReporter bugReporter;
 	private OpcodeStack stack = new OpcodeStack();
-	private Map<String, FieldInfo> fieldsReported = new HashMap<String, FieldInfo>();
+	private Map<String, FieldInfo> fieldsReported = new HashMap<String, FieldInfo>(10);
 	
 	/**
      * constructs a DLC detector given the reporter to report bugs on

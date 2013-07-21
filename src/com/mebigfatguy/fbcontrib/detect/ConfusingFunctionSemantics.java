@@ -45,7 +45,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class ConfusingFunctionSemantics extends BytecodeScanningDetector 
 {
-	private static final Set<String> knownImmutables = new HashSet<String>();
+	private static final Set<String> knownImmutables = new HashSet<String>(10);
 	static {
 		knownImmutables.add("Ljava/lang/String;");
 		knownImmutables.add("Ljava/lang/Byte;");
@@ -79,7 +79,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
-			possibleParmRegs = new HashMap<Integer, ParmUsage>();
+			possibleParmRegs = new HashMap<Integer, ParmUsage>(10);
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;

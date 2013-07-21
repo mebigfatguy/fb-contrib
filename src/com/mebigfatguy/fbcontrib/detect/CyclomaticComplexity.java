@@ -96,7 +96,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector
 			if (code.getCode().length < (2*reportLimit))
 				return;
 			
-			Set<Integer> exceptionNodeTargets = new HashSet<Integer>();
+			Set<Integer> exceptionNodeTargets = new HashSet<Integer>(10);
 
 			CFG cfg = classContext.getCFG(obj);
 			int branches = 0;

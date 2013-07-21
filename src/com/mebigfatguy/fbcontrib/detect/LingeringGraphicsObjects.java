@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
-	private static final Set<String> GRAPHICS_PRODUCERS = new HashSet<String>();
+	private static final Set<String> GRAPHICS_PRODUCERS = new HashSet<String>(2);
 	static {
 		GRAPHICS_PRODUCERS.add("java/awt/image/BufferedImage#getGraphics()Ljava/awt/Graphics;");
 		GRAPHICS_PRODUCERS.add("java/awt/Graphics#create()Ljava/awt/Graphics;");
@@ -61,7 +61,7 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
-			graphicsRegs = new HashMap<Integer, Integer>();
+			graphicsRegs = new HashMap<Integer, Integer>(5);
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;

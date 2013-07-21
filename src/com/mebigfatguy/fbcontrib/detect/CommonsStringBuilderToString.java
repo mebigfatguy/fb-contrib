@@ -49,7 +49,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
 
     private final BugReporter bugReporter;
     private Stack<Pair> stackTracker = new Stack<Pair>();
-    private Map<Integer, Boolean> registerTracker = new HashMap<Integer, Boolean>();
+    private Map<Integer, Boolean> registerTracker = new HashMap<Integer, Boolean>(10);
 
     /**
      * constructs a CSBTS detector given the reporter to report bugs on.

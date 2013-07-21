@@ -68,7 +68,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
-			unsafeAliases = new HashSet<Integer>();
+			unsafeAliases = new HashSet<Integer>(6);
 			branchInfo = new HashMap<Integer, Integer>();
 			super.visitClassContext(classContext);
 		} finally {

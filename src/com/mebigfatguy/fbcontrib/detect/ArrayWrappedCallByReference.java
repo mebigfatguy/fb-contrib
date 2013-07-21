@@ -75,7 +75,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
-			wrappers = new HashMap<Integer, WrapperInfo>();
+			wrappers = new HashMap<Integer, WrapperInfo>(10);
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;

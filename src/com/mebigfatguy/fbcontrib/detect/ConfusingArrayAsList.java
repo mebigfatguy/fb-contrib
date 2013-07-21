@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class ConfusingArrayAsList extends BytecodeScanningDetector {
 
-    private static Set<String> PRIMITIVE_ARRAYS = new HashSet<String>();
+    private static Set<String> PRIMITIVE_ARRAYS = new HashSet<String>(8);
     static {
         PRIMITIVE_ARRAYS.add("[[B");
         PRIMITIVE_ARRAYS.add("[[C");

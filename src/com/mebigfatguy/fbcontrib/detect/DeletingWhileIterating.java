@@ -69,18 +69,18 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 		}
 
 		try {
-			exceptionClasses = new HashSet<JavaClass>();
+			exceptionClasses = new HashSet<JavaClass>(2);
 			exceptionClasses.add(Repository.lookupClass("java.util.concurrent.CopyOnWriteArrayList"));
 			exceptionClasses.add(Repository.lookupClass("java.util.concurrent.CopyOnWriteArraySet"));
 		} catch (ClassNotFoundException cnfe) {
 		}
 
-		collectionMethods = new HashSet<String>();
+		collectionMethods = new HashSet<String>(3);
 		collectionMethods.add("entrySet()Ljava/lang/Set;");
 		collectionMethods.add("keySet()Ljava/lang/Set;");
 		collectionMethods.add("values()Ljava/lang/Collection;");
 	}
-	private static final Map<String, Integer> modifyingMethods = new HashMap<String, Integer>();
+	private static final Map<String, Integer> modifyingMethods = new HashMap<String, Integer>(8);
 	static {
 	    Integer ONE = Integer.valueOf(1);
 		modifyingMethods.put("add(Ljava/lang/Object;)Z", ONE);
@@ -121,7 +121,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 			stack = new OpcodeStack();
 			collectionGroups = new ArrayList<Set<Comparable<?>>>();
 			groupToIterator = new HashMap<Integer, Integer>();
-			loops = new HashMap<Integer, Loop>();
+			loops = new HashMap<Integer, Loop>(10);
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;

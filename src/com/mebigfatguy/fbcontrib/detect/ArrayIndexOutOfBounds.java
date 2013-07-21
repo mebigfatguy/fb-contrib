@@ -52,7 +52,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            initializedRegs = new HashSet<Integer>();
+            initializedRegs = new HashSet<Integer>(10);
             super.visitClassContext(classContext);
         } finally {
             stack = null;

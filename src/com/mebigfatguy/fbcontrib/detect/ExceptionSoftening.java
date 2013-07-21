@@ -291,7 +291,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	 * @return an set of catch exception types that the pc is currently in
 	 */
 	public Set<String> findPossibleCatchSignatures(List<CatchInfo> infos, int pc) {
-		Set<String> catchTypes = new HashSet<String>();
+		Set<String> catchTypes = new HashSet<String>(6);
 		ListIterator<CatchInfo> it = infos.listIterator(infos.size());
 		while (it.hasPrevious()) {
 			CatchInfo ci = it.previous();

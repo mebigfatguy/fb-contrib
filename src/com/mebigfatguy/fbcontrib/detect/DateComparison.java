@@ -37,7 +37,7 @@ public class DateComparison extends BytecodeScanningDetector
 {
 	enum State {SAW_NOTHING, SAW_LOAD1_1, SAW_LOAD1_2, SAW_CMP1, SAW_IFNE, SAW_LOAD2_1, SAW_LOAD2_2, SAW_CMP2}
 	
-	private static final Set<String> dateClasses = new HashSet<String>();
+	private static final Set<String> dateClasses = new HashSet<String>(3);
 	static {
 		dateClasses.add("java.util.Date");
 		dateClasses.add("java.sql.Date");

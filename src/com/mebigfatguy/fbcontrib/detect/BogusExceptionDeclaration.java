@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 	private static JavaClass runtimeExceptionClass;
-	private static final Set<String> safeClasses = new HashSet<String>();
+	private static final Set<String> safeClasses = new HashSet<String>(8);
 	static {
 		try {
 			safeClasses.add("java/lang/Object");
@@ -71,7 +71,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 		try {
 			if (runtimeExceptionClass != null) {
 				stack = new OpcodeStack();
-				declaredCheckedExceptions = new HashSet<String>();
+				declaredCheckedExceptions = new HashSet<String>(6);
 				super.visitClassContext(classContext);
 			}
 		} finally {

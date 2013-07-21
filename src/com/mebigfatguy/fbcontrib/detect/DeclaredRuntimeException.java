@@ -82,7 +82,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 		ExceptionTable et = obj.getExceptionTable();
 		if (et != null) {
 			String[] exNames = et.getExceptionNames();
-			Set<String> methodRTExceptions = new HashSet<String>();
+			Set<String> methodRTExceptions = new HashSet<String>(6);
 			int priority = LOW_PRIORITY;
 			boolean foundRuntime = false;
 			for (String ex : exNames) {

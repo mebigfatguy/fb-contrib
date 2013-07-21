@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class CustomBuiltXML extends BytecodeScanningDetector
 {
-	private static final Map<Pattern, Boolean> xmlPatterns = new HashMap<Pattern, Boolean>();
+	private static final Map<Pattern, Boolean> xmlPatterns = new HashMap<Pattern, Boolean>(10);
 	static {
 		xmlPatterns.put(Pattern.compile(".*<[a-zA-Z_](\\w)*>[^=]?.*"), Boolean.TRUE);
 		xmlPatterns.put(Pattern.compile(".*</[a-zA-Z_](\\w)*>[^=]?.*"), Boolean.TRUE);

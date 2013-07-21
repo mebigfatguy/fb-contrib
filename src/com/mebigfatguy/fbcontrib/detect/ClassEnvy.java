@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class ClassEnvy extends BytecodeScanningDetector
 {
 	private static final String ENVY_PERCENT_PROPERTY = "fb-contrib.ce.percent";
-	private static final Set<String> ignorableInterfaces = new HashSet<String>();
+	private static final Set<String> ignorableInterfaces = new HashSet<String>(3);
 	static {
 		ignorableInterfaces.add("java.io.Serializable");
 		ignorableInterfaces.add("java.lang.Cloneable");
