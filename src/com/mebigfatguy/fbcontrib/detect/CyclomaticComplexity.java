@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -87,6 +88,10 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector
 	@Override
 	public void visitMethod(final Method obj) {
 		try {
+		    
+		    if ((obj.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0)
+		        return;
+		    
 			Code code = obj.getCode();
 			if (code == null)
 				return;
