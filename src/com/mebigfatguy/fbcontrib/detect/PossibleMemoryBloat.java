@@ -48,16 +48,29 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 {
 	private static final Set<String> bloatableSigs = new HashSet<String>();
 	static {
-		bloatableSigs.add("Ljava/util/ArrayList;");
-		bloatableSigs.add("Ljava/util/Collection;");
+        bloatableSigs.add("Ljava/util/ArrayBlockingQueue;");
+        bloatableSigs.add("Ljava/util/ArrayList;");
+        bloatableSigs.add("Ljava/util/BlockingQueue;");		
+        bloatableSigs.add("Ljava/util/Collection;");
+        bloatableSigs.add("Ljava/util/ConcurrentHashMap;");
+        bloatableSigs.add("Ljava/util/ConcurrentSkipListMap;");
+        bloatableSigs.add("Ljava/util/ConcurrentSkipListSet;");
+        bloatableSigs.add("Ljava/util/CopyOnWriteArraySet;");
+        bloatableSigs.add("Ljava/util/EnumSet;");
+        bloatableSigs.add("Ljava/util/EnumMap;");
 		bloatableSigs.add("Ljava/util/HashMap;");
 		bloatableSigs.add("Ljava/util/HashSet;");
 		bloatableSigs.add("Ljava/util/Hashtable;");
 		bloatableSigs.add("Ljava/util/IdentityHashMap;");
-		bloatableSigs.add("Ljava/util/LinkedHashMap;");
+        bloatableSigs.add("Ljava/util/LinkedBlockingQueue;");
+        bloatableSigs.add("Ljava/util/LinkedHashMap;");
+        bloatableSigs.add("Ljava/util/LinkedHashSet;");
 		bloatableSigs.add("Ljava/util/LinkedList;");
-		bloatableSigs.add("Ljava/util/List;");
+        bloatableSigs.add("Ljava/util/List;");
+        bloatableSigs.add("Ljava/util/PriorityBlockingQueue;");
+        bloatableSigs.add("Ljava/util/PriorityQueue;");
 		bloatableSigs.add("Ljava/util/Map;");
+	    bloatableSigs.add("Ljava/util/Queue;");
 		bloatableSigs.add("Ljava/util/Set;");
 		bloatableSigs.add("Ljava/util/SortedSet;");
 		bloatableSigs.add("Ljava/util/SortedMap;");
@@ -72,14 +85,19 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	static {
 		decreasingMethods.add("clear");
 		decreasingMethods.add("delete");
-		decreasingMethods.add("deleteCharAt");
-		decreasingMethods.add("pop");
+        decreasingMethods.add("deleteCharAt");
+        decreasingMethods.add("drainTo");
+        decreasingMethods.add("poll");
+        decreasingMethods.add("pollFirst");
+        decreasingMethods.add("pollLast");
+        decreasingMethods.add("pop");
 		decreasingMethods.add("remove");
 		decreasingMethods.add("removeAll");
 		decreasingMethods.add("removeAllElements");
 		decreasingMethods.add("removeElementAt");
 		decreasingMethods.add("removeRange");
-		decreasingMethods.add("setLength");
+        decreasingMethods.add("setLength");
+        decreasingMethods.add("take");
 	}
 	
 	private static final Set<String> increasingMethods = new HashSet<String>();
