@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -34,6 +35,7 @@ import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantString;
+import org.apache.bcel.classfile.ConstantValue;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
@@ -86,6 +88,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 	private boolean lastLoadWasString;
 	/** branch targets, to a set of branch instructions */
 	private Map<Integer, Set<Integer>> branchTargets;
+	private Set<String> staticConstants;
 
 	/**
      * constructs a SPP detector given the reporter to report bugs on
@@ -117,6 +120,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			stack = null;
 			lastPCs = null;
 			branchTargets = null;
+			staticConstants = null;
 		}
 	}
 
@@ -476,8 +480,10 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				        if (stack.getStackDepth() > 1) {
 				            OpcodeStack.Item valItem = stack.getStackItem(0);
 				            OpcodeStack.Item sbItem = stack.getStackItem(1);
-				            boolean argIsLiteralString = (valItem.getConstant() instanceof String) && (((String) valItem.getConstant()).length() > 0);
-				            
+				            Object constant = valItem.getConstant();
+				            boolean argIsLiteralString = (constant instanceof String) && (((String) constant).length() > 0);
+				            argIsLiteralString = argIsLiteralString && !looksLikeStaticFieldValue((String) constant);
+
 				            if (argIsLiteralString) {
     				            String existingAppend = (String) sbItem.getUserValue();
     				            if (existingAppend != null) {
@@ -760,5 +766,24 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			System.arraycopy(lastPCs, 1, lastPCs, 0, 3);
 			lastPCs[3] = getPC();
 		}
+	}
+	
+	private boolean looksLikeStaticFieldValue(String constant) {
+	    if (staticConstants == null) {
+	        staticConstants = new HashSet<String>();
+	        
+	        Field[] fields = getClassContext().getJavaClass().getFields();
+	        for (Field f : fields) {
+	            if (((f.getAccessFlags() & (Constants.ACC_FINAL|Constants.ACC_STATIC)) == (Constants.ACC_FINAL|Constants.ACC_STATIC)) && "Ljava/lang/String;".equals(f.getSignature())) {
+	                ConstantValue cv = f.getConstantValue();
+	                if (cv != null) {
+    	                int cvIndex = cv.getConstantValueIndex();
+    	                staticConstants.add(getConstantPool().getConstantString(cvIndex, Constants.CONSTANT_String));
+	                }
+	            }
+	        }
+	    }
+	    
+	    return staticConstants.contains(constant);
 	}
 }

@@ -22,6 +22,7 @@ public class SPP_Sample implements Serializable
     private static final double pi = 3.14;
 	private static final double e = 2.72;
 	public static final String FALSE_POSITIVE = "INTERN_OK_HERE".intern();
+	private static final String LIT = "lit";
 
 	static enum Flap { Smack, Jack };
 
@@ -116,6 +117,13 @@ public class SPP_Sample implements Serializable
     {
         sb.append("hello").append("there");
         sb.append("Hello").append(s).append("there");
+    }
+    
+    public String testFPDoubleAppendListeralStatic()
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("literal").append(LIT).append("literal");
+        return sb.toString();
     }
     
 
