@@ -142,12 +142,16 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         OpcodeStack.Item item = stack.getStackItem(1);
                         Integer allocNum = (Integer) item.getUserValue();
                         if (allocNum != null) {
-                            List<Integer> lines = allocToAddPCs.get(allocNum);
-                            if (lines == null) {
-                                lines = new ArrayList<Integer>();
-                                allocToAddPCs.put(allocNum, lines);
+                            if ("addAll".equals(methodName)) {
+                                allocToAddPCs.remove(allocNum);
+                            } else {
+                                List<Integer> lines = allocToAddPCs.get(allocNum);
+                                if (lines == null) {
+                                    lines = new ArrayList<Integer>();
+                                    allocToAddPCs.put(allocNum, lines);
+                                }
+                                lines.add(getPC());
                             }
-                            lines.add(getPC());
                         }
                     }
                 }

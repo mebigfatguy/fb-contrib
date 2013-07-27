@@ -56,6 +56,17 @@ public class PSC_Sample {
             }
         }
     }
+    
+    public List<String> fpAddSubCollection(Map<String, Set<String>> s) 
+    {
+        List<String> l = new ArrayList<String>();
+        for (Map.Entry<String, Set<String>> entry : s.entrySet()) 
+        {
+            l.add(entry.getKey());
+            l.addAll(entry.getValue());
+        }
+        return l;
+    }
 
     public void fpSwitchInLoop(Set<Integer> source) {
         List<Integer> dest = new ArrayList<Integer>();
