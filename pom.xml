@@ -44,6 +44,15 @@
             </properties>
             <timezone>+1</timezone>
         </contributor>
+        <contributor>
+            <name>Trevor Pounds</name>
+        </contributor>
+        <contributor>
+            <name>Ronald Blaschke</name>
+        </contributor>
+        <contributor>
+            <name>Zenichi Amano</name>
+        </contributor>
     </contributors>
 
     <licenses>
