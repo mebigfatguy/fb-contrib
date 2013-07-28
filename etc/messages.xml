@@ -1601,11 +1601,11 @@
 	</BugPattern>
 
 	<BugPattern type="AFBR_ABNORMAL_FINALLY_BLOCK_RETURN">
-		<ShortDescription>Class has abnormal exit from finally block</ShortDescription>
-		<LongDescription>Class {0} has abnormal exit from finally block</LongDescription>
+		<ShortDescription>Method has abnormal exit from finally block</ShortDescription>
+		<LongDescription>Method {1} has abnormal exit from finally block</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This class returns or throws exceptions from a finally block. This will
+			<p>This method returns or throws exceptions from a finally block. This will
 			mask real program logic in the try block, and short-circuit normal method termination.
 			</p>
 			]]>
