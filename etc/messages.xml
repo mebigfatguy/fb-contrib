@@ -2646,6 +2646,17 @@
             ]]>
             </Details>
     </BugPattern> 
+    
+    <BugPattern type="SPP_NULL_BEFORE_INSTANCEOF">
+        <ShortDescription>Method checks a reference for null before calling instanceof</ShortDescription>
+        <LongDescription>Method checks a reference for null before calling instanceof</LongDescription>
+        <Details>
+            <![CDATA[
+                This method checks a reference for null just before seeing if the reference is an instanceof some class.
+                Since instanceof will return false for null references, the null check is not needed.
+            ]]>
+        </Details>
+    </BugPattern>
 	
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
 		<ShortDescription>Method assigns a variable in a larger scope then is needed</ShortDescription>

@@ -356,4 +356,20 @@ public class SPP_Sample implements Serializable
     public String testListFirst(List<String> l) {
         return l.iterator().next();
     }
+    
+    public boolean nullAndInstanceOf(Object o) {
+        if ((o != null) && (o instanceof String)) 
+        {
+            return true;
+        }
+        return false;
+    }
+    
+    public boolean nullAndInstanceOf(double d1, double d2, double d3, Object o) {
+        if ((o != null) && (o instanceof String)) 
+        {
+            return true;
+        }
+        return false;
+    }
 }

@@ -204,6 +204,24 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					}
 				}
 			}
+			
+			if (seen == IFEQ) {
+			    byte[] bytes = getCode().getCode();
+			    if ((lastPCs[0] != -1) && (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL) && (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INSTANCEOF)) {
+    			    int ins0 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
+    			    if ((ins0 == ALOAD) || (ins0 == ALOAD_0) || (ins0 == ALOAD_1) || (ins0 == ALOAD_2) || (ins0 == ALOAD_3)) {
+    			        int ins2 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
+    			        if (ins0 == ins2) {
+    			            if ((ins0 != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[0] + 1) == CodeByteUtils.getbyte(bytes, lastPCs[2] + 1))) {
+    			                bugReporter.reportBug(new BugInstance(this, "SPP_NULL_BEFORE_INSTANCEOF", NORMAL_PRIORITY)
+    			                        .addClass(this)
+    			                        .addMethod(this)
+    			                        .addSourceLine(this));
+    			            }
+    			        }
+    			    }
+			    }
+			}
 
 			if (seen == IFNE) {
 				byte[] bytes = getCode().getCode();
