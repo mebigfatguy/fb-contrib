@@ -372,4 +372,16 @@ public class SPP_Sample implements Serializable
         }
         return false;
     }
+    
+    public boolean fpNullAndInstanceOf(Object o) {
+        if (o != null)
+        {
+            if (o instanceof String)
+            {
+                return true;
+            }
+            return false;
+        }
+        return Math.random() > 0.5;
+    }
 }

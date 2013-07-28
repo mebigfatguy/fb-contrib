@@ -213,10 +213,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector
     			        int ins2 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
     			        if (ins0 == ins2) {
     			            if ((ins0 != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[0] + 1) == CodeByteUtils.getbyte(bytes, lastPCs[2] + 1))) {
-    			                bugReporter.reportBug(new BugInstance(this, "SPP_NULL_BEFORE_INSTANCEOF", NORMAL_PRIORITY)
-    			                        .addClass(this)
-    			                        .addMethod(this)
-    			                        .addSourceLine(this));
+    			                int ifNullTarget = lastPCs[1] + CodeByteUtils.getshort(bytes, lastPCs[1]+1);
+    			                if (ifNullTarget == getBranchTarget()) {
+        			                bugReporter.reportBug(new BugInstance(this, "SPP_NULL_BEFORE_INSTANCEOF", NORMAL_PRIORITY)
+        			                        .addClass(this)
+        			                        .addMethod(this)
+        			                        .addSourceLine(this));
+    			                }
     			            }
     			        }
     			    }
