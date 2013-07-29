@@ -48,26 +48,26 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 {
 	private static final Set<String> bloatableSigs = new HashSet<String>();
 	static {
-        bloatableSigs.add("Ljava/util/ArrayBlockingQueue;");
+        bloatableSigs.add("Ljava/util/concurrent/ArrayBlockingQueue;");
         bloatableSigs.add("Ljava/util/ArrayList;");
-        bloatableSigs.add("Ljava/util/BlockingQueue;");		
+        bloatableSigs.add("Ljava/util/concurrent/BlockingQueue;");		
         bloatableSigs.add("Ljava/util/Collection;");
-        bloatableSigs.add("Ljava/util/ConcurrentHashMap;");
-        bloatableSigs.add("Ljava/util/ConcurrentSkipListMap;");
-        bloatableSigs.add("Ljava/util/ConcurrentSkipListSet;");
-        bloatableSigs.add("Ljava/util/CopyOnWriteArraySet;");
+        bloatableSigs.add("Ljava/util/concurrent/ConcurrentHashMap;");
+        bloatableSigs.add("Ljava/util/concurrent/ConcurrentSkipListMap;");
+        bloatableSigs.add("Ljava/util/concurrent/ConcurrentSkipListSet;");
+        bloatableSigs.add("Ljava/util/concurrent/CopyOnWriteArraySet;");
         bloatableSigs.add("Ljava/util/EnumSet;");
         bloatableSigs.add("Ljava/util/EnumMap;");
 		bloatableSigs.add("Ljava/util/HashMap;");
 		bloatableSigs.add("Ljava/util/HashSet;");
 		bloatableSigs.add("Ljava/util/Hashtable;");
 		bloatableSigs.add("Ljava/util/IdentityHashMap;");
-        bloatableSigs.add("Ljava/util/LinkedBlockingQueue;");
+        bloatableSigs.add("Ljava/util/concurrent/LinkedBlockingQueue;");
         bloatableSigs.add("Ljava/util/LinkedHashMap;");
         bloatableSigs.add("Ljava/util/LinkedHashSet;");
 		bloatableSigs.add("Ljava/util/LinkedList;");
         bloatableSigs.add("Ljava/util/List;");
-        bloatableSigs.add("Ljava/util/PriorityBlockingQueue;");
+        bloatableSigs.add("Ljava/util/concurrent/PriorityBlockingQueue;");
         bloatableSigs.add("Ljava/util/PriorityQueue;");
 		bloatableSigs.add("Ljava/util/Map;");
 	    bloatableSigs.add("Ljava/util/Queue;");
@@ -202,8 +202,6 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			stack.mergeJumps(this);
-			
 			if (bloatableFields.isEmpty())
 				return;
 			
