@@ -109,7 +109,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		increasingMethods.add("addLast");
 		increasingMethods.add("append");
 		increasingMethods.add("insertElementAt");
-		increasingMethods.add("put");
+        increasingMethods.add("offer");
+        increasingMethods.add("put");
 	}
 	private final BugReporter bugReporter;
 	private Map<XField, SourceLineAnnotation> bloatableFields;
