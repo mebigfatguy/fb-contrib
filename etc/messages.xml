@@ -3005,6 +3005,18 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="LO_INVALID_FORMATTING_ANCHOR">
+       <ShortDescription>Method attempts to log using numbered formatting anchors</ShortDescription>
+       <LongDescription>Method {1} attempts to log using numbered formatting anchors</LongDescription>
+       <Details>
+            <![CDATA[
+                This method attempts to use an SLF4J logger to log a parameterized expression using formatting anchors.
+                However, slf4j uses simple non numbered anchors such as {}, rather than anchors with digits in them as the 
+                code uses. Thus no parameter replacement will occur.
+            ]]>
+       </Details>
+	</BugPattern>
 
 	<BugPattern type="IICU_INCORRECT_INTERNAL_CLASS_USE">
 		<ShortDescription>Class relies on internal api classes</ShortDescription>

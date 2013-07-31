@@ -20,6 +20,8 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -40,44 +42,46 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class LoggerOddities extends BytecodeScanningDetector {
-	private static JavaClass THROWABLE_CLASS;
-	private static Set<String> loggerMethods;
+    private static JavaClass THROWABLE_CLASS;
+    private static Set<String> LOGGER_METHODS;
+    private static Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
 
-	static {
-		try {
-			THROWABLE_CLASS = Repository.lookupClass("java/lang/Throwable");
+    static {
+        try {
+            THROWABLE_CLASS = Repository.lookupClass("java/lang/Throwable");
 
-			loggerMethods = new HashSet<String>();
-			loggerMethods.add("trace");
-			loggerMethods.add("debug");
-			loggerMethods.add("info");
-			loggerMethods.add("warn");
-			loggerMethods.add("error");
-			loggerMethods.add("fatal");
-		} catch (ClassNotFoundException cnfe) {
-			THROWABLE_CLASS = null;
-		}
-	}
-	private final BugReporter bugReporter;
-	private OpcodeStack stack;
-	private String clsName;
+            LOGGER_METHODS = new HashSet<String>();
+            LOGGER_METHODS.add("trace");
+            LOGGER_METHODS.add("debug");
+            LOGGER_METHODS.add("info");
+            LOGGER_METHODS.add("warn");
+            LOGGER_METHODS.add("error");
+            LOGGER_METHODS.add("fatal");
+        } catch (ClassNotFoundException cnfe) {
+            THROWABLE_CLASS = null;
+        }
+    }
+    private final BugReporter bugReporter;
+    private OpcodeStack stack;
+    private String clsName;
 
     /**
      * constructs a LO detector given the reporter to report bugs on.
-
-     * @param bugReporter the sync of bug reports
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
      */
-	public LoggerOddities(final BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public LoggerOddities(final BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-
-	/**
-	 * implements the visitor to discover what the class name is if it is a normal class,
-	 * or the owning class, if the class is an anonymous class.
-	 *
-	 * @param classContext the context object of the currently parsed class
-	 */
+    /**
+     * implements the visitor to discover what the class name is if it is a
+     * normal class, or the owning class, if the class is an anonymous class.
+     * 
+     * @param classContext
+     *            the context object of the currently parsed class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -85,7 +89,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
             clsName = classContext.getJavaClass().getClassName();
             int subclassIndex = clsName.indexOf('$');
             while (subclassIndex >= 0) {
-                String simpleName = clsName.substring(subclassIndex+1);
+                String simpleName = clsName.substring(subclassIndex + 1);
                 try {
                     Integer.parseInt(simpleName);
                     clsName = clsName.substring(0, subclassIndex);
@@ -103,35 +107,33 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the stack
-     *
-     * @param obj the context object of the currently parsed code block
+     * 
+     * @param obj
+     *            the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         Method m = getMethod();
         if ("<init>".equals(m.getName())) {
-        	Type[] types = Type.getArgumentTypes(m.getSignature());
-        	for (Type t : types)
-        	{
-        		String parmSig = t.getSignature();
-        		if ("Lorg/slf4j/Logger;".equals(parmSig)
-        		||  "Lorg/apache/log4j/Logger;".equals(parmSig)
-        		||  "Lorg/apache/commons/logging/Log;".equals(parmSig)) {
-                    bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_PARAMETER", NORMAL_PRIORITY)
-                    .addClass(this)
-                    .addMethod(this)
-                    .addSourceLine(this));
-        		}
-        	}
+            Type[] types = Type.getArgumentTypes(m.getSignature());
+            for (Type t : types) {
+                String parmSig = t.getSignature();
+                if ("Lorg/slf4j/Logger;".equals(parmSig) || "Lorg/apache/log4j/Logger;".equals(parmSig) || "Lorg/apache/commons/logging/Log;".equals(parmSig)) {
+                    bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_PARAMETER", NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this));
+                }
+            }
         }
         super.visitCode(obj);
     }
 
     /**
-     * implements the visitor to look for calls to Logger.getLogger with the wrong class name
-     *
-     * @param seen the opcode of the currently parsed instruction
+     * implements the visitor to look for calls to Logger.getLogger with the
+     * wrong class name
+     * 
+     * @param seen
+     *            the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -143,7 +145,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 Constant c = getConstantRefOperand();
                 if (c instanceof ConstantClass) {
                     ConstantPool pool = getConstantPool();
-                    ldcClassName = ((ConstantUtf8)pool.getConstant(((ConstantClass) c).getNameIndex())).getBytes();
+                    ldcClassName = ((ConstantUtf8) pool.getConstant(((ConstantClass) c).getNameIndex())).getBytes();
                 }
             } else if (seen == INVOKESTATIC) {
                 String callingClsName = getClassConstantOperand();
@@ -151,67 +153,64 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
                 String loggingClassName = null;
 
-                if ("org/slf4j/LoggerFactory".equals(callingClsName)
-                &&  "getLogger".equals(mthName)) {
+                if ("org/slf4j/LoggerFactory".equals(callingClsName) && "getLogger".equals(mthName)) {
                     String signature = getSigConstantOperand();
 
                     if ("(Ljava/lang/Class;)Lorg/slf4j/Logger;".equals(signature)) {
-                    	if (stack.getStackDepth() > 0) {
-	                        OpcodeStack.Item item = stack.getStackItem(0);
-	                        loggingClassName = (String)item.getUserValue();
-	                    }
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            loggingClassName = (String) item.getUserValue();
+                        }
                     } else if ("(Ljava/lang/String;)Lorg/slf4j/Logger;".equals(signature)) {
-                    	if (stack.getStackDepth() > 0) {
-	                        OpcodeStack.Item item = stack.getStackItem(0);
-	                        loggingClassName = (String)item.getConstant();
-	                        if (loggingClassName != null) {
-								loggingClassName = loggingClassName.replace('.', '/');
-							}
-	                    }
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            loggingClassName = (String) item.getConstant();
+                            if (loggingClassName != null) {
+                                loggingClassName = loggingClassName.replace('.', '/');
+                            }
+                        }
                     }
-                } else if ("org/apache/log4j/Logger".equals(callingClsName)
-                       &&  "getLogger".equals(mthName)) {
+                } else if ("org/apache/log4j/Logger".equals(callingClsName) && "getLogger".equals(mthName)) {
                     String signature = getSigConstantOperand();
 
                     if ("(Ljava/lang/Class;)Lorg/apache/log4j/Logger;".equals(signature)) {
-                    	if (stack.getStackDepth() > 0) {
-	                        OpcodeStack.Item item = stack.getStackItem(0);
-	                        loggingClassName = (String)item.getUserValue();
-	                    }
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            loggingClassName = (String) item.getUserValue();
+                        }
                     } else if ("(Ljava/lang/String;)Lorg/apache/log4j/Logger;".equals(signature)) {
-                    	if (stack.getStackDepth() > 0) {
-	                        OpcodeStack.Item item = stack.getStackItem(0);
-	                        loggingClassName = (String)item.getConstant();
-	                        if (loggingClassName != null) {
-								loggingClassName = loggingClassName.replace('.', '/');
-							}
-	                    }
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            loggingClassName = (String) item.getConstant();
+                            if (loggingClassName != null) {
+                                loggingClassName = loggingClassName.replace('.', '/');
+                            }
+                        }
                     } else if ("(Ljava/lang/String;Lorg/apache/log4j/spi/LoggerFactory;)Lorg/apache/log4j/Logger;".equals(signature)) {
-                    	if (stack.getStackDepth() > 1) {
-	                        OpcodeStack.Item item = stack.getStackItem(1);
-	                        loggingClassName = (String)item.getConstant();
-	                        if (loggingClassName != null) {
-								loggingClassName = loggingClassName.replace('.', '/');
-							}
-	                    }
+                        if (stack.getStackDepth() > 1) {
+                            OpcodeStack.Item item = stack.getStackItem(1);
+                            loggingClassName = (String) item.getConstant();
+                            if (loggingClassName != null) {
+                                loggingClassName = loggingClassName.replace('.', '/');
+                            }
+                        }
                     }
-                } else if ("org/apache/commons/logging/LogFactory".equals(callingClsName)
-                	&& "getLog".equals(mthName)) {
-            		String signature = getSigConstantOperand();
+                } else if ("org/apache/commons/logging/LogFactory".equals(callingClsName) && "getLog".equals(mthName)) {
+                    String signature = getSigConstantOperand();
 
                     if ("(Ljava/lang/Class;)Lorg/apache/commons/logging/Log;".equals(signature)) {
-                    	if (stack.getStackDepth() > 0) {
-	                        OpcodeStack.Item item = stack.getStackItem(0);
-	                        loggingClassName = (String)item.getUserValue();
-	                    }
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            loggingClassName = (String) item.getUserValue();
+                        }
                     } else if ("(Ljava/lang/String;)Lorg/apache/commons/logging/Log;".equals(signature)) {
-                    	if (stack.getStackDepth() > 0) {
-	                        OpcodeStack.Item item = stack.getStackItem(0);
-	                        loggingClassName = (String)item.getConstant();
-	                        if (loggingClassName != null) {
-								loggingClassName = loggingClassName.replace('.', '/');
-							}
-	                    }
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            loggingClassName = (String) item.getConstant();
+                            if (loggingClassName != null) {
+                                loggingClassName = loggingClassName.replace('.', '/');
+                            }
+                        }
                     }
                 }
 
@@ -228,10 +227,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             }
 
                             if (!isAnonClassPrefix) {
-                                bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_CLASS", NORMAL_PRIORITY)
-                                            .addClass(this)
-                                            .addMethod(this)
-                                            .addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_CLASS", NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                        .addSourceLine(this));
                             }
                         }
                     }
@@ -239,53 +236,70 @@ public class LoggerOddities extends BytecodeScanningDetector {
             } else if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (THROWABLE_CLASS != null)) {
                 String mthName = getNameConstantOperand();
                 if (mthName.equals("getMessage")) {
-                	String callingClsName = getClassConstantOperand();
-                	JavaClass cls = Repository.lookupClass(callingClsName);
-                	if (cls.instanceOf(THROWABLE_CLASS)) {
-                		if (stack.getStackDepth() > 0) {
-                			OpcodeStack.Item exItem = stack.getStackItem(0);
-                			exMessageReg = exItem.getRegisterNumber();
-                		}
-                	}
-                } else if (loggerMethods.contains(mthName)) {
-                	String callingClsName = getClassConstantOperand();
-                	if (callingClsName.endsWith("Log") || (callingClsName.endsWith("Logger"))) {
-                		String sig = getSigConstantOperand();
-                		if ("(Ljava/lang/String;Ljava/lang/Throwable;)V".equals(sig) || "(Ljava/lang/Object;Ljava/lang/Throwable;)V".equals(sig)) {
-                			if (stack.getStackDepth() >= 2) {
-                				OpcodeStack.Item exItem = stack.getStackItem(0);
-                				OpcodeStack.Item msgItem = stack.getStackItem(1);
-
-                				Integer exReg = (Integer)msgItem.getUserValue();
-                				if (exReg != null) {
-                					if (exReg.intValue() ==  exItem.getRegisterNumber()) {
-                						bugReporter.reportBug(new BugInstance(this, "LO_STUTTERED_MESSAGE", NORMAL_PRIORITY)
-                															.addClass(this)
-                															.addMethod(this)
-                															.addSourceLine(this));
-                					}
-                				}
-                			}
-                     } else if ("(Ljava/lang/Object;)V".equals(sig)) {
+                    String callingClsName = getClassConstantOperand();
+                    JavaClass cls = Repository.lookupClass(callingClsName);
+                    if (cls.instanceOf(THROWABLE_CLASS)) {
                         if (stack.getStackDepth() > 0) {
-                            final JavaClass clazz = stack.getStackItem(0).getJavaClass();
-                            if((clazz != null) && clazz.instanceOf(THROWABLE_CLASS)) {
-                               bugReporter.reportBug(new BugInstance(this, "LO_LOGGER_LOST_EXCEPTION_STACK_TRACE", NORMAL_PRIORITY)
-                                     .addClass(this)
-                                     .addMethod(this)
-                                     .addSourceLine(this));
-                            }
+                            OpcodeStack.Item exItem = stack.getStackItem(0);
+                            exMessageReg = exItem.getRegisterNumber();
                         }
-                     }
-                	}
+                    }
+                } else if (LOGGER_METHODS.contains(mthName)) {
+                    String callingClsName = getClassConstantOperand();
+                    if (callingClsName.endsWith("Log") || (callingClsName.endsWith("Logger"))) {
+                        String sig = getSigConstantOperand();
+                        if ("(Ljava/lang/String;Ljava/lang/Throwable;)V".equals(sig) || "(Ljava/lang/Object;Ljava/lang/Throwable;)V".equals(sig)) {
+                            if (stack.getStackDepth() >= 2) {
+                                OpcodeStack.Item exItem = stack.getStackItem(0);
+                                OpcodeStack.Item msgItem = stack.getStackItem(1);
+
+                                Integer exReg = (Integer) msgItem.getUserValue();
+                                if (exReg != null) {
+                                    if (exReg.intValue() == exItem.getRegisterNumber()) {
+                                        bugReporter.reportBug(new BugInstance(this, "LO_STUTTERED_MESSAGE", NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                                .addSourceLine(this));
+                                    }
+                                }
+                            }
+                        } else if ("(Ljava/lang/Object;)V".equals(sig)) {
+                            if (stack.getStackDepth() > 0) {
+                                final JavaClass clazz = stack.getStackItem(0).getJavaClass();
+                                if ((clazz != null) && clazz.instanceOf(THROWABLE_CLASS)) {
+                                    bugReporter.reportBug(new BugInstance(this, "LO_LOGGER_LOST_EXCEPTION_STACK_TRACE", NORMAL_PRIORITY).addClass(this)
+                                            .addMethod(this).addSourceLine(this));
+                                }
+                            }
+                        } else if ("org/slf4j/Logger".equals(callingClsName)) {
+                            String signature = getSigConstantOperand();
+                            if ("(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature) 
+                            ||  "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V".equals(signature) 
+                            ||  "(Ljava/lang/String;[Ljava/lang/Object;)V".equals(signature)) {
+                                int numParms = Type.getArgumentTypes(signature).length;
+                                if (stack.getStackDepth() >= numParms) {
+                                    OpcodeStack.Item formatItem = stack.getStackItem(numParms - 1);
+                                    Object con = formatItem.getConstant();
+                                    if (con instanceof String) {
+                                        Matcher m = BAD_FORMATTING_ANCHOR.matcher((String) con);
+                                        if (m.find()) {
+                                            bugReporter.reportBug(new BugInstance(this, "LO_INVALID_FORMATTING_ANCHOR", NORMAL_PRIORITY)
+                                                        .addClass(this)
+                                                        .addMethod(this)
+                                                        .addSourceLine(this));
+                                        }
+                                    }
+                                }
+                            }
+                            
+                        }
+                    }
                 }
             }
         } catch (ClassNotFoundException cnfe) {
-        	bugReporter.reportMissingClass(cnfe);
+            bugReporter.reportMissingClass(cnfe);
         } finally {
-			TernaryPatcher.pre(stack, seen);
-			stack.sawOpcode(this, seen);
-			TernaryPatcher.post(stack, seen);
+            TernaryPatcher.pre(stack, seen);
+            stack.sawOpcode(this, seen);
+            TernaryPatcher.post(stack, seen);
             if (ldcClassName != null) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
@@ -293,10 +307,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 }
             }
             if (exMessageReg >= 0) {
-            	if (stack.getStackDepth() > 0) {
-            		OpcodeStack.Item item = stack.getStackItem(0);
-            		item.setUserValue(Integer.valueOf(exMessageReg));
-            	}
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(Integer.valueOf(exMessageReg));
+                }
             }
         }
     }
