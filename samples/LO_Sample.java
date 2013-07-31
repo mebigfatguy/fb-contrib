@@ -6,7 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import org.apache.log4j.Logger;
-import org.apache.log4j.spi.LoggerFactory;
+import org.slf4j.LoggerFactory;
 
 
 @SuppressWarnings("all")
@@ -14,6 +14,7 @@ public class LO_Sample
 {
 	private static Logger l1 = Logger.getLogger(String.class);
 	private static Logger l2 = Logger.getLogger("com.foo.LO_Sample");
+	private static final org.slf4j.Logger l3 = LoggerFactory.getLogger(LO_Sample.class);
 
 	public LO_Sample(Logger l3)
 	{
@@ -36,6 +37,10 @@ public class LO_Sample
 		{
 			is.close();
 		}
+	}
+	
+	public void testInvalidSLF4jParm() {
+	    l3.error("This is a problem {0}", "hello");
 	}
 
 	public class Inner

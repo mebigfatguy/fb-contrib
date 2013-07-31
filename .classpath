@@ -13,5 +13,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="lib" path="samples/lib/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="samples/lib/backport-util-concurrent-3.1.jar"/>
+	<classpathentry kind="lib" path="samples/lib/slf4j-api-1.7.5.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

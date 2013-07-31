@@ -40,6 +40,7 @@
 	<property name="servlet-api.version" value="3.0.1" />
     <property name="backport-util-concurrent.version" value="3.1" />
     <property name="commons-collections.version" value="3.2.1" />
+    <property name="slf4j.version" value="1.7.5" />
 
 	<property name="commons-lang3-url" value="http://repo1.maven.org/maven2/org/apache/commons/commons-lang3/${commons-lang3.version}/commons-lang3-${commons-lang3.version}.jar" />
 	<property name="jsp-api-url" value="http://repo1.maven.org/maven2/javax/servlet/jsp/javax.servlet.jsp-api/${jsp-api.version}/javax.servlet.jsp-api-${jsp-api.version}.jar" />
@@ -48,6 +49,7 @@
 	<property name="servlet-api-url" value="http://repo1.maven.org/maven2/javax/servlet/javax.servlet-api/${servlet-api.version}/javax.servlet-api-${servlet-api.version}.jar" />
     <property name="backport-util-concurrent-url" value="http://repo1.maven.org/maven2/backport-util-concurrent/backport-util-concurrent/${backport-util-concurrent.version}/backport-util-concurrent-${backport-util-concurrent.version}.jar" />
     <property name="commons-collections-url" value="http://repo1.maven.org/maven2/commons-collections/commons-collections/${commons-collections.version}/commons-collections-${commons-collections.version}.jar" />
+    <property name="slf4j-api-url" value="http://repo1.maven.org/maven2/org/slf4j/slf4j-api/${slf4j.version}/slf4j-api-${slf4j.version}.jar" />
 
 	<target name="check">
 		<available file="${dest}/${name}-${version}.jar" property="jar-exists" />
@@ -85,6 +87,7 @@
         <pull url="${servlet-api-url}" dest="${sampleslib.dir}" name="servlet-api" version="${servlet-api.version}" />
         <pull url="${backport-util-concurrent-url}" dest="${sampleslib.dir}" name="backport-util-concurrent" version="${backport-util-concurrent.version}" />
         <pull url="${commons-collections-url}" dest="${sampleslib.dir}" name="commons-collections" version="${commons-collections.version}" />
+        <pull url="${slf4j-api-url}" dest="${sampleslib.dir}" name="slf4j-api" version="${slf4j.version}" />
 	</target>
 
 	<target name="clean" description="removes all generated collateral">
@@ -119,7 +122,8 @@
 			<pathelement location="${sampleslib.dir}/log4j-${log4j.version}.jar" />
 			<pathelement location="${sampleslib.dir}/commons-lang3-${commons-lang3.version}.jar" />
 			<pathelement location="${sampleslib.dir}/commons-lang3-${commons-lang3.version}.jar" />
-			<pathelement location="${sampleslib.dir}/backport-util-concurrent-${backport-util-concurrent.version}.jar" />
+            <pathelement location="${sampleslib.dir}/backport-util-concurrent-${backport-util-concurrent.version}.jar" />
+            <pathelement location="${sampleslib.dir}/slf4j-api-${slf4j.version}.jar" />
 		</path>
 		<mkdir dir="${classes.dir}/com" />
 		<mkdir dir="${classes.dir}/com/mebigfatguy" />
