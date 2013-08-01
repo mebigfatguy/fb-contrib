@@ -136,6 +136,14 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector
 			} else if ((seen == GOTO) || (seen == GOTO_W)) {
 				if (stack.getStackDepth() > 0)
 					indeterminate = true;
+			} else if (seen == ATHROW) {
+			    if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    String exSig = item.getSignature();
+                    if ("Ljava/lang/UnsupportedOperationException;".equals(exSig)) {
+                        indeterminate = true;
+                    }
+			    }
 			}
 		} finally {
 			stack.sawOpcode(this, seen);

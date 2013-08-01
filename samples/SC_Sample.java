@@ -35,4 +35,11 @@ public class SC_Sample
 			return i < that.i ? -1 : (i == that.i) ? 0 : 1;
 		}
 	}
+	
+	class FPThrowsComparator implements Comparator<SC_Sample>
+	{
+	       public int compare(SC_Sample arg0, SC_Sample arg1) {
+	            throw new UnsupportedOperationException();
+	        }
+	}
 }
