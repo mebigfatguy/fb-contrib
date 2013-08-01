@@ -1,14 +1,14 @@
 import java.util.Comparator;
 
-public class SC_Sample 
+public class SCRV_Sample 
 {
 	public static final int T1 = 0;
 	public static final int T2 = 1;
 	
 	int t = 0;
-	class SampleComparator implements Comparator<SC_Sample>
+	class SampleComparator implements Comparator<SCRV_Sample>
 	{
-		public int compare(SC_Sample arg0, SC_Sample arg1) {
+		public int compare(SCRV_Sample arg0, SCRV_Sample arg1) {
 			if (arg0.t == arg1.t)
 				return 0;
 
@@ -16,9 +16,9 @@ public class SC_Sample
 		}
 	}
 	
-	class SampleComparable implements Comparable<SC_Sample>
+	class SampleComparable implements Comparable<SCRV_Sample>
 	{
-		public int compareTo(SC_Sample arg0) {
+		public int compareTo(SCRV_Sample arg0) {
 			if (t == arg0.t)
 				return 0;
 			
@@ -36,9 +36,9 @@ public class SC_Sample
 		}
 	}
 	
-	class FPThrowsComparator implements Comparator<SC_Sample>
+	class FPThrowsComparator implements Comparator<SCRV_Sample>
 	{
-	       public int compare(SC_Sample arg0, SC_Sample arg1) {
+	       public int compare(SCRV_Sample arg0, SCRV_Sample arg1) {
 	            throw new UnsupportedOperationException();
 	        }
 	}
