@@ -45,6 +45,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     private static JavaClass THROWABLE_CLASS;
     private static Set<String> LOGGER_METHODS;
     private static Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
+    private static Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
 
     static {
         try {
@@ -139,6 +140,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         String ldcClassName = null;
         int exMessageReg = -1;
+        Integer arraySize = null;
 
         try {
             if ((seen == LDC) || (seen == LDC_W)) {
@@ -285,12 +287,31 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                                         .addClass(this)
                                                         .addMethod(this)
                                                         .addSourceLine(this));
+                                        } else {
+                                            int expectedParms = countAnchors((String) con);
+                                            int actualParms = getSLF4JParmCount(signature);
+                                            if ((actualParms != -1) && (expectedParms != actualParms)) {
+                                                bugReporter.reportBug(new BugInstance(this, "LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS", NORMAL_PRIORITY)
+                                                        .addClass(this)
+                                                        .addMethod(this)
+                                                        .addSourceLine(this)
+                                                        .addString("Expected: " + expectedParms)
+                                                        .addString("Actual: " + actualParms));
+                                            }
                                         }
                                     }
                                 }
                             }
                             
                         }
+                    }
+                }
+            } else if (seen == ANEWARRAY) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item sizeItem = stack.getStackItem(0);
+                    Object con = sizeItem.getConstant();
+                    if (con instanceof Integer) {
+                        arraySize = (Integer) con;
                     }
                 }
             }
@@ -312,6 +333,50 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     item.setUserValue(Integer.valueOf(exMessageReg));
                 }
             }
+            if (arraySize != null) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(arraySize);
+                }
+            }
         }
+    }
+    
+    /**
+     * returns the number of anchors {} in a string
+     * 
+     * @param formatString the format string
+     * @return the number of anchors
+     */
+    private int countAnchors(String formatString) {
+        Matcher m = FORMATTER_ANCHOR.matcher(formatString);
+        int count = 0;
+        int start = 0;
+        while (m.find(start)) {
+            ++count;
+            start = m.end();
+        }
+        
+        return count;
+    }
+    
+    /**
+     * returns the number of parameters slf4j is expecting to inject into the format string
+     * 
+     * @param signature the method signature of the error, warn, info, debug statement
+     * @return the number of expected parameters
+     */
+    private int getSLF4JParmCount(String signature) {
+        if ("(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature))
+            return 1;
+        if ("(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V".equals(signature))
+            return 2;
+        
+        OpcodeStack.Item item = stack.getStackItem(0);
+        Integer size = (Integer) item.getUserValue();
+        if (size != null) {
+            return size.intValue();
+        }
+        return -1; 
     }
 }

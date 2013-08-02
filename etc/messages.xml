@@ -3017,6 +3017,17 @@
             ]]>
        </Details>
 	</BugPattern>
+	
+	<BugPattern type="LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS">
+       <ShortDescription>Method passes the incorrect number of parameters to an SLF4J logging statement</ShortDescription>
+       <LongDescription>Method passes the incorrect number of parameters to an SLF4J logging statement</LongDescription>
+       <Details>
+            <![CDATA[
+            This method passes the wrong number of parameters to a slf4j logging method (error, warn, info, debug) based on the number of anchors {} in the 
+            format string.
+            ]]>
+       </Details>
+	</BugPattern>
 
 	<BugPattern type="IICU_INCORRECT_INTERNAL_CLASS_USE">
 		<ShortDescription>Class relies on internal api classes</ShortDescription>

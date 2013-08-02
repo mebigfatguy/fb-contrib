@@ -39,8 +39,17 @@ public class LO_Sample
 		}
 	}
 	
-	public void testInvalidSLF4jParm() {
+	public void testInvalidSLF4jParm() 
+	{
 	    l3.error("This is a problem {0}", "hello");
+	}
+	
+	public void testWrongNumberOfParms() 
+	{
+        l3.error("This is a problem {}", "hello", "hello");
+        l3.error("This is a problem {} and this {}", "hello");
+        l3.error("This is a problem {} and this {} and this {}", "hello", "world");
+        l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello");	    
 	}
 
 	public class Inner

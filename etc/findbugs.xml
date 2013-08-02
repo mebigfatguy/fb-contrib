@@ -165,7 +165,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousClusteredSessionSupport" speed="fast" reports="SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.LoggerOddities" speed="fast" reports="LO_LOGGER_LOST_EXCEPTION_STACK_TRACE,LO_SUSPECT_LOG_CLASS,LO_SUSPECT_LOG_PARAMETER,LO_STUTTERED_MESSAGE,LO_INVALID_FORMATTING_ANCHOR" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.LoggerOddities" speed="fast" reports="LO_LOGGER_LOST_EXCEPTION_STACK_TRACE,LO_SUSPECT_LOG_CLASS,LO_SUSPECT_LOG_PARAMETER,LO_STUTTERED_MESSAGE,LO_INVALID_FORMATTING_ANCHOR,LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.IncorrectInternalClassUse" speed="fast" reports="IICU_INCORRECT_INTERNAL_CLASS_USE" />
 
@@ -371,11 +371,12 @@
 	<BugPattern abbrev="SCA" type="SCA_SUSPICIOUS_CLONE_ALGORITHM" category="CORRECTNESS" />
 	<BugPattern abbrev="WEM" type="WEM_WEAK_EXCEPTION_MESSAGING" category="STYLE" />
 	<BugPattern abbrev="SCSS" type="SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT" category="CORRECTNESS" />
-   <BugPattern abbrev="LO" type="LO_LOGGER_LOST_EXCEPTION_STACK_TRACE" category="CORRECTNESS" />
+    <BugPattern abbrev="LO" type="LO_LOGGER_LOST_EXCEPTION_STACK_TRACE" category="CORRECTNESS" />
 	<BugPattern abbrev="LO" type="LO_SUSPECT_LOG_CLASS" category="CORRECTNESS" />
 	<BugPattern abbrev="LO" type="LO_SUSPECT_LOG_PARAMETER" category="CORRECTNESS" />
 	<BugPattern abbrev="LO" type="LO_STUTTERED_MESSAGE" category="STYLE" />
 	<BugPattern abbrev="LO" type="LO_INVALID_FORMATTING_ANCHOR" category="CORRECTNESS" />
+	<BugPattern abbrev="LO" type="LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS" category="CORRECTNESS" />
 	<BugPattern abbrev="IICU" type="IICU_INCORRECT_INTERNAL_CLASS_USE" category="CORRECTNESS" />
 	<BugPattern abbrev="DSOC" type="DSOC_DUBIOUS_SET_OF_COLLECTIONS" category="PERFORMANCE" />
 	<BugPattern abbrev="BED" type="BED_BOGUS_EXCEPTION_DECLARATION" category="CORRECTNESS" />
