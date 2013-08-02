@@ -49,7 +49,12 @@ public class LO_Sample
         l3.error("This is a problem {}", "hello", "hello");
         l3.error("This is a problem {} and this {}", "hello");
         l3.error("This is a problem {} and this {} and this {}", "hello", "world");
-        l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello");	    
+        l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello");
+	}
+	
+	public void testFPWrongNumberOfParms() 
+	{
+        l3.error("This is a problem {}", "hello", new IOException("Yikes"));
 	}
 
 	public class Inner

@@ -287,7 +287,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                                         .addClass(this)
                                                         .addMethod(this)
                                                         .addSourceLine(this));
-                                        } else {
+                                        } else if (!hasExceptionOnStack()) {
                                             int expectedParms = countAnchors((String) con);
                                             int actualParms = getSLF4JParmCount(signature);
                                             if ((actualParms != -1) && (expectedParms != actualParms)) {
@@ -378,5 +378,31 @@ public class LoggerOddities extends BytecodeScanningDetector {
             return size.intValue();
         }
         return -1; 
+    }
+    
+    /**
+     * returns whether an exception object is on the stack
+     * slf4j will find this, and not include it in the parm list
+     * so i we find one, just don't report
+     * 
+     * @return whether or not an exception i present
+     */
+    private boolean hasExceptionOnStack() {
+        try {
+            for (int i = 0; i < stack.getStackDepth() - 1; i++) {
+                OpcodeStack.Item item = stack.getStackItem(i);
+                String sig = item.getSignature();
+                if (sig.startsWith("L")) {
+                    String name = sig.substring(1, sig.length() - 1);
+                    JavaClass cls = Repository.lookupClass(name);
+                    if (cls.instanceOf(THROWABLE_CLASS))
+                        return true;
+                }
+            }
+            return false;
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+            return true;
+        }
     }
 }
