@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.HashMap;
@@ -166,6 +167,18 @@ public class BAS_Sample
 	    }
 
 	    return it.next();
-
+	}
+	
+	public List<String> testFPSynchronized(String s, String p) {
+	    List<String> l = new ArrayList<String>();
+	    String x = s;
+	    synchronized(s) {
+	        if (p != null) {
+	            l.add(p);
+	            return l;
+	        }  
+	    }
+	    
+	    return null;
 	}
 }
