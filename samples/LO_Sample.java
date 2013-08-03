@@ -56,6 +56,7 @@ public class LO_Sample
 	{
         l3.error("This is a problem {}", "hello", new IOException("Yikes"));
         l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello", "hello", new RuntimeException("yikes"));
+        l3.error("This is a problem {} and this {}", "hello", new RuntimeException("yikes"));
 	}
 
 	public class Inner
