@@ -287,16 +287,19 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                                         .addClass(this)
                                                         .addMethod(this)
                                                         .addSourceLine(this));
-                                        } else if (!hasExceptionOnStack()) {
-                                            int expectedParms = countAnchors((String) con);
+                                        } else {
                                             int actualParms = getSLF4JParmCount(signature);
-                                            if ((actualParms != -1) && (expectedParms != actualParms)) {
-                                                bugReporter.reportBug(new BugInstance(this, "LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS", NORMAL_PRIORITY)
-                                                        .addClass(this)
-                                                        .addMethod(this)
-                                                        .addSourceLine(this)
-                                                        .addString("Expected: " + expectedParms)
-                                                        .addString("Actual: " + actualParms));
+                                            if (actualParms != -1) {
+                                                int expectedParms = countAnchors((String) con);
+                                                boolean hasEx = hasExceptionOnStack();
+                                                if ((!hasEx && (expectedParms != actualParms)) || (expectedParms != (actualParms - 1))) {
+                                                    bugReporter.reportBug(new BugInstance(this, "LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS", NORMAL_PRIORITY)
+                                                            .addClass(this)
+                                                            .addMethod(this)
+                                                            .addSourceLine(this)
+                                                            .addString("Expected: " + expectedParms)
+                                                            .addString("Actual: " + actualParms));
+                                                }
                                             }
                                         }
                                     }
@@ -312,6 +315,17 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     Object con = sizeItem.getConstant();
                     if (con instanceof Integer) {
                         arraySize = (Integer) con;
+                    }
+                }
+            } else if (seen == AASTORE) {
+                if (stack.getStackDepth() >= 3) {
+                    OpcodeStack.Item arrayItem = stack.getStackItem(2);
+                    Integer size = (Integer) arrayItem.getUserValue();
+                    if ((size != null) && (size.intValue() > 0)) {
+                        if (hasExceptionOnStack()) {
+                            Integer sz = Integer.valueOf(-size.intValue());
+                            arrayItem.setUserValue(sz);
+                        }
                     }
                 }
             }
@@ -375,7 +389,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
         OpcodeStack.Item item = stack.getStackItem(0);
         Integer size = (Integer) item.getUserValue();
         if (size != null) {
-            return size.intValue();
+            return Math.abs(size.intValue());
         }
         return -1; 
     }
@@ -396,6 +410,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     String name = sig.substring(1, sig.length() - 1);
                     JavaClass cls = Repository.lookupClass(name);
                     if (cls.instanceOf(THROWABLE_CLASS))
+                        return true;
+                } else if (sig.startsWith("[")) {
+                    Integer sz = (Integer) item.getUserValue();
+                    if ((sz != null) && (sz.intValue() < 0))
                         return true;
                 }
             }
