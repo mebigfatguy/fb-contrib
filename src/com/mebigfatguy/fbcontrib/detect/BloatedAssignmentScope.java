@@ -357,8 +357,22 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 				uo.isRisky = isRiskyMethodCall();
 			} else if (seen == MONITORENTER) {
 				monitorSyncPCs.add(Integer.valueOf(getPC()));
-			} else if (seen == MONITOREXIT) {
+				ScopeBlock sb = findScopeBlockWithTarget(
+                        rootScopeBlock, getPC(), getNextPC());
+                if (sb == null) {
+                    sb = new ScopeBlock(getPC(), Integer.MAX_VALUE);
+                    sb.setSync();
+                    rootScopeBlock.addChild(sb);
+                } else {
+                    sb = new ScopeBlock(getPC(), Integer.MAX_VALUE);
+                    sb.setSync();
+                    rootScopeBlock.addChild(sb);
+                }
+			} else if (seen == MONITOREXIT) {	    
 				if (monitorSyncPCs.size() > 0) {
+				    ScopeBlock sb = findSynchronizedScopeBlock(rootScopeBlock, monitorSyncPCs.get(0));
+				    if (sb != null)
+				        sb.setFinish(getPC());
 					monitorSyncPCs.remove(monitorSyncPCs.size() - 1);
 				}
 			}
@@ -471,6 +485,29 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
 		return parentBlock;
 	}
+	
+	/**
+	 * finds the scope block that is the active synchronized block
+	 * 
+	 * @return the scope block
+	 */
+	private ScopeBlock findSynchronizedScopeBlock(ScopeBlock sb, int monitorEnterPC) {
+	    
+	    ScopeBlock monitorBlock = sb;
+	    
+	    if (sb.hasChildren()) {
+	        for (ScopeBlock child : sb.getChildren()) {
+	            if (child.isSync) {
+	                if (child.getStart() > monitorBlock.getStart()) {
+	                    monitorBlock = child;
+	                    monitorBlock = findSynchronizedScopeBlock(monitorBlock, monitorEnterPC);
+	                }
+	            }
+	        }
+	    }
+	    
+	    return monitorBlock;
+	}
 
 	/**
 	 * holds the description of a scope { } block, be it a for, if, while block
@@ -481,6 +518,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		private int finishLocation;
 		private boolean isLoop;
 		private boolean isGoto;
+		private boolean isSync;
 		private Map<Integer, Integer> loads;
 		private Map<Integer, Integer> stores;
 		private Map<UserObject, Integer> assocs;
@@ -500,6 +538,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 			finishLocation = finish;
 			isLoop = false;
 			isGoto = false;
+			isSync = false;
 			loads = null;
 			stores = null;
 			assocs = null;
@@ -525,6 +564,15 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		 */
 		public ScopeBlock getParent() {
 			return parent;
+		}
+		
+		/**
+		 * returns the children of this scope block
+		 * 
+		 * @return the scope blocks children
+		 */
+		public List<ScopeBlock> getChildren() {
+		    return children;
 		}
 
 		/**
@@ -600,6 +648,22 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		public boolean isGoto() {
 			return isGoto;
 		}
+		
+	      /**
+         * sets that this block was caused from a synchronized block
+         */
+        public void setSync() {
+            isSync = true;
+        }
+
+        /**
+         * returns whether this block was caused from a synchronized block
+         *
+         * @returns whether this block was caused by a synchronized block
+         */
+        public boolean isSync() {
+            return isSync;
+        }
 
 		/**
 		 * adds the register as a store in this scope block
@@ -732,18 +796,18 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 						for (Map.Entry<Integer, Integer> entry : stores
 								.entrySet()) {
 							int childUseCount = 0;
-							boolean inLoop = false;
+							boolean inIgnoreSB = false;
 							Integer reg = entry.getKey();
 							for (ScopeBlock child : children) {
 								if (child.usesReg(reg)) {
-									if (child.isLoop) {
-										inLoop = true;
+									if (child.isLoop || child.isSync) {
+										inIgnoreSB = true;
 										break;
 									}
 									childUseCount++;
 								}
 							}
-							if ((!inLoop) && (childUseCount == 1)) {
+							if ((!inIgnoreSB) && (childUseCount == 1)) {
 								bugReporter.reportBug(new BugInstance(
 										BloatedAssignmentScope.this,
 										"BAS_BLOATED_ASSIGNMENT_SCOPE",
