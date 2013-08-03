@@ -292,7 +292,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                             if (actualParms != -1) {
                                                 int expectedParms = countAnchors((String) con);
                                                 boolean hasEx = hasExceptionOnStack();
-                                                if ((expectedParms != actualParms) || (hasEx && (expectedParms != (actualParms - 1)))) {
+                                                if ((!hasEx && (expectedParms != actualParms)) || (hasEx && ((expectedParms != (actualParms - 1)) && (expectedParms != actualParms)))) {
                                                     bugReporter.reportBug(new BugInstance(this, "LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS", NORMAL_PRIORITY)
                                                             .addClass(this)
                                                             .addMethod(this)
