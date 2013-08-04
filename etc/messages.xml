@@ -3024,7 +3024,7 @@
        <Details>
             <![CDATA[
             This method passes the wrong number of parameters to a slf4j logging method (error, warn, info, debug) based on the number of anchors {} in the 
-            format string.
+            format string. An additional exception argument is allowed if found.
             ]]>
        </Details>
 	</BugPattern>
