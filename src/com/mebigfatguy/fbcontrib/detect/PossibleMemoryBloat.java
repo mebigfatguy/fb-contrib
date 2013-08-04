@@ -227,6 +227,15 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 					}
 				}
 			}
+			else if (seen == ARETURN) {
+			    if (stack.getStackDepth() > 0) {
+			        OpcodeStack.Item returnItem = stack.getStackItem(0);
+			        XField field = returnItem.getXField();
+			        if (field != null) {
+			            bloatableFields.remove(field);
+			        }
+			    }
+			}
 		}
 		finally {
 			stack.sawOpcode(this, seen);
