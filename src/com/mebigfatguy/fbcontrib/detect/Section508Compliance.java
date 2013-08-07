@@ -86,26 +86,30 @@ public class Section508Compliance extends BytecodeScanningDetector
 
 	private static final Map<String, Integer> displayTextMethods = new HashMap<String, Integer>();
 	static {
-		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;Ljavax/swing/Icon;I)", Integer.valueOf(1));
-		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;I)", Integer.valueOf(2));
-		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Integer.valueOf(1));
-		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)", Integer.valueOf(1));
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;Z)", Integer.valueOf(1));
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", Integer.valueOf(2));
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;Z)", Integer.valueOf(1));
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", Integer.valueOf(2));
-		displayTextMethods.put("java/awt/Dialog#setTitle(Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("java/awt/Frame#setTitle(Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;Z)", Integer.valueOf(1));
-		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;)", Integer.valueOf(0));
-		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Integer.valueOf(1));
-		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;I)", Integer.valueOf(1));
+	    Integer zero = Integer.valueOf(0);
+	    Integer one = Integer.valueOf(1);
+	    Integer two = Integer.valueOf(2);
+	    
+		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;)", zero);
+		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;Ljavax/swing/Icon;I)", one);
+		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;I)", two);
+		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;)", zero);
+		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", one);
+		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;)", zero);
+		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)", one);
+		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;)", zero);
+		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;Z)", one);
+		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", two);
+		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;)", zero);
+		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;Z)", one);
+		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", two);
+		displayTextMethods.put("java/awt/Dialog#setTitle(Ljava/lang/String;)", zero);
+		displayTextMethods.put("java/awt/Frame#setTitle(Ljava/lang/String;)", zero);
+		displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;)", zero);
+		displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;Z)", one);
+		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;)", zero);
+		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", one);
+		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;I)", one);
 	}
 
 	private final BugReporter bugReporter;
