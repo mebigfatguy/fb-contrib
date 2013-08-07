@@ -357,17 +357,10 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 				uo.isRisky = isRiskyMethodCall();
 			} else if (seen == MONITORENTER) {
 				monitorSyncPCs.add(Integer.valueOf(getPC()));
-				ScopeBlock sb = findScopeBlockWithTarget(
-                        rootScopeBlock, getPC(), getNextPC());
-                if (sb == null) {
-                    sb = new ScopeBlock(getPC(), Integer.MAX_VALUE);
-                    sb.setSync();
-                    rootScopeBlock.addChild(sb);
-                } else {
-                    sb = new ScopeBlock(getPC(), Integer.MAX_VALUE);
-                    sb.setSync();
-                    rootScopeBlock.addChild(sb);
-                }
+
+                ScopeBlock sb = new ScopeBlock(getPC(), Integer.MAX_VALUE);
+                sb.setSync();
+                rootScopeBlock.addChild(sb);
 			} else if (seen == MONITOREXIT) {	    
 				if (monitorSyncPCs.size() > 0) {
 				    ScopeBlock sb = findSynchronizedScopeBlock(rootScopeBlock, monitorSyncPCs.get(0));
