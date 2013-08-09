@@ -74,4 +74,14 @@ public class SUA_Sample
 		System.arraycopy(src, 0, dst, 0, src.length);
 		return dst;
 	}
+	
+   public double[] fpSFBug65tipOff() {
+        String[] elems = "1,2.0,3".split(",");      
+        double[] result = new double[elems.length];
+        for (int i = 0; i < elems.length; i++) 
+        {
+            result[i] = 0.0;
+        }
+        return result;
+    }
 }
