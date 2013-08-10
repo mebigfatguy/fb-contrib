@@ -196,7 +196,10 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector
 							uninitializedRegs.clear(reg);
 						}
 						userValue = null;
-					}	
+					} else {
+					    //error condition - stack isn't right
+					    uninitializedRegs.clear();
+					}
 				}
 				break;
 				
