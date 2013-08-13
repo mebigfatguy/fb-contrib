@@ -18,8 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.BitSet;
 import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -38,7 +38,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private Set<Integer> initializedRegs;
+    private BitSet initializedRegs;
     
     /**
      * constructs an AIOB detector given the reporter to report bugs on
@@ -52,7 +52,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            initializedRegs = new HashSet<Integer>(10);
+            initializedRegs = new BitSet();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -68,7 +68,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         int arg = ((m.getAccessFlags() & Constants.ACC_STATIC) != 0) ? 0 : 1;
         for (Type argType : argTypes) {
             String argSig = argType.getSignature();
-            initializedRegs.add(Integer.valueOf(arg));
+            initializedRegs.set(arg);
             arg += ("J".equals(argSig) || "D".equals(argSig)) ? 2 : 1;
         }
         super.visitCode(obj);
@@ -133,7 +133,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                         }
                         
                         int reg = arrayItem.getRegisterNumber();
-                        if ((reg >= 0) && !initializedRegs.contains(Integer.valueOf(reg))) {
+                        if ((reg >= 0) && !initializedRegs.get(reg)) {
                             bugReporter.reportBug(new BugInstance(this, "AIOB_ARRAY_STORE_TO_NULL_REFERENCE", HIGH_PRIORITY)
                             .addClass(this)
                             .addMethod(this)
@@ -177,9 +177,9 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item value = stack.getStackItem(0);
                     if (!value.isNull())
-                        initializedRegs.add(Integer.valueOf(getRegisterOperand()));
+                        initializedRegs.set(getRegisterOperand());
                 } else {
-                    initializedRegs.add(Integer.valueOf(getRegisterOperand()));
+                    initializedRegs.set(getRegisterOperand());
                 } 
                 break;
             }
