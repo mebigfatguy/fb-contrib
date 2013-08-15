@@ -787,33 +787,30 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 				    stores.remove(Integer.valueOf(r));
 				}
 
-				if (stores.size() > 0) {
-					if (children != null) {
-						for (Map.Entry<Integer, Integer> entry : stores
-								.entrySet()) {
-							int childUseCount = 0;
-							boolean inIgnoreSB = false;
-							Integer reg = entry.getKey();
-							for (ScopeBlock child : children) {
-								if (child.usesReg(reg)) {
-									if (child.isLoop || child.isSync) {
-										inIgnoreSB = true;
-										break;
-									}
-									childUseCount++;
+				if ((stores.size() > 0) && (children != null)) {
+					for (Map.Entry<Integer, Integer> entry : stores.entrySet()) {
+						int childUseCount = 0;
+						boolean inIgnoreSB = false;
+						Integer reg = entry.getKey();
+						for (ScopeBlock child : children) {
+							if (child.usesReg(reg)) {
+								if (child.isLoop || child.isSync) {
+									inIgnoreSB = true;
+									break;
 								}
+								childUseCount++;
 							}
-							if ((!inIgnoreSB) && (childUseCount == 1)) {
-								bugReporter.reportBug(new BugInstance(
-										BloatedAssignmentScope.this,
-										"BAS_BLOATED_ASSIGNMENT_SCOPE",
-										NORMAL_PRIORITY)
-										.addClass(BloatedAssignmentScope.this)
-										.addMethod(BloatedAssignmentScope.this)
-										.addSourceLine(
-												BloatedAssignmentScope.this,
-												entry.getValue().intValue()));
-							}
+						}
+						if ((!inIgnoreSB) && (childUseCount == 1)) {
+							bugReporter.reportBug(new BugInstance(
+									BloatedAssignmentScope.this,
+									"BAS_BLOATED_ASSIGNMENT_SCOPE",
+									NORMAL_PRIORITY)
+									.addClass(BloatedAssignmentScope.this)
+									.addMethod(BloatedAssignmentScope.this)
+									.addSourceLine(
+											BloatedAssignmentScope.this,
+											entry.getValue().intValue()));
 						}
 					}
 				}
