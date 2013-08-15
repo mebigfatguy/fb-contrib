@@ -1,3 +1,6 @@
+import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.Method;
+
 
 @SuppressWarnings("all")
 public class CLI_Sample 
@@ -24,5 +27,18 @@ public class CLI_Sample
 		String b = parts[1];
 		String c = parts[2];
 		return c + b + a;
+	}
+	
+	class FPHander implements InvocationHandler
+	{
+        public Object invoke(Object proxy, Method method, Object[] args) throws Throwable 
+        {
+            if (args[2] == null) 
+            {
+                return null;
+            }
+            
+            return String.valueOf(args[0]) + String.valueOf(args[1]);
+        }
 	}
 }

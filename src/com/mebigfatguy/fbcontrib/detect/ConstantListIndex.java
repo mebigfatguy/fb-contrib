@@ -22,8 +22,10 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantInteger;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -45,8 +47,15 @@ public class ConstantListIndex extends BytecodeScanningDetector
 	
 	private static final String MAX_ICONST0_LOOP_DISTANCE_PROPERTY = "fb-contrib.cli.maxloopdistance";
 	private static final Set<String> ubiquitousMethods = new HashSet<String>(2);
+	private static JavaClass INVOCATIONHANDLER_CLASS;
 	static {
 		ubiquitousMethods.add("java.lang.String.split(Ljava/lang/String;)[Ljava/lang/String;");
+		
+		try {
+		    INVOCATIONHANDLER_CLASS = Repository.lookupClass("java.lang.reflect.InvocationHandler");
+		} catch (ClassNotFoundException cnfe) {
+		    INVOCATIONHANDLER_CLASS = null;
+		}
 	}
 	
 	
@@ -73,9 +82,16 @@ public class ConstantListIndex extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
+		    if (INVOCATIONHANDLER_CLASS != null) {
+		        if (classContext.getJavaClass().implementationOf(INVOCATIONHANDLER_CLASS)) {
+		            return;
+		        }
+		    }
 			iConst0Looped = new HashSet<Integer>(10);
 			stack = new OpcodeStack();
 			super.visitClassContext(classContext);
+		} catch (ClassNotFoundException cnfe) {
+		    bugReporter.reportMissingClass(cnfe);
 		} finally {
 			iConst0Looped = null;
 			stack = null;
