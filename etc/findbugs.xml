@@ -246,6 +246,8 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" speed="fast" reports="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS,AIOB_ARRAY_STORE_TO_NULL_REFERENCE" />
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.OCSDebugger" speed="fast"/>
+    
 	<!-- BugPattern -->
 
 	<BugPattern abbrev="ISB" type="ISB_INEFFICIENT_STRING_BUFFERING" category="PERFORMANCE" />

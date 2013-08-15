@@ -1350,6 +1350,9 @@
         </Details>
     </Detector>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.OCSDebugger">
+        <Details></Details>
+    </Detector>
     
 	<!-- BugPattern -->
 
