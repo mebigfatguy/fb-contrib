@@ -47,7 +47,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 	private final BugReporter bugReporter;
 	private static final String BSB_MIN_SAFE_CODE_SIZE = "fb-contrib.bsb.minsize";
 	private OpcodeStack stack;
-	private Set<Integer> unsafeAliases;
+	private BitSet unsafeAliases;
 	private Map<Integer, Integer> branchInfo;
 	private int syncPC;
 	private boolean isStatic;
@@ -68,7 +68,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
-			unsafeAliases = new HashSet<Integer>(6);
+			unsafeAliases = new BitSet();
 			branchInfo = new HashMap<Integer, Integer>();
 			super.visitClassContext(classContext);
 		} finally {
@@ -104,7 +104,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 				syncPC = -1;
 			isStatic = m.isStatic();
 			unsafeAliases.clear();
-			unsafeAliases.add(Integer.valueOf(0));
+			unsafeAliases.set(0);
 			branchInfo.clear();
 			unsafeCallOccurred = false;
 			stack.resetForMethodEntry(this);
@@ -125,7 +125,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 			if (unsafeCallOccurred && ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)))) {
 				int storeReg = RegisterUtils.getAStoreReg(this, seen);
 				if (storeReg >= 0)
-					unsafeAliases.add(Integer.valueOf(storeReg));
+					unsafeAliases.set(storeReg);
 			}
 			
 			if ((seen == INVOKEVIRTUAL)
@@ -137,7 +137,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 					int parmCount = Type.getArgumentTypes(methodSig).length;
 					if (stack.getStackDepth() > parmCount) {
 						OpcodeStack.Item itm = stack.getStackItem(parmCount);
-						unsafeCallOccurred = unsafeAliases.contains(Integer.valueOf(itm.getRegisterNumber()));
+						unsafeCallOccurred = unsafeAliases.get(itm.getRegisterNumber());
 					} else
 						unsafeCallOccurred = false;
 				} else
@@ -161,7 +161,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 						OpcodeStack.Item itm = stack.getStackItem(0);
 						int monitorReg = itm.getRegisterNumber();
 						if (monitorReg >= 0) {
-							unsafeAliases.add(Integer.valueOf(monitorReg));
+							unsafeAliases.set(monitorReg);
 						} 
 					}
 				}
@@ -174,7 +174,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 				unsafe |= ((seen == PUTFIELD) || (seen == GETFIELD) || (seen == GETSTATIC)  || (seen == PUTSTATIC));
 				unsafe |= (!isStatic) && ((seen == ALOAD_0) || (seen == ASTORE_0));
 				int aloadReg = RegisterUtils.getALoadReg(this, seen);
-				unsafe |= (aloadReg >= 0) && unsafeAliases.contains(Integer.valueOf(aloadReg));
+				unsafe |= (aloadReg >= 0) && unsafeAliases.get(aloadReg);
 				if (unsafe) {
 					//If a branch exists in the safe code, make sure the entire branch
 					//is in the safe code, otherwise trim before the branch
