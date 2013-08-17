@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -58,7 +59,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 	private OpcodeStack stack;
 	private String packageName;
 	private String clsName;
-	private Map<String, Set<Integer>> clsAccessCount;
+	private Map<String, BitSet> clsAccessCount;
 	private int thisClsAccessCount;
 	private String methodName;
 	private boolean methodIsStatic;
@@ -130,7 +131,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 			return;
 		}
 
-		clsAccessCount = new HashMap<String, Set<Integer>>();
+		clsAccessCount = new HashMap<String, BitSet>();
 		super.visitCode(obj);
 
 		if (clsAccessCount.size() > 0) {
@@ -270,9 +271,9 @@ public class ClassEnvy extends BytecodeScanningDetector
 		} else {
 			String calledPackage = SignatureUtils.getPackageName(calledClass);
 			if (SignatureUtils.similarPackages(calledPackage, packageName, 2) && !generalPurpose(calledClass)) {
-				Set<Integer> lineNumbers = clsAccessCount.get(calledClass);
+				BitSet lineNumbers = clsAccessCount.get(calledClass);
 				if (lineNumbers == null) {
-					lineNumbers = new HashSet<Integer>();
+					lineNumbers = new BitSet();
 					addLineNumber(lineNumbers);
 					clsAccessCount.put(calledClass, lineNumbers);
 				} else {
@@ -287,16 +288,16 @@ public class ClassEnvy extends BytecodeScanningDetector
 	 *
 	 * @param lineNumbers the current set of line numbers
 	 */
-	private void addLineNumber(Set<Integer> lineNumbers) {
+	private void addLineNumber(BitSet lineNumbers) {
 		LineNumberTable lnt = getCode().getLineNumberTable();
 		if (lnt == null) {
-			lineNumbers.add(Integer.valueOf(-lineNumbers.size()));
+			lineNumbers.set(-lineNumbers.size());
 		} else {
 			int line = lnt.getSourceLine(getPC());
 			if (line < 0) {
-				lineNumbers.add(Integer.valueOf(lineNumbers.size()));
+				lineNumbers.set(lineNumbers.size());
 			} else {
-				lineNumbers.add(Integer.valueOf(line));
+				lineNumbers.set(line);
 			}
 		}
 	}
