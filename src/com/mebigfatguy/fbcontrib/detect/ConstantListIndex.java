@@ -18,8 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.BitSet;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
@@ -61,7 +61,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 	
 	private final BugReporter bugReporter;
 	private State state;
-	private Set<Integer> iConst0Looped;
+	private BitSet iConst0Looped;
 	private final int max_iConst0LoopDistance;
 	private OpcodeStack stack;
 	
@@ -87,7 +87,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 		            return;
 		        }
 		    }
-			iConst0Looped = new HashSet<Integer>(10);
+			iConst0Looped = new BitSet();
 			stack = new OpcodeStack();
 			super.visitClassContext(classContext);
 		} catch (ClassNotFoundException cnfe) {
@@ -146,7 +146,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 						//case CALOAD: usually harmless so ignore
 						case SALOAD:
 							if (state == State.SAW_CONSTANT_0)
-								iConst0Looped.add(Integer.valueOf(getPC()));
+								iConst0Looped.set(getPC());
 							else {
 								if (stack.getStackDepth() > 1) {
 									OpcodeStack.Item item = stack.getStackItem(1);
@@ -166,7 +166,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 								String methodName = getNameConstantOperand();
 								if ("get".equals(methodName)) {
 									if (state == State.SAW_CONSTANT_0) 
-										iConst0Looped.add(Integer.valueOf(getPC()));
+										iConst0Looped.set(getPC());
 									else {
 										bugReporter.reportBug(new BugInstance(this, "CLI_CONSTANT_LIST_INDEX", NORMAL_PRIORITY)
 																.addClass(this)
@@ -183,9 +183,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 			
 			if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == GOTO_W)) {
 				int branchTarget = this.getBranchTarget();
-				Iterator<Integer> it = iConst0Looped.iterator();
-				while (it.hasNext()) {
-					int bugPC = it.next().intValue();
+				for (int bugPC = iConst0Looped.nextSetBit(0); bugPC >= 0; bugPC = iConst0Looped.nextSetBit(bugPC+1)) {
 					if (branchTarget < bugPC) {
 						if ((bugPC - branchTarget) < max_iConst0LoopDistance) {
 							bugReporter.reportBug(new BugInstance(this, "CLI_CONSTANT_LIST_INDEX", NORMAL_PRIORITY)
@@ -193,7 +191,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 													.addMethod(this)
 													.addSourceLine(this, bugPC));
 						}
-						it.remove();
+						iConst0Looped.clear(bugPC);
 					}
 				}
 			}
