@@ -892,5 +892,10 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	static class UserObject {
 		Comparable<?> caller;
 		boolean isRisky;
+	      
+        @Override
+        public String toString() {
+            return "Caller: " + caller + " isRisky: " + isRisky;
+        }
 	}
 }
