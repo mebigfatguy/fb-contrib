@@ -18,9 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashSet;
+import java.util.BitSet;
 import java.util.Iterator;
-import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -101,7 +100,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector
 			if (code.getCode().length < (2*reportLimit))
 				return;
 			
-			Set<Integer> exceptionNodeTargets = new HashSet<Integer>(10);
+			BitSet exceptionNodeTargets = new BitSet();
 
 			CFG cfg = classContext.getCFG(obj);
 			int branches = 0;
@@ -117,9 +116,9 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector
 					&&  (edgeType != EdgeTypes.UNKNOWN_EDGE)) {
 						if ((edgeType == EdgeTypes.UNHANDLED_EXCEPTION_EDGE) 
 						||  (edgeType == EdgeTypes.HANDLED_EXCEPTION_EDGE)) {
-							Integer nodeTarget = Integer.valueOf(e.getTarget().getLabel());
-							if (!exceptionNodeTargets.contains(nodeTarget)) {
-								exceptionNodeTargets.add(nodeTarget);
+							int nodeTarget = e.getTarget().getLabel();
+							if (!exceptionNodeTargets.get(nodeTarget)) {
+								exceptionNodeTargets.set(nodeTarget);
 								branches++;
 							}
 						} else {
