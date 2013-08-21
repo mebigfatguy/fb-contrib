@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -97,7 +98,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	private List<Set<Comparable<?>>> collectionGroups;
 	private Map<Integer, Integer> groupToIterator;
 	private Map<Integer, Loop> loops;
-	private Map<Integer, Set<Integer>> endOfScopes;
+	private Map<Integer, BitSet> endOfScopes;
 
 	/**
      * constructs a DWI detector given the reporter to report bugs on
@@ -398,7 +399,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	}
 
 	private void buildVariableEndScopeMap() {
-	    endOfScopes = new HashMap<Integer, Set<Integer>>();
+	    endOfScopes = new HashMap<Integer, BitSet>();
 
 	    LocalVariableTable lvt = getMethod().getLocalVariableTable();
         if (lvt != null) {
@@ -408,21 +409,22 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
                 LocalVariable lv = lvt.getLocalVariable(i);
                 if (lv != null) {
                     Integer endPC = Integer.valueOf(lv.getStartPC() + lv.getLength());
-                    Set<Integer> vars = endOfScopes.get(endPC);
+                    BitSet vars = endOfScopes.get(endPC);
                     if (vars == null) {
-                        vars = new HashSet<Integer>();
+                        vars = new BitSet();
                         endOfScopes.put(endPC, vars);
                     }
-                    vars.add(Integer.valueOf(lv.getIndex()));
+                    vars.set(lv.getIndex());
                 }
             }
         }
 	}
 
 	private void processEndOfScopes(Integer pc) {
-	    Set<Integer> endVars = endOfScopes.get(pc);
+	    BitSet endVars = endOfScopes.get(pc);
 	    if (endVars != null) {
-    	    for (Integer v : endVars) {
+	        for (int i = endVars.nextSetBit(0); i >= 0; i = endVars.nextSetBit(i+1)) {
+	            Integer v = Integer.valueOf(i);
     	        Iterator<Set<Comparable<?>>> it = collectionGroups.iterator();
     	        while (it.hasNext()) {
     	            Set<Comparable<?>> gv = it.next();
