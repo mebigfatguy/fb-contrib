@@ -231,7 +231,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
                             if ("initCause".equals(getNameConstantOperand())) {
     							String className = getClassConstantOperand();
     							JavaClass exClass = Repository.lookupClass(className);
-    							if (exClass.instanceOf(errorClass)) {
+    							if (exClass.instanceOf(throwableClass)) {
     								if (stack.getStackDepth() > 1) {
     									OpcodeStack.Item itm = stack.getStackItem(1);
     									int reg = itm.getRegisterNumber();
