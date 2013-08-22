@@ -457,5 +457,10 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 		public int getRegister() {
 			return exReg;
 		}
+		
+		@Override
+		public String toString() {
+		    return "Register: " + exReg + " Range: [" + catchStart + "->" + catchFinish + "]";
+		}
 	}
 }
