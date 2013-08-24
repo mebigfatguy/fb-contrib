@@ -1350,7 +1350,7 @@
         </Details>
     </Detector>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.OCSDebugger">
+    <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
         <Details></Details>
     </Detector>
     
