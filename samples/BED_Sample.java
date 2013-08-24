@@ -37,6 +37,11 @@ public class BED_Sample
 	{
 
 	}
+	
+	public final void badFinal() throws ClassNotFoundException
+	{
+	    
+	}
 
 	public static void doIt() throws SQLException, IOException
 	{
