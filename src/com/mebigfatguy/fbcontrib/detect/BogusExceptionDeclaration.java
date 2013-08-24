@@ -60,6 +60,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private Set<String> declaredCheckedExceptions;
+	private boolean classIsFinal;
 
 	public BogusExceptionDeclaration(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -72,6 +73,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 			if (runtimeExceptionClass != null) {
 				stack = new OpcodeStack();
 				declaredCheckedExceptions = new HashSet<String>(6);
+				classIsFinal = classContext.getJavaClass().isFinal();
 				super.visitClassContext(classContext);
 			}
 		} finally {
@@ -91,7 +93,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 		declaredCheckedExceptions.clear();
 		stack.resetForMethodEntry(this);
 		Method method = getMethod();
-		if (method.isStatic() || method.isPrivate() || (("<init>".equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
+		if (classIsFinal || method.isStatic() || method.isPrivate() || method.isFinal() || (("<init>".equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
 			ExceptionTable et = method.getExceptionTable();
 			if (et != null) {
 				String[] exNames = et.getExceptionNames();
