@@ -19,12 +19,11 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
@@ -55,7 +54,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 	private final BugReporter bugReporter;
 	private JavaClass[] constrainingClasses;
 	private Map<Integer, Map<JavaClass, List<MethodInfo>>> parameterDefiners;
-	private Set<Integer> usedParameters;
+	private BitSet usedParameters;
 	private JavaClass objectClass;
 	private OpcodeStack stack;
 	private int parmCount;
@@ -85,7 +84,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 			System.arraycopy(infs, 0, constrainingClasses, 0, infs.length);
 			System.arraycopy(sups, 0, constrainingClasses, infs.length, sups.length);
 			parameterDefiners = new HashMap<Integer, Map<JavaClass, List<MethodInfo>>>();
-			usedParameters = new HashSet<Integer>();
+			usedParameters = new BitSet();
 			stack = new OpcodeStack();
 			super.visitClassContext(classContext);
 		} catch (ClassNotFoundException cnfe) {
@@ -239,7 +238,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 					parm--;
 				}
 				if ((parm >= 0) && (parm < parmCount)) {
-					usedParameters.add(Integer.valueOf(reg));
+					usedParameters.set(reg);
 				}
 			} else if (seen == AASTORE) {
 				//Don't check parameters that are stored in
@@ -291,7 +290,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 			Map.Entry<Integer, Map<JavaClass, List<MethodInfo>>> entry = it.next();
 
 			Integer reg = entry.getKey();
-			if (!usedParameters.contains(reg)) {
+			if (!usedParameters.get(reg.intValue())) {
 				it.remove();
 				continue;
 			}
