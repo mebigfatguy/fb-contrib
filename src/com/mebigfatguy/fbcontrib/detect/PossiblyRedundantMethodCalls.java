@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -126,7 +127,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 	private Map<Integer, MethodCall> localMethodCalls = null;
 	private Map<String, MethodCall> fieldMethodCalls = null;
 	private Map<String, MethodCall> staticMethodCalls = null;
-	private Set<Integer> branchTargets = null;
+	private BitSet branchTargets = null;
 
 	/**
      * constructs a PRMC detector given the reporter to report bugs on
@@ -148,7 +149,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 			localMethodCalls = new HashMap<Integer, MethodCall>();
 			fieldMethodCalls = new HashMap<String, MethodCall>();
 			staticMethodCalls = new HashMap<String, MethodCall>();
-			branchTargets = new HashSet<Integer>();
+			branchTargets = new BitSet();
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;
@@ -173,7 +174,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 		branchTargets.clear();
 		CodeException[] codeExceptions = obj.getExceptionTable();
 		for (CodeException codeEx : codeExceptions) {
-			branchTargets.add(Integer.valueOf(codeEx.getHandlerPC()));
+			branchTargets.set(codeEx.getHandlerPC());
 		}
 		super.visitCode(obj);
 	}
@@ -190,18 +191,19 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 
 		try {
 			stack.mergeJumps(this);
-			if (branchTargets.remove(Integer.valueOf(getPC()))) {
+            int pc = getPC();
+			if (branchTargets.get(pc)) {
 				localMethodCalls.clear();
 				fieldMethodCalls.clear();
+				branchTargets.clear(pc);
 			}
 
 			if (((seen >= IFEQ) && (seen <= GOTO)) || ((seen >= IFNULL) && (seen <= GOTO_W))) {
-				branchTargets.add(Integer.valueOf(getBranchTarget()));
+				branchTargets.set(getBranchTarget());
 			} else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
 				int[] offsets = getSwitchOffsets();
-				int pc = getPC();
 				for (int offset : offsets) {
-					branchTargets.add(Integer.valueOf(offset + pc));
+					branchTargets.set(offset + pc);
 				}
 			} else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
 				localMethodCalls.remove(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)));
@@ -276,7 +278,6 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 						if (!signature.endsWith("V") && methodName.equals(mc.getName()) && signature.equals(mc.getSignature()) && !isRiskyName(className, methodName)) {
 							Object[] parms = mc.getParms();
 							if (Arrays.equals(parms, parmConstants)) {
-			                    int pc = getPC();
 			                    int ln = getLineNumber(pc);
 			                    
 			                    if ((ln != mc.getLineNumber()) || (Math.abs(pc - mc.getPC()) < 10)) {
@@ -318,7 +319,6 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 							}
 						}
 					} else {
-					    int pc = getPC();
 					    int ln = getLineNumber(pc);
 						if (seen == INVOKESTATIC) {
 							staticMethodCalls.put(className, new MethodCall(methodName, signature, parmConstants, pc, ln));
