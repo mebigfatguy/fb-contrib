@@ -22,9 +22,9 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
 public class FinalParameters extends BytecodeScanningDetector
 {
 	private BugReporter bugReporter;
-	private Set<Integer> changedParms;
+	private BitSet changedParms;
 	private String methodName;
 	private int parmCount;
 	private boolean isStatic;
@@ -183,13 +183,15 @@ public class FinalParameters extends BytecodeScanningDetector
 				return;
 		}
 
-		changedParms = new HashSet<Integer>();
+		changedParms = new BitSet();
 		super.visitCode(obj);
 
 		BugInstance bi = null;
 		for (int i = 0; i < parmCount; i++) {
-			if (changedParms.remove(Integer.valueOf(i)))
+			if (changedParms.get(i)) {
+			    changedParms.clear(i);
 				continue;
+			}
 
 			int reg;
 			if (!isStatic)
@@ -220,7 +222,7 @@ public class FinalParameters extends BytecodeScanningDetector
 		if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
 			int parm = getAStoreParameter(seen);
 			if (parm >= 0)
-				changedParms.add(Integer.valueOf(parm));
+				changedParms.set(parm);
 		}
 	}
 
