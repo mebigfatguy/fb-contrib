@@ -23,7 +23,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashSet;
 import java.util.List;
 
 import org.apache.bcel.Constants;
@@ -54,7 +53,7 @@ public class FinalParameters extends BytecodeScanningDetector
 	private BugReporter bugReporter;
 	private BitSet changedParms;
 	private String methodName;
-	private int parmCount;
+	private int firstLocalReg;
 	private boolean isStatic;
 	private boolean isAbstract;
 	private boolean srcInited;
@@ -96,11 +95,14 @@ public class FinalParameters extends BytecodeScanningDetector
 
 		isStatic = (obj.getAccessFlags() & Constants.ACC_STATIC) != 0;
 		isAbstract = (obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0;
-		parmCount = Type.getArgumentTypes(obj.getSignature()).length;
-
-		super.visitMethod(obj);
-        srcLineAnnotation = null;
-        sourceLines = null;
+		
+		firstLocalReg = isStatic ? 0 : 1;
+		
+		Type[] parms = Type.getArgumentTypes(obj.getSignature());
+		for (Type p : parms) {
+		    String parmSig = p.getSignature();
+		    firstLocalReg += (parmSig.equals("J") || parmSig.equals("D")) ? 2 : 1;
+		}
 	}
 
 	/**
@@ -187,19 +189,13 @@ public class FinalParameters extends BytecodeScanningDetector
 		super.visitCode(obj);
 
 		BugInstance bi = null;
-		for (int i = 0; i < parmCount; i++) {
+		for (int i = 0; i < firstLocalReg; i++) {
 			if (changedParms.get(i)) {
 			    changedParms.clear(i);
 				continue;
 			}
 
-			int reg;
-			if (!isStatic)
-				reg = i + 1;
-			else
-				reg = i;
-
-			String parmName = getRegisterName(obj, reg);
+			String parmName = getRegisterName(obj, i);
 			if (bi == null) {
 				bi = new BugInstance(this, "FP_FINAL_PARAMETERS", LOW_PRIORITY)
 					.addClass(this)
@@ -220,9 +216,7 @@ public class FinalParameters extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(final int seen) {
 		if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
-			int parm = getAStoreParameter(seen);
-			if (parm >= 0)
-				changedParms.set(parm);
+		    changedParms.set(RegisterUtils.getAStoreReg(this,  seen));
 		}
 	}
 
@@ -243,25 +237,4 @@ public class FinalParameters extends BytecodeScanningDetector
 		}
 		return String.valueOf(reg);
 	}
-
-	/**
-	 * return the register number that is be stored
-	 *
-	 * @param seen the opcode of the currently parsed statement
-	 *
-	 * @return the register number being stored
-	 */
-	private int getAStoreParameter(final int seen) {
-		int reg = RegisterUtils.getAStoreReg(this, seen);
-
-		if (!isStatic)
-			reg--;
-
-		if (reg >= parmCount)
-			reg = -1;
-
-		return reg;
-
-	}
-
 }
