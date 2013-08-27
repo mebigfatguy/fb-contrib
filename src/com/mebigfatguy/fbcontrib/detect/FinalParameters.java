@@ -91,17 +91,19 @@ public class FinalParameters extends BytecodeScanningDetector
 		if ("<clinit>".equals(methodName) || "<init>".equals(methodName))
 			return;
 
-		sourceLines = getSourceLines(obj);
-
-		isStatic = (obj.getAccessFlags() & Constants.ACC_STATIC) != 0;
-		isAbstract = (obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0;
-		
-		firstLocalReg = isStatic ? 0 : 1;
-		
 		Type[] parms = Type.getArgumentTypes(obj.getSignature());
-		for (Type p : parms) {
-		    String parmSig = p.getSignature();
-		    firstLocalReg += (parmSig.equals("J") || parmSig.equals("D")) ? 2 : 1;
+		
+		if (parms.length > 0) {
+    		isStatic = (obj.getAccessFlags() & Constants.ACC_STATIC) != 0;
+    		isAbstract = (obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0;
+    		
+    		firstLocalReg = isStatic ? 0 : 1;
+    		for (Type p : parms) {
+    		    String parmSig = p.getSignature();
+    		    firstLocalReg += (parmSig.equals("J") || parmSig.equals("D")) ? 2 : 1;
+    		}
+    		
+    	    sourceLines = getSourceLines(obj);
 		}
 	}
 
