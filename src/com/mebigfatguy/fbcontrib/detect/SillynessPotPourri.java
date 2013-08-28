@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Arrays;
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -87,7 +88,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 	private boolean lastIfEqWasBoolean;
 	private boolean lastLoadWasString;
 	/** branch targets, to a set of branch instructions */
-	private Map<Integer, Set<Integer>> branchTargets;
+	private Map<Integer, BitSet> branchTargets;
 	private Set<String> staticConstants;
 
 	/**
@@ -114,7 +115,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		try {
 			stack = new OpcodeStack();
 			lastPCs = new int[4];
-			branchTargets = new HashMap<Integer, Set<Integer>>();
+			branchTargets = new HashMap<Integer, BitSet>();
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;
@@ -153,13 +154,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		try {
 			if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W)) {
 				Integer branchTarget = Integer.valueOf(getBranchTarget());
-				Set<Integer> branchInsSet = branchTargets.get(branchTarget);
+				BitSet branchInsSet = branchTargets.get(branchTarget);
 				if (branchInsSet == null)
 				{
-					branchInsSet = new HashSet<Integer>();
+					branchInsSet = new BitSet();
 					branchTargets.put(branchTarget, branchInsSet);
 				}
-				branchInsSet.add(Integer.valueOf(getPC()));
+				branchInsSet.set(getPC());
 			}
 
 			if ((seen == IFEQ) || (seen == IFLE) || (seen == IFNE)) {
@@ -306,13 +307,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				&&  ((0x00FF & bytes[lastPCs[0]]) == IFEQ)) {
 					if (getMethod().getSignature().endsWith("Z")) {
 						boolean bug = true;
-						Set<Integer> branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[1]));
+						BitSet branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[1]));
 						if (branchInsSet != null)
                         {
                             bug = false;
                         }
 						branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[3]));
-						if ((branchInsSet != null) && (branchInsSet.size() > 1))
+						if ((branchInsSet != null) && (branchInsSet.cardinality() > 1))
                         {
                             bug = false;
                         }
