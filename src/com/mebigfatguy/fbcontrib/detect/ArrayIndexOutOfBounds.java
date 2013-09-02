@@ -19,7 +19,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
-import java.util.HashSet;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -27,6 +26,8 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantInteger;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
+
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -39,6 +40,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private BitSet initializedRegs;
+    private BitSet iincRegs;
     
     /**
      * constructs an AIOB detector given the reporter to report bugs on
@@ -53,6 +55,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         try {
             stack = new OpcodeStack();
             initializedRegs = new BitSet();
+            iincRegs = new BitSet();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -64,6 +67,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         Method m = getMethod();
         stack.resetForMethodEntry(this);
         initializedRegs.clear();
+        iincRegs.clear();
         Type[] argTypes = m.getArgumentTypes();
         int arg = ((m.getAccessFlags() & Constants.ACC_STATIC) != 0) ? 0 : 1;
         for (Type argType : argTypes) {
@@ -74,10 +78,12 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         super.visitCode(obj);
         
         initializedRegs.clear();
+        iincRegs.clear();
     }
     
     public void sawOpcode(int seen) {
         Integer size = null;
+        boolean sizeSet = false;
         try {
             switch (seen) {
             case ICONST_0:
@@ -87,17 +93,39 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             case ICONST_4:
             case ICONST_5:
                 size = Integer.valueOf(seen - ICONST_0);
+                sizeSet = true;
             break;
+            
+            case ILOAD:
+            case ILOAD_0:
+            case ILOAD_1:
+            case ILOAD_2:
+            case ILOAD_3: {
+                int reg = RegisterUtils.getLoadReg(this,  seen);
+                if (iincRegs.get(reg)) {
+                    size = null;
+                    iincRegs.clear(reg);
+                    sizeSet = true;
+                }
+            }
+            break;
+                
             
             case BIPUSH:
             case SIPUSH:
                 size = getIntConstant();
+                sizeSet = true;
+            break;
+            
+            case IINC:
+                iincRegs.set(getRegisterOperand());
             break;
                 
             case LDC:
                 Constant c = getConstantRefOperand();
                 if (c instanceof ConstantInteger) {
                     size = Integer.valueOf(((ConstantInteger) c).getBytes());
+                    sizeSet = true;
                 }
             break;
             
@@ -106,6 +134,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                 if (stack.getStackDepth() >= 1) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     size = (Integer) item.getUserValue();
+                    sizeSet = true;
                 }
                 break;
             
@@ -186,7 +215,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
              
         } finally {
             stack.sawOpcode(this, seen);
-            if (size != null) {
+            if (sizeSet) {
                 if (stack.getStackDepth() >= 1) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     item.setUserValue(size);
