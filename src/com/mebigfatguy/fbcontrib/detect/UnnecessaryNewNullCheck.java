@@ -45,7 +45,7 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 {
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
-	private Set<Integer> allocationRegs;
+	private BitSet allocationRegs;
 	private Set<Integer> transitionPoints;
 
 	public UnnecessaryNewNullCheck(BugReporter bugReporter) {
@@ -56,7 +56,7 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
-			allocationRegs = new HashSet<Integer>();
+			allocationRegs = new BitSet();
 			transitionPoints = new HashSet<Integer>();
 			super.visitClassContext(classContext);
 		} finally {
@@ -119,9 +119,9 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 					OpcodeStack.Item item = stack.getStackItem(0);
 					int reg = RegisterUtils.getAStoreReg(this, seen);
 					if (item.getUserValue() != null) {
-						allocationRegs.add(Integer.valueOf(reg));
+						allocationRegs.set(reg);
 					} else {
-						allocationRegs.remove(Integer.valueOf(reg));
+						allocationRegs.clear(reg);
 					}
 				}
 				break;
@@ -132,7 +132,7 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 			case ALOAD_2:
 			case ALOAD_3:
 				int reg = RegisterUtils.getALoadReg(this, seen);
-				sawAlloc = (allocationRegs.contains(Integer.valueOf(reg)));
+				sawAlloc = (allocationRegs.get(reg));
 				break;
 
 			case IFNONNULL:
