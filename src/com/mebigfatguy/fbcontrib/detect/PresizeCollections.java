@@ -204,8 +204,6 @@ public class PresizeCollections extends BytecodeScanningDetector {
             case IF_ICMPLE:
             case IF_ACMPEQ:
             case IF_ACMPNE:
-            case IFNULL:
-            case IFNONNULL:
             case GOTO:
             case GOTO_W:
                 if (getBranchOffset() < 0) {
@@ -219,7 +217,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                             for (Integer pc : pcs) {
                                 if (pc > target) {
                                     int numDownBranches = countDownBranches(target, pc);
-                                    if (numDownBranches <= 1) {
+                                    if (numDownBranches == 1) {
                                         bugReporter.reportBug(new BugInstance(this, "PSC_PRESIZE_COLLECTIONS", NORMAL_PRIORITY)
                                                     .addClass(this)
                                                     .addMethod(this)
@@ -235,6 +233,12 @@ public class PresizeCollections extends BytecodeScanningDetector {
                     DownBranch db = new DownBranch(getPC(), getBranchTarget());
                     downBranches.add(db);
                 }
+                break;
+                
+            case IFNULL:
+            case IFNONNULL:
+                //null check branches are hard to presize
+                break;
             }
         } finally {
             stack.sawOpcode(this, seen);
