@@ -47,11 +47,15 @@ public class PresizeCollections extends BytecodeScanningDetector {
         PRESIZEABLE_COLLECTIONS.add("java/util/ArrayBlockingQueue");
         PRESIZEABLE_COLLECTIONS.add("java/util/ArrayDeque");
         PRESIZEABLE_COLLECTIONS.add("java/util/ArrayList");
+        PRESIZEABLE_COLLECTIONS.add("java/util/HashMap");
         PRESIZEABLE_COLLECTIONS.add("java/util/HashSet");
         PRESIZEABLE_COLLECTIONS.add("java/util/LinkedBlockingQueue");
+        PRESIZEABLE_COLLECTIONS.add("java/util/LinkedHashMap");
         PRESIZEABLE_COLLECTIONS.add("java/util/LinkedHashSet");
         PRESIZEABLE_COLLECTIONS.add("java/util/PriorityBlockingQueue");
         PRESIZEABLE_COLLECTIONS.add("java/util/PriorityQueue");
+        PRESIZEABLE_COLLECTIONS.add("java/util/TreeMap");
+        PRESIZEABLE_COLLECTIONS.add("java/util/TreeSet");
         PRESIZEABLE_COLLECTIONS.add("java/util/Vector");
     }
 
@@ -143,6 +147,25 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         Integer allocNum = (Integer) item.getUserValue();
                         if (allocNum != null) {
                             if ("addAll".equals(methodName)) {
+                                allocToAddPCs.remove(allocNum);
+                            } else {
+                                List<Integer> lines = allocToAddPCs.get(allocNum);
+                                if (lines == null) {
+                                    lines = new ArrayList<Integer>();
+                                    allocToAddPCs.put(allocNum, lines);
+                                }
+                                lines.add(getPC());
+                            }
+                        }
+                    }
+                } else if ("put".equals(methodName) || "putAll".equals(methodName)) {
+                    String signature = getSigConstantOperand();
+                    Type[] argTypes = Type.getArgumentTypes(signature);
+                    if ((argTypes.length == 2) && (stack.getStackDepth() > 2)) {
+                        OpcodeStack.Item item = stack.getStackItem(2);
+                        Integer allocNum = (Integer) item.getUserValue();
+                        if (allocNum != null) {
+                            if ("putAll".equals(methodName)) {
                                 allocToAddPCs.remove(allocNum);
                             } else {
                                 List<Integer> lines = allocToAddPCs.get(allocNum);

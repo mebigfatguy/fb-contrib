@@ -19,6 +19,13 @@ public class PSC_Sample {
             names.add(s.toString());
         }
     }
+    
+    public void testPSCMaps(Map<String, String> input) {
+        Map<String, String> output = new HashMap<String, String>();
+        for (Map.Entry<String, String> entry : input.entrySet()) {
+            output.put(entry.getKey().intern(), entry.getValue());
+        }
+    }
 
     public void testPSCEnumerated() {
         Set<String> commonWords = new HashSet<String>();
