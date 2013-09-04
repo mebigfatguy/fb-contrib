@@ -193,8 +193,6 @@ public class PresizeCollections extends BytecodeScanningDetector {
             case IFEQ:
             case IFNE:
             case IFLT:
-            case IFGE:
-            case IFGT:
             case IFLE:
             case IF_ICMPEQ:
             case IF_ICMPNE:
@@ -237,7 +235,9 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 
             case IFNULL:
             case IFNONNULL:
-                //null check branches are hard to presize
+            case IFGE:
+            case IFGT:
+                //null check and >, >= branches are hard to presize
                 break;
             }
         } finally {
