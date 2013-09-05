@@ -124,6 +124,18 @@ public class PSC_Sample {
             }
         }
         
+        List<Exception> exceptions2 = new ArrayList<Exception>();
+        
+        for (String s : src) {
+            try {
+                s = s.substring(1000, 1001);
+                if (s == null)
+                    return null;
+            } catch (IndexOutOfBoundsException e) {
+                exceptions2.add(e);
+            }
+        }
+        
         return exceptions;
     }
 }
