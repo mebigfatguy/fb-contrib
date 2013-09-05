@@ -10,6 +10,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.xml.transform.Source;
+
 
 public class PSC_Sample {
 
@@ -108,6 +110,20 @@ public class PSC_Sample {
         }
 
         return l;
-
+    }
+    
+    public List<Exception> fpPSCInCatchBlock(List<String> src) {
+        List<Exception> exceptions = new ArrayList<Exception>();
+        
+        for (String s : src) {
+            try {
+                s = s.substring(1000, 1001);
+                
+            } catch (IndexOutOfBoundsException e) {
+                exceptions.add(e);
+            }
+        }
+        
+        return exceptions;
     }
 }
