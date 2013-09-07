@@ -24,6 +24,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -175,17 +177,22 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						Integer allocation = (Integer)item.getUserValue();
 						if (allocation != null) {
-							Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-							if (storedAllocations.values().contains(allocation)) {
-								allocations.remove(allocation);
-								storedAllocations.remove(reg);
-							} else if (storedAllocations.containsKey(reg)) {
-								allocations.remove(allocation);
-								allocation = storedAllocations.remove(reg);
-								allocations.remove(allocation);
-							} else {
-								storedAllocations.put(reg, allocation);
-							}
+						    Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
+						    if (isFirstUse(reg.intValue())) {	
+    							if (storedAllocations.values().contains(allocation)) {
+    								allocations.remove(allocation);
+    								storedAllocations.remove(reg);
+    							} else if (storedAllocations.containsKey(reg)) {
+    								allocations.remove(allocation);
+    								allocation = storedAllocations.remove(reg);
+    								allocations.remove(allocation);
+    							} else {
+    								storedAllocations.put(reg, allocation);
+    							}
+						    } else {
+						        item.setUserValue(null);
+						        allocations.remove(allocation);
+						    }
 						}
 					}
 				break;
@@ -253,6 +260,22 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 					nextAllocationNumber++;
 			}
 		}
+	}
+	
+	/**
+	 * looks to see if this register has already in scope or whether is a new assignment.
+	 * return true if it's a new assignment. If you can't tell, return true anyway. might want to change.
+	 * 
+	 * @param reg the store register
+	 * @return whether this is a new register scope assignment
+	 */
+	private boolean isFirstUse(int reg) {
+	    LocalVariableTable lvt = getMethod().getLocalVariableTable();
+	    if (lvt == null)
+	        return true;
+	    
+	    LocalVariable lv = lvt.getLocalVariable(reg,  getPC());
+	    return lv == null;
 	}
 
 	static class AllocationInfo {

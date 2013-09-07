@@ -127,6 +127,27 @@ public class PCAIL_Sample
 		}
 	}
 	
+	public List<String> fpPreUse() 
+	{
+	    List<String> l = null;
+	    
+	    while (true) 
+	    {
+	        if (l != null) 
+	        {
+	            return l;
+	        }
+	        
+	        l = new ArrayList<String>();
+	        l.add("Foo");
+	        
+	        for (String s : l) 
+	        {
+	            System.out.println(s);
+	        }
+	    }
+	}
+	
 	private PCAIL_Sample builder() 
 	{
 	    return this;
