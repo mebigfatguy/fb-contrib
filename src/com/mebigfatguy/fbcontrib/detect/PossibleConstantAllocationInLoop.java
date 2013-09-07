@@ -241,6 +241,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						Integer allocation = (Integer)item.getUserValue();
 						if (allocation != null) {
+						    item.setUserValue(null);
 							allocations.remove(allocation);
 						}
 					}
