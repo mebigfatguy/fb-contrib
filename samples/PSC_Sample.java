@@ -10,8 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.xml.transform.Source;
-
 
 public class PSC_Sample {
 
@@ -48,6 +46,14 @@ public class PSC_Sample {
         commonWords.add("it");
         commonWords.add("they");
         commonWords.add("them");
+    }
+    
+    public List<String> testAddAllToCtor(List<String> l) {
+        List<String> ll = new ArrayList<String>();
+        ll.addAll(l);
+        
+        ll.add("FooBar");
+        return ll;
     }
 
     public void fpDontHaveCollectionForSizing(Iterator<Long> it) {
