@@ -186,7 +186,7 @@
 				<attribute name="Bundle-Vendor" value="FB-Contrib Project" />
 				<attribute name="Require-Bundle" value="edu.umd.cs.findbugs.plugin.eclipse" />
 				<attribute name="Bundle-ActivationPolicy" value="lazy" />
-				<attribute name="Export-Package" value="com.mebigfatguy.fbcontrib.collect, com.mebigfatguy.fbcontrib.detect" />
+				<attribute name="Export-Package" value="com.mebigfatguy.fbcontrib.collect, com.mebigfatguy.fbcontrib.detect, com.mebigfatguy.fbcontrib.debug" />
 			</manifest>
 		</jar>
 	</target>
