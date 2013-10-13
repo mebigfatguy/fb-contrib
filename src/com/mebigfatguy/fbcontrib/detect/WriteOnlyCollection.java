@@ -338,7 +338,9 @@ access to
 				break;
 
 				case GOTO:
-					if (stack.getStackDepth() > 0) {
+                case IFNULL:
+                case IFNONNULL:
+                    if (stack.getStackDepth() > 0) {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						Object uo = item.getUserValue();
 						if (!(uo instanceof Boolean)) {
