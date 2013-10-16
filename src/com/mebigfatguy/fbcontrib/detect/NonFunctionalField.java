@@ -68,7 +68,7 @@ public class NonFunctionalField extends PreorderVisitor implements Detector {
 				Field[] fields = cls.getFields();
 				setupVisitorForClass(cls);
 				for (Field f : fields) {
-					if (f.isFinal() && f.isTransient()) {
+					if (!f.isStatic() && f.isFinal() && f.isTransient()) {
 						bugReporter.reportBug(new BugInstance(this, "NFF_NON_FUNCTIONAL_FIELD", Priorities.NORMAL_PRIORITY)
 						           .addClass(this)
 						           .addField(cls.getClassName(), f.getName(), f.getSignature(), f.getAccessFlags()));
