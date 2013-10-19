@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /** looks for odd uses of the Assert class of the JUnit framework */
 public class JUnitAssertionOddities extends BytecodeScanningDetector
@@ -43,24 +44,15 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
     private enum State {SAW_NOTHING, SAW_IF_ICMPNE, SAW_ICONST_1, SAW_GOTO, SAW_ICONST_0, SAW_EQUALS};
     
 	private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
+	private static final String TESTCASE_CLASS = "junit.framework.TestCase";
+	private static final String TEST_CLASS = "org.junit.Test";
 	private static final String TEST_ANNOTATION_SIGNATURE = "Lorg/junit/Test;";
 	private static final String OLD_ASSERT_CLASS = "junit/framework/Assert";
 	private static final String NEW_ASSERT_CLASS = "org/junit/Assert";
-	private static JavaClass testCaseClass;
-	private static JavaClass testAnnotationClass;
-	static {
-		try {
-			testCaseClass = Repository.lookupClass("junit.framework.TestCase");
-		} catch (ClassNotFoundException cnfe) {
-			testCaseClass = null;
-		}
-		try {
-			testAnnotationClass = Repository.lookupClass("org.junit.Test");
-		} catch (ClassNotFoundException cnfe) {
-			testAnnotationClass = null;
-		}
-	}
+	
 	private BugReporter bugReporter;
+	private JavaClass testCaseClass;
+	private JavaClass testAnnotationClass;
 	private OpcodeStack stack;
 	private boolean isTestCaseDerived;
 	private boolean isAnnotationCapable;
@@ -72,6 +64,19 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	 */
 	public JUnitAssertionOddities(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		
+      try {
+            testCaseClass = Repository.lookupClass(TESTCASE_CLASS);
+        } catch (ClassNotFoundException cnfe) {
+            testCaseClass = null;
+            bugReporter.reportMissingClass(DescriptorFactory.createClassDescriptor(TESTCASE_CLASS));
+        }
+        try {
+            testAnnotationClass = Repository.lookupClass(TEST_CLASS);
+        } catch (ClassNotFoundException cnfe) {
+            testAnnotationClass = null;
+            bugReporter.reportMissingClass(DescriptorFactory.createClassDescriptor(TEST_CLASS));
+        }
 	}
 
 	/**
