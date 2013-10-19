@@ -71,13 +71,13 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
             testCaseClass = Repository.lookupClass(TESTCASE_CLASS);
         } catch (ClassNotFoundException cnfe) {
             testCaseClass = null;
-            bugReporter.reportMissingClass(DescriptorFactory.createClassDescriptor(TESTCASE_CLASS));
+            bugReporter.reportMissingClass(DescriptorFactory.createClassDescriptor(TESTCASE_CLASS.replaceAll("\\.",  "/")));
         }
         try {
             testAnnotationClass = Repository.lookupClass(TEST_CLASS);
         } catch (ClassNotFoundException cnfe) {
             testAnnotationClass = null;
-            bugReporter.reportMissingClass(DescriptorFactory.createClassDescriptor(TEST_CLASS));
+            bugReporter.reportMissingClass(DescriptorFactory.createClassDescriptor(TEST_CLASS.replaceAll("\\.",  "/")));
         }
 	}
 
