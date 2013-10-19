@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -26,6 +27,7 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.RuntimeVisibleAnnotations;
 import org.apache.bcel.classfile.Unknown;
 import org.apache.bcel.generic.Type;
 
@@ -126,6 +128,16 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 									break;
 								}
 							}
+						} else if (att instanceof RuntimeVisibleAnnotations) {
+						    RuntimeVisibleAnnotations rva = (RuntimeVisibleAnnotations) att;
+						    
+						    AnnotationEntry[] entries = rva.getAnnotationEntries();
+						    for (AnnotationEntry entry : entries) {
+						        if (TEST_ANNOTATION_SIGNATURE.equals(entry.getAnnotationType())) {
+						            isTestMethod = true;
+						            break;
+						        }
+						    }
 						}
 					}
 				}
