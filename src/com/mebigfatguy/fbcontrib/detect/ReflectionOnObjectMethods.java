@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * java.lang.Object. As these methods are always available, there's no
  * reason to do this.
  */
+@CustomUserValue
 public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 
 	private static final Set<String> objectSigs = new HashSet<String>();

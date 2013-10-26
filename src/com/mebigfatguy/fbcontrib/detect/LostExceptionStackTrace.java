@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -51,6 +52,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * the original exception within it. Doing this loses the stack history, and where the original
  * problem occurred. This makes finding and fixing errors difficult.
  */
+@CustomUserValue
 public class LostExceptionStackTrace extends BytecodeScanningDetector
 {
     private static JavaClass errorClass;

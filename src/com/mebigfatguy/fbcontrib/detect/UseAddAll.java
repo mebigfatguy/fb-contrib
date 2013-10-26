@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -42,6 +43,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * It is simpler to just use the addAll method of the collection class. In the case where the 
  * source is an array, you can use Arrays.asList(array), and use that as the source to addAll.
  */
+@CustomUserValue
 public class UseAddAll extends BytecodeScanningDetector {
 	private JavaClass collectionClass;
 	private ClassNotFoundException ex;	

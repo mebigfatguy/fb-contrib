@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -36,6 +37,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * is discarded. Since the method makes no changes to the object, calling this method
  * is useless. The method call can be removed.
  */
+@CustomUserValue
 public class NonProductiveMethodCall extends BytecodeScanningDetector {
 
     private static final Set<Pattern> IMMUTABLE_METHODS = new HashSet<Pattern>();

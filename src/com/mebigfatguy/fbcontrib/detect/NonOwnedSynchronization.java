@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -43,6 +44,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * synchronize on private fields of the class. Note that 'this' is not owned by
  * the current class and synchronization on 'this' should be avoided as well.
  */
+@CustomUserValue
 public class NonOwnedSynchronization extends BytecodeScanningDetector
 {
 	private static final Integer OWNED = Integer.valueOf(Integer.MAX_VALUE);

@@ -39,8 +39,10 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+@CustomUserValue
 public class LoggerOddities extends BytecodeScanningDetector {
     private static JavaClass THROWABLE_CLASS;
     private static Set<String> LOGGER_METHODS;

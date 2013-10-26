@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * these objects can be created in a short period of time, it is better to
  * dispose them as soon as possible
  */
+@CustomUserValue
 public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
 	private static final Set<String> GRAPHICS_PRODUCERS = new HashSet<String>(2);

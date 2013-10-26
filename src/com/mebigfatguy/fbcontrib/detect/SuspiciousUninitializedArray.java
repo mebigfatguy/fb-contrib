@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -38,6 +39,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * for a method. While it is possible that the method that called this method
  * will do the work of populated the array, it seems odd that this would be the case.
  */
+@CustomUserValue
 public class SuspiciousUninitializedArray extends BytecodeScanningDetector
 {
 	private static final String UNINIT_ARRAY = "Unitialized Array";

@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -38,6 +39,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * looks for method calls that passes the same argument to two different parameters of the same
  * method. It doesn't report method calls where the arguments are constants.
  */
+@CustomUserValue
 public class StutteredMethodArguments extends BytecodeScanningDetector {
 	private static Set<String> ignorableSignatures = new HashSet<String>();
 	static {

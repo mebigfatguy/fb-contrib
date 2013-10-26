@@ -27,12 +27,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for constructors that operate through side effects, specifically
  * constructors that aren't assigned to any variable or field.
  */
+@CustomUserValue
 public class SideEffectConstructor extends BytecodeScanningDetector {
 
 	private enum State {SAW_NOTHING, SAW_CTOR};

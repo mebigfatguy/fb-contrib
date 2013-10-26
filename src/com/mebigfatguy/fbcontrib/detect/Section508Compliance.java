@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -46,6 +47,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * looks for interfaces that ignore 508 compliance, including not using JLabel.setLabelFor,
  * Using null layouts,
  */
+@CustomUserValue
 public class Section508Compliance extends BytecodeScanningDetector
 {
     private static final String SAW_TEXT_LABEL = "SAW_TEXT_LABEL";

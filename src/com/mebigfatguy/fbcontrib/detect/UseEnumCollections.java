@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * looks for uses of sets or maps where the key is an enum. In these cases, it is 
  * more efficient to use EnumSet or EnumMap. It is a jdk1.5 only detector.
  */
+@CustomUserValue
 public class UseEnumCollections extends BytecodeScanningDetector 
 {	
 	private static final Set<String> nonEnumCollections = new HashSet<String>();

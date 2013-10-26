@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
@@ -44,6 +45,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * As the implementation of toString() is often considered a private implementation detail of a class, 
  * and not something that should be relied on, depending on it's format is dangerous.
  */
+@CustomUserValue
 public class InappropriateToStringUse extends BytecodeScanningDetector {
 
 	private static final Set<String> validToStringClasses = new HashSet<String>();

@@ -44,6 +44,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
@@ -54,6 +55,7 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
  * this occurs the iterator will become invalid and throw a ConcurrentModificationException.
  * Instead, the remove should be called on the iterator itself.
  */
+@CustomUserValue
 public class DeletingWhileIterating extends BytecodeScanningDetector
 {
 	private static JavaClass collectionClass;

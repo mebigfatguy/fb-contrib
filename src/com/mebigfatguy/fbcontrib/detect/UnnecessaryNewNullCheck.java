@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /** looks for construction of new objects, and then the immediate testing
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * or through an exception, this test is unnecessary and represents a misunderstanding
  * as to how the jvm works.
  */
+@CustomUserValue
 public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 {
 	private final BugReporter bugReporter;

@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -41,6 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * by pointer ala C++. It is better to define a proper return class type that holds all
  * the relevant information retrieved from the called method.
  */
+@CustomUserValue
 public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 	
 	static class WrapperInfo {

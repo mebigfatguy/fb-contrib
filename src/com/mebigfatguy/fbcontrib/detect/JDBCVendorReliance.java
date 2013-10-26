@@ -32,12 +32,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for uses of jdbc vendor specific classes and methods making the database access code
  * non portable.
  */
+@CustomUserValue
 public class JDBCVendorReliance extends BytecodeScanningDetector
 {	
 	private BugReporter bugReporter;

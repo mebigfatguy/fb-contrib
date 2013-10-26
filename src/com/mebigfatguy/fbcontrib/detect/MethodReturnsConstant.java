@@ -31,12 +31,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for private methods that can only return one constant value.
  * either the class should not return a value, or perhaps a branch was missed.
  */
+@CustomUserValue
 public class MethodReturnsConstant extends BytecodeScanningDetector
 {
 	private final BugReporter bugReporter;

@@ -31,14 +31,15 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for code that builds an array by using a StringTokenizer to break up
  * a string and place individual elements into an array. It is simpler to use
  * String.split instead.
-
  */
+@CustomUserValue
 public class UseSplit extends BytecodeScanningDetector 
 {
 	enum State {SEEN_NOTHING, SEEN_STRINGTOKENIZER, SEEN_COUNTTOKENS, SEEN_NEWARRAY, SEEN_HASMORE, SEEN_NEXT, SEEN_ARRAYSTORE}

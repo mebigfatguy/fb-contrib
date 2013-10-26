@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -40,6 +41,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * the end size of those collections, does not pre allocate the collection
  * to be big enough. This just causes unneeded reallocations putting strain
  * on the garbage collector. */
+@CustomUserValue
 public class PresizeCollections extends BytecodeScanningDetector {
 
     private static final Set<String> PRESIZEABLE_COLLECTIONS = new HashSet<String>();

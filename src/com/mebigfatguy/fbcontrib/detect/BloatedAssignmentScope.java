@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -47,6 +48,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * the assignment can be pushed down into the smaller scope to reduce the
  * performance impact of that assignment.
  */
+@CustomUserValue
 public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	private static final Set<String> dangerousAssignmentClassSources = new HashSet<String>(7);
 	private static final Set<String> dangerousAssignmentMethodSources = new HashSet<String>(4);

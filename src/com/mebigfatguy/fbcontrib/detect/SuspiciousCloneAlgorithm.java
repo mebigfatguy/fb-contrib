@@ -33,12 +33,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for implementation of clone() where a store is made to a member
  * of the source object.
  */
+@CustomUserValue
 public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
 	
 	private static JavaClass cloneableClass;

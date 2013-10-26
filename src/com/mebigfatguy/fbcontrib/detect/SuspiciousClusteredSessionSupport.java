@@ -33,6 +33,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -40,6 +41,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * modifies those objects, but does not call setAttribute to signify a change so that
  * cluster replication can happen.
  */
+@CustomUserValue
 public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector {
 	
 	private static final Pattern modifyingNames = Pattern.compile("(add|insert|put|remove|clear|set).*");

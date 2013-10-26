@@ -33,12 +33,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * Looks for methods that store the return result in a local variable, and
  * then immediately returns that local variable.
  */
+@CustomUserValue
 public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 {
 	enum State {SEEN_NOTHING, SEEN_STORE, SEEN_LOAD }

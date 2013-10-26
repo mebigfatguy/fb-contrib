@@ -28,11 +28,13 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for appending strings inside of calls to StringBuffer or StringBuilder append.
  */
+@CustomUserValue
 public class InefficientStringBuffering extends BytecodeScanningDetector
 {
     private enum AppendType { NONE, CLEAR, NESTED, TOSTRING };

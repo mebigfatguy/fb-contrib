@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
@@ -39,6 +40,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  * Find usage involving comparison of class names, rather than the class itself.
  *
  */
+@CustomUserValue
 public class CompareClassNameEquals extends OpcodeStackDetector {
     private boolean flag = false;
     private final BugReporter bugReporter;

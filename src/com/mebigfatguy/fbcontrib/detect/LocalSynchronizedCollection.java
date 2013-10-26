@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
@@ -44,6 +45,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * never stored in fields or returned from methods. As local variables are by definition
  * thread safe, using synchronized collections in this context makes no sense.
  */
+@CustomUserValue
 public class LocalSynchronizedCollection extends BytecodeScanningDetector
 {
     private static Map<String, Integer> syncCtors = new HashMap<String, Integer>();

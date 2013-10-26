@@ -22,6 +22,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
@@ -31,6 +32,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
  * be coalesced into one.
  */
 
+@CustomUserValue
 public class StackedTryBlocks extends BytecodeScanningDetector {
 
     private static JavaClass THROWABLE_CLASS;

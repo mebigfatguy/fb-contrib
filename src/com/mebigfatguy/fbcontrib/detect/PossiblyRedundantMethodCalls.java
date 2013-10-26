@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -45,6 +46,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * looks for calls of the same method on the same object when that object hasn't changed.
  * This often is redundant, and the second call can be removed, or combined.
  */
+@CustomUserValue
 public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 {
     public static final String PRMC_RISKY_FIELD_USER_KEY = "fbcontrib.PRMC.riskynames";

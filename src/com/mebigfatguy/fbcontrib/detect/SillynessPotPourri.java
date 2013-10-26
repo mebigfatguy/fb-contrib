@@ -50,12 +50,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
 
 /**
  * looks for silly bugs that are simple but do not fit into one large pattern.
  */
+@CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector
 {
 	private static final Set<String> collectionInterfaces = new HashSet<String>();

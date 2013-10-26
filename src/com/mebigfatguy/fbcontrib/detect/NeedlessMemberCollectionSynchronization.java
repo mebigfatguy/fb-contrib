@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
@@ -45,6 +46,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * the clinit or init, but are synchronized. This is not necessary as the constructor or static 
  * initializer are guaranteed to be thread safe.
  */
+@CustomUserValue
 public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDetector {
 	private static JavaClass collectionClass;
 	static {
