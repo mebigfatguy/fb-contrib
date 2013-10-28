@@ -2222,7 +2222,7 @@
 				<p>This method manually loops over a collection, pulling each element out and storing
 				it in an array to build an array from the collection. It is easier, and clearer to use
 				the built in collections method toArray. Given a collection 'mycollection' of type T, use
-				mycollection.toArray(new T[mycollection.size()]);
+				mycollection.toArray(new T[mycollection.size()]);</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2807,7 +2807,7 @@
 			<![CDATA[
 			<p>This method is not constrained by an interface or superclass, but converts a caught checked exception
 			to unchecked exception and thrown. It would be more appropriate just throw the checked exception, adding
-			the exception to the throws clause of the method.
+			the exception to the throws clause of the method.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3091,7 +3091,7 @@
 			<![CDATA[
 			<p>This method allocations an object with new, and then checks that the object is null
 			or non null. As the new operator is guaranteed to either succeed or throw an exception,
-			this null check is unnecessary and can be removed.
+			this null check is unnecessary and can be removed.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3154,7 +3154,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method calls algorithmic operations on a String that was returned from a toString() method.
-			As these methods are for debugging/logging purposes, it shouldn't be the basis of core logic in your code.
+			As these methods are for debugging/logging purposes, it shouldn't be the basis of core logic in your code.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3165,7 +3165,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method sets or gets an HttpSession attribute with a parameter name that was used in other locations
-			but with a different casing. As HttpSession attribute are case sensitive, this will be very confusing.
+			but with a different casing. As HttpSession attribute are case sensitive, this will be very confusing.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3176,7 +3176,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method fetches an HttpServletRequest parameter with a parameter name that was used in other locations
-			but with a different casing. As HttpServletRequest parameters are case sensitive, this will be very confusing.
+			but with a different casing. As HttpServletRequest parameters are case sensitive, this will be very confusing.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3188,7 +3188,7 @@
 			<![CDATA[
 			<p>This method casts the right hand side of an expression to a class that is more specific than the 
 			variable on the left hand side of the assignment. The cast only has to be as specific as what the variable
-			that is on the left. Using a more specific type on the right hand side just increases cohesion.
+			that is on the left. Using a more specific type on the right hand side just increases cohesion.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3200,7 +3200,7 @@
 			<![CDATA[
 			<p>This method defines parameters at a more abstract level than is actually needed to function correctly,
 			as the code casts these parameters to more concrete types. Since this method is not derivable, you should 
-			just define the parameters with the type that is needed.
+			just define the parameters with the type that is needed.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3452,7 +3452,7 @@
 			<![CDATA[
 				<p>This method uses reflection to call a method that is defined in java.lang.Object.
 				As these methods are always available, it is not necessary to call these methods with
-				reflection.
+				reflection.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3466,7 +3466,7 @@
 				is intended to be a String to String map, putting non String objects is wrong, and takes advantage
 				of a design flaw in the Properties class by deriving from Hashtable instead of using aggregation.
 				If you want a collection that holds other types of objects, use a Hashtable, or better still newer collections
-				like HashMap or TreeMap.
+				like HashMap or TreeMap.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3478,7 +3478,7 @@
 			<![CDATA[
 				<p>This method uses the inherited method from Hashtable put(String key, Object value) in
 				a Properties object. Since the Properties object was intended to be only a String to String
-				map, use of the derived put method is discouraged. Use the Properties.setProperty method instead.
+				map, use of the derived put method is discouraged. Use the Properties.setProperty method instead.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3492,7 +3492,7 @@
 				only uses it in a quasi-static way. It is never assigned to anything that lives outside
 				the loop, and could potentially be allocated once outside the loop. Often this can be 
 				achieved by calling a clear() like method in the loop, to reset the state of the object
-				in the loop.
+				in the loop.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3504,7 +3504,7 @@
 			<![CDATA[
 				<p>This method creates and initializes a collection but then never access this collection
 				to gain information, or fetch items from the collection. It is likely that this collection
-				is left over from a past effort, and can be removed.
+				is left over from a past effort, and can be removed.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3516,7 +3516,7 @@
 			<![CDATA[
 				<p>This class creates and initializes a collection as a field but then never access this collection
 				to gain information, or fetch items from the collection. It is likely that this collection
-				is left over from a past effort, and can be removed.
+				is left over from a past effort, and can be removed.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3528,7 +3528,7 @@
 			<![CDATA[
 				<p>This method defines a parameter list that ends with an array. As this class is compiled with
 				Java 1.5 or better, this parameter could be defined as a vararg parameter instead, which can be
-				more convenient for client developers to use. This is not a bug, per se, just an improvement.
+				more convenient for client developers to use. This is not a bug, per se, just an improvement.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3542,7 +3542,7 @@
 				reference to the containing class, this outer class will be serialized as well. This is often
 				not intentional, and will make the amount of data that is serialized much more than is needed.
 				If the outer classes is not desired to be serialized, either make the inner class static, or 
-				pull it out into a separate "first class" class.
+				pull it out into a separate "first class" class.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3555,7 +3555,7 @@
 				<p>This method creates an object but does not assign this object to any variable or field.
 				This implies that the class operates through side effects in the constructor, which is a 
 				bad pattern to use, as it adds unnecessary coupling. Consider pulling the side effect out of 
-				the constructor, into a separate method, or into the calling method.
+				the constructor, into a separate method, or into the calling method.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3566,7 +3566,7 @@
 		<Details>
 			<![CDATA[
 				<p>This method retrieves the property of a Java bean, only to use it in the setter
-				for the same property of the same bean. This is usually a copy/paste typo.
+				for the same property of the same bean. This is usually a copy/paste typo.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3732,7 +3732,7 @@
             <![CDATA[
             <p>This method declares a method level template parameter that is not bound by any parameter of this
             method. Therefore the template parameter adds no validation or type safety and can be removed, as it's 
-            just confusing to the reader.
+            just confusing to the reader.</p>
             ]]>
         </Details>
     </BugPattern>
@@ -3744,7 +3744,7 @@
             <![CDATA[
             <p>This method ignores the return value of a common method that is assumed to be none mutating.
             If this method does in fact not modify the object it is called on, there is no reason to call 
-            this method, and it can be removed.
+            this method, and it can be removed.</p>
             ]]>
         </Details>
     </BugPattern>
@@ -3765,7 +3765,7 @@
         <LongDescription>Method {1} attempts to store an array element to an array that does not appear to be allocated</LongDescription>
         <Details>
             <![CDATA[
-            <p>This method attempts to store an array element into an array that appears to not have been allocated.
+            <p>This method attempts to store an array element into an array that appears to not have been allocated.</p>
             ]]>
         </Details>
     </BugPattern>
