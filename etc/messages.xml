@@ -2445,7 +2445,9 @@
 				variable in question is a Boolean, which does an auto unbox to boolean.</p>
 				<pre>
 				if (b && b.booleanValue())
+				</pre>
 				should be
+				<pre>
 				if ((b != null) && b.booleanValue())
 				</pre>
 			]]>
