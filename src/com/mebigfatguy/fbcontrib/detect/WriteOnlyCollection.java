@@ -208,6 +208,7 @@ access to
 	public void sawOpcode(int seen) {
 		Object userObject = null;
 
+		stack.precomputation(this);
 		try {
 			switch (seen) {
 				case INVOKESPECIAL:
