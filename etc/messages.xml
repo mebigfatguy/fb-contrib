@@ -40,8 +40,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SyncCollectionIterators">
 		<Details>
 			<![CDATA[
-			<p> Looks for use of iterators on synchronized collections built from the java.util.Collections class</p>
-			<p> As the collection in question was built thru Collections.synchronizedXXX, an assumption
+			<p> Looks for use of iterators on synchronized collections built from the java.util.Collections class.</p>
+			<p> As the collection in question was built through Collections.synchronizedXXX, an assumption
 			is made that this collection must be multithreaded safe. However, iterator access is used, 
 			which is explicitly unsafe. When iterators are to be used, synchronization should be done manually.</p>
 			<p>It is a slow detector</p>
@@ -84,10 +84,10 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents">
 		<Details>
 			<![CDATA[
-			<p> Looks for collections or arrays that hold objects that are unrelated thru class or
+			<p> Looks for collections or arrays that hold objects that are unrelated through class or
 			interface inheritance other than java.lang.Object. Doing so makes for brittle code,
 			relying either on positional correspondence for type, or a reliance on instanceof to
-			determine type. A better design usually can be had by creating a seperate class,
+			determine type. A better design usually can be had by creating a separate class,
 			which defines the different types required, and add an instance of that class to the
 			collection, or array.</p>
 			<p>It is a fast detector</p>
@@ -111,7 +111,7 @@
 		<Details>
 			<![CDATA[
 			<p><em>THIS DETECTOR IS HIGHLY EXPERIMENTAL AND IS LIKELY TO CREATE A LOT OF FUD</em></p>
-			<p> Looks for methods that use a high percentage of methods from another class over it's own
+			<p> Looks for methods that use a high percentage of methods from another class over its own
 			methods. When this is the case, it is often better to implement this method in that other class,
 			by refactoring the class to accept parameters it needs from the source class.
 			The reporting percentage can be set with system property 'fb-contrib.ce.percent'.</p>
@@ -145,7 +145,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.DubiousListCollection">
 		<Details>
 			<![CDATA[
-			<p> looks for fields that are implementations of java.util.List, but that are used in a set-like fashion.
+			<p> Looks for fields that are implementations of java.util.List, but that are used in a set-like fashion.
 			Since lookup type operations are performed using a linear search for Lists, the performance for large
 			Lists will be poor. Consideration should be made as to whether these fields should be sets. In the
 			case that order is important, consider using LinkedHashSet.</p>
@@ -170,7 +170,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that correctly do not write to a parameter. To help document this, and to perhaps
-			help the jvm optimize the invocation of this method, you should consider defining these parameters
+			help the JVM optimize the invocation of this method, you should consider defining these parameters
 			as final.</p>
 			<p>It is a slow detector</p>
 			]]>
@@ -247,7 +247,7 @@
 			<pre>
 			public void test(Character c)
 			</pre>
-			but instead maps to one that takes an int long, float or double.
+			but instead maps to one that takes an int, long, float or double.
 			</p>
 			<p>It is a fast detector</p>
 			]]>
@@ -285,7 +285,7 @@
 			java.lang.Thread. Since the internal workings of the threads is to synchronize on the
 			thread itself, introducing client calls will confuse the thread state of the object
 			in question, and will cause spurious thread state changes, either waking threads up
-			when not intended, or removing the the thread from the runnable state.</p>
+			when not intended, or removing the thread from the runnable state.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -308,7 +308,7 @@
 			</ul>
 			</p>
 			<p>It also looks for calls to BoxedClass.valueOf(x) where X is already a Boxed class</p>
-			<p>It also looks for calls to BoxedClass.valueOf(myString).boxedValue(), When instead it is
+			<p>It also looks for calls to BoxedClass.valueOf(myString).boxedValue(), when instead it is
 			simpler to use BoxedClass.parseBoxed(myString)</p>
 			<p>It is a fast detector</p>			
 			]]>
@@ -319,7 +319,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that store the return result in a local variable and
-			then immediately returns that local variable. It is simpler to just return
+			then immediately return that local variable. It is simpler to just return
 			the method (or assignment) result directly.</p>
 			<p>It is a fast detector</p>
 			]]>
@@ -329,7 +329,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CopiedOverriddenMethod">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that are direct copies of the implementation in the super class</p>
+			<p>Looks for methods that are direct copies of the implementation in the super class.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -371,9 +371,9 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CustomBuiltXML">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that build xml based strings by concatenation strings
+			<p>Looks for methods that build XML based strings by concatenation strings
 			and custom values together. Doing so makes brittle code, that is difficult to 
-			modify, validate and understand. It is cleaner to create external xml files that are
+			modify, validate and understand. It is cleaner to create external XML files that are
 			transformed at runtime, using parameters set through Transformer.setParameter.
 			<p>It is a fast detector</p>
 			]]>
@@ -395,7 +395,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that access arrays or classes that implement java.util.List
-			using a constant integer for the index. This is often a typo intented to be a loop
+			using a constant integer for the index. This is often a typo intended to be a loop
 			variable, but if specific indices mean certain things, perhaps a first class object
 			would be a better choice for a container.</p>
 			<p>It is a fast detector</p>
@@ -430,8 +430,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SluggishGui">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that implement awt or swing listeners and perform time 
-			consuming operations. Doing these operations in the gui thread will cause the
+			<p>Looks for methods that implement AWT or Swing listeners and perform time
+			consuming operations. Doing these operations in the GUI thread will cause the
 			interface to appear sluggish and non-responsive to the user. It is better to 
 			use a separate thread to do the time consuming work so that the user
 			has a better experience.</p>
@@ -473,7 +473,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.JDBCVendorReliance">
 		<Details>
 			<![CDATA[
-			<p>Looks for uses of jdbc vendor specific classes and methods making the database 
+			<p>Looks for uses of JDBC vendor specific classes and methods making the database
 			access code non portable.</p>
 			<p>It is a fast detector</p>
 			]]>
@@ -550,7 +550,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UseEnumCollections">
 		<Details>
 			<![CDATA[
-			<p>Looks for use of sets and maps using enums. It is more efficient to use EnumSet or EnumMap</p>
+			<p>Looks for use of sets and maps using enums. It is more efficient to use EnumSet or EnumMap.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -559,7 +559,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SQLInLoop">
 		<Details>
 			<![CDATA[
-			<p>Looks for the execution of sql queries inside a loop. This pattern tends to be inefficient,
+			<p>Looks for the execution of SQL queries inside a loop. This pattern tends to be inefficient,
 			and often can be improved upon, by collecting all the keys needed for the query and issuing just
 			one query using an in clause with all the keys for all the queries previously needed in the loop.</p>
 			<p>It is a fast detector</p>
@@ -594,7 +594,7 @@
 			<![CDATA[
 			<p>Looks for creation of arrays in methods using constant values. These arrays
 			will need to be recreated each time the method is called. These arrays should probably
-			be defined as static fields, instead</p>
+			be defined as static fields, instead.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -659,7 +659,7 @@
 			<![CDATA[
 			<p>Looks for methods that are defined to return Object, and return different types of
 			objects based on different code paths. If this method is not based on a interface or
-			superclass, it is suggested to change the return type to a type that would accomodate
+			superclass, it is suggested to change the return type to a type that would accommodate
 			all kinds of return types.</p>
 			<p>It is a fast detector.</p>
 			]]>
@@ -701,7 +701,7 @@
 		<Details>
 			<![CDATA[
 			<p><em>THIS DETECTOR IS HIGHLY EXPERIMENTAL AND IS LIKELY TO CREATE A LOT OF FUD</em>
-			Looks for assignments to variables in a scope larger than it's use. As long as the evaluation of the assignment
+			Looks for assignments to variables in a scope larger than its use. As long as the evaluation of the assignment
 			does not have side effects, the assignment can be moved into the inner scope where it is used.</p>
 			<p>It is a fast detector.</p>
 			]]>
@@ -747,7 +747,7 @@
 			<![CDATA[
 			<p>Looks for calls to classes and methods that do not exist in the JDK for which this class is
 			compiled. This can happen if you specify the -source and -target options of the javac compiler, and
-			specify a target that is less than the jdk version of the javac compiler.</p>
+			specify a target that is less than the JDK version of the javac compiler.</p>
 			<p>It is a slow detector.</p>
 			]]>
 		</Details>
@@ -756,7 +756,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UseAddAll">
 		<Details>
 			<![CDATA[
-			<p>Looks for loops that transfers the contents of one collection to another. These collection sources might
+			<p>Looks for loops that transfer the contents of one collection to another. These collection sources might
 			be local variables or member fields, including sets, maps key/values, lists, or arrays. It is simpler to 
 			just use the addAll method of the collection class. In the case where the source is an array, you can use
 			Arrays.asList(array), and use that as the source to addAll.</p>
@@ -807,7 +807,7 @@
 			concerning are methods constrained by interface or super class contracts
 			not to throw checked exceptions but appear owned by the same author. Next
 			are methods constrained by interface or super class contracts and throw other
-			types of checked exceptions. Most egregious are method not constrained by any interface
+			types of checked exceptions. Most egregious are methods not constrained by any interface
 			or superclass contract.</p>
 			<p>It is a moderately fast detector</p>
 			]]>
@@ -882,7 +882,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LoggerOddities">
 		<Details>
 			<![CDATA[
-			<p>Looks for odd patterns of use of Logger classes from either log4j, slf4j or commons logging.</p>
+			<p>Looks for odd patterns of use of Logger classes from either log4j, SLF4j or commons logging.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -891,8 +891,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.IncorrectInternalClassUse">
 		<Details>
 			<![CDATA[
-			<p>Looks for classes that rely on internal classes in the various apis or libraries. As these 
-			classes are not officially released from the api vendor, they are subject to change or removal, and thus,
+			<p>Looks for classes that rely on internal classes in the various APIs or libraries. As these
+			classes are not officially released from the API vendor, they are subject to change or removal, and thus,
 			should not be counted on.</p>
 			Packages that shouldn't be used are:
 			<ul>
@@ -913,10 +913,10 @@
 			on each item in the collection, this can be costly from a performance point of view.</p>
 			<p>In addition, using a set, or keySet of a map, infers that you will be looking for items based on 
 			the value of a collection, which seems dubious at best.</p>
-			<p>Finally, as collections are often modified, This may cause problems if the collection is modified,
+			<p>Finally, as collections are often modified, this may cause problems if the collection is modified,
 			thus changing hashCodes, etc, while the collection is in the set.</p>
 			<p>If you wish to keep a collection of collections, the outer collection should probably be a list
-			to avoid these problems</p>
+			to avoid these problems.</p>
 			<p>It is a moderately fast detector</p>
 			]]>
 		</Details>
@@ -937,9 +937,9 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for allocations of objects, and then immediately checking to see if the
-			object is null, or non null. As the new operator is guaranteed to eiher succeed, or throw
+			object is null, or non null. As the new operator is guaranteed to either succeed, or throw
 			an exception, this null check is useless, and denotes a misunderstanding as to how
-			the jvm works. You can remove this guard.</p>
+			the JVM works. You can remove this guard.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -949,8 +949,8 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for classes that appear to implement the old style type safe enum pattern 
-			that was used before java added Enum support to the language. Since this class is 
-			compiled with java 1.5 or later, it would be simpler to just use java enums</p>
+			that was used before Java added Enum support to the language. Since this class is
+			compiled with Java 1.5 or later, it would be simpler to just use Java enums.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -984,7 +984,7 @@
 			<![CDATA[
 				<p>Looks for methods that return arrays that are allocated but not initialized
 				in this method. While it's possible that the calling method will do the work of
-				initializing the array, it is not a usual pattern, and it suspected that this array
+				initializing the array, it is not a usual pattern, and it is suspected that this array
 				was just forgotten to be initialized.</p>
 				<p>It is a fast detector</p>
 			]]>
@@ -1051,7 +1051,7 @@
 		<Details>
 			<![CDATA[
 			<p>Finds contravariant array assignments. Since arrays are mutable data structures, their use 
-			must be restricted to covariant or invariant usage</p>
+			must be restricted to covariant or invariant usage.</p>
 			
 			<pre>
 			class A {}
@@ -1083,7 +1083,7 @@
  			<p>Looks for code that checks to see if a field or local variable is not null,
  			before entering a code block either an if, or while statement, and then reassigns that 
  			field or local variable. It is likely that guard should have been to see if that
- 			field or local variable is null, not, not null</p>
+			field or local variable is null, not, not null.</p>
  			<p>It is a fast detector</p>
 	 		]]>
 	 	</Details>
@@ -1136,7 +1136,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection">
 		<Details>
 	 		<![CDATA[
-	 		<p>This detector looks for allocations and initializations of java collections, but that are never
+			<p>This detector looks for allocations and initializations of Java collections, but that are never
 	 		read from or accessed to gain information. This represents a collection of no use, and most probably
 	 		can be removed. It is similar to a dead local store.</p>
 	 		<p>It is a fast detector</p>
@@ -1148,8 +1148,8 @@
 		<Details>
 	 		<![CDATA[
 	 		<p>This detector looks for definitions of methods that have an array as the last parameter.
-	 		Since this class is compiled with java 1.5 or better, it would be more flexible for clients of this
-	 		method to define this parameter as a vararg parameter</p>
+			Since this class is compiled with Java 1.5 or better, it would be more flexible for clients of this
+			method to define this parameter as a vararg parameter.</p>
 	 		<p>It is a fast detector</p>
 	 		]]>
 	 	</Details>
@@ -1181,7 +1181,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousGetterSetterUse">
 		<Details>
 			<![CDATA[
-			<p>This detector looks for java bean getter-setter use where the value of a property is set
+			<p>This detector looks for Java bean getter-setter use where the value of a property is set
 			with the value retrieved from the same bean's correllary getter, like this:</p>
 			<pre>
 				person.setAge(person.getAge());
@@ -1250,7 +1250,7 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.CompareClassNameEquals">
         <Details>
             <![CDATA[
-            <p> In a JVM, Two classes are the same class (and consequently the same type) if
+            <p> In a JVM, two classes are the same class (and consequently the same type) if
             they are loaded by the same class loader, and they have the same fully
             qualified name [JVMSpec 1999].
             
@@ -1434,8 +1434,8 @@
 		<LongDescription>Method {1} uses integer based for loops to iterate over a List</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method uses an integer based for loop to iterator over a java.util.List, by calling
-			List.get(i) each time thru the loop. The integer is not used for other reasons. It is better
+			<p>This method uses an integer based for loop to iterate over a java.util.List, by calling
+			List.get(i) each time through the loop. The integer is not used for other reasons. It is better
 			to use an Iterator instead, as depending on List implementation, iterators can perform better, 
 			and they also allow for exchanging of other collection types without issue.</p>
 			]]>
@@ -1459,10 +1459,10 @@
 		<LongDescription>Method {1} declares RuntimeException in throws clause</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method declares a RuntimeException derived class in it's throws clause.
+			<p>This method declares a RuntimeException derived class in its throws clause.
 			This may indicate a misunderstanding as to how unchecked exceptions are handled.
 			If is felt that a RuntimeException is so prevalent that it should be declared, it 
-			is probably a better idea to prevent the occurance in code.</p>
+			is probably a better idea to prevent the occurrence in code.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1473,7 +1473,7 @@
 		<Details>
 			<![CDATA[
 			<p><em>THIS DETECTOR IS HIGHLY EXPERIMENTAL AND IS LIKELY TO CREATE A LOT OF FUD</em></p>
-			<p>This method makes extensive use of methods from another class over methods of it's own
+			<p>This method makes extensive use of methods from another class over methods of its own
 			class. Typically this means that the functionality that is accomplished by this method
 			most likely belongs with the class that is being used so liberally. Consider refactoring this
 			method to be contained in that class, and to accept all the parameters needed in the method signature.</p>
@@ -1498,7 +1498,7 @@
 		<LongDescription>Constructor {1} makes call to non-final method</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This constructor makes a call to a non-final method. Since this method can be overriden, a subclasses
+			<p>This constructor makes a call to a non-final method. Since this method can be overridden, a subclasses
 			implementation will be executing against an object that has not been initialized at the subclass level.
 			You should mark all methods called from the constructor as final to avoid this problem.</p>
 			]]>
@@ -1537,7 +1537,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method correctly does not write to a parameter. To help document this, and to perhaps
-			help the jvm optimize the invocation of this method, you should consider defining these parameters
+			help the JVM optimize the invocation of this method, you should consider defining these parameters
 			as final.</p>
 			]]>
 		</Details>
@@ -1636,7 +1636,7 @@
 			<![CDATA[
 			<p>This method invokes the methods wait, notify or notifyAll on a Thread instance.
 			Doing so will confuse the internal thread state behaviour causing spurious thread
-			wakeups/sleeps because the internal mechanism also uses the thread instance for it's 
+			wakeups/sleeps because the internal mechanism also uses the thread instance for its
 			notifications.
 			</p>
 			]]>
@@ -1732,7 +1732,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method constructs a Boxed Primitive from a primitive only to call the primitiveValue() method to
-			cast the value to another primitive typee. It is simpler to just use casting</p>
+			cast the value to another primitive type. It is simpler to just use casting</p>
 			<pre>
 				primitive i = new BoxedPrimitive(1.0).primitiveValue();
 					or
@@ -1779,11 +1779,11 @@
 	</BugPattern>
 
 	<BugPattern type="COM_COPIED_OVERRIDDEN_METHOD">
-		<ShortDescription>Method is implemented with an exact copy of it's superclass's method</ShortDescription>
-		<LongDescription>Method {1} is implemented with an exact copy of it's superclass's method</LongDescription>
+		<ShortDescription>Method is implemented with an exact copy of its superclass's method</ShortDescription>
+		<LongDescription>Method {1} is implemented with an exact copy of its superclass's method</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method is implemented using an exact copy of it's super class method's 
+			<p>This method is implemented using an exact copy of its super class method's
 			implementation, which usually means that this method can just be removed.
 			</p>
 			]]>
@@ -1829,14 +1829,14 @@
 	</BugPattern>
 
 	<BugPattern type="CBX_CUSTOM_BUILT_XML">
-		<ShortDescription>Method builds xml strings through adhoc concatenation</ShortDescription>
-		<LongDescription>Method {1} builds xml strings through adhoc concatenation</LongDescription>
+		<ShortDescription>Method builds XML strings through adhoc concatenation</ShortDescription>
+		<LongDescription>Method {1} builds XML strings through adhoc concatenation</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method generates an xml based string by concatenating together various 
-			xml fragments, and variable values. Doing so makes the code difficult to read, modify 
-			and validate. It is much more clean to built xml structures in external files that are
-			read in and transformed into the final product, thru modification by Transformer.setParameter.
+			<p>This method generates an XML based string by concatenating together various
+			XML fragments, and variable values. Doing so makes the code difficult to read, modify
+			and validate. It is much more clean to built XML structures in external files that are
+			read in and transformed into the final product, through modification by Transformer.setParameter.
 			</p>
 			]]>
 		</Details>
@@ -1895,12 +1895,12 @@
 	</BugPattern>
 
 	<BugPattern type="SG_SLUGGISH_GUI">
-		<ShortDescription>Method performs time consuming operation in gui thread</ShortDescription>
-		<LongDescription>Method {1} performs time consuming operation in gui thread</LongDescription>
+		<ShortDescription>Method performs time consuming operation in GUI thread</ShortDescription>
+		<LongDescription>Method {1} performs time consuming operation in GUI thread</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method implements an awt or swing listener and performs time 
-			consuming operations. Doing these operations in the gui thread will cause the
+			<p>This method implements an AWT or Swing listener and performs time
+			consuming operations. Doing these operations in the GUI thread will cause the
 			interface to appear sluggish and non-responsive to the user. Consider
 			using a separate thread to do the time consuming work so that the user
 			has a better experience.</p>
@@ -1926,7 +1926,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method compares dates with two comparisons, rather than using the reverse comparison.
-			So This pattern
+			So this pattern
 <pre>
 	if ((date1.equals( date2 )) || (date1.after( date2 )))
 </pre>
@@ -1967,11 +1967,11 @@
 	</BugPattern>
 
 	<BugPattern type="JVR_JDBC_VENDOR_RELIANCE">
-		<ShortDescription>Method uses jdbc vendor specific classes and methods</ShortDescription>
-		<LongDescription>Method {1} uses jdbc vendor specific classes and methods</LongDescription>
+		<ShortDescription>Method uses JDBC vendor specific classes and methods</ShortDescription>
+		<LongDescription>Method {1} uses JDBC vendor specific classes and methods</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method uses jdbc vendor specific classes and method to perform database work.
+			<p>This method uses JDBC vendor specific classes and method to perform database work.
 			This makes the code specific to this vendor, and unable to run on other databases.</p>
 			]]>
 		</Details>
@@ -2042,7 +2042,7 @@
 		<LongDescription>Tag library {0} is not recycleable</LongDescription>
 		<Details>
 			<![CDATA[
-				<p>This Tag library class implements an attribute who's associated backing store field
+				<p>This tag library class implements an attribute who's associated backing store field
 				is modified at another point in the tag library. In order for a taglibrary to be
 				recycleable, only the container is allowed to change this attribute, through the use
 				of the setXXX method of the taglib. By modifying the value programmatically, the 
@@ -2052,13 +2052,13 @@
 	</BugPattern>
 
 	<BugPattern type="S508C_NULL_LAYOUT">
-		<ShortDescription>Gui uses absolute layout</ShortDescription>
-		<LongDescription>Gui {0} uses absolute layout</LongDescription>
+		<ShortDescription>GUI uses absolute layout</ShortDescription>
+		<LongDescription>GUI {0} uses absolute layout</LongDescription>
 		<Details>
 			<![CDATA[
 				<p>This class passes null to setLayout, which specifies that components are
 				to be laid out using absolute coordinates. This makes making changes for
-				font sizes, etc, difficult as items will not reposition
+				font sizes, etc, difficult as items will not reposition.
 				</p>
 			]]>
 		</Details>
@@ -2094,9 +2094,9 @@
 		<LongDescription>Class {0} extends JComponent but does not implement Accessible interface</LongDescription>
 		<Details>
 			<![CDATA[
-				<p>This class extends the JComponent gui control but does not implement the Accessibility interface.
+				<p>This class extends the JComponent GUI control but does not implement the Accessibility interface.
 				This makes this control unable to be processed by screen readers, etc, for people with reading/vision
-				difficulties</p>
+				difficulties.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2143,17 +2143,17 @@
 		<Details>
 			<![CDATA[
 				<p>This class uses an ordinary set or map collection and uses an enum class as the key type.
-				It is better performant to use the jdk 1.5 EnumSet or EnumMap classes.</p>
+				It is better performant to use the JDK 1.5 EnumSet or EnumMap classes.</p>
 			]]>
 		</Details>
 	</BugPattern>
 
 	<BugPattern type="SIL_SQL_IN_LOOP">
-		<ShortDescription>Method executes sql queries inside of loops</ShortDescription>
-		<LongDescription>Method {1} executes sql queries inside of loops</LongDescription>
+		<ShortDescription>Method executes SQL queries inside of loops</ShortDescription>
+		<LongDescription>Method {1} executes SQL queries inside of loops</LongDescription>
 		<Details>
 			<![CDATA[
-				<p>This method executes sql queries inside of a loop. This pattern is often inefficient
+				<p>This method executes SQL queries inside of a loop. This pattern is often inefficient
 				as the number of queries may mushroom in fencepost cases. It is probably more performant
 				to loop over the input and collect the key data needed for the query for all items, and
 				issue one query using an in clause, or similar construct, and then loop over this result
@@ -2222,7 +2222,7 @@
 				<p>This method manually loops over a collection, pulling each element out and storing
 				it in an array to build an array from the collection. It is easier, and clearer to use
 				the built in collections method toArray. Given a collection 'mycollection' of type T, use
-				mycollection.toArray(new T[mycollection.size()]);
+				mycollection.toArray(new T[mycollection.size()]);</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2311,7 +2311,7 @@
 				because this class does not take the responsibility of writing these fields out
 				either using Serializable's writeObject method, or Externalizable's writeExternal 
 				method. Therefore when this class is read from a stream, the superclass fields
-				will only be initialized to the values specified in it's default constructor.
+				will only be initialized to the values specified in its default constructor.
 				If possible, change the superclass to implement Serializable, or implement 
 				Serializable or Externalizable methods in the child class.</p>
 			]]>
@@ -2347,7 +2347,7 @@
 		<Details>
 			<![CDATA[
 				<p>This method calls intern on a constant string. As constant strings are already interned, this call
-				is superfluous</p>
+				is superfluous.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2393,7 +2393,7 @@
 		<LongDescription>Method {1} compares a double to Double.NAN</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method compares a douhle or float to the constant Double.NaN or Float.NaN. You should use
+			<p>This method compares a double or float to the constant Double.NaN or Float.NaN. You should use
 			Double.isNaN(d) or Float.isNaN(f) if a primitive; or d.isNaN() or f.isNaN() if a boxed double, instead.</p>
 			]]>
 		</Details>
@@ -2416,7 +2416,7 @@
 		<LongDescription>Method {1} passes empty string to StringBuffer of StringBuilder constructor</LongDescription>
 		<Details>
 			<![CDATA[
-				<p>This method calls the StringBuffer of StringBuilder constructor passing in a constant empty string (""). 
+				<p>This method calls the StringBuffer or StringBuilder constructor passing in a constant empty string ("").
 				This is the same as calling the default constructor, but makes the code work harder. Consider passing in a
 				default size instead.
 			]]>
@@ -2440,12 +2440,14 @@
 		<LongDescription>Method {1} uses invalid C++ style null check on Boolean</LongDescription>
 		<Details>
 			<![CDATA[
-				<p>This method attempts to check for null by just refering to the variable name
+				<p>This method attempts to check for null by just referring to the variable name
 				as would be done in C++. This ordinarily would be considered a compile error, except the
 				variable in question is a Boolean, which does an auto unbox to boolean.</p>
 				<pre>
 				if (b && b.booleanValue())
+				</pre>
 				should be
+				<pre>
 				if ((b != null) && b.booleanValue())
 				</pre>
 			]]>
@@ -2470,7 +2472,7 @@
 		<Details>
 			<![CDATA[
 				<p>This method tests the value of a boolean and using a ternary operator to return either true or false.
-				The ternary operator is completely unecessary, just use the original boolean value.</p>
+				The ternary operator is completely unnecessary, just use the original boolean value.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2494,8 +2496,8 @@
 	</BugPattern>
 
 	<BugPattern type="SPP_USE_STRINGBUILDER_LENGTH">
-		<ShortDescription>Method converts StringBuffer or Builder to String just to get it's length</ShortDescription>
-		<LongDescription>Method {1} converts StringBuffer or Builder to String just to get it's length</LongDescription>
+		<ShortDescription>Method converts StringBuffer or Builder to String just to get its length</ShortDescription>
+		<LongDescription>Method {1} converts StringBuffer or Builder to String just to get its length</LongDescription>
 		<Details>
 			<![CDATA[
 				<p>This method calls the toString method on a StringBuffer or StringBuilder only to call length() on the resulting
@@ -2512,7 +2514,7 @@
 			<![CDATA[
 				<p>This method passes a non calendar object to the java.util.Calendar.after or java.util.Calendar.before methods.
 				Even though these methods take an Object as a parameter type, only Calendar type objects are supported, otherwise
-				false is returned</p>
+				false is returned.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2522,7 +2524,7 @@
 		<LongDescription>Method {1} calls keySet() just to call contains, use containsKey instead</LongDescription>
 		<Details>	
 			<![CDATA[
-				<p>This method calls mySet.keySet().contains("foo") when mySet.containsKey("foo") is simpler</p>
+				<p>This method calls mySet.keySet().contains("foo") when mySet.containsKey("foo") is simpler.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2533,7 +2535,7 @@
 		<Details>
 			<![CDATA[
 				<p>This method calls the size() method on a collection and compares the result to zero to see if the collection
-				is empty. For better code clarity, it is better to just use col.isEmpty() or !col.isEmpty()</p>
+				is empty. For better code clarity, it is better to just use col.isEmpty() or !col.isEmpty().</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2607,8 +2609,8 @@
 		<Details>
 			<![CDATA[
 				This method calls trim() on a String without assigning the new string to another variable.
-				It then calls length() or equals on this trimmed string. If trimming the string was important
-				for determining it's length of it's equality, it should be trimmed when you actually go to use it.
+				It then calls length() or equals() on this trimmed string. If trimming the string was important
+				for determining its length or its equality, it should be trimmed when you actually go to use it.
 				It would make more sense to first trim the String, store the trimmed value in a variable, and then
 				continue to test and use that trimmed string.
 			]]>
@@ -2710,7 +2712,7 @@
 		<LongDescription>Method {1} modifies collection element while iterating</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method modifies the contents of a collection using the collection api methods, while
+			<p>This method modifies the contents of a collection using the collection API methods, while
 			at the same time iterating across the collection. Doing this will invalidate the iterator, and further
 			use of it, will cause ConcurrentModificationExceptions to be thrown.
 			</p>
@@ -2723,7 +2725,7 @@
 		<LongDescription>Method {1} builds String array using String Tokenizing</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method uses a StringTokenizer to split up a String and then walks thru the
+			<p>This method uses a StringTokenizer to split up a String and then walks through the
 			separated elements and builds an array from these enumerated values. It is simpler 
 			and easier to use the String.split method.</p>
 			<p>PLEASE NOTE: String.split will return an array of 1 element when passed the 
@@ -2743,7 +2745,7 @@
 		<LongDescription>Method {1} uses rt.jar class or method that does not exist for the version the class is compiled for</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method calls a method that does not exist, on a class that does not exist in the jdk that
+			<p>This method calls a method that does not exist, on a class that does not exist in the JDK that
 			this class has been compiled for. This can happen if you compile the class specifying the -source and
 			-target options, and use a version that is before the version of the compiler's JDK.</p>
 			]]>
@@ -2758,7 +2760,7 @@
 			<p>This method uses a simple for loop to copy the contents of a set, list, map key/value, array or other collection
 			to another collection. It is simpler and more straight forward to just call the addAll method of the destination collection
 			passing in the source collection. In the case that the source is an array, you can use Array.asList method to massage the array
-			into a collection</p>
+			into a collection.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2769,7 +2771,7 @@
 		<Details>
 			<![CDATA[
 			<p>This private or static method only returns one constant value. As this method is private or static,
-			it's behavior can't be overridden, and thus the return of a constant value seems dubious.
+			its behavior can't be overridden, and thus the return of a constant value seems dubious.
 			Either the method should be changed to return no value, or perhaps another return value
 			was expected to be returned in another code path in this method.</p>
 			]]>
@@ -2805,7 +2807,7 @@
 			<![CDATA[
 			<p>This method is not constrained by an interface or superclass, but converts a caught checked exception
 			to unchecked exception and thrown. It would be more appropriate just throw the checked exception, adding
-			the exception to the throws clause of the method.
+			the exception to the throws clause of the method.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2898,11 +2900,11 @@
 	</BugPattern>
 	
 	   <BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED">
-        <ShortDescription>Method uses java asserts rather than a junit assertion</ShortDescription>
-        <LongDescription>Method {1} uses java asserts rather than a junit assertion</LongDescription>
+        <ShortDescription>Method uses Java asserts rather than a junit assertion</ShortDescription>
+        <LongDescription>Method {1} uses Java asserts rather than a junit assertion</LongDescription>
         <Details>
             <![CDATA[
-            <p>This method uses a java assert to assure that a certain state is in effect. As this is
+            <p>This method uses a Java assert to assure that a certain state is in effect. As this is
             a junit test it makes more sense to either check this condition with a junit assert, or allow
             a following exception to occur.</p>
             ]]>
@@ -3015,7 +3017,7 @@
        <Details>
             <![CDATA[
                 This method attempts to use an SLF4J logger to log a parameterized expression using formatting anchors.
-                However, slf4j uses simple non numbered anchors such as {}, rather than anchors with digits in them as the 
+                However, SLF4j uses simple non numbered anchors such as {}, rather than anchors with digits in them as the
                 code uses. Thus no parameter replacement will occur.
             ]]>
        </Details>
@@ -3026,19 +3028,19 @@
        <LongDescription>Method {1} passes an incorrect number of parameters to an SLF4J logging statement</LongDescription>
        <Details>
             <![CDATA[
-            This method passes the wrong number of parameters to a slf4j logging method (error, warn, info, debug) based on the number of anchors {} in the 
+            This method passes the wrong number of parameters to a SLF4j logging method (error, warn, info, debug) based on the number of anchors {} in the
             format string. An additional exception argument is allowed if found.
             ]]>
        </Details>
 	</BugPattern>
 
 	<BugPattern type="IICU_INCORRECT_INTERNAL_CLASS_USE">
-		<ShortDescription>Class relies on internal api classes</ShortDescription>
-		<LongDescription>Class {0} relies on internal api classes</LongDescription>
+		<ShortDescription>Class relies on internal API classes</ShortDescription>
+		<LongDescription>Class {0} relies on internal API classes</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This class makes use of internal api classes. As these
-			classes are not documented, nor externally released as part of the api, they are subject
+			<p>This class makes use of internal API classes. As these
+			classes are not documented, nor externally released as part of the API, they are subject
 			to change or removal. You should not be using these classes.</p>
 			Packages that shouldn't be used are:
 			<ul>
@@ -3089,7 +3091,7 @@
 			<![CDATA[
 			<p>This method allocations an object with new, and then checks that the object is null
 			or non null. As the new operator is guaranteed to either succeed or throw an exception,
-			this null check is unnecessary and can be removed.
+			this null check is unnecessary and can be removed.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3100,7 +3102,7 @@
 		<Details>
 			<![CDATA[
 			<p>This class appears to implement the old style type safe enum pattern that was used in place of
-			real enums. Since this class is compiled with java 1.5 or better, it would be simpler and more 
+			real enums. Since this class is compiled with Java 1.5 or better, it would be simpler and more
 			easy to understand if it was just switched over to an enum.</p>
 			]]>
 		</Details>
@@ -3152,7 +3154,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method calls algorithmic operations on a String that was returned from a toString() method.
-			As these methods are for debugging/logging purposes, it shouldn't be the basis of core logic in your code.
+			As these methods are for debugging/logging purposes, it shouldn't be the basis of core logic in your code.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3162,8 +3164,8 @@
 		<LongDescription>Method {1} uses the same HttpSession attribute name but with different casing</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method sets or gets an HttpSession attribute with a parmeter name that was used in other locations
-			but with a different casing. As HttpSession attribute are case sensitive, this will be very confusing.
+			<p>This method sets or gets an HttpSession attribute with a parameter name that was used in other locations
+			but with a different casing. As HttpSession attribute are case sensitive, this will be very confusing.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3174,7 +3176,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method fetches an HttpServletRequest parameter with a parameter name that was used in other locations
-			but with a different casing. As HttpServletRequest parameters are case sensitive, this will be very confusing.
+			but with a different casing. As HttpServletRequest parameters are case sensitive, this will be very confusing.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3186,7 +3188,7 @@
 			<![CDATA[
 			<p>This method casts the right hand side of an expression to a class that is more specific than the 
 			variable on the left hand side of the assignment. The cast only has to be as specific as what the variable
-			that is on the left. Using a more specific type on the right hand side just increases cohesion.
+			that is on the left. Using a more specific type on the right hand side just increases cohesion.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3198,7 +3200,7 @@
 			<![CDATA[
 			<p>This method defines parameters at a more abstract level than is actually needed to function correctly,
 			as the code casts these parameters to more concrete types. Since this method is not derivable, you should 
-			just define the parameters with the type that is needed.
+			just define the parameters with the type that is needed.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3223,7 +3225,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method contains a contravariant array assignment. Since arrays are mutable data structures, their use 
-			must be restricted to covariant or invariant usage</p>
+			must be restricted to covariant or invariant usage.</p>
 			
 			<pre>
 			class A {}
@@ -3242,7 +3244,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method contains a contravariant array element assignment. Since arrays are mutable 
-			data structures, their use must be restricted to covariant or invariant usage</p>
+			data structures, their use must be restricted to covariant or invariant usage.</p>
 			
 			<pre>
 			class A {}
@@ -3408,7 +3410,7 @@
 		<LongDescription>Method {1} calls Condition.signal() rather than Condition.signalAll()</LongDescription>
 		<Details>
 		  <![CDATA[
-		  <p><code>Condition.signalAll()</code> is prefered over <code>Condition.signal()</code>. Calling <code>signal()</code> only wakes up one thread, meaning that the thread woken up might not be the one waiting for the condition that the caller just satisfied.</p>
+		  <p><code>Condition.signalAll()</code> is preferred over <code>Condition.signal()</code>. Calling <code>signal()</code> only wakes up one thread, meaning that the thread woken up might not be the one waiting for the condition that the caller just satisfied.</p>
 		  ]]>
 		</Details>
 	</BugPattern>
@@ -3450,7 +3452,7 @@
 			<![CDATA[
 				<p>This method uses reflection to call a method that is defined in java.lang.Object.
 				As these methods are always available, it is not necessary to call these methods with
-				reflection.
+				reflection.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3461,10 +3463,10 @@
 		<Details>
 			<![CDATA[
 				<p>This method places non-String objects into a Properties object. As the Properties object
-				is intented to be a String to String map, putting non String objects is wrong, and takes advantage
+				is intended to be a String to String map, putting non String objects is wrong, and takes advantage
 				of a design flaw in the Properties class by deriving from Hashtable instead of using aggregation.
 				If you want a collection that holds other types of objects, use a Hashtable, or better still newer collections
-				like HashMap or TreeMap.
+				like HashMap or TreeMap.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3476,7 +3478,7 @@
 			<![CDATA[
 				<p>This method uses the inherited method from Hashtable put(String key, Object value) in
 				a Properties object. Since the Properties object was intended to be only a String to String
-				map, use of the derived put method is discouraged. Use the Properties.setProperty method instead.
+				map, use of the derived put method is discouraged. Use the Properties.setProperty method instead.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3490,7 +3492,7 @@
 				only uses it in a quasi-static way. It is never assigned to anything that lives outside
 				the loop, and could potentially be allocated once outside the loop. Often this can be 
 				achieved by calling a clear() like method in the loop, to reset the state of the object
-				in the loop.
+				in the loop.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3502,7 +3504,7 @@
 			<![CDATA[
 				<p>This method creates and initializes a collection but then never access this collection
 				to gain information, or fetch items from the collection. It is likely that this collection
-				is left over from a past effort, and can be removed.
+				is left over from a past effort, and can be removed.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3514,7 +3516,7 @@
 			<![CDATA[
 				<p>This class creates and initializes a collection as a field but then never access this collection
 				to gain information, or fetch items from the collection. It is likely that this collection
-				is left over from a past effort, and can be removed.
+				is left over from a past effort, and can be removed.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3526,7 +3528,7 @@
 			<![CDATA[
 				<p>This method defines a parameter list that ends with an array. As this class is compiled with
 				Java 1.5 or better, this parameter could be defined as a vararg parameter instead, which can be
-				more convienent for client developers to use. This is not a bug, per se, just an improvement.
+				more convenient for client developers to use. This is not a bug, per se, just an improvement.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3540,7 +3542,7 @@
 				reference to the containing class, this outer class will be serialized as well. This is often
 				not intentional, and will make the amount of data that is serialized much more than is needed.
 				If the outer classes is not desired to be serialized, either make the inner class static, or 
-				pull it out into a separate "first class" class.
+				pull it out into a separate "first class" class.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3553,7 +3555,7 @@
 				<p>This method creates an object but does not assign this object to any variable or field.
 				This implies that the class operates through side effects in the constructor, which is a 
 				bad pattern to use, as it adds unnecessary coupling. Consider pulling the side effect out of 
-				the constructor, into a separate method, or into the calling method.
+				the constructor, into a separate method, or into the calling method.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3563,8 +3565,8 @@
 		<LongDescription>Method {1} uses same bean's getter value for setter</LongDescription>
 		<Details>
 			<![CDATA[
-				<p>This method retrieves the property of a java bean, only to use it in the setter
-				for the same property of the same bean. This is usually a copy/paste typo.
+				<p>This method retrieves the property of a Java bean, only to use it in the setter
+				for the same property of the same bean. This is usually a copy/paste typo.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3575,7 +3577,7 @@
 		<Details>
 			<![CDATA[
 				<p>This method allocates a java.awt.Graphics object but doesn't dispose of it when done. While
-				the garbage collecter will clean this up, given that a large number of Graphics objects can be
+				the garbage collector will clean this up, given that a large number of Graphics objects can be
 				created in a short period of time, it is recommended that you explicitly dispose() of them.
 				</p>
 			]]>
@@ -3623,7 +3625,7 @@
         <Details>
             <![CDATA[
             <p>This method returns the result of toString() on ToStringBuilder without an
-            intermediate invocation of append()</p>
+            intermediate invocation of append().</p>
             ]]>
         </Details>
     </BugPattern>
@@ -3730,7 +3732,7 @@
             <![CDATA[
             <p>This method declares a method level template parameter that is not bound by any parameter of this
             method. Therefore the template parameter adds no validation or type safety and can be removed, as it's 
-            just confusing to the reader.
+            just confusing to the reader.</p>
             ]]>
         </Details>
     </BugPattern>
@@ -3742,7 +3744,7 @@
             <![CDATA[
             <p>This method ignores the return value of a common method that is assumed to be none mutating.
             If this method does in fact not modify the object it is called on, there is no reason to call 
-            this method, and it can be removed.
+            this method, and it can be removed.</p>
             ]]>
         </Details>
     </BugPattern>
@@ -3753,7 +3755,7 @@
         <Details>
             <![CDATA[
             <p>This method access an array element using a literal index that is know to be outside the size of the specified 
-            array. This will cause an ArrayIndexOutOfBoundsException at runtime</p>
+            array. This will cause an ArrayIndexOutOfBoundsException at runtime.</p>
             ]]>
         </Details>
     </BugPattern>
@@ -3763,7 +3765,7 @@
         <LongDescription>Method {1} attempts to store an array element to an array that does not appear to be allocated</LongDescription>
         <Details>
             <![CDATA[
-            <p>This method attempts to store an array element into an an array that appears to not have been allocated.
+            <p>This method attempts to store an array element into an array that appears to not have been allocated.</p>
             ]]>
         </Details>
     </BugPattern>
@@ -3802,7 +3804,7 @@
 	<BugCode abbrev="CLI">Constant List Index</BugCode>
 	<BugCode abbrev="SCR">Sloppy Class Reflection</BugCode>
 	<BugCode abbrev="AWCBR">Array Wrapped Call By Reference</BugCode>
-	<BugCode abbrev="SG">Sluggish Gui</BugCode>
+	<BugCode abbrev="SG">Sluggish GUI</BugCode>
 	<BugCode abbrev="NIR">Needless Instance Retrieval</BugCode>
 	<BugCode abbrev="DDC">Double Date comparison</BugCode>
 	<BugCode abbrev="SWCO">Suspicious Wait on Concurrent Object</BugCode>
