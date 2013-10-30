@@ -142,7 +142,8 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
+	        
 			if (seen == ARETURN) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item itm = stack.getStackItem(0);

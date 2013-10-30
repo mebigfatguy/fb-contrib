@@ -89,6 +89,8 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		try {
+	        stack.precomputation(this);
+	        
 			Integer pc = Integer.valueOf(getPC());
 			nullGuards.remove(pc);
 

@@ -116,6 +116,8 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector
 			if (indeterminate)
 				return;
 			
+	        stack.precomputation(this);
+	        
 			if (seen == IRETURN) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);

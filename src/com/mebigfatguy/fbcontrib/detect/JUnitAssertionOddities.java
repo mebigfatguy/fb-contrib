@@ -158,7 +158,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 		String userValue = null;
 
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 
 			if (seen == INVOKESTATIC) {
 				String clsName = getClassConstantOperand();

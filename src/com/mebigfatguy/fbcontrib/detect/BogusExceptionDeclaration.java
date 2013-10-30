@@ -158,6 +158,8 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
 		try {
 
+	        stack.precomputation(this);
+	        
 			if ((seen == INVOKEVIRTUAL)
 			||  (seen == INVOKEINTERFACE)
 			||  (seen == INVOKESPECIAL)

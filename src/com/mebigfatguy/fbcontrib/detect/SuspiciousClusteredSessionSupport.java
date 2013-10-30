@@ -88,6 +88,8 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
 		String attributeName = null;
 		boolean sawGetAttribute = false;
 		try {
+	        stack.precomputation(this);
+	        
 			if (seen == INVOKEINTERFACE) {
 				String clsName = getClassConstantOperand();
 				if ("javax/servlet/http/HttpSession".equals(clsName)) {

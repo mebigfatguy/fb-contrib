@@ -103,6 +103,8 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
     	try {
+            stack.precomputation(this);
+            
     		if (seen == CHECKCAST) {
     			if (stack.getStackDepth() > 0) {
     				OpcodeStack.Item item = stack.getStackItem(0);

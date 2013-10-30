@@ -118,7 +118,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			if (unsafeCallOccurred && ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)))) {
 				int storeReg = RegisterUtils.getAStoreReg(this, seen);

@@ -124,6 +124,8 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		String methodPackage = null;
 		try {
+	        stack.precomputation(this);
+	        
 			if (seen == INVOKEVIRTUAL) {
 				String methodName = getNameConstantOperand();
 				if ("toString".equals(methodName)) {

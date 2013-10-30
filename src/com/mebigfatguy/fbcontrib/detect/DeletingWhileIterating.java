@@ -161,8 +161,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 		int groupId = -1;
 
 		try {
-			if (seen == INVOKEINTERFACE)
-			{
+	        stack.precomputation(this);
+	        
+			if (seen == INVOKEINTERFACE) {
 				String className = getClassConstantOperand();
 				String methodName = getNameConstantOperand();
 				String signature = getSigConstantOperand();

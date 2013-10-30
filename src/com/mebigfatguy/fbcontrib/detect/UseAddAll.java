@@ -124,6 +124,8 @@ public class UseAddAll extends BytecodeScanningDetector {
 		boolean sawLoad = false;
 		
 		try {
+	        stack.precomputation(this);
+	        
 			int pc = getPC();
 			Iterator<LoopInfo> it = loops.values().iterator();
 			while (it.hasNext()) {

@@ -217,7 +217,8 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 	private void sawCLInitOpcode(int seen) {
 		boolean isSyncCollection = false;
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
+	        
 			isSyncCollection = isSyncCollectionCreation(seen);
 			if (seen == PUTSTATIC)
 				processCollectionStore();

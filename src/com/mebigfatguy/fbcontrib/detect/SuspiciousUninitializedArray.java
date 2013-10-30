@@ -103,6 +103,8 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector
 	public void sawOpcode(int seen) {
 		Object userValue = null;
 		try {
+	        stack.precomputation(this);
+	        
 			switch (seen) {
 				case NEWARRAY: {
 					if (!isTOS0()) {

@@ -112,6 +112,8 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
     @Override
     public void sawOpcode(int seen) {
         try {
+            stack.precomputation(this);
+            
             if (seen == INVOKEINTERFACE) {
             	KeyType type = isKeyAccessMethod(seen);
             	if (type != null) {

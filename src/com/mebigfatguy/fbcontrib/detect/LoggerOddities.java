@@ -145,6 +145,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
         Integer arraySize = null;
 
         try {
+            stack.precomputation(this);
+            
             if ((seen == LDC) || (seen == LDC_W)) {
                 Constant c = getConstantRefOperand();
                 if (c instanceof ConstantClass) {

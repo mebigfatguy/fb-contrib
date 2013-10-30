@@ -72,6 +72,7 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		try {
+        
 			switch (seen) {
 			case INVOKEVIRTUAL:
 				String methodName = getNameConstantOperand();

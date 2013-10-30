@@ -82,6 +82,8 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		try {
+	        stack.precomputation(this);
+	        
 			if (seen == INVOKEVIRTUAL) {
 				String clsName = getClassConstantOperand();
 				if ("java/util/Properties".equals(clsName)) {

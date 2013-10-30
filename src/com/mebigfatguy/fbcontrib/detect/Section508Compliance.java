@@ -214,7 +214,8 @@ public class Section508Compliance extends BytecodeScanningDetector
 		boolean sawUIManager = false;
 		boolean sawAppend = false;
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
+	        
 			if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);

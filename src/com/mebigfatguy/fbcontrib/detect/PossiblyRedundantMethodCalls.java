@@ -192,7 +192,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 	    String userValue = null;
 
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
+	        
             int pc = getPC();
 			if (branchTargets.get(pc)) {
 				localMethodCalls.clear();

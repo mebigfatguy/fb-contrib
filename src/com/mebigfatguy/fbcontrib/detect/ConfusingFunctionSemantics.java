@@ -144,6 +144,8 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector
 			return;
 		
 		try {
+	        stack.precomputation(this);
+	        
 			if (seen == ARETURN) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);

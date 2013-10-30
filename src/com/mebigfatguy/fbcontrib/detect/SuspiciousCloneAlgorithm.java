@@ -116,7 +116,8 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		boolean srcField = false;
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
+	        
 			switch (seen) {
 				case ALOAD_0:
 					srcField = true;

@@ -93,7 +93,7 @@ public class ParallelLists extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(final int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			if (seen == INVOKEINTERFACE) {
 				String className = getClassConstantOperand();

@@ -175,7 +175,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(final int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 
 			if ((seen == INVOKEVIRTUAL)
 					||  (seen == INVOKEINTERFACE)

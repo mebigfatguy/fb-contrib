@@ -169,6 +169,8 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 	public void sawOpcode(int seen) {
 		int lhsReg = -1;
 		try {
+	        stack.precomputation(this);
+	        
 	        switch (state) {
 				case SEEN_NOTHING:
 					if (!catchTargets.contains(Integer.valueOf(getPC()))) {

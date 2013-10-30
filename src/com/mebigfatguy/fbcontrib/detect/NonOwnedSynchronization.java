@@ -117,7 +117,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 	public void sawOpcode(int seen) {
 		Integer tosIsPriority = null;
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 
 			switch (seen) {
 				case GETFIELD:

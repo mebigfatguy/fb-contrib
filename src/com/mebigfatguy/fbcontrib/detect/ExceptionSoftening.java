@@ -131,7 +131,8 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
+	        
 			int pc = getPC();
 			CodeException ex = catchHandlerPCs.get(Integer.valueOf(pc));
 			if (ex != null) {

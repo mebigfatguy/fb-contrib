@@ -52,6 +52,8 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
+        stack.precomputation(this);
+        
         switch (seen) {
         case INVOKESTATIC: {
             String className = getClassConstantOperand();

@@ -95,7 +95,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(final int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			if ((seen == INVOKEVIRTUAL) && "java/lang/String".equals(getClassConstantOperand())) {
 				String calledMethodName = getNameConstantOperand();

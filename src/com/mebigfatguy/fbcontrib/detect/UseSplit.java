@@ -88,7 +88,7 @@ public class UseSplit extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			int pc = getPC();
 			if ((loopEnd != -1) && (pc > loopEnd)) {

@@ -88,6 +88,8 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		int pc = 0;
 		try {
+	        stack.precomputation(this);
+	        
 			switch (state) {
 				case SAW_NOTHING:
 					if (seen == INVOKESPECIAL) {

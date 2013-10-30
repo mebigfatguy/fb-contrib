@@ -82,7 +82,9 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		try{
-			switch(seen){
+	        stack.precomputation(this);
+	        
+			switch(seen) {
 			case ASTORE:
 			case ASTORE_0:
 			case ASTORE_1:

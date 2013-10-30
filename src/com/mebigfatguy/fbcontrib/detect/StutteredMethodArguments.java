@@ -106,6 +106,8 @@ public class StutteredMethodArguments extends BytecodeScanningDetector {
 		String fieldSource = null;
 		
 		try {
+	        stack.precomputation(this);
+	        
 			switch (seen) {
 				case INVOKEVIRTUAL:
 				case INVOKESTATIC:

@@ -125,6 +125,8 @@ public class PresizeCollections extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         boolean sawAlloc = false;
         try {
+            stack.precomputation(this);
+            
             switch (seen) {
             case INVOKESPECIAL:
                 String clsName = getClassConstantOperand();

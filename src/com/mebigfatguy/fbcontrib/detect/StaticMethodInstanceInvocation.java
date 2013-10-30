@@ -103,7 +103,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 
 			int sDepth = stack.getStackDepth();
 			Iterator<PopInfo> it = popStack.iterator();

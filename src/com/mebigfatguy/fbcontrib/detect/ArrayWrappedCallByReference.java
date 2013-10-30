@@ -119,7 +119,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		Integer userValue = null;
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			switch (seen) {
 				case NEWARRAY:

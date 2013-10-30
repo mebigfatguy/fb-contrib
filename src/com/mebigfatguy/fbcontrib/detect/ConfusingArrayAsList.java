@@ -94,6 +94,8 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
+            stack.precomputation(this);
+            
             if (seen == INVOKESTATIC) {
                 String clsName = getClassConstantOperand();
                 if ("java/util/Arrays".equals(clsName)) {

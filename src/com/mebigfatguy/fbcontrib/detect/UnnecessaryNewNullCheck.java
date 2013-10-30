@@ -89,6 +89,8 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 	public void sawOpcode(int seen) {
 		boolean sawAlloc = false;
 		try {
+	        stack.precomputation(this);
+	        
 			if (transitionPoints.contains(Integer.valueOf(getPC())))
 			{
 				allocationRegs.clear();

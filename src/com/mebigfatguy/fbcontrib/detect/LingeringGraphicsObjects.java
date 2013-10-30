@@ -87,6 +87,8 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		Integer sawNewGraphicsAt = null;
 		try {
+	        stack.precomputation(this);
+	        
 			switch (seen) {
 				case ALOAD:
 				case ALOAD_0:

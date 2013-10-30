@@ -205,6 +205,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 			if (bloatableFields.isEmpty())
 				return;
 			
+	        stack.precomputation(this);
+	        
 			if ((seen == INVOKEVIRTUAL)
 			||  (seen == INVOKEINTERFACE)) {
 				String sig = getSigConstantOperand();

@@ -111,6 +111,8 @@ public class UseToArray extends BytecodeScanningDetector
 		boolean sawNewArray = false;
 		
 		try {
+	        stack.precomputation(this);
+	        
 			if (seen == INVOKEINTERFACE) {
 				String methodName = getNameConstantOperand();
 				String signature = getSigConstantOperand();

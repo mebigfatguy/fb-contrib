@@ -173,7 +173,8 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 		boolean markAsValid = false;
 
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
+	        
 			int pc = getPC();
 			for (CodeException ex : exceptions) {
 				if (pc == ex.getEndPC()) {

@@ -140,7 +140,7 @@ public class LocalSynchronizedCollection extends BytecodeScanningDetector
     public void sawOpcode(int seen) {
         Integer tosIsSyncColReg = null;
         try {
-            stack.mergeJumps(this);
+            stack.precomputation(this);
             
             if (seen == INVOKESPECIAL) {
                 if ("<init>".equals(getNameConstantOperand())) {

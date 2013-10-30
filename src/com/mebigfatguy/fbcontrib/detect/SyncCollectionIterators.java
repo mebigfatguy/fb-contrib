@@ -105,7 +105,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(final int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			switch (state) {
 				case SEEN_NOTHING:

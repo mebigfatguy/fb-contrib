@@ -127,7 +127,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector
 		String strCon = null;
 
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 
 			if (seen == INVOKESPECIAL) {
 				String clsName = getClassConstantOperand();

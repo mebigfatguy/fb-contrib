@@ -110,7 +110,8 @@ public class UseEnumCollections extends BytecodeScanningDetector
 		Boolean sawEnumCollectionCreation = null; //true - enum, false - nonenum
 		try {
 			
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
+	        
 			if (methodReported)
 				return;
 		

@@ -93,7 +93,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector
 	public void sawOpcode(int seen) {
 		boolean tosIsJDBC = false;
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
             int curPC = getPC();
             Iterator<Integer> it = jdbcLocals.values().iterator();

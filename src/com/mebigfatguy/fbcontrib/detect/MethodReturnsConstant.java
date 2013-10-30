@@ -115,6 +115,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 				return;
 			}
 
+	        stack.precomputation(this);
 			if ((seen >= IRETURN) && (seen <= ARETURN)) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);

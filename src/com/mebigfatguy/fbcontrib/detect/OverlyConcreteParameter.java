@@ -169,7 +169,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 		}
 
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 
 			if ((seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE)) {
 				String methodSig = getSigConstantOperand();

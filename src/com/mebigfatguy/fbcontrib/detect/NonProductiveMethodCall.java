@@ -93,6 +93,8 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         String methodInfo = null;
         try {
+            stack.precomputation(this);
+            
             switch (seen) {
             case INVOKEVIRTUAL:
             case INVOKEINTERFACE:

@@ -69,6 +69,7 @@ public class OCSDebugger extends BytecodeScanningDetector {
     }
     
     public void sawOpcode(int seen) {
+        stack.precomputation(this);
         stack.sawOpcode(this, seen);
         pw.println(String.format("After executing: %-16s at PC: %-5d Stack Size: %-3d", Constants.OPCODE_NAMES[getOpcode()], getPC(), stack.getStackDepth()));
     }

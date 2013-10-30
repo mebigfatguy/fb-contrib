@@ -89,6 +89,8 @@ public class TristateBooleanPattern extends BytecodeScanningDetector
 			if (methodReported)
 				return;
 			
+	        stack.precomputation(this);
+	        
 			if (seen == ARETURN) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);

@@ -118,6 +118,8 @@ public class ConstantListIndex extends BytecodeScanningDetector
 	@Override	
 	public void sawOpcode(int seen) {
 		try {
+	        stack.precomputation(this);
+	        
 			switch (state) {
 				case SAW_NOTHING:
 					if (seen == ICONST_0)

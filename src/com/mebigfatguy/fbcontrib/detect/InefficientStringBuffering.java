@@ -83,7 +83,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 	public void sawOpcode(final int seen) {
 		AppendType apType = AppendType.NONE;
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			if (seen == INVOKESPECIAL) {
 				String calledClass = getClassConstantOperand();

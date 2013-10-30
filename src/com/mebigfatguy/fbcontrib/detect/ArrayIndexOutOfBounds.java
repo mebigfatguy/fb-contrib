@@ -87,6 +87,8 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         Integer size = null;
         boolean sizeSet = false;
         try {
+            stack.precomputation(this);
+            
             switch (seen) {
             case ICONST_0:
             case ICONST_1:

@@ -106,7 +106,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector
 			return;
 		
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL)) {
 				int parmCount = Type.getArgumentTypes(getSigConstantOperand()).length;

@@ -96,6 +96,8 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		try {
+	        stack.precomputation(this);
+	        
 			if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
 				String clsName = getClassConstantOperand();
 				String methodName = getNameConstantOperand();

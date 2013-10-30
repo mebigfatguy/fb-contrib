@@ -139,6 +139,8 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
 	    String message = null;
 		try {
+	        stack.precomputation(this);
+	        
 		    if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
 		        for (int offset : getSwitchOffsets()) {
 		            transitionPoints.add(Integer.valueOf(offset));

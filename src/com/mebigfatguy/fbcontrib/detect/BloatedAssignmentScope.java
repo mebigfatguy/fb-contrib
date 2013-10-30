@@ -172,6 +172,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		UserObject uo = null;
 		try {
+	        stack.precomputation(this);
+	        
 			if ((seen == ASTORE) || (seen == ISTORE) || (seen == LSTORE)
 					|| (seen == FSTORE) || (seen == DSTORE)
 					|| ((seen >= ASTORE_0) && (seen <= ASTORE_3))

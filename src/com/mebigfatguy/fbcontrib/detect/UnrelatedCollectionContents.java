@@ -109,7 +109,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(final int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			Set<Integer> regs = localScopeEnds.remove(Integer.valueOf(getPC()));
 			if (regs != null) {

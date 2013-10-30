@@ -125,6 +125,8 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 		String[] loadedTypes = null;
 
 		try {
+	        stack.precomputation(this);
+	        
 			switch (seen) {
 				case ANEWARRAY: {
 					if ("java/lang/Class".equals(getClassConstantOperand())) {

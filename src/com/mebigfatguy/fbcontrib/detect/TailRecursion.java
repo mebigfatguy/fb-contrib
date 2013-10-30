@@ -99,7 +99,7 @@ public class TailRecursion extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 
 			if (seen == INVOKEVIRTUAL) {
 				boolean isRecursion = (getMethodName().equals(getNameConstantOperand()))

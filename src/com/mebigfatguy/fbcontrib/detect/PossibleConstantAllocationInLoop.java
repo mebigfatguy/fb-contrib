@@ -98,6 +98,8 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 		Integer sawAllocationNumber = null;
 
 		try {
+	        stack.precomputation(this);
+	        
 			switch (seen)  {
 				case IFEQ:
 				case IFNE:

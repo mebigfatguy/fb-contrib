@@ -92,7 +92,7 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			if (seen == INVOKEVIRTUAL) {
 				String methodName = getNameConstantOperand();

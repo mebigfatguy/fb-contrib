@@ -174,7 +174,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector
 	 */
 	private void sawOpcodeBug(final int seen) {
 		try {		
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			Iterator<ForLoop> it = possibleForLoops.iterator();
 			while (it.hasNext()) {

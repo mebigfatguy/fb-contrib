@@ -154,6 +154,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		int reg = -1;
 		String userValue = null;
 		try {
+	        stack.precomputation(this);
+	        
 			if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W)) {
 				Integer branchTarget = Integer.valueOf(getBranchTarget());
 				BitSet branchInsSet = branchTargets.get(branchTarget);

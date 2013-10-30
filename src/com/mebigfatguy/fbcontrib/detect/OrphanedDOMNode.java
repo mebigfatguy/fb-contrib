@@ -128,7 +128,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector
 		Integer itemPC = null;
 		
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			if (seen == INVOKEINTERFACE) {
 				String className = getClassConstantOperand();

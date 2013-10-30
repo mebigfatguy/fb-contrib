@@ -122,6 +122,8 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
 		boolean allConstantStrings = false;
 		boolean sawConstant = false;
 		try {
+	        stack.precomputation(this);
+	        
 			if (seen == ATHROW) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);

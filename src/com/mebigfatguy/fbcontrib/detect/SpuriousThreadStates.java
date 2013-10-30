@@ -67,7 +67,7 @@ public class SpuriousThreadStates extends BytecodeScanningDetector
 		OpcodeStack.Item itm = null;
 		
 		try {
-			stack.mergeJumps(this);
+	        stack.precomputation(this);
 			
 			if (seen == INVOKEVIRTUAL) {
 				String className = getClassConstantOperand();
