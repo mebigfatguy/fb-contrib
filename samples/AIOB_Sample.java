@@ -34,4 +34,17 @@ public class AIOB_Sample
         data[0] = 0;
         return data;
     }
+    
+    public void fpPostAllocate() {
+        double[] da = null;
+        
+        for (int i = 0; i < 10; i++) {
+            if ((i & 1) == 1) {
+                da[0] = 0.0;
+            }
+            
+            if (da == null)
+                da = new double[10];
+        }
+    }
 }
