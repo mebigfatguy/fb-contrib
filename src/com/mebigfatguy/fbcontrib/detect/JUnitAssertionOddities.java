@@ -167,9 +167,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 					if ("assertEquals".equals(methodName)) {
 						String signature = getSigConstantOperand();
 						Type[] argTypes = Type.getArgumentTypes(signature);
-						if (argTypes.length == 2) {
-    						if (argTypes[0].equals(Type.STRING) && argTypes[1].equals(Type.STRING))
-    							return;
+						if ((argTypes.length == 2) || (argTypes.length ==3)) {
 
     						if (stack.getStackDepth() >= 2) {
     							OpcodeStack.Item item1 = stack.getStackItem(1);
@@ -182,14 +180,14 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
     								return;
     							}
     							OpcodeStack.Item item0 = stack.getStackItem(0);
-    							if (item0.getConstant() != null) {
+    							if ((item0.getConstant() != null) && (item1.getConstant() == null) && ((argTypes.length == 2) || !"D".equals(item0.getSignature()))) {
     								bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT", NORMAL_PRIORITY)
     										   .addClass(this)
     										   .addMethod(this)
     										   .addSourceLine(this));
     								return;
     							}
-    							if (argTypes[0].equals(Type.OBJECT) && argTypes[1].equals(Type.OBJECT)) {
+    							if (argTypes[argTypes.length-1].equals(Type.OBJECT) && argTypes[argTypes.length-2].equals(Type.OBJECT)) {
     								if ("Ljava/lang/Double;".equals(item0.getSignature()) && "Ljava/lang/Double;".equals(item1.getSignature())) {
     									bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE", NORMAL_PRIORITY)
     									   .addClass(this)
