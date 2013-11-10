@@ -798,7 +798,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 						Integer reg = entry.getKey();
 						for (ScopeBlock child : children) {
 							if (child.usesReg(reg)) {
-								if (child.isLoop || child.isSync) {
+								if (child.isLoop || child.isSync()) {
 									inIgnoreSB = true;
 									break;
 								}
