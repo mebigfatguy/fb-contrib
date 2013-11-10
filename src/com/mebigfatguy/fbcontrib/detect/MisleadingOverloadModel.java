@@ -50,10 +50,10 @@ public class MisleadingOverloadModel  extends PreorderVisitor implements Detecto
 	}
 	
 	public void visitClassContext(ClassContext classContext) {
-		Map<String, MethodFoundType> declMethods = new HashMap<String, MethodFoundType>();
 		JavaClass cls = classContext.getJavaClass();
 		String clsName = cls.getClassName();
 		Method[] methods = cls.getMethods();
+        Map<String, MethodFoundType> declMethods = new HashMap<String, MethodFoundType>(methods.length);
 		for (Method m : methods) {
 			String methodName = m.getName();
 			boolean report;
