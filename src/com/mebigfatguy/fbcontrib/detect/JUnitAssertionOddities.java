@@ -180,7 +180,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
     								return;
     							}
     							OpcodeStack.Item item0 = stack.getStackItem(0);
-    							if ((item0.getConstant() != null) && (item1.getConstant() == null) && ((argTypes.length == 2) || !"D".equals(item0.getSignature()))) {
+    							if ((item0.getConstant() != null) && (item1.getConstant() == null) && ((argTypes.length == 2) || !isFloatingPtPrimitive(item0.getSignature()))) {
     								bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT", NORMAL_PRIORITY)
     										   .addClass(this)
     										   .addMethod(this)
@@ -290,5 +290,9 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 				item.setUserValue(userValue);
 			}
 		}
+	}
+	
+	public boolean isFloatingPtPrimitive(String signature) {
+	    return "D".equals(signature) || "F".equals(signature);
 	}
 }
