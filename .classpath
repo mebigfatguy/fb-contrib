@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="samples/lib/commons-lang3-3.1.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="lib" path="samples/lib/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="samples/lib/backport-util-concurrent-3.1.jar"/>
+	<classpathentry kind="lib" path="samples/lib/backport-util-concurrent-3.1.jar" sourcepath="/home/dave/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1-sources.jar"/>
 	<classpathentry kind="lib" path="samples/lib/slf4j-api-1.7.5.jar"/>
 	<classpathentry kind="lib" path="samples/lib/junit.jar"/>
 	<classpathentry kind="output" path="classes"/>

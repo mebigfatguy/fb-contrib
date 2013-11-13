@@ -42,8 +42,10 @@ public class JAO_Sample extends TestCase
 	    Assert.assertTrue(s.length() == s.length());
 	}
 
-	public void test3ArgNP(float foo)
+	public void test3ArgNP(float foo, int boo)
 	{
 	    Assert.assertEquals(1.0f, foo, 0.1);
+	    Assert.assertEquals(20, boo, 0);
+	    
 	}
 }
