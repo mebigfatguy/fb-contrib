@@ -14,14 +14,21 @@ public class ICA_Sample {
     {
         JOptionPane.showMessageDialog(null, "hi", "there", ImageObserver.ERROR);
     }
+    
     public void testBorder() {
         Border b = BorderFactory.createBevelBorder(2, Color.RED, Color.BLUE);
         b = BorderFactory.createEtchedBorder(2, Color.RED, Color.BLUE);
+    }
+    
+    public void testThread() {
+        Thread t = new Thread();
+        t.setPriority(100);
     }
     
     public void fpICA() {
         JOptionPane.showMessageDialog(null, "hi", "there", JOptionPane.ERROR_MESSAGE);
         Border b = BorderFactory.createBevelBorder(BevelBorder.RAISED);
         b = BorderFactory.createEtchedBorder(EtchedBorder.RAISED, Color.RED, Color.BLUE);
+        new Thread().setPriority(Thread.MAX_PRIORITY);
     }
 }

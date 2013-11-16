@@ -54,6 +54,8 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                 new ParameterInfo<Integer>(0, true, BevelBorder.LOWERED, BevelBorder.RAISED));
         PATTERNS.put(Pattern.compile("javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;"), 
                 new ParameterInfo<Integer>(0, true, EtchedBorder.LOWERED, EtchedBorder.RAISED));
+        PATTERNS.put(Pattern.compile("java/lang/Thread#setPriority\\(I\\)V"), 
+                new ParameterInfo<Integer>(0, true, new Range<Integer>(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY)));
 
     }
     
@@ -98,8 +100,8 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                        ParameterInfo<?> info = entry.getValue();
                        OpcodeStack.Item item = stack.getStackItem(info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1: info.parameterOffset);
                        
-                       Object cons = item.getConstant();
-                       if ((cons != null) && !info.validValues.contains(cons)) {
+                       Comparable cons = (Comparable) item.getConstant();
+                       if (!info.isValid(cons)) {
                            int badParm = 1 + (info.fromStart ? info.parameterOffset: Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
                            bugReporter.reportBug(new BugInstance(this, "ICA_INVALID_CONSTANT_ARGUMENT", NORMAL_PRIORITY)
                                                        .addClass(this)
@@ -117,15 +119,52 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         }
     }
     
-    static class ParameterInfo<T> {
-        int parameterOffset;
-        boolean fromStart;
-        Set<T> validValues;
+    static class ParameterInfo<T extends Comparable> {
+        private int parameterOffset;
+        private boolean fromStart;
+        private Set<T> validValues;
+        private Range<T> range;
         
         public ParameterInfo(int offset, boolean start, T...values) {
             parameterOffset = offset;
             fromStart = start;
             validValues = new HashSet<T>(Arrays.asList(values));
-        }     
+            range = null;
+        }
+        
+        public ParameterInfo(int offset, boolean start, Range<T> rng) {
+            parameterOffset = offset;
+            fromStart = start;
+            validValues = null;
+            range = rng;
+        }
+        
+        public boolean isValid(Comparable o) {
+            if (o == null)
+                return true;
+            
+            if (validValues != null)
+                return validValues.contains(o);
+            
+            return (o.compareTo(range.getFrom()) >= 0) && (o.compareTo(range.getTo()) <= 0);
+        }
+    }
+    
+    static class Range<T extends Comparable> {
+        T from;
+        T to;
+        
+        public Range(T f, T t) {
+            from = f;
+            to = t;
+        }
+
+        public T getFrom() {
+            return from;
+        }
+
+        public T getTo() {
+            return to;
+        }
     }
 }
