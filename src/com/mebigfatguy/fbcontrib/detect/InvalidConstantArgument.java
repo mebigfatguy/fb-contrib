@@ -99,7 +99,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                        OpcodeStack.Item item = stack.getStackItem(info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1: info.parameterOffset);
                        
                        Object cons = item.getConstant();
-                       if (!info.validValues.contains(cons)) {
+                       if ((cons != null) && !info.validValues.contains(cons)) {
                            int badParm = 1 + (info.fromStart ? info.parameterOffset: Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
                            bugReporter.reportBug(new BugInstance(this, "ICA_INVALID_CONSTANT_ARGUMENT", NORMAL_PRIORITY)
                                                        .addClass(this)
