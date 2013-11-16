@@ -23,11 +23,15 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
 import javax.swing.JOptionPane;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -40,10 +44,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class InvalidConstantArgument extends BytecodeScanningDetector {
 
-    private static final Map<String, ParameterInfo<?>> PATTERNS = new HashMap<String, ParameterInfo<?>>();
+    private static final Map<Pattern, ParameterInfo<?>> PATTERNS = new HashMap<Pattern, ParameterInfo<?>>();
     static {
-        PATTERNS.put("javax.swing.JOptionPane#(showMessageDialog(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I)V", 
-                     new ParameterInfo<Integer>(4, JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE));
+        PATTERNS.put(Pattern.compile("javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V"), 
+                     new ParameterInfo<Integer>(0, false, JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE));
     }
     
     private BugReporter bugReporter;
@@ -79,7 +83,26 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
             case INVOKESTATIC:
             case INVOKEINTERFACE:
             case INVOKEVIRTUAL:
-                
+                for (Map.Entry<Pattern, ParameterInfo<?>> entry : PATTERNS.entrySet()) {
+                   String sig = getSigConstantOperand();
+                   String mInfo = getClassConstantOperand() + "#" + getNameConstantOperand() + sig;
+                   Matcher m = entry.getKey().matcher(mInfo);
+                   if (m.matches()) {
+                       ParameterInfo<?> info = entry.getValue();
+                       OpcodeStack.Item item = stack.getStackItem(info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1: info.parameterOffset);
+                       
+                       Object cons = item.getConstant();
+                       if (!info.validValues.contains(cons)) {
+                           int badParm = 1 + (info.fromStart ? info.parameterOffset: Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
+                           bugReporter.reportBug(new BugInstance(this, "ICA_INVALID_CONSTANT_ARGUMENT", NORMAL_PRIORITY)
+                                                       .addClass(this)
+                                                       .addMethod(this)
+                                                       .addSourceLine(this)
+                                                       .addString("Parameter " + badParm));
+                           break;
+                       }
+                   }
+                }
                 break;
             }
         } finally {
@@ -88,11 +111,13 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     }
     
     static class ParameterInfo<T> {
-        int parameterIndex;
+        int parameterOffset;
+        boolean fromStart;
         Set<T> validValues;
         
-        public ParameterInfo(int index, T...values) {
-            parameterIndex = index;
+        public ParameterInfo(int offset, boolean start, T...values) {
+            parameterOffset = offset;
+            fromStart = start;
             validValues = new HashSet<T>(Arrays.asList(values));
         }     
     }

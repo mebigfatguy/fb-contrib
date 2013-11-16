@@ -1350,6 +1350,19 @@
         </Details>
     </Detector>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.InvalidConstantArgument">
+        <Details>
+            <![CDATA[
+            <p>Looks for method calls that take a parameter value that does not match one of the expected
+            values for that parameter. It is likely this parameter value should really be an enum, but predates
+            the addition of enums to java. Passing an invalid value will likely cause problems in the execution of
+            the method.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+    
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
         <Details></Details>
     </Detector>
@@ -3769,6 +3782,17 @@
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="ICA_INVALID_CONSTANT_ARGUMENT">
+        <ShortDescription>Method passes an invalid value as a method argument</ShortDescription>
+        <LongDescription>Method {1} passes an invalid value as a method argument</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method passes an invalid constant value to a method parameter that expects only a select number of possible values.
+            This is likely going to cause this method to fail to operate correctly.</p>
+            ]]>
+        </Details>
+    </BugPattern>
    
 	<!-- BugCode -->
 
@@ -3883,4 +3907,5 @@
     <BugCode abbrev="UMTP">Unbound Method Template Parameter</BugCode>
     <BugCode abbrev="NPMC">Non Productive Method Call</BugCode>
     <BugCode abbrev="AIOB">Array Index Out of Bounds</BugCode>
+    <BugCode abbrev="ICA">Invalid Constant Argument</BugCode>
 </MessageCollection>

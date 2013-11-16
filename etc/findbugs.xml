@@ -250,6 +250,8 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" speed="fast" reports="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS,AIOB_ARRAY_STORE_TO_NULL_REFERENCE" />
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.InvalidConstantArgument" speed="fast" reports="ICA_INVALID_CONSTANT_ARRAY" />
+    
 	<!-- BugPattern -->
 
 	<BugPattern abbrev="ISB" type="ISB_INEFFICIENT_STRING_BUFFERING" category="PERFORMANCE" />
@@ -441,4 +443,5 @@
     <BugPattern abbrev="NPMC" type="NPMC_NON_PRODUCTIVE_METHOD_CALL" category="CORRECTNESS" />
     <BugPattern abbrev="AIOB" type="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS" category="CORRECTNESS" />
     <BugPattern abbrev="AIOB" type="AIOB_ARRAY_STORE_TO_NULL_REFERENCE" category="CORRECTNESS" />
+    <BugPattern abbrev="ICA" type="ICA_INVALID_CONSTANT_ARGUMENT" category="CORRECTNESS" />
 </FindbugsPlugin>
