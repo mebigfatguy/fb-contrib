@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.awt.Adjustable;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -54,6 +55,8 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                 new ParameterInfo<Integer>(0, true, BevelBorder.LOWERED, BevelBorder.RAISED));
         PATTERNS.put(Pattern.compile("javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;"), 
                 new ParameterInfo<Integer>(0, true, EtchedBorder.LOWERED, EtchedBorder.RAISED));
+        PATTERNS.put(Pattern.compile("javax/swing/JScrollBar#\\<init\\>\\(I.*\\)V"), 
+                new ParameterInfo<Integer>(0, true, Adjustable.HORIZONTAL, Adjustable.VERTICAL));
         PATTERNS.put(Pattern.compile("java/lang/Thread#setPriority\\(I\\)V"), 
                 new ParameterInfo<Integer>(0, true, new Range<Integer>(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY)));
 
@@ -89,6 +92,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             switch (seen) {
+            case INVOKESPECIAL:
             case INVOKESTATIC:
             case INVOKEINTERFACE:
             case INVOKEVIRTUAL:
