@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import javax.swing.JOptionPane;
+import javax.swing.border.BevelBorder;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -48,6 +49,9 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     static {
         PATTERNS.put(Pattern.compile("javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V"), 
                      new ParameterInfo<Integer>(0, false, JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE));
+        PATTERNS.put(Pattern.compile("javax/swing/BorderFactory#createBevelBorder\\(I.*\\)Ljavax/swing/border/Border;"), 
+                new ParameterInfo<Integer>(0, true, BevelBorder.LOWERED, BevelBorder.RAISED));
+
     }
     
     private BugReporter bugReporter;
@@ -83,9 +87,9 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
             case INVOKESTATIC:
             case INVOKEINTERFACE:
             case INVOKEVIRTUAL:
+                String sig = getSigConstantOperand();
+                String mInfo = getClassConstantOperand() + "#" + getNameConstantOperand() + sig;
                 for (Map.Entry<Pattern, ParameterInfo<?>> entry : PATTERNS.entrySet()) {
-                   String sig = getSigConstantOperand();
-                   String mInfo = getClassConstantOperand() + "#" + getNameConstantOperand() + sig;
                    Matcher m = entry.getKey().matcher(mInfo);
                    if (m.matches()) {
                        ParameterInfo<?> info = entry.getValue();
