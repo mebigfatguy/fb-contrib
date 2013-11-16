@@ -31,6 +31,7 @@ import org.apache.bcel.generic.Type;
 
 import javax.swing.JOptionPane;
 import javax.swing.border.BevelBorder;
+import javax.swing.border.EtchedBorder;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -51,6 +52,8 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                      new ParameterInfo<Integer>(0, false, JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE));
         PATTERNS.put(Pattern.compile("javax/swing/BorderFactory#createBevelBorder\\(I.*\\)Ljavax/swing/border/Border;"), 
                 new ParameterInfo<Integer>(0, true, BevelBorder.LOWERED, BevelBorder.RAISED));
+        PATTERNS.put(Pattern.compile("javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;"), 
+                new ParameterInfo<Integer>(0, true, EtchedBorder.LOWERED, EtchedBorder.RAISED));
 
     }
     
