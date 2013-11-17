@@ -15,7 +15,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -29,7 +29,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
 
-<!-- COMMENT OUT FOR RELEASE -->
+    COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -242,16 +242,18 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConfusingArrayAsList" speed="fast" reports="CAAL_CONFUSING_ARRAY_AS_LIST" />
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections" speed="fast" reports="PSC_PRESIZE_COLLECTIONS" />
-
     <Detector class="com.mebigfatguy.fbcontrib.detect.UnboundMethodTemplateParameter" speed="fast" reports="UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.NonProductiveMethodCall" speed="fast" reports="NPMC_NON_PRODUCTIVE_METHOD_CALL" />
-
-    <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" speed="fast" reports="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS,AIOB_ARRAY_STORE_TO_NULL_REFERENCE" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.InvalidConstantArgument" speed="fast" reports="ICA_INVALID_CONSTANT_ARRAY" />
     
+    <!--
+    <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections" speed="fast" reports="PSC_PRESIZE_COLLECTIONS" />
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" speed="fast" reports="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS,AIOB_ARRAY_STORE_TO_NULL_REFERENCE" />
+     -->
+     
 	<!-- BugPattern -->
 
 	<BugPattern abbrev="ISB" type="ISB_INEFFICIENT_STRING_BUFFERING" category="PERFORMANCE" />

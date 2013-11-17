@@ -68,44 +68,25 @@ function toggleBlock(divId, imgId)
 			</li>
 			</ul>
 		</p>
-		<p style="font-weight: bold;">The latest version of fb-contrib is 4.8.5 available for download 
-		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-4.8.5.jar/download">here</a>.</p>
+		<p style="font-weight: bold;">The latest version of fb-contrib is 5.0.0 available for download 
+		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-5.0.0.jar/download">here</a>.</p>
 		</div>
 
         <hr/>
-        <img id="svn_image" src="flip2.gif" onClick="toggleBlock('svn', 'svn_image');" align="top"/>
-        Detectors added in svn<br/>
-        <div id="svn" style="display:block;">
+        <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
+        Detectors added in git<br/>
+        <div id="git" style="display:none;">
             <ul>
-                <li><b>[CVAA] ContraVariant Array Assignment</b><br/>
-                Looks for contravariant array assignments. Since arrays are mutable data structures, their use 
-                must be restricted to covariant or invariant usage.<br/>
-                <span style="color: #0000FF;">--contributed by Bhaskar Maddala - THANKS!</span></li>
                 <li><b>[STB] Stacked Try Blocks</b><br/>
                 Looks for two or more try catch blocks that are consecutive and catch the
                 same kind of exception, and throw the same exception always. These blocks can
                 be coalesced into one.
                 </li>
-				<li><b>[CAAL] Confusing Array As List</b><br/>
-				Looks for calls to Arrays.asList where the parameter is a primitive array.
-				This does not produce a list that holds the primitive boxed value, but a list of
-				one item, the array itself.
-				</li>
                 <li><b>[PSC] Presize Collections</b><br/>
                 Looks for methods that create and populate collections, and while knowing
                 the end size of those collections, does not pre allocate the collection
                 to be big enough. This just causes unneeded reallocations putting strain
                 on the garbage collector.
-                </li>
-                <li><b>[UMTP] Unbound Method Template Parameter</b><br/>
-                Looks for methods that declare method level template parameter(s) that are not bound to any of 
-                the method's parameters, and thus is not adding any validation/type safety to the method, 
-                and is just confusing.
-                </li>
-                <li><b>[NPMC] Non Productive Method Call</b><br/>
-                Looks for common methods that are believed to be non mutating, where the value
-                is discarded. Since the method makes no changes to the object, calling this method
-                is useless. The method call can be removed.
                 </li>
         		<li><b>[AIOB] Array Index Out of Bounds</b><br/>
         		Looks for questionable load/stores to array elements.<ul>
@@ -117,12 +98,37 @@ function toggleBlock(divId, imgId)
         		    </li>
         		    </ul>
         		</li>
-        		<li><b>[ICA] Invalid Constant Argument</b><br/>
-        		Looks for passing invalid constant arguments to some well known methods that expect an enum-like
-        		value. However these JDK methods were created before the introduction of enums and thus used simple int 
-        		constants. Passing an invalid value will cause exceptions to occur.
-        		</li>
             </ul>             
+        </div>
+        <hr/>
+        <img id="v5_0_0_image" src="flip2.gif" onClick="toggleBlock('v5_0_0', 'v5_0_0_image');" align="top"/>
+        Detectors added in v5.0.0<br/>
+        <div id="v5_0_0" style="display:block;">
+            <li><b>[CVAA] ContraVariant Array Assignment</b><br/>
+            Looks for contravariant array assignments. Since arrays are mutable data structures, their use 
+            must be restricted to covariant or invariant usage.<br/>
+            <span style="color: #0000FF;">--contributed by Bhaskar Maddala - THANKS!</span>
+            </li>
+            <li><b>[CAAL] Confusing Array As List</b><br/>
+            Looks for calls to Arrays.asList where the parameter is a primitive array.
+            This does not produce a list that holds the primitive boxed value, but a list of
+            one item, the array itself.
+            </li>
+            <li><b>[UMTP] Unbound Method Template Parameter</b><br/>
+            Looks for methods that declare method level template parameter(s) that are not bound to any of 
+            the method's parameters, and thus is not adding any validation/type safety to the method, 
+            and is just confusing.
+            </li>
+             <li><b>[NPMC] Non Productive Method Call</b><br/>
+            Looks for common methods that are believed to be non mutating, where the value
+            is discarded. Since the method makes no changes to the object, calling this method
+            is useless. The method call can be removed.
+            </li>
+            <li><b>[ICA] Invalid Constant Argument</b><br/>
+            Looks for passing invalid constant arguments to some well known methods that expect an enum-like
+            value. However these JDK methods were created before the introduction of enums and thus used simple int 
+            constants. Passing an invalid value will cause exceptions to occur.
+            </li>
         </div>
 		<hr/>
 		<img id="v4_8_0_image" src="flip1.gif" onClick="toggleBlock('v4_8_0', 'v4_8_0_image');" align="top"/>
