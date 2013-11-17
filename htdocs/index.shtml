@@ -107,16 +107,21 @@ function toggleBlock(divId, imgId)
                 is discarded. Since the method makes no changes to the object, calling this method
                 is useless. The method call can be removed.
                 </li>
-		<li><b>[AIOB] Array Index Out of Bounds</b><br/>
-		Looks for questionable load/stores to array elements.<ul>
-		    <li>
-		    Looks for accesses to array elements using literal values that are known to be outside the bounds of the array.
-		    This mistake will cause an ArrayIndexOutOfBoundsException to occur at runtime.</li>
-		    <li>
-		    Looks for stores to array elements where the array itself appears to have not been allocated.
-		    </li>
-		    </ul>
-		</li>
+        		<li><b>[AIOB] Array Index Out of Bounds</b><br/>
+        		Looks for questionable load/stores to array elements.<ul>
+        		    <li>
+        		    Looks for accesses to array elements using literal values that are known to be outside the bounds of the array.
+        		    This mistake will cause an ArrayIndexOutOfBoundsException to occur at runtime.</li>
+        		    <li>
+        		    Looks for stores to array elements where the array itself appears to have not been allocated.
+        		    </li>
+        		    </ul>
+        		</li>
+        		<li><b>[ICA] Invalid Constant Argument</b><br/>
+        		Looks for passing invalid constant arguments to some well known methods that expect an enum-like
+        		value. However these JDK methods were created before the introduction of enums and thus used simple int 
+        		constants. Passing an invalid value will cause exceptions to occur.
+        		</li>
             </ul>             
         </div>
 		<hr/>
