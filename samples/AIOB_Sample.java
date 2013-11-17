@@ -47,4 +47,16 @@ public class AIOB_Sample
                 da = new double[10];
         }
     }
+    
+    public void fpPlusEquals(List<String> ss) {
+        int size = 0;
+        
+        for (String s : ss) {
+            size += s.length();
+        }
+        
+        int[] a = new int[size];
+        
+        a[0] = 1;
+    }
 }
