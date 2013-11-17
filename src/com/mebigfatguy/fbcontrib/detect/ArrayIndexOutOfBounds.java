@@ -42,7 +42,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private BitSet initializedRegs;
-    private BitSet iincRegs;
+    private BitSet modifyRegs;
     
     /**
      * constructs an AIOB detector given the reporter to report bugs on
@@ -57,7 +57,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         try {
             stack = new OpcodeStack();
             initializedRegs = new BitSet();
-            iincRegs = new BitSet();
+            modifyRegs = new BitSet();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -69,7 +69,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         Method m = getMethod();
         stack.resetForMethodEntry(this);
         initializedRegs.clear();
-        iincRegs.clear();
+        modifyRegs.clear();
         Type[] argTypes = m.getArgumentTypes();
         int arg = ((m.getAccessFlags() & Constants.ACC_STATIC) != 0) ? 0 : 1;
         for (Type argType : argTypes) {
@@ -80,7 +80,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         super.visitCode(obj);
         
         initializedRegs.clear();
-        iincRegs.clear();
+        modifyRegs.clear();
     }
     
     public void sawOpcode(int seen) {
@@ -106,9 +106,8 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             case ILOAD_2:
             case ILOAD_3: {
                 int reg = RegisterUtils.getLoadReg(this,  seen);
-                if (iincRegs.get(reg)) {
-                    size = null;
-                    iincRegs.clear(reg);
+                if (modifyRegs.get(reg)) {
+                    modifyRegs.clear(reg);
                     sizeSet = true;
                 }
             }
@@ -122,7 +121,30 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             break;
             
             case IINC:
-                iincRegs.set(getRegisterOperand());
+                modifyRegs.set(getRegisterOperand());
+            break;
+            
+            case IADD:
+            case ISUB:
+            case IMUL:
+            case IDIV:
+            case F2I:
+            case D2I:
+            case L2I:
+                sizeSet = true;
+            break;
+            
+            case ISTORE:
+            case ISTORE_0:
+            case ISTORE_1:
+            case ISTORE_2:
+            case ISTORE_3:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if (item.getUserValue() == null) {
+                        modifyRegs.set(getRegisterOperand());
+                    }
+                }
             break;
                 
             case LDC:
