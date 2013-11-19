@@ -102,17 +102,20 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                    Matcher m = entry.getKey().matcher(mInfo);
                    if (m.matches()) {
                        ParameterInfo<?> info = entry.getValue();
-                       OpcodeStack.Item item = stack.getStackItem(info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1: info.parameterOffset);
-                       
-                       Comparable cons = (Comparable) item.getConstant();
-                       if (!info.isValid(cons)) {
-                           int badParm = 1 + (info.fromStart ? info.parameterOffset: Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
-                           bugReporter.reportBug(new BugInstance(this, "ICA_INVALID_CONSTANT_ARGUMENT", NORMAL_PRIORITY)
-                                                       .addClass(this)
-                                                       .addMethod(this)
-                                                       .addSourceLine(this)
-                                                       .addString("Parameter " + badParm));
-                           break;
+                       int parmOffset = info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1: info.parameterOffset;
+                       if (stack.getStackDepth() > parmOffset) {
+                           OpcodeStack.Item item = stack.getStackItem(parmOffset);
+                           
+                           Comparable cons = (Comparable) item.getConstant();
+                           if (!info.isValid(cons)) {
+                               int badParm = 1 + (info.fromStart ? info.parameterOffset: Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
+                               bugReporter.reportBug(new BugInstance(this, "ICA_INVALID_CONSTANT_ARGUMENT", NORMAL_PRIORITY)
+                                                           .addClass(this)
+                                                           .addMethod(this)
+                                                           .addSourceLine(this)
+                                                           .addString("Parameter " + badParm));
+                               break;
+                           }
                        }
                    }
                 }
