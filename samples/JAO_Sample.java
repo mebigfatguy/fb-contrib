@@ -1,4 +1,6 @@
-import junit.framework.Assert;
+
+import org.junit.Assert;
+
 import junit.framework.TestCase;
 
 
