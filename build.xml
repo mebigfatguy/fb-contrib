@@ -1,6 +1,6 @@
 <!-- fb-contrib Ant build script. Dave Brosius -->
 
-<project name="fb-contrib" default="info" xmlns:yank="antlib:com.mebigfatguy.yank">
+<project name="fb-contrib" default="info">
 
     <property file="build.properties" />
     <property file="version.properties" />
@@ -35,7 +35,7 @@
 		<delete dir="${basedir}/plugin" />
 	</target>
 	
-	<target name="yank">
+	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank">
         <mkdir dir="${lib.dir}" />
         <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" source="true">
             <server url="http://repo1.maven.org/maven2" />
