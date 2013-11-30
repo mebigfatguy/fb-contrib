@@ -174,7 +174,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             case SASTORE:
                 if (stack.getStackDepth() >= 3) {
                     OpcodeStack.Item indexItem = stack.getStackItem(1);
-                    Integer index = (Integer) indexItem.getConstant();
+                    Number index = (Number) indexItem.getConstant();
                     if (index != null) {
                         OpcodeStack.Item arrayItem = stack.getStackItem(2);
                         Integer sz = (Integer) arrayItem.getUserValue();
