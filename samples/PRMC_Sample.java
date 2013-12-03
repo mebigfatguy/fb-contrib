@@ -105,11 +105,16 @@ public class PRMC_Sample
         return c1.chainedField.toString().equals(c2.chainedField.toString());
     }
     
-    public void fpMultipleStatics() {
+    public void fpMultipleStatics() 
+    {
         SAMPLE1 = new PRMC_Sample();
-        SAMPLE1.hashCode();
+        SAMPLE1.setValue(5);
         SAMPLE2 = new PRMC_Sample();
-        SAMPLE2.hashCode();
+        SAMPLE2.setValue(5);
+    }
+    
+    public void setValue(int i) 
+    {
     }
 
     class Chain
