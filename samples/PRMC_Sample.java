@@ -7,6 +7,8 @@ import java.util.Set;
 @SuppressWarnings("all")
 public class PRMC_Sample
 {
+    private static PRMC_Sample SAMPLE1;
+    private static PRMC_Sample SAMPLE2;
 	String data;
 
 	public boolean test1(Calendar c)
@@ -101,6 +103,13 @@ public class PRMC_Sample
     public boolean fpChainedFieldsOfDiffBases(Chain c1, Chain c2)
     {
         return c1.chainedField.toString().equals(c2.chainedField.toString());
+    }
+    
+    public void fpMultipleStatics() {
+        SAMPLE1 = new PRMC_Sample();
+        SAMPLE1.hashCode();
+        SAMPLE2 = new PRMC_Sample();
+        SAMPLE2.hashCode();
     }
 
     class Chain
