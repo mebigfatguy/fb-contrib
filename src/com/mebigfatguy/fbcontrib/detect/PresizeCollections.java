@@ -56,8 +56,6 @@ public class PresizeCollections extends BytecodeScanningDetector {
         PRESIZEABLE_COLLECTIONS.add("java/util/LinkedHashSet");
         PRESIZEABLE_COLLECTIONS.add("java/util/PriorityBlockingQueue");
         PRESIZEABLE_COLLECTIONS.add("java/util/PriorityQueue");
-        PRESIZEABLE_COLLECTIONS.add("java/util/TreeMap");
-        PRESIZEABLE_COLLECTIONS.add("java/util/TreeSet");
         PRESIZEABLE_COLLECTIONS.add("java/util/Vector");
     }
 
