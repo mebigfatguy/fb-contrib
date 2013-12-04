@@ -145,6 +145,19 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		        for (int offset : getSwitchOffsets()) {
 		            transitionPoints.add(Integer.valueOf(offset));
 		        }
+		    } else if (isBranch(seen)) {
+		        // throw out try blocks in loops, this could cause false negatives
+		        // with two try/catches in one loop, but more unlikely
+		        if (getBranchOffset() < 0) {
+		            Iterator<TryBlock> it = blocks.iterator();
+		            int target = getBranchTarget();
+		            while (it.hasNext()) {
+		                TryBlock block = it.next();
+		                if (block.getStartPC() >= target) {
+		                    it.remove();
+		                }
+		            }
+		        }
 		    }
 
 			int pc = getPC();
