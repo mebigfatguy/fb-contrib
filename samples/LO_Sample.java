@@ -39,6 +39,18 @@ public class LO_Sample
 		}
 	}
 	
+	public void testParmInExMessage()
+	{
+	    try 
+	    {
+	        InputStream is = new FileInputStream("foo/bar");
+	    } 
+	    catch (IOException e) 
+	    {
+	        throw new RuntimeException("Failed to parse {}", e);
+	    }
+	}
+	
 	public void testInvalidSLF4jParm() 
 	{
 	    l3.error("This is a problem {0}", "hello");
