@@ -3020,6 +3020,18 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="LO_EXCEPTION_WITH_LOGGER_PARMS">
+       <ShortDescription>Method creates exception with logger parameter markers in message</ShortDescription>
+       <LongDescription>Method {1} creates exception with logger parameter markers in message</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <pThis method creates an standard exception passing a message string which contains an slf4j style
+	       parameter marker '{}'. This marker will not be translated as it is not processed by the Exception class.
+	       </p>
+	       ]]>
+	   </Details>
+	</BugPattern>
 
 	<BugPattern type="IICU_INCORRECT_INTERNAL_CLASS_USE">
 		<ShortDescription>Class relies on internal API classes</ShortDescription>

@@ -313,6 +313,29 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         }
                     }
                 }
+            } else if (seen == INVOKESPECIAL) {
+                if ("<init>".equals(getNameConstantOperand())) {         
+                    String cls = getClassConstantOperand();
+                    if ((cls.startsWith("java/") || cls.startsWith("javax/")) && cls.endsWith("Exception")) {
+                        String sig = getSigConstantOperand();
+                        Type[] types = Type.getArgumentTypes(sig);
+                        if (types.length <= stack.getStackDepth()) {
+                            for (int i = 0; i < types.length; i++) {
+                                if ("Ljava/lang/String;".equals(types[i].getSignature())) {
+                                    OpcodeStack.Item item = stack.getStackItem(types.length - i - 1);
+                                    String cons = (String) item.getConstant();
+                                    if ((cons != null) && cons.contains("{}")) {
+                                        bugReporter.reportBug(new BugInstance(this, "LO_EXCEPTION_WITH_LOGGER_PARMS", NORMAL_PRIORITY)
+                                                    .addClass(this)
+                                                    .addMethod(this)
+                                                    .addSourceLine(this));
+                                        break;
+                                    }
+                                }
+                            }
+                        }    
+                    }
+                }
             } else if (seen == ANEWARRAY) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item sizeItem = stack.getStackItem(0);
