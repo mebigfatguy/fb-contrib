@@ -280,9 +280,16 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 					    String cls = itm.getSignature();
 					    if ((cls != null) && cls.startsWith("L")) {
 					        cls = cls.substring(1, cls.length() - 1);
-    					    if (isCollection(cls)) {
+    					    if (isCollection(cls) || "java/util/Iterator".equals(cls)) {
         				        int reg = RegisterUtils.getAStoreReg(this, seen);
         				        removeFromCollectionGroup(new OpcodeStack.Item(itm, reg));
+        				        Iterator<Integer> it = groupToIterator.values().iterator();
+        				        while (it.hasNext()) {
+        				            if (it.next().intValue() == reg) {
+        				                it.remove();
+        				                break;
+        				            }
+        				        }
     					    }
 					    }
 					}
