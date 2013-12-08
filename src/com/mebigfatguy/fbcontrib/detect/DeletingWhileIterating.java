@@ -47,6 +47,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 
 /**
@@ -275,6 +276,15 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 						} catch (ClassNotFoundException cnfe) {
 							bugReporter.reportMissingClass(cnfe);
 						}
+					} else {
+					    String cls = itm.getSignature();
+					    if ((cls != null) && cls.startsWith("L")) {
+					        cls = cls.substring(1, cls.length() - 1);
+    					    if (isCollection(cls)) {
+        				        int reg = RegisterUtils.getAStoreReg(this, seen);
+        				        removeFromCollectionGroup(new OpcodeStack.Item(itm, reg));
+    					    }
+					    }
 					}
 				}
 			} else if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
