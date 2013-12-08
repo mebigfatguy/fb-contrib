@@ -428,13 +428,23 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	    if (endVars != null) {
 	        for (int i = endVars.nextSetBit(0); i >= 0; i = endVars.nextSetBit(i+1)) {
 	            Integer v = Integer.valueOf(i);
-    	        Iterator<Set<Comparable<?>>> it = collectionGroups.iterator();
-    	        while (it.hasNext()) {
-    	            Set<Comparable<?>> gv = it.next();
-    	            if (gv.contains(v)) {
-    	                gv.remove(v);
-    	            }
-    	        }
+	            {
+        	        Iterator<Set<Comparable<?>>> it = collectionGroups.iterator();
+        	        while (it.hasNext()) {
+        	            Set<Comparable<?>> gv = it.next();
+        	            if (gv.contains(v)) {
+        	                gv.remove(v);
+        	            }
+        	        }
+	            }
+	            {
+	                Iterator<Integer> it = groupToIterator.values().iterator();
+	                while (it.hasNext()) {
+	                    if (v.equals(it.next())) {
+	                        it.remove();
+	                    }
+	                }
+	            }
     	    }
 	    }
 	}
