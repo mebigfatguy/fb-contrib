@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.GETFIELD;
+import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -43,11 +44,11 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.BasicBlock;
+import edu.umd.cs.findbugs.ba.BasicBlock.InstructionIterator;
 import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Edge;
-import edu.umd.cs.findbugs.ba.BasicBlock.InstructionIterator;
 
 /**
  * finds fields that are used in a locals only fashion, specifically private fields
@@ -227,6 +228,12 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 						if (finfo != null)
 							finfo.setSrcLineAnnotation(SourceLineAnnotation.fromVisitedInstruction(clsContext, this, ih.getPosition()));
 					}
+				} else if (ins instanceof INVOKESPECIAL) {
+				    INVOKESPECIAL is = (INVOKESPECIAL) ins;
+				    
+				    if ("<init>".equals(is.getMethodName(cpg)) && (is.getClassName(cpg).startsWith(clsContext.getJavaClass().getClassName() + "$"))) {  
+				        localizableFields.clear();
+				    }
 				}
 			}
 

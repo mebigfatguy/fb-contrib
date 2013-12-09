@@ -75,16 +75,21 @@ public final class FCBL_Sample
 	    multiMethodFP = i;
 	}
 	
-	public boolean testFPAnon() {
-	    ret = false;
-	    
-	    SwingUtilities.invokeLater(new Runnable()
-	    {
-	        public void run() {
-	            ret = false;
-	        }
-	    });
-	    
-	    return ret;
+	class Foo 
+	{
+	    boolean ret;
+
+    	public boolean testFPAnon() {
+    	    ret = false;
+    	    
+    	    SwingUtilities.invokeLater(new Runnable()
+    	    {
+    	        public void run() {
+    	            ret = false;
+    	        }
+    	    });
+    	    
+    	    return ret;
+    	}
 	}
 }
