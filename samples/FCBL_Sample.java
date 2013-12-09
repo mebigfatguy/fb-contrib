@@ -1,3 +1,5 @@
+import javax.swing.SwingUtilities;
+
 
 @SuppressWarnings("all")
 public final class FCBL_Sample 
@@ -11,6 +13,7 @@ public final class FCBL_Sample
 	private String test;
 	private int x = 1;
 	private int y = 2;
+	private boolean ret;
 	
 	public FCBL_Sample()
 	{
@@ -70,5 +73,18 @@ public final class FCBL_Sample
 	
 	public void mm2FP(int i) {
 	    multiMethodFP = i;
+	}
+	
+	public boolean testFPAnon() {
+	    ret = false;
+	    
+	    SwingUtilities.invokeLater(new Runnable()
+	    {
+	        public void run() {
+	            ret = false;
+	        }
+	    });
+	    
+	    return ret;
 	}
 }
