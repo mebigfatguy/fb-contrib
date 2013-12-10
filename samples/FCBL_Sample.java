@@ -23,6 +23,9 @@ public final class FCBL_Sample
     private String notUsed;
     @FooAnnotation
     private String used;
+
+    private String fooS = "Foo";
+    private String[] fooSS = { fooS };
 	
 	public FCBL_Sample()
 	{
@@ -48,6 +51,13 @@ public final class FCBL_Sample
 		boo = 4;
 		fp = 5;
 	}
+
+    public void testInArray() 
+    {
+        for (String s : fooSS)
+        {
+        }
+    }
 	
 	public void test2()
 	{
