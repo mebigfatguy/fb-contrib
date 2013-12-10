@@ -27,7 +27,10 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -86,10 +89,20 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 			clsContext = classContext;
 			JavaClass cls = classContext.getJavaClass();
 			Field[] fields = cls.getFields();
+			ConstantPool cp = classContext.getConstantPoolGen().getConstantPool();
+			
 			for (Field f : fields) {
 				if ((!f.isStatic() && f.getName().indexOf('$') < 0) && f.isPrivate()) {
 					FieldAnnotation fa = new FieldAnnotation(cls.getClassName(), f.getName(), f.getSignature(), false);
-					localizableFields.put(f.getName(), new FieldInfo(fa));
+					boolean hasExternalAnnotation = false;
+					for (AnnotationEntry entry : f.getAnnotationEntries()) {
+					    ConstantUtf8 cutf = (ConstantUtf8) cp.getConstant(entry.getTypeIndex());
+					    if (!cutf.getBytes().startsWith("java")) {
+					        hasExternalAnnotation = true;
+					        break;
+					    }
+					}
+					localizableFields.put(f.getName(), new FieldInfo(fa, hasExternalAnnotation));
 				}
 			}
 
@@ -215,18 +228,23 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 				if (ins instanceof FieldInstruction) {
 					FieldInstruction fi = (FieldInstruction) ins;
 					String fieldName = fi.getFieldName(cpg);
-					boolean justRemoved = bState.removeUncheckedField(fieldName);
-
-					if (ins instanceof GETFIELD) {
-						if (justRemoved) {
-							localizableFields.remove(fieldName);
-							if (localizableFields.isEmpty())
-								return;
-						}
+					FieldInfo finfo = localizableFields.get(fieldName);
+					
+					if ((finfo != null) && localizableFields.get(fieldName).hasAnnotation()) {
+					    localizableFields.remove(fieldName);
 					} else {
-						FieldInfo finfo = localizableFields.get(fieldName);
-						if (finfo != null)
-							finfo.setSrcLineAnnotation(SourceLineAnnotation.fromVisitedInstruction(clsContext, this, ih.getPosition()));
+    					boolean justRemoved = bState.removeUncheckedField(fieldName);
+    
+    					if (ins instanceof GETFIELD) {
+    						if (justRemoved) {
+    							localizableFields.remove(fieldName);
+    							if (localizableFields.isEmpty())
+    								return;
+    						}
+    					} else {
+    						if (finfo != null)
+    							finfo.setSrcLineAnnotation(SourceLineAnnotation.fromVisitedInstruction(clsContext, this, ih.getPosition()));
+    					}
 					}
 				} else if (ins instanceof INVOKESPECIAL) {
 				    INVOKESPECIAL is = (INVOKESPECIAL) ins;
@@ -258,14 +276,17 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	private static class FieldInfo {
 		private final FieldAnnotation fieldAnnotation;
 		private SourceLineAnnotation srcLineAnnotation;
+		private boolean hasAnnotation;
 
 		/**
 		 * creates a FieldInfo from an annotation, and assumes no source line information
 		 * @param fa the field annotation for this field
+		 * @param hasExternalAnnotation the field has a non java based annotation
 		 */
-		public FieldInfo(final FieldAnnotation fa) {
+		public FieldInfo(final FieldAnnotation fa, boolean hasExternalAnnotation) {
 			fieldAnnotation = fa;
 			srcLineAnnotation = null;
+			hasAnnotation = hasExternalAnnotation;
 		}
 
 		/**
@@ -291,6 +312,14 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		 */
 		public SourceLineAnnotation getSrcLineAnnotation() {
 			return srcLineAnnotation;
+		}
+		
+		/**
+		 * gets whether the field has a non java annotation
+		 * @return if the field has a non java annotation
+		 */
+		public boolean hasAnnotation() {
+		    return hasAnnotation;
 		}
 	}
 

@@ -1,3 +1,8 @@
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import javax.swing.SwingUtilities;
 
 
@@ -14,6 +19,10 @@ public final class FCBL_Sample
 	private int x = 1;
 	private int y = 2;
 	private boolean ret;
+    @FooAnnotation
+    private String notUsed;
+    @FooAnnotation
+    private String used;
 	
 	public FCBL_Sample()
 	{
@@ -22,6 +31,7 @@ public final class FCBL_Sample
 		boo = 2;
 		hoo = 3;
 		fp = 4;
+		used = "Hello";
 	}
 	
 	public void method1() 
@@ -76,7 +86,7 @@ public final class FCBL_Sample
 	}
 	
 	class Foo 
-	{
+	{    
 	    boolean ret;
 
     	public boolean testFPAnon() {
@@ -91,5 +101,11 @@ public final class FCBL_Sample
     	    
     	    return ret;
     	}
+	}
+	
+	@Retention(RetentionPolicy.RUNTIME)
+	@Target(ElementType.FIELD)
+	@interface FooAnnotation {
+	    
 	}
 }
