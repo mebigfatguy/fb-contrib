@@ -2,6 +2,7 @@
 
 <project name="fb-contrib" default="info">
 
+    <property file="user.properties" />
     <property file="build.properties" />
     <property file="version.properties" />
 
