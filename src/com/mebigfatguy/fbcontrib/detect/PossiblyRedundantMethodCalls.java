@@ -367,7 +367,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 				return true;
 			}
 		}
-		return false;
+		
+		return methodName.contains("$");
 	}
 	
 	/**
