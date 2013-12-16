@@ -54,7 +54,6 @@ public class FinalParameters extends BytecodeScanningDetector
 	private BitSet changedParms;
 	private String methodName;
 	private int firstLocalReg;
-	private boolean isStatic;
 	private boolean isAbstract;
 	private boolean srcInited;
 	private SourceLineAnnotation srcLineAnnotation;
@@ -94,7 +93,7 @@ public class FinalParameters extends BytecodeScanningDetector
 		Type[] parms = Type.getArgumentTypes(obj.getSignature());
 		
 		if (parms.length > 0) {
-    		isStatic = (obj.getAccessFlags() & Constants.ACC_STATIC) != 0;
+    		boolean isStatic = (obj.getAccessFlags() & Constants.ACC_STATIC) != 0;
     		isAbstract = (obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0;
     		
     		firstLocalReg = isStatic ? 0 : 1;
