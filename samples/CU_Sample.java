@@ -37,4 +37,10 @@ public class CU_Sample implements Cloneable {
         public void run() {
         }
     }
+    
+    class FPActuallyThrow implements Cloneable {
+        public FPActuallyThrow clone() throws CloneNotSupportedException {
+            throw new CloneNotSupportedException("Silly");
+        }
+    }
 }
