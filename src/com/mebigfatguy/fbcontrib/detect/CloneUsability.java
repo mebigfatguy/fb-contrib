@@ -18,23 +18,28 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.BitSet;
+
+import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * finds classes that implement clone() that do not specialize the return value, and do
  * not swallow CloneNotFoundException. Not doing so makes the clone method not as simple
  * to use, and should be harmless to do.
  */
-public class CloneUsability extends PreorderVisitor implements Detector {
+public class CloneUsability extends BytecodeScanningDetector implements Detector {
 
     private static JavaClass CLONE_CLASS;
 
@@ -49,6 +54,8 @@ public class CloneUsability extends PreorderVisitor implements Detector {
     private BugReporter bugReporter;
     private JavaClass cls;
     private String clsName;
+    private OpcodeStack stack;
+    private boolean throwsCNFE;
 
     /**
      * constructs a CU detector given the reporter to report bugs on
@@ -68,26 +75,29 @@ public class CloneUsability extends PreorderVisitor implements Detector {
             cls = classContext.getJavaClass();
             if (cls.implementationOf(CLONE_CLASS)) {
                 clsName = cls.getClassName();
-                cls.accept(this);
+                stack = new OpcodeStack();
+                super.visitClassContext(classContext);
             }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         } finally {
             cls = null;
+            stack = null;
         }
     }
 
     /**
      * overrides the visitor to grab the method name and reset the state.
      *
-     * @param obj the method being parsed
+     * @param m the method being parsed
      */
     @Override
-    public void visitMethod(Method obj) {
+    public void visitCode(Code obj) {
         try {
-            if (obj.isPublic() && !obj.isSynthetic() && obj.getName().equals("clone") && (obj.getArgumentTypes().length == 0)) {
+            Method m = getMethod();
+            if (m.isPublic() && !m.isSynthetic() && m.getName().equals("clone") && (m.getArgumentTypes().length == 0)) {
 
-                String returnClsName = obj.getReturnType().getSignature();
+                String returnClsName = m.getReturnType().getSignature();
                 returnClsName = returnClsName.substring(1, returnClsName.length() - 1).replaceAll("/", ".");
                 if (!clsName.equals(returnClsName))
                 {
@@ -105,22 +115,52 @@ public class CloneUsability extends PreorderVisitor implements Detector {
                     }
                 }
 
-                ExceptionTable et = obj.getExceptionTable();
+                ExceptionTable et = m.getExceptionTable();
 
                 if ((et != null) && (et.getLength() > 0)) {
-                    bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_THROWS", NORMAL_PRIORITY)
-                    .addClass(this)
-                    .addMethod(this));
+                    
+                    throwsCNFE = false;
+                    if (prescreen(m)) {
+                        stack.resetForMethodEntry(this);
+                        super.visitCode(obj);
+                    }
+                        
+                    if (!throwsCNFE) {
+                        bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_THROWS", NORMAL_PRIORITY)
+                        .addClass(this)
+                        .addMethod(this));
+                    }
                 }
             }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }
     }
-
+    
+    public void sawOpcode(int seen) {
+        try {
+            if (seen == ATHROW) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if ("Ljava/lang/CloneNotSupportedException;".equals(item.getSignature())) {
+                        throwsCNFE = true;  
+                    }
+                }
+            }
+        }
+        finally {
+            stack.sawOpcode(this, seen);
+        }
+    }
+    
     /**
-     * implements the Detector with a nop
+     * looks for methods that contain a THROW opcode
+     * 
+     * @param method the context object of the current method
+     * @return if the class throws exceptions
      */
-    public void report() {
+    public boolean prescreen(Method method) {
+        BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
+        return (bytecodeSet != null) && bytecodeSet.get(Constants.ATHROW);
     }
 }
