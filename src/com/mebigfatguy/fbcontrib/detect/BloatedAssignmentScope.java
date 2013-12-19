@@ -29,6 +29,8 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
@@ -73,6 +75,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	private OpcodeStack stack;
 	private BitSet ignoreRegs;
 	private ScopeBlock rootScopeBlock;
+	private BitSet tryBlocks;
 	private BitSet catchHandlers;
 	private BitSet switchTargets;
 	private List<Integer> monitorSyncPCs;
@@ -101,6 +104,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			ignoreRegs = new BitSet();
+			tryBlocks = new BitSet();
 			catchHandlers = new BitSet();
 			switchTargets = new BitSet();
 			monitorSyncPCs = new ArrayList<Integer>(5);
@@ -108,6 +112,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 			super.visitClassContext(classContext);
 		} finally {
 			ignoreRegs = null;
+			tryBlocks = null;
 			catchHandlers = null;
 			switchTargets = null;
 			monitorSyncPCs = null;
@@ -137,10 +142,12 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 			}
 
 			rootScopeBlock = new ScopeBlock(0, obj.getLength());
+			tryBlocks.clear();
 			catchHandlers.clear();
 			CodeException[] exceptions = obj.getExceptionTable();
 			if (exceptions != null) {
 				for (CodeException ex : exceptions) {
+				    tryBlocks.set(ex.getStartPC());
 					catchHandlers.set(ex.getHandlerPC());
 				}
 			}
@@ -173,7 +180,14 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		UserObject uo = null;
 		try {
 	        stack.precomputation(this);
-	        
+
+            int pc = getPC();
+            if (tryBlocks.get(pc)) { 
+                ScopeBlock sb = new ScopeBlock(getPC(), findCatchHandlerFor(pc));
+                sb.setTry();
+                rootScopeBlock.addChild(sb);
+            }
+            
 			if ((seen == ASTORE) || (seen == ISTORE) || (seen == LSTORE)
 					|| (seen == FSTORE) || (seen == DSTORE)
 					|| ((seen >= ASTORE_0) && (seen <= ASTORE_3))
@@ -182,7 +196,6 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 					|| ((seen >= FSTORE_0) && (seen <= FSTORE_1))
 					|| ((seen >= DSTORE_0) && (seen <= DSTORE_1))) {
 				int reg = RegisterUtils.getStoreReg(this, seen);
-				int pc = getPC();
 
 				if (catchHandlers.get(pc)) {
 					ignoreRegs.set(reg);
@@ -223,7 +236,6 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 						ignoreRegs.set(reg);
 					}
 				}
-				int pc = getPC();
 				if (catchHandlers.get(pc)) {
 					ignoreRegs.set(reg);
 				} else if (monitorSyncPCs.size() > 0) {
@@ -317,7 +329,6 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 					}
 				}
 			} else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
-				int pc = getPC();
 				int[] offsets = getSwitchOffsets();
 				List<Integer> targets = new ArrayList<Integer>(offsets.length);
 				for (int offset : offsets) {
@@ -506,6 +517,25 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 	    
 	    return monitorBlock;
 	}
+	
+	/**
+	 * returns the catch handler for a given try block
+	 * 
+	 * @param pc the current instruction
+	 * @return the pc of the handler for this pc if it's the start of a try block, or -1
+	 * 
+	 */
+	private int findCatchHandlerFor(int pc) {
+	    CodeException[] exceptions = getMethod().getCode().getExceptionTable();
+        if (exceptions != null) {
+            for (CodeException ex : exceptions) {
+                if (ex.getStartPC() == pc)
+                    return ex.getHandlerPC();
+            }
+        }
+        
+        return -1;
+	}
 
 	/**
 	 * holds the description of a scope { } block, be it a for, if, while block
@@ -517,6 +547,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 		private boolean isLoop;
 		private boolean isGoto;
 		private boolean isSync;
+		private boolean isTry;
 		private Map<Integer, Integer> loads;
 		private Map<Integer, Integer> stores;
 		private Map<UserObject, Integer> assocs;
@@ -537,6 +568,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 			isLoop = false;
 			isGoto = false;
 			isSync = false;
+			isTry = false;
 			loads = null;
 			stores = null;
 			assocs = null;
@@ -647,21 +679,38 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 			return isGoto;
 		}
 		
-	      /**
+	    /**
          * sets that this block was caused from a synchronized block
          */
         public void setSync() {
             isSync = true;
         }
 
-        /**
-         * returns whether this block was caused from a synchronized block
-         *
-         * @returns whether this block was caused by a synchronized block
-         */
-        public boolean isSync() {
-            return isSync;
-        }
+      /**
+       * returns whether this block was caused from a synchronized block
+       *
+       * @returns whether this block was caused by a synchronized block
+       */
+      public boolean isSync() {
+          return isSync;
+      }
+      
+      /**
+       * sets that this block was caused from a try block
+       */
+      public void setTry() {
+        isTry = true;
+      }
+      
+      
+      /**
+       * returns whether this block was caused from a try block
+       *
+       * @returns whether this block was caused by a try block
+       */
+      public boolean isTry() {
+          return isTry;
+      }
 
 		/**
 		 * adds the register as a store in this scope block
@@ -798,7 +847,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 						Integer reg = entry.getKey();
 						for (ScopeBlock child : children) {
 							if (child.usesReg(reg)) {
-								if (child.isLoop || child.isSync()) {
+								if (child.isLoop || child.isSync() || child.isTry()) {
 									inIgnoreSB = true;
 									break;
 								}
