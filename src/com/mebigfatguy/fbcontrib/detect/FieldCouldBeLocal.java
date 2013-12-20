@@ -92,7 +92,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 			ConstantPool cp = classContext.getConstantPoolGen().getConstantPool();
 			
 			for (Field f : fields) {
-				if ((!f.isStatic() && f.getName().indexOf('$') < 0) && f.isPrivate()) {
+				if (!f.isStatic() && !f.isVolatile() && (f.getName().indexOf('$') < 0) && f.isPrivate()) {
 					FieldAnnotation fa = new FieldAnnotation(cls.getClassName(), f.getName(), f.getSignature(), false);
 					boolean hasExternalAnnotation = false;
 					for (AnnotationEntry entry : f.getAnnotationEntries()) {
