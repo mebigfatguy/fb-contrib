@@ -104,6 +104,13 @@ public class WOC_Sample {
         
         return result;
     }
+    
+    public List<String> fpWOCTernary(boolean b) {
+        List<String> used1 = new ArrayList<String>();
+        List<String> used2 = new ArrayList<String>();
+        
+        return b ? used1 : used2;
+    }
 
     public static class FpContains {
         private List<String> fpSet;
