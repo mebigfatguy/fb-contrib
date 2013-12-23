@@ -125,6 +125,7 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 	private Map<Integer, Integer> localWOCollections;
 	/** fieldname to field sig */
 	private Map<String, String> fieldWOCollections;
+	private boolean sawTernary;
 
 
 	/**
@@ -187,6 +188,7 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 	public void visitCode(Code obj) {
 		stack.resetForMethodEntry(this);
 		localWOCollections.clear();
+		sawTernary = false;
 		super.visitCode(obj);
 
 		for (Integer pc : localWOCollections.values()) {
@@ -349,6 +351,7 @@ access to
 						if (!(uo instanceof Boolean)) {
 							clearUserValue(item);
 						}
+	                    sawTernary = true;
 					}
 				break;
 			}
@@ -361,6 +364,16 @@ access to
 					OpcodeStack.Item item = stack.getStackItem(0);
 					item.setUserValue(userObject);
 				}
+			}
+			if (sawTernary) {
+			    if ((seen == GETFIELD) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+			        if (stack.getStackDepth() > 0) {
+			            OpcodeStack.Item item = stack.getStackItem(0);
+			            clearUserValue(item);
+			        }
+			    }
+			    if ((seen != GOTO) && (seen != IFNULL) && (seen != IFNONNULL))
+			        sawTernary = false;
 			}
 		}
 	}
