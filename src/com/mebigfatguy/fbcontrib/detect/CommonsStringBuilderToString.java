@@ -20,7 +20,9 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 import org.apache.bcel.classfile.Code;
@@ -47,6 +49,13 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  */
 public class CommonsStringBuilderToString extends OpcodeStackDetector {
 
+    private static final Set<String> TOSTRINGBUILDER_CTOR_SIGS = new HashSet<String>();
+    static {
+        TOSTRINGBUILDER_CTOR_SIGS.add("(Ljava/lang/Object;)V");
+        TOSTRINGBUILDER_CTOR_SIGS.add("(Ljava/lang/Object;Lorg/apache/commons/lang/builder/ToStringStyle;)V");
+        TOSTRINGBUILDER_CTOR_SIGS.add("(Ljava/lang/Object;Lorg/apache/commons/lang3/builder/ToStringStyle;)V");
+    }
+    
     private final BugReporter bugReporter;
     private Stack<Pair> stackTracker = new Stack<Pair>();
     private Map<Integer, Boolean> registerTracker = new HashMap<Integer, Boolean>(10);
@@ -135,7 +144,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
                             .equals(loadClassName)) {
                 String calledMethodSig = getSigConstantOperand();
                 if ("<init>".equals(calledMethodName)
-                        && "(Ljava/lang/Object;)V".equals(calledMethodSig)) {
+                        && TOSTRINGBUILDER_CTOR_SIGS.contains(calledMethodSig)) {
                     stackTracker.add(new Pair(-1, false));
                 } else if ("append".equals(calledMethodName)) {
                     Pair p = stackTracker.pop();
