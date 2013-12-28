@@ -40,6 +40,7 @@ import java.util.Vector;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -126,6 +127,7 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 	/** fieldname to field sig */
 	private Map<String, String> fieldWOCollections;
 	private boolean sawTernary;
+	private boolean isInnerClass;
 
 
 	/**
@@ -143,13 +145,16 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			clsSignature = "L" + classContext.getJavaClass().getClassName().replaceAll("\\.", "/") + ";";
+		    JavaClass clz = classContext.getJavaClass();
+		    isInnerClass = clz.getClassName().contains("$");
+		    
+			clsSignature = "L" + clz.getClassName().replaceAll("\\.", "/") + ";";
 			stack = new OpcodeStack();
 			localWOCollections = new HashMap<Integer, Integer>();
 			fieldWOCollections = new HashMap<String, String>();
 			super.visitClassContext(classContext);
 
-			if (fieldWOCollections.size() > 0) {
+			if (!isInnerClass && (fieldWOCollections.size() > 0)) {
 				String clsName = classContext.getJavaClass().getClassName();
 				for (Map.Entry<String, String> entry : fieldWOCollections.entrySet()) {
 					String fieldName = entry.getKey();
@@ -168,7 +173,7 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
 
 	@Override
 	public void visitField(Field obj) {
-		if (obj.isPrivate() && !obj.isSynthetic()) {
+		if (!isInnerClass && obj.isPrivate() && !obj.isSynthetic()) {
 			String sig = obj.getSignature();
 			if (sig.startsWith("L")) {
 				String type = sig.substring(1, sig.length() - 1).replace('/', '.');
