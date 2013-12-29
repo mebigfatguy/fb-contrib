@@ -377,7 +377,8 @@ access to
 			            clearUserValue(item);
 			        }
 			    }
-			    if ((seen != GOTO) && (seen != IFNULL) && (seen != IFNONNULL))
+			    /* check ALOAD_0, as if it's a field the statement after a GOTO will be loading 'this' */
+			    if ((seen != GOTO) && (seen != IFNULL) && (seen != IFNONNULL) && (seen != ALOAD_0))
 			        sawTernary = false;
 			}
 		}

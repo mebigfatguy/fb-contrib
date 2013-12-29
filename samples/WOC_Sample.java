@@ -15,8 +15,8 @@ public class WOC_Sample {
     private final Set<String> memberSet = new HashSet<String>();
     private Set<String> fpSet;
     private final List<String> fpList = new ArrayList<String>();
-    private Set<String> fp1 = new HashSet<String>();
-    private Set<String> fp2 = new HashSet<String>();
+    private List<String> fp1 = new ArrayList<String>();
+    private List<String> fp2 = new ArrayList<String>();
 
     public void testWOCSimple() {
         Set<String> s = new HashSet<String>();
@@ -66,12 +66,7 @@ public class WOC_Sample {
         }
     }
 
-    public Set<String> testFPTrinary(boolean a, boolean b) {
-        if (a)
-        {
-            return b ? fp1 : fp2;
-        }
-        
+    public Set<String> testFPTernary(boolean b) {
         Set<String> s = new HashSet<String>();
         s.add("foo");
         s.add("bar");
@@ -112,7 +107,13 @@ public class WOC_Sample {
         return result;
     }
     
-    public List<String> fpWOCTernary(boolean b) {
+    public List<String> fpWOCTernary(boolean a, boolean b) {
+        
+        if (a)
+        {
+            return b ? fp1 : fp2;
+        }
+        
         List<String> used1 = new ArrayList<String>();
         List<String> used2 = new ArrayList<String>();
         
