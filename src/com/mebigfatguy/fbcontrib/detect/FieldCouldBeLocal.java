@@ -38,6 +38,7 @@ import org.apache.bcel.generic.ConstantPoolGen;
 import org.apache.bcel.generic.FieldInstruction;
 import org.apache.bcel.generic.GETFIELD;
 import org.apache.bcel.generic.INVOKESPECIAL;
+import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
@@ -65,6 +66,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	private CFG cfg;
 	private ConstantPoolGen cpg;
 	private BitSet visitedBlocks;
+	private Map<String, Set<String>> methodFieldModifiers;
+	private String clsName;
 
     /**
      * constructs a FCBL detector given the reporter to report bugs on.
@@ -87,6 +90,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	        localizableFields = new HashMap<String, FieldInfo>();
 	        visitedBlocks = new BitSet();
 			clsContext = classContext;
+			clsName = clsContext.getJavaClass().getClassName();
 			JavaClass cls = classContext.getJavaClass();
 			Field[] fields = cls.getFields();
 			ConstantPool cp = classContext.getConstantPoolGen().getConstantPool();
@@ -107,6 +111,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 			}
 
 			if (localizableFields.size() > 0) {
+			    buildMethodFieldModifiers(classContext);
 				super.visitClassContext(classContext);
 				for (FieldInfo fi : localizableFields.values()) {
 					FieldAnnotation fa = fi.getFieldAnnotation();
@@ -123,6 +128,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	        localizableFields = null;
 	        visitedBlocks = null;
 	        clsContext = null;
+	        methodFieldModifiers = null;
 		}
 	}
 
@@ -252,6 +258,18 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 				    if ("<init>".equals(is.getMethodName(cpg)) && (is.getClassName(cpg).startsWith(clsContext.getJavaClass().getClassName() + "$"))) {  
 				        localizableFields.clear();
 				    }
+				} else if (ins instanceof INVOKEVIRTUAL) {
+				    INVOKEVIRTUAL is = (INVOKEVIRTUAL) ins;
+				    
+				    if (is.getClassName(cpg).equals(clsName)) {
+    				    String methodDesc = is.getName(cpg) + is.getSignature(cpg);
+    				    Set<String> fields = methodFieldModifiers.get(methodDesc);
+    				    if (fields != null) {
+    				        for (String field : fields) {
+    				            localizableFields.remove(field);
+    				        }
+    				    }
+				    }
 				}
 			}
 
@@ -268,6 +286,19 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 				}
 			}
 		}
+	}
+	
+	/**
+	 * builds up the method to field map of what method write to which fields
+	 * this is one recursively so that if method A calls method B, and method B
+	 * writes to field C, then A modifies F.
+	 * 
+	 * @param classContext the context object of the currently parsed class
+	 */
+	private void buildMethodFieldModifiers(ClassContext classContext) {
+	    FieldModifier fm = new FieldModifier();
+	    fm.visitClassContext(classContext);
+	    methodFieldModifiers = fm.getMethodFieldModifiers();
 	}
 
 	/**
@@ -403,5 +434,74 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		public String toString() {
 			return basicBlock + "|" + uncheckedFields;
 		}
+	}
+	
+	private class FieldModifier extends BytecodeScanningDetector {
+	    
+	    private Map<String, Set<String>> methodCallChain = new HashMap<String, Set<String>>();
+	    private Map<String, Set<String>> mfModifiers = new HashMap<String, Set<String>>();
+	    private String clsName;
+
+	    public Map<String, Set<String>> getMethodFieldModifiers() {
+	        Map<String, Set<String>> modifiers = new HashMap<String, Set<String>>(mfModifiers.size());
+	        modifiers.putAll(mfModifiers);
+	        for (String method : modifiers.keySet()) {
+	            modifiers.put(method,  (Set<String>) ((HashSet<String>) modifiers.get(method)).clone());
+	        }
+	        
+	        boolean modified = true;
+	        while (modified) {
+	            modified = false;
+	            for (Map.Entry<String, Set<String>> entry : methodCallChain.entrySet()) {
+	                String methodDesc = entry.getKey();
+	                Set<String> calledMethods = entry.getValue();
+	                
+	                for (String calledMethodDesc : calledMethods) {
+	                    Set<String> fields = mfModifiers.get(calledMethodDesc);
+	                    if (fields != null) {
+	                        Set<String> flds = modifiers.get(methodDesc);
+	                        if (flds == null) {
+	                            flds = new HashSet<String>();
+	                            modifiers.put(methodDesc,  flds);
+	                        }
+	                        if (flds.addAll(fields))
+	                            modified = true;
+	                    }
+	                }
+	            }
+	        }
+	        
+	        return modifiers;
+	    }
+	    @Override
+	    public void visitClassContext(ClassContext context) {
+	        clsName = context.getJavaClass().getClassName();
+	        super.visitClassContext(context);
+	    }
+	    
+	    @Override
+	    public void sawOpcode(int seen) {
+	        if (seen == PUTFIELD) {
+                if (clsName.equals(getClassConstantOperand())) {
+                    String methodDesc = getMethodName()+getMethodSig();
+                    Set<String> fields = mfModifiers.get(methodDesc);
+                    if (fields == null) {
+                        fields = new HashSet<String>();
+                        mfModifiers.put(methodDesc, fields);
+                    }
+                    fields.add(getNameConstantOperand());
+                }
+	        } else if (seen == INVOKEVIRTUAL) {
+	            if (clsName.equals(getClassConstantOperand())) {
+	                String methodDesc = getMethodName()+getMethodSig();
+	                Set<String> methods = methodCallChain.get(methodDesc);
+	                if (methods == null) {
+	                    methods = new HashSet<String>();
+	                    methodCallChain.put(methodDesc, methods);
+	                }
+	                methods.add(getNameConstantOperand()+getSigConstantOperand());
+	            }
+	        }
+	    }
 	}
 }
