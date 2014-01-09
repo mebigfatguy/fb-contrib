@@ -27,7 +27,6 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
@@ -46,7 +45,6 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private List<PopInfo> popStack;
-	private LineNumberTable lineNumberTable;
 
 	/**
      * constructs a SMII detector given the reporter to report bugs on
@@ -65,7 +63,6 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
 		} finally {
 			stack = null;
 			popStack = null;
-			lineNumberTable = null;
 		}
 	}
 	/**
@@ -90,7 +87,6 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
 		if (prescreen(m)) {
 			stack.resetForMethodEntry(this);
 			popStack.clear();
-			lineNumberTable = obj.getLineNumberTable();
 			super.visitCode(obj);
 		}
 	}
