@@ -1348,6 +1348,18 @@
 			]]>
 		</Details>
 	</Detector>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CollectionNamingConfusion">
+	   <Details>
+	       <![CDATA[
+	       <p>Looks for fields or local variables that are collections but which names have a different type
+	       of collection in the name. This is confusing, and is probably a left over from a type change, such as
+	       </p>
+	       <p>List<String> mySet;</p>
+	       <p>It is a fast detector</p>
+	       ]]>
+	   </Details>
+	</Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -3771,6 +3783,18 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="CNC_COLLECTION_NAMING_CONFUSION">
+	    <ShortDescription>Collection variable is named with a different type of collection in the name</ShortDescription>
+        <LongDescription>Collection variable is named with a different type of collection in the name</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class defines a field or local collection variable with a name that contains a different type
+            of collection in it's name. This is confusing to the reader, and likely caused by a previous refactor of 
+            type, without changing the name.
+            ]]> 
+        </Details>
+	</BugPattern>
 
 	<!-- BugCode -->
 
@@ -3886,4 +3910,5 @@
 	<BugCode abbrev="NPMC">Non Productive Method Call</BugCode>
 	<BugCode abbrev="AIOB">Array Index Out of Bounds</BugCode>
 	<BugCode abbrev="ICA">Invalid Constant Argument</BugCode>
+	<BugCode abbrev="CNC">Collection Naming Confusion</BugCode>
 </MessageCollection>

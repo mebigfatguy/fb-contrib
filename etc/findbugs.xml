@@ -252,6 +252,8 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections" speed="fast" reports="PSC_PRESIZE_COLLECTIONS" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" speed="fast" reports="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS,AIOB_ARRAY_STORE_TO_NULL_REFERENCE" />
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.CollectionNamingConfusion" speed="fast" reports="CNC_COLLECTION_NAMING_CONFUSION" />
     <!--  COMMENT OUT FOR POINT RELEASE  -->
     
 	<!-- BugPattern -->
@@ -447,4 +449,5 @@
     <BugPattern abbrev="AIOB" type="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS" category="CORRECTNESS" />
     <BugPattern abbrev="AIOB" type="AIOB_ARRAY_STORE_TO_NULL_REFERENCE" category="CORRECTNESS" />
     <BugPattern abbrev="ICA" type="ICA_INVALID_CONSTANT_ARGUMENT" category="CORRECTNESS" />
+    <BugPattern abbrev="CNC" type="CNC_COLLECTION_NAMING_CONFUSION" category="STYLE" />
 </FindbugsPlugin>
