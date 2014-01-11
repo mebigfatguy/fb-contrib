@@ -98,6 +98,10 @@ function toggleBlock(divId, imgId)
         		    </li>
         		    </ul>
         		</li>
+        		<li><b>[CNC] Collection Naming Confusion</b><br/>
+        		Looks for fields and local variables that have Map, Set, List in their names
+                but the variable is a collection of a different basic type.
+                </li>
             </ul>             
         </div>
         <hr/>
