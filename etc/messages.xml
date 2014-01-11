@@ -1360,6 +1360,17 @@
 	       ]]>
 	   </Details>
 	</Detector>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.PoorMansEnum">
+	   <Details>
+	       <![CDATA[
+	       <p>Looks for fields defined with simple types, (int, String, etc) that are used like an enum. Specifically fields that are 
+	       only assigned a set of constant values. This variable probably should be redefined as an enum.
+	       </p>
+	       <p>It is a fast detector</p>
+	       ]]>
+	   </Details>
+	</Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -3791,9 +3802,21 @@
             <![CDATA[
             <p>This class defines a field or local collection variable with a name that contains a different type
             of collection in it's name. This is confusing to the reader, and likely caused by a previous refactor of 
-            type, without changing the name.
+            type, without changing the name.</p>
             ]]> 
         </Details>
+	</BugPattern>
+	
+	<BugPattern type="PME_POOR_MANS_ENUM">
+	   <ShortDescription>Simple field is used like an enum</ShortDescription>
+	   <LongDescription>Simple field is used like an enum</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This field, although defined as a simple variable (int, String, etc) only has a set of constant values
+	       assigned to it. This appears to be used like an enum value, and should probably be defined as such.
+	       </p>
+	       ]]>
+	   </Details>
 	</BugPattern>
 
 	<!-- BugCode -->
@@ -3911,4 +3934,5 @@
 	<BugCode abbrev="AIOB">Array Index Out of Bounds</BugCode>
 	<BugCode abbrev="ICA">Invalid Constant Argument</BugCode>
 	<BugCode abbrev="CNC">Collection Naming Confusion</BugCode>
+	<BugCode abbrev="PME">Poor Mans Enum</BugCode>
 </MessageCollection>
