@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 
@@ -39,6 +40,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
     private BugReporter bugReporter;
     private Map<String, Set<Object>> fieldValues;
     private Map<String, Field> nameToField;
+    private Map<String, SourceLineAnnotation> firstFieldUse;
     private OpcodeStack stack;
     
     public PoorMansEnum(BugReporter bugReporter) {
@@ -59,22 +61,26 @@ public class PoorMansEnum extends BytecodeScanningDetector {
             }
             if (!fieldValues.isEmpty()) {
                 stack = new OpcodeStack();
-                
+                firstFieldUse = new HashMap<String, SourceLineAnnotation>();
                 super.visitClassContext(classContext);
                 
                 for (Map.Entry<String, Set<Object>> fieldInfo : fieldValues.entrySet()) {
                     Set<Object> values = fieldInfo.getValue();
                     if (values != null) {
                         if (values.size() >= 3) {
+                            String fieldName = fieldInfo.getKey();
                             bugReporter.reportBug(new BugInstance(this, "PME_POOR_MANS_ENUM", NORMAL_PRIORITY)
                                         .addClass(this)
-                                        .addField(XFactory.createXField(cls, nameToField.get(fieldInfo.getKey()))));
+                                        .addField(XFactory.createXField(cls, nameToField.get(fieldName)))
+                                        .addSourceLine(firstFieldUse.get(fieldName)));
                         }
                     }
                 }
             }
         } finally {
             fieldValues = null;
+            nameToField = null;
+            firstFieldUse = null;
             stack = null;
         }
     }
@@ -103,11 +109,14 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                         if (cons == null) {
                             fieldValues.remove(fieldName);
                             nameToField.remove(fieldName);
+                            firstFieldUse.remove(fieldName);
                         } else {
                             Set<Object> values = fieldValues.get(fieldName);
                             if (values == null) {
                                 values = new HashSet<Object>();
                                 fieldValues.put(fieldName, values);
+                                if (firstFieldUse.get(fieldName) == null)
+                                    firstFieldUse.put(fieldName, SourceLineAnnotation.fromVisitedInstruction(this));
                             }
                             values.add(cons);
                         } 
