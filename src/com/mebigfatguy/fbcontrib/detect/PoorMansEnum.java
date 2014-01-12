@@ -35,6 +35,10 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 
+/**
+ * looks for simple fields that only store one of several constant values. This usually is an 
+ * indication that this field should really be an enum type.
+ */
 public class PoorMansEnum extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;

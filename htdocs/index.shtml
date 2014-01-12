@@ -102,6 +102,10 @@ function toggleBlock(divId, imgId)
         		Looks for fields and local variables that have Map, Set, List in their names
                 but the variable is a collection of a different basic type.
                 </li>
+                <li><b>[PME] Poor Mans Enum</b><br/>
+                Looks for simple fields that only store one of several constant values. This usually is an indication 
+                that this field should really be an enum type.
+                </li>
             </ul>             
         </div>
         <hr/>
