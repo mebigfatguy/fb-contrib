@@ -3809,7 +3809,7 @@
 	
 	<BugPattern type="PME_POOR_MANS_ENUM">
 	   <ShortDescription>Simple field is used like an enum</ShortDescription>
-	   <LongDescription>Simple field {2} is used like an enum</LongDescription>
+	   <LongDescription>Simple field {1} is used like an enum</LongDescription>
 	   <Details>
 	       <![CDATA[
 	       <p>This field, although defined as a simple variable (int, String, etc) only has a set of constant values
