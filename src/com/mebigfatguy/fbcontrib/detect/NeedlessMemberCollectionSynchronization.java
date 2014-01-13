@@ -92,15 +92,14 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 		modifyingMethods.add("setElementAt");
 		modifyingMethods.add("setSize");
 	}
-	private static final int IN_METHOD = 0;
-	private static final int IN_CLINIT = 1;
-	private static final int IN_INIT = 2;
+	
+	private enum State {IN_METHOD, IN_CLINIT, IN_INIT};
 	
 	private BugReporter bugReporter;
 	private Map<String, FieldInfo> collectionFields;
 	private Map<Integer, String> aliases;
 	private OpcodeStack stack;
-	private int state;
+	private State state;
 	private String className;
 	
 	/**
@@ -176,11 +175,11 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 			aliases.clear();
 			String methodName = getMethodName();
 			if ("<clinit>".equals(methodName))
-				state = IN_CLINIT;
+				state = State.IN_CLINIT;
 			else if ("<init>".equals(methodName))
-				state = IN_INIT;
+				state = State.IN_INIT;
 			else
-				state = IN_METHOD;
+				state = State.IN_METHOD;
 			stack.resetForMethodEntry(this);
 			super.visitCode(obj);
 		}
