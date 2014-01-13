@@ -55,18 +55,16 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class LostExceptionStackTrace extends BytecodeScanningDetector
 {
-    private static JavaClass errorClass;
     private static JavaClass throwableClass;
     private static JavaClass assertionClass;
 
 	static {
 		try {
-            errorClass = Repository.lookupClass("java/lang/Error");
             throwableClass = Repository.lookupClass("java/lang/Throwable");
             assertionClass = Repository.lookupClass("java/lang/AssertionError");
 		} catch (ClassNotFoundException cnfe) {
-            errorClass = null;
             throwableClass = null;
+            assertionClass = null;
 		}
 	}
 
@@ -94,7 +92,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			if (errorClass != null && throwableClass != null && !isPre14Class(classContext.getJavaClass())) {
+			if (throwableClass != null && !isPre14Class(classContext.getJavaClass())) {
 				stack = new OpcodeStack();
 				catchInfos = new HashSet<CatchInfo>();
 				exReg = new HashMap<Integer, Boolean>();
@@ -213,7 +211,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 							if ("<init>".equals(getNameConstantOperand())) {
 								String className = getClassConstantOperand();
 								JavaClass exClass = Repository.lookupClass(className);
-								if (exClass.instanceOf(errorClass) || (exClass.instanceOf(throwableClass))) {
+								if (exClass.instanceOf(throwableClass)) {
 									String sig = getSigConstantOperand();
 									if (sig.indexOf("Exception") >= 0
 									||  sig.indexOf("Throwable") >= 0
@@ -332,7 +330,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 		if (returnSig.startsWith("L")) {
 			returnSig = returnSig.substring(1, returnSig.length() - 1);
 			JavaClass retCls = Repository.lookupClass(returnSig);
-			if (retCls.instanceOf(errorClass)) {
+			if (retCls.instanceOf(throwableClass)) {
 				int numParms = Type.getArgumentTypes(sig).length;
 				if (stack.getStackDepth() >= numParms) {
 					for (int p = 0; p < numParms; p++) {

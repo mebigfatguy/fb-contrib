@@ -1,8 +1,12 @@
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.google.common.base.Throwables;
 
 @SuppressWarnings("all")
 public class LEST_Sample
@@ -158,6 +162,18 @@ public class LEST_Sample
         {
             throw new Exception("message");
         }
+	}
+	
+	public void fpThrowables() 
+	{
+	    try 
+	    {
+	        InputStream is = new FileInputStream("foo");
+	    } 
+	    catch (IOException e) 
+	    {
+	        throw Throwables.propagate(e);
+	    }
 	}
 
 	private Exception wrap(Exception e) {

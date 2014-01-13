@@ -17,5 +17,6 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.5.jar"/>
 	<classpathentry kind="lib" path="lib/findbugs-2.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/guava-15.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
