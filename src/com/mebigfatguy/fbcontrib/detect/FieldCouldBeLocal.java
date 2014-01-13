@@ -436,7 +436,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		}
 	}
 	
-	private class FieldModifier extends BytecodeScanningDetector {
+	private static class FieldModifier extends BytecodeScanningDetector {
 	    
 	    private Map<String, Set<String>> methodCallChain = new HashMap<String, Set<String>>();
 	    private Map<String, Set<String>> mfModifiers = new HashMap<String, Set<String>>();
