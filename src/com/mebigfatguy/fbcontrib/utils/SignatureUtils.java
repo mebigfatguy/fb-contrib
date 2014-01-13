@@ -154,7 +154,7 @@ public class SignatureUtils {
 	public static Map<Integer, String> getParameterSignatures(Method m) {
 	    Type[] parms = m.getArgumentTypes();
 	    
-	    Map<Integer, String> parmSigs = new LinkedHashMap<Integer, String>();
+	    Map<Integer, String> parmSigs = new LinkedHashMap<Integer, String>(parms.length);
 	    
 	    int slot = m.isStatic() ? 0 : 1;
 	    for (Type t : parms) {
