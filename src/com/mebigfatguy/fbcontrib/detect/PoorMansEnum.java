@@ -100,6 +100,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
+            stack.precomputation(this);
             if (fieldValues.isEmpty()) {
                 return;
             }
