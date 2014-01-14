@@ -2673,6 +2673,18 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="SPP_NON_USEFUL_TOSTRING">
+	   <ShortDescription>Method calls toString() on an instance of a class that hasn't overridden toString()</ShortDescription>
+	   <LongDescription>Method {1} calls toString() on an instance of a class that hasn't overridden toString()</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This method calls toString() on an object that hasn't overridden the toString() method, and thus relies on
+	       the version found in java.lang.Object. This string is just a raw display of the object's class and location, and
+	       provides no information about the information of use. You should implement toString in this class.
+	       ]]>
+	   </Details>
+	</BugPattern>
 
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
 		<ShortDescription>Method assigns a variable in a larger scope then is needed</ShortDescription>

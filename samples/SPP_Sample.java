@@ -384,4 +384,11 @@ public class SPP_Sample implements Serializable
         }
         return Math.random() > 0.5;
     }
+    
+    public void testToString() {
+        SPP_Sample s = new SPP_Sample();
+        System.out.println(s.toString());
+        /* only report it once */
+        System.out.println(s.toString());
+    }
 }

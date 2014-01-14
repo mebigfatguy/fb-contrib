@@ -83,6 +83,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 	}
 
 	private final BugReporter bugReporter;
+	private final Set<String> toStringClasses;
 	private OpcodeStack stack;
 	private int lastPCs[];
 	private int lastOpcode;
@@ -99,6 +100,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 	 */
 	public SillynessPotPourri(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		toStringClasses = new HashSet<String>();
 	}
 
 	@Override
@@ -672,6 +674,17 @@ public class SillynessPotPourri extends BytecodeScanningDetector
                 			}
                 		}
                 	}
+                } else if ("toString".equals(methodName) && "java/lang/Object".equals(className)) {
+                    if (stack.getStackDepth() >= 1) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        JavaClass toStringClass = item.getJavaClass();
+                        if (!toStringClass.isInterface() && !"java.lang.Object".equals(toStringClass.getClassName()) && toStringClasses.add(toStringClass.getClassName())) {
+                            bugReporter.reportBug(new BugInstance(this, "SPP_NON_USEFUL_TOSTRING", NORMAL_PRIORITY)
+                                        .addClass(this)
+                                        .addMethod(this)
+                                        .addSourceLine(this));
+                        }
+                    }
                 }
 			} else if (seen == INVOKESPECIAL) {
 				String className = getClassConstantOperand();
@@ -773,7 +786,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					}
 				}
 			}
-
+		} catch (ClassNotFoundException cnfe) {
+		    bugReporter.reportMissingClass(cnfe);
 		} finally {
 			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
