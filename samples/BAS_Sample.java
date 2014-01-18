@@ -134,6 +134,17 @@ public class BAS_Sample
 
 	    return 0;
 	}
+	
+	public void tstFPRefChange(Holder h1, Holder h2, boolean b) {
+	    
+	    int h = h1.member;
+	    h1 = h2;
+	    
+	    if (b) 
+	    {
+	        System.out.println(h);
+	    }
+	}
 
 	public void testFPSrcOverwrite(int src, boolean b)
 	{
@@ -180,5 +191,10 @@ public class BAS_Sample
 	    }
 	    
 	    return null;
+	}
+	
+	static class Holder 
+	{
+	    int member;
 	}
 }
