@@ -5,18 +5,18 @@
 	<classpathentry excluding="lib/" kind="src" path="samples"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
-	<classpathentry kind="lib" path="lib/annotations-2.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/asm-tree-3.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/backport-util-concurrent-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/bcel-2.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang3-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet-api-3.1.0.jar"/>
-	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.11.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.5.jar"/>
 	<classpathentry kind="lib" path="lib/findbugs-2.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/guava-15.0.jar"/>
+	<classpathentry kind="lib" path="lib/annotations-2.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.2.jar"/>
+	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
