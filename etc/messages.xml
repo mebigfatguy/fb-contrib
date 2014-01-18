@@ -1352,7 +1352,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CollectionNamingConfusion">
 	   <Details>
 	       <![CDATA[
-	       <p>Looks for fields or local variables that are collections but which names have a different type
+	       <p>Looks for fields or local variables that are collections but the names have a different type
 	       of collection in the name. This is confusing, and is probably a left over from a type change, such as
 	       </p>
 	       <p>List<String> mySet;</p>
@@ -3813,7 +3813,7 @@
         <Details>
             <![CDATA[
             <p>This class defines a field or local collection variable with a name that contains a different type
-            of collection in it's name. This is confusing to the reader, and likely caused by a previous refactor of 
+            of collection in its name. This is confusing to the reader, and likely caused by a previous refactor of 
             type, without changing the name.</p>
             ]]> 
         </Details>
@@ -3825,7 +3825,7 @@
 	   <Details>
 	       <![CDATA[
 	       <p>This field, although defined as a simple variable (int, String, etc) only has a set of constant values
-	       assigned to it. This appears to be used like an enum value, and should probably be defined as such.
+	       assigned to it. Thus it appears to be used like an enum value, and should probably be defined as such.
 	       </p>
 	       ]]>
 	   </Details>
