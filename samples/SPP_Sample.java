@@ -391,4 +391,8 @@ public class SPP_Sample implements Serializable
         /* only report it once */
         System.out.println(s.toString());
     }
+    
+    public void testFPToString(Object o) {
+        System.out.println(o);
+    }
 }
