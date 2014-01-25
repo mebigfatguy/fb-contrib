@@ -49,7 +49,7 @@
         <echo message=""/>
         <echo message="    this project uses yank (https://github.com/mebigfatguy/yank) for dependency management"/>
         <echo message="    download yank.jar and place in ant/lib directory"/>
-        <echo message="    http://search.maven.org/#artifactdetails%7Ccom.mebigfatguy.yank%7Cyank%7C0.4.2%7Cjar"/>
+        <echo message="    http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.mebigfatguy.yank%22"/>
         <antcall target="install"/>
     </target>
 
