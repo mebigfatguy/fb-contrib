@@ -88,35 +88,34 @@ public class WOC_Sample {
     public List<String> fpOtherInstance(WOC_Sample ws) {
         return ws.fpList;
     }
-    
+
     public String fpCheckReference(boolean b) {
         List<String> s = null;
-        
+
         if (b) {
             s = new ArrayList<String>();
             s.add("foo");
         }
-        
+
         String result;
         if (s != null) {
             result = "yes";
         } else {
             result = "no";
         }
-        
+
         return result;
     }
-    
+
     public List<String> fpWOCTernary(boolean a, boolean b) {
-        
-        if (a)
-        {
+
+        if (a) {
             return b ? fp1 : fp2;
         }
-        
+
         List<String> used1 = new ArrayList<String>();
         List<String> used2 = new ArrayList<String>();
-        
+
         return b ? used1 : used2;
     }
 

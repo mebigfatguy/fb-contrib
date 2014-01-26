@@ -1,4 +1,3 @@
-
 public class CU_Sample implements Cloneable {
 
     public Object clone() throws CloneNotSupportedException {
@@ -37,7 +36,7 @@ public class CU_Sample implements Cloneable {
         public void run() {
         }
     }
-    
+
     class FPActuallyThrow implements Cloneable {
         public FPActuallyThrow clone() throws CloneNotSupportedException {
             throw new CloneNotSupportedException("Silly");

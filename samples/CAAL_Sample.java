@@ -1,7 +1,6 @@
 import java.util.Arrays;
 import java.util.List;
 
-
 public class CAAL_Sample {
 
     public void testCAAL(int[] v) {

@@ -3,17 +3,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-
-public class NPMC_Sample implements Cloneable
-{
-    public void testToString()
-    {
+public class NPMC_Sample implements Cloneable {
+    public void testToString() {
         StringBuilder sb = new StringBuilder();
         sb.append("hello").append("world").toString();
     }
 
-    public void testXValue()
-    {
+    public void testXValue() {
         Integer i = Integer.valueOf(4);
         i.intValue();
         Long l = Long.valueOf(4);
@@ -24,32 +20,25 @@ public class NPMC_Sample implements Cloneable
         f.doubleValue();
     }
 
-    public void testEquals(Object o)
-    {
+    public void testEquals(Object o) {
         equals(o);
     }
 
-    public void testHashCode()
-    {
+    public void testHashCode() {
         hashCode();
     }
 
-    public NPMC_Sample clone()
-    {
-        try
-        {
+    public NPMC_Sample clone() {
+        try {
             super.clone();
 
             return null;
-        }
-        catch (CloneNotSupportedException cnse)
-        {
+        } catch (CloneNotSupportedException cnse) {
             throw new Error();
         }
     }
 
-    public String[] testToArrayList()
-    {
+    public String[] testToArrayList() {
         List<String> l = new ArrayList<String>();
         l.toArray();
         Set<String> s = new HashSet<String>();

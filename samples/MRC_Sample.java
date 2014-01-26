@@ -3,89 +3,74 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
-
 @SuppressWarnings("all")
-public class MRC_Sample
-{
+public class MRC_Sample {
     private Component[] components;
 
-	private int getValue() {
-		return 1;
-	}
+    private int getValue() {
+        return 1;
+    }
 
-	private String getStringValue() {
-		return "Hello";
-	}
+    private String getStringValue() {
+        return "Hello";
+    }
 
-	public float getFP()
-	{
-		return 0.0f;
-	}
+    public float getFP() {
+        return 0.0f;
+    }
 
-	private double getTwoValuesFP(boolean b)
-	{
-		if (b)
-			return 1.0;
-		else
-			return 0.0;
-	}
+    private double getTwoValuesFP(boolean b) {
+        if (b)
+            return 1.0;
+        else
+            return 0.0;
+    }
 
-	private String getTwoDupsBySwitch(int i)
-	{
-		switch (i)
-		{
-		case 1:
-			return "Hello";
+    private String getTwoDupsBySwitch(int i) {
+        switch (i) {
+        case 1:
+            return "Hello";
 
-		case 2:
-			return "Hello";
+        case 2:
+            return "Hello";
 
-		default:
-			return "Hello";
-		}
-	}
+        default:
+            return "Hello";
+        }
+    }
 
+    private String fpStringBuilder() {
+        StringBuilder sb = new StringBuilder();
+        fooIt(sb);
 
-	private String fpStringBuilder()
-	{
-		StringBuilder sb = new StringBuilder();
-		fooIt(sb);
+        return sb.toString();
+    }
 
-	    return sb.toString();
-	}
+    private void fooIt(StringBuilder sb) {
+        sb.append("Foo");
+    }
 
-	private void fooIt(StringBuilder sb)
-	{
-		sb.append("Foo");
-	}
+    private int getCount(List<String> l) {
+        int count = 0;
+        Iterator<String> it = l.iterator();
+        while (it.hasNext()) {
+            if ("Foo".equals(it.next())) {
+                count += 1;
+            }
+        }
 
-	private int getCount(List<String> l)
-	{
-	  	int count = 0;
-	  	Iterator<String> it = l.iterator();
-	  	while(it.hasNext())
-	  	{
-	  		if("Foo".equals(it.next()))
-	  		{
-	  			count += 1;
-	  		}
-	  	}
+        return count;
+    }
 
-	  	return count;
-	}
+    private int fpInc() {
+        int i = 0;
+        i++;
+        return i;
+    }
 
-	private int fpInc()
-	{
-		int i = 0;
-		i++;
-		return i;
-	}
-
-    private long fpCountChars(Collection<String> c)
-    {
+    private long fpCountChars(Collection<String> c) {
         long totLength = 0;
-        for (String s : c)
-        {
+        for (String s : c) {
             totLength += s.length();
         }
         return totLength;

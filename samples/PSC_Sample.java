@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-
 public class PSC_Sample {
 
     public void testPSC(List<PSC_Sample> samples) {
@@ -19,7 +18,7 @@ public class PSC_Sample {
             names.add(s.toString());
         }
     }
-    
+
     public void testPSCMaps(Map<String, String> input) {
         Map<String, String> output = new HashMap<String, String>();
         for (Map.Entry<String, String> entry : input.entrySet()) {
@@ -47,11 +46,11 @@ public class PSC_Sample {
         commonWords.add("they");
         commonWords.add("them");
     }
-    
+
     public List<String> testAddAllToCtor(List<String> l) {
         List<String> ll = new ArrayList<String>();
         ll.addAll(l);
-        
+
         ll.add("FooBar");
         return ll;
     }
@@ -71,12 +70,10 @@ public class PSC_Sample {
             }
         }
     }
-    
-    public List<String> fpAddSubCollection(Map<String, Set<String>> s) 
-    {
+
+    public List<String> fpAddSubCollection(Map<String, Set<String>> s) {
         List<String> l = new ArrayList<String>();
-        for (Map.Entry<String, Set<String>> entry : s.entrySet()) 
-        {
+        for (Map.Entry<String, Set<String>> entry : s.entrySet()) {
             l.add(entry.getKey());
             l.addAll(entry.getValue());
         }
@@ -87,11 +84,11 @@ public class PSC_Sample {
         List<Integer> dest = new ArrayList<Integer>();
         for (Integer s : source) {
             switch (s.intValue()) {
-                case 0:
-                    dest.add(s);
+            case 0:
+                dest.add(s);
                 break;
-                case 1:
-                    dest.remove(s);
+            case 1:
+                dest.remove(s);
                 break;
             }
         }
@@ -117,21 +114,21 @@ public class PSC_Sample {
 
         return l;
     }
-    
+
     public List<Exception> fpPSCInCatchBlock(List<String> src) {
         List<Exception> exceptions = new ArrayList<Exception>();
-        
+
         for (String s : src) {
             try {
                 s = s.substring(1000, 1001);
-                
+
             } catch (IndexOutOfBoundsException e) {
                 exceptions.add(e);
             }
         }
-        
+
         List<Exception> exceptions2 = new ArrayList<Exception>();
-        
+
         for (String s : src) {
             try {
                 s = s.substring(1000, 1001);
@@ -141,7 +138,7 @@ public class PSC_Sample {
                 exceptions2.add(e);
             }
         }
-        
+
         return exceptions;
     }
 }

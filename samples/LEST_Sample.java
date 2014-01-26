@@ -9,178 +9,126 @@ import java.util.Date;
 import com.google.common.base.Throwables;
 
 @SuppressWarnings("all")
-public class LEST_Sample
-{
-	public Date testLest1(String input)
-	{
-		try
-		{
-			DateFormat df = new SimpleDateFormat("YYYY");
-			return df.parse(input);
-		}
-		catch (ParseException pe)
-		{
-			throw new IllegalArgumentException(pe.getMessage());
-		}
-	}
+public class LEST_Sample {
+    public Date testLest1(String input) {
+        try {
+            DateFormat df = new SimpleDateFormat("YYYY");
+            return df.parse(input);
+        } catch (ParseException pe) {
+            throw new IllegalArgumentException(pe.getMessage());
+        }
+    }
 
-	public Date testLest2(String input)
-	{
-		try
-		{
-			DateFormat df = new SimpleDateFormat("YYYY");
-			return df.parse(input);
-		}
-		catch (ParseException pe)
-		{
-			throw new IllegalArgumentException(pe.getMessage(), pe);
-		}
-	}
+    public Date testLest2(String input) {
+        try {
+            DateFormat df = new SimpleDateFormat("YYYY");
+            return df.parse(input);
+        } catch (ParseException pe) {
+            throw new IllegalArgumentException(pe.getMessage(), pe);
+        }
+    }
 
-	public Date testLestFP1(String input) throws ParseException
-	{
-		try
-		{
-			DateFormat df = new SimpleDateFormat("YYYY");
-			return df.parse(input);
-		}
-		catch (ParseException pe)
-		{
-			throw pe;
-		}
-	}
+    public Date testLestFP1(String input) throws ParseException {
+        try {
+            DateFormat df = new SimpleDateFormat("YYYY");
+            return df.parse(input);
+        } catch (ParseException pe) {
+            throw pe;
+        }
+    }
 
-	public Date testLestFP2(String input)
-	{
-		try
-		{
-			DateFormat df = new SimpleDateFormat("YYYY");
-			return df.parse(input);
-		}
-		catch (ParseException pe)
-		{
-			IllegalArgumentException iae = new IllegalArgumentException(pe.getMessage());
-			iae.initCause(pe);
-			throw iae;
-		}
-	}
+    public Date testLestFP2(String input) {
+        try {
+            DateFormat df = new SimpleDateFormat("YYYY");
+            return df.parse(input);
+        } catch (ParseException pe) {
+            IllegalArgumentException iae = new IllegalArgumentException(pe.getMessage());
+            iae.initCause(pe);
+            throw iae;
+        }
+    }
 
-	public void testLestFP3(String s)
-	{
-		double d;
-		try
-		{
-			d = Double.parseDouble(s);
-		}
-		catch (NumberFormatException nfe)
-		{
+    public void testLestFP3(String s) {
+        double d;
+        try {
+            d = Double.parseDouble(s);
+        } catch (NumberFormatException nfe) {
 
-		}
-		throw new RuntimeException("ok");
-	}
+        }
+        throw new RuntimeException("ok");
+    }
 
-	public void testLestFP4(String s) throws Exception
-	{
-		double d;
-		try
-		{
-			d = Double.parseDouble(s);
-		}
-		catch (NumberFormatException nfe)
-		{
-			Exception e = wrap(nfe);
-			throw e;
-		}
-	}
+    public void testLestFP4(String s) throws Exception {
+        double d;
+        try {
+            d = Double.parseDouble(s);
+        } catch (NumberFormatException nfe) {
+            Exception e = wrap(nfe);
+            throw e;
+        }
+    }
 
-	public void testLestFP5(String s) throws Exception
-	{
-		double d;
-		try
-		{
-			d = Double.parseDouble(s);
-		}
-		catch (NumberFormatException nfe)
-		{
-			Exception e = wrapStatic(nfe);
-			throw e;
-		}
-	}
+    public void testLestFP5(String s) throws Exception {
+        double d;
+        try {
+            d = Double.parseDouble(s);
+        } catch (NumberFormatException nfe) {
+            Exception e = wrapStatic(nfe);
+            throw e;
+        }
+    }
 
-	public void testLestFP6(String s) throws Exception
-	{
-		double d;
-		try
-		{
-			d = Double.parseDouble(s);
-		}
-		finally
-		{
-			throw new Exception("Yikes");
-		}
-	}
+    public void testLestFP6(String s) throws Exception {
+        double d;
+        try {
+            d = Double.parseDouble(s);
+        } finally {
+            throw new Exception("Yikes");
+        }
+    }
 
-	public void testLestFP7(String s)
-	{
-	    try
-        {
+    public void testLestFP7(String s) {
+        try {
             double d = Double.parseDouble(s);
+        } catch (NumberFormatException e) {
+            throw new RuntimeException(e);
         }
-	    catch (NumberFormatException e)
-	    {
-	        throw new RuntimeException(e);
-	    }
-	}
+    }
 
-	public void testLestFP8()
-	{
-	    try
-        {
+    public void testLestFP8() {
+        try {
             Thread.sleep(10L);
-        }
-        catch (Exception ex)
-        {
+        } catch (Exception ex) {
             throw new AssertionError(ex);
         }
     }
 
-	public void testLestFP3510540() throws Exception
-	{
+    public void testLestFP3510540() throws Exception {
         boolean bool = true;
-        if (bool)
-        {
-            try
-            {
+        if (bool) {
+            try {
                 throw new IOException();
-            }
-            catch (IOException ioe)
-            {
+            } catch (IOException ioe) {
                 throw new Exception(ioe);
             }
-        }
-        else
-        {
+        } else {
             throw new Exception("message");
         }
-	}
-	
-	public void fpThrowables() 
-	{
-	    try 
-	    {
-	        InputStream is = new FileInputStream("foo");
-	    } 
-	    catch (IOException e) 
-	    {
-	        throw Throwables.propagate(e);
-	    }
-	}
+    }
 
-	private Exception wrap(Exception e) {
-		return new Exception(e);
-	}
+    public void fpThrowables() {
+        try {
+            InputStream is = new FileInputStream("foo");
+        } catch (IOException e) {
+            throw Throwables.propagate(e);
+        }
+    }
 
-	private static Exception wrapStatic(Exception e) {
-		return new Exception(e);
-	}
+    private Exception wrap(Exception e) {
+        return new Exception(e);
+    }
+
+    private static Exception wrapStatic(Exception e) {
+        return new Exception(e);
+    }
 }

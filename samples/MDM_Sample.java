@@ -11,92 +11,95 @@ import java.util.concurrent.locks.ReentrantLock;
 import javax.net.ServerSocketFactory;
 import javax.net.ssl.SSLServerSocketFactory;
 
+public class MDM_Sample implements Runnable {
+    public MDM_Sample() throws Exception {
+        boolean b;
 
-public class MDM_Sample  implements Runnable
-{
-	public MDM_Sample() throws Exception
-	{
-		boolean b;
+        { // Halt tests
+            Runtime r = Runtime.getRuntime();
+            r.exit(0); // WARNING
+            r.halt(0); // WARNING
+            r.runFinalization(); // WARNING
+            System.runFinalization(); // WARNING
+        }
 
-		{ // Halt tests
-		Runtime r = Runtime.getRuntime();
-		r.exit(0); // WARNING
-		r.halt(0); // WARNING
-		r.runFinalization(); // WARNING
-		System.runFinalization(); // WARNING
-		}
+        { // equals() tests
+            BigDecimal bd1 = new BigDecimal(0);
+            BigDecimal bd2 = new BigDecimal(0);
+            b = bd1.equals(bd2); // WARNING
+        }
 
-		{ // equals() tests
-		BigDecimal bd1 = new BigDecimal(0);
-		BigDecimal bd2 = new BigDecimal(0);
-		b = bd1.equals(bd2); // WARNING
-		}
+        { // Socket tests
+            InetAddress localhost = InetAddress.getLocalHost(); // WARNING
+            if (localhost == null) {
+                localhost = InetAddress.getByName("booya");
+            }
+            ServerSocket ss = new ServerSocket(0);
+            touch(ss); // WARNING
+            ss = new ServerSocket(0, 0);
+            touch(ss); // WARNING
+            ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
+            ss = ssf.createServerSocket(0);
+            touch(ss); // WARNING
+            ss = ssf.createServerSocket(0, 0);
+            touch(ss); // WARNING
+        }
 
-		{ // Socket tests
-		InetAddress localhost = InetAddress.getLocalHost(); // WARNING
-		if (localhost == null)
-		{
-			localhost = InetAddress.getByName("booya");
-		}
-		ServerSocket ss = new ServerSocket(0); touch(ss); // WARNING
-		ss = new ServerSocket(0,0); touch(ss); // WARNING
-		ServerSocketFactory ssf = SSLServerSocketFactory.getDefault();
-		ss = ssf.createServerSocket(0); touch(ss); // WARNING
-		ss = ssf.createServerSocket(0,0); touch(ss); // WARNING
-		}
+        { // RNG tests
+            Random r = new Random();
+            touch(r); // WARNING
+            byte[] seed = SecureRandom.getSeed(1); // WARNING
+            r = new SecureRandom(seed);
+            touch(r); // WARNING
+        }
 
-		{ // RNG tests
-		Random r = new Random(); touch(r); // WARNING
-		byte[] seed = SecureRandom.getSeed(1); // WARNING
-		r = new SecureRandom(seed); touch(r); // WARNING
-		}
+        { // Thread tests
+            Thread t = new Thread(this);
+            int priority = t.getPriority(); // WARNING
+            t.setPriority(priority); // WARNING
+            t.join(); // WARNING
 
-		{ // Thread tests
-			Thread t = new Thread(this);
-			int priority = t.getPriority(); // WARNING
-			t.setPriority(priority); // WARNING
-			t.join(); // WARNING
+            Thread.sleep(0); // WARNING
+            Thread.sleep(0, 0); // WARNING
+            Thread.yield(); // WARNING
+        }
 
-			Thread.sleep(0); // WARNING
-			Thread.sleep(0,0); // WARNING
-			Thread.yield(); // WARNING
-		}
+        { // Timeout tests
+            ReentrantLock rl = new ReentrantLock();
+            rl.lock(); // WARNING
+            rl.lockInterruptibly(); // WARNING
+            b = rl.isHeldByCurrentThread(); // WARNING
+            b = rl.isLocked(); // WARNING
 
-		{ // Timeout tests
-			ReentrantLock rl = new ReentrantLock();
-			rl.lock(); // WARNING
-			rl.lockInterruptibly(); // WARNING
-			b = rl.isHeldByCurrentThread(); // WARNING
-			b = rl.isLocked(); // WARNING
+            Object o = new Object();
+            do {
+                b = rl.tryLock(); // WARNING
+                o.wait(); // WARNING
+            } while (b);
 
-			Object o = new Object();
-			do {
-				b = rl.tryLock(); // WARNING
-				o.wait(); // WARNING
-			} while (b);
+            Lock l = rl;
+            l.lock(); // WARNING
+            b = l.tryLock();
+            touch(b); // WARNING
+            l.lockInterruptibly(); // WARNING
 
-			Lock l = rl;
-			l.lock(); // WARNING
-			b = l.tryLock(); touch(b); // WARNING
-			l.lockInterruptibly(); // WARNING
+            Condition c = l.newCondition();
+            c.signal(); // WARNING
+            c.await(); // WARNING
+        }
 
-			Condition c = l.newCondition();
-			c.signal(); // WARNING
-			c.await(); // WARNING
-		}
+        { // String tests
+            byte[] bytes = "".getBytes(); // WARNING
+            String s = new String(bytes); // WARNING
+            bytes = s.getBytes("UTF-8");
 
-		{ // String tests
-			byte[] bytes = "".getBytes(); // WARNING
-			String s = new String(bytes); // WARNING
-			bytes = s.getBytes("UTF-8");
+            Locale.setDefault(Locale.ENGLISH); // WARNING
+        }
+    }
 
-			Locale.setDefault(Locale.ENGLISH); // WARNING
-		}
-	}
+    public void run() {
+    }
 
-	public void run() {}
-	private static void touch(Object o) {}
+    private static void touch(Object o) {
+    }
 }
-
-
- 	  	 

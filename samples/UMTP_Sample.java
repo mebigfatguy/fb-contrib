@@ -1,7 +1,6 @@
 import java.util.HashMap;
 import java.util.Map;
 
-
 public class UMTP_Sample {
 
     public <T, C> C getT(String s, int i, Class<C> cls) {

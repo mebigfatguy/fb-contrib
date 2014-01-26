@@ -10,61 +10,48 @@ import javax.naming.NamingException;
 import javax.naming.directory.DirContext;
 import javax.naming.directory.InitialDirContext;
 
-
 @SuppressWarnings("all")
-public class BED_Sample
-{
-	IOException ioe;
+public class BED_Sample {
+    IOException ioe;
 
-	public BED_Sample() throws IOException
-	{
+    public BED_Sample() throws IOException {
 
-	}
+    }
 
-	public BED_Sample(String name) throws NamingException
-	{
-		Hashtable<String, String> env = new Hashtable<String, String>();
-		env.put("name", name);
-		DirContext context = new InitialDirContext(env);
-	}
+    public BED_Sample(String name) throws NamingException {
+        Hashtable<String, String> env = new Hashtable<String, String>();
+        env.put("name", name);
+        DirContext context = new InitialDirContext(env);
+    }
 
-	private void badThrow() throws SQLException
-	{
+    private void badThrow() throws SQLException {
 
-	}
+    }
 
-	public static void badStatic() throws DataFormatException
-	{
+    public static void badStatic() throws DataFormatException {
 
-	}
-	
-	public final void badFinal() throws ClassNotFoundException
-	{
-	    
-	}
+    }
 
-	public static void doIt() throws SQLException, IOException
-	{
-		InputStream is = new FileInputStream("c:\\temp.txt");
-	}
+    public final void badFinal() throws ClassNotFoundException {
 
-	public static void fp() throws Exception
-	{
-		InputStream is = new FileInputStream("c:\\temp.txt");
-	}
+    }
 
-	private void fpThrowField(boolean b) throws IOException
-	{
-		if (b)
-		{
-			throw ioe;
-		}
-		else
-		{
-			IOException e = ioe;
-			throw ioe;
-		}
-	}
+    public static void doIt() throws SQLException, IOException {
+        InputStream is = new FileInputStream("c:\\temp.txt");
+    }
+
+    public static void fp() throws Exception {
+        InputStream is = new FileInputStream("c:\\temp.txt");
+    }
+
+    private void fpThrowField(boolean b) throws IOException {
+        if (b) {
+            throw ioe;
+        } else {
+            IOException e = ioe;
+            throw ioe;
+        }
+    }
 
     public Object iAmCreatingAnObject() {
         return new Object() {

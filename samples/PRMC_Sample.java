@@ -5,86 +5,72 @@ import java.util.HashSet;
 import java.util.Set;
 
 @SuppressWarnings("all")
-public class PRMC_Sample
-{
+public class PRMC_Sample {
     private static PRMC_Sample SAMPLE1;
     private static PRMC_Sample SAMPLE2;
-	String data;
+    String data;
 
-	public boolean test1(Calendar c)
-	{
-		Date d = c.getTime();
-		long l = d.getTime();
-		Date e = c.getTime();
-		long j = e.getTime();
-		return l == j;
-	}
+    public boolean test1(Calendar c) {
+        Date d = c.getTime();
+        long l = d.getTime();
+        Date e = c.getTime();
+        long j = e.getTime();
+        return l == j;
+    }
 
-    public void rmcFP(ByteBuffer bb)
-    {
+    public void rmcFP(ByteBuffer bb) {
         int i = bb.getInt();
         int j = bb.getInt();
     }
 
     @Override
-    public boolean equals(Object o)
-    {
-    	PRMC_Sample rmc = (PRMC_Sample)o;
-    	if (data.equals("INF") || rmc.data.equals("INF"))
-    		return false;
+    public boolean equals(Object o) {
+        PRMC_Sample rmc = (PRMC_Sample) o;
+        if (data.equals("INF") || rmc.data.equals("INF"))
+            return false;
 
-    	return data.equals(rmc.data);
+        return data.equals(rmc.data);
     }
 
-    public void staticPRMC()
-    {
-    	Factory.getInstance().fee();
-    	Factory.getInstance().fi();
-    	Factory.getInstance().fo();
-    	Factory.getInstance().fum();
+    public void staticPRMC() {
+        Factory.getInstance().fee();
+        Factory.getInstance().fi();
+        Factory.getInstance().fo();
+        Factory.getInstance().fum();
     }
 
-    static class Factory
-    {
-    	private static Factory f = new Factory();
+    static class Factory {
+        private static Factory f = new Factory();
 
-    	private Factory()
-    	{
-    	}
+        private Factory() {
+        }
 
-    	public static Factory getInstance()
-    	{
-    		return f;
-    	}
+        public static Factory getInstance() {
+            return f;
+        }
 
-    	public void fee()
-    	{
-    	}
+        public void fee() {
+        }
 
-    	public void fi()
-    	{
-    	}
+        public void fi() {
+        }
 
-    	public void fo()
-    	{
-    	}
+        public void fo() {
+        }
 
-    	public void fum()
-    	{
-    	}
+        public void fum() {
+        }
     }
 
-    public long fpCurrentTimeMillis(Object o)
-    {
-    	long time = -System.currentTimeMillis();
-    	o.hashCode();
-    	time += System.currentTimeMillis();
+    public long fpCurrentTimeMillis(Object o) {
+        long time = -System.currentTimeMillis();
+        o.hashCode();
+        time += System.currentTimeMillis();
 
-    	return time;
+        return time;
     }
 
-    public void fpEnumToString(FPEnum e)
-    {
+    public void fpEnumToString(FPEnum e) {
         Set<String> s = new HashSet<String>();
 
         s.add(FPEnum.fee.toString());
@@ -93,32 +79,29 @@ public class PRMC_Sample
         s.add(FPEnum.fum.toString());
     }
 
-    enum FPEnum { fee, fi, fo, fum };
-
+    enum FPEnum {
+        fee, fi, fo, fum
+    };
 
     public boolean validChainedFields(Chain c1) {
         return c1.chainedField.toString().equals(c1.chainedField.toString());
     }
 
-    public boolean fpChainedFieldsOfDiffBases(Chain c1, Chain c2)
-    {
+    public boolean fpChainedFieldsOfDiffBases(Chain c1, Chain c2) {
         return c1.chainedField.toString().equals(c2.chainedField.toString());
     }
-    
-    public void fpMultipleStatics() 
-    {
+
+    public void fpMultipleStatics() {
         SAMPLE1 = new PRMC_Sample();
         SAMPLE1.setValue(5);
         SAMPLE2 = new PRMC_Sample();
         SAMPLE2.setValue(5);
     }
-    
-    public void setValue(int i) 
-    {
+
+    public void setValue(int i) {
     }
 
-    class Chain
-    {
+    class Chain {
         public Chain chainedField;
 
         public String toString() {
