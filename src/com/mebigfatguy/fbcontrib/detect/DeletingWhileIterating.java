@@ -97,7 +97,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
-	private List<Set<Comparable<?>>> collectionGroups;
+	private List<GroupPair> collectionGroups;
 	private Map<Integer, Integer> groupToIterator;
 	private Map<Integer, Loop> loops;
 	private Map<Integer, BitSet> endOfScopes;
@@ -122,7 +122,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 
 		try {
 			stack = new OpcodeStack();
-			collectionGroups = new ArrayList<Set<Comparable<?>>>();
+			collectionGroups = new ArrayList<GroupPair>();
 			groupToIterator = new HashMap<Integer, Integer>();
 			loops = new HashMap<Integer, Loop>(10);
 			super.visitClassContext(classContext);
@@ -186,21 +186,23 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 							OpcodeStack.Item itm = stack.getStackItem(1);
 							int id = findCollectionGroup(itm, true);
 							if (id >= 0) {
-								Integer it = groupToIterator.get(Integer.valueOf(id));
-								Loop loop = loops.get(it);
-								if (loop != null) {
-									int pc = getPC();
-									if (loop.hasPC(pc)) {
-										boolean breakFollows = breakFollows(loop, !Type.getReturnType(signature).getSignature().equals("V"));
-
-										if (!breakFollows) {
-											bugReporter.reportBug(new BugInstance(this, "DWI_DELETING_WHILE_ITERATING", NORMAL_PRIORITY)
-														.addClass(this)
-														.addMethod(this)
-														.addSourceLine(this));
-										}
-									}
-								}
+							    if (collectionGroups.get(id).isStandardCollection()) {
+    								Integer it = groupToIterator.get(Integer.valueOf(id));
+    								Loop loop = loops.get(it);
+    								if (loop != null) {
+    									int pc = getPC();
+    									if (loop.hasPC(pc)) {
+    										boolean breakFollows = breakFollows(loop, !Type.getReturnType(signature).getSignature().equals("V"));
+    
+    										if (!breakFollows) {
+    											bugReporter.reportBug(new BugInstance(this, "DWI_DELETING_WHILE_ITERATING", NORMAL_PRIORITY)
+    														.addClass(this)
+    														.addMethod(this)
+    														.addSourceLine(this));
+    										}
+    									}
+    								}
+							    }
 							}
 						}
 					} else {
@@ -247,6 +249,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 						FieldAnnotation fa = FieldAnnotation.fromFieldDescriptor(new FieldDescriptor(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false));
 						itm = new OpcodeStack.Item(itm.getSignature(), fa, stack.getStackItem(1).getRegisterNumber());
 						removeFromCollectionGroup(itm);
+		                groupId = findCollectionGroup(itm, true);
 					}
 				}
 			 } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
@@ -268,9 +271,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 								groupToIterator.put(id, regIt);
 							}
 
-							Set<Comparable<?>> group = collectionGroups.get(id.intValue());
-							if (group != null) {
-								group.add(Integer.valueOf(reg));
+							GroupPair pair = collectionGroups.get(id.intValue());
+							if (pair != null) {
+							    pair.addMember(Integer.valueOf(reg));
 							}
 						} catch (ClassNotFoundException cnfe) {
 							bugReporter.reportMissingClass(cnfe);
@@ -388,16 +391,16 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 		if (groupElement != null) {
 			int numGroups = collectionGroups.size();
 			for (int i = 0; i < numGroups; i++) {
-				Set<? extends Comparable<?>> group = collectionGroups.get(i);
-				if (group.contains(groupElement)) {
+				GroupPair groupPair = collectionGroups.get(i);
+				if (groupPair.containsMember(groupElement)) {
 					return i;
 				}
 			}
 
 			if (addIfNotFound) {
+			    GroupPair groupPair = new GroupPair(groupElement, itm.getSignature());
 				Set<Comparable<?>> group = new HashSet<Comparable<?>>();
-				group.add(groupElement);
-				collectionGroups.add(group);
+				collectionGroups.add(groupPair);
 				return collectionGroups.size() - 1;
 			}
 		}
@@ -408,9 +411,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	private void removeFromCollectionGroup(OpcodeStack.Item itm) {
 		Comparable<?> groupElement = getGroupElement(itm);
 		if (groupElement != null) {
-			for (Set<? extends Comparable<?>> group : collectionGroups) {
-				if (group.contains(groupElement)) {
-					group.remove(groupElement);
+			for (GroupPair groupPair : collectionGroups) {
+				if (groupPair.containsMember(groupElement)) {
+				    groupPair.removeMember(groupElement);
 					break;
 				}
 			}
@@ -445,11 +448,11 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	        for (int i = endVars.nextSetBit(0); i >= 0; i = endVars.nextSetBit(i+1)) {
 	            Integer v = Integer.valueOf(i);
 	            {
-        	        Iterator<Set<Comparable<?>>> it = collectionGroups.iterator();
+        	        Iterator<GroupPair> it = collectionGroups.iterator();
         	        while (it.hasNext()) {
-        	            Set<Comparable<?>> gv = it.next();
-        	            if (gv.contains(v)) {
-        	                gv.remove(v);
+        	            GroupPair groupPair = it.next();
+        	            if (groupPair.containsMember(v)) {
+        	                groupPair.removeMember(v);
         	            }
         	        }
 	            }
@@ -491,5 +494,37 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
         public String toString() {
             return "Start=" + loopStart + " Finish=" + loopFinish;
         }
+	}
+	
+	static class GroupPair {
+	    private Set<Comparable<?>> groupMembers;
+	    private String collectionClass;
+	    
+	    public GroupPair(Comparable<?> member, String cls) {
+	        groupMembers = new HashSet<Comparable<?>>();
+	        groupMembers.add(member);
+	        collectionClass = cls;
+	    }
+	    
+	    public void addMember(Comparable<?> member) {
+	        groupMembers.add(member);
+	    }
+	    
+	    public void removeMember(Comparable<?> member) {
+            groupMembers.remove(member);
+        }
+	    
+	    public boolean containsMember(Comparable<?> member) {
+	        return groupMembers.contains(member);
+	    }
+	    
+	    public boolean isStandardCollection() {
+	        return (collectionClass == null) || !collectionClass.contains("/concurrent/");
+	    }
+	    
+	    @Override
+	    public String toString() {
+	        return groupMembers + ((collectionClass == null) ? "" : collectionClass);
+	    }
 	}
 }
