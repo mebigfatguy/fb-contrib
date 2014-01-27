@@ -240,7 +240,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 							groupId = id.intValue();
 					}
 				}
-			 } else if (seen == PUTFIELD) {
+			 } else if ((seen == PUTFIELD) || (seen == PUTSTATIC)) {
 				if (stack.getStackDepth() > 1) {
 					OpcodeStack.Item itm = stack.getStackItem(0);
 
