@@ -274,13 +274,19 @@ access to
 						Object uo = item.getUserValue();
 						if (uo != null) {
 							if (uo instanceof Boolean) {
-								int reg = RegisterUtils.getAStoreReg(this, seen);
+							    int reg = RegisterUtils.getAStoreReg(this, seen);
 								localWOCollections.put(Integer.valueOf(reg), Integer.valueOf(getPC()));
+	                            if (stack.getStackDepth() > 1) {
+	                                //the astore was preceded by a dup
+	                                item = stack.getStackItem(1);
+	                                item.setUserValue(Integer.valueOf(reg));
+	                            }
 							} else {
 								clearUserValue(item);
 							}
 						}
 					}
+					
 				break;
 
 				case ALOAD_0:
@@ -395,6 +401,8 @@ access to
 			localWOCollections.remove(uo);
 		} else if (uo instanceof String) {
 			fieldWOCollections.remove(uo);
+		} else if (uo instanceof Boolean) {
+		    localWOCollections.remove(Integer.valueOf(item.getRegisterNumber()));
 		}
 		item.setUserValue(null);
 	}
