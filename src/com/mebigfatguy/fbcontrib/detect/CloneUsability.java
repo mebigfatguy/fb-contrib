@@ -89,7 +89,7 @@ public class CloneUsability extends BytecodeScanningDetector implements Detector
     /**
      * overrides the visitor to grab the method name and reset the state.
      *
-     * @param m the method being parsed
+     * @param obj the method being parsed
      */
     @Override
     public void visitCode(Code obj) {
