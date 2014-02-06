@@ -118,6 +118,13 @@ public class WOC_Sample {
 
         return b ? used1 : used2;
     }
+    
+    public void fpWOCAllowToMap(Map<String, List<String>> m, List<String> l) {
+        if (l == null) {
+            m.put("FP",  l = new ArrayList<String>());
+        }
+        l.add("Hello there");
+    }
 
     public static class FpContains {
         private List<String> fpSet;
