@@ -71,61 +71,63 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
 		try {
 			XMethod xMethod = getXMethod();
-			String[] tes = xMethod.getThrownExceptions();
-			Set<String> thrownExceptions = new HashSet<String>(Arrays.<String> asList((tes == null) ? new String[0] : tes));
-
-			blocks = new ArrayList<TryBlock>();
-			inBlocks = new ArrayList<TryBlock>();
-			transitionPoints = new ArrayList<Integer>();
-
-			CodeException[] ces = obj.getExceptionTable();
-			for (CodeException ce : ces) {
-				TryBlock tb = new TryBlock(ce);
-				int existingBlock = blocks.indexOf(tb);
-				if (existingBlock >= 0) {
-					tb = blocks.get(existingBlock);
-					tb.addCatchType(ce);
-				} else {
-					blocks.add(tb);
-				}
-			}
-
-			Iterator<TryBlock> it = blocks.iterator();
-			while (it.hasNext()) {
-				TryBlock block = it.next();
-				if (block.hasMultipleHandlers() || block.isFinally()
-						|| block.catchIsThrown(getConstantPool(), thrownExceptions)) {
-					it.remove();
-				}
-			}
-
-			if (blocks.size() > 1) {
-				stack.resetForMethodEntry(this);
-				super.visitCode(obj);
-
-				if (blocks.size() > 1) {
-                    Collections.sort(transitionPoints);
-
-                    TryBlock firstBlock = blocks.get(0);
-					for (int i = 1; i < blocks.size(); i++) {
-						TryBlock secondBlock = blocks.get(i);
-
-						if (!blocksSplitAcrossTransitions(firstBlock, secondBlock)) {
-    						if ((firstBlock.getCatchType() == secondBlock.getCatchType())
-                                    && (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
-                                    && (firstBlock.getMessage().equals(secondBlock.getMessage())
-    								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature()))))) {
-    							bugReporter.reportBug(new BugInstance(this, "STB_STACKED_TRY_BLOCKS", NORMAL_PRIORITY)
-    									.addClass(this).addMethod(this)
-    									.addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
-    									.addSourceLineRange(this, secondBlock.getStartPC(), secondBlock.getEndHandlerPC()));
-
+			if (xMethod != null) {
+    			String[] tes = xMethod.getThrownExceptions();
+    			Set<String> thrownExceptions = new HashSet<String>(Arrays.<String> asList((tes == null) ? new String[0] : tes));
+    
+    			blocks = new ArrayList<TryBlock>();
+    			inBlocks = new ArrayList<TryBlock>();
+    			transitionPoints = new ArrayList<Integer>();
+    
+    			CodeException[] ces = obj.getExceptionTable();
+    			for (CodeException ce : ces) {
+    				TryBlock tb = new TryBlock(ce);
+    				int existingBlock = blocks.indexOf(tb);
+    				if (existingBlock >= 0) {
+    					tb = blocks.get(existingBlock);
+    					tb.addCatchType(ce);
+    				} else {
+    					blocks.add(tb);
+    				}
+    			}
+    
+    			Iterator<TryBlock> it = blocks.iterator();
+    			while (it.hasNext()) {
+    				TryBlock block = it.next();
+    				if (block.hasMultipleHandlers() || block.isFinally()
+    						|| block.catchIsThrown(getConstantPool(), thrownExceptions)) {
+    					it.remove();
+    				}
+    			}
+    
+    			if (blocks.size() > 1) {
+    				stack.resetForMethodEntry(this);
+    				super.visitCode(obj);
+    
+    				if (blocks.size() > 1) {
+                        Collections.sort(transitionPoints);
+    
+                        TryBlock firstBlock = blocks.get(0);
+    					for (int i = 1; i < blocks.size(); i++) {
+    						TryBlock secondBlock = blocks.get(i);
+    
+    						if (!blocksSplitAcrossTransitions(firstBlock, secondBlock)) {
+        						if ((firstBlock.getCatchType() == secondBlock.getCatchType())
+                                        && (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
+                                        && (firstBlock.getMessage().equals(secondBlock.getMessage())
+        								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature()))))) {
+        							bugReporter.reportBug(new BugInstance(this, "STB_STACKED_TRY_BLOCKS", NORMAL_PRIORITY)
+        									.addClass(this).addMethod(this)
+        									.addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
+        									.addSourceLineRange(this, secondBlock.getStartPC(), secondBlock.getEndHandlerPC()));
+    
+        						}
     						}
-						}
-
-						firstBlock = secondBlock;
-					}
-				}
+    
+    						firstBlock = secondBlock;
+    					}
+    				}
+    			}
 			}
 		} finally {
 			blocks = null;
