@@ -399,8 +399,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 
 			if (addIfNotFound) {
 			    GroupPair groupPair = new GroupPair(groupElement, itm.getSignature());
-				Set<Comparable<?>> group = new HashSet<Comparable<?>>();
-				collectionGroups.add(groupPair);
+			    collectionGroups.add(groupPair);
 				return collectionGroups.size() - 1;
 			}
 		}
