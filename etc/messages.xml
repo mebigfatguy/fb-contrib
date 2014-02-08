@@ -2695,6 +2695,16 @@
 	       ]]>
 	   </Details>
 	</BugPattern>
+	
+	<BugPattern type="SPP_TOSTRING_ON_STRING">
+	   <ShortDescription>Method calls toString() on a String</ShortDescription>
+	   <LongDescription>Method {1} calls toString() on a String</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This methods calls toString on a String. Just use the object itself if you want a String.</p>
+	       ]]>
+	   </Details>
+	</BugPattern>
 
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
 		<ShortDescription>Method assigns a variable in a larger scope then is needed</ShortDescription>

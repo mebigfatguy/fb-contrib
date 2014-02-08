@@ -602,6 +602,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 							}
 						}
 					}
+    				else if ("toString".equals(methodName)) {
+                        bugReporter.reportBug(new BugInstance(this, "SPP_TOSTRING_ON_STRING", NORMAL_PRIORITY)
+                         .addClass(this)
+                         .addMethod(this)
+                         .addSourceLine(this));
+                    }
                 } else if ("equals(Ljava/lang/Object;)Z".equals(methodName + getSigConstantOperand())) {
                 	try {
 	                	JavaClass cls = Repository.lookupClass(className);

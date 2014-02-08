@@ -310,6 +310,10 @@ public class SPP_Sample implements Serializable {
         }
         return false;
     }
+    
+    public String testStringToString(String x) {
+        return x.toString();
+    }
 
     public boolean fpNullAndInstanceOf(Object o) {
         if (o != null) {
