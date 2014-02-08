@@ -107,7 +107,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
                     unusedParms.set(reg);
                     regToParm.put(reg, Integer.valueOf(i+1));
                     String parmSig = parmTypes[i].getSignature();
-                    reg += ("L".equals(parmSig) || "D".equals(parmSig)) ? 2 : 1;
+                    reg += ("J".equals(parmSig) || "D".equals(parmSig)) ? 2 : 1;
                 }
                 
                 super.visitCode(obj);
