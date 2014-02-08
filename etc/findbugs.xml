@@ -257,6 +257,8 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.PoorMansEnum" speed="fast" reports="PME_POOR_MANS_ENUM" />
 
+    <Detector class="com.mebigfatguy.fbcontrib.detect.UnusedParameter" speed="fast" reports="UP_UNUSED_PARAMETER" />
+    
     <!--  COMMENT OUT FOR POINT RELEASE  -->
     
 	<!-- BugPattern -->
@@ -455,4 +457,5 @@
     <BugPattern abbrev="ICA" type="ICA_INVALID_CONSTANT_ARGUMENT" category="CORRECTNESS" />
     <BugPattern abbrev="CNC" type="CNC_COLLECTION_NAMING_CONFUSION" category="STYLE" />
     <BugPattern abbrev="PME" type="PME_POOR_MANS_ENUM" category="STYLE" />
+    <BugPattern abbrev="UP" type="UP_UNUSED_PARAMETER" category="STYLE" />
 </FindbugsPlugin>

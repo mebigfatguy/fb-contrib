@@ -1371,6 +1371,16 @@
 	       ]]>
 	   </Details>
 	</Detector>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UnusedParameter">
+	   <Details>
+	       <![CDATA[
+	       <p>Looks for private or static methods that have parameters that aren't used. These parameters
+            can be removed.</p>
+            <p>It is fast detector</p>
+	       ]]>
+	   </Details>
+	</Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -3830,6 +3840,19 @@
 	       ]]>
 	   </Details>
 	</BugPattern>
+	
+	<BugPattern type="UP_UNUSED_PARAMETER">
+	   <ShortDescription>Static or private method has unused parameters</ShortDescription>
+	   <LongDescription>Static or private method {1} has unused parameters</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This method defines parameters that are never used. As this method is either static of private,
+	       and can't be derived from, it is safe to remove these parameters and simplify your method.
+	       You should consider, while unlikely, that this method may be used reflectively, and thus you will
+	       want to change that call as well.
+	       ]]>
+	   </Details>
+	</BugPattern>
 
 	<!-- BugCode -->
 
@@ -3947,4 +3970,5 @@
 	<BugCode abbrev="ICA">Invalid Constant Argument</BugCode>
 	<BugCode abbrev="CNC">Collection Naming Confusion</BugCode>
 	<BugCode abbrev="PME">Poor Mans Enum</BugCode>
+	<BugCode abbrev="UP">Unused Parameter</BugCode>
 </MessageCollection>
