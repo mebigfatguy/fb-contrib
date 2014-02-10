@@ -1,5 +1,9 @@
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 
-public class UP_Sample {
+
+public class UP_Sample implements Serializable {
 
     private int testUP1(int x, double d, float f, char c) {
         if (f == 0f) {
@@ -31,5 +35,13 @@ public class UP_Sample {
         }
         
         c += x;
+    }
+    
+    private void readObject(ObjectInputStream in) {
+        
+    }
+    
+    private void writeObject(ObjectOutputStream out) {
+        
     }
 }

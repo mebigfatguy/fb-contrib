@@ -20,7 +20,9 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -43,6 +45,15 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class UnusedParameter extends BytecodeScanningDetector {
 
+    private static Set<String> IGNORE_METHODS = new HashSet<String>();
+    static {
+        IGNORE_METHODS.add("<init>");
+        IGNORE_METHODS.add("<clinit>");
+        IGNORE_METHODS.add("main");
+        IGNORE_METHODS.add("writeObject");
+        IGNORE_METHODS.add("readObject");
+        IGNORE_METHODS.add("readObjectNoData");
+    }
     private BugReporter bugReporter;
     
     private BitSet unusedParms;
@@ -87,7 +98,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
         Method m = getMethod();
         String methodName = m.getName();
-        if ("<init>".equals(methodName) || "<clinit>".equals(methodName) || "main".equals(methodName))
+        if (IGNORE_METHODS.contains(methodName))
             return;
         
         int accessFlags = m.getAccessFlags();
