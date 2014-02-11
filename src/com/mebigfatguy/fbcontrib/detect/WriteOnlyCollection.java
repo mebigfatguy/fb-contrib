@@ -215,7 +215,16 @@ access to
 	public void sawOpcode(int seen) {
 		Object userObject = null;
 
+		// saving and restoring the userobject of the top item, works around a bug in Findbugs proper
+		if (stack.getStackDepth() > 0) {
+		    userObject = stack.getStackItem(0).getUserValue();
+		}
 		stack.precomputation(this);
+		if (stack.getStackDepth() > 0) {
+            stack.getStackItem(0).setUserValue(userObject);
+            userObject = null;
+        }
+		
 		try {
 			switch (seen) {
 				case INVOKESPECIAL:
@@ -311,7 +320,7 @@ access to
 					if (stack.getStackDepth() > 1) {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						Object uo = item.getUserValue();
-						if (!(uo instanceof Boolean)) {
+						if ((uo != null) && !(uo instanceof Boolean)) {
 							clearUserValue(item);
 						}
 					}
@@ -337,7 +346,7 @@ access to
 					if (stack.getStackDepth() > 0) {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						Object uo = item.getUserValue();
-						if (!(uo instanceof Boolean)) {
+						if ((uo != null) && !(uo instanceof Boolean)) {
 							clearUserValue(item);
 						}
 					}
@@ -359,7 +368,7 @@ access to
                     if (stack.getStackDepth() > 0) {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						Object uo = item.getUserValue();
-						if (!(uo instanceof Boolean)) {
+						if ((uo != null) && !(uo instanceof Boolean)) {
 							clearUserValue(item);
 						}
 	                    sawTernary = true;
@@ -410,7 +419,7 @@ access to
 	private void processMethodParms() {
 		String sig = getSigConstantOperand();
 		int numParms = Type.getArgumentTypes(sig).length;
-		if (stack.getStackDepth() >= numParms) {
+		if ((numParms > 0) && (stack.getStackDepth() >= numParms)) {
 			for (int i = 0; i < numParms; i++) {
 				clearUserValue(stack.getStackItem(i));
 			}
