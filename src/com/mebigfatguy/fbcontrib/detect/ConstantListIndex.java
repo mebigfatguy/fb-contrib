@@ -147,19 +147,18 @@ public class ConstantListIndex extends BytecodeScanningDetector
 						//case BALOAD: byte and char indexing seems prevalent, and 
 						//case CALOAD: usually harmless so ignore
 						case SALOAD:
-							if (state == State.SAW_CONSTANT_0)
-								iConst0Looped.set(getPC());
-							else {
-								if (stack.getStackDepth() > 1) {
-									OpcodeStack.Item item = stack.getStackItem(1);
-									if (!isArrayFromUbiquitousMethod(item)) {
+                            if (stack.getStackDepth() > 1) {
+                                OpcodeStack.Item item = stack.getStackItem(1);
+                                if (!isArrayFromUbiquitousMethod(item)) { 
+        							if (state == State.SAW_CONSTANT_0)
+        								iConst0Looped.set(getPC());
+        							else {
 										bugReporter.reportBug(new BugInstance(this, "CLI_CONSTANT_LIST_INDEX", NORMAL_PRIORITY)
 													.addClass(this)
 													.addMethod(this)
 													.addSourceLine(this));
-									}
-								}
-
+        							}
+                                }
 							}
 						break;
 						
