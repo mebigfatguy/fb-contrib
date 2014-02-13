@@ -48,13 +48,15 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
 	static {
 		try {
 			cloneableClass = Repository.lookupClass("java/lang/Cloneable");
+			Integer normal = Integer.valueOf(NORMAL_PRIORITY);
+			Integer low = Integer.valueOf(LOW_PRIORITY);
 			changingMethods = new HashMap<String, Integer>();
-			changingMethods.put("add", Integer.valueOf(NORMAL_PRIORITY));
-			changingMethods.put("addAll", Integer.valueOf(NORMAL_PRIORITY));
-			changingMethods.put("put", Integer.valueOf(NORMAL_PRIORITY));
-			changingMethods.put("putAll", Integer.valueOf(NORMAL_PRIORITY));
-			changingMethods.put("insert", Integer.valueOf(LOW_PRIORITY));
-			changingMethods.put("set", Integer.valueOf(LOW_PRIORITY));
+			changingMethods.put("add", normal);
+			changingMethods.put("addAll", normal);
+			changingMethods.put("put", normal);
+			changingMethods.put("putAll", normal);
+			changingMethods.put("insert", low);
+			changingMethods.put("set", low);
 			
 		} catch (ClassNotFoundException cnfe) {
 			cloneableClass = null;
