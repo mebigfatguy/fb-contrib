@@ -2014,6 +2014,21 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="PMB_INSTANCE_BASED_THREAD_LOCAL">
+	   <ShortDescription>Field is an instance based ThreadLocal variable</ShortDescription>
+	   <LongDescription>Field {1} is an instance based ThreadLocal variable</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This ThreadLocal field is defined as being instance based (not static). As all 
+	       ThreadLocal variables describe permanent reachability roots so far as the garbage
+	       collector is concerned, these variables will never be reclaimed (so long as the Thread lives).
+	       Since this ThreadLocal is instanced, you potentially will be creating many non reclaimable 
+	       variables, even after the owning instance has been reclaimed. It is almost a certainty that
+	       you want to use static based ThreadLocal variables.</p>
+	       ]]>
+	   </Details>
+	</BugPattern>
 
 	<BugPattern type="LSYC_LOCAL_SYNCHRONIZED_COLLECTION">
 		<ShortDescription>Method creates local variable-based synchronized collection</ShortDescription>

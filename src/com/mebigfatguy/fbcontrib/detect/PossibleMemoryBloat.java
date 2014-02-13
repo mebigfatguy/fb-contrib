@@ -143,6 +143,10 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 					if (bloatableSigs.contains(sig)) {
 						bloatableFields.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), null);
 					}
+				} else if ("Ljava/lang/ThreadLocal;".equals(f.getSignature())) {
+			            bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
+			                    .addClass(this)
+			                    .addField(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic())));
 				}
 			}
 			
