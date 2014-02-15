@@ -684,7 +684,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector
                     if (stack.getStackDepth() >= 1) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         JavaClass toStringClass = item.getJavaClass();
-                        if ((toStringClass != null) && !toStringClass.isInterface() && !toStringClass.isAbstract() && !"java.lang.Object".equals(toStringClass.getClassName()) && toStringClasses.add(toStringClass.getClassName())) {
+                        String toStringClassName = toStringClass.getClassName();
+                        if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !"java.lang.Object".equals(toStringClassName) && !"java.lang.String".equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
                             bugReporter.reportBug(new BugInstance(this, "SPP_NON_USEFUL_TOSTRING", toStringClass.isFinal() ? NORMAL_PRIORITY : LOW_PRIORITY)
                                         .addClass(this)
                                         .addMethod(this)
