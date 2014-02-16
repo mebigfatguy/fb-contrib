@@ -73,9 +73,9 @@ function toggleBlock(divId, imgId)
 		</div>
 
         <hr/>
-        <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
+        <img id="git_image" src="flip2.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
         Detectors added in git<br/>
-        <div id="git" style="display:none;">
+        <div id="git" style="display:block;">
             <ul>
                 <li><b>[STB] Stacked Try Blocks</b><br/>
                 Looks for two or more try catch blocks that are consecutive and catch the
@@ -106,12 +106,16 @@ function toggleBlock(divId, imgId)
                 Looks for simple fields that only store one of several constant values. This usually is an indication 
                 that this field should really be an enum type.
                 </li>
+                <li><b>[UP] Unused Parameter</b><br/>
+                Looks for private or static methods that have parameters that aren't used. These parameters
+                can be removed.
+                </li>
             </ul>             
         </div>
         <hr/>
-        <img id="v5_0_0_image" src="flip2.gif" onClick="toggleBlock('v5_0_0', 'v5_0_0_image');" align="top"/>
+        <img id="v5_0_0_image" src="flip1.gif" onClick="toggleBlock('v5_0_0', 'v5_0_0_image');" align="top"/>
         Detectors added in v5.0.0<br/>
-        <div id="v5_0_0" style="display:block;">
+        <div id="v5_0_0" style="display:none;">
             <li><b>[CVAA] ContraVariant Array Assignment</b><br/>
             Looks for contravariant array assignments. Since arrays are mutable data structures, their use 
             must be restricted to covariant or invariant usage.<br/>
