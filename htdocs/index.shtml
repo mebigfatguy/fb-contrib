@@ -68,8 +68,8 @@ function toggleBlock(divId, imgId)
 			</li>
 			</ul>
 		</p>
-		<p style="font-weight: bold;">The latest version of fb-contrib is 5.0.2 available for download 
-		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-5.0.2.jar/download">here</a>.</p>
+		<p style="font-weight: bold;">The latest version of fb-contrib is 5.0.3 available for download 
+		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-5.0.3.jar/download">here</a>.</p>
 		</div>
 
         <hr/>

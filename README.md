@@ -10,4 +10,4 @@ Available on maven.org
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 5.0.2
+       Version: 5.0.3
