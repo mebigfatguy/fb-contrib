@@ -259,6 +259,8 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.UnusedParameter" speed="fast" reports="UP_UNUSED_PARAMETER" />
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.CircularDependencies" speed="moderate" reports="CD_CIRCULAR_DEPENDENCY"/>
+
     <!--  COMMENT OUT FOR POINT RELEASE  -->
     
 	<!-- BugPattern -->
@@ -460,4 +462,5 @@
     <BugPattern abbrev="CNC" type="CNC_COLLECTION_NAMING_CONFUSION" category="STYLE" />
     <BugPattern abbrev="PME" type="PME_POOR_MANS_ENUM" category="STYLE" />
     <BugPattern abbrev="UP" type="UP_UNUSED_PARAMETER" category="STYLE" />
+    <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="CORRECTNESS" />
 </FindbugsPlugin>

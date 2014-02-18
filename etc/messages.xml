@@ -1381,6 +1381,15 @@
 	       ]]>
 	   </Details>
 	</Detector>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CircularDependencies">
+        <Details>
+            <![CDATA[
+            <p>This detector looks circular dependencies among classes. </p>
+            <p>It is a moderately fast detector</p>
+            ]]>
+        </Details>
+  </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -3878,6 +3887,20 @@
 	       ]]>
 	   </Details>
 	</BugPattern>
+	
+	<BugPattern type="CD_CIRCULAR_DEPENDENCY">
+        <ShortDescription>Test for circular dependencies among classes</ShortDescription>
+        <LongDescription>Class {0} has a circular dependency with other classes</LongDescription>
+        <Details>
+		   <![CDATA[
+		    <p>
+		    This class has a circular dependency with other classes. This makes building these classes
+		    difficult, as each is dependent on the other to build correctly. Consider using interfaces
+		    to break the hard dependency.
+		    </p>
+		    ]]>
+        </Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -3996,4 +4019,5 @@
 	<BugCode abbrev="CNC">Collection Naming Confusion</BugCode>
 	<BugCode abbrev="PME">Poor Mans Enum</BugCode>
 	<BugCode abbrev="UP">Unused Parameter</BugCode>
+	<BugCode abbrev="CD">Circular Dependencies</BugCode>
 </MessageCollection>
