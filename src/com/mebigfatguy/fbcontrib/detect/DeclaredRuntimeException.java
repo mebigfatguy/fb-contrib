@@ -52,7 +52,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 		}
 	}
 	
-	private static final Set<String> runtimeExceptions = new HashSet<String>();
+	private final Set<String> runtimeExceptions = new HashSet<String>();
 
 	
 	/**
