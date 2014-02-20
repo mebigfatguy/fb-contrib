@@ -59,10 +59,10 @@ public class CircularDependencies extends BytecodeScanningDetector {
             if (clsName.equals(refClsName))
                 return;
 
-            if (clsName.startsWith(refClsName) && (refClsName.indexOf("$") >= 0))
+            if (clsName.startsWith(refClsName) && (refClsName.indexOf('$') >= 0))
                 return;
 
-            if (refClsName.startsWith(clsName) && (clsName.indexOf("$") >= 0))
+            if (refClsName.startsWith(clsName) && (clsName.indexOf('$') >= 0))
                 return;
 
             Set<String> dependencies = dependencyGraph.get(clsName);
