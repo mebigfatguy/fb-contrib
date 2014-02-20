@@ -42,17 +42,18 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class DeclaredRuntimeException extends PreorderVisitor implements Detector
 {
 	private final BugReporter bugReporter;
-	private static final Set<String> runtimeExceptions = new HashSet<String>();
 	private static JavaClass runtimeExceptionClass;
 	
 	static {
 		try {
 			runtimeExceptionClass = Repository.lookupClass("java.lang.RuntimeException");
-			runtimeExceptions.add("java.lang.RuntimeException");
 		} catch (ClassNotFoundException cnfe) {
 			runtimeExceptionClass = null;
 		}
 	}
+	
+	private static final Set<String> runtimeExceptions = new HashSet<String>();
+
 	
 	/**
      * constructs a DRE detector given the reporter to report bugs on
@@ -60,6 +61,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 	 */
 	public DeclaredRuntimeException(final BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+		runtimeExceptions.add("java.lang.RuntimeException");
 	}
 	
 	/**
