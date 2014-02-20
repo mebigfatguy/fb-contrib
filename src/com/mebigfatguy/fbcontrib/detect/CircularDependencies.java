@@ -77,13 +77,13 @@ public class CircularDependencies extends BytecodeScanningDetector {
 
     @Override
     public void report() {
-        removeDependencyLeaves(dependencyGraph);
+        removeDependencyLeaves();
 
         LoopFinder lf = new LoopFinder();
 
         while (dependencyGraph.size() > 0) {
-            String clsName = dependencyGraph.keySet().iterator().next();
-            Set<String> loop = lf.findLoop(dependencyGraph, clsName);
+            String className = dependencyGraph.keySet().iterator().next();
+            Set<String> loop = lf.findLoop(dependencyGraph, className);
             boolean pruneLeaves;
             if (loop != null) {
                 BugInstance bug = new BugInstance(this, "CD_CIRCULAR_DEPENDENCY", NORMAL_PRIORITY);
@@ -91,19 +91,19 @@ public class CircularDependencies extends BytecodeScanningDetector {
                     bug.addClass(loopCls);
                 }
                 bugReporter.reportBug(bug);
-                pruneLeaves = removeLoopLinks(dependencyGraph, loop);
+                pruneLeaves = removeLoopLinks(loop);
             } else {
-                dependencyGraph.remove(clsName);
+                dependencyGraph.remove(className);
                 pruneLeaves = true;
             }
             if (pruneLeaves)
-                removeDependencyLeaves(dependencyGraph);
+                removeDependencyLeaves();
         }
 
         dependencyGraph.clear();
     }
 
-    private void removeDependencyLeaves(Map<String, Set<String>> dependencyGraph) {
+    private void removeDependencyLeaves() {
         boolean changed = true;
         while (changed) {
             changed = false;
@@ -120,7 +120,7 @@ public class CircularDependencies extends BytecodeScanningDetector {
                         changed = true;
                     }
                 }
-                if (dependencies.size() == 0) {
+                if (dependencies.isEmpty()) {
                     it.remove();
                     changed = true;
                 }
@@ -128,12 +128,12 @@ public class CircularDependencies extends BytecodeScanningDetector {
         }
     }
 
-    private boolean removeLoopLinks(Map<String, Set<String>> dependencyGraph, Set<String> loop) {
+    private boolean removeLoopLinks(Set<String> loop) {
         Set<String> dependencies = null;
-        for (String clsName : loop) {
+        for (String className : loop) {
             if (dependencies != null)
-                dependencies.remove(clsName);
-            dependencies = dependencyGraph.get(clsName);
+                dependencies.remove(className);
+            dependencies = dependencyGraph.get(className);
         }
         if (dependencies != null)
             dependencies.remove(loop.iterator().next());
@@ -141,9 +141,9 @@ public class CircularDependencies extends BytecodeScanningDetector {
         boolean removedClass = false;
         Iterator<String> cIt = loop.iterator();
         while (cIt.hasNext()) {
-            String clsName = cIt.next();
-            dependencies = dependencyGraph.get(clsName);
-            if (dependencies.size() == 0) {
+            String className = cIt.next();
+            dependencies = dependencyGraph.get(className);
+            if (dependencies.isEmpty()) {
                 cIt.remove();
                 removedClass = true;
             }
