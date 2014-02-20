@@ -41,16 +41,18 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 {
 	private static Map<String, Integer> characterMethods = new HashMap<String, Integer>();
 	static {
-		//characterMethods.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Integer.valueOf(0));
-		//characterMethods.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Integer.valueOf(0));
-		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;)I", Integer.valueOf(0));
-		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;I)I", Integer.valueOf(1));
-		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;)I", Integer.valueOf(0));
-		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;I)I", Integer.valueOf(1));
-		//characterMethods.put("java/lang/String:startsWith:(Ljava/lang/String;)Z", Integer.valueOf(0));
-		characterMethods.put("java/io/PrintStream:print:(Ljava/lang/String;)V", Integer.valueOf(0));
-		characterMethods.put("java/io/PrintStream:println:(Ljava/lang/String;)V", Integer.valueOf(0));
-		characterMethods.put("java/io/StringWriter:write:(Ljava/lang/String;)V", Integer.valueOf(0));
+	    Integer ZERO = Integer.valueOf(0);
+	    Integer ONE = Integer.valueOf(1);
+		//characterMethods.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", ZERO);
+		//characterMethods.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", ZERO);
+		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;)I", ZERO);
+		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;I)I", ONE);
+		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;)I", ZERO);
+		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;I)I", ONE);
+		//characterMethods.put("java/lang/String:startsWith:(Ljava/lang/String;)Z", ZERO);
+		characterMethods.put("java/io/PrintStream:print:(Ljava/lang/String;)V", ZERO);
+		characterMethods.put("java/io/PrintStream:println:(Ljava/lang/String;)V", ZERO);
+		characterMethods.put("java/io/StringWriter:write:(Ljava/lang/String;)V", ZERO);
 	}
 	
 	private BugReporter bugReporter;
