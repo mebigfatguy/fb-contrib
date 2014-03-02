@@ -100,4 +100,7 @@ public class Statistics {
 			numMethodCalls = calls;
 		}
 	}
+
+    public void addImmutabilityStatus(String clsName, String name, String signature, ImmutabilityType imType) {
+    }
 }

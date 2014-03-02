@@ -20,6 +20,14 @@
 			]]>
 		</Details>
 	</Detector>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections">
+        <Details>
+            <![CDATA[
+            <p>Collects method calls that may return immutable collections</p>
+            ]]>
+        </Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.InefficientStringBuffering">
 		<Details>
@@ -1389,7 +1397,17 @@
             <p>It is a moderately fast detector</p>
             ]]>
         </Details>
-  </Detector>
+    </Detector>
+  
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ModifyingUnmodifiableCollection">
+        <Details>
+            <![CDATA[
+            <p>This detector looks for code that attempts to modify a collection that is or may be
+            defined as immutable. Doing so will cause exceptions at runtime.</p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -3901,6 +3919,18 @@
 		    ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION">
+        <ShortDescription>This method attempts to modify collection that appears to possibly be immutable</ShortDescription>
+        <LongDescription>This method {} attempts to modify collection that appears to possibly be immutable</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method attempts to modify a collection that it got from a source that could potentially have created an
+            immutable collection, thru Arrays.asList, Collections.unmodifiableXXX, or one of guava's methods. Doing so will cause
+            an exception, as these collections are not mutable.
+            ]]>
+        </Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -4020,4 +4050,5 @@
 	<BugCode abbrev="PME">Poor Mans Enum</BugCode>
 	<BugCode abbrev="UP">Unused Parameter</BugCode>
 	<BugCode abbrev="CD">Circular Dependencies</BugCode>
+	<BugCode abbrev="MUC">Modifying Unmodifiable Collection</BugCode>
 </MessageCollection>

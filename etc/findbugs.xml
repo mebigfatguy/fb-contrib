@@ -11,6 +11,11 @@
 			<Earlier class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" />
 			<LaterCategory name="reporting" spanplugins="true" />
 		</SplitPass>
+		<SplitPass>
+            <Earlier class="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" />
+            <Later class="com.mebigfatguy.fbcontrib.detect.ModifyingUnmodifiableCollection" />
+        </SplitPass>
+		
 	</OrderingConstraints>
 
 	<!-- Detectors -->
@@ -261,6 +266,9 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.CircularDependencies" speed="moderate" reports="CD_CIRCULAR_DEPENDENCY"/>
 
+    <Detector class="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" speed="fast" reports="" hidden="true" />
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ModifyingUnmodifiableCollection" speed="fast" reports="MUC_MODIFYING_UNMODIFIABLE_COLLECTION"/>
     <!--  COMMENT OUT FOR POINT RELEASE  -->
     
 	<!-- BugPattern -->
@@ -463,4 +471,5 @@
     <BugPattern abbrev="PME" type="PME_POOR_MANS_ENUM" category="STYLE" />
     <BugPattern abbrev="UP" type="UP_UNUSED_PARAMETER" category="STYLE" />
     <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="CORRECTNESS" />
+    <BugPattern abbrev="MUC" type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION" category="CORRECTNESS" />
 </FindbugsPlugin>
