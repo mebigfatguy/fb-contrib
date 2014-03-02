@@ -67,6 +67,12 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 	}
 
 
+	/**
+     * constructs a BED detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
