@@ -31,6 +31,11 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
+/**
+ * looks for classes that have dependencies on each other in a circular way.
+ * Class initialization can be compromised in this scenario, and usually points to
+ * a bad data model. Consider using interfaces to break this hard circular dependency.
+ */
 public class CircularDependencies extends BytecodeScanningDetector {
     private Map<String, Set<String>> dependencyGraph = null;
 
@@ -38,6 +43,12 @@ public class CircularDependencies extends BytecodeScanningDetector {
 
     private String clsName;
 
+    /**
+     * constructs a CD detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
     public CircularDependencies(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.dependencyGraph = new HashMap<String, Set<String>>();
