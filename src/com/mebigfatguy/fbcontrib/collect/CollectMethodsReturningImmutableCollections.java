@@ -38,6 +38,10 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
 
     private static Set<String> IMMUTABLE_PRODUCING_METHODS = new HashSet<String>();
     static {
+        IMMUTABLE_PRODUCING_METHODS.add("com/google/common/Collect/Maps.immutableEnumMap");
+        IMMUTABLE_PRODUCING_METHODS.add("com/google/common/Collect/Maps.unmodifiableMap");
+        IMMUTABLE_PRODUCING_METHODS.add("com/google/common/Collect/Sets.immutableEnumSet");
+        IMMUTABLE_PRODUCING_METHODS.add("com/google/common/Collect/Sets.immutableCopy");
         IMMUTABLE_PRODUCING_METHODS.add("java/util/Arrays.asList");
         IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableCollection");
         IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableSet");

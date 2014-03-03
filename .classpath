@@ -17,6 +17,6 @@
 	<classpathentry kind="lib" path="lib/annotations-2.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.2.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/guava-16.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/guava-16.0.1.jar" sourcepath="lib/guava-16.0.1-sources.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
