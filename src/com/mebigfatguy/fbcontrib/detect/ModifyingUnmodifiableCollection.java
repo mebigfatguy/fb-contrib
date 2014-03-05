@@ -18,14 +18,44 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.classfile.Code;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
+@CustomUserValue
 public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
+    private OpcodeStack stack;
     
     public ModifyingUnmodifiableCollection(BugReporter reporter) {
         bugReporter = reporter;
+    }
+    
+    @Override
+    public void visitClassContext(ClassContext context) {
+        try {
+            stack = new OpcodeStack();
+            super.visitClassContext(context);
+        } finally {
+            stack = null;
+        }
+    }
+    
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+    }
+    
+    public void sawOpcode(int seen) {
+        try {
+            stack.precomputation(this);
+        } finally {
+            stack.sawOpcode(this, seen);
+        }
     }
 }
