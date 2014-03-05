@@ -18,8 +18,14 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
 
+    private BugReporter bugReporter;
+    
+    public ModifyingUnmodifiableCollection(BugReporter reporter) {
+        bugReporter = reporter;
+    }
 }
