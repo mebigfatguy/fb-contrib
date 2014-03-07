@@ -51,4 +51,21 @@ public class CSBTS_StringToStringSample {
         System.out.println("P - Once Again " + y.toString());
         System.out.println("P - Again " + x.toString());
     }
+    
+    public class FPNoStore {
+        private String userName;
+        private String firstName;
+        private String lastName;
+        private String email;
+        
+        public final String toString() {
+            ToStringBuilder b = new ToStringBuilder(this).
+            append("username", userName).
+            append("firstname", firstName).
+            append("lastname", lastName).
+            append("email", email);
+            return b.toString();
+        }
+
+    }
 }
