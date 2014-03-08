@@ -30,11 +30,12 @@ import java.util.Map;
 public class Statistics {
 
 	private static Statistics statistics = new Statistics();
+	private static final MethodInfo NOT_FOUND_METHOD_INFO = new MethodInfo();
 	
-	private Map<Long, Long> methodStatistics = new HashMap<Long, Long>();
+	private Map<Long, MethodInfo> methodStatistics = new HashMap<Long, MethodInfo>();
+	
 
 	private Statistics() {
-		
 	}
 	
 	public static Statistics getStatistics() {
@@ -45,20 +46,23 @@ public class Statistics {
 		methodStatistics.clear();
 	}
 	
-	public void addMethodStatistics(String className, String methodName, String signature, MethodInfo methodInfo) {
+	public void addMethodStatistics(String className, String methodName, String signature, int numBytes, int numMethodCalls) {
 		Long key = getKey(className, methodName, signature);
-		if (methodStatistics.containsKey(key))
-			methodStatistics.put(key, getValue(new MethodInfo()));
-		else
-			methodStatistics.put(getKey(className, methodName, signature), getValue(methodInfo));
+		MethodInfo mi = methodStatistics.get(key);
+		if (mi == null) {
+		    mi = new MethodInfo();
+		    methodStatistics.put(key,  mi);
+		}
+		
+		mi.setNumBytes(numBytes);
+		mi.setNumMethodCalls(numMethodCalls);
 	}
 	
 	public MethodInfo getMethodStatistics(String className, String methodName, String signature) {
-		Long v = methodStatistics.get(getKey(className, methodName, signature));
-		if (v == null)
-			return new MethodInfo();
-		else
-			return buildMethodInfo(v);
+		MethodInfo mi = methodStatistics.get(getKey(className, methodName, signature));
+		if (mi == null)
+			return NOT_FOUND_METHOD_INFO;
+		return mi;
 	}
 	
 	private Long getKey(String className, String methodName, String signature) {
@@ -69,38 +73,15 @@ public class Statistics {
 		hashCode |= signature.hashCode();
 		return Long.valueOf(hashCode);
 	}
-	
-	private Long getValue(MethodInfo methodInfo) {
-		long value = methodInfo.numBytes;
-		value <<= 32;
-		value |= methodInfo.numMethodCalls;
-		return Long.valueOf(value);
-	}
-	
-	private MethodInfo buildMethodInfo(Long value) {
-		MethodInfo mi = new MethodInfo();
-		long v = value.longValue();
-		mi.numBytes = (int)(v >>> 32);
-		mi.numMethodCalls = (int)(v & 0x7FFFFFFF);
-		return mi;
-	}
-	
-	public static class MethodInfo
-	{
-		public int numBytes;
-		public int numMethodCalls;
-		
-		public MethodInfo() {
-			numBytes = 0;
-			numMethodCalls = 0;
-		}
-		
-		public MethodInfo(int bytes, int calls) {
-			numBytes = bytes;
-			numMethodCalls = calls;
-		}
-	}
 
-    public void addImmutabilityStatus(String clsName, String name, String signature, ImmutabilityType imType) {
+    public void addImmutabilityStatus(String className, String methodName, String signature, ImmutabilityType imType) {
+        Long key = getKey(className, methodName, signature);
+        MethodInfo mi = methodStatistics.get(key);
+        if (mi == null) {
+            mi = new MethodInfo();
+            methodStatistics.put(key,  mi);
+        }
+        
+        mi.setImmutabilityType(imType);
     }
 }

@@ -41,7 +41,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 		byte[] code = obj.getCode();
 		if (code != null) {
 			super.visitCode(obj);
-			Statistics.getStatistics().addMethodStatistics(getClassName(), getMethodName(), getMethodSig(), new Statistics.MethodInfo(code.length, numMethodCalls));
+			Statistics.getStatistics().addMethodStatistics(getClassName(), getMethodName(), getMethodSig(), obj.getLength(), numMethodCalls);
 		}
 	}
 

@@ -61,7 +61,6 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
      *            the sync of bug reports
      */
     public CollectMethodsReturningImmutableCollections(BugReporter bugReporter) {
-        Statistics.getStatistics().clear();
     }
     
     public void visitClassContext(ClassContext context) {

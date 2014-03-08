@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
@@ -286,14 +287,14 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 			                    
 			                    if ((ln != mc.getLineNumber()) || (Math.abs(pc - mc.getPC()) < 10)) {
     								Statistics statistics = Statistics.getStatistics();
-    								Statistics.MethodInfo mi = statistics.getMethodStatistics(getClassConstantOperand(), methodName, signature);
+    								MethodInfo mi = statistics.getMethodStatistics(getClassConstantOperand(), methodName, signature);
     
     								bugReporter.reportBug(new BugInstance(this, "PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS",
-    																	  ((mi.numBytes >= highByteCountLimit) || (mi.numMethodCalls >= highMethodCallLimit)) ?
+    																	  ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit)) ?
     																			  HIGH_PRIORITY :
-    																		      ((mi.numBytes >= normalByteCountLimit) || (mi.numMethodCalls >= normalMethodCallLimit)) ?
+    																		      ((mi.getNumBytes() >= normalByteCountLimit) || (mi.getNumMethodCalls() >= normalMethodCallLimit)) ?
     																		    		  NORMAL_PRIORITY :
-    																		    			  ((mi.numBytes == 0) || (mi.numMethodCalls == 0)) ?
+    																		    			  ((mi.getNumBytes() == 0) || (mi.getNumMethodCalls() == 0)) ?
     																		    					  LOW_PRIORITY :
     																		    				      EXP_PRIORITY)
     											.addClass(this)
