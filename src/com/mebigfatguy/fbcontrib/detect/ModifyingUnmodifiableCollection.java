@@ -20,6 +20,10 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.collect.ImmutabilityType;
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
+import com.mebigfatguy.fbcontrib.collect.Statistics;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -52,10 +56,34 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     }
     
     public void sawOpcode(int seen) {
+        ImmutabilityType imType = null;
+
         try {
             stack.precomputation(this);
+            
+            switch (seen) {
+            case INVOKESTATIC:
+            case INVOKEINTERFACE:
+            case INVOKESPECIAL:
+            case INVOKEVIRTUAL: {
+                String className = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
+                String signature = getSigConstantOperand();
+                
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
+                imType = mi.getImmutabilityType();
+            }
+            break;
+
         } finally {
             stack.sawOpcode(this, seen);
+            if (imType != null) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(imType);
+                }
+            }
+            
         }
     }
 }
