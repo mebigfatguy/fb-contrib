@@ -118,12 +118,17 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                         
                         switch (imType) {
                             case UNKNOWN:
-                                if (item.getUserValue() == ImmutabilityType.IMMUTABLE) {
-                                    imType = ImmutabilityType.IMMUTABLE;
-                                } else {
-                                    imType = ImmutabilityType.MUTABLE;
+                                switch ((ImmutabilityType) item.getUserValue()) {
+                                    case IMMUTABLE:
+                                        imType = ImmutabilityType.IMMUTABLE;
+                                    break;
+                                    case POSSIBLY_IMMUTABLE:
+                                        imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
+                                    break;
+                                    default:
+                                        imType = ImmutabilityType.MUTABLE;
+                                    break;
                                 }
-                                break;
                                 
                             case IMMUTABLE:
                                 if (item.getUserValue() == null) {
