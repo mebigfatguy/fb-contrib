@@ -84,53 +84,73 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
     }
     
     public void sawOpcode(int seen) {
-        boolean seenImmutable = false;
+        ImmutabilityType seenImmutable = null;
         try {
             stack.precomputation(this);
-            if (seen == INVOKESTATIC) {
-                String className = getClassConstantOperand();
-                String methodName = getNameConstantOperand();
-                
-                if (IMMUTABLE_PRODUCING_METHODS.contains(className + '.' + methodName)) {
-                    seenImmutable = true;
-                }
-            } else if (seen == ARETURN) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
+            
+            switch (seen) {
+                case INVOKESTATIC: {
+                    String className = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
                     
-                    switch (imType) {
-                    case UNKNOWN:
-                        if (item.getUserValue() != null) {
-                            imType = ImmutabilityType.IMMUTABLE;
-                        } else {
-                            imType = ImmutabilityType.MUTABLE;
-                        }
-                        break;
-                        
-                    case IMMUTABLE:
-                        if (item.getUserValue() == null) {
-                            imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
-                        }
-                        break;
-                        
-                    case POSSIBLY_IMMUTABLE:
-                        break;
-                        
-                    case MUTABLE:
-                        if (item.getUserValue() != null) {
-                            imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
-                        }
-                        break;
+                    if (IMMUTABLE_PRODUCING_METHODS.contains(className + '.' + methodName)) {
+                        seenImmutable = ImmutabilityType.IMMUTABLE;
                     }
+                }
+                //$FALL-THROUGH$   
+                case INVOKEINTERFACE:
+                case INVOKESPECIAL:
+                case INVOKEVIRTUAL: {
+                    String className = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
+                    String signature = getSigConstantOperand();
+                    
+                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
+                    seenImmutable = mi.getImmutabilityType();
+                    if (seenImmutable == ImmutabilityType.UNKNOWN)
+                        seenImmutable = null;
+                }
+                break;
+                    
+                case ARETURN: {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        
+                        switch (imType) {
+                            case UNKNOWN:
+                                if (item.getUserValue() == ImmutabilityType.IMMUTABLE) {
+                                    imType = ImmutabilityType.IMMUTABLE;
+                                } else {
+                                    imType = ImmutabilityType.MUTABLE;
+                                }
+                                break;
+                                
+                            case IMMUTABLE:
+                                if (item.getUserValue() == null) {
+                                    imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
+                                }
+                                break;
+                                
+                            case POSSIBLY_IMMUTABLE:
+                                break;
+                                
+                            case MUTABLE:
+                                if (item.getUserValue() != null) {
+                                    imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
+                                }
+                                break;
+                        }
+                    }
+                    break;
                 }
             }
             
         } finally {
             stack.sawOpcode(this,  seen);
-            if (seenImmutable) {
+            if (seenImmutable != null) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(Boolean.TRUE);
+                    item.setUserValue(seenImmutable);
                 }
             }
         }
