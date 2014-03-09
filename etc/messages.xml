@@ -3922,7 +3922,7 @@
     
     <BugPattern type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION">
         <ShortDescription>This method attempts to modify collection that appears to possibly be immutable</ShortDescription>
-        <LongDescription>This method {} attempts to modify collection that appears to possibly be immutable</LongDescription>
+        <LongDescription>This method {1} attempts to modify collection that appears to possibly be immutable</LongDescription>
         <Details>
             <![CDATA[
             <p>This method attempts to modify a collection that it got from a source that could potentially have created an
