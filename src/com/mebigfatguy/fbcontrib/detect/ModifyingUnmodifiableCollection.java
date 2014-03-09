@@ -36,6 +36,10 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for code that attempts to modify a collection that is or may be
+   defined as immutable. Doing so will cause exceptions at runtime.
+ */
 @CustomUserValue
 public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
 
@@ -68,10 +72,18 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private ImmutabilityType reportedType;
     
+    /**
+     * constructs a MUC detector given the reporter to report bugs on
+     * @param bugReporter the sync of bug reports
+     */
     public ModifyingUnmodifiableCollection(BugReporter reporter) {
         bugReporter = reporter;
     }
     
+    /**
+     * overrides the visitor to setup and tear down the opcode stack
+     * @parm context the context object of the currently parse java class
+     */
     @Override
     public void visitClassContext(ClassContext context) {
         try {
@@ -82,6 +94,11 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
         }
     }
     
+    /**
+     * overrides the visitor to reset the opcode stack, and reset the reported immutability of the method
+     * 
+     * @param obj the context object of the currently parse code block
+     */
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
@@ -89,6 +106,12 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
         super.visitCode(obj);
     }
     
+    /**
+     * overrides the visitor to find method mutations on collections that have previously
+     * been determined to have been created as immutable collections
+     * 
+     * @param seen the currently parsed opcode
+     */
     public void sawOpcode(int seen) {
         
         if (reportedType == ImmutabilityType.IMMUTABLE) {
@@ -113,7 +136,7 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
                     
                     if (seen == INVOKEINTERFACE) {
                         Integer collectionOffset = MODIFYING_METHODS.get(methodName + signature);
-                        if (collectionOffset != null) {
+                        if ((collectionOffset != null) && isCollection(className)) {
                             if (stack.getStackDepth() > collectionOffset) {
                                 OpcodeStack.Item item = stack.getStackItem(collectionOffset);
                                 ImmutabilityType type = (ImmutabilityType) item.getUserValue();
@@ -144,6 +167,12 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
         }
     }
     
+    /**
+     * determines if the current class name is derived from List, Set or Map
+     * 
+     * @param clsName the class to determine it's parentage
+     * @return if the class is a List, Set or Map
+     */
     private boolean isCollection(String clsName) {
         
         try {
