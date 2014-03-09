@@ -62,18 +62,19 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
             stack.precomputation(this);
             
             switch (seen) {
-            case INVOKESTATIC:
-            case INVOKEINTERFACE:
-            case INVOKESPECIAL:
-            case INVOKEVIRTUAL: {
-                String className = getClassConstantOperand();
-                String methodName = getNameConstantOperand();
-                String signature = getSigConstantOperand();
-                
-                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
-                imType = mi.getImmutabilityType();
+                case INVOKESTATIC:
+                case INVOKEINTERFACE:
+                case INVOKESPECIAL:
+                case INVOKEVIRTUAL: {
+                    String className = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
+                    String signature = getSigConstantOperand();
+                    
+                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
+                    imType = mi.getImmutabilityType();
+                }
+                break;
             }
-            break;
 
         } finally {
             stack.sawOpcode(this, seen);
