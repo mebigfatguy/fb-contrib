@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -34,7 +35,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * such as Arrays.aslist, etc.
  */
 @CustomUserValue
-public class CollectMethodsReturningImmutableCollections extends BytecodeScanningDetector {
+public class CollectMethodsReturningImmutableCollections extends BytecodeScanningDetector implements NonReportingDetector {
 
     private static Set<String> IMMUTABLE_PRODUCING_METHODS = new HashSet<String>();
     static {

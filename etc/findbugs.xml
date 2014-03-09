@@ -13,7 +13,7 @@
 		</SplitPass>
 		<SplitPass>
             <Earlier class="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" />
-            <Later class="com.mebigfatguy.fbcontrib.detect.ModifyingUnmodifiableCollection" />
+            <LaterCategory name="reporting" spanplugins="true" />
         </SplitPass>
 		
 	</OrderingConstraints>
