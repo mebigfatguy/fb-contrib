@@ -96,6 +96,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                     
                     if (IMMUTABLE_PRODUCING_METHODS.contains(className + '.' + methodName)) {
                         seenImmutable = ImmutabilityType.IMMUTABLE;
+                        break;
                     }
                 }
                 //$FALL-THROUGH$   
