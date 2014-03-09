@@ -116,10 +116,14 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                 case ARETURN: {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
+                        ImmutabilityType type = (ImmutabilityType) item.getUserValue();
+                        if (type == null)
+                            type = ImmutabilityType.UNKNOWN;
                         
                         switch (imType) {
                             case UNKNOWN:
-                                switch ((ImmutabilityType) item.getUserValue()) {
+
+                                switch (type) {
                                     case IMMUTABLE:
                                         imType = ImmutabilityType.IMMUTABLE;
                                     break;
@@ -130,9 +134,10 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                                         imType = ImmutabilityType.MUTABLE;
                                     break;
                                 }
+                                break;
                                 
                             case IMMUTABLE:
-                                if (item.getUserValue() == null) {
+                                if (type != ImmutabilityType.IMMUTABLE) {
                                     imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
                                 }
                                 break;
@@ -141,7 +146,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                                 break;
                                 
                             case MUTABLE:
-                                if (item.getUserValue() != null) {
+                                if (type == ImmutabilityType.IMMUTABLE) {
                                     imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
                                 }
                                 break;
