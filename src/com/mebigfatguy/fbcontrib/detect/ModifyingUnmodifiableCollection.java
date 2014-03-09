@@ -18,8 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -39,22 +39,23 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
 
-    private static Set<String> MODIFYING_METHODS = null;
+    private static Map<String, Integer> MODIFYING_METHODS = null;
     private static JavaClass LIST_CLASS = null;
     private static JavaClass SET_CLASS = null;
     private static JavaClass MAP_CLASS = null;
     
     static {
         try {
-            MODIFYING_METHODS = new HashSet<String>();
-            MODIFYING_METHODS.add("add(Ljava/lang/Object;)Z");
-            MODIFYING_METHODS.add("remove(Ljava/lang/Object;)Z");
-            MODIFYING_METHODS.add("addAll(Ljava/util/Collection;)Z");
-            MODIFYING_METHODS.add("retainAll(Ljava/util/Collection;)Z");
-            MODIFYING_METHODS.add("removeAll(Ljava/util/Collection;)Z");
-            MODIFYING_METHODS.add("put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
-            MODIFYING_METHODS.add("remove(Ljava/lang/Object;)Ljava/lang/Object;");
-            MODIFYING_METHODS.add("putAll(Ljava/util/Map;)V;");
+            Integer one = Integer.valueOf(1);
+            MODIFYING_METHODS = new HashMap<String, Integer>();
+            MODIFYING_METHODS.put("add(Ljava/lang/Object;)Z", one);
+            MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Z", one);
+            MODIFYING_METHODS.put("addAll(Ljava/util/Collection;)Z", one);
+            MODIFYING_METHODS.put("retainAll(Ljava/util/Collection;)Z", one);
+            MODIFYING_METHODS.put("removeAll(Ljava/util/Collection;)Z", one);
+            MODIFYING_METHODS.put("put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", Integer.valueOf(2));
+            MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Ljava/lang/Object;", one);
+            MODIFYING_METHODS.put("putAll(Ljava/util/Map;)V;", one);
             
             LIST_CLASS = Repository.lookupClass("java.util.List");
             SET_CLASS = Repository.lookupClass("java.util.Set");
@@ -110,17 +111,20 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
                     MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
                     imType = mi.getImmutabilityType();
                     
-                    if ((seen == INVOKEINTERFACE) && MODIFYING_METHODS.contains(methodName + signature) && (isCollection(className))) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            ImmutabilityType type = (ImmutabilityType) item.getUserValue();
-                            
-                            if ((type == ImmutabilityType.IMMUTABLE) || ((type == ImmutabilityType.POSSIBLY_IMMUTABLE) && (reportedType != ImmutabilityType.POSSIBLY_IMMUTABLE))) {
-                                bugReporter.reportBug(new BugInstance(this, "MUC_MODIFYING_UNMODIFIABLE_COLLECTION", (type == ImmutabilityType.IMMUTABLE) ? HIGH_PRIORITY : NORMAL_PRIORITY)
-                                                          .addClass(this)
-                                                          .addMethod(this)
-                                                          .addSourceLine(this));
-                                reportedType = type;
+                    if (seen == INVOKEINTERFACE) {
+                        Integer collectionOffset = MODIFYING_METHODS.get(methodName + signature);
+                        if (collectionOffset != null) {
+                            if (stack.getStackDepth() > collectionOffset) {
+                                OpcodeStack.Item item = stack.getStackItem(collectionOffset);
+                                ImmutabilityType type = (ImmutabilityType) item.getUserValue();
+                                
+                                if ((type == ImmutabilityType.IMMUTABLE) || ((type == ImmutabilityType.POSSIBLY_IMMUTABLE) && (reportedType != ImmutabilityType.POSSIBLY_IMMUTABLE))) {
+                                    bugReporter.reportBug(new BugInstance(this, "MUC_MODIFYING_UNMODIFIABLE_COLLECTION", (type == ImmutabilityType.IMMUTABLE) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                                              .addClass(this)
+                                                              .addMethod(this)
+                                                              .addSourceLine(this));
+                                    reportedType = type;
+                                }
                             }
                         }
                     }
