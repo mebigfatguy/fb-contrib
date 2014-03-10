@@ -20,6 +20,12 @@ public class MUC_Sample {
         s.add("Yowsers");
     }
     
+    public void testMUCChained() {
+        List<String> l = getImmutableListChained();
+        
+        l.add("Uhoh");
+    }
+    
     public List<String> getImmutableList() {
         return Arrays.asList("foo");
     }
@@ -29,6 +35,10 @@ public class MUC_Sample {
             return Collections.unmodifiableSet(new HashSet<String>());
         
         return new HashSet<String>();
+    }
+    
+    public List<String> getImmutableListChained() {
+        return getImmutableList();
     }
     
     
