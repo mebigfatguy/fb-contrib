@@ -3,7 +3,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import edu.emory.mathcs.backport.java.util.Collections;
+import java.util.Collections;
 
 
 public class MUC_Sample {
