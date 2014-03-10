@@ -48,7 +48,13 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
         IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableSet");
         IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableSortedSet");
         IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableMap");
-        IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableList");
+        IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableList");        
+        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Arrays.asList");
+        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableCollection");
+        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableSet");
+        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableSortedSet");
+        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableMap");
+        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableList");
     }
     
     private OpcodeStack stack;
