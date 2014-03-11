@@ -20,6 +20,9 @@ package com.mebigfatguy.fbcontrib.utils;
 
 public class CodeByteUtils {
 	
+    private CodeByteUtils() {       
+    }
+    
 	/**
 	 * returns the code byte at a specific offset as an int
 	 * 
