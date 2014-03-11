@@ -80,6 +80,12 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
         }
     }
     
+    /**
+     * overides the visitor to reset the stack for the new method, then checks if the immutability field is set to immutable
+     * and if so reports it
+     * 
+     * @param obj the context object of the currently parsed method
+     */
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         imType = ImmutabilityType.UNKNOWN;
@@ -90,6 +96,10 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
         }
     }
     
+    /**
+     * overrides the visitor to look for calls to static methods that are known to return immutable collections
+     * It records those variabls, and documents if what the method returns is one of those objects.
+     */
     public void sawOpcode(int seen) {
         ImmutabilityType seenImmutable = null;
         try {
