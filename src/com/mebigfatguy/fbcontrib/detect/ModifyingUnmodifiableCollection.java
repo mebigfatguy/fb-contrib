@@ -21,13 +21,12 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.collect.ImmutabilityType;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
+import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -44,28 +43,18 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
 
     private static Map<String, Integer> MODIFYING_METHODS = null;
-    private static JavaClass LIST_CLASS = null;
-    private static JavaClass SET_CLASS = null;
-    private static JavaClass MAP_CLASS = null;
     
     static {
-        try {
-            Integer one = Integer.valueOf(1);
-            MODIFYING_METHODS = new HashMap<String, Integer>();
-            MODIFYING_METHODS.put("add(Ljava/lang/Object;)Z", one);
-            MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Z", one);
-            MODIFYING_METHODS.put("addAll(Ljava/util/Collection;)Z", one);
-            MODIFYING_METHODS.put("retainAll(Ljava/util/Collection;)Z", one);
-            MODIFYING_METHODS.put("removeAll(Ljava/util/Collection;)Z", one);
-            MODIFYING_METHODS.put("put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", Integer.valueOf(2));
-            MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Ljava/lang/Object;", one);
-            MODIFYING_METHODS.put("putAll(Ljava/util/Map;)V;", one);
-            
-            LIST_CLASS = Repository.lookupClass("java.util.List");
-            SET_CLASS = Repository.lookupClass("java.util.Set");
-            MAP_CLASS = Repository.lookupClass("java.util.Map");
-        } catch (ClassNotFoundException cnfe) {
-        }
+        Integer one = Integer.valueOf(1);
+        MODIFYING_METHODS = new HashMap<String, Integer>();
+        MODIFYING_METHODS.put("add(Ljava/lang/Object;)Z", one);
+        MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Z", one);
+        MODIFYING_METHODS.put("addAll(Ljava/util/Collection;)Z", one);
+        MODIFYING_METHODS.put("retainAll(Ljava/util/Collection;)Z", one);
+        MODIFYING_METHODS.put("removeAll(Ljava/util/Collection;)Z", one);
+        MODIFYING_METHODS.put("put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", Integer.valueOf(2));
+        MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Ljava/lang/Object;", one);
+        MODIFYING_METHODS.put("putAll(Ljava/util/Map;)V;", one);
     }
     
     private BugReporter bugReporter;
@@ -136,7 +125,7 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
                     
                     if (seen == INVOKEINTERFACE) {
                         Integer collectionOffset = MODIFYING_METHODS.get(methodName + signature);
-                        if ((collectionOffset != null) && isCollection(className)) {
+                        if ((collectionOffset != null) && CollectionUtils.isListSetMap(className)) {
                             if (stack.getStackDepth() > collectionOffset) {
                                 OpcodeStack.Item item = stack.getStackItem(collectionOffset);
                                 ImmutabilityType type = (ImmutabilityType) item.getUserValue();
@@ -154,7 +143,8 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
                 }
                 break;
             }
-
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
         } finally {
             stack.sawOpcode(this, seen);
             if (imType != null) {
@@ -164,23 +154,6 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
                 }
             }
             
-        }
-    }
-    
-    /**
-     * determines if the current class name is derived from List, Set or Map
-     * 
-     * @param clsName the class to determine it's parentage
-     * @return if the class is a List, Set or Map
-     */
-    private boolean isCollection(String clsName) {
-        
-        try {
-            JavaClass cls = Repository.lookupClass(clsName);
-            return (cls.implementationOf(LIST_CLASS) || cls.implementationOf(SET_CLASS) || cls.implementationOf(MAP_CLASS));
-        } catch (ClassNotFoundException cnfe) {
-            bugReporter.reportMissingClass(cnfe);
-            return false;
         }
     }
 }

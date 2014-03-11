@@ -22,6 +22,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.generic.Type;
+
+import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -57,6 +60,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
         IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableList");
     }
     
+    private BugReporter bugReporter;
     private OpcodeStack stack;
     private String clsName;
     private ImmutabilityType imType;
@@ -67,7 +71,8 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
      * @param bugReporter
      *            the sync of bug reports
      */
-    public CollectMethodsReturningImmutableCollections(BugReporter bugReporter) {
+    public CollectMethodsReturningImmutableCollections(BugReporter reporter) {
+        bugReporter = reporter;
     }
     
     public void visitClassContext(ClassContext context) {
@@ -81,18 +86,25 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
     }
     
     /**
-     * overides the visitor to reset the stack for the new method, then checks if the immutability field is set to immutable
+     * overrides the visitor to reset the stack for the new method, then checks if the immutability field is set to immutable
      * and if so reports it
      * 
      * @param obj the context object of the currently parsed method
      */
     public void visitCode(Code obj) {
-        stack.resetForMethodEntry(this);
-        imType = ImmutabilityType.UNKNOWN;
-        super.visitCode(obj);
-        
-        if ((imType == ImmutabilityType.IMMUTABLE) || (imType == ImmutabilityType.POSSIBLY_IMMUTABLE)) {
-            Statistics.getStatistics().addImmutabilityStatus(clsName, getMethod().getName(), getMethod().getSignature(), imType);
+        try {
+            String signature = Type.getReturnType(getMethod().getSignature()).getSignature();
+            if (signature.startsWith("L") && CollectionUtils.isListSetMap(signature.substring(1, signature.length() - 1))) {
+                stack.resetForMethodEntry(this);
+                imType = ImmutabilityType.UNKNOWN;
+                super.visitCode(obj);
+                
+                if ((imType == ImmutabilityType.IMMUTABLE) || (imType == ImmutabilityType.POSSIBLY_IMMUTABLE)) {
+                    Statistics.getStatistics().addImmutabilityStatus(clsName, getMethod().getName(), getMethod().getSignature(), imType);
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
         }
     }
     
