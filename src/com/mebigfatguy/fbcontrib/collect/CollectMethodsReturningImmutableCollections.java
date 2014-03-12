@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
@@ -100,7 +101,8 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                 super.visitCode(obj);
                 
                 if ((imType == ImmutabilityType.IMMUTABLE) || (imType == ImmutabilityType.POSSIBLY_IMMUTABLE)) {
-                    Statistics.getStatistics().addImmutabilityStatus(clsName, getMethod().getName(), getMethod().getSignature(), imType);
+                    Method m = getMethod();
+                    Statistics.getStatistics().addImmutabilityStatus(clsName, m.getName(), m.getSignature(), imType);
                 }
             }
         } catch (ClassNotFoundException cnfe) {
