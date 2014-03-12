@@ -27,7 +27,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
- * an auxillary class for managing and manipulating registers
+ * an auxiliary class for managing and manipulating registers
  */
 public class RegisterUtils {
 	
