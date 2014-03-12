@@ -28,6 +28,12 @@ import org.apache.bcel.generic.Type;
 
 public class SignatureUtils {
 
+    /**
+     * private to reinforce the helper status of the class
+     */
+    private SignatureUtils() {       
+    }
+    
 	public static boolean isInheritedMethod(JavaClass cls, String methodName, String signature) throws ClassNotFoundException {
 		JavaClass[] infs = cls.getAllInterfaces();
 		if (findInheritedMethod(infs, methodName, signature) != null) {
