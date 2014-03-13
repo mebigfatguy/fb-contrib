@@ -178,5 +178,10 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
             this.register = register;
             this.appendInvoked = appendInvoked;
         }
+        
+        @Override
+        public String toString() {
+            return "register: " + register + " appendInvoked: " + appendInvoked;
+        }
     }
 }
