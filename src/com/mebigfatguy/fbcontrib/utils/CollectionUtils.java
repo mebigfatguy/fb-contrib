@@ -36,6 +36,9 @@ public class CollectionUtils {
         }
     }
     
+    /**
+     * private to reinforce the helper status of the class
+     */
     private CollectionUtils() {       
     }
 
