@@ -41,6 +41,14 @@ public class LO_Sample {
     public void testInvalidSLF4jParm() {
         l3.error("This is a problem {0}", "hello");
     }
+    
+    public void testLogAppending(String s) {
+        try {
+            l3.info("Got an error with: " + s);
+        } catch (Exception e) {
+            l3.warn("Go a bad error with: " + s, e);
+        }
+    }
 
     public void testWrongNumberOfParms() {
         l3.error("This is a problem {}", "hello", "hello");
