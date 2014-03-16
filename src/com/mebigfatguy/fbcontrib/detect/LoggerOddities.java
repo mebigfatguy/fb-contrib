@@ -141,6 +141,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         String ldcClassName = null;
+        String seenMethodName = null;
         int exMessageReg = -1;
         Integer arraySize = null;
 
@@ -259,9 +260,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                 OpcodeStack.Item exItem = stack.getStackItem(0);
                                 OpcodeStack.Item msgItem = stack.getStackItem(1);
 
-                                Integer exReg = (Integer) msgItem.getUserValue();
-                                if (exReg != null) {
-                                    if (exReg.intValue() == exItem.getRegisterNumber()) {
+                                Object exReg = msgItem.getUserValue();
+                                if (exReg instanceof Integer) {
+                                    if (((Integer) exReg).intValue() == exItem.getRegisterNumber()) {
                                         bugReporter.reportBug(new BugInstance(this, "LO_STUTTERED_MESSAGE", NORMAL_PRIORITY).addClass(this).addMethod(this)
                                                 .addSourceLine(this));
                                     }
@@ -277,7 +278,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             }
                         } else if ("org/slf4j/Logger".equals(callingClsName)) {
                             String signature = getSigConstantOperand();
-                            if ("(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature) 
+                            if ("(Ljava/lang/String;)V".equals(signature) 
+                            ||  "(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature) 
                             ||  "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V".equals(signature) 
                             ||  "(Ljava/lang/String;[Ljava/lang/Object;)V".equals(signature)) {
                                 int numParms = Type.getArgumentTypes(signature).length;
@@ -306,11 +308,21 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                                 }
                                             }
                                         }
+                                    } else if ("toString".equals(formatItem.getUserValue())) {
+                                        bugReporter.reportBug(new BugInstance(this, "LO_APPENDED_STRING_IN_FORMAT_STRING", NORMAL_PRIORITY)
+                                        .addClass(this)
+                                        .addMethod(this)
+                                        .addSourceLine(this));
                                     }
                                 }
                             }
                             
                         }
+                    }
+                } else if (mthName.equals("toString")) {
+                    String callingClsName = getClassConstantOperand();
+                    if ((callingClsName.equals("java/lang/StringBuilder") || callingClsName.equals("java/lang/StringBuffer"))) {
+                        seenMethodName = mthName;
                     }
                 }
             } else if (seen == INVOKESPECIAL) {
@@ -367,14 +379,17 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     item.setUserValue(ldcClassName);
                 }
-            }
-            if (exMessageReg >= 0) {
+            } else if (seenMethodName != null) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(seenMethodName);
+                }
+            } else if (exMessageReg >= 0) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     item.setUserValue(Integer.valueOf(exMessageReg));
                 }
-            }
-            if (arraySize != null) {
+            } else if (arraySize != null) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     item.setUserValue(arraySize);

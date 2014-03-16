@@ -3129,6 +3129,19 @@
 	       ]]>
 	   </Details>
 	</BugPattern>
+	
+	<BugPattern type="LO_APPENDED_STRING_IN_FORMAT_STRING">
+	   <ShortDescription>Method passes a concatenated string to Slf4j's format string</ShortDescription>
+	   <LongDescription>Method {1} passes a concatenated string to Slf4j's format string</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This method uses an slf4j logger to log a string, where the first (format) string is created using concatenation.
+	       You should use {} markers to inject dynamic content into the string, so that String building is delayed until the
+	       actual log string is needed. If the log level is high enough that this log statement isn't used, then the appends
+	       will never be executed.
+	       ]]>
+	   </Details>
+	</BugPattern>'
 
 	<BugPattern type="IICU_INCORRECT_INTERNAL_CLASS_USE">
 		<ShortDescription>Class relies on internal API classes</ShortDescription>
