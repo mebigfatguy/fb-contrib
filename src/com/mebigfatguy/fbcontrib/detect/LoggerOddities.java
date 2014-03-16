@@ -159,6 +159,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 String mthName = getNameConstantOperand();
 
                 String loggingClassName = null;
+                int loggingPriority = NORMAL_PRIORITY;
 
                 if ("org/slf4j/LoggerFactory".equals(callingClsName) && "getLogger".equals(mthName)) {
                     String signature = getSigConstantOperand();
@@ -175,6 +176,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             if (loggingClassName != null) {
                                 loggingClassName = loggingClassName.replace('.', '/');
                             }
+                            loggingPriority = LOW_PRIORITY;
                         }
                     }
                 } else if ("org/apache/log4j/Logger".equals(callingClsName) && "getLogger".equals(mthName)) {
@@ -234,7 +236,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             }
 
                             if (!isAnonClassPrefix) {
-                                bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_CLASS", NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_CLASS", loggingPriority).addClass(this).addMethod(this)
                                         .addSourceLine(this));
                             }
                         }
