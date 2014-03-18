@@ -68,14 +68,14 @@ function toggleBlock(divId, imgId)
 			</li>
 			</ul>
 		</p>
-		<p style="font-weight: bold;">The latest version of fb-contrib is 5.0.3 available for download 
-		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-5.0.3.jar/download">here</a>.</p>
+		<p style="font-weight: bold;">The latest version of fb-contrib is 5.2.0 available for download 
+		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-5.2.0.jar/download">here</a>.</p>
 		</div>
 
         <hr/>
-        <img id="git_image" src="flip2.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
+        <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
         Detectors added in git<br/>
-        <div id="git" style="display:block;">
+        <div id="git" style="display:none;">
             <ul>
                 <li><b>[STB] Stacked Try Blocks</b><br/>
                 Looks for two or more try catch blocks that are consecutive and catch the
@@ -88,16 +88,23 @@ function toggleBlock(divId, imgId)
                 to be big enough. This just causes unneeded reallocations putting strain
                 on the garbage collector.
                 </li>
-        		<li><b>[AIOB] Array Index Out of Bounds</b><br/>
-        		Looks for questionable load/stores to array elements.<ul>
-        		    <li>
-        		    Looks for accesses to array elements using literal values that are known to be outside the bounds of the array.
-        		    This mistake will cause an ArrayIndexOutOfBoundsException to occur at runtime.</li>
-        		    <li>
-        		    Looks for stores to array elements where the array itself appears to have not been allocated.
-        		    </li>
-        		    </ul>
-        		</li>
+                <li><b>[AIOB] Array Index Out of Bounds</b><br/>
+                Looks for questionable load/stores to array elements.<ul>
+                    <li>
+                    Looks for accesses to array elements using literal values that are known to be outside the bounds of the array.
+                    This mistake will cause an ArrayIndexOutOfBoundsException to occur at runtime.</li>
+                    <li>
+                    Looks for stores to array elements where the array itself appears to have not been allocated.
+                    </li>
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <hr/>
+        <img id="v5_2_0_image" src="flip2.gif" onClick="toggleBlock('v5_2_0', 'v5_2_0_image');" align="top"/>
+        Detectors added in v5.2.0<br/>
+        <div id="git" style="display:block;">
+            <ul>
         		<li><b>[CNC] Collection Naming Confusion</b><br/>
         		Looks for fields and local variables that have Map, Set, List in their names
                 but the variable is a collection of a different basic type.
