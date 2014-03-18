@@ -123,7 +123,7 @@ function toggleBlock(divId, imgId)
                 </li>
                 <li><b>[MUC] Modifying Unmodifiable Collection</b><br/>
                 Looks for code that attempts to modify a collection that is or may be
-                defined as immutable. or instance, being returned from Arrays.asList(). Doing so will cause exceptions at runtime.
+                defined as immutable. for instance, being returned from Arrays.asList(). Doing so will cause exceptions at runtime.
                 </li>
             </ul>             
         </div>
