@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -54,29 +55,31 @@ public class PoorMansEnum extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            fieldValues = new HashMap<String, Set<Object>>();
-            nameToField = new HashMap<String, Field>();
             JavaClass cls = classContext.getJavaClass();
-            for (Field f : cls.getFields()) {
-                if (f.isPrivate() && !f.isSynthetic()) {
-                    fieldValues.put(f.getName(), null);
-                    nameToField.put(f.getName(), f);
+            if (cls.getMajor() >= Constants.MAJOR_1_5) {
+                fieldValues = new HashMap<String, Set<Object>>();
+                nameToField = new HashMap<String, Field>();
+                for (Field f : cls.getFields()) {
+                    if (f.isPrivate() && !f.isSynthetic()) {
+                        fieldValues.put(f.getName(), null);
+                        nameToField.put(f.getName(), f);
+                    }
                 }
-            }
-            if (!fieldValues.isEmpty()) {
-                stack = new OpcodeStack();
-                firstFieldUse = new HashMap<String, SourceLineAnnotation>();
-                super.visitClassContext(classContext);
-                
-                for (Map.Entry<String, Set<Object>> fieldInfo : fieldValues.entrySet()) {
-                    Set<Object> values = fieldInfo.getValue();
-                    if (values != null) {
-                        if (values.size() >= 3) {
-                            String fieldName = fieldInfo.getKey();
-                            bugReporter.reportBug(new BugInstance(this, "PME_POOR_MANS_ENUM", NORMAL_PRIORITY)
-                                        .addClass(this)
-                                        .addField(XFactory.createXField(cls, nameToField.get(fieldName)))
-                                        .addSourceLine(firstFieldUse.get(fieldName)));
+                if (!fieldValues.isEmpty()) {
+                    stack = new OpcodeStack();
+                    firstFieldUse = new HashMap<String, SourceLineAnnotation>();
+                    super.visitClassContext(classContext);
+                    
+                    for (Map.Entry<String, Set<Object>> fieldInfo : fieldValues.entrySet()) {
+                        Set<Object> values = fieldInfo.getValue();
+                        if (values != null) {
+                            if (values.size() >= 3) {
+                                String fieldName = fieldInfo.getKey();
+                                bugReporter.reportBug(new BugInstance(this, "PME_POOR_MANS_ENUM", NORMAL_PRIORITY)
+                                            .addClass(this)
+                                            .addField(XFactory.createXField(cls, nameToField.get(fieldName)))
+                                            .addSourceLine(firstFieldUse.get(fieldName)));
+                            }
                         }
                     }
                 }
