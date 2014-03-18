@@ -69,7 +69,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
     /**
      * constructs a CMRIC detector given the reporter to report bugs on
      * 
-     * @param bugReporter
+     * @param reporter
      *            the sync of bug reports
      */
     public CollectMethodsReturningImmutableCollections(BugReporter reporter) {

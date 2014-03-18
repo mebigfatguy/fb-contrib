@@ -63,7 +63,8 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     
     /**
      * constructs a MUC detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
+     * 
+     * @param reporter the sync of bug reports
      */
     public ModifyingUnmodifiableCollection(BugReporter reporter) {
         bugReporter = reporter;
@@ -71,7 +72,8 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     
     /**
      * overrides the visitor to setup and tear down the opcode stack
-     * @parm context the context object of the currently parse java class
+     * 
+     * @param context the context object of the currently parse java class
      */
     @Override
     public void visitClassContext(ClassContext context) {

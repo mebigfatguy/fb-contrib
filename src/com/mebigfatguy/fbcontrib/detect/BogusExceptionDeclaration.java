@@ -68,10 +68,10 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
 
 	/**
-     * constructs a BED detector given the reporter to report bugs on
+     * overrides the visitor to create the opcode stack
      * 
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param classContext the context object of the currently parsed class
+     *            
      */
 	@Override
 	public void visitClassContext(ClassContext classContext) {
