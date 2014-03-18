@@ -421,11 +421,11 @@
 	<BugPattern abbrev="OC" type="OC_OVERZEALOUS_CASTING" category="CORRECTNESS" />
 	<BugPattern abbrev="PDP" type="PDP_POORLY_DEFINED_PARAMETER" category="CORRECTNESS" />
 	<BugPattern abbrev="NSE" type="NSE_NON_SYMMETRIC_EQUALS" category="CORRECTNESS" />
-	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT" category="CORRECTNESS" />
+	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT" category="CORRECTNESS />
 	<BugPattern abbrev="NFF" type="NFF_NON_FUNCTIONAL_FIELD" category="CORRECTNESS" />
-	<BugPattern abbrev="SNG" type="SNG_SUSPICIOUS_NULL_FIELD_GUARD" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="SNG" type="SNG_SUSPICIOUS_NULL_LOCAL_GUARD" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="SNG" type="SNG_SUSPICIOUS_NULL_FIELD_GUARD" category="CORRECTNESS" />
+	<BugPattern abbrev="SNG" type="SNG_SUSPICIOUS_NULL_LOCAL_GUARD" category="CORRECTNESS" />
 	<BugPattern abbrev="MDM" type="MDM_RUNTIME_EXIT_OR_HALT" category="CORRECTNESS" />
 	<BugPattern abbrev="MDM" type="MDM_RUNFINALIZATION" category="CORRECTNESS" />
 	<BugPattern abbrev="MDM" type="MDM_INETADDRESS_GETLOCALHOST" category="CORRECTNESS" />
@@ -448,10 +448,10 @@
 	<BugPattern abbrev="WOC" type="WOC_WRITE_ONLY_COLLECTION_LOCAL" category="CORRECTNESS" />
 	<BugPattern abbrev="WOC" type="WOC_WRITE_ONLY_COLLECTION_FIELD" category="CORRECTNESS" />
 	<BugPattern abbrev="UVA" type="UVA_USE_VAR_ARGS" category="STYLE" />
-	<BugPattern abbrev="PUS" type="PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="SEC" type="SEC_SIDE_EFFECT_CONSTRUCTOR" category="STYLE" experimental="true" />
-	<BugPattern abbrev="SGSU" type="SGSU_SUSPICIOUS_GETTER_SETTER_USE" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="LGO" type="LGO_LINGERING_GRAPHICS_OBJECT" category="PERFORMANCE" experimental="true" />
+	<BugPattern abbrev="PUS" type="PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION" category="CORRECTNESS" />
+	<BugPattern abbrev="SEC" type="SEC_SIDE_EFFECT_CONSTRUCTOR" category="STYLE" />
+	<BugPattern abbrev="SGSU" type="SGSU_SUSPICIOUS_GETTER_SETTER_USE" category="CORRECTNESS" />
+	<BugPattern abbrev="LGO" type="LGO_LINGERING_GRAPHICS_OBJECT" category="PERFORMANCE" />
 	<BugPattern abbrev="STB" type="STB_STACKED_TRY_BLOCKS" category="STYLE" experimental="true" />
 	<BugPattern abbrev="CEBE" type="CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS" category="CORRECTNESS" />
 	<BugPattern abbrev="CHTH" type="CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE" category="CORRECTNESS" />
