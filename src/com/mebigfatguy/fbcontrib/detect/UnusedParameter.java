@@ -129,12 +129,14 @@ public class UnusedParameter extends BytecodeScanningDetector {
                     reg = unusedParms.nextSetBit(firstReg);
                     while (reg >= 0) {
                         LocalVariable lv = (lvt != null) ? lvt.getLocalVariable(reg, 0) : null;
-                        String parmName = (lv != null) ? lv.getName() : "";
-                        bugReporter.reportBug(new BugInstance(this, "UP_UNUSED_PARAMETER", NORMAL_PRIORITY)
-                                        .addClass(this)
-                                        .addMethod(this)
-                                        .addString("Parameter " + regToParm.get(reg) + ": " + parmName));
-                        reg = unusedParms.nextSetBit(reg+1);
+                        if (lv != null) {
+                            String parmName = lv.getName();
+                            bugReporter.reportBug(new BugInstance(this, "UP_UNUSED_PARAMETER", NORMAL_PRIORITY)
+                                            .addClass(this)
+                                            .addMethod(this)
+                                            .addString("Parameter " + regToParm.get(reg) + ": " + parmName));
+                            reg = unusedParms.nextSetBit(reg+1);
+                        }
                     }
                 }
             }
