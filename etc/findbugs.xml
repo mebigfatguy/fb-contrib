@@ -422,7 +422,7 @@
 	<BugPattern abbrev="PDP" type="PDP_POORLY_DEFINED_PARAMETER" category="CORRECTNESS" />
 	<BugPattern abbrev="NSE" type="NSE_NON_SYMMETRIC_EQUALS" category="CORRECTNESS" />
 	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT" category="CORRECTNESS" />
-	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT" category="CORRECTNESS />
+	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT" category="CORRECTNESS" />
 	<BugPattern abbrev="NFF" type="NFF_NON_FUNCTIONAL_FIELD" category="CORRECTNESS" />
 	<BugPattern abbrev="SNG" type="SNG_SUSPICIOUS_NULL_FIELD_GUARD" category="CORRECTNESS" />
 	<BugPattern abbrev="SNG" type="SNG_SUSPICIOUS_NULL_LOCAL_GUARD" category="CORRECTNESS" />
@@ -465,12 +465,12 @@
     <BugPattern abbrev="PSC" type="PSC_PRESIZE_COLLECTIONS" category="PERFORMANCE" />
     <BugPattern abbrev="UMTP" type="UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER" category="CORRECTNESS" />
     <BugPattern abbrev="NPMC" type="NPMC_NON_PRODUCTIVE_METHOD_CALL" category="CORRECTNESS" />
-    <BugPattern abbrev="AIOB" type="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS" category="CORRECTNESS" />
-    <BugPattern abbrev="AIOB" type="AIOB_ARRAY_STORE_TO_NULL_REFERENCE" category="CORRECTNESS" />
-    <BugPattern abbrev="ICA" type="ICA_INVALID_CONSTANT_ARGUMENT" category="CORRECTNESS" />
-    <BugPattern abbrev="CNC" type="CNC_COLLECTION_NAMING_CONFUSION" category="STYLE" />
-    <BugPattern abbrev="PME" type="PME_POOR_MANS_ENUM" category="STYLE" />
-    <BugPattern abbrev="UP" type="UP_UNUSED_PARAMETER" category="STYLE" />
+    <BugPattern abbrev="AIOB" type="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS" category="CORRECTNESS" experimental="true"  />
+    <BugPattern abbrev="AIOB" type="AIOB_ARRAY_STORE_TO_NULL_REFERENCE" category="CORRECTNESS" experimental="true"  />
+    <BugPattern abbrev="ICA" type="ICA_INVALID_CONSTANT_ARGUMENT" category="CORRECTNESS"  />
+    <BugPattern abbrev="CNC" type="CNC_COLLECTION_NAMING_CONFUSION" category="STYLE" experimental="true"  />
+    <BugPattern abbrev="PME" type="PME_POOR_MANS_ENUM" category="STYLE" experimental="true"  />
+    <BugPattern abbrev="UP" type="UP_UNUSED_PARAMETER" category="STYLE" experimental="true"  />
     <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="CORRECTNESS" />
-    <BugPattern abbrev="MUC" type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION" category="CORRECTNESS" />
+    <BugPattern abbrev="MUC" type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION" category="CORRECTNESS" experimental="true" />
 </FindbugsPlugin>
