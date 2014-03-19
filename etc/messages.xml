@@ -3888,8 +3888,8 @@
         <Details>
             <![CDATA[
             <p>This class defines a field or local collection variable with a name that contains a different type
-            of collection in its name. This is confusing to the reader, and likely caused by a previous refactor of 
-            type, without changing the name.</p>
+            of collection in its name. An example woutd be a Set<User> called userList. This is confusing to the reader, 
+            and likely caused by a previous refactor of type, without changing the name.</p>
             ]]> 
         </Details>
 	</BugPattern>
