@@ -168,7 +168,7 @@
 
 	<target name="install" depends="build" description="installs the plugin into FindBugs">
 		<property environment="env" />
-		<copy todir="${env.FINDBUGS_HOME}/plugin">
+		<copy todir="${env.FINDBUGS_ECLIPSE}/plugin">
 			<fileset dir="${basedir}">
 				<include name="fb-contrib-${fb-contrib.version}.jar" />
 			</fileset>

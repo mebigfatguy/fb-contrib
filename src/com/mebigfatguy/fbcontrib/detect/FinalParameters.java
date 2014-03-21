@@ -200,7 +200,8 @@ public class FinalParameters extends BytecodeScanningDetector
 			if (bi == null) {
 				bi = new BugInstance(this, "FP_FINAL_PARAMETERS", LOW_PRIORITY)
 					.addClass(this)
-					.addMethod(this)
+					.addMethod(this)		//adds method and source line annotation
+					.addParameterAnnotation(0, "helper")
 					.addSourceLine(this, 0);
 				bugReporter.reportBug(bi);
 			}
@@ -217,7 +218,8 @@ public class FinalParameters extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(final int seen) {
 		if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
-		    changedParms.set(RegisterUtils.getAStoreReg(this,  seen));
+			if (changedParms != null)
+				changedParms.set(RegisterUtils.getAStoreReg(this,  seen));
 		}
 	}
 

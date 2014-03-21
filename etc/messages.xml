@@ -1600,7 +1600,7 @@
 
 	<BugPattern type="FP_FINAL_PARAMETERS">
 		<ShortDescription>Method does not define a parameter as final, but could</ShortDescription>
-		<LongDescription>Method {1} does not define parameter {2} as final, but could</LongDescription>
+		<LongDescription>Method {1} does not define parameter "{4}" as final, but could</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method correctly does not write to a parameter. To help document this, and to perhaps
