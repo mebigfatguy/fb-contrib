@@ -6,6 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
+import java.sql.Date;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -97,4 +99,13 @@ public class OCP_Sample extends Z implements ActionListener, Serializable {
 class Z {
     public void usesOCP(LinkedList<String> ll) {
     }
+}
+
+class fpOverride {
+    public static final Comparator<Date> COMPARATOR = new Comparator<Date>() {
+
+        public int compare(Date o1, Date o2) {
+            return o1.getYear() - o2.getYear();
+        }
+    }; 
 }
