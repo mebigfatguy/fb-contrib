@@ -113,6 +113,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		increasingMethods.add("put");
 	}
 	private final BugReporter bugReporter;
+	private Map<XField, SourceLineAnnotation> bloatableCandidates;
 	private Map<XField, SourceLineAnnotation> bloatableFields;
 	private OpcodeStack stack;
 	private String methodName;
@@ -134,10 +135,10 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			bloatableFields = new HashMap<XField, SourceLineAnnotation>();
+			bloatableCandidates = new HashMap<XField, SourceLineAnnotation>();
 			parseFields(classContext);
 
-			if (bloatableFields.size() > 0) {
+			if (bloatableCandidates.size() > 0) {
 				stack = new OpcodeStack();
 				super.visitClassContext(classContext);
 
@@ -145,12 +146,12 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 			}
 		} finally {
 			stack = null;
-			bloatableFields = null;
+			bloatableCandidates = null;
 		}
 	}
 
 	private void findAndReportBugs() {
-		for (Map.Entry<XField, SourceLineAnnotation> entry : bloatableFields.entrySet()) {
+		for (Map.Entry<XField, SourceLineAnnotation> entry : bloatableCandidates.entrySet()) {
 			SourceLineAnnotation sla = entry.getValue();
 			if (sla != null) {
 				bugReporter.reportBug(new BugInstance(this, "PMB_POSSIBLE_MEMORY_BLOAT", NORMAL_PRIORITY)
@@ -165,12 +166,12 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		JavaClass cls = classContext.getJavaClass();
 		Field[] fields = cls.getFields();
 		for (Field f : fields) {
+			String sig = f.getSignature();
 			if (f.isStatic()) {
-				String sig = f.getSignature();
 				if (bloatableSigs.contains(sig)) {
-					bloatableFields.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), null);
+					bloatableCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), SourceLineAnnotation.fromVisitedInstruction(this));
 				}
-			} else if ("Ljava/lang/ThreadLocal;".equals(f.getSignature())) {
+			} else if ("Ljava/lang/ThreadLocal;".equals(sig)) {
 				bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
 				.addClass(this)
 				.addField(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic())));
@@ -200,7 +201,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		if ("<clinit>".equals(methodName) || "<init>".equals(methodName))
 			return;
 
-		if (bloatableFields.size() > 0)
+		if (bloatableCandidates.size() > 0)
 			super.visitCode(obj);
 	}
 
@@ -213,7 +214,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			if (bloatableFields.isEmpty())
+			if (bloatableCandidates.isEmpty())
 				return;
 
 			stack.precomputation(this);
@@ -225,7 +226,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 					OpcodeStack.Item itm = stack.getStackItem(argCount);
 					XField field = itm.getXField();
 					if (field != null) {
-						if (bloatableFields.containsKey(field)) {
+						if (bloatableCandidates.containsKey(field)) {
 							checkMethodAsDecreasingOrIncreasing(field);
 						}
 					}
@@ -246,6 +247,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 			OpcodeStack.Item returnItem = stack.getStackItem(0);
 			XField field = returnItem.getXField();
 			if (field != null) {
+				bloatableCandidates.remove(field);
 				bloatableFields.remove(field);
 			}
 		}
@@ -254,11 +256,11 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	protected void checkMethodAsDecreasingOrIncreasing(XField field) {
 		String mName = getNameConstantOperand();
 		if (decreasingMethods.contains(mName)) {
+			bloatableCandidates.remove(field);
 			bloatableFields.remove(field);
 		} else if (increasingMethods.contains(mName)) {
-			if (bloatableFields.get(field) == null) {
-				SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
-				bloatableFields.put(field, sla);
+			if (bloatableCandidates.containsKey(field)) {
+				bloatableFields.put(field, bloatableCandidates.get(field));
 			}
 		}
 	}
