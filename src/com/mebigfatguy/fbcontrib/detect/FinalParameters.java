@@ -200,9 +200,7 @@ public class FinalParameters extends BytecodeScanningDetector
 			if (bi == null) {
 				bi = new BugInstance(this, "FP_FINAL_PARAMETERS", LOW_PRIORITY)
 					.addClass(this)
-					.addMethod(this)		//adds method and source line annotation
-					.addParameterAnnotation(0, "helper")
-					.addSourceLine(this, 0);
+					.addMethod(this);		//adds method and source line annotation
 				bugReporter.reportBug(bi);
 			}
 			bi.addString(parmName);
