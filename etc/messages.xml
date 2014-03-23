@@ -2050,13 +2050,19 @@
 	</BugPattern>
 
 	<BugPattern type="PMB_POSSIBLE_MEMORY_BLOAT">
-		<ShortDescription>Class defines static field that appears to allow memory bloat</ShortDescription>
-		<LongDescription>Class {0} defines static field that appears to allow memory bloat</LongDescription>
+		<ShortDescription>Potential memory bloat in static field</ShortDescription>
+		<LongDescription>Class {0} defines static field "{2}" which appears to allow memory bloat</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This class defines static fields that are collections or StringBuffers that do not
-			appear to have any way to clear or reduce their size. This is a potential cause of
-			memory bloat.</p>
+			<p>This class defines static fields that are <code>Collection</code>s, <code>StringBuffer</code>s, or <code>StringBuilder</code>s
+			that do not appear to have any way to clear or reduce their size. That is, a collection is defined
+			and has method calls like <br/>
+			{<code>add()</code>, <code>append()</code>, <code>offer()</code>, <code>put()</code>, ...} <br/>
+			with no method calls to removal methods like<br/>
+			{<code>clear()</code>, <code>delete()</code>, <code>pop()</code>, <code>remove()</code>, ...}<br/>
+			This means that the collection in question can only ever increase in size, which is 
+			a potential cause of memory bloat.</p>
+			
 			]]>
 		</Details>
 	</BugPattern>

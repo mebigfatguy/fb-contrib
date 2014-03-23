@@ -48,29 +48,29 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 {
 	private static final Set<String> bloatableSigs = new HashSet<String>();
 	static {
-        bloatableSigs.add("Ljava/util/concurrent/ArrayBlockingQueue;");
-        bloatableSigs.add("Ljava/util/ArrayList;");
-        bloatableSigs.add("Ljava/util/concurrent/BlockingQueue;");		
-        bloatableSigs.add("Ljava/util/Collection;");
-        bloatableSigs.add("Ljava/util/concurrent/ConcurrentHashMap;");
-        bloatableSigs.add("Ljava/util/concurrent/ConcurrentSkipListMap;");
-        bloatableSigs.add("Ljava/util/concurrent/ConcurrentSkipListSet;");
-        bloatableSigs.add("Ljava/util/concurrent/CopyOnWriteArraySet;");
-        bloatableSigs.add("Ljava/util/EnumSet;");
-        bloatableSigs.add("Ljava/util/EnumMap;");
+		bloatableSigs.add("Ljava/util/concurrent/ArrayBlockingQueue;");
+		bloatableSigs.add("Ljava/util/ArrayList;");
+		bloatableSigs.add("Ljava/util/concurrent/BlockingQueue;");		
+		bloatableSigs.add("Ljava/util/Collection;");
+		bloatableSigs.add("Ljava/util/concurrent/ConcurrentHashMap;");
+		bloatableSigs.add("Ljava/util/concurrent/ConcurrentSkipListMap;");
+		bloatableSigs.add("Ljava/util/concurrent/ConcurrentSkipListSet;");
+		bloatableSigs.add("Ljava/util/concurrent/CopyOnWriteArraySet;");
+		bloatableSigs.add("Ljava/util/EnumSet;");
+		bloatableSigs.add("Ljava/util/EnumMap;");
 		bloatableSigs.add("Ljava/util/HashMap;");
 		bloatableSigs.add("Ljava/util/HashSet;");
 		bloatableSigs.add("Ljava/util/Hashtable;");
 		bloatableSigs.add("Ljava/util/IdentityHashMap;");
-        bloatableSigs.add("Ljava/util/concurrent/LinkedBlockingQueue;");
-        bloatableSigs.add("Ljava/util/LinkedHashMap;");
-        bloatableSigs.add("Ljava/util/LinkedHashSet;");
+		bloatableSigs.add("Ljava/util/concurrent/LinkedBlockingQueue;");
+		bloatableSigs.add("Ljava/util/LinkedHashMap;");
+		bloatableSigs.add("Ljava/util/LinkedHashSet;");
 		bloatableSigs.add("Ljava/util/LinkedList;");
-        bloatableSigs.add("Ljava/util/List;");
-        bloatableSigs.add("Ljava/util/concurrent/PriorityBlockingQueue;");
-        bloatableSigs.add("Ljava/util/PriorityQueue;");
+		bloatableSigs.add("Ljava/util/List;");
+		bloatableSigs.add("Ljava/util/concurrent/PriorityBlockingQueue;");
+		bloatableSigs.add("Ljava/util/PriorityQueue;");
 		bloatableSigs.add("Ljava/util/Map;");
-	    bloatableSigs.add("Ljava/util/Queue;");
+		bloatableSigs.add("Ljava/util/Queue;");
 		bloatableSigs.add("Ljava/util/Set;");
 		bloatableSigs.add("Ljava/util/SortedSet;");
 		bloatableSigs.add("Ljava/util/SortedMap;");
@@ -85,21 +85,21 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	static {
 		decreasingMethods.add("clear");
 		decreasingMethods.add("delete");
-        decreasingMethods.add("deleteCharAt");
-        decreasingMethods.add("drainTo");
-        decreasingMethods.add("poll");
-        decreasingMethods.add("pollFirst");
-        decreasingMethods.add("pollLast");
-        decreasingMethods.add("pop");
+		decreasingMethods.add("deleteCharAt");
+		decreasingMethods.add("drainTo");
+		decreasingMethods.add("poll");
+		decreasingMethods.add("pollFirst");
+		decreasingMethods.add("pollLast");
+		decreasingMethods.add("pop");
 		decreasingMethods.add("remove");
 		decreasingMethods.add("removeAll");
 		decreasingMethods.add("removeAllElements");
 		decreasingMethods.add("removeElementAt");
 		decreasingMethods.add("removeRange");
-        decreasingMethods.add("setLength");
-        decreasingMethods.add("take");
+		decreasingMethods.add("setLength");
+		decreasingMethods.add("take");
 	}
-	
+
 	private static final Set<String> increasingMethods = new HashSet<String>();
 	static {
 		increasingMethods.add("add");
@@ -109,22 +109,22 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		increasingMethods.add("addLast");
 		increasingMethods.add("append");
 		increasingMethods.add("insertElementAt");
-        increasingMethods.add("offer");
-        increasingMethods.add("put");
+		increasingMethods.add("offer");
+		increasingMethods.add("put");
 	}
 	private final BugReporter bugReporter;
 	private Map<XField, SourceLineAnnotation> bloatableFields;
 	private OpcodeStack stack;
 	private String methodName;
-	
+
 	/**
-     * constructs a PMB detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
+	 * constructs a PMB detector given the reporter to report bugs on
+	 * @param bugReporter the sync of bug reports
 	 */
 	public PossibleMemoryBloat(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-	
+
 	/**
 	 * collects static fields that are likely bloatable objects and if found
 	 * allows the visitor to proceed, at the end report all leftover fields
@@ -144,23 +144,23 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 						bloatableFields.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), null);
 					}
 				} else if ("Ljava/lang/ThreadLocal;".equals(f.getSignature())) {
-			            bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
-			                    .addClass(this)
-			                    .addField(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic())));
+					bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
+					.addClass(this)
+					.addField(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic())));
 				}
 			}
-			
+
 			if (bloatableFields.size() > 0) {
 				stack = new OpcodeStack();
 				super.visitClassContext(classContext);
-	
+
 				for (Map.Entry<XField, SourceLineAnnotation> entry : bloatableFields.entrySet()) {
 					SourceLineAnnotation sla = entry.getValue();
 					if (sla != null) {
 						bugReporter.reportBug(new BugInstance(this, "PMB_POSSIBLE_MEMORY_BLOAT", NORMAL_PRIORITY)
-									.addClass(this)
-									.addSourceLine(sla)
-									.addField(entry.getKey()));
+						.addClass(this)
+						.addSourceLine(sla)
+						.addField(entry.getKey()));
 					}
 				}
 			}
@@ -169,7 +169,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 			bloatableFields = null;
 		}
 	}
-	
+
 	/**
 	 * implements the visitor to collect the method name
 	 * 
@@ -179,7 +179,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	public void visitMethod(Method obj) {
 		methodName = obj.getName();
 	}
-	
+
 	/**
 	 * implements the visitor to reset the opcode stack
 	 * 
@@ -188,15 +188,15 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	@Override
 	public void visitCode(Code obj) {
 		stack.resetForMethodEntry(this);
-		
+
 		if ("<clinit>".equals(methodName)
-		||  "<init>".equals(methodName))
+				||  "<init>".equals(methodName))
 			return;
-		
+
 		if (bloatableFields.size() > 0)
 			super.visitCode(obj);
 	}
-	
+
 	/**
 	 * implements the visitor to look for methods that empty a bloatable field
 	 * if found, remove these fields from the current list
@@ -208,11 +208,11 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		try {
 			if (bloatableFields.isEmpty())
 				return;
-			
-	        stack.precomputation(this);
-	        
+
+			stack.precomputation(this);
+
 			if ((seen == INVOKEVIRTUAL)
-			||  (seen == INVOKEINTERFACE)) {
+					||  (seen == INVOKEINTERFACE)) {
 				String sig = getSigConstantOperand();
 				int argCount = Type.getArgumentTypes(sig).length;
 				if (stack.getStackDepth() > argCount) {
@@ -234,13 +234,13 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 				}
 			}
 			else if (seen == ARETURN) {
-			    if (stack.getStackDepth() > 0) {
-			        OpcodeStack.Item returnItem = stack.getStackItem(0);
-			        XField field = returnItem.getXField();
-			        if (field != null) {
-			            bloatableFields.remove(field);
-			        }
-			    }
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item returnItem = stack.getStackItem(0);
+					XField field = returnItem.getXField();
+					if (field != null) {
+						bloatableFields.remove(field);
+					}
+				}
 			}
 		}
 		finally {
