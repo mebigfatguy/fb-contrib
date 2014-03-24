@@ -2063,6 +2063,20 @@
 			This means that the collection in question can only ever increase in size, which is 
 			a potential cause of memory bloat.</p>
 			
+			<p>
+			If this collection is a list, set or otherwise of static things (e.g. a List<String> for month names), consider
+			adding all of the elements in a static initializer, which can only be called once:<br/>
+			<code>
+			private static List<String> monthNames = new ArrayList<String>();<br/>
+			static {<br/>
+				&nbsp;&nbsp;&nbsp;monthNames.add("January");<br/>
+				&nbsp;&nbsp;&nbsp;monthNames.add("February");<br/>
+				&nbsp;&nbsp;&nbsp;monthNames.add("March");<br/>
+				&nbsp;&nbsp;&nbsp;...<br/>
+			}
+			</code>
+			</p>
+			
 			]]>
 		</Details>
 	</BugPattern>

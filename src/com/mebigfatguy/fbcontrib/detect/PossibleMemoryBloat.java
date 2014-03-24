@@ -35,7 +35,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -119,6 +118,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	private Map<XField, FieldAnnotation> bloatableFields;
 	private OpcodeStack stack;
 	private String methodName;
+	private Set<FieldAnnotation> threadLocalFields;
 
 	/**
 	 * constructs a PMB detector given the reporter to report bugs on
@@ -139,22 +139,37 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		try {
 			bloatableCandidates = new HashMap<XField, FieldAnnotation>();
 			bloatableFields = new HashMap<XField, FieldAnnotation>();
+			threadLocalFields = new HashSet<FieldAnnotation>();
 			parseFields(classContext);
 
 			if (bloatableCandidates.size() > 0) {
 				stack = new OpcodeStack();
 				super.visitClassContext(classContext);
 
-				findAndReportBugs();
+				reportMemoryBloatBugs();
+				reportThreadLocalBugs();
 			}
 		} finally {
 			stack = null;
+			bloatableCandidates.clear();
 			bloatableCandidates = null;
+			bloatableFields.clear();
 			bloatableFields = null;
+			threadLocalFields.clear();
+			threadLocalFields = null;
 		}
 	}
 
-	private void findAndReportBugs() {
+	private void reportThreadLocalBugs() {
+		for(FieldAnnotation fieldAn: threadLocalFields) {
+			bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
+			.addClass(this)
+			.addField(fieldAn));
+		}
+		
+	}
+
+	private void reportMemoryBloatBugs() {
 		for (Entry<XField, FieldAnnotation> entry : bloatableFields.entrySet()) {
 			FieldAnnotation fieldAn = entry.getValue();
 			if (fieldAn != null) {
@@ -176,10 +191,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 					bloatableCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), FieldAnnotation.fromBCELField(cls, f));
 				}
 			} else if ("Ljava/lang/ThreadLocal;".equals(sig)) {
-				bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
-				.addClass(this)
-				.addField(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic())));
-			}
+				threadLocalFields.add(FieldAnnotation.fromBCELField(cls, f));
+			} 
 		}
 	}
 
