@@ -54,7 +54,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 	 * @param classContext the context object for the currently parsed class
 	 */
 	@Override
-	public void visitClassContext(ClassContext classContext) {
+	public void visitClassContext(final ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
 			super.visitClassContext(classContext);
@@ -69,7 +69,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 	 * @param method the context object of the current method
 	 * @return if the class loads constants
 	 */
-	public boolean prescreen(Method method) {
+	public boolean prescreen(final Method method) {
 		BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
 		return (bytecodeSet != null) && (bytecodeSet.get(Constants.LDC) || bytecodeSet.get(Constants.LDC_W));
 	}
@@ -109,7 +109,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 						OpcodeStack.Item itm = stack.getStackItem(0);
 						Object constant = itm.getConstant();
 						if ((constant != null) && constant.getClass().equals(String.class)) {
-							bugReporter.reportBug( new BugInstance( this, "LSC_LITERAL_STRING_COMPARISON", LOW_PRIORITY)
+							bugReporter.reportBug( new BugInstance( this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY)  //very confident
 								.addClass(this)
 								.addMethod(this)
 								.addSourceLine(this));

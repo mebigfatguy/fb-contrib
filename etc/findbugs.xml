@@ -320,7 +320,7 @@
 	<BugPattern abbrev="DDC" type="DDC_DOUBLE_DATE_COMPARISON" category="PERFORMANCE" />
 	<BugPattern abbrev="SWCO" type="SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT" category="CORRECTNESS" />
 	<BugPattern abbrev="JVR" type="JVR_JDBC_VENDOR_RELIANCE" category="CORRECTNESS" />
-	<BugPattern abbrev="PMB" type="PMB_POSSIBLE_MEMORY_BLOAT" category="CORRECTNESS" />
+	<BugPattern abbrev="PMB" type="PMB_POSSIBLE_MEMORY_BLOAT" category="PERFORMANCE" />
 	<BugPattern abbrev="PMB" type="PMB_INSTANCE_BASED_THREAD_LOCAL" category="CORRECTNESS" />
 	<BugPattern abbrev="LSYC" type="LSYC_LOCAL_SYNCHRONIZED_COLLECTION" category="CORRECTNESS" />
 	<BugPattern abbrev="FCBL" type="FCBL_FIELD_COULD_BE_LOCAL" category="CORRECTNESS" />
@@ -420,7 +420,7 @@
 	<BugPattern abbrev="IKNC" type="IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING" category="STYLE" />
 	<BugPattern abbrev="IKNC" type="IKNC_INCONSISTENT_HTTP_PARAM_CASING" category="STYLE" />
 	<BugPattern abbrev="OC" type="OC_OVERZEALOUS_CASTING" category="CORRECTNESS" />
-	<BugPattern abbrev="PDP" type="PDP_POORLY_DEFINED_PARAMETER" category="CORRECTNESS" />
+	<BugPattern abbrev="PDP" type="PDP_POORLY_DEFINED_PARAMETER" category="BAD_PRACTICE" />
 	<BugPattern abbrev="NSE" type="NSE_NON_SYMMETRIC_EQUALS" category="CORRECTNESS" />
 	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT" category="CORRECTNESS" />
 	<BugPattern abbrev="CVAA" type="CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT" category="CORRECTNESS" />

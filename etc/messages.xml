@@ -178,6 +178,12 @@
 			<p>Looks for methods that correctly do not write to a parameter. To help document this, and to perhaps
 			help the JVM optimize the invocation of this method, you should consider defining these parameters
 			as final.</p>
+			
+			<p>Performance gains are debatable as "the final keyword does not appear in the class file for 
+			local variables and parameters, thus it cannot impact the runtime performance. It's only use 
+			is to clarify the coders intent that the variable not be changed (which many consider dubious 
+			reason for its usage), and dealing with anonymous inner classes." - http://stackoverflow.com/a/266981/1447621</p>
+			
 			<p>It is a slow detector</p>
 			]]>
 		</Details>
@@ -1545,9 +1551,17 @@
 		<LongDescription>Method {1} makes literal string comparisons passing the literal as an argument</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method calls the equals or compareTo methods on a String variable passing in a String literal.
-			A NullPointerException may occur if the string variable is null. If instead the method was called on
-			the string literal, and the variable was passed as an argument, this exception could never happen.</p>
+			<p>This line is in the form of <br/>
+			<code>String str = ...<br/>str.equals("someOtherString")<br/>
+			//or</br>
+			str.compareTo("someOtherString")</code></p>
+			<p>A <code>NullPointerException</code> may occur if the String variable <code>str</code> is <code>null</code>. If instead the code was restructured to<br/>
+			<code>String str = ...<br/>"someOtherString".equals(str)<br/>
+			//or</br>
+			"someOtherString".compareTo(str)</code><br/>
+			that is, call <code>equals()</code> or <code>compareTo()</code> on the string literal, passing the 
+			variable as an argument, this exception could never happen as both <code>equals()</code> and 
+			<code>compareTo()</code> check for <code>null</code>.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1592,12 +1606,17 @@
 
 	<BugPattern type="FP_FINAL_PARAMETERS">
 		<ShortDescription>Method does not define a parameter as final, but could</ShortDescription>
-		<LongDescription>Method {1} does not define a parameter as final, but could</LongDescription>
+		<LongDescription>Method {1} does not define one or more parameters as final, but could</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method correctly does not write to a parameter. To help document this, and to perhaps
+			<p>This method does not write to a parameter. To help document this, and to perhaps
 			help the JVM optimize the invocation of this method, you should consider defining these parameters
 			as final.</p>
+			
+			<p>Performance gains are debatable as "the final keyword does not appear in the class file for 
+			local variables and parameters, thus it cannot impact the runtime performance. It's only use 
+			is to clarify the coders intent that the variable not be changed (which many consider dubious 
+			reason for its usage), and dealing with anonymous inner classes." - http://stackoverflow.com/a/266981/1447621 </p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2031,13 +2050,33 @@
 	</BugPattern>
 
 	<BugPattern type="PMB_POSSIBLE_MEMORY_BLOAT">
-		<ShortDescription>Class defines static field that appears to allow memory bloat</ShortDescription>
-		<LongDescription>Class {0} defines static field that appears to allow memory bloat</LongDescription>
+		<ShortDescription>Potential memory bloat in static field</ShortDescription>
+		<LongDescription>Class {0} defines static field "{2}" which appears to allow memory bloat</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This class defines static fields that are collections or StringBuffers that do not
-			appear to have any way to clear or reduce their size. This is a potential cause of
-			memory bloat.</p>
+			<p>This class defines static fields that are <code>Collection</code>s, <code>StringBuffer</code>s, or <code>StringBuilder</code>s
+			that do not appear to have any way to clear or reduce their size. That is, a collection is defined
+			and has method calls like <br/>
+			{<code>add()</code>, <code>append()</code>, <code>offer()</code>, <code>put()</code>, ...} <br/>
+			with no method calls to removal methods like<br/>
+			{<code>clear()</code>, <code>delete()</code>, <code>pop()</code>, <code>remove()</code>, ...}<br/>
+			This means that the collection in question can only ever increase in size, which is 
+			a potential cause of memory bloat.</p>
+			
+			<p>
+			If this collection is a list, set or otherwise of static things (e.g. a List<String> for month names), consider
+			adding all of the elements in a static initializer, which can only be called once:<br/>
+			<code>
+			private static List<String> monthNames = new ArrayList<String>();<br/>
+			static {<br/>
+				&nbsp;&nbsp;&nbsp;monthNames.add("January");<br/>
+				&nbsp;&nbsp;&nbsp;monthNames.add("February");<br/>
+				&nbsp;&nbsp;&nbsp;monthNames.add("March");<br/>
+				&nbsp;&nbsp;&nbsp;...<br/>
+			}
+			</code>
+			</p>
+			
 			]]>
 		</Details>
 	</BugPattern>

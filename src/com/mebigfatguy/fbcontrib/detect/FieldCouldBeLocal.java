@@ -116,7 +116,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 				for (FieldInfo fi : localizableFields.values()) {
 					FieldAnnotation fa = fi.getFieldAnnotation();
 					SourceLineAnnotation sla = fi.getSrcLineAnnotation();
-					BugInstance bug = new BugInstance(this, "FCBL_FIELD_COULD_BE_LOCAL", NORMAL_PRIORITY)
+					BugInstance bug = new BugInstance(this, "FCBL_FIELD_COULD_BE_LOCAL", HIGH_PRIORITY)	//very confident
 													.addClass(this)
 													.addField(fa);
 					if (sla != null)
