@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
@@ -32,6 +33,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -113,8 +115,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		increasingMethods.add("put");
 	}
 	private final BugReporter bugReporter;
-	private Map<XField, SourceLineAnnotation> bloatableCandidates;
-	private Map<XField, SourceLineAnnotation> bloatableFields;
+	private Map<XField, FieldAnnotation> bloatableCandidates;
+	private Map<XField, FieldAnnotation> bloatableFields;
 	private OpcodeStack stack;
 	private String methodName;
 
@@ -135,7 +137,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			bloatableCandidates = new HashMap<XField, SourceLineAnnotation>();
+			bloatableCandidates = new HashMap<XField, FieldAnnotation>();
+			bloatableFields = new HashMap<XField, FieldAnnotation>();
 			parseFields(classContext);
 
 			if (bloatableCandidates.size() > 0) {
@@ -147,16 +150,17 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		} finally {
 			stack = null;
 			bloatableCandidates = null;
+			bloatableFields = null;
 		}
 	}
 
 	private void findAndReportBugs() {
-		for (Map.Entry<XField, SourceLineAnnotation> entry : bloatableCandidates.entrySet()) {
-			SourceLineAnnotation sla = entry.getValue();
-			if (sla != null) {
+		for (Entry<XField, FieldAnnotation> entry : bloatableFields.entrySet()) {
+			FieldAnnotation fieldAn = entry.getValue();
+			if (fieldAn != null) {
 				bugReporter.reportBug(new BugInstance(this, "PMB_POSSIBLE_MEMORY_BLOAT", NORMAL_PRIORITY)
 				.addClass(this)
-				.addSourceLine(sla)
+				.addField(fieldAn)
 				.addField(entry.getKey()));
 			}
 		}
@@ -169,7 +173,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 			String sig = f.getSignature();
 			if (f.isStatic()) {
 				if (bloatableSigs.contains(sig)) {
-					bloatableCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), SourceLineAnnotation.fromVisitedInstruction(this));
+					bloatableCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), FieldAnnotation.fromBCELField(cls, f));
 				}
 			} else if ("Ljava/lang/ThreadLocal;".equals(sig)) {
 				bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
