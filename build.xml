@@ -130,6 +130,7 @@
 				<attribute name="Require-Bundle" value="edu.umd.cs.findbugs.plugin.eclipse" />
 				<attribute name="Bundle-ActivationPolicy" value="lazy" />
 				<attribute name="Export-Package" value="com.mebigfatguy.fbcontrib.collect, com.mebigfatguy.fbcontrib.detect, com.mebigfatguy.fbcontrib.debug" />
+                <attribute name="Import-Package" value="edu.umd.cs.findbugs, edu.umd.cs.findbugs.ba, edu.umd.cs.findbugs.bceledu.umd.cs.findbugs.visitclass, org.apache.bcel, org.apache.bcel.classfile, org.apache.bcel.generic" />
 			</manifest>
 		</jar>
 	</target>
