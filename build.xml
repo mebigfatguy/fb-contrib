@@ -73,11 +73,6 @@
             <pathelement location="${lib.dir}/slf4j-api-${slf4j-api.version}.jar" />
             <pathelement location="${lib.dir}/guava-${guava.version}.jar" />
 		</path>
-		<mkdir dir="${classes.dir}/com" />
-		<mkdir dir="${classes.dir}/com/mebigfatguy" />
-		<mkdir dir="${classes.dir}/com/mebigfatguy/fbcontrib" />
-		<mkdir dir="${classes.dir}/com/mebigfatguy/fbcontrib/detect" />
-		<echo message="*.class" file="${classes.dir}/com/mebigfatguy/fbcontrib/detect/.cvsignore" />
 	</target>
 
 	<target name="validate_xml" depends="-init" description="validates the xml files">
