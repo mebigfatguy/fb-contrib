@@ -497,12 +497,12 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	
 	static class GroupPair {
 	    private Set<Comparable<?>> groupMembers;
-	    private String collectionClass;
+	    private String colClass;
 	    
 	    public GroupPair(Comparable<?> member, String cls) {
 	        groupMembers = new HashSet<Comparable<?>>();
 	        groupMembers.add(member);
-	        collectionClass = cls;
+	        colClass = cls;
 	    }
 	    
 	    public void addMember(Comparable<?> member) {
@@ -518,12 +518,12 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	    }
 	    
 	    public boolean isStandardCollection() {
-	        return (collectionClass == null) || !collectionClass.contains("/concurrent/");
+	        return (colClass == null) || !colClass.contains("/concurrent/");
 	    }
 	    
 	    @Override
 	    public String toString() {
-	        return groupMembers + ((collectionClass == null) ? "" : collectionClass);
+	        return groupMembers + ((colClass == null) ? "" : colClass);
 	    }
 	}
 }
