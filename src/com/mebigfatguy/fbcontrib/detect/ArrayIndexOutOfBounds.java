@@ -19,6 +19,9 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -43,6 +46,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private BitSet initializedRegs;
     private BitSet modifyRegs;
+    private Map<Integer, Integer> nullStoreToLocation;
     
     /**
      * constructs an AIOB detector given the reporter to report bugs on
@@ -58,10 +62,13 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             stack = new OpcodeStack();
             initializedRegs = new BitSet();
             modifyRegs = new BitSet();
+            nullStoreToLocation = new HashMap<Integer, Integer>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
             initializedRegs = null;
+            modifyRegs = null;
+            nullStoreToLocation = null;
         }
     }
     
@@ -77,10 +84,15 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             initializedRegs.set(arg);
             arg += ("J".equals(argSig) || "D".equals(argSig)) ? 2 : 1;
         }
+        nullStoreToLocation.clear();
         super.visitCode(obj);
         
-        initializedRegs.clear();
-        modifyRegs.clear();
+        for (Integer pc : nullStoreToLocation.values()) {
+            bugReporter.reportBug(new BugInstance(this, "AIOB_ARRAY_STORE_TO_NULL_REFERENCE", HIGH_PRIORITY)
+            .addClass(this)
+            .addMethod(this)
+            .addSourceLine(this, pc.intValue()));
+        }
     }
     
     public void sawOpcode(int seen) {
@@ -189,10 +201,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                         
                         int reg = arrayItem.getRegisterNumber();
                         if ((reg >= 0) && !initializedRegs.get(reg)) {
-                            bugReporter.reportBug(new BugInstance(this, "AIOB_ARRAY_STORE_TO_NULL_REFERENCE", HIGH_PRIORITY)
-                            .addClass(this)
-                            .addMethod(this)
-                            .addSourceLine(this));
+                            nullStoreToLocation.put(Integer.valueOf(reg), getPC());
                         }
                     }
                 }
@@ -237,8 +246,33 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                     initializedRegs.set(getRegisterOperand());
                 } 
                 break;
+            
+            case IFEQ:
+            case IFNE:
+            case IFLT:
+            case IFGE:
+            case IFGT:
+            case IFLE:
+            case IF_ICMPEQ:
+            case IF_ICMPNE:
+            case IF_ICMPLT:
+            case IF_ICMPGE:
+            case IF_ICMPGT:
+            case IF_ICMPLE:
+            case IF_ACMPEQ:
+            case IF_ACMPNE:
+            case GOTO:
+            case GOTO_W:
+                int branchTarget = getBranchTarget();
+                Iterator<Map.Entry<Integer, Integer>> it = nullStoreToLocation.entrySet().iterator();
+                while (it.hasNext()) {
+                    Map.Entry<Integer, Integer> entry = it.next();
+                    int pc =entry.getValue().intValue();
+                    if ((branchTarget < pc) && (initializedRegs.get(entry.getKey().intValue())))
+                        it.remove();
+                }
             }
-             
+  
         } finally {
             stack.sawOpcode(this, seen);
             if (sizeSet) {
