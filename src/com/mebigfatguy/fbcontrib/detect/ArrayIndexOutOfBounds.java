@@ -267,7 +267,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                 Iterator<Map.Entry<Integer, Integer>> it = nullStoreToLocation.entrySet().iterator();
                 while (it.hasNext()) {
                     Map.Entry<Integer, Integer> entry = it.next();
-                    int pc =entry.getValue().intValue();
+                    int pc = entry.getValue().intValue();
                     if ((branchTarget < pc) && (initializedRegs.get(entry.getKey().intValue())))
                         it.remove();
                 }
