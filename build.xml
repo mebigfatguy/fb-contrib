@@ -146,7 +146,9 @@
 				<include name="**/*.xml" />
 				<include name="**/*.xsd" />
 				<include name="**/*.license" />
-				<include name="**/*.txt" />
+                <include name="**/*.txt" />
+                <include name="**/*.md" />
+                <include name="**/*.xls" />
 				<include name="lib/*.jar" />
 			</fileset>
 		</zip>
