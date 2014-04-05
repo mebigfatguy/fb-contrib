@@ -53,51 +53,48 @@ public class LSC_Sample {
         return CONSTANT_VAL_STRING2.compareTo(s);
     }
     
-//Uncomment when source flag is -1.7
-//Should not throw a LSC flag 
-//    public static int test10(String s) {
-//    	switch (s) {
-//		case "Hello":
-//			return 1;
-//		case CONSTANT_VAL_STRING:
-//			return 2;
-//
-//		}
-//    	
-//    	switch (s) {		//two in a row to check the correct switch offsets
-//		case "Hello2":
-//			return 1;
-//		case CONSTANT_VAL_STRING+"2":
-//			return 2;
-//		default:
-//			return 3;
-//		}
-//    }
-//    
-//   
-//    //Try to embed a "correct" bug inside false positives
-//    public static int test11(String s, String s2) {
-//    	//no tag
-//    	switch (s) {
-//		case "Switch1":
-//			return 1;
-//		case "switch2":
-//			return 2;
-//		case "switch3":
-//			//tag
-//			if (s2.equalsIgnoreCase("Foo6")) {
-//				return 5;
-//			}
-//		}
-//    	
-//    	//tag
-//    	if (s.equals("Foo7")) {
-//    		return 3;
-//    	}
-//    	System.out.println(s);
-//    	return 4;
-//    	
-//    }
+    public static int test10(String s) {
+    	switch (s) {
+		case "Hello":
+			return 1;
+		case CONSTANT_VAL_STRING:
+			return 2;
+
+		}
+    	
+    	switch (s) {		//two in a row to check the correct switch offsets
+		case "Hello2":
+			return 1;
+		case CONSTANT_VAL_STRING+"2":
+			return 2;
+		default:
+			return 3;
+		}
+    }
+    
+   
+    public static int test11(String s, String s2) {
+    	//no tag
+    	switch (s) {
+		case "Switch1":
+			return 1;
+		case "switch2":
+			return 2;
+		case "switch3":
+			//tag
+			if (s2.equalsIgnoreCase("Foo6")) {
+				return 5;
+			}
+		}
+    	
+    	//tag
+    	if (s.equals("Foo7")) {
+    		return 3;
+    	}
+    	System.out.println(s);
+    	return 4;
+    	
+    }
     
     public static int test12(int n, String s2) {
     	switch (n) {		//this is probably a table lookup
