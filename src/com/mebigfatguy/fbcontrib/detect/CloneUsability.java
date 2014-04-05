@@ -95,7 +95,7 @@ public class CloneUsability extends BytecodeScanningDetector implements Detector
     public void visitCode(Code obj) {
         try {
             Method m = getMethod();
-            if (m.isPublic() && !m.isSynthetic() && m.getName().equals("clone") && (m.getArgumentTypes().length == 0)) {
+            if (m.isPublic() && !m.isSynthetic() && "clone".equals(m.getName()) && (m.getArgumentTypes().length == 0)) {
 
                 String returnClsName = m.getReturnType().getSignature();
                 returnClsName = returnClsName.substring(1, returnClsName.length() - 1).replaceAll("/", ".");
