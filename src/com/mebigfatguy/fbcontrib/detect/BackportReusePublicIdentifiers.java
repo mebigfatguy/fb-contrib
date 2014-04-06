@@ -55,21 +55,21 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
         stack.precomputation(this);
         
         switch (seen) {
-        case INVOKESTATIC: {
-            String className = getClassConstantOperand();
-            if (className.startsWith("edu/emory/mathcs/backport/")) {
-                reportBug();
+            case INVOKESTATIC: {
+                String className = getClassConstantOperand();
+                if (className.startsWith("edu/emory/mathcs/backport/")) {
+                    reportBug();
+                }
             }
-        }
             break;
-        case INVOKESPECIAL: {
-            String className = getClassConstantOperand();
-            String methodName = getNameConstantOperand();
-            if (className.startsWith("edu/emory/mathcs/backport/")
-                    && methodName.equals("<init>")) {
-                reportBug();
+            
+            case INVOKESPECIAL: {
+                String className = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
+                if (className.startsWith("edu/emory/mathcs/backport/") && "<init>".equals(methodName)) {
+                    reportBug();
+                }
             }
-        }
             break;
         }
     }
