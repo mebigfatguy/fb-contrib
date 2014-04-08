@@ -99,7 +99,7 @@ public class FinalParameters extends BytecodeScanningDetector
     		firstLocalReg = isStatic ? 0 : 1;
     		for (Type p : parms) {
     		    String parmSig = p.getSignature();
-    		    firstLocalReg += (parmSig.equals("J") || parmSig.equals("D")) ? 2 : 1;
+    		    firstLocalReg += ("J".equals(parmSig) || "D".equals(parmSig)) ? 2 : 1;
     		}
     		
     	    sourceLines = getSourceLines(obj);
