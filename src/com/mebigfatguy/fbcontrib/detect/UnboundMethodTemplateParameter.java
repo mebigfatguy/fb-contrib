@@ -70,7 +70,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     public void visitMethod(Method obj) {
         Attribute[] attributes = obj.getAttributes();
         for (Attribute a : attributes) {
-            if (a.getName().equals("Signature")) {
+            if ("Signature".equals(a.getName())) {
                 TemplateSignature ts = parseSignatureAttribute((Signature) a);
                 if (ts != null) {
                     for (String templateParm : ts.templateParameters) {
