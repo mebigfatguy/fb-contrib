@@ -389,7 +389,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					OpcodeStack.Item item = stack.getStackItem(0);
 					String mName = (String) item.getUserValue();
 					if (mName != null) {
-    					if (mName.equals("trim")) {
+    					if ("trim".equals(mName)) {
     						item.setUserValue(null);
     					} else {
     					    Matcher m = APPEND_PATTERN.matcher(mName);
