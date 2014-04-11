@@ -138,7 +138,7 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
 					String sig = getSigConstantOperand();
 					if (sig.startsWith("()")) {
 						propType = sig.substring("()".length());
-						if (!propType.equals("V")) {
+						if (!"V".equals(propType)) {
 							propName = getNameConstantOperand();
 							if (propName.startsWith("get")) {
 								propName = propName.substring("get".length());
