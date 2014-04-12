@@ -244,7 +244,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 }
             } else if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (THROWABLE_CLASS != null)) {
                 String mthName = getNameConstantOperand();
-                if (mthName.equals("getMessage")) {
+                if ("getMessage".equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
                     JavaClass cls = Repository.lookupClass(callingClsName);
                     if (cls.instanceOf(THROWABLE_CLASS)) {
@@ -321,9 +321,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             
                         }
                     }
-                } else if (mthName.equals("toString")) {
+                } else if ("toString".equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
-                    if ((callingClsName.equals("java/lang/StringBuilder") || callingClsName.equals("java/lang/StringBuffer"))) {
+                    if (("java/lang/StringBuilder".equals(callingClsName) || "java/lang/StringBuffer".equals(callingClsName))) {
                         seenMethodName = mthName;
                     }
                 }
