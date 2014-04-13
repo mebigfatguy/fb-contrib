@@ -135,8 +135,8 @@ public class UnusedParameter extends BytecodeScanningDetector {
                                             .addClass(this)
                                             .addMethod(this)
                                             .addString("Parameter " + regToParm.get(reg) + ": " + parmName));
-                            reg = unusedParms.nextSetBit(reg+1);
                         }
+                        reg = unusedParms.nextSetBit(reg+1);
                     }
                 }
             }
