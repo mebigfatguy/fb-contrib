@@ -87,6 +87,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
         riskyMethodNameContents.add("allOf");
         riskyMethodNameContents.add("random");
         riskyMethodNameContents.add("beep");
+        riskyMethodNameContents.add("emptyList");
+        riskyMethodNameContents.add("emptySet");
+        riskyMethodNameContents.add("emptyMap");
 
 		String userNameProp = System.getProperty(PRMC_RISKY_FIELD_USER_KEY);
 		if (userNameProp != null) {
