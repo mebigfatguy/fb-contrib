@@ -11,3 +11,20 @@ Available on maven.org
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
        Version: 5.2.0
+
+
+Developer
+* Dave Brosius
+
+
+Contributors
+* Bhaskar Maddala
+* Chris Peterson
+* Grzegorz Slowikowski
+* Trevor Pounds
+* Ronald Blaschke
+* Zenichi Amano
+* Philipp Wiesemann
+* Kevin Lubick
+
+
