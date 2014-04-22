@@ -270,6 +270,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" speed="fast" reports="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS,AIOB_ARRAY_STORE_TO_NULL_REFERENCE" />
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.Unjitable" speed="fast" reports="UJM_UNJITABLE_METHOD" />
+    
     <!--  COMMENT OUT FOR POINT RELEASE  -->
     
 	<!-- BugPattern -->
@@ -474,4 +476,5 @@
     <BugPattern abbrev="UP" type="UP_UNUSED_PARAMETER" category="STYLE" experimental="true"  />
     <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="CORRECTNESS" />
     <BugPattern abbrev="MUC" type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION" category="CORRECTNESS" experimental="true" />
+    <BugPattern abbrev="UJM" type="UJM_UNJITABLE_METHOD" category="PERFORMANCE" experimental="true" />
 </FindbugsPlugin>
