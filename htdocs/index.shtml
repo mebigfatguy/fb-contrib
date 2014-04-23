@@ -89,7 +89,8 @@ function toggleBlock(divId, imgId)
                 on the garbage collector.
                 </li>
                 <li><b>[AIOB] Array Index Out of Bounds</b><br/>
-                Looks for questionable load/stores to array elements.<ul>
+                Looks for questionable load/stores to array elements.
+                	<ul>
                     <li>
                     Looks for accesses to array elements using literal values that are known to be outside the bounds of the array.
                     This mistake will cause an ArrayIndexOutOfBoundsException to occur at runtime.</li>
@@ -97,6 +98,9 @@ function toggleBlock(divId, imgId)
                     Looks for stores to array elements where the array itself appears to have not been allocated.
                     </li>
                     </ul>
+                </li>
+                <li><b>[UJM] Unjitable Methods</b><br/>
+                Looks for methods that are too big that the JIT will not compile them no matter how often they are run
                 </li>
             </ul>
         </div>
