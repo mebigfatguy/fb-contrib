@@ -71,7 +71,8 @@ public class Unjitable extends PreorderVisitor implements Detector {
 			if (code.length >= UNJITABLE_CODE_LENGTH) {
 				bugReporter.reportBug(new BugInstance(this, "UJM_UNJITABLE_METHOD", NORMAL_PRIORITY)
 								.addClass(this)
-								.addMethod(this));
+								.addMethod(this)
+								.addString("Code Bytes: " + code.length));
 			}
 		}
 	}
