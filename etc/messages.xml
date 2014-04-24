@@ -4044,11 +4044,15 @@
     </BugPattern>
 	
 	<BugPattern type="HE_LOCAL_EXECUTOR_SERVICE">
-        <ShortDescription>Unusual Local Executor Service</ShortDescription>
-        <LongDescription>ExecutorService {2} is a local variable, which is unusual</LongDescription>
+        <ShortDescription>Suspicious Local Executor Service</ShortDescription>
+        <LongDescription>ExecutorService is created as a local variable, which is unusual</LongDescription>
         <Details>
             <![CDATA[
-            <p>Work in progress</p>
+            <p><code>ExecutorService</code>s are typically instantiated as fields so that many tasks can be executed on a controlled number of <code>Thread</code>s across many method calls.  Therefore, it is unusual for <code>ExecutorService</code>s to be a local variable, where tasks will be added only one time, in the enclosing method. </p>
+			
+			<p>Furthermore, when a local <code>ExecutorService</code> reaches the end of scope and goes up for garbage collection, the internal <code>Thread</code>s are not necessarily terminated and can prevent the JVM from ever shutting down.</p>
+			
+			<p>Consider making this local variable a field and create a method that will explicitly shutdown the <code>ExecutorService</code></p>
             ]]>
         </Details>
     </BugPattern>
@@ -4058,9 +4062,7 @@
         <LongDescription>ExecutorService {2} is replaced with another ExecutorService without being shutdown, potentially preventing the entire JVM from shutting down</LongDescription>
         <Details>
             <![CDATA[
-            <p>Most <code>ExecutorService</code> objects must be explicitly shutdown, 
-            otherwise, their internal threads can prolong the running of the JVM, even when everything
-            else has stopped.</p>
+            <p>Most <code>ExecutorService</code> objects must be explicitly shutdown, otherwise, their internal threads can prevent the JVM from ever shutting down, even when everything else has stopped.</p>
             
             <p>FindBugs has detected that something like the following is happening:<br/>
             <code>
@@ -4091,7 +4093,7 @@
 			it is good practice to explictly shutdown the <code>ExecutorService</code> at the end of execution, or
 			when it is being replaced.</p>
 			
-			<p>Note: <code>ExecutorService</code>s are generally created once in a program's lifecycle.  If you find yourself
+			<p><b>Note:</b> <code>ExecutorService</code>s are generally created once in a program's lifecycle.  If you find yourself
 			replacing the <code>ExecutorService</code>, perhaps you may consider restructuring your code to use calls like
 			<code>awaitTermination()</code> or <code>Future</code>s/<code>Callable</code>s to avoid recreating the <code>ExecutorService</code>.</p>
             ]]>
