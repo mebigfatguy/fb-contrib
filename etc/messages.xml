@@ -178,6 +178,12 @@
 			<p>Looks for methods that correctly do not write to a parameter. To help document this, and to perhaps
 			help the JVM optimize the invocation of this method, you should consider defining these parameters
 			as final.</p>
+			
+			<p>Performance gains are debatable as "the final keyword does not appear in the class file for 
+			local variables and parameters, thus it cannot impact the runtime performance. It's only use 
+			is to clarify the coders intent that the variable not be changed (which many consider dubious 
+			reason for its usage), and dealing with anonymous inner classes." - http://stackoverflow.com/a/266981/1447621</p>
+			
 			<p>It is a slow detector</p>
 			]]>
 		</Details>
@@ -1408,6 +1414,15 @@
             ]]>
         </Details>
     </Detector>
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.HangingExecutors">
+        <Details>
+            <![CDATA[
+            <p>Single detector for hanging ExecutorServices, that is, ExecutorServices that never get a call to shutdown, which
+			can potentially cause the JVM to not exit.</p>
+            ]]>
+        </Details>
+    </Detector>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.Unjitable">
     	<Details>
@@ -1603,22 +1618,43 @@
 		<LongDescription>Class {0} defines two or more one for one associated lists or arrays</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This class appears to maintain two or more lists or arrays who's contains is related one-for-one
-			through the index of the list or array. Consider creating a separate class to hold all the related
+			<p>This class appears to maintain two or more lists or arrays whose contents are related in a parallel way.  That is,
+			you have something like:<br/>
+			<code> 
+			List<String> words = new ArrayList<String>();<br/>
+			List<Integer> wordCounts = new ArrayList<String>();<br/>
+			</code>
+			where the elements of the list at index 0 are related, the elements at index 1 are related and so on. </p>
+			<p>
+			Consider creating a separate class to hold all the related
 			pieces of information, and adding instances of this class to just one list or array, or if just two values, use
-			a Map to associate one value with the other.</p>
+			a Map to associate one value with the other like:<br/>
+			<code> 
+			private class WordAndCount{public String word;  public int count}
+			List<WordAndCount> wordsAndCounts = new ArrayList<WordAndCount>();<br/>
+			<br/>
+			//or, for just two elements<br/>
+			Map<String,Integer> wordCounts = new HashMap<String,Integer>();<br/>
+			</code>
+			
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
 
 	<BugPattern type="FP_FINAL_PARAMETERS">
 		<ShortDescription>Method does not define a parameter as final, but could</ShortDescription>
-		<LongDescription>Method {1} does not define a parameter as final, but could</LongDescription>
+		<LongDescription>Method {1} does not define one or more parameters as final, but could</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method correctly does not write to a parameter. To help document this, and to perhaps
+			<p>This method does not write to a parameter. To help document this, and to perhaps
 			help the JVM optimize the invocation of this method, you should consider defining these parameters
 			as final.</p>
+			
+			<p>Performance gains are debatable as "the final keyword does not appear in the class file for 
+			local variables and parameters, thus it cannot impact the runtime performance. It's only use 
+			is to clarify the coders intent that the variable not be changed (which many consider dubious 
+			reason for its usage), and dealing with anonymous inner classes." - http://stackoverflow.com/a/266981/1447621 </p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2052,13 +2088,33 @@
 	</BugPattern>
 
 	<BugPattern type="PMB_POSSIBLE_MEMORY_BLOAT">
-		<ShortDescription>Class defines static field that appears to allow memory bloat</ShortDescription>
-		<LongDescription>Class {0} defines static field that appears to allow memory bloat</LongDescription>
+		<ShortDescription>Potential memory bloat in static field</ShortDescription>
+		<LongDescription>Class {0} defines static field "{2}" which appears to allow memory bloat</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This class defines static fields that are collections or StringBuffers that do not
-			appear to have any way to clear or reduce their size. This is a potential cause of
-			memory bloat.</p>
+			<p>This class defines static fields that are <code>Collection</code>s, <code>StringBuffer</code>s, or <code>StringBuilder</code>s
+			that do not appear to have any way to clear or reduce their size. That is, a collection is defined
+			and has method calls like <br/>
+			{<code>add()</code>, <code>append()</code>, <code>offer()</code>, <code>put()</code>, ...} <br/>
+			with no method calls to removal methods like<br/>
+			{<code>clear()</code>, <code>delete()</code>, <code>pop()</code>, <code>remove()</code>, ...}<br/>
+			This means that the collection in question can only ever increase in size, which is 
+			a potential cause of memory bloat.</p>
+			
+			<p>
+			If this collection is a list, set or otherwise of static things (e.g. a List<String> for month names), consider
+			adding all of the elements in a static initializer, which can only be called once:<br/>
+			<code>
+			private static List<String> monthNames = new ArrayList<String>();<br/>
+			static {<br/>
+				&nbsp;&nbsp;&nbsp;monthNames.add("January");<br/>
+				&nbsp;&nbsp;&nbsp;monthNames.add("February");<br/>
+				&nbsp;&nbsp;&nbsp;monthNames.add("March");<br/>
+				&nbsp;&nbsp;&nbsp;...<br/>
+			}
+			</code>
+			</p>
+			
 			]]>
 		</Details>
 	</BugPattern>
@@ -3965,6 +4021,82 @@
             ]]>
         </Details>
     </BugPattern>
+	
+	<BugPattern type="HE_EXECUTOR_NEVER_SHUTDOWN">
+        <ShortDescription>ExecutorService field doesn't ever get shutdown</ShortDescription>
+        <LongDescription>ExecutorService {2} is instantiated, but never shutdown, potentially preventing the entire JVM from shutting down</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>Most <code>ExecutorService</code> objects must be explicitly shutdown, 
+            otherwise, their internal threads can prolong the running of the JVM, even when everything
+            else has stopped.</p>
+            
+            <p>FindBugs has detected that there are no calls to either the <code>shutdown()</code> or <code>shutdownNow()</code>
+            method, and thus, the <code>ExecutorService</code> is not guaranteed to ever terminate.  This is especially
+            problematic for <code>Executors.newFixedThreadPool()</code> and most of the other convenience methods in 
+            the <code>Executors</code> class.</p>
+			
+			<p>Even though there are some exceptions to this, particularly when a custom <code>ThreadFactory</code> is 
+			provided, or for <code>ThreadPoolExecutor</code>s with <code>allowsCoreThreadTimeOut()</code> set to true,
+			it is good practice to explictly shutdown the <code>ExecutorService</code> when its utility is done.</p>
+            ]]>
+        </Details>
+    </BugPattern>
+	
+	<BugPattern type="HE_LOCAL_EXECUTOR_SERVICE">
+        <ShortDescription>Unusual Local Executor Service</ShortDescription>
+        <LongDescription>ExecutorService {2} is a local variable, which is unusual</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>Work in progress</p>
+            ]]>
+        </Details>
+    </BugPattern>
+
+<BugPattern type="HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN">
+        <ShortDescription>An ExecutorService isn't shutdown before the reference to it is lost</ShortDescription>
+        <LongDescription>ExecutorService {2} is replaced with another ExecutorService without being shutdown, potentially preventing the entire JVM from shutting down</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>Most <code>ExecutorService</code> objects must be explicitly shutdown, 
+            otherwise, their internal threads can prolong the running of the JVM, even when everything
+            else has stopped.</p>
+            
+            <p>FindBugs has detected that something like the following is happening:<br/>
+            <code>
+            ExecutorService executor = ... //e.g. Executors.newCachedThreadPool();<br/>
+            ...<br/>
+            public void reset() {<br/>
+            &nbsp;&nbsp;&nbsp;this.executor = Executors.newCachedThreadPool(); <br/>
+            &nbsp;&nbsp;&nbsp;this.executor.execute(new SampleExecutable()); <br/>
+            }<br/>
+            </code>
+            For normal objects, losing the last reference to them like this would trigger the object to be cleaned up
+            in garbage collection.  For <code>ExecutorService</code>s, this isn't enough to terminate the internal threads in the 
+            thread pool, and the <code>ExecutorService</code> isn't guaranteed to shutdown, causing the JVM to never stop. <br/>
+            To fix this, simply add a call to <code>shutdown()</code> like this:<br/>
+            <code>
+            ExecutorService executor = ... //e.g. Executors.newCachedThreadPool();<br/>
+            ...<br/>
+            public void reset() {<br/>
+            <b>&nbsp;&nbsp;&nbsp;this.executor.shutDown();</b> <br/>
+            &nbsp;&nbsp;&nbsp;this.executor = Executors.newCachedThreadPool(); <br/>
+            &nbsp;&nbsp;&nbsp;this.executor.execute(new SampleExecutable()); <br/>
+            }
+            </code>
+            </p>
+            			
+			<p>Even though there are some exceptions to this, particularly when a custom <code>ThreadFactory</code> is 
+			provided, or for <code>ThreadPoolExecutor</code>s with <code>allowsCoreThreadTimeOut()</code> set to true,
+			it is good practice to explictly shutdown the <code>ExecutorService</code> at the end of execution, or
+			when it is being replaced.</p>
+			
+			<p>Note: <code>ExecutorService</code>s are generally created once in a program's lifecycle.  If you find yourself
+			replacing the <code>ExecutorService</code>, perhaps you may consider restructuring your code to use calls like
+			<code>awaitTermination()</code> or <code>Future</code>s/<code>Callable</code>s to avoid recreating the <code>ExecutorService</code>.</p>
+            ]]>
+        </Details>
+    </BugPattern>
     
     <BugPattern type="UJM_UNJITABLE_METHOD">
     	<ShortDescription>This method is too long to be compiled by the JIT</ShortDescription>
@@ -4097,5 +4229,6 @@
 	<BugCode abbrev="UP">Unused Parameter</BugCode>
 	<BugCode abbrev="CD">Circular Dependencies</BugCode>
 	<BugCode abbrev="MUC">Modifying Unmodifiable Collection</BugCode>
+	<BugCode abbrev="HE">Hanging ExecutorService</BugCode>	
 	<BugCode abbrev="UJM">Unjitable method</BugCode>
 </MessageCollection>

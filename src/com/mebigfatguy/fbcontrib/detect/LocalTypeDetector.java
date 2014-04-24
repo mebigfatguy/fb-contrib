@@ -283,6 +283,12 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 		public int getPriority() {
 			return priority;
 		}
+
+		@Override
+		public String toString() {
+			return "RegisterInfo [slAnnotation=" + slAnnotation + ", priority=" + priority + ", endPCRange="
+					+ endPCRange + "]";
+		}
 	}
 
 }

@@ -264,6 +264,8 @@
     <Detector class="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" speed="fast" reports="" hidden="true" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ModifyingUnmodifiableCollection" speed="fast" reports="MUC_MODIFYING_UNMODIFIABLE_COLLECTION"/>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.HangingExecutors" speed="fast" reports="HE_EXECUTOR_NEVER_SHUTDOWN,HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN,HE_LOCAL_EXECUTOR_SERVICE"/>
 
     <!--  COMMENT OUT FOR POINT RELEASE  -->
     <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections" speed="fast" reports="PSC_PRESIZE_COLLECTIONS" />
@@ -477,4 +479,7 @@
     <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="CORRECTNESS" />
     <BugPattern abbrev="MUC" type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION" category="CORRECTNESS" experimental="true" />
     <BugPattern abbrev="UJM" type="UJM_UNJITABLE_METHOD" category="PERFORMANCE" experimental="true" />
+	<BugPattern abbrev="HENS" type="HE_EXECUTOR_NEVER_SHUTDOWN" category="CORRECTNESS" />
+	<BugPattern abbrev="HOWS" type="HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN" category="CORRECTNESS" />
+	<BugPattern abbrev="HLES" type="HE_LOCAL_EXECUTOR_SERVICE" category="CORRECTNESS" />
 </FindbugsPlugin>

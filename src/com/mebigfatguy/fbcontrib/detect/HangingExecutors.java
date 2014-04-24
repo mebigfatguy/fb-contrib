@@ -1,5 +1,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -17,8 +18,10 @@ import com.mebigfatguy.fbcontrib.debug.Debug;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -45,12 +48,14 @@ public class HangingExecutors extends BytecodeScanningDetector {
 	private OpcodeStack stack;
 	private String methodName;
 	
+	private LocalHangingExecutor localHEDetector;
 	
 	
 	
 	public HangingExecutors(BugReporter reporter) {
 		this.bugReporter=reporter;
-		Debug.println("Hello HangingExecutors");
+		this.localHEDetector = new LocalHangingExecutor(this, reporter);
+		Debug.println("Hello HangingExecutors "+reporter);
 	}
 	
 	
@@ -62,6 +67,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 	 */
 	@Override
 	public void visitClassContext(ClassContext classContext) {
+		localHEDetector.visitClassContext(classContext);
 		try {
 			hangingFieldCandidates = new HashMap<XField, FieldAnnotation>();
 
@@ -78,6 +84,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 			hangingFieldCandidates.clear();
 			hangingFieldCandidates = null;
 		}
+		
 	}
 	
 	private void parseFieldsForHangingCandidates(ClassContext classContext) {
@@ -85,9 +92,9 @@ public class HangingExecutors extends BytecodeScanningDetector {
 		Field[] fields = cls.getFields();
 		for (Field f : fields) {
 			String sig = f.getSignature();
-			Debug.println(sig);
+			//Debug.println(sig);
 			if (hangableSig.contains(sig)) {
-				Debug.println("yes");
+				//Debug.println("yes");
 				hangingFieldCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), FieldAnnotation.fromBCELField(cls, f));
 			}
 		}
@@ -180,7 +187,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
 	protected void checkMethodAsShutdownOrRelated(XField field) {
 		String mName = getNameConstantOperand();
-		Debug.println("\t"+mName);
+		//Debug.println("\t"+mName);
 		if (terminatingMethods.contains(mName)) {
 			hangingFieldCandidates.remove(field);
 		}
@@ -190,24 +197,60 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
 
 class LocalHangingExecutor extends LocalTypeDetector {
+	
+	private static Map<String, Set<String>> watchedClassMethods = new HashMap<String, Set<String>>();
+	
+	static {
+		Set<String> forExecutors = new HashSet<String>();
+		forExecutors.add("newSingleThreadExecutor");
+		
+		watchedClassMethods.put("java/util/concurrent/Executors", forExecutors);
+	}
+
+	private BugReporter bugReporter;
+	private Detector delegatingDetector;
+
+	public LocalHangingExecutor(Detector delegatingDetector, BugReporter reporter) {
+		this.bugReporter = reporter;
+		this.delegatingDetector = delegatingDetector;
+	}
 
 	@Override
 	protected Map<String, Integer> getWatchedConstructors() {
-		// TODO Auto-generated method stub
-		return null;
+		return Collections.emptyMap();
 	}
 
 	@Override
 	protected Map<String, Set<String>> getWatchedClassMethods() {
-		// TODO Auto-generated method stub
-		return null;
+		return watchedClassMethods;
 	}
 
 	@Override
 	protected void reportBug(RegisterInfo cri) {
-		// TODO Auto-generated method stub
+		Debug.println("Found bug "+cri);
+		bugReporter.reportBug(new BugInstance(delegatingDetector, "HE_LOCAL_EXECUTOR_SERVICE", Priorities.HIGH_PRIORITY)
+		.addClass(this)
+		.addMethod(this)
+		.addSourceLine(cri.getSourceLineAnnotation()));
+		
 		
 	}
+	@Override
+	public void visitClassContext(ClassContext classContext) {
+		Debug.println("Visiting Class Context");
+		super.visitClassContext(classContext);
+	}
 	
+	@Override
+	public void visitCode(Code obj) {
+		Debug.println("Visiting Code "+obj);
+		super.visitCode(obj);
+	}
+	
+	@Override
+	public void visitMethod(Method obj) {
+		Debug.println("Visiting Method "+obj);
+		super.visitMethod(obj);
+	}
 	
 }
