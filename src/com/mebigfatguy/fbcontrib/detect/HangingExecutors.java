@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -198,13 +199,21 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
 class LocalHangingExecutor extends LocalTypeDetector {
 	
-	private static Map<String, Set<String>> watchedClassMethods = new HashMap<String, Set<String>>();
-	
+	private static final Map<String, Set<String>> watchedClassMethods = new HashMap<String, Set<String>>();
+	private static final Map<String, Integer> syncCtors = new HashMap<String, Integer>();
 	static {
 		Set<String> forExecutors = new HashSet<String>();
+		forExecutors.add("newCachedThreadPool");
+		forExecutors.add("newFixedThreadPool");
+		forExecutors.add("newScheduledThreadPool");
 		forExecutors.add("newSingleThreadExecutor");
 		
+		
 		watchedClassMethods.put("java/util/concurrent/Executors", forExecutors);
+	
+	
+		syncCtors.put("java/util/concurrent/ThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
+		syncCtors.put("java/util/concurrent/ScheduledThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
 	}
 
 	private BugReporter bugReporter;
@@ -217,7 +226,7 @@ class LocalHangingExecutor extends LocalTypeDetector {
 
 	@Override
 	protected Map<String, Integer> getWatchedConstructors() {
-		return Collections.emptyMap();
+		return syncCtors;
 	}
 
 	@Override

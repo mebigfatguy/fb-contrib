@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Hashtable;
@@ -28,6 +29,12 @@ public class LSYC_Sample {
         List<String> a = Collections.synchronizedList(ls);
         syncfield = a;
     }
+    
+    public List<String> getList() {
+        // don't report
+       return Collections.synchronizedList(new ArrayList<String>());
+       
+    }
 
     public Map<String, Map<String, String>> test4() {
         // report as low
@@ -46,6 +53,11 @@ public class LSYC_Sample {
         for (int i = 0; i < 50; i++)
             buffer.append("Findbugs ");
         return buffer.toString();
+    }
+    
+    public String printString2() {
+    	//no tag, but probably should. 
+    	return new StringBuffer().append("Hello").append("World").toString();
     }
 
 }
