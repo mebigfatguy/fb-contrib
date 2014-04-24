@@ -16,3 +16,7 @@ samples/*.class
 javadoc
 version.properties
 .~lock.yank.*
+/classes
+/classes
+/classes
+/classes

@@ -27,12 +27,12 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
-
 import javax.swing.JOptionPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
+
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
