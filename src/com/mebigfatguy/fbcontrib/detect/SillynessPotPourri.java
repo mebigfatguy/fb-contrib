@@ -572,7 +572,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 							}
 							item = stack.getStackItem(0);
 							String parm = (String)item.getConstant();
-							if ((parm != null) && (parm.length() == 0)) {
+							if ("".equals(parm)) {
 								bugReporter.reportBug(new BugInstance(this, "SPP_EMPTY_CASING", NORMAL_PRIORITY)
 								.addClass(this)
 								.addMethod(this)
