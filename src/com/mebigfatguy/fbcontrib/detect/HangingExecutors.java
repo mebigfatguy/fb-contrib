@@ -1,11 +1,10 @@
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -13,8 +12,6 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
-
-import com.mebigfatguy.fbcontrib.debug.Debug;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -57,7 +54,6 @@ public class HangingExecutors extends BytecodeScanningDetector {
 	public HangingExecutors(BugReporter reporter) {
 		this.bugReporter=reporter;
 		this.localHEDetector = new LocalHangingExecutor(this, reporter);
-		Debug.println("Hello HangingExecutors "+reporter);
 	}
 	
 	
@@ -172,22 +168,14 @@ public class HangingExecutors extends BytecodeScanningDetector {
 				removeFieldsThatGetReturned();
 			}
 			else if (seen == PUTFIELD) {
-//				OpcodeStack.Item obj = stack.getStackItem(1);
-//	            OpcodeStack.Item value = stack.getStackItem(0);
 	            XField f = getXFieldOperand();
-//	            XClass x = getXClassOperand();
-				Debug.println(seen+ " in "+methodName+" and "+ f+ " is being replaced.");
-				Debug.println("Exempt "+exemptExecutors);
-//				Debug.println(String.format("`%s` `%s` `%s` `%s`", x, obj, value, f.getSignature()));
 				if ("Ljava/util/concurrent/ExecutorService;".equals(f.getSignature()) && !checkException(f)) {
 					bugReporter.reportBug(new BugInstance(this, "HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN", Priorities.HIGH_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addField(f)
 					.addSourceLine(this));
-				} else if (exemptExecutors.containsKey(f)) {
-					Debug.println("Was exempted");
-				}
+				} 
 				//after it's been replaced, it no longer uses its exemption. 
 				exemptExecutors.remove(f);
 			}

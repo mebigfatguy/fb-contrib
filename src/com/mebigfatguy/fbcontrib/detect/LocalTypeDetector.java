@@ -1,6 +1,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import static com.mebigfatguy.fbcontrib.utils.OpcodeUtils.*;
+
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
