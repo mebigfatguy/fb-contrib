@@ -36,16 +36,17 @@ public class HangingExecutors extends BytecodeScanningDetector {
 	}
 	
 	
-	private static final Set<String> terminatingMethods = new HashSet<String>();
+	private static final Set<String> shutdownMethods = new HashSet<String>();
 	
 	static {
-		terminatingMethods.add("shutdown");
-		terminatingMethods.add("shutdownNow");
+		shutdownMethods.add("shutdown");
+		shutdownMethods.add("shutdownNow");
 	}
 	
 	
 	private final BugReporter bugReporter;
 	private Map<XField, FieldAnnotation> hangingFieldCandidates;
+	private Map<XField, Integer> exemptExecutors;
 	private OpcodeStack stack;
 	private String methodName;
 	
@@ -71,7 +72,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 		localHEDetector.visitClassContext(classContext);
 		try {
 			hangingFieldCandidates = new HashMap<XField, FieldAnnotation>();
-
+			exemptExecutors = new HashMap<XField, Integer>();
 			parseFieldsForHangingCandidates(classContext);
 
 			if (hangingFieldCandidates.size() > 0) {
@@ -82,8 +83,12 @@ public class HangingExecutors extends BytecodeScanningDetector {
 			}
 		} finally {
 			stack = null;
-			hangingFieldCandidates.clear();
+			if (hangingFieldCandidates != null)
+				hangingFieldCandidates.clear();
 			hangingFieldCandidates = null;
+			if (exemptExecutors != null)
+				exemptExecutors.clear();
+			exemptExecutors = null;
 		}
 		
 	}
@@ -121,7 +126,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 	@Override
 	public void visitCode(Code obj) {
 		stack.resetForMethodEntry(this);
-
+		exemptExecutors.clear();
 		if ("<clinit>".equals(methodName) || "<init>".equals(methodName))
 			return;
 
@@ -140,35 +145,58 @@ public class HangingExecutors extends BytecodeScanningDetector {
 	}
 
 	/**
-	 * implements the visitor to look for methods that empty a bloatable field
-	 * if found, remove these fields from the current list
+	 * Browses for calls to shutdown() and shutdownNow(), and if they happen, remove
+	 * the hanging candidate, as there is a chance it will be called.
 	 * 
 	 * @param seen the opcode of the currently parsed instruction
 	 */
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			if (hangingFieldCandidates.isEmpty())
-				return;
-
 			stack.precomputation(this);
 
 			if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
 				String sig = getSigConstantOperand();
 				int argCount = Type.getArgumentTypes(sig).length;
 				if (stack.getStackDepth() > argCount) {
-					OpcodeStack.Item itm = stack.getStackItem(argCount);
-					XField field = itm.getXField();
-					if (field != null) {
-						if (hangingFieldCandidates.containsKey(field)) {
-							checkMethodAsShutdownOrRelated(field);
-						}
-					}
+					OpcodeStack.Item invokeeItem = stack.getStackItem(argCount);
+					XField fieldOnWhichMethodIsInvoked = invokeeItem.getXField();
+					if (fieldOnWhichMethodIsInvoked != null) {		
+						removeCandidateIfShutdownCalled(fieldOnWhichMethodIsInvoked);
+						addExemptionIfShutdownCalled(fieldOnWhichMethodIsInvoked);
+					} 
 				}
 			}
-			//Should not include private methods
+			//TODO Should not include private methods
 			else if (seen == ARETURN) {
 				removeFieldsThatGetReturned();
+			}
+			else if (seen == PUTFIELD) {
+//				OpcodeStack.Item obj = stack.getStackItem(1);
+//	            OpcodeStack.Item value = stack.getStackItem(0);
+	            XField f = getXFieldOperand();
+//	            XClass x = getXClassOperand();
+				Debug.println(seen+ " in "+methodName+" and "+ f+ " is being replaced.");
+				Debug.println("Exempt "+exemptExecutors);
+//				Debug.println(String.format("`%s` `%s` `%s` `%s`", x, obj, value, f.getSignature()));
+				if ("Ljava/util/concurrent/ExecutorService;".equals(f.getSignature()) && !checkException(f)) {
+					bugReporter.reportBug(new BugInstance(this, "HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN", Priorities.HIGH_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addField(f)
+					.addSourceLine(this));
+				} else if (exemptExecutors.containsKey(f)) {
+					Debug.println("Was exempted");
+				}
+				//after it's been replaced, it no longer uses its exemption. 
+				exemptExecutors.remove(f);
+			}
+			else if (seen == IFNONNULL) {
+				OpcodeStack.Item nullCheckItem = stack.getStackItem(0);
+				XField fieldWhichWasNullChecked = nullCheckItem.getXField();
+				if (fieldWhichWasNullChecked != null) {
+					exemptExecutors.put(fieldWhichWasNullChecked, getPC() + getBranchOffset());
+				}
 			}
 		}
 		finally {
@@ -176,7 +204,16 @@ public class HangingExecutors extends BytecodeScanningDetector {
 		}
 	}
 
-	protected void removeFieldsThatGetReturned() {
+
+	private boolean checkException(XField f) {
+		if (!exemptExecutors.containsKey(f)) 
+			return false;
+		int i = exemptExecutors.get(f).intValue();
+		
+		return i == -1 || getPC() < i;
+	}
+
+	private void removeFieldsThatGetReturned() {
 		if (stack.getStackDepth() > 0) {
 			OpcodeStack.Item returnItem = stack.getStackItem(0);
 			XField field = returnItem.getXField();
@@ -186,11 +223,20 @@ public class HangingExecutors extends BytecodeScanningDetector {
 		}
 	}
 
-	protected void checkMethodAsShutdownOrRelated(XField field) {
-		String mName = getNameConstantOperand();
-		//Debug.println("\t"+mName);
-		if (terminatingMethods.contains(mName)) {
-			hangingFieldCandidates.remove(field);
+	private void addExemptionIfShutdownCalled(XField fieldOnWhichMethodIsInvoked) {
+		String methodBeingInvoked = getNameConstantOperand();
+		if (shutdownMethods.contains(methodBeingInvoked)) {
+			exemptExecutors.put(fieldOnWhichMethodIsInvoked, -1);
+		}
+	}
+
+
+	private void removeCandidateIfShutdownCalled(XField fieldOnWhichMethodIsInvoked) {
+		if (hangingFieldCandidates.containsKey(fieldOnWhichMethodIsInvoked)) {
+			String methodBeingInvoked = getNameConstantOperand();
+			if (shutdownMethods.contains(methodBeingInvoked)) {
+				hangingFieldCandidates.remove(fieldOnWhichMethodIsInvoked);
+			}
 		}
 	}
 	
@@ -236,7 +282,7 @@ class LocalHangingExecutor extends LocalTypeDetector {
 
 	@Override
 	protected void reportBug(RegisterInfo cri) {
-		Debug.println("Found bug "+cri);
+		//very important to report the bug under the top, parent detector, otherwise it gets filtered out
 		bugReporter.reportBug(new BugInstance(delegatingDetector, "HE_LOCAL_EXECUTOR_SERVICE", Priorities.HIGH_PRIORITY)
 		.addClass(this)
 		.addMethod(this)
@@ -246,19 +292,16 @@ class LocalHangingExecutor extends LocalTypeDetector {
 	}
 	@Override
 	public void visitClassContext(ClassContext classContext) {
-		Debug.println("Visiting Class Context");
 		super.visitClassContext(classContext);
 	}
 	
 	@Override
 	public void visitCode(Code obj) {
-		Debug.println("Visiting Code "+obj);
 		super.visitCode(obj);
 	}
 	
 	@Override
 	public void visitMethod(Method obj) {
-		Debug.println("Visiting Method "+obj);
 		super.visitMethod(obj);
 	}
 	

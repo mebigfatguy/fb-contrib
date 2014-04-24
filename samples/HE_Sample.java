@@ -4,10 +4,10 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-//Expected bug count: 11
+//Expected bug count: 12
 //5 HE_EXECUTOR_NEVER_SHUTDOWN 
 //4 HE_LOCAL_EXECUTOR_SERVICE
-//1 HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN
+//3 HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN
 public class HE_Sample {
 
 
@@ -100,7 +100,7 @@ class SingleThreadExecutorGood2 {
 }
 
 class SingleThreadExecutorTryProblem {
-	//this won't get tagged
+	//this won't get tagged as of version 2.2  If given more thought, this could be implemented
 	private ExecutorService executor;
 
 	public SingleThreadExecutorTryProblem() {
@@ -198,6 +198,8 @@ class ReplacementExecutorProblem {
 	}
 
 	public void reset() {
+		
+		executor.execute(new SampleExecutable());
 		//tag (the old executor won't get picked up for garbage collection)
 		this.executor = Executors.newScheduledThreadPool(1);
 		executor.execute(new SampleExecutable());
@@ -281,14 +283,18 @@ class ReplacementExecutorGood2 {
 	}
 
 	public void reset() {
+		System.out.println("Pretest");
 		if (executor == null) {
-			//no tag, this indicates some thought that another threadpool won't get left behind
+			//no tag, the null check indicates some thought that another threadpool won't get left behind
 			this.executor = Executors.newScheduledThreadPool(1);
 		}
+		//tag (this one is no long under the "good graces" of the null check
+		this.executor = Executors.newCachedThreadPool();
 	}
 
 	public void shutDown() {
 		this.executor.shutdown();
+		//no tag
 		this.executor = null;
 	}
 
