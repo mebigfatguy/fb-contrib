@@ -1384,7 +1384,7 @@
 	   <Details>
 	       <![CDATA[
 	       <p>Looks for private or static methods that have parameters that aren't used. These parameters
-            can be removed.</p>
+            can be removed, assuming the method isn't used through reflection.</p>
             <p>It is fast detector</p>
 	       ]]>
 	   </Details>
