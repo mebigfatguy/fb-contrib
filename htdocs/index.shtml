@@ -102,6 +102,10 @@ function toggleBlock(divId, imgId)
                 <li><b>[UJM] Unjitable Methods</b><br/>
                 Looks for methods that are too big that the JIT will not compile them no matter how often they are run
                 </li>
+                <li><b>[HE] Hangable Executors</b><br/>
+                Looks for executors that are never shutdown, which will not allow the application to terminate
+                <span style="color: #0000FF;">--contributed by Kevin Lubick - THANKS!</span>
+                </li>
             </ul>
         </div>
         <hr/>

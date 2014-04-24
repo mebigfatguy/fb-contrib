@@ -43,6 +43,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 
+/**
+ * looks for executors that are never shutdown, which will not allow the application to terminate
+ */
 public class HangingExecutors extends BytecodeScanningDetector {
 	
 	private static final Set<String> hangableSig = new HashSet<String>();
