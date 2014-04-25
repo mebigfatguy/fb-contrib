@@ -1420,6 +1420,7 @@
             <![CDATA[
             <p>Single detector for hanging ExecutorServices, that is, ExecutorServices that never get a call to shutdown, which
 			can potentially cause the JVM to not exit.</p>
+			<p>It is a fast detector</p>
             ]]>
         </Details>
     </Detector>
