@@ -277,6 +277,9 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 					}
 				}
 				break;
+				
+				default:
+					break;
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);

@@ -160,6 +160,8 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
                     }
                 }
             }
+            default:
+            	break;
         }
     }
 

@@ -71,6 +71,8 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
                 }
             }
             break;
+            default:
+            	break;
         }
     }
 

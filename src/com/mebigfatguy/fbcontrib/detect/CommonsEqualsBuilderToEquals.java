@@ -37,6 +37,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
  */
 public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 
+	private static final String LANG_EQUALS_BUILDER = "Lorg/apache/commons/lang/builder/EqualsBuilder;";
+	private static final String LANG3_EQUALS_BUILDER = "Lorg/apache/commons/lang3/builder/EqualsBuilder;";
 	private final OpcodeStack stack;
 	private final BugReporter bugReporter;
 
@@ -71,29 +73,19 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 
 	@Override
 	public void sawOpcode(int seen) {
-		try {
-        
-			switch (seen) {
-			case INVOKEVIRTUAL:
-				String methodName = getNameConstantOperand();
-				if ("equals".equals(methodName)
-						&& "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())
-						&& (stack.getStackDepth() > 1)) {
-					String calledClass = stack.getStackItem(1).getSignature();
-					if ("Lorg/apache/commons/lang3/builder/EqualsBuilder;"
-							.equals(calledClass)
-							|| "Lorg/apache/commons/lang/builder/EqualsBuilder;"
-									.equals(calledClass)) {
-						bugReporter.reportBug(new BugInstance(this,
-								"CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS",
-								HIGH_PRIORITY).addClass(this).addMethod(this)
-								.addSourceLine(this));
-					}
+		if (seen == INVOKEVIRTUAL) {
+			String methodName = getNameConstantOperand();
+			if ("equals".equals(methodName)	&& "(Ljava/lang/Object;)Z".equals(getSigConstantOperand()) && (stack.getStackDepth() > 1)) {
+				String calledClass = stack.getStackItem(1).getSignature();
+				if (LANG3_EQUALS_BUILDER.equals(calledClass) || LANG_EQUALS_BUILDER.equals(calledClass)) {
+					bugReporter.reportBug(new BugInstance(this, "CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS", HIGH_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this));
 				}
 			}
-		} finally {
-			super.sawOpcode(seen);
-			stack.sawOpcode(this, seen);
 		}
+		super.sawOpcode(seen);
+		stack.sawOpcode(this, seen);
 	}
 }

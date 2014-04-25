@@ -205,6 +205,8 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 					}
 				}
 				break;
+				default:
+					break;
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);

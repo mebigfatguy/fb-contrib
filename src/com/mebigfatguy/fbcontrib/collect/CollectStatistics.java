@@ -54,6 +54,8 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 			case INVOKESTATIC:
 				numMethodCalls++;
 			break;
+			default:
+				break;
 		}
 	}
 }

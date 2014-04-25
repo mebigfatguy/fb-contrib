@@ -374,6 +374,8 @@ access to
 	                    sawTernary = true;
 					}
 				break;
+				default:
+					break;
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);

@@ -187,6 +187,8 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 			case ATHROW:
 				allocationRegs.clear();
 				break;
+			default:
+				break;
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);
