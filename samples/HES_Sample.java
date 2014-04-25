@@ -8,7 +8,7 @@ import java.util.concurrent.TimeUnit;
 //5 HE_EXECUTOR_NEVER_SHUTDOWN 
 //4 HE_LOCAL_EXECUTOR_SERVICE
 //3 HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN
-public class HE_Sample {
+public class HES_Sample {
 
 
 	public static void main(String[] args) {
