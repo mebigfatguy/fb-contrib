@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -445,8 +446,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	    public Map<String, Set<String>> getMethodFieldModifiers() {
 	        Map<String, Set<String>> modifiers = new HashMap<String, Set<String>>(mfModifiers.size());
 	        modifiers.putAll(mfModifiers);
-	        for (String method : modifiers.keySet()) {
-	            modifiers.put(method,  (Set<String>) ((HashSet<String>) modifiers.get(method)).clone());
+	        for (Entry<String, Set<String>> method : modifiers.entrySet()) {
+	            modifiers.put(method.getKey(),  new HashSet<String>(method.getValue()));
 	        }
 	        
 	        boolean modified = true;
