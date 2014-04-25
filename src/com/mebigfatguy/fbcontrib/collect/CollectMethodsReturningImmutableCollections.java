@@ -76,7 +76,8 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
         bugReporter = reporter;
     }
     
-    public void visitClassContext(ClassContext context) {
+    @Override
+	public void visitClassContext(ClassContext context) {
         try {
             stack = new OpcodeStack();
             clsName = context.getJavaClass().getClassName();
@@ -92,7 +93,8 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
      * 
      * @param obj the context object of the currently parsed method
      */
-    public void visitCode(Code obj) {
+    @Override
+	public void visitCode(Code obj) {
         try {
             String signature = Type.getReturnType(getMethod().getSignature()).getSignature();
             if (signature.startsWith("L") && CollectionUtils.isListSetMap(signature.substring(1, signature.length() - 1))) {
@@ -114,7 +116,8 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
      * overrides the visitor to look for calls to static methods that are known to return immutable collections
      * It records those variabls, and documents if what the method returns is one of those objects.
      */
-    public void sawOpcode(int seen) {
+    @Override
+	public void sawOpcode(int seen) {
         ImmutabilityType seenImmutable = null;
         try {
             stack.precomputation(this);
@@ -185,6 +188,8 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                     }
                     break;
                 }
+                default:
+                	break;
             }
             
         } finally {
