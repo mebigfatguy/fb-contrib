@@ -399,7 +399,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 	    int hi = lns.length - 2;
 	    int mid = 0;
 	    while (lo <= hi) {
-	        mid = (lo + hi) / 2;
+	        mid = (lo + hi) >>> 1;
 	        if (pc < lns[mid].getStartPC()) {
 	            hi = mid - 1;
 	        } else if (pc >= lns[mid+1].getStartPC()) {
