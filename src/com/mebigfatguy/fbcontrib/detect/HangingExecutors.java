@@ -93,7 +93,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 			exemptExecutors = new HashMap<XField, Integer>();
 			parseFieldsForHangingCandidates(classContext);
 
-			if (hangingFieldCandidates.size() > 0) {
+			if (!hangingFieldCandidates.isEmpty()) {
 				stack = new OpcodeStack();
 				super.visitClassContext(classContext);
 
@@ -101,11 +101,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 			}
 		} finally {
 			stack = null;
-			if (hangingFieldCandidates != null)
-				hangingFieldCandidates.clear();
 			hangingFieldCandidates = null;
-			if (exemptExecutors != null)
-				exemptExecutors.clear();
 			exemptExecutors = null;
 		}
 		
@@ -116,9 +112,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 		Field[] fields = cls.getFields();
 		for (Field f : fields) {
 			String sig = f.getSignature();
-			//Debug.println(sig);
 			if (hangableSig.contains(sig)) {
-				//Debug.println("yes");
 				hangingFieldCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), FieldAnnotation.fromBCELField(cls, f));
 			}
 		}
@@ -148,7 +142,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 		if ("<clinit>".equals(methodName) || "<init>".equals(methodName))
 			return;
 
-		if (hangingFieldCandidates.size() > 0)
+		if (!hangingFieldCandidates.isEmpty())
 			super.visitCode(obj);
 	}
 	
