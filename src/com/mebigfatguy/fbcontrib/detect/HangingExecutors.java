@@ -128,7 +128,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 		for (Entry<XField, FieldAnnotation> entry : hangingFieldCandidates.entrySet()) {
 			FieldAnnotation fieldAn = entry.getValue();
 			if (fieldAn != null) {
-				bugReporter.reportBug(new BugInstance(this, "HE_EXECUTOR_NEVER_SHUTDOWN", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, "HES_EXECUTOR_NEVER_SHUTDOWN", NORMAL_PRIORITY)
 				.addClass(this)
 				.addField(fieldAn)
 				.addField(entry.getKey()));
@@ -192,7 +192,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 			else if (seen == PUTFIELD) {
 	            XField f = getXFieldOperand();
 				if ("Ljava/util/concurrent/ExecutorService;".equals(f.getSignature()) && !checkException(f)) {
-					bugReporter.reportBug(new BugInstance(this, "HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN", Priorities.HIGH_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, "HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN", Priorities.HIGH_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addField(f)
@@ -293,7 +293,7 @@ class LocalHangingExecutor extends LocalTypeDetector {
 	@Override
 	protected void reportBug(RegisterInfo cri) {
 		//very important to report the bug under the top, parent detector, otherwise it gets filtered out
-		bugReporter.reportBug(new BugInstance(delegatingDetector, "HE_LOCAL_EXECUTOR_SERVICE", Priorities.HIGH_PRIORITY)
+		bugReporter.reportBug(new BugInstance(delegatingDetector, "HES_LOCAL_EXECUTOR_SERVICE", Priorities.HIGH_PRIORITY)
 		.addClass(this)
 		.addMethod(this)
 		.addSourceLine(cri.getSourceLineAnnotation()));

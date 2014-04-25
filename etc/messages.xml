@@ -4022,7 +4022,7 @@
         </Details>
     </BugPattern>
 	
-	<BugPattern type="HE_EXECUTOR_NEVER_SHUTDOWN">
+	<BugPattern type="HES_EXECUTOR_NEVER_SHUTDOWN">
         <ShortDescription>ExecutorService field doesn't ever get shutdown</ShortDescription>
         <LongDescription>ExecutorService {2} is instantiated, but never shutdown, potentially preventing the entire JVM from shutting down</LongDescription>
         <Details>
@@ -4043,7 +4043,7 @@
         </Details>
     </BugPattern>
 	
-	<BugPattern type="HE_LOCAL_EXECUTOR_SERVICE">
+	<BugPattern type="HES_LOCAL_EXECUTOR_SERVICE">
         <ShortDescription>Suspicious Local Executor Service</ShortDescription>
         <LongDescription>ExecutorService is created as a local variable, which is unusual</LongDescription>
         <Details>
@@ -4057,7 +4057,7 @@
         </Details>
     </BugPattern>
 
-<BugPattern type="HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN">
+<BugPattern type="HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN">
         <ShortDescription>An ExecutorService isn't shutdown before the reference to it is lost</ShortDescription>
         <LongDescription>ExecutorService {2} is replaced with another ExecutorService without being shutdown, potentially preventing the entire JVM from shutting down</LongDescription>
         <Details>
@@ -4231,6 +4231,6 @@
 	<BugCode abbrev="UP">Unused Parameter</BugCode>
 	<BugCode abbrev="CD">Circular Dependencies</BugCode>
 	<BugCode abbrev="MUC">Modifying Unmodifiable Collection</BugCode>
-	<BugCode abbrev="HE">Hanging ExecutorService</BugCode>	
 	<BugCode abbrev="UJM">Unjitable method</BugCode>
+	<BugCode abbrev="HES">Hanging ExecutorService</BugCode>	
 </MessageCollection>
