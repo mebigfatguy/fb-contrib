@@ -57,7 +57,7 @@ public class OCSDebugger extends BytecodeScanningDetector {
         String curMethodDesc = getClassContext().getJavaClass().getClassName() + "." + m.getName() + m.getSignature();
         if (curMethodDesc.equals(METHOD_DESC)) {
             try {
-                pw = new PrintWriter(new FileWriter(OUTPUT_FILE_NAME));
+                pw = new PrintWriter(OUTPUT_FILE_NAME, "UTF-8");
                 stack.resetForMethodEntry(this);
 
                 super.visitCode(obj);
