@@ -103,7 +103,7 @@ function toggleBlock(divId, imgId)
                 Looks for methods that are too big that the JIT will not compile them no matter how often they are run
                 </li>
                 <li><b>[HE] Hangable Executors</b><br/>
-                Looks for executors that are never shutdown, which will not allow the application to terminate
+                Looks for executors that are never shutdown, which will not allow the application to terminate<br/>
                 <span style="color: #0000FF;">--contributed by Kevin Lubick - THANKS!</span>
                 </li>
             </ul>
