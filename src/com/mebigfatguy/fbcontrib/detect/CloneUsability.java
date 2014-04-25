@@ -30,7 +30,6 @@ import org.apache.bcel.classfile.Method;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
@@ -39,7 +38,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * not swallow CloneNotFoundException. Not doing so makes the clone method not as simple
  * to use, and should be harmless to do.
  */
-public class CloneUsability extends BytecodeScanningDetector implements Detector {
+public class CloneUsability extends BytecodeScanningDetector {
 
     private static JavaClass CLONE_CLASS;
 
@@ -70,7 +69,8 @@ public class CloneUsability extends BytecodeScanningDetector implements Detector
      *
      * @param classContext the context object that holds the JavaClass being parsed
      */
-    public void visitClassContext(ClassContext classContext) {
+    @Override
+	public void visitClassContext(ClassContext classContext) {
         try {
             cls = classContext.getJavaClass();
             if (cls.implementationOf(CLONE_CLASS)) {
@@ -137,7 +137,8 @@ public class CloneUsability extends BytecodeScanningDetector implements Detector
         }
     }
     
-    public void sawOpcode(int seen) {
+    @Override
+	public void sawOpcode(int seen) {
         try {
             if (seen == ATHROW) {
                 if (stack.getStackDepth() > 0) {
