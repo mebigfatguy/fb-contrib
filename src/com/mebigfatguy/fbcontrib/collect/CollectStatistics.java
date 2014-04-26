@@ -28,7 +28,6 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 {
 	private int numMethodCalls;
 
-	@SuppressWarnings("unused")
 	public CollectStatistics(BugReporter bugReporter) {
 		Statistics.getStatistics().clear();
 	}
