@@ -42,7 +42,6 @@ public class OCSDebugger extends BytecodeScanningDetector {
     private OpcodeStack stack = new OpcodeStack();
     private PrintWriter pw = null;
     
-    @SuppressWarnings("unused")
     public OCSDebugger(BugReporter bugReporter) {
     }
     
