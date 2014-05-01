@@ -67,7 +67,7 @@ public class Unjitable extends PreorderVisitor implements Detector {
 		
 		Method m = getMethod();
 		if ((((m.getAccessFlags() & Constants.ACC_STATIC) == 0) || !"<clinit>".equals(m.getName()))
-		&&  (!m.getName().startsWith("enum constant"))) { //a findbugs thing!!
+		&&  (!m.getName().contains("enum constant"))) { //a findbugs thing!!
 			byte[] code = obj.getCode();
 			if (code.length >= UNJITABLE_CODE_LENGTH) {
 				bugReporter.reportBug(new BugInstance(this, "UJM_UNJITABLE_METHOD", NORMAL_PRIORITY)
