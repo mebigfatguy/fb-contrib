@@ -1,3 +1,5 @@
+import edu.emory.mathcs.backport.java.util.concurrent.TimeUnit;
+
 
 public class CTU_Sample {
 
@@ -6,5 +8,12 @@ public class CTU_Sample {
 		long nanos = System.nanoTime();
 		
 		return millis + nanos;
+	}
+	
+	public long badUseOfConvert() {
+		long secs = TimeUnit.SECONDS.convert(1000, TimeUnit.MILLISECONDS);
+		long millis = System.currentTimeMillis();
+		
+		return secs + millis;
 	}
 }
