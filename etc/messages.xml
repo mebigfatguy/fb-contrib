@@ -1435,6 +1435,17 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ConflictingTimeUnits">
+    	<Details>
+    		<![CDATA[
+    		<p>looks for methods that perform arithmetic operations on values representing time
+			where the time unit is incompatible, ie adding a millisecond value to a nanosecond value.
+			</p>
+			<p>It is a fast detector</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -4112,6 +4123,19 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="CTU_CONFLICTING_TIME_UNITS">
+    	<ShortDescription>This method performs arithmetic operations on time values with different units</ShortDescription>
+    	<LongDescription>This method performs arithmetic operations on time values with different units</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method takes two values that appear to be representing time, and performs arithmetic operations on this 
+    		two values directly, even though it appears that the two values are representing different time units, such as 
+    		adding a millisecond value to a nanosecond value. You should convert the two values to the same time unit before
+    		performing this calculation in order for it to be meaningful.
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -4233,5 +4257,6 @@
 	<BugCode abbrev="CD">Circular Dependencies</BugCode>
 	<BugCode abbrev="MUC">Modifying Unmodifiable Collection</BugCode>
 	<BugCode abbrev="UJM">Unjitable method</BugCode>
-	<BugCode abbrev="HES">Hanging ExecutorService</BugCode>	
+	<BugCode abbrev="HES">Hanging ExecutorService</BugCode>
+	<BugCode abbrev="CTU">Conflicting Time Units</BugCode>
 </MessageCollection>
