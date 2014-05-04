@@ -54,7 +54,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
 		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
 		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
 		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
-		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)L", Units.CALLER);
+		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)J", Units.CALLER);
 		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toNanos(J)J", Units.NANOS);
 		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toMicros(J)J", Units.MICROS);
 		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toSeconds(J)J", Units.SECONDS);
@@ -62,8 +62,20 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
 		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
 		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
 		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
-		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)L", Units.CALLER);
+		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)J", Units.CALLER);
 	}
+	
+	private static Map<String, Units> TIMEUNIT_TO_UNITS = new HashMap<String, Units>();
+	static {
+		TIMEUNIT_TO_UNITS.put("NANOSECONDS", Units.NANOS);
+		TIMEUNIT_TO_UNITS.put("MICROSECONDS", Units.MICROS);
+		TIMEUNIT_TO_UNITS.put("MILLISECONDS", Units.MILLIS);
+		TIMEUNIT_TO_UNITS.put("SECONDS", Units.SECONDS);
+		TIMEUNIT_TO_UNITS.put("MINUTES", Units.MINUTES);
+		TIMEUNIT_TO_UNITS.put("HOURS", Units.HOURS);
+		TIMEUNIT_TO_UNITS.put("DAYS", Units.DAYS);
+	}
+	
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
 	
@@ -119,8 +131,8 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
 					if (unit == Units.CALLER) {
 						int offset = Type.getArgumentTypes(getSigConstantOperand()).length;
 						if (stack.getStackDepth() > offset) {
-							//TimeUnit tu = (TimeUnit) stack.getStackItem(offset);
-							unit = null;
+							OpcodeStack.Item item = stack.getStackItem(offset);
+							unit = (Units) item.getUserValue();
 						} else {
 							unit = null;
 						}
@@ -129,6 +141,10 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
 				
 				case GETSTATIC:
 					String clsName = getClassConstantOperand();
+					if ("java/util/concurrent/TimeUnit".equals(clsName) 
+					||  "edu/emory/matchcs/backport/java/util/concurrent/TimeUnit".equals(clsName)) {
+						unit = TIMEUNIT_TO_UNITS.get(getNameConstantOperand());
+					}
 				break;
 					
 				
