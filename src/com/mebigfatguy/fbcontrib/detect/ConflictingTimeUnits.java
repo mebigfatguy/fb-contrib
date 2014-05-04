@@ -20,7 +20,6 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.TimeUnit;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
@@ -48,22 +47,22 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
 		TIME_UNIT_GENERATING_METHODS.put("java/sql/Timestamp.getTime()J", Units.MILLIS);
 		TIME_UNIT_GENERATING_METHODS.put("java/sql/Timestamp.getNanos()I", Units.NANOS);
 		TIME_UNIT_GENERATING_METHODS.put("java/util/Date.getTime()J", Units.MILLIS);
-		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent.toNanos(J)J", Units.NANOS);
-		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent.toMicros(J)J", Units.MICROS);
-		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent.toSeconds(J)J", Units.SECONDS);
-		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent.toMinutes(J)J", Units.MINUTES);
-		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent.toHours(J)J", Units.HOURS);
-		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent.toDays(J)J", Units.DAYS);
-		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent.excessNanos(JJ)I", Units.NANOS);
-		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent.convert(JLjava/util/concurrent/TimeUnit;)L", Units.CALLER);
-		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent.toNanos(J)J", Units.NANOS);
-		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent.toMicros(J)J", Units.MICROS);
-		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent.toSeconds(J)J", Units.SECONDS);
-		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent.toMinutes(J)J", Units.MINUTES);
-		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent.toHours(J)J", Units.HOURS);
-		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent.toDays(J)J", Units.DAYS);
-		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent.excessNanos(JJ)I", Units.NANOS);
-		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent.convert(JLjava/util/concurrent/TimeUnit;)L", Units.CALLER);
+		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toNanos(J)J", Units.NANOS);
+		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toMicros(J)J", Units.MICROS);
+		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toSeconds(J)J", Units.SECONDS);
+		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toMinutes(J)J", Units.MINUTES);
+		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
+		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
+		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
+		TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)L", Units.CALLER);
+		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toNanos(J)J", Units.NANOS);
+		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toMicros(J)J", Units.MICROS);
+		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toSeconds(J)J", Units.SECONDS);
+		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toMinutes(J)J", Units.MINUTES);
+		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
+		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
+		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
+		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)L", Units.CALLER);
 	}
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
@@ -127,6 +126,11 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
 						}
 					}
 				break;
+				
+				case GETSTATIC:
+					String clsName = getClassConstantOperand();
+				break;
+					
 				
 				case L2I:
 				case I2L:
