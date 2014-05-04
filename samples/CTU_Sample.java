@@ -16,4 +16,11 @@ public class CTU_Sample {
 		
 		return secs + millis;
 	}
+	
+	public long fpHandConversions() {
+		long millis = System.currentTimeMillis();
+		long secs = TimeUnit.SECONDS.convert(1, TimeUnit.HOURS);
+		
+		return millis * 1000 + secs;
+	}
 }
