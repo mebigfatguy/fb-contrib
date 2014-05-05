@@ -106,6 +106,10 @@ function toggleBlock(divId, imgId)
                 Looks for executors that are never shutdown, which will not allow the application to terminate<br/>
                 <span style="color: #0000FF;">--contributed by Kevin Lubick - THANKS!</span>
                 </li>
+                <li><b>[CTU] Conflicting Time Units</b><br/>
+                Looks for methods that perform arithmetic operations on values representing time
+				where the time unit is incompatible, ie adding a millisecond value to a nanosecond value.
+				</li>
             </ul>
         </div>
         <hr/>
