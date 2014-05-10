@@ -15,8 +15,8 @@
 	<classpathentry kind="lib" path="lib/findbugs-2.0.3.jar" sourcepath="/home/dave/.m2/repository/com/google/code/findbugs/findbugs/2.0.3/findbugs-2.0.3-sources.jar"/>
 	<classpathentry kind="lib" path="lib/annotations-2.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/guava-16.0.1.jar" sourcepath="lib/guava-16.0.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.3.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.6.jar"/>
+	<classpathentry kind="lib" path="lib/guava-17.0.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
