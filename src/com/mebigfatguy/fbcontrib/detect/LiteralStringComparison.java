@@ -165,10 +165,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 				OpcodeStack.Item itm = stack.getStackItem(0);
 				Object constant = itm.getConstant();
 				if ((constant != null) && constant.getClass().equals(String.class)) {
-					if (stringBasedSwitchFalsePositives.contains(getPC())) {
-						System.out.println("Ignoring false positive LSC");
-					}
-					else {
+					if (!stringBasedSwitchFalsePositives.contains(getPC())) {
 						bugReporter.reportBug( new BugInstance( this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY)  //very confident
 						.addClass(this)
 						.addMethod(this)
