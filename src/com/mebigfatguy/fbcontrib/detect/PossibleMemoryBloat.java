@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
@@ -32,8 +33,8 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -113,10 +114,12 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
         increasingMethods.add("put");
 	}
 	private final BugReporter bugReporter;
-	private Map<XField, SourceLineAnnotation> bloatableFields;
+	private Map<XField, FieldAnnotation> bloatableCandidates;
+	private Map<XField, FieldAnnotation> bloatableFields;
 	private OpcodeStack stack;
 	private String methodName;
-	
+	private Set<FieldAnnotation> threadLocalNonStaticFields;
+
 	/**
      * constructs a PMB detector given the reporter to report bugs on
      * @param bugReporter the sync of bug reports
@@ -134,42 +137,62 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			bloatableFields = new HashMap<XField, SourceLineAnnotation>();
-			JavaClass cls = classContext.getJavaClass();
-			Field[] fields = cls.getFields();
-			for (Field f : fields) {
-				if (f.isStatic()) {
-					String sig = f.getSignature();
-					if (bloatableSigs.contains(sig)) {
-						bloatableFields.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), null);
-					}
-				} else if ("Ljava/lang/ThreadLocal;".equals(f.getSignature())) {
-			            bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
-			                    .addClass(this)
-			                    .addField(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic())));
-				}
-			}
-			
-			if (bloatableFields.size() > 0) {
+			bloatableCandidates = new HashMap<XField, FieldAnnotation>();
+			bloatableFields = new HashMap<XField, FieldAnnotation>();
+			threadLocalNonStaticFields = new HashSet<FieldAnnotation>();
+			parseFields(classContext);
+
+			if (bloatableCandidates.size() > 0) {
 				stack = new OpcodeStack();
 				super.visitClassContext(classContext);
-	
-				for (Map.Entry<XField, SourceLineAnnotation> entry : bloatableFields.entrySet()) {
-					SourceLineAnnotation sla = entry.getValue();
-					if (sla != null) {
-						bugReporter.reportBug(new BugInstance(this, "PMB_POSSIBLE_MEMORY_BLOAT", NORMAL_PRIORITY)
-									.addClass(this)
-									.addSourceLine(sla)
-									.addField(entry.getKey()));
-					}
-				}
+
+				reportMemoryBloatBugs();
+				reportThreadLocalBugs();
 			}
 		} finally {
 			stack = null;
+			bloatableCandidates = null;
 			bloatableFields = null;
+			threadLocalNonStaticFields = null;
 		}
 	}
-	
+
+	private void reportThreadLocalBugs() {
+		for(FieldAnnotation fieldAn: threadLocalNonStaticFields) {
+			bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
+			.addClass(this)
+			.addField(fieldAn));
+		}
+		
+	}
+
+	private void reportMemoryBloatBugs() {
+		for (Entry<XField, FieldAnnotation> entry : bloatableFields.entrySet()) {
+			FieldAnnotation fieldAn = entry.getValue();
+			if (fieldAn != null) {
+				bugReporter.reportBug(new BugInstance(this, "PMB_POSSIBLE_MEMORY_BLOAT", NORMAL_PRIORITY)
+				.addClass(this)
+				.addField(fieldAn)
+				.addField(entry.getKey()));
+			}
+		}
+	}
+
+	private void parseFields(ClassContext classContext) {
+		JavaClass cls = classContext.getJavaClass();
+		Field[] fields = cls.getFields();
+		for (Field f : fields) {
+			String sig = f.getSignature();
+			if (f.isStatic()) {
+				if (bloatableSigs.contains(sig)) {
+					bloatableCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()), FieldAnnotation.fromBCELField(cls, f));
+				}
+			} else if ("Ljava/lang/ThreadLocal;".equals(sig)) {
+				threadLocalNonStaticFields.add(FieldAnnotation.fromBCELField(cls, f));
+			} 
+		}
+	}
+
 	/**
 	 * implements the visitor to collect the method name
 	 * 
@@ -188,12 +211,11 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	@Override
 	public void visitCode(Code obj) {
 		stack.resetForMethodEntry(this);
-		
-		if ("<clinit>".equals(methodName)
-		||  "<init>".equals(methodName))
+
+		if ("<clinit>".equals(methodName) || "<init>".equals(methodName))
 			return;
-		
-		if (bloatableFields.size() > 0)
+
+		if (bloatableCandidates.size() > 0)
 			super.visitCode(obj);
 	}
 	
@@ -206,45 +228,54 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			if (bloatableFields.isEmpty())
+			if (bloatableCandidates.isEmpty())
 				return;
-			
-	        stack.precomputation(this);
-	        
-			if ((seen == INVOKEVIRTUAL)
-			||  (seen == INVOKEINTERFACE)) {
+
+			stack.precomputation(this);
+
+			if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
 				String sig = getSigConstantOperand();
 				int argCount = Type.getArgumentTypes(sig).length;
 				if (stack.getStackDepth() > argCount) {
 					OpcodeStack.Item itm = stack.getStackItem(argCount);
 					XField field = itm.getXField();
 					if (field != null) {
-						if (bloatableFields.containsKey(field)) {
-							String mName = getNameConstantOperand();
-							if (decreasingMethods.contains(mName)) {
-								bloatableFields.remove(field);
-							} else if (increasingMethods.contains(mName)) {
-								if (bloatableFields.get(field) == null) {
-									SourceLineAnnotation sla = SourceLineAnnotation.fromVisitedInstruction(this);
-									bloatableFields.put(field, sla);
-								}
-							}
+						if (bloatableCandidates.containsKey(field)) {
+							checkMethodAsDecreasingOrIncreasing(field);
 						}
 					}
 				}
 			}
+			//Should not include private methods
 			else if (seen == ARETURN) {
-			    if (stack.getStackDepth() > 0) {
-			        OpcodeStack.Item returnItem = stack.getStackItem(0);
-			        XField field = returnItem.getXField();
-			        if (field != null) {
-			            bloatableFields.remove(field);
-			        }
-			    }
+				removeFieldsThatGetReturned();
 			}
 		}
 		finally {
 			stack.sawOpcode(this, seen);
+		}
+	}
+
+	protected void removeFieldsThatGetReturned() {
+		if (stack.getStackDepth() > 0) {
+			OpcodeStack.Item returnItem = stack.getStackItem(0);
+			XField field = returnItem.getXField();
+			if (field != null) {
+				bloatableCandidates.remove(field);
+				bloatableFields.remove(field);
+			}
+		}
+	}
+
+	protected void checkMethodAsDecreasingOrIncreasing(XField field) {
+		String mName = getNameConstantOperand();
+		if (decreasingMethods.contains(mName)) {
+			bloatableCandidates.remove(field);
+			bloatableFields.remove(field);
+		} else if (increasingMethods.contains(mName)) {
+			if (bloatableCandidates.containsKey(field)) {
+				bloatableFields.put(field, bloatableCandidates.get(field));
+			}
 		}
 	}
 }
