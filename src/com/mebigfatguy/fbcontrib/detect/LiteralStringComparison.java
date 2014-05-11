@@ -18,9 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.ArrayList;
 import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.List;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -30,7 +30,10 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for methods that compare strings against literal strings, where the literal string
@@ -40,22 +43,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * Updated for 1.7 to not throw false positives for string-based switch statements (which are susceptible to 
  * NPEs).  String-based switch generate String.equals(Constant) bytecodes, and thus, must be accounted for
  */
+@CustomUserValue
 public class LiteralStringComparison extends BytecodeScanningDetector
 {
-	//offsets to detect for a string switch
-	private static final int HASH_CODE_PC_OFFSET = 3;
-	private static final int DUP_PC_OFFSET = 5;
-	private static final int STRING_SWITCH_OFFSET = 3;
-
-
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
-
-	private Set<Integer> stringBasedSwitchFalsePositives;
-
-	int lastDupSeen;
-	int lastStringHashCodeSeen;
-
+	/** the object that was switched on, to the switch targets for that switch */
+	private List<LookupDetails> lookupSwitches;
 
 	/**
 	 * constructs a LSC detector given the reporter to report bugs on
@@ -74,13 +68,11 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
-
-			stringBasedSwitchFalsePositives = new HashSet<Integer>();
+			lookupSwitches = new ArrayList<LookupDetails>();
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;
-			stringBasedSwitchFalsePositives.clear();
-			stringBasedSwitchFalsePositives = null;
+			lookupSwitches = null;
 		}
 	}
 
@@ -104,10 +96,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 	public void visitCode(final Code obj) {
 		if (prescreen(getMethod())) {
 			stack.resetForMethodEntry(this);
-			lastDupSeen=-10;
-			lastStringHashCodeSeen=-10;
-			stringBasedSwitchFalsePositives.clear();
-
+			lookupSwitches.clear();
 			super.visitCode(obj);
 		}
 	}
@@ -119,65 +108,137 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 	 */
 	@Override
 	public void sawOpcode(final int seen) {
+		Object hashCodedStringRef = null;
 		try {
 			stack.precomputation(this);
+			
+			switch (seen) {
+				case INVOKEVIRTUAL:
+					if ("java/lang/String".equals(getClassConstantOperand())) {
+						String calledMethodName = getNameConstantOperand();
+						String calledMethodSig = getSigConstantOperand();
 
-			if ((seen == INVOKEVIRTUAL) && "java/lang/String".equals(getClassConstantOperand())) {
-				handleMethodOnString();						
-			} 
-			else if (seen == DUP) {
-				lastDupSeen = getPC();
+						if (("equals".equals(calledMethodName) && "(Ljava/lang/Object;)Z".equals(calledMethodSig))
+								||  ("compareTo".equals(calledMethodName) && "(Ljava/lang/String;)I".equals(calledMethodSig))
+								||  ("equalsIgnoreCase".equals(calledMethodName) && "(Ljava/lang/String;)Z".equals(calledMethodSig))) {
+
+							if (stack.getStackDepth() > 0) {
+								OpcodeStack.Item itm = stack.getStackItem(0);
+								Object constant = itm.getConstant();
+								if ((constant != null) && constant.getClass().equals(String.class)) {
+									if (!lookupSwitchOnString()) {
+										bugReporter.reportBug( new BugInstance( this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY)  //very confident
+										.addClass(this)
+										.addMethod(this)
+										.addSourceLine(this));
+									}
+
+								}
+							}
+						}
+						else if ("hashCode".equals(calledMethodName)) {
+							if (stack.getStackDepth() > 0) {
+								OpcodeStack.Item item = stack.getStackItem(0);
+								int reg = item.getRegisterNumber();
+								if (reg >= 0)
+									hashCodedStringRef = String.valueOf(reg);
+								else {
+									XField xf = item.getXField();
+									if (xf != null)
+										hashCodedStringRef = xf.getName();
+									else {
+										XMethod xm = item.getReturnValueOf();
+										if (xm != null)
+											hashCodedStringRef = xm.toString();
+									}
+										
+								}
+							}
+						}					
+					}
+				break;
+				
+				case LOOKUPSWITCH:
+					if (stack.getStackDepth() > 0) {
+						OpcodeStack.Item item = stack.getStackItem(0);
+						String stringRef = (String) item.getUserValue();
+						if (stringRef != null) {
+							int[] offsets = getSwitchOffsets();
+							BitSet bs = new BitSet();
+							int pc = getPC();
+							for (int offset : offsets) {
+								bs.set(pc + offset);
+							}
+							lookupSwitches.add(new LookupDetails(stringRef, bs));
+						}
+					}
+				break;
 			}
-			else if (seen == LOOKUPSWITCH) {
-				handleLookupSwitch();
-			} 
+
 		} finally {
 			stack.sawOpcode(this, seen);
-		}
-	}
-
-
-	private void handleLookupSwitch() {
-		int pc = getPC();
-		//This setup, with a dup 5 bytes before and a hashcode call 3 bytes before is a near-sure-fire
-		//way to detect a string-based switch
-		if (pc-lastStringHashCodeSeen == HASH_CODE_PC_OFFSET && pc - lastDupSeen == DUP_PC_OFFSET) {
-			addFalsePositivesForStringSwitch(getSwitchOffsets(),pc);
-		}
-	}
-
-	private void addFalsePositivesForStringSwitch(int[] switchOffsets, int pc) {
-		for (Integer i:switchOffsets) {
-			//string-based switches
-			stringBasedSwitchFalsePositives.add(pc + i.intValue() + STRING_SWITCH_OFFSET);
-		}
-	}
-
-	private void handleMethodOnString() {
-		String calledMethodName = getNameConstantOperand();
-		String calledMethodSig = getSigConstantOperand();
-
-		if (("equals".equals(calledMethodName) && "(Ljava/lang/Object;)Z".equals(calledMethodSig))
-				||  ("compareTo".equals(calledMethodName) && "(Ljava/lang/String;)I".equals(calledMethodSig))
-				||  ("equalsIgnoreCase".equals(calledMethodName) && "(Ljava/lang/String;)Z".equals(calledMethodSig))) {
-
-			if (stack.getStackDepth() > 0) {
-				OpcodeStack.Item itm = stack.getStackItem(0);
-				Object constant = itm.getConstant();
-				if ((constant != null) && constant.getClass().equals(String.class)) {
-					if (!stringBasedSwitchFalsePositives.contains(getPC())) {
-						bugReporter.reportBug( new BugInstance( this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY)  //very confident
-						.addClass(this)
-						.addMethod(this)
-						.addSourceLine(this));
+			if (hashCodedStringRef != null) {
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item item = stack.getStackItem(0);
+					item.setUserValue(hashCodedStringRef);
+				}
+			}
+			
+			if (!lookupSwitches.isEmpty()) {
+				int innerMostSwitch = lookupSwitches.size() - 1;
+				LookupDetails details = lookupSwitches.get(innerMostSwitch);
+				if (details.switchTargets.get(getPC())) {
+					if (stack.getStackDepth() > 0) {
+						OpcodeStack.Item item = stack.getStackItem(0);
+						item.setUserValue(details.getStringReference());
 					}
-
+				}
+				
+				if (getPC() >= details.getSwitchTargets().previousSetBit(Integer.MAX_VALUE)) {
+					lookupSwitches.remove(innerMostSwitch);
 				}
 			}
 		}
-		else if ("hashCode".equals(calledMethodName)) {
-			lastStringHashCodeSeen = getPC();
+	}
+	
+	private boolean lookupSwitchOnString() {
+		if (stack.getStackDepth() > 1) {
+			OpcodeStack.Item item = stack.getStackItem(1);
+			String stringRef = (String) item.getUserValue();
+			
+			if (stringRef == null)
+				return false;
+			
+			if (!lookupSwitches.isEmpty()) {
+				LookupDetails details = lookupSwitches.get(lookupSwitches.size() - 1);
+				return stringRef.equals(details.getStringReference());
+			}
+		}
+		
+		return true;
+	}
+		
+	class LookupDetails {
+		private String stringReference;
+		private BitSet switchTargets;
+		
+		public LookupDetails(String stringRef, BitSet switchOffs) {
+			stringReference = stringRef;
+			switchTargets = switchOffs;
+		}
+
+		public String getStringReference() {
+			return stringReference;
+		}
+
+		public BitSet getSwitchTargets() {
+			return switchTargets;
+		}
+		
+		@Override
+		public String toString() {
+			return "StringReference: " + stringReference + ", SwitchTargets: " + switchTargets;
 		}
 	}
-
 }
+

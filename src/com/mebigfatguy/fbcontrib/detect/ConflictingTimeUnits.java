@@ -63,6 +63,9 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
 		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
 		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
 		TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)J", Units.CALLER);
+		TIME_UNIT_GENERATING_METHODS.put("org/joda/time/base/BaseDuration.getMillis()J", Units.MILLIS);
+		TIME_UNIT_GENERATING_METHODS.put("org/joda/time/base/BaseInterval.getEndMillis()J", Units.MILLIS);
+		TIME_UNIT_GENERATING_METHODS.put("org/joda/time/base/BaseInterval.getStartMillis()J", Units.MILLIS);
 	}
 	
 	private static Map<String, Units> TIMEUNIT_TO_UNITS = new HashMap<String, Units>();
