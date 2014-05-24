@@ -100,6 +100,17 @@ public class SPP_Sample implements Serializable {
         sb.append("Hello").append(s).append("there");
     }
 
+    public boolean testStringBuilderEquals(StringBuilder sb1, StringBuilder sb2) {
+    	if (sb1.equals(sb2)) {
+    		StringBuffer sbu1 = new StringBuffer(sb1.toString());
+    		StringBuffer sbu2 = new StringBuffer(sb2.toString());
+    		
+    		return sbu1.equals(sbu2);
+    	}
+    	
+    	return false;
+    }
+    
     public String testFPDoubleAppendListeralStatic() {
         StringBuilder sb = new StringBuilder();
         sb.append("literal").append(LIT).append("literal");
