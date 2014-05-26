@@ -4,7 +4,7 @@ import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
-//Expected bug count: 12
+//Expected bug count: 13
 //5 HE_EXECUTOR_NEVER_SHUTDOWN 
 //4 HE_LOCAL_EXECUTOR_SERVICE
 //3 HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN
@@ -189,6 +189,30 @@ class ScheduledThreadPoolProblem {
 
 }
 
+class ScheduledThreadPoolProblemCustomThreadFactory {
+	//tag, with low priority because the threadFactory is overwritten
+	private ExecutorService executor;
+
+	public ScheduledThreadPoolProblemCustomThreadFactory() {
+		this.executor = Executors.newScheduledThreadPool(1, new ThreadFactory() {
+			
+			@Override
+			public Thread newThread(Runnable arg0) {
+				Thread retVal = new Thread(arg0);
+				retVal.setDaemon(true);
+				return retVal;
+			}
+		});
+	}
+
+	public void test() {
+		executor.execute(new SampleExecutable());
+		executor.execute(new SampleExecutable());
+	}
+
+}
+
+
 class ReplacementExecutorProblem {
 	private ExecutorService executor;
 
@@ -218,8 +242,9 @@ class ReplacementExecutorProblem {
 	public void shutDown() {
 		executor.shutdownNow();
 	}
-
 }
+
+
 
 class ReplacementExecutorGood {
 	private ExecutorService executor;
@@ -362,6 +387,8 @@ class LocalExecutorProblem3 {
 		ScheduledThreadPoolExecutor executor = new ScheduledThreadPoolExecutor(1);
 		
 		System.out.println(executor);
+		
+		executor.shutdown();
 	}
 
 }
