@@ -2836,6 +2836,19 @@
 	       ]]>
 	   </Details>
 	</BugPattern>
+	
+	<BugPattern type="SPP_EQUALS_ON_STRING_BUILDER">
+		<ShortDescription>Method calls equals(Object o) on a StringBuilder or StringBuffer</ShortDescription>
+		<LongDescription>Method {1} calls equals(Object o) on a StringBuilder or StringBuffer</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method calls equals on a StringBuilder or StringBuffer. Surprisingly, these classes do not override
+			the equals method from Object, and so equals is just defined to be == (or same references). This is most
+			likely not what you would like. If you wish to check that the strings have the same characters, you need to
+			call toString() on these object and compare them as Strings.
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
 		<ShortDescription>Method assigns a variable in a larger scope then is needed</ShortDescription>

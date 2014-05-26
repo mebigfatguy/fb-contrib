@@ -69,6 +69,11 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		collectionInterfaces.add("java/util/Map");
 		collectionInterfaces.add("java/util/SortedMap");
 	}
+	private static final Set<String> oddMissingEqualsClasses = new HashSet<String>();
+	static {
+		oddMissingEqualsClasses.add("java.lang.StringBuffer");
+		oddMissingEqualsClasses.add("java.lang.StringBuilder");
+	}
 	
 	private static final String LITERAL = "literal";
 	private static final Pattern APPEND_PATTERN = Pattern.compile("append:([0-9]+):(.*)");
@@ -616,10 +621,24 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 	                							.addClass(this)
 	                							.addMethod(this)
 	                							.addSourceLine(this));
+	                	} else {
+	                    	if (stack.getStackDepth() >= 2) {
+	                    		OpcodeStack.Item item = stack.getStackItem(1);
+	                    		cls = item.getJavaClass();
+	                    		if (cls != null) {
+	                    			String clsName = cls.getClassName();
+	                    			if (oddMissingEqualsClasses.contains(clsName)) {
+	            				    	 bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_STRING_BUILDER", NORMAL_PRIORITY)
+	                                     .addClass(this)
+	                                     .addMethod(this)
+	                                     .addSourceLine(this));
+	                    			}
+	                    		}
+	                    	}
 	                	}
                 	} catch (ClassNotFoundException cnfe) {
                 		bugReporter.reportMissingClass(cnfe);
-                	}
+                	}      	
                 } else if ("java/lang/Boolean".equals(className)
                 	&&     "booleanValue".equals(methodName)) {
                 	if (lastPCs[0] != -1) {
