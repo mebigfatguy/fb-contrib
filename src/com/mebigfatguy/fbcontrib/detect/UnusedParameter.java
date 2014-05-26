@@ -51,6 +51,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
         IGNORE_METHODS.add("<clinit>");
         IGNORE_METHODS.add("main");
         IGNORE_METHODS.add("premain");
+        IGNORE_METHODS.add("agentmain");
         IGNORE_METHODS.add("writeObject");
         IGNORE_METHODS.add("readObject");
         IGNORE_METHODS.add("readObjectNoData");
