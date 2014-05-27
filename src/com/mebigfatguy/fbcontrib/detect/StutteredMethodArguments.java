@@ -164,6 +164,9 @@ public class StutteredMethodArguments extends BytecodeScanningDetector {
 						}
 					}
 				break;
+				
+				default:
+					break;
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);

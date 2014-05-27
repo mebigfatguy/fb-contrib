@@ -126,7 +126,7 @@ public class FinalParameters extends BytecodeScanningDetector
 			{
 				SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
 				SourceFile sourceFile = sourceFinder.findSourceFile(srcLineAnnotation.getPackageName(), srcLineAnnotation.getSourceFile());
-				sourceReader = new BufferedReader(new InputStreamReader(sourceFile.getInputStream()));
+				sourceReader = new BufferedReader(new InputStreamReader(sourceFile.getInputStream(), "UTF-8"));
 
 				List<String> lines = new ArrayList<String>(100);
 				String line;

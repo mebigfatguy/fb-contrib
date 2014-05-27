@@ -67,8 +67,7 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        switch (seen) {
-        case INVOKEVIRTUAL:
+    	if (seen == INVOKEVIRTUAL) {
             if ("getName".equals(getNameConstantOperand())
                     && "()Ljava/lang/String;".equals(getSigConstantOperand())
                     && "java/lang/Class".equals(getClassConstantOperand())) {
@@ -81,14 +80,13 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
                 item = stack.getStackItem(0);
                 Object dstValue = item.getUserValue();
                 if (Boolean.TRUE.equals(srcValue) && Boolean.TRUE.equals(dstValue)) {
-                    bugReporter
-                            .reportBug(new BugInstance(this,
-                                    "CCNE_COMPARE_CLASS_EQUALS_NAME",
-                                    NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, "CCNE_COMPARE_CLASS_EQUALS_NAME",NORMAL_PRIORITY)
+                    .addClass(this)
+                    .addMethod(this)
+                    .addSourceLine(this));
                 }
             }
-            break;
         }
+//		stack.sawOpcode(this, seen);
     }
 }

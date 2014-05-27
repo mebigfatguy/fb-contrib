@@ -73,7 +73,7 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		boolean reset = true;
-		switch (state) {
+		switch (state) {		//TODO: Refactor this to use state pattern, not nested switches
 			case SEEN_NOTHING:
 				switch (seen) {
 					case ALOAD:
@@ -85,6 +85,8 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
 						state = State.SEEN_ALOAD;
 						reset = false;
 					break;
+					default:
+						break;
 				}
 			break;
 			
@@ -115,6 +117,9 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
 							reset = false;
 						}
 					}
+					break;
+					default:
+						break;
 				}
 			break;
 			
@@ -129,6 +134,8 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
 						state = State.SEEN_ALOAD;
 						reset = false;
 					break;
+					default:
+						break;
 				}
 			}
 			break;

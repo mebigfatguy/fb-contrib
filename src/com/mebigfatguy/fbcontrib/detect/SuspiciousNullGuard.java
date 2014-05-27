@@ -197,6 +197,8 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 				case IFNONNULL:
 					nullGuards.clear();
 				break;
+				default:
+					break;
 			}
 		} finally {
 			stack.sawOpcode(this, seen);

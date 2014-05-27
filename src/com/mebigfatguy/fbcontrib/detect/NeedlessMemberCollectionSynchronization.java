@@ -326,6 +326,8 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 						}
 					}
 				break;
+				default:
+					break;
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);

@@ -120,12 +120,10 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 						if (cls != null)
 							bug.addString(cls.getClassName());
 					}
-					if (bug != null) {
-						for (Integer pc : returnTypes.values()) {
-							bug.addSourceLine(this, pc.intValue());
-						}
-						bugReporter.reportBug(bug);
+					for (Integer pc : returnTypes.values()) {
+						bug.addSourceLine(this, pc.intValue());
 					}
+					bugReporter.reportBug(bug);
 				}
 			}
 		} catch (ClassNotFoundException cnfe) {

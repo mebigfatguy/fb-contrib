@@ -226,6 +226,8 @@ public class UnusedParameter extends BytecodeScanningDetector {
                     }
                 }
                 break;
+                default:
+                	break;
             }
         } finally {
             stack.sawOpcode(this, seen);

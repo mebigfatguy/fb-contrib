@@ -37,6 +37,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
  */
 public class CommonsHashcodeBuilderToHashcode extends BytecodeScanningDetector {
 
+	private static final String LANG_HASH_CODE_BUILDER = "Lorg/apache/commons/lang/builder/HashCodeBuilder;";
+	private static final String LANG3_HASH_CODE_BUILDER = "Lorg/apache/commons/lang3/builder/HashCodeBuilder;";
 	private final OpcodeStack stack;
 	private final BugReporter bugReporter;
 
@@ -71,28 +73,19 @@ public class CommonsHashcodeBuilderToHashcode extends BytecodeScanningDetector {
 
 	@Override
 	public void sawOpcode(int seen) {
-		try {
-			switch (seen) {
-			case INVOKEVIRTUAL:
-				String methodName = getNameConstantOperand();
-				if ("hashCode".equals(methodName)
-						&& "()I".equals(getSigConstantOperand())
-						&& (stack.getStackDepth() > 0)) {
-					String calledClass = stack.getStackItem(0).getSignature();
-					if ("Lorg/apache/commons/lang3/builder/HashCodeBuilder;"
-							.equals(calledClass)
-							|| "Lorg/apache/commons/lang/builder/HashCodeBuilder;"
-									.equals(calledClass)) {
-						bugReporter.reportBug(new BugInstance(this,
-								"CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE",
-								HIGH_PRIORITY).addClass(this).addMethod(this)
-								.addSourceLine(this));
-					}
+		if (seen == INVOKEVIRTUAL) {
+			String methodName = getNameConstantOperand();
+			if ("hashCode".equals(methodName) && "()I".equals(getSigConstantOperand()) && (stack.getStackDepth() > 0)) {
+				String calledClass = stack.getStackItem(0).getSignature();
+				if (LANG3_HASH_CODE_BUILDER.equals(calledClass) || LANG_HASH_CODE_BUILDER.equals(calledClass)) {
+					bugReporter.reportBug(new BugInstance(this,"CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE",HIGH_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this));
 				}
 			}
-		} finally {
-			super.sawOpcode(seen);
-			stack.sawOpcode(this, seen);
 		}
+		super.sawOpcode(seen);
+		stack.sawOpcode(this, seen);
 	}
 }

@@ -177,6 +177,8 @@ public class ConstantListIndex extends BytecodeScanningDetector
 								}
 							}
 						break;
+						default:
+							break;
 					}
 					state = State.SAW_NOTHING;
 				break;

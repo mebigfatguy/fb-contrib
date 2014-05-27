@@ -257,6 +257,9 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector
 					}					
 				}
 				break;
+				
+				default:
+					break;
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);

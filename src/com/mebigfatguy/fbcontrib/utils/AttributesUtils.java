@@ -55,7 +55,7 @@ public class AttributesUtils
 		int mid = 0;
 		int linePC = 0;
 		while (lo <= hi) {
-			mid = (lo + hi) / 2;
+			mid = (lo + hi) >>> 1;
 			linePC = lineNumbers[mid].getStartPC();
 			if (linePC == pc)
 				break;

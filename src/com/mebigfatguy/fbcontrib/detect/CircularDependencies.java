@@ -92,7 +92,7 @@ public class CircularDependencies extends BytecodeScanningDetector {
 
         LoopFinder lf = new LoopFinder();
 
-        while (dependencyGraph.size() > 0) {
+        while (!dependencyGraph.isEmpty()) {
             String className = dependencyGraph.keySet().iterator().next();
             Set<String> loop = lf.findLoop(dependencyGraph, className);
             boolean pruneLeaves;
