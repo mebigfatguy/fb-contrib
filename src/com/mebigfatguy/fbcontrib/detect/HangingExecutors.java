@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.Priorities;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for executors that are never shutdown, which will not allow the application to terminate
@@ -215,13 +216,16 @@ public class HangingExecutors extends BytecodeScanningDetector {
 					//look at the top of the stack, get the arguments passed into the function that was called
 					//and then pull out the types.
 					//if the last type is a ThreadFactory, set the priority to low
-					Type[] argumentTypes = Type.getArgumentTypes(stack.getStackItem(0).getReturnValueOf().getSignature());
-					if (argumentTypes.length != 0) {
-						if ("Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes[argumentTypes.length-1].getSignature())) {
-							AnnotationPriority ap = this.hangingFieldCandidates.get(f);
-							if (ap != null) {
-								ap.priority = LOW_PRIORITY;
-								this.hangingFieldCandidates.put(f, ap);
+					XMethod probableConstructor = stack.getStackItem(0).getReturnValueOf();
+					if (probableConstructor != null) {
+						Type[] argumentTypes = Type.getArgumentTypes(probableConstructor.getSignature());
+						if (argumentTypes.length != 0) {
+							if ("Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes[argumentTypes.length-1].getSignature())) {
+								AnnotationPriority ap = this.hangingFieldCandidates.get(f);
+								if (ap != null) {
+									ap.priority = LOW_PRIORITY;
+									this.hangingFieldCandidates.put(f, ap);
+								}
 							}
 						}
 					}
@@ -310,9 +314,7 @@ class LocalHangingExecutor extends LocalTypeDetector {
 		forExecutors.add("newScheduledThreadPool");
 		forExecutors.add("newSingleThreadExecutor");
 
-
 		watchedClassMethods.put("java/util/concurrent/Executors", forExecutors);
-
 
 		syncCtors.put("java/util/concurrent/ThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
 		syncCtors.put("java/util/concurrent/ScheduledThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
