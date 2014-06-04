@@ -2,7 +2,10 @@ import java.nio.ByteBuffer;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import edu.emory.mathcs.backport.java.util.Collections;
 
 @SuppressWarnings("all")
 public class PRMC_Sample {
@@ -77,6 +80,12 @@ public class PRMC_Sample {
         s.add(FPEnum.fi.toString());
         s.add(FPEnum.fo.toString());
         s.add(FPEnum.fum.toString());
+    }
+    
+    public void emptyList() {
+    	List l = Collections.emptyList();
+    	List o = Collections.emptyList();
+    	List p = Collections.emptyList();
     }
 
     enum FPEnum {
