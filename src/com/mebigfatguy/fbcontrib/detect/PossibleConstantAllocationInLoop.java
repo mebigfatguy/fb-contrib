@@ -267,9 +267,11 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 				case TABLESWITCH:
 					int top = getPC();
 					int[] offsets = getSwitchOffsets();
-					int bottom = top + offsets[offsets.length-1];
-					SwitchInfo switchInfo = new SwitchInfo(top, bottom);
-					switchInfos.add(switchInfo);
+					if (offsets.length > 0) {
+						int bottom = top + offsets[offsets.length-1];
+						SwitchInfo switchInfo = new SwitchInfo(top, bottom);
+						switchInfos.add(switchInfo);
+					}
 					break;
 				
 				default:
