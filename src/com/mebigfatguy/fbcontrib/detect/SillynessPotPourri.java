@@ -760,10 +760,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 						Object constant = item.getConstant();
 						if (constant instanceof Double)
 						{
-							bugReporter.reportBug(new BugInstance(this, "SPP_USE_BIGDECIMAL_STRING_CTOR", NORMAL_PRIORITY)
-									   .addClass(this)
-									   .addMethod(this)
-									   .addSourceLine(this));
+							Double v = (Double) constant;
+							if ((v != 0.0) && (v != 1.0)) {
+								bugReporter.reportBug(new BugInstance(this, "SPP_USE_BIGDECIMAL_STRING_CTOR", NORMAL_PRIORITY)
+										   .addClass(this)
+										   .addMethod(this)
+										   .addSourceLine(this));
+							}
 						}
 					}
 				}
