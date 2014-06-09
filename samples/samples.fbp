@@ -7,7 +7,7 @@
   <AuxClasspathEntry>././../lib/junit-4.11.jar</AuxClasspathEntry>
   <AuxClasspathEntry>././../lib/log4j-1.2.17.jar</AuxClasspathEntry>
   <AuxClasspathEntry>././../lib/commons-lang3-3.3.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././../lib/slf4j-api-1.7.6.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>././../lib/slf4j-api-1.7.7.jar</AuxClasspathEntry>
   <AuxClasspathEntry>./../lib/guava-17.0.jar</AuxClasspathEntry>
   <SrcDir>././.</SrcDir>
   <SuppressionFilter>
