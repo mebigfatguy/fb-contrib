@@ -1,15 +1,15 @@
 <Project projectName="sample">
-  <Jar>././.</Jar>
-  <AuxClasspathEntry>././../lib/backport-util-concurrent-3.1.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././../lib/commons-collections-3.2.1.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././../lib/javax.servlet-api-3.1.0.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././../lib/javax.servlet.jsp-api-2.3.1.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././../lib/junit-4.11.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././../lib/log4j-1.2.17.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././../lib/commons-lang3-3.3.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././../lib/slf4j-api-1.7.7.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>./../lib/guava-17.0.jar</AuxClasspathEntry>
-  <SrcDir>././.</SrcDir>
+  <Jar>.</Jar>
+  <AuxClasspathEntry>../lib/backport-util-concurrent-3.1.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/commons-collections-3.2.1.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/javax.servlet-api-3.1.0.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/javax.servlet.jsp-api-2.3.1.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/junit-4.11.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/log4j-1.2.17.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/commons-lang3-3.3.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/slf4j-api-1.7.7.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/guava-17.0.jar</AuxClasspathEntry>
+  <SrcDir>.</SrcDir>
   <SuppressionFilter>
     <LastVersion value="-1" relOp="NEQ"/>
   </SuppressionFilter>
