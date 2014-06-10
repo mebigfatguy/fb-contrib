@@ -40,7 +40,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector
 	private static JavaClass EXCEPTION_CLASS;
 	static {
 		try {
-			EXCEPTION_CLASS = Repository.lookupClass("java.lang.Exception");
+			EXCEPTION_CLASS = Repository.lookupClass("java/lang/Exception");
 		} catch (ClassNotFoundException cnfe) {
 			//ignore
 		}

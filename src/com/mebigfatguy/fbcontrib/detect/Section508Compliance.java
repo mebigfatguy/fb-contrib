@@ -79,7 +79,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 			clsNFException = cnfe;
 		}
 		try {
-			accessibleClass = Repository.lookupClass("javax.accessibility.Accessible");
+			accessibleClass = Repository.lookupClass("javax/accessibility/Accessible");
 		} catch (ClassNotFoundException cnfe) {
 			accessibleClass = null;
 			clsNFException = cnfe;

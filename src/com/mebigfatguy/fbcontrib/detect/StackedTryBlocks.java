@@ -39,7 +39,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
     static {
         try {
-            THROWABLE_CLASS = Repository.lookupClass("java.lang.Throwable");
+            THROWABLE_CLASS = Repository.lookupClass("java/lang/Throwable");
         } catch (ClassNotFoundException cnfe) {
             THROWABLE_CLASS = null;
         }
