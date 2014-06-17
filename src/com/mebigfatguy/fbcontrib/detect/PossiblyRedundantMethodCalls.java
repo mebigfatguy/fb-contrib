@@ -120,6 +120,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
         riskyClassNames.add("java/nio/ByteBuffer");
         riskyClassNames.add("java/io/DataInputStream");
         riskyClassNames.add("java/io/ObjectInputStream");
+        riskyClassNames.add("java/util/Calendar");
         String userNameProp = System.getProperty(PRMC_RISKY_CLASS_USER_KEY);
         if (userNameProp != null) {
             String[] userNames = userNameProp.split("\\s*,\\s*");
