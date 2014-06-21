@@ -123,8 +123,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
             for (Type t : types) {
                 String parmSig = t.getSignature();
                 if ("Lorg/slf4j/Logger;".equals(parmSig) || "Lorg/apache/log4j/Logger;".equals(parmSig) || "Lorg/apache/commons/logging/Log;".equals(parmSig)) {
-                    bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_PARAMETER", NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_PARAMETER", NORMAL_PRIORITY).addClass(this).addMethod(this));
                 }
             }
         }
