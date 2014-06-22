@@ -1458,9 +1458,40 @@
 		<LongDescription>Method {1} passes simple concatenating string in StringBuffer or StringBuilder append</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method uses StringBuffer or StringBuilder's append method to concatenate strings. However, it passes the result
+			<p>This method uses <code>StringBuffer</code> or <code>StringBuilder</code>'s append method to concatenate strings. However, it passes the result
 			of doing a simple String concatenation to one of these append calls, thus removing any performance gains
-			of using the StringBuffer or StringBuilder class.</p>
+			of using the <code>StringBuffer</code> or <code>StringBuilder</code> class.</p>
+			
+			<p>
+			Java will implicitly use StringBuilders, which can make this hard to detect or fix.  For example, <br/>
+			<code>
+			StringBuilder sb = new StringBuilder();<br/>
+			for (Map.Entry<Integer, String> e : map.entrySet()) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(e.getKey() + e.getValue());		//bug detected here<br/>
+			}<br/>
+			</code><br/>
+			
+			gets automatically turned into something like: <br/>
+			<code>
+			StringBuilder sb = new StringBuilder();<br/>
+			for (Map.Entry<Integer, String> e : map.entrySet()) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;StringBuilder tempBuilder = new StringBuilder();<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;tempBuilder.append(e.getKey());<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;tempBuilder.append(e.getValue());<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(tempBuilder.toString());		//this isn't too efficient<br/>
+			}<br/>
+			</code><br/>
+			
+			which involves a temporary <code>StringBuilder</code>, which is completely unneccessary.  To prevent this from happening, simply do:<br/>
+			
+			<code>
+			StringBuilder sb = new StringBuilder();<br/>
+			for (Map.Entry<Integer, String> e : map.entrySet()) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(e.getKey()); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(e.getValue());<br/>
+			}<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
