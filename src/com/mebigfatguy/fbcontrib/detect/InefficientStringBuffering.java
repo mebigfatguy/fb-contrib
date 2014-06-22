@@ -154,11 +154,10 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 												.addMethod(this)
 												.addSourceLine(this));
 							} else if (apValue == AppendType.TOSTRING){
-	                             bugReporter.reportBug( 
-	                                        new BugInstance(this, "ISB_TOSTRING_APPENDING", NORMAL_PRIORITY)
-	                                                .addClass(this)
-	                                                .addMethod(this)
-	                                                .addSourceLine(this));
+								bugReporter.reportBug(new BugInstance(this, "ISB_TOSTRING_APPENDING", NORMAL_PRIORITY)
+								.addClass(this)
+								.addMethod(this)
+								.addSourceLine(this));
 							}
 						}
 					} else if ("toString".equals(methodName)) {
@@ -166,7 +165,9 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 						apType = (itm == null) ? AppendType.NONE : (AppendType)itm.getUserValue();
 					}
 				} else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())) {
-				    apType = AppendType.TOSTRING;
+				    //calls to this.toString() are okay, some people like to be explicit
+				    if (stack.getStackItem(0).getRegisterNumber() != 0)
+				    	apType = AppendType.TOSTRING;
 				}
 
 			} else if ((seen == GOTO) || (seen == GOTO_W)) {

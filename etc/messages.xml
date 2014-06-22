@@ -1483,9 +1483,31 @@
 		<LongDescription>Method {1} concatenates the result of a toString() call</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method concatenates the output of a toString() call into a StringBuffer/Builder.
+			<p>This method concatenates the output of a <code>toString()</code> call into a <code>StringBuffer</code> or <code>StringBuilder</code>.
 			It is simpler just to pass the object you want to append to the append call, as that form
-			does not suffer the potential for NullPointerExceptions, and is easier to read.</p>
+			does not suffer the potential for <code>NullPointerException</code>s, and is easier to read.</p>
+			
+			<p>
+			Keep in mind that Java compiles simple <code>String</code> Concatenation to use <code>StringBuilder</code>s, so you may see this bug even when you don't use <code>StringBuilder</code>s explicitly.
+			</p>
+			
+			<p>
+			Instead of: <br/>
+			<code>
+			StringBuilder builder = ... <br/>
+			builder.append(someObj.toString());<br/>
+			... <br/>
+			System.out.println("Problem with the object :" + someObj.toString());<br/>
+			</code>
+			just do: <br/>
+			<code>
+			StringBuilder builder = ... <br/>
+			builder.append(someObj);<br/>
+			... <br/>
+			System.out.println("Problem with the object :" + someObj);<br/>
+			</code>
+			to avoid the possibility of <code>NullPointerException</code>s when someObj is <code>null</code>.
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
