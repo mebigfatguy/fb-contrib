@@ -31,8 +31,7 @@ public class ISB_Sample {
     }
 
     public String testISB5(String a, String b, String c, String d) {
-        String msg = a + "false positive" + b + ((c == null) ? "" : (a + d));
-        return msg;
+        return a + "false positive" + b + ((c == null) ? "" : (a + d));
     }
 
     public String testISB6(int a) {
@@ -67,6 +66,36 @@ public class ISB_Sample {
         //tag ISB_TOSTRING_APPENDING
         sb.append(map.toString());
         return sb.toString();
+    }
+    
+    public static final String WORLD = "CONSTWorld"; 
+    
+    public String testOkayAppending() {
+    	//no tag, the compiler pre-joins these
+    	return "Hello "+"World" + " FindBUGS";
+    }
+    
+    public String testOkayAppendingWithConst() {
+    	//no tag, the compiler pre-joins these
+    	return "Hello "+WORLD + " FindBUGS";
+    }
+    
+    public String testBadAppending() {
+    	//tag, this defeats compiler optimization
+    	StringBuilder sb = new StringBuilder();
+    	sb.append("Hello ").append("World").append(" FindBUGS");
+    	return sb.toString();
+    }
+    
+    public String testBadAppendingWithConst() {
+    	//tag, this defeats compiler optimization
+    	StringBuilder sb = new StringBuilder();
+    	sb.append(WORLD);
+    	sb.append("World");
+    	sb.append(WORLD);
+    	sb.append("World");
+
+    	return sb.toString();
     }
 
     @Override
