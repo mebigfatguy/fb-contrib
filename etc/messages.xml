@@ -1785,8 +1785,24 @@
 		<LongDescription>Method {1} passes parsed string to primitive wrapper constructor</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method passes a primitive value retrieved from a BoxedPrimitive.parseBoxedPrimitive("1") call to
-			the same class's constructor. It is simpler to just pass the string to the BoxedPrimitives constructor.</p>
+			<p>This method passes a primitive value retrieved from a <code>BoxedPrimitive.parseBoxedPrimitive("1")</code> call to
+			the same class's constructor. It is simpler to just pass the string to the BoxedPrimitives constructor or, better yet, use the static valueOf.</p>
+			<p>Instead of something like:<br/>
+			<code>
+			Boolean bo = new Boolean(Boolean.parseBoolean("true")); <br/>
+			Float f = new Float(Float.parseFloat("1.234"));<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			Boolean bo = new Boolean("true"); <br/>
+			Float f = new Float("1.234");<br/>
+			</code>
+			or, to be more memory efficient: <br/>
+			<code>
+			Boolean bo = Boolean.valueOf("true"); <br/>
+			Float f = Float.valueOf("1.234");<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1810,8 +1826,27 @@
 			<![CDATA[
 			<p>This method passes a String to a wrapped primitive object's valueOf method, which in turn calls
 			the boxedValue() method to convert to a primitive. When it is desired to convert from a String
-			to a primitive value, it is simpler to use the BoxedPrimitive.parseBoxedPrimitive(myString)
+			to a primitive value, it is simpler to use the BoxedPrimitive.parseBoxedPrimitive(String)
 			method. </p>
+			
+			<p>Instead of something like:<br/>
+			<code>
+			public int someMethod(String data) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;long l = Long.valueOf(data).longValue(); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;float f = Float.valueOf(data).floatValue(); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;return Integer.valueOf(data); &nbsp;&nbsp;// There is an implicit .intValue() call<br/>
+			}<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			public int someMethod(String data) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;long l = Long.parseLong(data); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;float f = Float.parseFloat(data); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;return Integer.parseInt(data); <br/>
+			}<br/>
+			</code>
+			</p>
+			
 			]]>
 		</Details>
 	</BugPattern>
@@ -1823,8 +1858,19 @@
 			<![CDATA[
 			<p>This method passes a String to a wrapped primitive object's parse method, which in turn calls
 			the valueOf() method to convert to a boxed primitive. When it is desired to convert from a String
-			to a boxed primitive object, it is simpler to use the BoxedPrimitive.valueOf(myString)
-			method.</p>
+			to a boxed primitive object, it is simpler to use the BoxedPrimitive.valueOf(String) method.</p>
+			
+			<p>Instead of something like:<br/>
+			<code>
+			Boolean bo = Boolean.valueOf(Boolean.parseBoolean("true")); <br/>
+			Float f = Float.valueOf(Float.parseFloat("1.234"));<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			Boolean bo = Boolean.valueOf("true"); <br/>
+			Float f = Float.valueOf("1.234");<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1836,17 +1882,18 @@
 			<![CDATA[
 			<p>This method constructs a Boxed Primitive from a primitive only to call the primitiveValue() method to
 			convert it back to a primitive. Just use the primitive value instead.</p>
-			<pre>
-				primitive i = new BoxedPrimitive(1).primitiveValue();
-			</pre>
-			or
-			<pre>
-				primitive i = BoxedPrimitive.valueOf(1).primitiveValue();
-			</pre>
-			should just use
-			<pre>
-				primitive i = 1;
-			</pre>
+			<p>Instead of something like:<br/>
+			<code>
+			boolean bo = new Boolean(true).booleanValue(); <br/>
+			float f = new Float(1.234f).floatValue();<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			boolean bo = true; <br/>
+			float f = 1.234f;<br/>
+			</code>
+			</p>
+			
 			]]>
 		</Details>
 	</BugPattern>
@@ -1857,18 +1904,24 @@
 		<Details>
 			<![CDATA[
 			<p>This method constructs a Boxed Primitive from a primitive only to call the primitiveValue() method to
-			cast the value to another primitive type. It is simpler to just use casting</p>
-			<pre>
-				primitive i = new BoxedPrimitive(1.0).primitiveValue();
-			</pre>
-			or
-			<pre>
-				primitive i = BoxedPrimitive.valueOf(1.0).primitiveValue();
-			</pre>
-			should just use
-			<pre>
-				primitive i = (primitive)1.0;
-			</pre>
+			cast the value to another primitive type. It is simpler to just use casting.</p>
+			<p>Instead of something like:<br/>
+			<code>
+			double someDouble = ...<br/>
+			float f = new Double(someDouble).floatValue();<br/>
+			<br/>
+			int someInt = ...<br/>
+			byte b = new Integer(someInt).byteValue();<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			double someDouble = ...<br/>
+			float f = (float) someDouble;<br/>
+			<br/>
+			int someInt = ...<br/>
+			byte b = (byte)someInt;<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1880,15 +1933,15 @@
 			<![CDATA[
 			<p>This method assigns a Boxed boolean constant to a primitive boolean variable, or assigns a primitive boolean
 			constant to a Boxed boolean variable. Use the correct constant for the variable desired. Use</p>
-			<pre>
-				boolean b = true;
-				boolean b = false;
-			</pre>
-			or
-			<pre>
-				Boolean b = Boolean.TRUE;
-				Boolean b = Boolean.FALSE;
-			</pre>
+			<code>
+				boolean b = true;<br/>
+				boolean b = false;<br/>
+			</code>
+			or <br/>
+			<code>
+				Boolean b = Boolean.TRUE;<br/>
+				Boolean b = Boolean.FALSE;<br/>
+			</code>
 			]]>
 		</Details>
 	</BugPattern>
