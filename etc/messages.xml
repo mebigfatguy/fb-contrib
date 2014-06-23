@@ -1985,7 +1985,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method assigns a Boxed boolean constant to a primitive boolean variable, or assigns a primitive boolean
-			constant to a Boxed boolean variable. Use the correct constant for the variable desired. Use</p>
+			constant to a Boxed boolean variable. Use the correct constant for the variable desired. Use <br/>
 			<code>
 				boolean b = true;<br/>
 				boolean b = false;<br/>
@@ -1993,8 +1993,31 @@
 			or <br/>
 			<code>
 				Boolean b = Boolean.TRUE;<br/>
-				Boolean b = Boolean.FALSE;<br/>
+				Boolean b = Boolean.FALSE;
 			</code>
+			</p>
+			
+			<p>Be aware that this boxing happens automatically when you might not expect it.  For example, <br/>
+			<code>
+			Map<String, Boolean> statusMap = ... <br/>
+			<br/>
+			public Boolean someMethod() {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;statusMap.put("foo", true);  //the "true" here is boxed<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;return false;  //the "false" here is boxed<br/>
+			}<br/>
+			</code>
+			has two cases of this needless autoboxing.  This can be made more efficient by simply substituting 
+			in the constant values: <br/>
+			
+			<code>
+			Map<String, Boolean> statusMap = ... <br/>
+			<br/>
+			public Boolean someMethod() {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;statusMap.put("foo", Boolean.TRUE);  <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;return Boolean.FALSE; <br/>
+			}<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2155,29 +2178,31 @@
 			<![CDATA[
 			<p>This method compares dates with two comparisons, rather than using the reverse comparison.
 			So this pattern</p>
-			<pre>
-				if ((date1.equals( date2 )) || (date1.after( date2 )))
-			</pre>
-			could become
-			<pre>
-				if (date1.compareTo( date2 ) >= 0)
-			</pre>
-			and
-			<pre>
-				if ((date1.equals( date2 )) || (date1.before( date2 )))
-			</pre>
-			could become
-			<pre>
-				if (date1.compareTo( date2 ) <= 0)
-			</pre>
-			and
-			<pre>
-				if ((date1.before( date2 )) || (date1.after( date2 )))
-			</pre>
-			could become
-			<pre>
-				if (!date1.equals( date2 ))
-			</pre>
+			<code>
+				if ((date1.equals( date2 )) || (date1.after( date2 )))<br/>
+			</code>
+			could become:<br/>
+			<code>
+				if (date1.compareTo( date2 ) >= 0) <br/>
+			</code>
+			<br/>
+			and<br/>
+			<code>
+				if ((date1.equals( date2 )) || (date1.before( date2 ))) <br/>
+			</code>
+			could become <br/>
+			<code>
+				if (date1.compareTo( date2 ) <= 0) <br/>
+			</code>
+			<br/>
+			and<br/>
+			<code>
+				if ((date1.before( date2 )) || (date1.after( date2 ))) <br/>
+			</code>
+			could become<br/>
+			<code>
+				if (!date1.equals( date2 ))<br/>
+			</code>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2505,9 +2530,31 @@
 		<LongDescription>Method {1} passes constant String of length 1 to character overridden method</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method passes a constant literal String of length 1 as a parameter to a method, that
-			exposes a similar method that takes a character. It is simpler and more expedient to handle one
-			character, rather than pass a string.</p>
+			<p>This method passes a constant literal <code>String</code> of length 1 as a parameter to a method, that
+			exposes a similar method that takes a <code>char</code>. It is simpler and more expedient to handle one
+			character, rather than a <code>String</code.</p>
+			
+			<p>
+			Instead of making calls like: <br/>
+			<code>
+			String myString = ... <br/>
+			if (myString.indexOf("e") != -1) {<br/>
+			int i = myString.lastIndexOf("e");<br/>
+			...<br/>
+			return myString.replace("m","z");<br/>
+			}<br/>
+			</code>
+			Replace the single letter <code>String</code>s with their <code>char</code> equivalents like so:<br/>
+			
+			<code>
+			String myString = ... <br/>
+			if (myString.indexOf('e') != -1) {<br/>
+			int i = myString.lastIndexOf('e');<br/>
+			...<br/>
+			return myString.replace('m','z');<br/>
+			}<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
