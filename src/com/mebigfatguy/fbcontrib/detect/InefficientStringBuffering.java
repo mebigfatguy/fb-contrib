@@ -22,6 +22,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantString;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -37,7 +38,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class InefficientStringBuffering extends BytecodeScanningDetector
 {
-    private enum AppendType { NONE, CLEAR, NESTED, TOSTRING };
+    private enum AppendType { NONE, CLEAR, NESTED, TOSTRING};
     
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
@@ -86,89 +87,12 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 	        stack.precomputation(this);
 			
 			if (seen == INVOKESPECIAL) {
-				String calledClass = getClassConstantOperand();
-				if (("java/lang/StringBuffer".equals(calledClass)
-				||  "java/lang/StringBuilder".equals(calledClass))
-				&&  "<init>".equals(getNameConstantOperand())) {
-	                String signature = getSigConstantOperand();
-					if ("()V".equals(signature)) {
-						OpcodeStack.Item itm = getStringBufferItemAt(2);
-						if (itm != null) {
-							apType = AppendType.NESTED;
-						}
-					} else if ("(Ljava/lang/String;)V".equals(signature)) {
-						if (stack.getStackDepth() > 0) {
-							OpcodeStack.Item itm = stack.getStackItem(0);
-							apType = (AppendType)itm.getUserValue();
-							if (apType == AppendType.NESTED) {
-								bugReporter.reportBug( 
-										new BugInstance(this, "ISB_INEFFICIENT_STRING_BUFFERING", NORMAL_PRIORITY)
-												.addClass(this)
-												.addMethod(this)
-												.addSourceLine(this));
-							}
-						}
-					}
-				}
+				apType = sawInvokeSpecial(apType);
 			} else if (seen == INVOKEVIRTUAL) {
 				if (sawLDCEmpty) {
-					String calledClass = getClassConstantOperand();
-					if (("java/lang/StringBuffer".equals(calledClass)
-					||  "java/lang/StringBuilder".equals(calledClass))
-					&&  "append".equals(getNameConstantOperand())
-					&&  getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
-						if (stack.getStackDepth() > 1) {
-                            OpcodeStack.Item sbItm = stack.getStackItem(1);
-                            if ((sbItm != null) && (sbItm.getUserValue() == null))
-                            {
-    							OpcodeStack.Item itm = stack.getStackItem(0);
-    							Object cons = itm.getConstant();
-    							if ((cons instanceof String) && (itm.getRegisterNumber() < 0)) {
-    								if (((String)cons).length() == 0) {
-    									bugReporter.reportBug(
-    										new BugInstance(this, "ISB_EMPTY_STRING_APPENDING", NORMAL_PRIORITY)
-    											.addClass(this)
-    											.addMethod(this)
-    											.addSourceLine(this));
-    								}
-    							}
-                            }
-						}
-					}
+					dealWithEmptyString();
 				}
-				String calledClass = getClassConstantOperand();
-				if (("java/lang/StringBuffer".equals(calledClass)
-				||  "java/lang/StringBuilder".equals(calledClass))) {
-					String methodName = getNameConstantOperand();
-					if ("append".equals(methodName)) {
-						OpcodeStack.Item itm = getStringBufferItemAt(1);
-						apType = (itm == null) ? AppendType.NONE : (AppendType )itm.getUserValue();
-						
-						if (stack.getStackDepth() > 0) {
-							itm = stack.getStackItem(0);
-							AppendType apValue = (AppendType)itm.getUserValue();
-							if (apValue == AppendType.NESTED) {
-								bugReporter.reportBug( 
-										new BugInstance(this, "ISB_INEFFICIENT_STRING_BUFFERING", "toString".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY)
-												.addClass(this)
-												.addMethod(this)
-												.addSourceLine(this));
-							} else if (apValue == AppendType.TOSTRING){
-								bugReporter.reportBug(new BugInstance(this, "ISB_TOSTRING_APPENDING", NORMAL_PRIORITY)
-								.addClass(this)
-								.addMethod(this)
-								.addSourceLine(this));
-							}
-						}
-					} else if ("toString".equals(methodName)) {
-						OpcodeStack.Item itm = getStringBufferItemAt(0);
-						apType = (itm == null) ? AppendType.NONE : (AppendType)itm.getUserValue();
-					}
-				} else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())) {
-				    //calls to this.toString() are okay, some people like to be explicit
-				    if (stack.getStackItem(0).getRegisterNumber() != 0)
-				    	apType = AppendType.TOSTRING;
-				}
+				apType = sawInvokeVirtual(apType);
 
 			} else if ((seen == GOTO) || (seen == GOTO_W)) {
 				int depth = stack.getStackDepth();
@@ -181,15 +105,13 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 				if (c instanceof ConstantString) {
 					String s = ((ConstantString) c).getBytes(getConstantPool());
 					if (s.length() == 0)
-						sawLDCEmpty = true;
+						sawLDCEmpty = true;	
 				}
-			} else if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+			} else if (OpcodeUtils.isALoad(seen)) {
 			    apType = AppendType.CLEAR;
 			}
 		} finally {
-			TernaryPatcher.pre(stack, seen);
-			stack.sawOpcode(this, seen);
-			TernaryPatcher.post(stack, seen);
+			handleOpcode(seen);
 			if (apType != AppendType.NONE) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item itm = stack.getStackItem(0);
@@ -197,6 +119,107 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 				}
 			}
 		}
+	}
+
+	private void handleOpcode(final int seen) {
+		TernaryPatcher.pre(stack, seen);
+		stack.sawOpcode(this, seen);
+		TernaryPatcher.post(stack, seen);
+	}
+
+	private AppendType sawInvokeVirtual(AppendType apType) {
+		String calledClass = getClassConstantOperand();
+		if (("java/lang/StringBuffer".equals(calledClass) ||  "java/lang/StringBuilder".equals(calledClass))) {
+			String methodName = getNameConstantOperand();
+			if ("append".equals(methodName)) {
+				OpcodeStack.Item itm = getStringBufferItemAt(1);
+				apType = (itm == null) ? AppendType.NONE : (AppendType) itm.getUserValue();
+				
+				if (stack.getStackDepth() > 0) {
+					itm = stack.getStackItem(0);
+					Object userVal = itm.getUserValue();
+					AppendType apValue = (userVal instanceof AppendType ? (AppendType) userVal: AppendType.NONE);
+					switch (apValue) {
+					case NESTED:
+						bugReporter.reportBug(new BugInstance(this, "ISB_INEFFICIENT_STRING_BUFFERING", 
+								"toString".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY)
+								.addClass(this)
+								.addMethod(this)
+								.addSourceLine(this));
+						break;
+					case TOSTRING:
+						bugReporter.reportBug(new BugInstance(this, "ISB_TOSTRING_APPENDING", NORMAL_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+						break;
+					default:
+						break;
+					}
+				}
+			} else if ("toString".equals(methodName)) {
+				OpcodeStack.Item itm = getStringBufferItemAt(0);
+				apType = (itm == null) ? AppendType.NONE : (AppendType)itm.getUserValue();
+			}
+		} else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())) {
+		    //calls to this.toString() are okay, some people like to be explicit
+		    if (stack.getStackItem(0).getRegisterNumber() != 0)
+		    	apType = AppendType.TOSTRING;
+		}
+		return apType;
+	}
+
+	private void dealWithEmptyString() {
+		String calledClass = getClassConstantOperand();
+		if (("java/lang/StringBuffer".equals(calledClass)
+		||  "java/lang/StringBuilder".equals(calledClass))
+		&&  "append".equals(getNameConstantOperand())
+		&&  getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
+			if (stack.getStackDepth() > 1) {
+		        OpcodeStack.Item sbItm = stack.getStackItem(1);
+		        if ((sbItm != null) && (sbItm.getUserValue() == null))
+		        {
+					OpcodeStack.Item itm = stack.getStackItem(0);
+					Object cons = itm.getConstant();
+					if ((cons instanceof String) && (itm.getRegisterNumber() < 0)) {
+						if (((String)cons).length() == 0) {
+							bugReporter.reportBug(
+								new BugInstance(this, "ISB_EMPTY_STRING_APPENDING", NORMAL_PRIORITY)
+									.addClass(this)
+									.addMethod(this)
+									.addSourceLine(this));
+						}
+					}
+		        }
+			}
+		}
+	}
+
+	private AppendType sawInvokeSpecial(AppendType apType) {
+		String calledClass = getClassConstantOperand();
+		if (("java/lang/StringBuffer".equals(calledClass) ||  "java/lang/StringBuilder".equals(calledClass))
+		&&  "<init>".equals(getNameConstantOperand())) {
+		    String signature = getSigConstantOperand();
+			if ("()V".equals(signature)) {
+				OpcodeStack.Item itm = getStringBufferItemAt(2);
+				if (itm != null) {
+					apType = AppendType.NESTED;
+				}
+			} else if ("(Ljava/lang/String;)V".equals(signature)) {
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item itm = stack.getStackItem(0);
+					apType = (AppendType)itm.getUserValue();
+					if (apType == AppendType.NESTED) {
+						bugReporter.reportBug( 
+								new BugInstance(this, "ISB_INEFFICIENT_STRING_BUFFERING", NORMAL_PRIORITY)
+										.addClass(this)
+										.addMethod(this)
+										.addSourceLine(this));
+					}
+				}
+			}
+		}
+		return apType;
 	}
 	
 	private OpcodeStack.Item getStringBufferItemAt(int depth) {
