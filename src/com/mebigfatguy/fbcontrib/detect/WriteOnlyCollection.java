@@ -121,17 +121,19 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 	}
 
 	@Override
-	protected Set<String> getObjectsThatNeedAMethod() {
-		return collectionClasses;
-	}
-
-	@Override
 	protected BugInstance makeLocalBugInstance() {
 		return new BugInstance(this, "WOC_WRITE_ONLY_COLLECTION_LOCAL", NORMAL_PRIORITY);
 	}
 
 	@Override
+	protected Set<String> getObjectsThatNeedAMethod() {
+		return collectionClasses;
+	}
+
+	@Override
 	protected boolean isMethodThatShouldBeCalled(String methodName) {
+		//If it's not a nonInformational method, i.e. something like get() or size(), then we don't need to report
+		//the collection
 		return !nonInformationalMethods.contains(methodName);
 	}
 }
