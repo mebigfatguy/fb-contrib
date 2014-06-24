@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -42,17 +43,17 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-		    String clsName = classContext.getJavaClass().getClassName();
-		    isInnerClass = clsName.contains("$");
-		    
-			clsSignature = "L" + clsName.replace('.', '/') + ";";
+			JavaClass clz = classContext.getJavaClass();
+		    isInnerClass = clz.getClassName().contains("$");
+
+			clsSignature = "L" + clz.getClassName().replaceAll("\\.", "/") + ";";
 			stack = new OpcodeStack();
 			localSpecialObjects = new HashMap<Integer, Integer>();
 			fieldSpecialObjects = new HashMap<String, String>();
 			super.visitClassContext(classContext);
-	
+
 			if (!isInnerClass && (fieldSpecialObjects.size() > 0)) {
-				
+				String clsName = classContext.getJavaClass().getClassName();
 				for (Map.Entry<String, String> entry : fieldSpecialObjects.entrySet()) {
 					String fieldName = entry.getKey();
 					String signature = entry.getValue();
