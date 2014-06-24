@@ -274,6 +274,8 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.Unjitable" speed="fast" reports="UJM_UNJITABLE_METHOD" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.HangingExecutors" speed="fast" reports="HES_EXECUTOR_NEVER_SHUTDOWN,HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN,HES_LOCAL_EXECUTOR_SERVICE"/>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.HttpClientProblems" speed="fast" reports="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD,HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConflictingTimeUnits" speed="fast" reports="CTU_CONFLICTING_TIME_UNITS" />
     
@@ -486,5 +488,7 @@
 	<BugPattern abbrev="HES" type="HES_EXECUTOR_NEVER_SHUTDOWN" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="HES" type="HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="HES" type="HES_LOCAL_EXECUTOR_SERVICE" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="HCP" type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="HCP" type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="CTU" type="CTU_CONFLICTING_TIME_UNITS" category="CORRECTNESS" experimental="true" />
 </FindbugsPlugin>

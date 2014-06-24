@@ -4259,7 +4259,7 @@
         </Details>
     </BugPattern>
 
-<BugPattern type="HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN">
+	<BugPattern type="HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN">
         <ShortDescription>An ExecutorService isn't shutdown before the reference to it is lost</ShortDescription>
         <LongDescription>ExecutorService {2} is replaced with another ExecutorService without being shutdown, potentially preventing the entire JVM from shutting down</LongDescription>
         <Details>
@@ -4298,6 +4298,26 @@
 			<p><b>Note:</b> <code>ExecutorService</code>s are generally created once in a program's lifecycle.  If you find yourself
 			replacing the <code>ExecutorService</code>, perhaps you may consider restructuring your code to use calls like
 			<code>awaitTermination()</code> or <code>Future</code>s/<code>Callable</code>s to avoid recreating the <code>ExecutorService</code>.</p>
+            ]]>
+        </Details>
+    </BugPattern>
+	
+	<BugPattern type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD">
+        <ShortDescription>Unreleased HttpRequest network resources (field)</ShortDescription>
+        <LongDescription>The HttpRequest field {1} does not release its network resources, which could freeze the running code</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>Message Message</p>
+            ]]>
+        </Details>
+    </BugPattern>
+	
+	<BugPattern type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL">
+        <ShortDescription>Unreleased HttpRequest network resources (local)</ShortDescription>
+        <LongDescription>The local HttpRequest {1} does not release its network resources before being garbage collected, which could freeze the running code</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>Message Message</p>
             ]]>
         </Details>
     </BugPattern>
@@ -4448,5 +4468,6 @@
 	<BugCode abbrev="MUC">Modifying Unmodifiable Collection</BugCode>
 	<BugCode abbrev="UJM">Unjitable method</BugCode>
 	<BugCode abbrev="HES">Hanging ExecutorService</BugCode>
+	<BugCode abbrev="HCP">HttpClient Problems</BugCode>
 	<BugCode abbrev="CTU">Conflicting Time Units</BugCode>
 </MessageCollection>
