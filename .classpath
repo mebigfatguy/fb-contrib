@@ -18,5 +18,12 @@
 	<classpathentry kind="lib" path="lib/commons-lang3-3.3.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.6.jar"/>
 	<classpathentry kind="lib" path="lib/guava-17.0.jar"/>
+	<classpathentry kind="lib" path="lib/fluent-hc-4.3.4.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-cache-4.3.4.jar"/>
+	<classpathentry kind="lib" path="lib/httpmime-4.3.4.jar"/>
+	<classpathentry kind="lib" path="lib/fluent-hc-4.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/httpmime-4.3.2.jar"/>
+	<classpathentry kind="lib" path="httpcore-4.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.3.4.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

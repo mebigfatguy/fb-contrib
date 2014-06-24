@@ -18,7 +18,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
-	<property name="fb-contrib.version" value="5.3.0" />
+	<property name="fb-contrib.version" value="5.2.0" />
 	
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
 	
@@ -38,7 +38,7 @@
 	
 	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank">
         <mkdir dir="${lib.dir}" />
-        <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" proxyServer="${proxy.server}" source="true" separateClassifierTypes="true">
+        <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" proxyServer="${proxy.server}" source="true">
             <server url="http://repo1.maven.org/maven2" />
             <generateVersions propertyFileName="${basedir}/version.properties" />
         </yank:yank>
@@ -72,6 +72,11 @@
             <pathelement location="${lib.dir}/backport-util-concurrent-${backport-util-concurrent.version}.jar" />
             <pathelement location="${lib.dir}/slf4j-api-${slf4j-api.version}.jar" />
             <pathelement location="${lib.dir}/guava-${guava.version}.jar" />
+			<pathelement location="${lib.dir}/fluent-hc-${fluent-hc.version}.jar" />
+			<pathelement location="${lib.dir}/httpclient-cache-${httpclient-cache.version}.jar" />
+			<pathelement location="${lib.dir}/httpmime-${httpmime.version}.jar" />
+			<pathelement location="${lib.dir}/httpcore-${httpcore.version}.jar" />
+			<pathelement location="${lib.dir}/httpclient-${httpclient.version}.jar" />
 		</path>
 	</target>
 
@@ -165,7 +170,9 @@
 	</target>
 
 	<target name="install" depends="build" description="installs the plugin into FindBugs">
-		<copy todir="${findbugs.dir}/plugin">
+		<property environment="env" />
+		<echo message="Findbugs: ${env.FINDBUGS_ECLIPSE}"/>
+		<copy todir="${env.FINDBUGS_ECLIPSE}/plugin">
 			<fileset dir="${basedir}">
 				<include name="fb-contrib-${fb-contrib.version}.jar" />
 			</fileset>
