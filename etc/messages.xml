@@ -1418,8 +1418,17 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.HangingExecutors">
         <Details>
             <![CDATA[
-            <p>Single detector for hanging ExecutorServices, that is, ExecutorServices that never get a call to shutdown, which
+            <p>Three detectors for hanging ExecutorServices, that is, ExecutorServices that never get a call to shutdown, which
 			can potentially cause the JVM to not exit.</p>
+			<p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.HttpClientProblems">
+        <Details>
+            <![CDATA[
+            <p>TODO description</p>
 			<p>It is a fast detector</p>
             ]]>
         </Details>
