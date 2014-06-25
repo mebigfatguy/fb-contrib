@@ -357,7 +357,10 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 	/**
 	 * Checks to see if any of the locals or fields that we are tracking are passed into
 	 * another method.  If they are, we clear out our tracking of them, because we can't
-	 * easily track their progress into the method
+	 * easily track their progress into the method.
+	 * 
+	 * This can be overridden to check for exceptions to this rule, for example, being logged to
+	 * the console not counting.
 	 */
 	protected void processMethodParms() {
 		String sig = getSigConstantOperand();
