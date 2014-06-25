@@ -1428,7 +1428,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.HttpClientProblems">
         <Details>
             <![CDATA[
-            <p>TODO description</p>
+            <p>The HttpRequests from the apache.httpComponents have some little-known quirks about them.  
+			This is a set of detectors that helps guard against resource starvation.</p>
 			<p>It is a fast detector</p>
             ]]>
         </Details>
@@ -3624,13 +3625,13 @@
 			<p>This method contains a contravariant array assignment. Since arrays are mutable data structures, their use
 			must be restricted to covariant or invariant usage.</p>
 
-			<pre>
-				class A {}
-				class B extends A {}
-
-				B[] b = new B[2];
-				A[] a = b;
-			</pre>
+			<code>
+				class A {}</br>
+				class B extends A {}</br>
+				</br>
+				B[] b = new B[2];</br>
+				A[] a = b;</br>
+			</code>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3643,14 +3644,14 @@
 			<p>This method contains a contravariant array element assignment. Since arrays are mutable
 			data structures, their use must be restricted to covariant or invariant usage.</p>
 
-			<pre>
-				class A {}
-				class B extends A {}
-
-				B[] b = new B[2];
-				A[] a = b;
-				a[0] = new A(); // results in ArrayStoreException (Runtime)
-			</pre>
+			<code>
+				class A {}</br>
+				class B extends A {}</br>
+<				/br>
+				B[] b = new B[2];</br>
+				A[] a = b;</br>
+				a[0] = new A(); // results in ArrayStoreException (Runtime)</br>
+			</code>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4316,7 +4317,45 @@
         <LongDescription>The HttpRequest field {1} does not release its network resources, which could freeze the running code</LongDescription>
         <Details>
             <![CDATA[
-            <p>Message Message</p>
+            <p>FindBugs has detected an <code>org.apache.http.HttpRequest</code> (e.g. <code>HttpGet</code>, <code>HttpPost</code>, etc)
+				that didn't release its associated resources.  Code like the following: <br/>
+				<code>
+				private HttpGet httpGet; <br/>
+				...</br>
+				public String requestInfo(URI u) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
+				}</br>
+				</code>
+				will freeze after a few requests, usually with no indication as to why.  </p>
+				
+			<p>
+				The reason this code freezes is because <code>org.apache.http.HttpRequest</code>s need explicitly release their connection
+				with a call to either <code>reset()</code> or <code>releaseConnection()</code>.  The above example can be easily fixed:<br/>
+				<code>
+				private HttpGet httpGet; <br/>
+				...</br>
+				public String requestInfo(URI u) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet.reset();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</b></br>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
+				}</br>
+				</code>
+			</p>
             ]]>
         </Details>
     </BugPattern>
@@ -4326,7 +4365,44 @@
         <LongDescription>The local HttpRequest {1} does not release its network resources before being garbage collected, which could freeze the running code</LongDescription>
         <Details>
             <![CDATA[
-            <p>Message Message</p>
+            <p>FindBugs has detected an <code>org.apache.http.HttpRequest</code> (e.g. <code>HttpGet</code>, <code>HttpPost</code>, etc)
+				that didn't release its associated resources.  Code like the following: <br/>
+				<code>
+				public String requestInfo(URI u) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
+				}</br>
+				</code>
+				will freeze after a few requests, usually with no indication as to why. </p>
+				
+			<p>
+				The reason this code freezes is because <code>org.apache.http.HttpRequest</code>s need explicitly release their connection
+				with a call to either <code>reset()</code> or <code>releaseConnection()</code>, <b>even if the request is a local</b>. 
+				The garbage collector will not release these resources, leading to the frustrating freezing scenario described above.
+				
+				<br/>The above example can be easily fixed:<br/>
+				<code>
+				public String requestInfo(URI u) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpGet.reset();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</b></br>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
+				}</br>
+				</code>
+			</p>
             ]]>
         </Details>
     </BugPattern>
