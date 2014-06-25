@@ -61,17 +61,17 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			JavaClass clz = classContext.getJavaClass();
-			isInnerClass = clz.getClassName().contains("$");
+			String clsName = classContext.getJavaClass().getClassName();
+			isInnerClass = clsName.contains("$");
 
-			clsSignature = "L" + clz.getClassName().replaceAll("\\.", "/") + ";";
+			clsSignature = "L" + clsName.replace('.', '/') + ";";
 			stack = new OpcodeStack();
 			localSpecialObjects = new HashMap<Integer, Integer>();
 			fieldSpecialObjects = new HashMap<String, String>();
 			super.visitClassContext(classContext);
 
 			if (!isInnerClass && (fieldSpecialObjects.size() > 0)) {
-				String clsName = classContext.getJavaClass().getClassName();
+				
 				for (Map.Entry<String, String> entry : fieldSpecialObjects.entrySet()) {
 					String fieldName = entry.getKey();
 					String signature = entry.getValue();
