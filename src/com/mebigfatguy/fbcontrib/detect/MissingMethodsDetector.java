@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
-import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;

@@ -1567,7 +1567,7 @@
 
 	<BugPattern type="CC_CYCLOMATIC_COMPLEXITY">
 		<ShortDescription>Method is excessively complex</ShortDescription>
-		<LongDescription>Method {1} is excessively complex</LongDescription>
+		<LongDescription>Method {1} is excessively complex, with a cyclomatic complexity of {3}</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method has a high cyclomatic complexity figure, which calculates the number of branch
