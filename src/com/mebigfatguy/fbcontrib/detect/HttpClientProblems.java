@@ -1,3 +1,22 @@
+/*
+ * fb-contrib - Auxiliary detectors for Java programs
+ * Copyright (C) 2005-2014 Kevin Lubick
+ * Copyright (C) 2005-2014 Dave Brosius
+ *
+ * This library is free software; you can redistribute it and/or
+ * modify it under the terms of the GNU Lesser General Public
+ * License as published by the Free Software Foundation; either
+ * version 2.1 of the License, or (at your option) any later version.
+ *
+ * This library is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+ * Lesser General Public License for more details.
+ *
+ * You should have received a copy of the GNU Lesser General Public
+ * License along with this library; if not, write to the Free Software
+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+ */
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashSet;
@@ -41,13 +60,23 @@ public class HttpClientProblems extends MissingMethodsDetector {
 	}
 
 	@Override
-	protected Set<String> getObjectsThatNeedAMethod() {
-		return httpRequestClasses;
+	protected boolean doesObjectNeedToBeWatched(String type) {
+		return httpRequestClasses.contains(type);
 	}
 
 	@Override
 	protected boolean isMethodThatShouldBeCalled(String methodName) {
 		return resetMethods.contains(methodName);
+	}
+	
+	@Override
+	protected void processMethodParms() {
+		String nameConstantOperand = getNameConstantOperand();
+		//these requests are typically executed by being passed to an "execute()" method.  We know this doesn't
+		//close the resource, we don't want to remove objects just because they passed into this method
+		if (!"execute".equals(nameConstantOperand)) {
+			super.processMethodParms();
+		}
 	}
 
 }

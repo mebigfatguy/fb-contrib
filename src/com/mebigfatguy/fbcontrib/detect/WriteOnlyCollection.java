@@ -125,10 +125,12 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 		return new BugInstance(this, "WOC_WRITE_ONLY_COLLECTION_LOCAL", NORMAL_PRIORITY);
 	}
 
+	
 	@Override
-	protected Set<String> getObjectsThatNeedAMethod() {
-		return collectionClasses;
+	protected boolean doesObjectNeedToBeWatched(String type) {
+		return collectionClasses.contains(type);
 	}
+	
 
 	@Override
 	protected boolean isMethodThatShouldBeCalled(String methodName) {
