@@ -12,6 +12,7 @@ import java.util.Set;
 import java.util.Vector;
 
 public class WOC_Sample {
+	//tag WOC_WRITE_ONLY_COLLECTION_FIELD 
     private final Set<String> memberSet = new HashSet<String>();
     private Set<String> fpSet;
     private final List<String> fpList = new ArrayList<String>();
@@ -19,6 +20,7 @@ public class WOC_Sample {
     private List<String> fp2 = new ArrayList<String>();
 
     public void testWOCSimple() {
+    	//tag WOC_WRITE_ONLY_COLLECTION_LOCAL 
         Set<String> s = new HashSet<String>();
         s.add("Foo");
         memberSet.add("fee");
@@ -28,6 +30,7 @@ public class WOC_Sample {
     }
 
     public Map<String, String> testFPWOCReturn() {
+    	//no tag, value is returned
         Map<String, String> m = new HashMap<String, String>();
         m.put("Foo", "Bar");
         memberSet.add("fi");
@@ -36,6 +39,7 @@ public class WOC_Sample {
     }
 
     public void testFPWOCAsParm() {
+    	//no tag, passed to helper function
         Map<String, String> m = new HashMap<String, String>();
         m.put("Foo", "Bar");
         memberSet.add("fo");
@@ -44,19 +48,23 @@ public class WOC_Sample {
     }
 
     public void testFPWOCCopy() {
+    	//no tag, reference is copied
         Set<String> s = new LinkedHashSet<String>();
         s.add("foo");
-        Set<String> c = s;
+        @SuppressWarnings("unused")
+		Set<String> c = s;
         memberSet.add("fum");
     }
 
     public void testFPWOCInArray() {
+    	//no tag, object is added to array
         Vector<Integer> v = new Vector<Integer>();
-        v.addElement(Integer.valueOf(0));
+        v.add(Integer.valueOf(0));
         Object[] o = new Object[] { v };
     }
 
     public void testFPWOCUseReturnVal() {
+    	//no tag, return value was looked at
         LinkedList<String> l = new LinkedList<String>();
         l.add("Foo");
         l.add("Bar");
@@ -75,21 +83,28 @@ public class WOC_Sample {
     }
 
     private void helper(int i, Map<String, String> x) {
+    	System.out.println(x.get(i));
     }
 
+    //no tag, put in anonymous class
     public void testFPInnerClass(final Set<String> data) {
+    	
         ActionListener al = new ActionListener() {
-            public void actionPerformed(ActionEvent ae) {
+            @Override
+			public void actionPerformed(ActionEvent ae) {
                 data.add("Woot");
             }
         };
+        System.out.println(al);
     }
 
+    
     public List<String> fpOtherInstance(WOC_Sample ws) {
         return ws.fpList;
     }
 
     public String fpCheckReference(boolean b) {
+    	//no tag, null check done
         List<String> s = null;
 
         if (b) {
@@ -113,6 +128,7 @@ public class WOC_Sample {
             return b ? fp1 : fp2;
         }
 
+        //no tag, either could be returned in the ternary operator
         List<String> used1 = new ArrayList<String>();
         List<String> used2 = new ArrayList<String>();
 
@@ -127,19 +143,19 @@ public class WOC_Sample {
     }
 
     public static class FpContains {
-        private List<String> fpSet;
+        private List<String> fpSetList;
 
         public FpContains() {
-            fpSet = new ArrayList<String>();
+            fpSetList = new ArrayList<String>();
         }
 
         public void add() {
-            fpSet.add("Foo");
+            fpSetList.add("Foo");
         }
 
         protected void contains() {
             for (int i = 0; i < 10; i++) {
-                if (fpSet.get(i) != null) {
+                if (fpSetList.get(i) != null) {
                     System.out.println("Contains");
                 }
             }
