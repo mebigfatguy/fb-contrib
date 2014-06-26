@@ -44,7 +44,7 @@ public class CloneUsability extends BytecodeScanningDetector {
 
     static {
         try {
-            CLONE_CLASS = Repository.lookupClass("java.lang.Cloneable");
+            CLONE_CLASS = Repository.lookupClass("java/lang/Cloneable");
         } catch (ClassNotFoundException cnfe) {
             CLONE_CLASS = null;
         }

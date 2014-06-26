@@ -64,8 +64,8 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	private static final Set<String> collectionMethods;
 	static {
 		try {
-			collectionClass = Repository.lookupClass("java.util.Collection");
-			iteratorClass = Repository.lookupClass("java.util.Iterator");
+			collectionClass = Repository.lookupClass("java/util/Collection");
+			iteratorClass = Repository.lookupClass("java/util/Iterator");
 		} catch (ClassNotFoundException cnfe) {
 			collectionClass = null;
 			iteratorClass = null;
@@ -73,8 +73,8 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 
 		try {
 			exceptionClasses = new HashSet<JavaClass>(2);
-			exceptionClasses.add(Repository.lookupClass("java.util.concurrent.CopyOnWriteArrayList"));
-			exceptionClasses.add(Repository.lookupClass("java.util.concurrent.CopyOnWriteArraySet"));
+			exceptionClasses.add(Repository.lookupClass("java/util/concurrent/CopyOnWriteArrayList"));
+			exceptionClasses.add(Repository.lookupClass("java/util/concurrent/CopyOnWriteArraySet"));
 		} catch (ClassNotFoundException cnfe) {
 		}
 

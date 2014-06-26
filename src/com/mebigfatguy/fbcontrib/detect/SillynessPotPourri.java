@@ -710,30 +710,30 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 	private void equalsSilliness(String className) {
 		try {
-			JavaClass cls = Repository.lookupClass(className);
-			if (cls.isEnum()) {
-				bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_ENUM", NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this)
-									.addSourceLine(this));
-			} else {
-		    	if (stack.getStackDepth() >= 2) {
-		    		OpcodeStack.Item item = stack.getStackItem(1);
-		    		cls = item.getJavaClass();
-		    		if (cls != null) {
-		    			String clsName = cls.getClassName();
-		    			if (oddMissingEqualsClasses.contains(clsName)) {
-					    	 bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_STRING_BUILDER", NORMAL_PRIORITY)
-		                     .addClass(this)
-		                     .addMethod(this)
-		                     .addSourceLine(this));
-		    			}
-		    		}
-		    	}
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		}
+	                	JavaClass cls = Repository.lookupClass(className);
+	                	if (cls.isEnum()) {
+	                		bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_ENUM", NORMAL_PRIORITY)
+	                							.addClass(this)
+	                							.addMethod(this)
+	                							.addSourceLine(this));
+	                	} else {
+	                    	if (stack.getStackDepth() >= 2) {
+	                    		OpcodeStack.Item item = stack.getStackItem(1);
+	                    		cls = item.getJavaClass();
+	                    		if (cls != null) {
+	                    			String clsName = cls.getClassName();
+	                    			if (oddMissingEqualsClasses.contains(clsName)) {
+	            				    	 bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_STRING_BUILDER", NORMAL_PRIORITY)
+	                                     .addClass(this)
+	                                     .addMethod(this)
+	                                     .addSourceLine(this));
+	                    			}
+	                    		}
+	                    	}
+	                	}
+                	} catch (ClassNotFoundException cnfe) {
+                		bugReporter.reportMissingClass(cnfe);
+                	}     
 	}
 
 	private void booleanSilliness() {
@@ -906,18 +906,21 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		        }
 			}
 		} else if ("java/math/BigDecimal".equals(className)) {
-			if (stack.getStackDepth() > 0) {
-				OpcodeStack.Item item = stack.getStackItem(0);
-				Object constant = item.getConstant();
-				if (constant instanceof Double)
-				{
-					bugReporter.reportBug(new BugInstance(this, "SPP_USE_BIGDECIMAL_STRING_CTOR", NORMAL_PRIORITY)
-							   .addClass(this)
-							   .addMethod(this)
-							   .addSourceLine(this));
+					if (stack.getStackDepth() > 0) {
+						OpcodeStack.Item item = stack.getStackItem(0);
+						Object constant = item.getConstant();
+						if (constant instanceof Double)
+						{
+							Double v = (Double) constant;
+							if ((v != 0.0) && (v != 1.0)) {
+								bugReporter.reportBug(new BugInstance(this, "SPP_USE_BIGDECIMAL_STRING_CTOR", NORMAL_PRIORITY)
+										   .addClass(this)
+										   .addMethod(this)
+										   .addSourceLine(this));
+							}
+						}
+					}
 				}
-			}
-		}
 	}
 
 	private boolean looksLikeStaticFieldValue(String constant) {

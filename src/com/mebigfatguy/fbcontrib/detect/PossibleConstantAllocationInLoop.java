@@ -18,8 +18,10 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -55,6 +57,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 	/** reg, allocation number */
 	private Map<Integer, Integer> storedAllocations;
 	private int nextAllocationNumber;
+	private List<SwitchInfo> switchInfos;
 
 	public PossibleConstantAllocationInLoop(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -66,11 +69,13 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 			stack = new OpcodeStack();
 			allocations = new HashMap<Integer, AllocationInfo>();
 			storedAllocations = new HashMap<Integer, Integer>();
+			switchInfos = new ArrayList<SwitchInfo>();
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;
 			allocations = null;
 			storedAllocations = null;
+			switchInfos = null;
 		}
 	}
 
@@ -128,6 +133,11 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 								info.loopBottom = pc;
 							}
 						}
+					} else if (!switchInfos.isEmpty()) {
+						int target = getBranchTarget();
+						SwitchInfo innerSwitch = switchInfos.get(switchInfos.size() - 1);
+						if (target > innerSwitch.switchBottom)
+							innerSwitch.switchBottom = target;
 					}
 				break;
 
@@ -135,9 +145,11 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 					if ("<init>".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
 						String clsName = getClassConstantOperand();
 						if (!SYNTHETIC_ALLOCATION_CLASSES.contains(clsName)) {
-							sawAllocationNumber = Integer.valueOf(nextAllocationNumber);
-							allocations.put(sawAllocationNumber, new AllocationInfo(getPC()));
-							sawAllocation = true;
+							if (switchInfos.isEmpty()) {
+								sawAllocationNumber = Integer.valueOf(nextAllocationNumber);
+								allocations.put(sawAllocationNumber, new AllocationInfo(getPC()));
+								sawAllocation = true;
+							}
 						}
 					}
 				//$FALL-THROUGH$
@@ -251,6 +263,17 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 					}
 				break;
 				
+				case LOOKUPSWITCH:
+				case TABLESWITCH:
+					int top = getPC();
+					int[] offsets = getSwitchOffsets();
+					if (offsets.length > 0) {
+						int bottom = top + offsets[offsets.length-1];
+						SwitchInfo switchInfo = new SwitchInfo(top, bottom);
+						switchInfos.add(switchInfo);
+					}
+					break;
+				
 				default:
 					break;
 			}
@@ -266,6 +289,12 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 
 				if (seen == INVOKESPECIAL)
 					nextAllocationNumber++;
+			}
+			
+			if (!switchInfos.isEmpty()) {
+				if (getPC() >= switchInfos.get(switchInfos.size() - 1).switchBottom) {
+					switchInfos.remove(switchInfos.size() - 1);
+				}
 			}
 		}
 	}
@@ -296,6 +325,16 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 			allocationPC = pc;
 			loopTop = -1;
 			loopBottom = -1;
+		}
+	}
+	
+	static class SwitchInfo {
+		int switchTop;
+		int switchBottom;
+		
+		public SwitchInfo(int top, int bottom) {
+			switchTop = top;
+			switchBottom = bottom;
 		}
 	}
 }

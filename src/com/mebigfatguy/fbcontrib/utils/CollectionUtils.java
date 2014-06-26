@@ -29,9 +29,9 @@ public class CollectionUtils {
 
     static {
         try {
-            LIST_CLASS = Repository.lookupClass("java.util.List");
-            SET_CLASS = Repository.lookupClass("java.util.Set");
-            MAP_CLASS = Repository.lookupClass("java.util.Map");
+            LIST_CLASS = Repository.lookupClass("java/util/List");
+            SET_CLASS = Repository.lookupClass("java/util/Set");
+            MAP_CLASS = Repository.lookupClass("java/util/Map");
         } catch (ClassNotFoundException cnfe) {
         }
     }

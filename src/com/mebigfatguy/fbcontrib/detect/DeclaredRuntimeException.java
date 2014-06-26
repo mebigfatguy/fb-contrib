@@ -46,7 +46,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 	
 	static {
 		try {
-			runtimeExceptionClass = Repository.lookupClass("java.lang.RuntimeException");
+			runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
 		} catch (ClassNotFoundException cnfe) {
 			runtimeExceptionClass = null;
 		}
