@@ -2758,14 +2758,15 @@
 			<![CDATA[
 			<p>This method attempts to check for null by just referring to the variable name
 			as would be done in C++. This ordinarily would be considered a compile error, except the
-			variable in question is a Boolean, which does an auto unbox to boolean.</p>
-			<pre>
-				if (b && b.booleanValue())
-			</pre>
-			should be
-			<pre>
-				if ((b != null) && b.booleanValue())
-			</pre>
+			variable in question is a Boolean, which does an auto unbox to boolean.
+			<code><br/>
+				if (b && b.booleanValue())<br/>
+			</code>
+			should be<br/>
+			<code>
+				if ((b != null) && b.booleanValue())<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3020,6 +3021,29 @@
 	   <Details>
 	       <![CDATA[
 	       <p>This methods calls toString on a String. Just use the object itself if you want a String.</p>
+	       ]]>
+	   </Details>
+	</BugPattern>
+	
+	<BugPattern type="SPP_CONVERSION_OF_STRING_LITERAL">
+	<ShortDescription>Method converts a String literal</ShortDescription>
+	   <LongDescription>Method {1} calls {3} on a String Literal</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This methods calls a converting method like <code>toLowerCase()</code> or <code>trim</code>
+		   on a <code>String</code> literal. You should make the transformation yourself and use the transformed literal.</p>
+		   
+		   <p>
+		   For example, instead of :<br/>
+		   <code>
+		   return "ThisIsAConstantString ".toLowerCase().trim(); <br/>
+		   </code>
+		   just do <br/>
+		   <code>
+		   return "thisisaconstantstring"; <br/>
+		   </code>
+		   for shorter and easier to read code.  An exception might be made when locale-specific transformations need to be done (in the case of <code>toUpperCase()</code> and <code>toLowerCase()</code>.
+		   </p>
 	       ]]>
 	   </Details>
 	</BugPattern>
