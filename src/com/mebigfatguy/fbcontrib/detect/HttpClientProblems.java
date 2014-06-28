@@ -45,6 +45,23 @@ public class HttpClientProblems extends MissingMethodsDetector {
 	}
 	
 	
+	//Any methods that should not be treated as a "will call a reset method"
+	private static Set<String> whiteListMethods = new HashSet<String>();
+	static 
+	{
+		whiteListMethods.add("execute");
+		whiteListMethods.add("fatal");
+		whiteListMethods.add("error");
+		whiteListMethods.add("info");
+		whiteListMethods.add("debug");
+		whiteListMethods.add("trace");
+		whiteListMethods.add("println");
+		whiteListMethods.add("print");
+		whiteListMethods.add("format");
+		whiteListMethods.add("append");		//for when Java uses StringBuilders to append Strings
+	}
+	
+	
 	public HttpClientProblems(BugReporter bugReporter) {
 		super(bugReporter);
 	}
@@ -74,7 +91,7 @@ public class HttpClientProblems extends MissingMethodsDetector {
 		String nameConstantOperand = getNameConstantOperand();
 		//these requests are typically executed by being passed to an "execute()" method.  We know this doesn't
 		//close the resource, we don't want to remove objects just because they passed into this method
-		if (!"execute".equals(nameConstantOperand)) {
+		if (!whiteListMethods.contains(nameConstantOperand)) {
 			super.processMethodParms();
 		}
 	}
