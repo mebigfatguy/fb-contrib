@@ -36,7 +36,7 @@
 		<delete dir="${basedir}/plugin" />
 	</target>
 	
-	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank">
+	<target name="yank" unless="no.yank" xmlns:yank="antlib:com.mebigfatguy.yank">
         <mkdir dir="${lib.dir}" />
         <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" proxyServer="${proxy.server}" source="true" separateClassifierTypes="true">
             <server url="http://repo1.maven.org/maven2" />
