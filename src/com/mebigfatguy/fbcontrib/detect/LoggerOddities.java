@@ -154,93 +154,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     ldcClassName = ((ConstantUtf8) pool.getConstant(((ConstantClass) c).getNameIndex())).getBytes();
                 }
             } else if (seen == INVOKESTATIC) {
-                String callingClsName = getClassConstantOperand();
-                String mthName = getNameConstantOperand();
-
-                String loggingClassName = null;
-                int loggingPriority = NORMAL_PRIORITY;
-
-                if ("org/slf4j/LoggerFactory".equals(callingClsName) && "getLogger".equals(mthName)) {
-                    String signature = getSigConstantOperand();
-
-                    if ("(Ljava/lang/Class;)Lorg/slf4j/Logger;".equals(signature)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            loggingClassName = (String) item.getUserValue();
-                        }
-                    } else if ("(Ljava/lang/String;)Lorg/slf4j/Logger;".equals(signature)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            loggingClassName = (String) item.getConstant();
-                            if (loggingClassName != null) {
-                                loggingClassName = loggingClassName.replace('.', '/');
-                            }
-                            loggingPriority = LOW_PRIORITY;
-                        }
-                    }
-                } else if ("org/apache/log4j/Logger".equals(callingClsName) && "getLogger".equals(mthName)) {
-                    String signature = getSigConstantOperand();
-
-                    if ("(Ljava/lang/Class;)Lorg/apache/log4j/Logger;".equals(signature)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            loggingClassName = (String) item.getUserValue();
-                        }
-                    } else if ("(Ljava/lang/String;)Lorg/apache/log4j/Logger;".equals(signature)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            loggingClassName = (String) item.getConstant();
-                            if (loggingClassName != null) {
-                                loggingClassName = loggingClassName.replace('.', '/');
-                            }
-                        }
-                    } else if ("(Ljava/lang/String;Lorg/apache/log4j/spi/LoggerFactory;)Lorg/apache/log4j/Logger;".equals(signature)) {
-                        if (stack.getStackDepth() > 1) {
-                            OpcodeStack.Item item = stack.getStackItem(1);
-                            loggingClassName = (String) item.getConstant();
-                            if (loggingClassName != null) {
-                                loggingClassName = loggingClassName.replace('.', '/');
-                            }
-                        }
-                    }
-                } else if ("org/apache/commons/logging/LogFactory".equals(callingClsName) && "getLog".equals(mthName)) {
-                    String signature = getSigConstantOperand();
-
-                    if ("(Ljava/lang/Class;)Lorg/apache/commons/logging/Log;".equals(signature)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            loggingClassName = (String) item.getUserValue();
-                        }
-                    } else if ("(Ljava/lang/String;)Lorg/apache/commons/logging/Log;".equals(signature)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            loggingClassName = (String) item.getConstant();
-                            if (loggingClassName != null) {
-                                loggingClassName = loggingClassName.replace('.', '/');
-                            }
-                        }
-                    }
-                }
-
-                if (loggingClassName != null) {
-                    if (stack.getStackDepth() > 0) {
-                        if (!loggingClassName.equals(clsName)) {
-                            boolean isPrefix = clsName.startsWith(loggingClassName);
-                            boolean isAnonClassPrefix;
-                            if (isPrefix) {
-                                String anonClass = clsName.substring(loggingClassName.length());
-                                isAnonClassPrefix = anonClass.matches("(\\$\\d+)+");
-                            } else {
-                                isAnonClassPrefix = false;
-                            }
-
-                            if (!isAnonClassPrefix) {
-                                bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_CLASS", loggingPriority).addClass(this).addMethod(this)
-                                        .addSourceLine(this));
-                            }
-                        }
-                    }
-                }
+                lookForSuspectClasses();
             } else if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (THROWABLE_CLASS != null)) {
                 String mthName = getNameConstantOperand();
                 if ("getMessage".equals(mthName)) {
@@ -372,32 +286,116 @@ public class LoggerOddities extends BytecodeScanningDetector {
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         } finally {
-            TernaryPatcher.pre(stack, seen);
-            stack.sawOpcode(this, seen);
-            TernaryPatcher.post(stack, seen);
-            if (ldcClassName != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(ldcClassName);
-                }
-            } else if (seenMethodName != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(seenMethodName);
-                }
-            } else if (exMessageReg >= 0) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(Integer.valueOf(exMessageReg));
-                }
-            } else if (arraySize != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(arraySize);
-                }
-            }
+        	TernaryPatcher.pre(stack, seen);
+        	stack.sawOpcode(this, seen);
+        	TernaryPatcher.post(stack, seen);
+        	if (stack.getStackDepth() > 0) {
+        		if (ldcClassName != null) {
+        			OpcodeStack.Item item = stack.getStackItem(0);
+        			item.setUserValue(ldcClassName);
+        		} else if (seenMethodName != null) {
+        			OpcodeStack.Item item = stack.getStackItem(0);
+        			item.setUserValue(seenMethodName);
+        		} else if (exMessageReg >= 0) {
+        			OpcodeStack.Item item = stack.getStackItem(0);
+        			item.setUserValue(Integer.valueOf(exMessageReg));
+        		} else if (arraySize != null) {
+        			OpcodeStack.Item item = stack.getStackItem(0);
+        			item.setUserValue(arraySize);
+        		}
+        	}
         }
     }
+
+	private void lookForSuspectClasses() {
+		String callingClsName = getClassConstantOperand();
+		String mthName = getNameConstantOperand();
+
+		String loggingClassName = null;
+		int loggingPriority = NORMAL_PRIORITY;
+
+		if ("org/slf4j/LoggerFactory".equals(callingClsName) && "getLogger".equals(mthName)) {
+		    String signature = getSigConstantOperand();
+
+		    if ("(Ljava/lang/Class;)Lorg/slf4j/Logger;".equals(signature)) {
+		        if (stack.getStackDepth() > 0) {
+		            OpcodeStack.Item item = stack.getStackItem(0);
+		            loggingClassName = (String) item.getUserValue();
+		        }
+		    } else if ("(Ljava/lang/String;)Lorg/slf4j/Logger;".equals(signature)) {
+		        if (stack.getStackDepth() > 0) {
+		            OpcodeStack.Item item = stack.getStackItem(0);
+		            loggingClassName = (String) item.getConstant();
+		            if (loggingClassName != null) {
+		                loggingClassName = loggingClassName.replace('.', '/');
+		            }
+		            loggingPriority = LOW_PRIORITY;
+		        }
+		    }
+		} else if ("org/apache/log4j/Logger".equals(callingClsName) && "getLogger".equals(mthName)) {
+		    String signature = getSigConstantOperand();
+
+		    if ("(Ljava/lang/Class;)Lorg/apache/log4j/Logger;".equals(signature)) {
+		        if (stack.getStackDepth() > 0) {
+		            OpcodeStack.Item item = stack.getStackItem(0);
+		            loggingClassName = (String) item.getUserValue();
+		        }
+		    } else if ("(Ljava/lang/String;)Lorg/apache/log4j/Logger;".equals(signature)) {
+		        if (stack.getStackDepth() > 0) {
+		            OpcodeStack.Item item = stack.getStackItem(0);
+		            loggingClassName = (String) item.getConstant();
+		            if (loggingClassName != null) {
+		                loggingClassName = loggingClassName.replace('.', '/');
+		            }
+		        }
+		    } else if ("(Ljava/lang/String;Lorg/apache/log4j/spi/LoggerFactory;)Lorg/apache/log4j/Logger;".equals(signature)) {
+		        if (stack.getStackDepth() > 1) {
+		            OpcodeStack.Item item = stack.getStackItem(1);
+		            loggingClassName = (String) item.getConstant();
+		            if (loggingClassName != null) {
+		                loggingClassName = loggingClassName.replace('.', '/');
+		            }
+		        }
+		    }
+		} else if ("org/apache/commons/logging/LogFactory".equals(callingClsName) && "getLog".equals(mthName)) {
+		    String signature = getSigConstantOperand();
+
+		    if ("(Ljava/lang/Class;)Lorg/apache/commons/logging/Log;".equals(signature)) {
+		        if (stack.getStackDepth() > 0) {
+		            OpcodeStack.Item item = stack.getStackItem(0);
+		            loggingClassName = (String) item.getUserValue();
+		        }
+		    } else if ("(Ljava/lang/String;)Lorg/apache/commons/logging/Log;".equals(signature)) {
+		        if (stack.getStackDepth() > 0) {
+		            OpcodeStack.Item item = stack.getStackItem(0);
+		            loggingClassName = (String) item.getConstant();
+		            if (loggingClassName != null) {
+		                loggingClassName = loggingClassName.replace('.', '/');
+		            }
+		        }
+		    }
+		}
+
+		if (loggingClassName != null) {
+		    if (stack.getStackDepth() > 0) {
+		        if (!loggingClassName.equals(clsName)) {
+		            boolean isPrefix = clsName.startsWith(loggingClassName);
+		            boolean isAnonClassPrefix;
+		            if (isPrefix) {
+		                String anonClass = clsName.substring(loggingClassName.length());
+		                isAnonClassPrefix = anonClass.matches("(\\$\\d+)+");
+		            } else {
+		                isAnonClassPrefix = false;
+		            }
+
+		            if (!isAnonClassPrefix) {
+		                bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_CLASS", loggingPriority).addClass(this).addMethod(this)
+		                        .addSourceLine(this));
+		            }
+		        }
+		    }
+		}
+	}
     
     /**
      * returns the number of anchors {} in a string
