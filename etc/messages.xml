@@ -214,7 +214,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that use floating point indexes for loops. Since floating point
-			math is inprecise, rounding errors will occur each time through the loop causing
+			math is imprecise, rounding errors will occur each time through the loop causing
 			hard to find problems. It is usually better to use integer indexing, and calculating
 			the correct floating point value from the index.</p>
 			<p>It is a fast detector</p>
@@ -226,7 +226,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for method calls to collection classes where the method is not defined by the Collections
-			interface, and an equivalent method exists in the interface. Examples include:<br>
+			interface, and an equivalent method exists in the interface. Examples include:<br/>
 			<table border="1">
 				<tr><th>Old Method</th><th>New Method</th></tr>
 				<tr><td>Hashtable.contains</td><td>Map.containsValue</td></tr>
@@ -624,7 +624,7 @@
 			<![CDATA[
 			<p>Looks for code that builds an array of values from a collection, by manually looping
 			over the elements of the collection, and adding them to the array. It is simpler and
-			cleaner to use mycollection.toArray(new type[mycollection.size()].</p>
+			cleaner to use mycollection.toArray(new type[mycollection.size()]).</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -1204,7 +1204,7 @@
 			<![CDATA[
 			<p>This detector looks for creation of java.awt.Graphics object that do not have the
 			.dispose() method called on them when finished. These objects will be cleaned up by
-			the Garbage collector, bug given the likelyhood that large numbers of these objects can
+			the Garbage collector, bug given the likelihood that large numbers of these objects can
 			be created in a short period of time, it is better to dispose them as soon as possible.</p>
 			<p>It is a fast detector</p>
 			]]>
@@ -1429,7 +1429,7 @@
     	<Details>
     		<![CDATA[
     		<p>This detector looks for methods that are longer than 8000 bytes. Methods this
-    		long are automatically disqualified by the jit for compilation and will always be
+			long are automatically disqualified by the JIT for compilation and will always be
     		emulated. Consider breaking this method up to avoid this, if performance is important.</p>
     		<p>It is a fast detector.</p>
     		]]>
@@ -2037,7 +2037,7 @@
 			<![CDATA[
 			<p>This method calls a method to load a reference to an object, and then only
 			uses it to load a static member of that instance's class. It is simpler and
-			better performant to just load the static field from the class itself.</p>
+			more performant to just load the static field from the class itself.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2152,7 +2152,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method creates a synchronized collection and store the reference to it
-			in a local variable. As local variables are by definition threadsafe, it seems
+			in a local variable. As local variables are by definition thread-safe, it seems
 			questionable that this collection needs to be synchronized.</p>
 			<p>
 			<table>
@@ -2297,7 +2297,7 @@
 		<Details>
 			<![CDATA[
 			<p>This class uses an ordinary set or map collection and uses an enum class as the key type.
-			It is better performant to use the JDK 1.5 EnumSet or EnumMap classes.</p>
+			It is more performant to use the JDK 1.5 EnumSet or EnumMap classes.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3225,7 +3225,7 @@
        <LongDescription>Method {1} creates exception with logger parameter markers in message</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <pThis method creates an standard exception passing a message string which contains an slf4j style
+	       <p>This method creates a standard exception passing a message string which contains an slf4j style
 	       parameter marker '{}'. This marker will not be translated as it is not processed by the Exception class.
 	       </p>
 	       ]]>
@@ -3237,7 +3237,7 @@
 	   <LongDescription>Method {1} passes a concatenated string to Slf4j's format string</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This method uses an slf4j logger to log a string, where the first (format) string is created using concatenation.
+	       <p>This method uses an Slf4j logger to log a string, where the first (format) string is created using concatenation.
 	       You should use {} markers to inject dynamic content into the string, so that String building is delayed until the
 	       actual log string is needed. If the log level is high enough that this log statement isn't used, then the appends
 	       will never be executed.
@@ -3879,8 +3879,8 @@
 	</BugPattern>
 
 	<BugPattern type="CU_CLONE_USABILITY_MISMATCHED_RETURN">
-		<ShortDescription>Clone method declares it returns an type different then the owning class</ShortDescription>
-		<LongDescription>Clone method {1} declares it returns an type different then the owning class</LongDescription>
+		<ShortDescription>Clone method declares it returns a type different then the owning class</ShortDescription>
+		<LongDescription>Clone method {1} declares it returns a type different then the owning class</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This class implements the Cloneable interface but defines its clone method to return a type
@@ -3990,7 +3990,7 @@
         <Details>
             <![CDATA[
             <p>This class defines a field or local collection variable with a name that contains a different type
-            of collection in its name. An example woutd be a Set<User> called userList. This is confusing to the reader, 
+            of collection in its name. An example would be a Set<User> called userList. This is confusing to the reader,
             and likely caused by a previous refactor of type, without changing the name.</p>
             ]]> 
         </Details>
@@ -4063,7 +4063,7 @@
 			
 			<p>Even though there are some exceptions to this, particularly when a custom <code>ThreadFactory</code> is 
 			provided, or for <code>ThreadPoolExecutor</code>s with <code>allowsCoreThreadTimeOut()</code> set to true,
-			it is good practice to explictly shutdown the <code>ExecutorService</code> when its utility is done.</p>
+			it is good practice to explicitly shutdown the <code>ExecutorService</code> when its utility is done.</p>
             ]]>
         </Details>
     </BugPattern>
@@ -4115,7 +4115,7 @@
             			
 			<p>Even though there are some exceptions to this, particularly when a custom <code>ThreadFactory</code> is 
 			provided, or for <code>ThreadPoolExecutor</code>s with <code>allowsCoreThreadTimeOut()</code> set to true,
-			it is good practice to explictly shutdown the <code>ExecutorService</code> at the end of execution, or
+			it is good practice to explicitly shutdown the <code>ExecutorService</code> at the end of execution, or
 			when it is being replaced.</p>
 			
 			<p><b>Note:</b> <code>ExecutorService</code>s are generally created once in a program's lifecycle.  If you find yourself
