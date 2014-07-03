@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.debug.Debug;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -40,6 +41,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
+import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 @CustomUserValue
@@ -157,7 +159,11 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 lookForSuspectClasses();
             } else if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (THROWABLE_CLASS != null)) {
                 String mthName = getNameConstantOperand();
-                if ("getMessage".equals(mthName)) {
+                if ("getName".equals(mthName)) {
+                	Item stackItem = stack.getStackItem(0);
+					ldcClassName = (String) stackItem.getUserValue();
+                }
+                else if ("getMessage".equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
                     JavaClass cls = Repository.lookupClass(callingClsName);
                     if (cls.instanceOf(THROWABLE_CLASS)) {
@@ -342,8 +348,13 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		        }
 		    } else if ("(Ljava/lang/String;)Lorg/apache/log4j/Logger;".equals(signature)) {
 		        if (stack.getStackDepth() > 0) {
-		            OpcodeStack.Item item = stack.getStackItem(0);
+		        	Debug.println(getPC(), stack);
+		        	OpcodeStack.Item item = stack.getStackItem(0);
+		        	 
+		        	Debug.println("\t"+item.getReturnValueOf());
+		           
 		            loggingClassName = (String) item.getConstant();
+		            
 		            if (loggingClassName != null) {
 		                loggingClassName = loggingClassName.replace('.', '/');
 		            }
