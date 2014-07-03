@@ -3372,7 +3372,7 @@
 
 	<BugPattern type="LO_SUSPECT_LOG_CLASS">
 		<ShortDescription>Method specifies an unrelated class when allocating a Logger</ShortDescription>
-		<LongDescription>Method {1} specifies an unrelated class when allocating a Logger</LongDescription>
+		<LongDescription>Method {1} specifies an unrelated class when allocating a Logger.  Saw "{3}", expected "{4}".</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method creates a Logger by passing in a specification for a class that is unrelated

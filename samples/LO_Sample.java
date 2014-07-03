@@ -16,7 +16,7 @@ public class LO_Sample {
 	private static Logger l2 = Logger.getLogger("com.foo.LO_Sample");
 	//no tag
 	private static final org.slf4j.Logger l3 = LoggerFactory.getLogger(LO_Sample.class);
-	//tag LO_SUSPECT_LOG_CLASS, but isn't
+	//tag LO_SUSPECT_LOG_CLASS
 	private static Logger l4 = Logger.getLogger(ActionEvent.class.getName());
 	//no tag
 	private static Logger l5 = Logger.getLogger(LO_Sample.class.getName());
