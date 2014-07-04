@@ -2040,6 +2040,29 @@
 			<p>This method stores the return result in a local variable, and then immediately
 			returns the local variable. It would be simpler just to return the value that is
 			assigned to the local variable, directly.</p>
+			<p>
+				Instead of the following: <br/>
+				<code>
+				public float average(int[] arr) { <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;float sum = 0;<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < arr.length; i++) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum += arr[i];<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;float ave = sum / arr.length;<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;return ave;<br/>
+				}<br/>
+				</code>
+				simply change the method to return the result of the division: <br/>		
+				<code>
+				public float average(int[] arr) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;float sum = 0;<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < arr.length; i++) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum += arr[i];<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;<b>return sum / arr.length;</b><br/>
+				}
+				</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
