@@ -72,6 +72,7 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 	 * 
 	 * @param classContext the context object that holds the JavaClass currently being parsed
 	 */
+	@Override
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass cls = classContext.getJavaClass();
 		
@@ -119,15 +120,15 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 		
 		boolean foundParmDiff = false;
 		for (int i = 0; i < type1.length; i++) {
-			Type t1 = type1[i];
-			Type t2 = type2[i];
+			String typeOneSig = type1[i].getSignature();
+			String typeTwoSig = type2[i].getSignature();
 			
-			if (!t1.getSignature().equals(t2.getSignature())) {
-				if ("Ljava/lang/Character;".equals(t1.getSignature())) {
-					if (!primitiveSigs.contains(t2.getSignature()))
+			if (!typeOneSig.equals(typeTwoSig)) {
+				if ("Ljava/lang/Character;".equals(typeOneSig)) {
+					if (!primitiveSigs.contains(typeTwoSig))
 						return false;
-				} else if ("Ljava/lang/Character;".equals(t2.getSignature())) {
-					if (!primitiveSigs.contains(t1.getSignature()))
+				} else if ("Ljava/lang/Character;".equals(typeTwoSig)) {
+					if (!primitiveSigs.contains(typeOneSig))
 						return false;
 				} else 
 					return false;
@@ -192,6 +193,7 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 	/**
 	 * implements the detector with null implementation
 	 */
+	@Override
 	public void report() {		
 	}
 }

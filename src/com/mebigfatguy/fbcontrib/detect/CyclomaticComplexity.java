@@ -64,6 +64,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector
 	 * 
 	 * @param context the context object for the currently parsed class
 	 */
+	@Override
 	public void visitClassContext(final ClassContext context) {
 		try {
 			classContext = context;
@@ -76,6 +77,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector
 	/**
 	 * implement the detector with null implementation
 	 */
+	@Override
 	public void report() {
 	}
 

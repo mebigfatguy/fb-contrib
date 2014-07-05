@@ -44,12 +44,14 @@ public class OCSDebugger extends BytecodeScanningDetector {
     public OCSDebugger(BugReporter bugReporter) {
     }
     
-    public void visitClassContext(ClassContext classContext) {
+    @Override
+	public void visitClassContext(ClassContext classContext) {
         if ((OUTPUT_FILE_NAME != null) && (METHOD_DESC != null))
             super.visitClassContext(classContext);
     }
     
-    public void visitCode(Code obj) {
+    @Override
+	public void visitCode(Code obj) {
         Method m = getMethod();
         
         String curMethodDesc = getClassContext().getJavaClass().getClassName() + "." + m.getName() + m.getSignature();
@@ -67,7 +69,8 @@ public class OCSDebugger extends BytecodeScanningDetector {
         }
     }
     
-    public void sawOpcode(int seen) {
+    @Override
+	public void sawOpcode(int seen) {
         stack.precomputation(this);
         stack.sawOpcode(this, seen);
         pw.println(String.format("After executing: %-16s at PC: %-5d Stack Size: %-3d", Constants.OPCODE_NAMES[getOpcode()], getPC(), stack.getStackDepth()));
