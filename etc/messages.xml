@@ -3601,7 +3601,7 @@
 		<LongDescription>Method {1} sleeps without timeout when calling {2}</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>Calling <code>{2}</code> without timeout could block forever. Consider using a timeout to detect deadlocks or performance problems. Thread.join() Object.wait() Condition.await() Lock.lock() Lock.lockInterruptibly()</p>
+			<p>Calling one of the following methods without timeout could block forever. Consider using a timeout to detect deadlocks or performance problems. Methods: Thread.join(), Object.wait(), Condition.await(), Lock.lock(), Lock.lockInterruptibly(), ReentrantLock.lock(), ReentrantLock.lockInterruptibly()</p>
 			]]>
 		</Details>
 	</BugPattern>
