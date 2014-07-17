@@ -28,3 +28,4 @@ Contributors
 * Kevin Lubick
 
 
+This branch is for bug fixes on the now defunct Findbugs2. The master branch is the active development branch.
