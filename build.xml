@@ -13,8 +13,8 @@
 	<property name="samples.dir" value="${basedir}/samples" />
 	<property name="javadoc.dir" value="${basedir}/javadoc" />
 	<property name="htdocs.dir" value="${basedir}/htdocs" />
-	<property name="javac.source" value="1.7" />
-	<property name="javac.target" value="1.7" />
+	<property name="javac.source" value="1.6" />
+	<property name="javac.target" value="1.6" />
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
