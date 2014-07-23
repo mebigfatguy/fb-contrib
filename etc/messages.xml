@@ -4368,17 +4368,17 @@
 				that didn't release its associated resources.  Code like the following: <br/>
 				<code>
 				private HttpGet httpGet; <br/>
-				...</br>
-				public String requestInfo(URI u) {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
-				}</br>
+				...<br/>
+				public String requestInfo(URI u) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
+				}<br/>
 				</code>
 				will freeze after a few requests, usually with no indication as to why.  </p>
 				
@@ -4387,20 +4387,20 @@
 				with a call to either <code>reset()</code> or <code>releaseConnection()</code>.  The above example can be easily fixed:<br/>
 				<code>
 				private HttpGet httpGet; <br/>
-				...</br>
-				public String requestInfo(URI u) {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet.reset();</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</b></br>
-				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
-				}</br>
+				...<br/>
+				public String requestInfo(URI u) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet.reset();<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</b><br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
+				}<br/>
 				</code>
 			</p>
             ]]>
@@ -4415,16 +4415,16 @@
             <p>FindBugs has detected an <code>org.apache.http.HttpRequest</code> (e.g. <code>HttpGet</code>, <code>HttpPost</code>, etc)
 				that didn't release its associated resources.  Code like the following: <br/>
 				<code>
-				public String requestInfo(URI u) {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
-				}</br>
+				public String requestInfo(URI u) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
+				}<br/>
 				</code>
 				will freeze after a few requests, usually with no indication as to why. </p>
 				
@@ -4435,19 +4435,19 @@
 				
 				<br/>The above example can be easily fixed:<br/>
 				<code>
-				public String requestInfo(URI u) {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpGet.reset();</br>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</b></br>
-				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
-				}</br>
+				public String requestInfo(URI u) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpGet.reset();<br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</b><br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
+				}<br/>
 				</code>
 			</p>
             ]]>
