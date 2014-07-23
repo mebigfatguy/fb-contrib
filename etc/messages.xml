@@ -1649,12 +1649,12 @@
 			<p>This line is in the form of <br/>
 			<code>String str = ...<br/>
 			str.equals("someOtherString");<br/>
-			//or</br>
+			//or<br/>
 			str.compareTo("someOtherString");</code></p>
 			<p>A <code>NullPointerException</code> may occur if the String variable <code>str</code> is <code>null</code>. If instead the code was restructured to<br/>
 			<code>String str = ...<br/>
 			"someOtherString".equals(str);<br/>
-			//or</br>
+			//or<br/>
 			"someOtherString".compareTo(str);</code><br/>
 			that is, call <code>equals()</code> or <code>compareTo()</code> on the string literal, passing the 
 			variable as an argument, this exception could never happen as both <code>equals()</code> and 
@@ -3650,11 +3650,11 @@
 			must be restricted to covariant or invariant usage.</p>
 
 			<code>
-				class A {}</br>
-				class B extends A {}</br>
-				</br>
-				B[] b = new B[2];</br>
-				A[] a = b;</br>
+				class A {}<br/>
+				class B extends A {}<br/>
+				<br/>
+				B[] b = new B[2];<br/>
+				A[] a = b;<br/>
 			</code>
 			]]>
 		</Details>
@@ -3669,12 +3669,12 @@
 			data structures, their use must be restricted to covariant or invariant usage.</p>
 
 			<code>
-				class A {}</br>
-				class B extends A {}</br>
-<				/br>
-				B[] b = new B[2];</br>
-				A[] a = b;</br>
-				a[0] = new A(); // results in ArrayStoreException (Runtime)</br>
+				class A {}<br/>
+				class B extends A {}<br/>
+                                <br/>
+				B[] b = new B[2];<br/>
+				A[] a = b;<br/>
+				a[0] = new A(); // results in ArrayStoreException (Runtime)<br/>
 			</code>
 			]]>
 		</Details>
