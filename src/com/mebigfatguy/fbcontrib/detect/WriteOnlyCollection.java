@@ -95,6 +95,7 @@ public class WriteOnlyCollection extends BytecodeScanningDetector {
         collectionClasses.add(ArrayDeque.class.getName());
         collectionClasses.add(LinkedBlockingDeque.class.getName());
         collectionClasses.add(NavigableMap.class.getName());
+        collectionClasses.add(ConcurrentLinkedQueue.class.getName());
         collectionClasses.add(ConcurrentMap.class.getName());
         collectionClasses.add(ConcurrentNavigableMap.class.getName());
         collectionClasses.add(ConcurrentSkipListMap.class.getName());
