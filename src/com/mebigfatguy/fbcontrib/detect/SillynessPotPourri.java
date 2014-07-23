@@ -41,8 +41,10 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -74,7 +76,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		oddMissingEqualsClasses.add("java.lang.StringBuffer");
 		oddMissingEqualsClasses.add("java.lang.StringBuilder");
 	}
-	
+
 	private static final String LITERAL = "literal";
 	private static final Pattern APPEND_PATTERN = Pattern.compile("append:([0-9]+):(.*)");
 
@@ -85,6 +87,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		} catch (ClassNotFoundException cnfe) {
 			calendarClass = null;
 		}
+	}
+
+	private static Set<String> methodsThatAreSillyOnStringLiterals = new HashSet<String>();
+	static {
+		methodsThatAreSillyOnStringLiterals.add("toLowerCase");
+		methodsThatAreSillyOnStringLiterals.add("toUpperCase");
+		methodsThatAreSillyOnStringLiterals.add("trim");
 	}
 
 	private final BugReporter bugReporter;
@@ -100,8 +109,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 	private Set<String> staticConstants;
 
 	/**
-     * constructs a SPP detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
+	 * constructs a SPP detector given the reporter to report bugs on
+	 * @param bugReporter the sync of bug reports
 	 */
 	public SillynessPotPourri(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
@@ -110,13 +119,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 	@Override
 	public void visitField(Field field) {
-	    if ("serialVersionUID".equals(field.getName())
-	    &&  ((field.getAccessFlags() & ACC_STATIC) != 0)
-	    &&  ((field.getAccessFlags() & ACC_PRIVATE) == 0)) {
-	        bugReporter.reportBug(new BugInstance(this, "SPP_SERIALVER_SHOULD_BE_PRIVATE", LOW_PRIORITY)
-	                                    .addClass(this)
-	                                    .addField(this));
-	    }
+		if ("serialVersionUID".equals(field.getName())
+				&&  ((field.getAccessFlags() & ACC_STATIC) != 0)
+				&&  ((field.getAccessFlags() & ACC_PRIVATE) == 0)) {
+			bugReporter.reportBug(new BugInstance(this, "SPP_SERIALVER_SHOULD_BE_PRIVATE", LOW_PRIORITY)
+			.addClass(this)
+			.addField(this));
+		}
 	}
 
 	@Override
@@ -161,8 +170,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		int reg = -1;
 		String userValue = null;
 		try {
-	        stack.precomputation(this);
-	        
+			stack.precomputation(this);
+
 			if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W)) {
 				Integer branchTarget = Integer.valueOf(getBranchTarget());
 				BitSet branchInsSet = branchTargets.get(branchTarget);
@@ -181,12 +190,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					int brOffset = (loadIns == ALOAD) ? 11 : 10;
 
 					if ((((loadIns >= ALOAD_0) && (loadIns <= ALOAD_3)) || (loadIns == ALOAD))
-					&&  (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL)
-					&&  (CodeByteUtils.getbyte(bytes, lastPCs[2]) == loadIns)
-					&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL)
-					&&  (CodeByteUtils.getbyte(bytes, lastPCs[0]) == loadIns)
-					&&  ((loadIns != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[2]+1) == CodeByteUtils.getbyte(bytes, lastPCs[0]+1)))
-					&&  ((seen == IFNE) ? CodeByteUtils.getshort(bytes, lastPCs[1]+1) > brOffset : CodeByteUtils.getshort(bytes, lastPCs[1]+1) == brOffset)) {
+							&&  (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL)
+							&&  (CodeByteUtils.getbyte(bytes, lastPCs[2]) == loadIns)
+							&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL)
+							&&  (CodeByteUtils.getbyte(bytes, lastPCs[0]) == loadIns)
+							&&  ((loadIns != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[2]+1) == CodeByteUtils.getbyte(bytes, lastPCs[0]+1)))
+							&&  ((seen == IFNE) ? CodeByteUtils.getshort(bytes, lastPCs[1]+1) > brOffset : CodeByteUtils.getshort(bytes, lastPCs[1]+1) == brOffset)) {
 						int nextOp = CodeByteUtils.getbyte(bytes, getNextPC());
 						if ((nextOp != GOTO) && (nextOp != GOTO_W)) {
 							ConstantPool pool = getConstantPool();
@@ -196,9 +205,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 							ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
 							if ("length".equals(cnt.getName(pool))) {
 								bugReporter.reportBug(new BugInstance(this, "SPP_SUSPECT_STRING_TEST", NORMAL_PRIORITY)
-											.addClass(this)
-											.addMethod(this)
-											.addSourceLine(this));
+								.addClass(this)
+								.addMethod(this)
+								.addSourceLine(this));
 							}
 						}
 					}
@@ -210,39 +219,39 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					OpcodeStack.Item item = stack.getStackItem(0);
 					if ("size".equals(item.getUserValue())) {
 						bugReporter.reportBug(new BugInstance(this, "SPP_USE_ISEMPTY", NORMAL_PRIORITY)
-								   .addClass(this)
-								   .addMethod(this)
-								   .addSourceLine(this));
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
 					}
 				}
 			}
-			
+
 			if (seen == IFEQ) {
-			    byte[] bytes = getCode().getCode();
-			    if ((lastPCs[0] != -1) && (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL) && (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INSTANCEOF)) {
-    			    int ins0 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
-    			    if ((ins0 == ALOAD) || (ins0 == ALOAD_0) || (ins0 == ALOAD_1) || (ins0 == ALOAD_2) || (ins0 == ALOAD_3)) {
-    			        int ins2 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
-    			        if (ins0 == ins2) {
-    			            if ((ins0 != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[0] + 1) == CodeByteUtils.getbyte(bytes, lastPCs[2] + 1))) {
-    			                int ifNullTarget = lastPCs[1] + CodeByteUtils.getshort(bytes, lastPCs[1]+1);
-    			                if (ifNullTarget == getBranchTarget()) {
-        			                bugReporter.reportBug(new BugInstance(this, "SPP_NULL_BEFORE_INSTANCEOF", NORMAL_PRIORITY)
-        			                        .addClass(this)
-        			                        .addMethod(this)
-        			                        .addSourceLine(this));
-    			                }
-    			            }
-    			        }
-    			    }
-			    }
+				byte[] bytes = getCode().getCode();
+				if ((lastPCs[0] != -1) && (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL) && (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INSTANCEOF)) {
+					int ins0 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
+					if ((ins0 == ALOAD) || (ins0 == ALOAD_0) || (ins0 == ALOAD_1) || (ins0 == ALOAD_2) || (ins0 == ALOAD_3)) {
+						int ins2 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
+						if (ins0 == ins2) {
+							if ((ins0 != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[0] + 1) == CodeByteUtils.getbyte(bytes, lastPCs[2] + 1))) {
+								int ifNullTarget = lastPCs[1] + CodeByteUtils.getshort(bytes, lastPCs[1]+1);
+								if (ifNullTarget == getBranchTarget()) {
+									bugReporter.reportBug(new BugInstance(this, "SPP_NULL_BEFORE_INSTANCEOF", NORMAL_PRIORITY)
+									.addClass(this)
+									.addMethod(this)
+									.addSourceLine(this));
+								}
+							}
+						}
+					}
+				}
 			}
 
 			if (seen == IFNE) {
 				byte[] bytes = getCode().getCode();
 				if (lastPCs[2] != -1) {
 					if ((CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL)
-					&&  (CodeByteUtils.getbyte(bytes, lastPCs[2]) == INVOKEVIRTUAL)) {
+							&&  (CodeByteUtils.getbyte(bytes, lastPCs[2]) == INVOKEVIRTUAL)) {
 						ConstantPool pool = getConstantPool();
 						int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[2]+1);
 						ConstantMethodref toStringMR = (ConstantMethodref)pool.getConstant(toStringIndex);
@@ -257,9 +266,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 								cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
 								if ("length".equals(cnt.getName(pool))) {
 									bugReporter.reportBug(new BugInstance(this, "SPP_USE_STRINGBUILDER_LENGTH", NORMAL_PRIORITY)
-												.addClass(this)
-												.addMethod(this)
-												.addSourceLine(this));
+									.addClass(this)
+									.addMethod(this)
+									.addSourceLine(this));
 								}
 							}
 						}
@@ -274,66 +283,66 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				byte[] bytes = getCode().getCode();
 				if (lastPCs[1] != -1) {
 					if (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL) {
-	                    int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
-    					if  (((loadIns == LDC) || (loadIns == LDC_W))
-    					&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == INVOKEVIRTUAL)) {
-    						ConstantPool pool = getConstantPool();
-    						int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[1]+1);
-    						Constant cmr = pool.getConstant(toStringIndex);
-    						if (cmr instanceof ConstantMethodref) {
-        						ConstantMethodref toStringMR = (ConstantMethodref)cmr;
-        						String toStringCls = toStringMR.getClass(pool);
-        						if (toStringCls.startsWith("java.lang.&&StringBu")) {
-        							int consIndex = CodeByteUtils.getbyte(bytes, lastPCs[2]+1);
-        							Constant c = pool.getConstant(consIndex);
-        							if (c instanceof ConstantString) {
-        								if ("".equals(((ConstantString) c).getBytes(pool))) {
-        									int nandtIndex = toStringMR.getNameAndTypeIndex();
-        									ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-        									if ("toString".equals(cnt.getName(pool))) {
-        										int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
-        										ConstantMethodref lengthMR = (ConstantMethodref)pool.getConstant(lengthIndex);
-        										nandtIndex = lengthMR.getNameAndTypeIndex();
-        										cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-        										if ("equals".equals(cnt.getName(pool))) {
-        											bugReporter.reportBug(new BugInstance(this, "SPP_USE_STRINGBUILDER_LENGTH", NORMAL_PRIORITY)
-        														.addClass(this)
-        														.addMethod(this)
-        														.addSourceLine(this));
-        										}
-        									}
-        								}
-        							}
-        						}
-    						}
-    					}
+						int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
+						if  (((loadIns == LDC) || (loadIns == LDC_W))
+								&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == INVOKEVIRTUAL)) {
+							ConstantPool pool = getConstantPool();
+							int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[1]+1);
+							Constant cmr = pool.getConstant(toStringIndex);
+							if (cmr instanceof ConstantMethodref) {
+								ConstantMethodref toStringMR = (ConstantMethodref)cmr;
+								String toStringCls = toStringMR.getClass(pool);
+								if (toStringCls.startsWith("java.lang.&&StringBu")) {
+									int consIndex = CodeByteUtils.getbyte(bytes, lastPCs[2]+1);
+									Constant c = pool.getConstant(consIndex);
+									if (c instanceof ConstantString) {
+										if ("".equals(((ConstantString) c).getBytes(pool))) {
+											int nandtIndex = toStringMR.getNameAndTypeIndex();
+											ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+											if ("toString".equals(cnt.getName(pool))) {
+												int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
+												ConstantMethodref lengthMR = (ConstantMethodref)pool.getConstant(lengthIndex);
+												nandtIndex = lengthMR.getNameAndTypeIndex();
+												cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+												if ("equals".equals(cnt.getName(pool))) {
+													bugReporter.reportBug(new BugInstance(this, "SPP_USE_STRINGBUILDER_LENGTH", NORMAL_PRIORITY)
+													.addClass(this)
+													.addMethod(this)
+													.addSourceLine(this));
+												}
+											}
+										}
+									}
+								}
+							}
+						}
 					}
 				}
 			} else if ((seen == IRETURN) && lastIfEqWasBoolean) {
 				byte[] bytes = getCode().getCode();
 				if ((lastPCs[0] != -1)
-				&&  ((0x00FF & bytes[lastPCs[3]]) == ICONST_0)
-				&&  ((0x00FF & bytes[lastPCs[2]]) == GOTO)
-				&&  ((0x00FF & bytes[lastPCs[1]]) == ICONST_1)
-				&&  ((0x00FF & bytes[lastPCs[0]]) == IFEQ)) {
+						&&  ((0x00FF & bytes[lastPCs[3]]) == ICONST_0)
+						&&  ((0x00FF & bytes[lastPCs[2]]) == GOTO)
+						&&  ((0x00FF & bytes[lastPCs[1]]) == ICONST_1)
+						&&  ((0x00FF & bytes[lastPCs[0]]) == IFEQ)) {
 					if (getMethod().getSignature().endsWith("Z")) {
 						boolean bug = true;
 						BitSet branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[1]));
 						if (branchInsSet != null)
-                        {
-                            bug = false;
-                        }
+						{
+							bug = false;
+						}
 						branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[3]));
 						if ((branchInsSet != null) && (branchInsSet.cardinality() > 1))
-                        {
-                            bug = false;
-                        }
+						{
+							bug = false;
+						}
 
 						if (bug) {
 							bugReporter.reportBug(new BugInstance(this, "SPP_USELESS_TERNARY", NORMAL_PRIORITY)
-										.addClass(this)
-										.addMethod(this)
-										.addSourceLine(this));
+							.addClass(this)
+							.addMethod(this)
+							.addSourceLine(this));
 						}
 					}
 				}
@@ -345,11 +354,11 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					double eDelta = Math.abs(d - Math.E);
 
 					if (((piDelta > 0.0) && (piDelta < 0.002))
-					||  ((eDelta > 0.0) && (eDelta < 0.002))) {
+							||  ((eDelta > 0.0) && (eDelta < 0.002))) {
 						bugReporter.reportBug(new BugInstance(this, "SPP_USE_MATH_CONSTANT", NORMAL_PRIORITY)
-								   .addClass(this)
-								   .addMethod(this)
-								   .addSourceLine(this));
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
 					}
 				}
 			} else if (seen == DCMPL) {
@@ -361,9 +370,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 					if (((d1 != null) && d1.isNaN()) || ((d2 != null) && d2.isNaN())) {
 						bugReporter.reportBug(new BugInstance(this, "SPP_USE_ISNAN", NORMAL_PRIORITY)
-								   .addClass(this)
-								   .addMethod(this)
-								   .addSourceLine(this));
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
 					}
 				}
 			} else if (seen == FCMPL) {
@@ -375,42 +384,42 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 					if (((f1 != null) && f1.isNaN()) || ((f2 != null) && f2.isNaN())) {
 						bugReporter.reportBug(new BugInstance(this, "SPP_USE_ISNAN", NORMAL_PRIORITY)
-								   .addClass(this)
-								   .addMethod(this)
-								   .addSourceLine(this));
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
 					}
 				}
-			} else if (((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == ASTORE)) {
+			} else if (OpcodeUtils.isAStore(seen)) {
 				reg = RegisterUtils.getAStoreReg(this, seen);
 				if (seen == lastOpcode) {
 					if (reg == lastReg) {
 						bugReporter.reportBug(new BugInstance(this, "SPP_STUTTERED_ASSIGNMENT", NORMAL_PRIORITY)
-								   .addClass(this)
-								   .addMethod(this)
-								   .addSourceLine(this));
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
 					}
 				}
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					String mName = (String) item.getUserValue();
 					if (mName != null) {
-    					if ("trim".equals(mName)) {
-    						item.setUserValue(null);
-    					} else {
-    					    Matcher m = APPEND_PATTERN.matcher(mName);
-    					    if (m.matches()) {
-        					    int appendReg = Integer.parseInt(m.group(1));
-        					    if (reg == appendReg) {
-        					        bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUILDER_IS_MUTABLE", NORMAL_PRIORITY)
-        					                    .addClass(this)
-        					                    .addMethod(this)
-        					                    .addSourceLine(this));
-        					    }
-    					    }
-    					}
+						if ("trim".equals(mName)) {
+							item.setUserValue(null);
+						} else {
+							Matcher m = APPEND_PATTERN.matcher(mName);
+							if (m.matches()) {
+								int appendReg = Integer.parseInt(m.group(1));
+								if (reg == appendReg) {
+									bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUILDER_IS_MUTABLE", NORMAL_PRIORITY)
+									.addClass(this)
+									.addMethod(this)
+									.addSourceLine(this));
+								}
+							}
+						}
 					}
 				}
-			} else if (((seen >= ALOAD_0) && (seen <= ASTORE_3)) || (seen == ALOAD)) {
+			} else if (OpcodeUtils.isALoad(seen)) {
 				lastLoadWasString = false;
 				LocalVariableTable lvt = getMethod().getLocalVariableTable();
 				if (lvt != null) {
@@ -433,403 +442,33 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					String ic = (String)item.getUserValue();
 					if ("iconst".equals(ic)) {
 						bugReporter.reportBug(new BugInstance(this, "SPP_USE_CHARAT", NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this)
-									.addSourceLine(this));
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
 					}
 				}
 			} else if (seen == INVOKESTATIC) {
-				String className = getClassConstantOperand();
-				String methodName = getNameConstantOperand();
-				if ("java/lang/System".equals(className)) {
-	            	if ("getProperties".equals(methodName)) {
-                        userValue = "getProperties";
-                    } else if ("arraycopy".equals(methodName)) {
-                    	if (stack.getStackDepth() >= 5) {
-                    		OpcodeStack.Item item = stack.getStackItem(2);
-                    		String sig = item.getSignature();
-                    		if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
-                    			bugReporter.reportBug(new BugInstance(this, "SPP_NON_ARRAY_PARM", HIGH_PRIORITY)
-                    						.addClass(this)
-                    						.addMethod(this)
-                    						.addSourceLine(this));
-                    		}
-                    		item = stack.getStackItem(4);
-                    		sig = item.getSignature();
-                    		if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
-                    			bugReporter.reportBug(new BugInstance(this, "SPP_NON_ARRAY_PARM", HIGH_PRIORITY)
-        						.addClass(this)
-        						.addMethod(this)
-        						.addSourceLine(this));
-                    		}
-                    	}
-                    }
-				} else if ("java/lang/reflect/Array".equals(className)) {
-					int offset = -1;
-					if ("getLength".equals(methodName)) {
-						offset = 0;
-					} else if (methodName.startsWith("get")) {
-						offset = 1;
-					} else if (methodName.startsWith("set")) {
-						offset = 2;
-					}
-					if (offset >= 0) {
-						if (stack.getStackDepth() > offset) {
-							OpcodeStack.Item item = stack.getStackItem(offset);
-							String sig = item.getSignature();
-							if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
-                    			bugReporter.reportBug(new BugInstance(this, "SPP_NON_ARRAY_PARM", HIGH_PRIORITY)
-        						.addClass(this)
-        						.addMethod(this)
-        						.addSourceLine(this));
-                    		}
-						}
-					}
-
-				}
+				userValue = sawInvokeStatic(userValue);
 			} else if (seen == INVOKEVIRTUAL) {
-				String className = getClassConstantOperand();
-				String methodName = getNameConstantOperand();
-				if ("java/util/BitSet".equals(className)) {
-					if ("clear".equals(methodName)
-					||  "flip".equals(methodName)
-					||  "get".equals(methodName)
-					||  "set".equals(methodName)) {
-						if (stack.getStackDepth() > 0) {
-							OpcodeStack.Item item = stack.getStackItem(0);
-							Object o =item.getConstant();
-							if (o instanceof Integer) {
-								if (((Integer) o).intValue() < 0) {
-									bugReporter.reportBug(new BugInstance(this, "SPP_NEGATIVE_BITSET_ITEM", NORMAL_PRIORITY)
-											   .addClass(this)
-											   .addMethod(this)
-											   .addSourceLine(this));
-								}
-							}
-						}
-					}
-				} else if ("java/lang/StringBuilder".equals(className) || "java/lang/StringBuffer".equals(className)) {
-				    if ("append".equals(methodName)) {
-				        if (stack.getStackDepth() > 1) {
-				            OpcodeStack.Item valItem = stack.getStackItem(0);
-				            OpcodeStack.Item sbItem = stack.getStackItem(1);
-				            Object constant = valItem.getConstant();
-				            boolean argIsLiteralString = (constant instanceof String) && (((String) constant).length() > 0);
-				            argIsLiteralString = argIsLiteralString && !looksLikeStaticFieldValue((String) constant);
-
-				            if (argIsLiteralString) {
-    				            String existingAppend = (String) sbItem.getUserValue();
-    				            if (existingAppend != null) {
-    				                Matcher m = APPEND_PATTERN.matcher(existingAppend);
-    				                if (m.matches() && LITERAL.equals(m.group(2))) {
-    				                    bugReporter.reportBug(new BugInstance(this, "SPP_DOUBLE_APPENDED_LITERALS", NORMAL_PRIORITY)
-    				                                .addClass(this)
-    				                                .addMethod(this)
-    				                                .addSourceLine(this));
-    				                    argIsLiteralString = false;
-    				                }
-    				            }
-				            }
-				            
-				            String literal = argIsLiteralString ? LITERAL : "";
-				            if (sbItem.getRegisterNumber() > -1) {
-				                userValue = "append:" + sbItem.getRegisterNumber() + ":" + literal;
-				            } else {
-				                userValue = (String) sbItem.getUserValue();
-				                if (userValue != null) {
-				                    Matcher m = APPEND_PATTERN.matcher(userValue);
-				                    if (m.matches()) {
-				                        userValue = "append:" + m.group(1) + ":" + literal;
-				                    }
-				                }
-				            }
-				        }
-				    }
-				} else if ("java/lang/String".equals(className)) {
-					if ("intern".equals(methodName)) {
-						String owningMethod = getMethod().getName();
-						if (!"<clinit>".equals(owningMethod))
-						{
-							if (stack.getStackDepth() > 0) {
-								OpcodeStack.Item item = stack.getStackItem(0);
-								if (item.getConstant() != null) {
-									bugReporter.reportBug(new BugInstance(this, "SPP_INTERN_ON_CONSTANT", NORMAL_PRIORITY)
-											   .addClass(this)
-											   .addMethod(this)
-											   .addSourceLine(this));
-								}
-							}
-						}
-					} else if ("toCharArray".equals(methodName)) {
-						userValue = "toCharArray";
-					} else if ("toLowerCase".equals(methodName)
-					       ||  "toUpperCase".equals(methodName)) {
-						userValue = "IgnoreCase";
-					} else if ("equalsIgnoreCase".equals(methodName)
-						   ||  "compareToIgnoreCase".equals(methodName)) {
-						if (stack.getStackDepth() > 1) {
-							OpcodeStack.Item item = stack.getStackItem(1);
-							if ("IgnoreCase".equals(item.getUserValue())) {
-		                		bugReporter.reportBug(new BugInstance(this, "SPP_USELESS_CASING", NORMAL_PRIORITY)
-    							.addClass(this)
-    							.addMethod(this)
-    							.addSourceLine(this));
-							}
-							item = stack.getStackItem(0);
-							String parm = (String)item.getConstant();
-							if ("".equals(parm)) {
-								bugReporter.reportBug(new BugInstance(this, "SPP_EMPTY_CASING", NORMAL_PRIORITY)
-								.addClass(this)
-								.addMethod(this)
-								.addSourceLine(this));
-							}
-						}
-					} else if ("trim".equals(methodName)) {
-						userValue = "trim";
-					} else if ("length".equals(methodName)) {
-						if (stack.getStackDepth() > 0) {
-							OpcodeStack.Item item = stack.getStackItem(0);
-							if ("trim".equals(item.getUserValue())) {
-								bugReporter.reportBug(new BugInstance(this, "SPP_TEMPORARY_TRIM", NORMAL_PRIORITY)
-								.addClass(this)
-								.addMethod(this)
-								.addSourceLine(this));
-							}
-						}
-					} else if ("equals".equals(methodName)) {
-						if (stack.getStackDepth() > 1) {
-							OpcodeStack.Item item = stack.getStackItem(1);
-							if ("trim".equals(item.getUserValue())) {
-								bugReporter.reportBug(new BugInstance(this, "SPP_TEMPORARY_TRIM", NORMAL_PRIORITY)
-								.addClass(this)
-								.addMethod(this)
-								.addSourceLine(this));
-							}
-						}
-					}
-    				else if ("toString".equals(methodName)) {
-                        bugReporter.reportBug(new BugInstance(this, "SPP_TOSTRING_ON_STRING", NORMAL_PRIORITY)
-                         .addClass(this)
-                         .addMethod(this)
-                         .addSourceLine(this));
-                    }
-                } else if ("equals(Ljava/lang/Object;)Z".equals(methodName + getSigConstantOperand())) {
-                	try {
-	                	JavaClass cls = Repository.lookupClass(className);
-	                	if (cls.isEnum()) {
-	                		bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_ENUM", NORMAL_PRIORITY)
-	                							.addClass(this)
-	                							.addMethod(this)
-	                							.addSourceLine(this));
-	                	} else {
-	                    	if (stack.getStackDepth() >= 2) {
-	                    		OpcodeStack.Item item = stack.getStackItem(1);
-	                    		cls = item.getJavaClass();
-	                    		if (cls != null) {
-	                    			String clsName = cls.getClassName();
-	                    			if (oddMissingEqualsClasses.contains(clsName)) {
-	            				    	 bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_STRING_BUILDER", NORMAL_PRIORITY)
-	                                     .addClass(this)
-	                                     .addMethod(this)
-	                                     .addSourceLine(this));
-	                    			}
-	                    		}
-	                    	}
-	                	}
-                	} catch (ClassNotFoundException cnfe) {
-                		bugReporter.reportMissingClass(cnfe);
-                	}      	
-                } else if ("java/lang/Boolean".equals(className)
-                	&&     "booleanValue".equals(methodName)) {
-                	if (lastPCs[0] != -1) {
-                		int range1Size = lastPCs[2] - lastPCs[0];
-                		if (range1Size == (getNextPC() - lastPCs[3])) {
-                			byte[] bytes = getCode().getCode();
-                			int ifeq = 0x000000FF & bytes[lastPCs[2]];
-                			if (ifeq == IFEQ) {
-                				int start1 = lastPCs[0];
-                    			int start2 = lastPCs[3];
-                				boolean found = true;
-                				for (int i = 0; i < range1Size; i++) {
-                					if (bytes[start1+i] != bytes[start2+i]) {
-                						found = false;
-                						break;
-                					}
-                				}
-
-                				if (found) {
-                					bugReporter.reportBug(new BugInstance(this, "SPP_INVALID_BOOLEAN_NULL_CHECK", NORMAL_PRIORITY)
-                								.addClass(this)
-                								.addMethod(this)
-                								.addSourceLine(this));
-                				}
-                			}
-                		}
-                	}
-                } else if (("java/util/GregorianCalendar".equals(className) || "java/util/Calendar".equals(className))
-                   &&      ("after".equals(methodName) || "before".equals(methodName))) {
-                	if (stack.getStackDepth() > 1) {
-                		OpcodeStack.Item item = stack.getStackItem(0);
-                		String itemSig = item.getSignature();
-                		//Rule out java.lang.Object as mergeJumps can throw away type info (BUG)
-                		if (!"Ljava/lang/Object;".equals(itemSig) && !"Ljava/util/Calendar;".equals(itemSig) && !"Ljava/util/GregorianCalendar;".equals(itemSig)) {
-                			try {
-                				JavaClass cls = Repository.lookupClass(itemSig.substring(1, itemSig.length() - 1));
-                				if (!cls.instanceOf(calendarClass)) {
-                					bugReporter.reportBug(new BugInstance(this, "SPP_INVALID_CALENDAR_COMPARE", NORMAL_PRIORITY)
-			                					.addClass(this)
-			                					.addMethod(this)
-			                					.addSourceLine(this));
-                				}
-                			} catch (ClassNotFoundException cnfe) {
-                				bugReporter.reportMissingClass(cnfe);
-                			}
-
-                		}
-                	}
-                } else if ("java/util/Properties".equals(className)) {
-                	if (("get".equals(methodName) || "getProperty".equals(methodName))) {
-                		if (stack.getStackDepth() > 1) {
-                			OpcodeStack.Item item = stack.getStackItem(1);
-                			if ("getProperties".equals(item.getUserValue())) {
-                				bugReporter.reportBug(new BugInstance(this, "SPP_USE_GETPROPERTY", NORMAL_PRIORITY)
-                				           .addClass(this)
-                				           .addMethod(this)
-                				           .addSourceLine(this));
-                			}
-                		}
-                	}
-                } else if ("toString".equals(methodName) && "java/lang/Object".equals(className)) {
-                    if (stack.getStackDepth() >= 1) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        JavaClass toStringClass = item.getJavaClass();
-                        if (toStringClass != null) {
-                            String toStringClassName = toStringClass.getClassName();
-                            if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !"java.lang.Object".equals(toStringClassName) && !"java.lang.String".equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
-                                bugReporter.reportBug(new BugInstance(this, "SPP_NON_USEFUL_TOSTRING", toStringClass.isFinal() ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                            .addClass(this)
-                                            .addMethod(this)
-                                            .addSourceLine(this));
-                            }
-                        }
-                    }
-                }
+				userValue = sawInvokeVirtual(userValue);
 			} else if (seen == INVOKESPECIAL) {
-				String className = getClassConstantOperand();
-				if ("java/lang/StringBuffer".equals(className)
-				||  "java/lang/StringBuilder".equals(className)) {
-					String methodName = getNameConstantOperand();
-					if ("<init>".equals(methodName)) {
-						String signature = getSigConstantOperand();
-						if ("(I)V".equals(signature)) {
-							if (lastOpcode == BIPUSH) {
-								if (stack.getStackDepth() > 0) {
-									OpcodeStack.Item item = stack.getStackItem(0);
-									Object o = item.getConstant();
-									if (o instanceof Integer) {
-										int parm = ((Integer) o).intValue();
-										if ((parm > 32)
-										&&  (parm < 127)
-										&&  (parm != 64)
-										&&  ((parm % 10) != 0)
-										&&  ((parm % 5) != 0)) {
-											bugReporter.reportBug(new BugInstance(this, "SPP_NO_CHAR_SB_CTOR", LOW_PRIORITY)
-										   .addClass(this)
-										   .addMethod(this)
-										   .addSourceLine(this));
-										}
-									}
-								}
-							}
-						} else if ("(Ljava/lang/String;)V".equals(signature)) {
-							if (stack.getStackDepth() > 0) {
-	                            OpcodeStack.Item item = stack.getStackItem(0);
-	                            String con = (String)item.getConstant();
-	                            if ("".equals(con)) {
-	                                bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUFFER_WITH_EMPTY_STRING", NORMAL_PRIORITY)
-	                                   .addClass(this)
-	                                   .addMethod(this)
-	                                   .addSourceLine(this));
-	                            }
-	                        }
-                        }
-					}
-				} else if ("java/math/BigDecimal".equals(className)) {
-					if (stack.getStackDepth() > 0) {
-						OpcodeStack.Item item = stack.getStackItem(0);
-						Object constant = item.getConstant();
-						if (constant instanceof Double)
-						{
-							Double v = (Double) constant;
-							if ((v != 0.0) && (v != 1.0)) {
-								bugReporter.reportBug(new BugInstance(this, "SPP_USE_BIGDECIMAL_STRING_CTOR", NORMAL_PRIORITY)
-										   .addClass(this)
-										   .addMethod(this)
-										   .addSourceLine(this));
-							}
-						}
-					}
-				}
+				sawInvokeSpecial();
 			} else if (seen == INVOKEINTERFACE) {
-				String className = getClassConstantOperand();
-				if ("java/util/Map".equals(className)) {
-					String method = getNameConstantOperand();
-					if ("keySet".equals(method)) {
-						userValue = "keySet";
-					}
-				} else if ("java/util/Set".equals(className)) {
-					String method = getNameConstantOperand();
-					if ("contains".equals(method)) {
-						if (stack.getStackDepth() >= 2) {
-							OpcodeStack.Item item = stack.getStackItem(1);
-							if ("keySet".equals(item.getUserValue())) {
-								bugReporter.reportBug(new BugInstance(this, "SPP_USE_CONTAINSKEY", NORMAL_PRIORITY)
-										   .addClass(this)
-										   .addMethod(this)
-										   .addSourceLine(this));
-							}
-						}
-					}
-				} else if ("java/util/List".equals(className)) {
-				    String method = getNameConstantOperand();
-                    if ("iterator".equals(method)) {
-                            userValue = "iterator";
-                    }
-				} else if ("java/util/Iterator".equals(className)) {
-				    String method = getNameConstantOperand();
-                    if ("next".equals(method)) {
-                        if (stack.getStackDepth() >= 1) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            if ("iterator".equals(item.getUserValue())) {
-                                bugReporter.reportBug(new BugInstance(this, "SPP_USE_GET0", NORMAL_PRIORITY)
-                                            .addClass(this)
-                                            .addMethod(this)
-                                            .addSourceLine(this));
-                            }
-                        }
-                    }
-				}
-
-				if (collectionInterfaces.contains(className)) {
-					String method = getNameConstantOperand();
-					if ("size".equals(method)) {
-						userValue = "size";
-					}
-				}
+				userValue = sawInvokeInterface(userValue);
 			}
 		} catch (ClassNotFoundException cnfe) {
-		    bugReporter.reportMissingClass(cnfe);
+			bugReporter.reportMissingClass(cnfe);
 		} finally {
 			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
 			TernaryPatcher.post(stack, seen);
 			if ((stack.getStackDepth() > 0)) {
-                OpcodeStack.Item item = stack.getStackItem(0);
-    			if (userValue != null) {
-    				item.setUserValue(userValue);
-    			} else if ("iterator".equals(item.getUserValue()) && (seen == GETFIELD) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
-    			    item.setUserValue(null);
-    			}
+				OpcodeStack.Item item = stack.getStackItem(0);
+				if (userValue != null) {
+					item.setUserValue(userValue);
+				} else if ("iterator".equals(item.getUserValue()) && (seen == GETFIELD) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+					item.setUserValue(null);
+				}
 			}
 
 			lastOpcode = seen;
@@ -838,23 +477,468 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			lastPCs[3] = getPC();
 		}
 	}
-	
+
+	private String sawInvokeStatic(String userValue) {
+		String className = getClassConstantOperand();
+		String methodName = getNameConstantOperand();
+		if ("java/lang/System".equals(className)) {
+			if ("getProperties".equals(methodName)) {
+				userValue = "getProperties";
+			} else if ("arraycopy".equals(methodName)) {
+				if (stack.getStackDepth() >= 5) {
+					OpcodeStack.Item item = stack.getStackItem(2);
+					String sig = item.getSignature();
+					if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_NON_ARRAY_PARM", HIGH_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+					item = stack.getStackItem(4);
+					sig = item.getSignature();
+					if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_NON_ARRAY_PARM", HIGH_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				}
+			}
+		} else if ("java/lang/reflect/Array".equals(className)) {
+			int offset = -1;
+			if ("getLength".equals(methodName)) {
+				offset = 0;
+			} else if (methodName.startsWith("get")) {
+				offset = 1;
+			} else if (methodName.startsWith("set")) {
+				offset = 2;
+			}
+			if (offset >= 0) {
+				if (stack.getStackDepth() > offset) {
+					OpcodeStack.Item item = stack.getStackItem(offset);
+					String sig = item.getSignature();
+					if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_NON_ARRAY_PARM", HIGH_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				}
+			}
+
+		}
+		return userValue;
+	}
+
+	private String sawInvokeVirtual(String userValue) throws ClassNotFoundException {
+		String className = getClassConstantOperand();
+		String methodName = getNameConstantOperand();
+		if ("java/util/BitSet".equals(className)) {
+			bitSetSilliness(methodName);
+		} else if ("java/lang/StringBuilder".equals(className) || "java/lang/StringBuffer".equals(className)) {
+			userValue = stringBufferSilliness(userValue, methodName);
+		} else if ("java/lang/String".equals(className)) {
+			userValue = stringSilliness(userValue, methodName);
+		} else if ("equals(Ljava/lang/Object;)Z".equals(methodName + getSigConstantOperand())) {
+			equalsSilliness(className);      	
+		} else if ("java/lang/Boolean".equals(className) && "booleanValue".equals(methodName)) {
+			booleanSilliness();
+		} else if (("java/util/GregorianCalendar".equals(className) || "java/util/Calendar".equals(className))
+				&&      ("after".equals(methodName) || "before".equals(methodName))) {
+			calendarBeforeAfterSilliness();
+		} else if ("java/util/Properties".equals(className)) {
+			propertiesSilliness(methodName);
+		} else if ("toString".equals(methodName) && "java/lang/Object".equals(className)) {
+			defaultToStringSilliness();
+		}
+		return userValue;
+	}
+
+	private void bitSetSilliness(String methodName) {
+		if ("clear".equals(methodName)
+				||  "flip".equals(methodName)
+				||  "get".equals(methodName)
+				||  "set".equals(methodName)) {
+			if (stack.getStackDepth() > 0) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				Object o =item.getConstant();
+				if (o instanceof Integer) {
+					if (((Integer) o).intValue() < 0) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_NEGATIVE_BITSET_ITEM", NORMAL_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				}
+			}
+		}
+	}
+
+	private String stringBufferSilliness(String userValue, String methodName) {
+		if ("append".equals(methodName)) {
+			if (stack.getStackDepth() > 1) {
+				OpcodeStack.Item valItem = stack.getStackItem(0);
+				OpcodeStack.Item sbItem = stack.getStackItem(1);
+				Object constant = valItem.getConstant();
+				boolean argIsLiteralString = (constant instanceof String) && (((String) constant).length() > 0);
+				argIsLiteralString = argIsLiteralString && !looksLikeStaticFieldValue((String) constant);
+
+				if (argIsLiteralString) {
+					String existingAppend = (String) sbItem.getUserValue();
+					if (existingAppend != null) {
+						Matcher m = APPEND_PATTERN.matcher(existingAppend);
+						if (m.matches() && LITERAL.equals(m.group(2))) {
+							bugReporter.reportBug(new BugInstance(this, "SPP_DOUBLE_APPENDED_LITERALS", NORMAL_PRIORITY)
+							.addClass(this)
+							.addMethod(this)
+							.addSourceLine(this));
+							argIsLiteralString = false;
+						}
+					}
+				}
+
+				String literal = argIsLiteralString ? LITERAL : "";
+				if (sbItem.getRegisterNumber() > -1) {
+					userValue = "append:" + sbItem.getRegisterNumber() + ":" + literal;
+				} else {
+					userValue = (String) sbItem.getUserValue();
+					if (userValue != null) {
+						Matcher m = APPEND_PATTERN.matcher(userValue);
+						if (m.matches()) {
+							userValue = "append:" + m.group(1) + ":" + literal;
+						}
+					}
+				}
+			}
+		}
+		return userValue;
+	}
+
+	private String stringSilliness(String userValue, String methodName) {
+
+		if (methodsThatAreSillyOnStringLiterals.contains(methodName)) {
+			//When locales are passed in, the top item is not necessarily the string literal that 
+			//this method is being invoked on.  So, we loop
+			for(int i = 0;i<stack.getStackDepth();i++) 
+			{
+				OpcodeStack.Item itm = stack.getStackItem(i);
+				Object constant = itm.getConstant();
+				if ((constant != null) && constant.getClass().equals(String.class)) {
+					int priority = NORMAL_PRIORITY;
+					if (Type.getArgumentTypes(getSigConstantOperand()).length > 0) {
+						//if an argument is passed in, it may be locale-specific
+						priority = LOW_PRIORITY;
+					}
+					bugReporter.reportBug(new BugInstance(this, "SPP_CONVERSION_OF_STRING_LITERAL", priority)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this)
+					.addCalledMethod(this));
+					break;
+				}
+			}
+		} 
+		//not an elseif because the below cases might be in the set methodsThatAreSillyOnStringLiterals
+		if ("intern".equals(methodName)) {
+			String owningMethod = getMethod().getName();
+			if (!"<clinit>".equals(owningMethod))
+			{
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item item = stack.getStackItem(0);
+					if (item.getConstant() != null) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_INTERN_ON_CONSTANT", NORMAL_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				}
+			}
+		} 
+		else if ("toCharArray".equals(methodName)) {
+			userValue = "toCharArray";
+		} else if ("toLowerCase".equals(methodName) ||  "toUpperCase".equals(methodName)) {
+			userValue = "IgnoreCase";
+		} else if ("equalsIgnoreCase".equals(methodName) || "compareToIgnoreCase".equals(methodName)) {
+			if (stack.getStackDepth() > 1) {
+				OpcodeStack.Item item = stack.getStackItem(1);
+				if ("IgnoreCase".equals(item.getUserValue())) {
+					bugReporter.reportBug(new BugInstance(this, "SPP_USELESS_CASING", NORMAL_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this));
+				}
+				item = stack.getStackItem(0);
+				String parm = (String)item.getConstant();
+				if ("".equals(parm)) {
+					bugReporter.reportBug(new BugInstance(this, "SPP_EMPTY_CASING", NORMAL_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this));
+				}
+			}
+		} else if ("trim".equals(methodName)) {
+			userValue = "trim";
+		} else if ("length".equals(methodName)) {
+			if (stack.getStackDepth() > 0) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				if ("trim".equals(item.getUserValue())) {
+					bugReporter.reportBug(new BugInstance(this, "SPP_TEMPORARY_TRIM", NORMAL_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this));
+				}
+			}
+		} else if ("equals".equals(methodName)) {
+			if (stack.getStackDepth() > 1) {
+				OpcodeStack.Item item = stack.getStackItem(1);
+				if ("trim".equals(item.getUserValue())) {
+					bugReporter.reportBug(new BugInstance(this, "SPP_TEMPORARY_TRIM", NORMAL_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this));
+				}
+			}
+		}
+		else if ("toString".equals(methodName)) {
+			bugReporter.reportBug(new BugInstance(this, "SPP_TOSTRING_ON_STRING", NORMAL_PRIORITY)
+			.addClass(this)
+			.addMethod(this)
+			.addSourceLine(this));
+		}
+		return userValue;
+	}
+
+	private void equalsSilliness(String className) {
+		try {
+			JavaClass cls = Repository.lookupClass(className);
+			if (cls.isEnum()) {
+				bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_ENUM", NORMAL_PRIORITY)
+				.addClass(this)
+				.addMethod(this)
+				.addSourceLine(this));
+			} else {
+				if (stack.getStackDepth() >= 2) {
+					OpcodeStack.Item item = stack.getStackItem(1);
+					cls = item.getJavaClass();
+					if (cls != null) {
+						String clsName = cls.getClassName();
+						if (oddMissingEqualsClasses.contains(clsName)) {
+							bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_STRING_BUILDER", NORMAL_PRIORITY)
+							.addClass(this)
+							.addMethod(this)
+							.addSourceLine(this));
+						}
+					}
+				}
+			}
+		} catch (ClassNotFoundException cnfe) {
+			bugReporter.reportMissingClass(cnfe);
+		}     
+	}
+
+	private void booleanSilliness() {
+		if (lastPCs[0] != -1) {
+			int range1Size = lastPCs[2] - lastPCs[0];
+			if (range1Size == (getNextPC() - lastPCs[3])) {
+				byte[] bytes = getCode().getCode();
+				int ifeq = 0x000000FF & bytes[lastPCs[2]];
+				if (ifeq == IFEQ) {
+					int start1 = lastPCs[0];
+					int start2 = lastPCs[3];
+					boolean found = true;
+					for (int i = 0; i < range1Size; i++) {
+						if (bytes[start1+i] != bytes[start2+i]) {
+							found = false;
+							break;
+						}
+					}
+
+					if (found) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_INVALID_BOOLEAN_NULL_CHECK", NORMAL_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				}
+			}
+		}
+	}
+
+	private void calendarBeforeAfterSilliness() {
+		if (stack.getStackDepth() > 1) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			String itemSig = item.getSignature();
+			//Rule out java.lang.Object as mergeJumps can throw away type info (BUG)
+			if (!"Ljava/lang/Object;".equals(itemSig) && !"Ljava/util/Calendar;".equals(itemSig) && !"Ljava/util/GregorianCalendar;".equals(itemSig)) {
+				try {
+					JavaClass cls = Repository.lookupClass(itemSig.substring(1, itemSig.length() - 1));
+					if (!cls.instanceOf(calendarClass)) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_INVALID_CALENDAR_COMPARE", NORMAL_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				} catch (ClassNotFoundException cnfe) {
+					bugReporter.reportMissingClass(cnfe);
+				}
+
+			}
+		}
+	}
+
+	private void defaultToStringSilliness() throws ClassNotFoundException {
+		if (stack.getStackDepth() >= 1) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			JavaClass toStringClass = item.getJavaClass();
+			if (toStringClass != null) {
+				String toStringClassName = toStringClass.getClassName();
+				if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !"java.lang.Object".equals(toStringClassName) && !"java.lang.String".equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
+					bugReporter.reportBug(new BugInstance(this, "SPP_NON_USEFUL_TOSTRING", toStringClass.isFinal() ? NORMAL_PRIORITY : LOW_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this));
+				}
+			}
+		}
+	}
+
+	private void propertiesSilliness(String methodName) {
+		if (("get".equals(methodName) || "getProperty".equals(methodName))) {
+			if (stack.getStackDepth() > 1) {
+				OpcodeStack.Item item = stack.getStackItem(1);
+				if ("getProperties".equals(item.getUserValue())) {
+					bugReporter.reportBug(new BugInstance(this, "SPP_USE_GETPROPERTY", NORMAL_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this));
+				}
+			}
+		}
+	}
+
+	private String sawInvokeInterface(String userValue) {
+		String className = getClassConstantOperand();
+		if ("java/util/Map".equals(className)) {
+			String method = getNameConstantOperand();
+			if ("keySet".equals(method)) {
+				userValue = "keySet";
+			}
+		} else if ("java/util/Set".equals(className)) {
+			String method = getNameConstantOperand();
+			if ("contains".equals(method)) {
+				if (stack.getStackDepth() >= 2) {
+					OpcodeStack.Item item = stack.getStackItem(1);
+					if ("keySet".equals(item.getUserValue())) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_USE_CONTAINSKEY", NORMAL_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				}
+			}
+		} else if ("java/util/List".equals(className)) {
+			String method = getNameConstantOperand();
+			if ("iterator".equals(method)) {
+				userValue = "iterator";
+			}
+		} else if ("java/util/Iterator".equals(className)) {
+			String method = getNameConstantOperand();
+			if ("next".equals(method)) {
+				if (stack.getStackDepth() >= 1) {
+					OpcodeStack.Item item = stack.getStackItem(0);
+					if ("iterator".equals(item.getUserValue())) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_USE_GET0", NORMAL_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				}
+			}
+		}
+
+		if (collectionInterfaces.contains(className)) {
+			String method = getNameConstantOperand();
+			if ("size".equals(method)) {
+				userValue = "size";
+			}
+		}
+		return userValue;
+	}
+
+	private void sawInvokeSpecial() {
+		String className = getClassConstantOperand();
+		if ("java/lang/StringBuffer".equals(className)
+				||  "java/lang/StringBuilder".equals(className)) {
+			String methodName = getNameConstantOperand();
+			if ("<init>".equals(methodName)) {
+				String signature = getSigConstantOperand();
+				if ("(I)V".equals(signature)) {
+					if (lastOpcode == BIPUSH) {
+						if (stack.getStackDepth() > 0) {
+							OpcodeStack.Item item = stack.getStackItem(0);
+							Object o = item.getConstant();
+							if (o instanceof Integer) {
+								int parm = ((Integer) o).intValue();
+								if ((parm > 32)
+										&&  (parm < 127)
+										&&  (parm != 64)
+										&&  ((parm % 10) != 0)
+										&&  ((parm % 5) != 0)) {
+									bugReporter.reportBug(new BugInstance(this, "SPP_NO_CHAR_SB_CTOR", LOW_PRIORITY)
+									.addClass(this)
+									.addMethod(this)
+									.addSourceLine(this));
+								}
+							}
+						}
+					}
+				} else if ("(Ljava/lang/String;)V".equals(signature)) {
+					if (stack.getStackDepth() > 0) {
+						OpcodeStack.Item item = stack.getStackItem(0);
+						String con = (String)item.getConstant();
+						if ("".equals(con)) {
+							bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUFFER_WITH_EMPTY_STRING", NORMAL_PRIORITY)
+							.addClass(this)
+							.addMethod(this)
+							.addSourceLine(this));
+						}
+					}
+				}
+			}
+		} else if ("java/math/BigDecimal".equals(className)) {
+			if (stack.getStackDepth() > 0) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				Object constant = item.getConstant();
+				if (constant instanceof Double)
+				{
+					Double v = (Double) constant;
+					if ((v != 0.0) && (v != 1.0)) {
+						bugReporter.reportBug(new BugInstance(this, "SPP_USE_BIGDECIMAL_STRING_CTOR", NORMAL_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				}
+			}
+		}
+	}
+
 	private boolean looksLikeStaticFieldValue(String constant) {
-	    if (staticConstants == null) {
-	        staticConstants = new HashSet<String>();
-	        
-	        Field[] fields = getClassContext().getJavaClass().getFields();
-	        for (Field f : fields) {
-	            if (((f.getAccessFlags() & (Constants.ACC_FINAL|Constants.ACC_STATIC)) == (Constants.ACC_FINAL|Constants.ACC_STATIC)) && "Ljava/lang/String;".equals(f.getSignature())) {
-	                ConstantValue cv = f.getConstantValue();
-	                if (cv != null) {
-    	                int cvIndex = cv.getConstantValueIndex();
-    	                staticConstants.add(getConstantPool().getConstantString(cvIndex, Constants.CONSTANT_String));
-	                }
-	            }
-	        }
-	    }
-	    
-	    return staticConstants.contains(constant);
+		if (staticConstants == null) {
+			staticConstants = new HashSet<String>();
+
+			Field[] fields = getClassContext().getJavaClass().getFields();
+			for (Field f : fields) {
+				if (((f.getAccessFlags() & (Constants.ACC_FINAL|Constants.ACC_STATIC)) == (Constants.ACC_FINAL|Constants.ACC_STATIC)) && "Ljava/lang/String;".equals(f.getSignature())) {
+					ConstantValue cv = f.getConstantValue();
+					if (cv != null) {
+						int cvIndex = cv.getConstantValueIndex();
+						staticConstants.add(getConstantPool().getConstantString(cvIndex, Constants.CONSTANT_String));
+					}
+				}
+			}
+		}
+
+		return staticConstants.contains(constant);
 	}
 }

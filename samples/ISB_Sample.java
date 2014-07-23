@@ -1,8 +1,9 @@
 import java.util.Map;
+import java.util.Set;
 
 @SuppressWarnings("all")
 public class ISB_Sample {
-    public String testISB1(String a, String b) {
+    public String testISB1(final String a, String b) {
         StringBuffer sb = new StringBuffer();
         sb.append("{" + a + ",");
         sb.append(b + "}");
@@ -30,8 +31,7 @@ public class ISB_Sample {
     }
 
     public String testISB5(String a, String b, String c, String d) {
-        String msg = a + "false positive" + b + ((c == null) ? "" : (a + d));
-        return msg;
+        return a + "false positive" + b + ((c == null) ? "" : (a + d));
     }
 
     public String testISB6(int a) {
@@ -59,11 +59,17 @@ public class ISB_Sample {
         return sb.toString();
     }
 
-    public String testTOStringAppending() {
+    public String testTOStringAppending(Map<String,Set<Integer>> map) {
         StringBuilder sb = new StringBuilder();
+        //no tag ISB_TOSTRING_APPENDING, because this can never be null.  Some styles like this.toString()
         sb.append(this.toString());
+        //tag ISB_TOSTRING_APPENDING
+        sb.append(map.toString());
         return sb.toString();
     }
+    
+    public static final String WORLD = "CONSTWorld"; 
+    
 
     @Override
     public String toString() {

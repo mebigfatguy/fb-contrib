@@ -1418,8 +1418,18 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.HangingExecutors">
         <Details>
             <![CDATA[
-            <p>Single detector for hanging ExecutorServices, that is, ExecutorServices that never get a call to shutdown, which
+            <p>Three detectors for hanging ExecutorServices, that is, ExecutorServices that never get a call to shutdown, which
 			can potentially cause the JVM to not exit.</p>
+			<p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.HttpClientProblems">
+        <Details>
+            <![CDATA[
+            <p>The HttpRequests from the apache.httpComponents have some little-known quirks about them.  
+			This is a set of detectors that helps guard against resource starvation.</p>
 			<p>It is a fast detector</p>
             ]]>
         </Details>
@@ -1458,9 +1468,40 @@
 		<LongDescription>Method {1} passes simple concatenating string in StringBuffer or StringBuilder append</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method uses StringBuffer or StringBuilder's append method to concatenate strings. However, it passes the result
+			<p>This method uses <code>StringBuffer</code> or <code>StringBuilder</code>'s append method to concatenate strings. However, it passes the result
 			of doing a simple String concatenation to one of these append calls, thus removing any performance gains
-			of using the StringBuffer or StringBuilder class.</p>
+			of using the <code>StringBuffer</code> or <code>StringBuilder</code> class.</p>
+			
+			<p>
+			Java will implicitly use StringBuilders, which can make this hard to detect or fix.  For example, <br/>
+			<code>
+			StringBuilder sb = new StringBuilder();<br/>
+			for (Map.Entry<Integer, String> e : map.entrySet()) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(e.getKey() + e.getValue());		//bug detected here<br/>
+			}<br/>
+			</code><br/>
+			
+			gets automatically turned into something like: <br/>
+			<code>
+			StringBuilder sb = new StringBuilder();<br/>
+			for (Map.Entry<Integer, String> e : map.entrySet()) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;StringBuilder tempBuilder = new StringBuilder();<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;tempBuilder.append(e.getKey());<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;tempBuilder.append(e.getValue());<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(tempBuilder.toString());		//this isn't too efficient<br/>
+			}<br/>
+			</code><br/>
+			
+			which involves a temporary <code>StringBuilder</code>, which is completely unneccessary.  To prevent this from happening, simply do:<br/>
+			
+			<code>
+			StringBuilder sb = new StringBuilder();<br/>
+			for (Map.Entry<Integer, String> e : map.entrySet()) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(e.getKey()); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(e.getValue());<br/>
+			}<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1483,9 +1524,31 @@
 		<LongDescription>Method {1} concatenates the result of a toString() call</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method concatenates the output of a toString() call into a StringBuffer/Builder.
+			<p>This method concatenates the output of a <code>toString()</code> call into a <code>StringBuffer</code> or <code>StringBuilder</code>.
 			It is simpler just to pass the object you want to append to the append call, as that form
-			does not suffer the potential for NullPointerExceptions, and is easier to read.</p>
+			does not suffer the potential for <code>NullPointerException</code>s, and is easier to read.</p>
+			
+			<p>
+			Keep in mind that Java compiles simple <code>String</code> Concatenation to use <code>StringBuilder</code>s, so you may see this bug even when you don't use <code>StringBuilder</code>s explicitly.
+			</p>
+			
+			<p>
+			Instead of: <br/>
+			<code>
+			StringBuilder builder = ... <br/>
+			builder.append(someObj.toString());<br/>
+			... <br/>
+			System.out.println("Problem with the object :" + someObj.toString());<br/>
+			</code>
+			just do: <br/>
+			<code>
+			StringBuilder builder = ... <br/>
+			builder.append(someObj);<br/>
+			... <br/>
+			System.out.println("Problem with the object :" + someObj);<br/>
+			</code>
+			to avoid the possibility of <code>NullPointerException</code>s when someObj is <code>null</code>.
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1504,7 +1567,7 @@
 
 	<BugPattern type="CC_CYCLOMATIC_COMPLEXITY">
 		<ShortDescription>Method is excessively complex</ShortDescription>
-		<LongDescription>Method {1} is excessively complex</LongDescription>
+		<LongDescription>Method {1} is excessively complex, with a cyclomatic complexity of {3}</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method has a high cyclomatic complexity figure, which calculates the number of branch
@@ -1785,8 +1848,24 @@
 		<LongDescription>Method {1} passes parsed string to primitive wrapper constructor</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method passes a primitive value retrieved from a BoxedPrimitive.parseBoxedPrimitive("1") call to
-			the same class's constructor. It is simpler to just pass the string to the BoxedPrimitives constructor.</p>
+			<p>This method passes a primitive value retrieved from a <code>BoxedPrimitive.parseBoxedPrimitive("1")</code> call to
+			the same class's constructor. It is simpler to just pass the string to the BoxedPrimitives constructor or, better yet, use the static valueOf.</p>
+			<p>Instead of something like:<br/>
+			<code>
+			Boolean bo = new Boolean(Boolean.parseBoolean("true")); <br/>
+			Float f = new Float(Float.parseFloat("1.234"));<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			Boolean bo = new Boolean("true"); <br/>
+			Float f = new Float("1.234");<br/>
+			</code>
+			or, to be more memory efficient: <br/>
+			<code>
+			Boolean bo = Boolean.valueOf("true"); <br/>
+			Float f = Float.valueOf("1.234");<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1810,8 +1889,27 @@
 			<![CDATA[
 			<p>This method passes a String to a wrapped primitive object's valueOf method, which in turn calls
 			the boxedValue() method to convert to a primitive. When it is desired to convert from a String
-			to a primitive value, it is simpler to use the BoxedPrimitive.parseBoxedPrimitive(myString)
+			to a primitive value, it is simpler to use the BoxedPrimitive.parseBoxedPrimitive(String)
 			method. </p>
+			
+			<p>Instead of something like:<br/>
+			<code>
+			public int someMethod(String data) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;long l = Long.valueOf(data).longValue(); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;float f = Float.valueOf(data).floatValue(); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;return Integer.valueOf(data); &nbsp;&nbsp;// There is an implicit .intValue() call<br/>
+			}<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			public int someMethod(String data) {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;long l = Long.parseLong(data); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;float f = Float.parseFloat(data); <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;return Integer.parseInt(data); <br/>
+			}<br/>
+			</code>
+			</p>
+			
 			]]>
 		</Details>
 	</BugPattern>
@@ -1823,8 +1921,19 @@
 			<![CDATA[
 			<p>This method passes a String to a wrapped primitive object's parse method, which in turn calls
 			the valueOf() method to convert to a boxed primitive. When it is desired to convert from a String
-			to a boxed primitive object, it is simpler to use the BoxedPrimitive.valueOf(myString)
-			method.</p>
+			to a boxed primitive object, it is simpler to use the BoxedPrimitive.valueOf(String) method.</p>
+			
+			<p>Instead of something like:<br/>
+			<code>
+			Boolean bo = Boolean.valueOf(Boolean.parseBoolean("true")); <br/>
+			Float f = Float.valueOf(Float.parseFloat("1.234"));<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			Boolean bo = Boolean.valueOf("true"); <br/>
+			Float f = Float.valueOf("1.234");<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1836,17 +1945,18 @@
 			<![CDATA[
 			<p>This method constructs a Boxed Primitive from a primitive only to call the primitiveValue() method to
 			convert it back to a primitive. Just use the primitive value instead.</p>
-			<pre>
-				primitive i = new BoxedPrimitive(1).primitiveValue();
-			</pre>
-			or
-			<pre>
-				primitive i = BoxedPrimitive.valueOf(1).primitiveValue();
-			</pre>
-			should just use
-			<pre>
-				primitive i = 1;
-			</pre>
+			<p>Instead of something like:<br/>
+			<code>
+			boolean bo = new Boolean(true).booleanValue(); <br/>
+			float f = new Float(1.234f).floatValue();<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			boolean bo = true; <br/>
+			float f = 1.234f;<br/>
+			</code>
+			</p>
+			
 			]]>
 		</Details>
 	</BugPattern>
@@ -1857,18 +1967,24 @@
 		<Details>
 			<![CDATA[
 			<p>This method constructs a Boxed Primitive from a primitive only to call the primitiveValue() method to
-			cast the value to another primitive type. It is simpler to just use casting</p>
-			<pre>
-				primitive i = new BoxedPrimitive(1.0).primitiveValue();
-			</pre>
-			or
-			<pre>
-				primitive i = BoxedPrimitive.valueOf(1.0).primitiveValue();
-			</pre>
-			should just use
-			<pre>
-				primitive i = (primitive)1.0;
-			</pre>
+			cast the value to another primitive type. It is simpler to just use casting.</p>
+			<p>Instead of something like:<br/>
+			<code>
+			double someDouble = ...<br/>
+			float f = new Double(someDouble).floatValue();<br/>
+			<br/>
+			int someInt = ...<br/>
+			byte b = new Integer(someInt).byteValue();<br/>
+			</code>
+			Simply do: <br/>
+			<code>
+			double someDouble = ...<br/>
+			float f = (float) someDouble;<br/>
+			<br/>
+			int someInt = ...<br/>
+			byte b = (byte)someInt;<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -1879,16 +1995,39 @@
 		<Details>
 			<![CDATA[
 			<p>This method assigns a Boxed boolean constant to a primitive boolean variable, or assigns a primitive boolean
-			constant to a Boxed boolean variable. Use the correct constant for the variable desired. Use</p>
-			<pre>
-				boolean b = true;
-				boolean b = false;
-			</pre>
-			or
-			<pre>
-				Boolean b = Boolean.TRUE;
+			constant to a Boxed boolean variable. Use the correct constant for the variable desired. Use <br/>
+			<code>
+				boolean b = true;<br/>
+				boolean b = false;<br/>
+			</code>
+			or <br/>
+			<code>
+				Boolean b = Boolean.TRUE;<br/>
 				Boolean b = Boolean.FALSE;
-			</pre>
+			</code>
+			</p>
+			
+			<p>Be aware that this boxing happens automatically when you might not expect it.  For example, <br/>
+			<code>
+			Map<String, Boolean> statusMap = ... <br/>
+			<br/>
+			public Boolean someMethod() {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;statusMap.put("foo", true);  //the "true" here is boxed<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;return false;  //the "false" here is boxed<br/>
+			}<br/>
+			</code>
+			has two cases of this needless autoboxing.  This can be made more efficient by simply substituting 
+			in the constant values: <br/>
+			
+			<code>
+			Map<String, Boolean> statusMap = ... <br/>
+			<br/>
+			public Boolean someMethod() {<br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;statusMap.put("foo", Boolean.TRUE);  <br/>
+			&nbsp;&nbsp;&nbsp;&nbsp;return Boolean.FALSE; <br/>
+			}<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2049,29 +2188,31 @@
 			<![CDATA[
 			<p>This method compares dates with two comparisons, rather than using the reverse comparison.
 			So this pattern</p>
-			<pre>
-				if ((date1.equals( date2 )) || (date1.after( date2 )))
-			</pre>
-			could become
-			<pre>
-				if (date1.compareTo( date2 ) >= 0)
-			</pre>
-			and
-			<pre>
-				if ((date1.equals( date2 )) || (date1.before( date2 )))
-			</pre>
-			could become
-			<pre>
-				if (date1.compareTo( date2 ) <= 0)
-			</pre>
-			and
-			<pre>
-				if ((date1.before( date2 )) || (date1.after( date2 )))
-			</pre>
-			could become
-			<pre>
-				if (!date1.equals( date2 ))
-			</pre>
+			<code>
+				if ((date1.equals( date2 )) || (date1.after( date2 )))<br/>
+			</code>
+			could become:<br/>
+			<code>
+				if (date1.compareTo( date2 ) >= 0) <br/>
+			</code>
+			<br/>
+			and<br/>
+			<code>
+				if ((date1.equals( date2 )) || (date1.before( date2 ))) <br/>
+			</code>
+			could become <br/>
+			<code>
+				if (date1.compareTo( date2 ) <= 0) <br/>
+			</code>
+			<br/>
+			and<br/>
+			<code>
+				if ((date1.before( date2 )) || (date1.after( date2 ))) <br/>
+			</code>
+			could become<br/>
+			<code>
+				if (!date1.equals( date2 ))<br/>
+			</code>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2399,9 +2540,31 @@
 		<LongDescription>Method {1} passes constant String of length 1 to character overridden method</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method passes a constant literal String of length 1 as a parameter to a method, that
-			exposes a similar method that takes a character. It is simpler and more expedient to handle one
-			character, rather than pass a string.</p>
+			<p>This method passes a constant literal <code>String</code> of length 1 as a parameter to a method, that
+			exposes a similar method that takes a <code>char</code>. It is simpler and more expedient to handle one
+			character, rather than a <code>String</code.</p>
+			
+			<p>
+			Instead of making calls like: <br/>
+			<code>
+			String myString = ... <br/>
+			if (myString.indexOf("e") != -1) {<br/>
+			int i = myString.lastIndexOf("e");<br/>
+			...<br/>
+			return myString.replace("m","z");<br/>
+			}<br/>
+			</code>
+			Replace the single letter <code>String</code>s with their <code>char</code> equivalents like so:<br/>
+			
+			<code>
+			String myString = ... <br/>
+			if (myString.indexOf('e') != -1) {<br/>
+			int i = myString.lastIndexOf('e');<br/>
+			...<br/>
+			return myString.replace('m','z');<br/>
+			}<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2595,14 +2758,15 @@
 			<![CDATA[
 			<p>This method attempts to check for null by just referring to the variable name
 			as would be done in C++. This ordinarily would be considered a compile error, except the
-			variable in question is a Boolean, which does an auto unbox to boolean.</p>
-			<pre>
-				if (b && b.booleanValue())
-			</pre>
-			should be
-			<pre>
-				if ((b != null) && b.booleanValue())
-			</pre>
+			variable in question is a Boolean, which does an auto unbox to boolean.
+			<code><br/>
+				if (b && b.booleanValue())<br/>
+			</code>
+			should be<br/>
+			<code>
+				if ((b != null) && b.booleanValue())<br/>
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2798,8 +2962,32 @@
 		<LongDescription>Method {1} appends two literal strings back to back to a StringBuilder</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method appends two literal strings to a StringBuilder back to back. This can be done with just
-			one append call, and may avoid intermediate reallocations of the StringBuilders backing store.</p>
+			<p>This method appends two literal strings to a <code>StringBuilder</code> back to back. 
+			Modern compilers will optimize something like:<br/>
+			<code>
+				public static final string CONST_VAL = "there";<br/>
+				...<br/>
+				String str = "Hello" + " "+ CONST_VAL + " " +"world!";<br/>
+			</code>
+			to: <br/>
+			<code>
+				public static final string CONST_VAL = "there";<br/>
+				...<br/>
+				String str = "Hello there world!";<br/>
+			</code>
+			This means the concatenation is done during compile time, not at runtime, so there's <b>no need</b> to do: <br/>
+			<code>
+			public static final string CONST_VAL = "there";<br/>
+			...<br/>
+			StringBuilder sb = new StringBuilder("Hello").append(" ").append(CONST_VAL).append(" ").append("world!");<br/>
+			String str = sb.toString();<br/>
+			</code>
+			which is harder to read and will result in more complex bytecode.
+			</p>
+			
+			<p>
+			Simply append your constants with the "+" symbol, don't append them with <code>StringBuilder.append()</code>.
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2833,6 +3021,29 @@
 	   <Details>
 	       <![CDATA[
 	       <p>This methods calls toString on a String. Just use the object itself if you want a String.</p>
+	       ]]>
+	   </Details>
+	</BugPattern>
+	
+	<BugPattern type="SPP_CONVERSION_OF_STRING_LITERAL">
+	<ShortDescription>Method converts a String literal</ShortDescription>
+	   <LongDescription>Method {1} calls {3} on a String Literal</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This methods calls a converting method like <code>toLowerCase()</code> or <code>trim</code>
+		   on a <code>String</code> literal. You should make the transformation yourself and use the transformed literal.</p>
+		   
+		   <p>
+		   For example, instead of :<br/>
+		   <code>
+		   return "ThisIsAConstantString ".toLowerCase().trim(); <br/>
+		   </code>
+		   just do <br/>
+		   <code>
+		   return "thisisaconstantstring"; <br/>
+		   </code>
+		   for shorter and easier to read code.  An exception might be made when locale-specific transformations need to be done (in the case of <code>toUpperCase()</code> and <code>toLowerCase()</code>.
+		   </p>
 	       ]]>
 	   </Details>
 	</BugPattern>
@@ -3161,7 +3372,7 @@
 
 	<BugPattern type="LO_SUSPECT_LOG_CLASS">
 		<ShortDescription>Method specifies an unrelated class when allocating a Logger</ShortDescription>
-		<LongDescription>Method {1} specifies an unrelated class when allocating a Logger</LongDescription>
+		<LongDescription>Method {1} specifies an unrelated class when allocating a Logger.  Saw "{3}", expected "{4}".</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method creates a Logger by passing in a specification for a class that is unrelated
@@ -3438,13 +3649,13 @@
 			<p>This method contains a contravariant array assignment. Since arrays are mutable data structures, their use
 			must be restricted to covariant or invariant usage.</p>
 
-			<pre>
-				class A {}
-				class B extends A {}
-
-				B[] b = new B[2];
-				A[] a = b;
-			</pre>
+			<code>
+				class A {}</br>
+				class B extends A {}</br>
+				</br>
+				B[] b = new B[2];</br>
+				A[] a = b;</br>
+			</code>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3457,14 +3668,14 @@
 			<p>This method contains a contravariant array element assignment. Since arrays are mutable
 			data structures, their use must be restricted to covariant or invariant usage.</p>
 
-			<pre>
-				class A {}
-				class B extends A {}
-
-				B[] b = new B[2];
-				A[] a = b;
-				a[0] = new A(); // results in ArrayStoreException (Runtime)
-			</pre>
+			<code>
+				class A {}</br>
+				class B extends A {}</br>
+<				/br>
+				B[] b = new B[2];</br>
+				A[] a = b;</br>
+				a[0] = new A(); // results in ArrayStoreException (Runtime)</br>
+			</code>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4082,7 +4293,7 @@
         </Details>
     </BugPattern>
 
-<BugPattern type="HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN">
+	<BugPattern type="HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN">
         <ShortDescription>An ExecutorService isn't shutdown before the reference to it is lost</ShortDescription>
         <LongDescription>ExecutorService {2} is replaced with another ExecutorService without being shutdown, potentially preventing the entire JVM from shutting down</LongDescription>
         <Details>
@@ -4121,6 +4332,101 @@
 			<p><b>Note:</b> <code>ExecutorService</code>s are generally created once in a program's lifecycle.  If you find yourself
 			replacing the <code>ExecutorService</code>, perhaps you may consider restructuring your code to use calls like
 			<code>awaitTermination()</code> or <code>Future</code>s/<code>Callable</code>s to avoid recreating the <code>ExecutorService</code>.</p>
+            ]]>
+        </Details>
+    </BugPattern>
+	
+	<BugPattern type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD">
+        <ShortDescription>Unreleased HttpRequest network resources (field)</ShortDescription>
+        <LongDescription>The HttpRequest field {1} does not release its network resources, which could freeze the running code</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>FindBugs has detected an <code>org.apache.http.HttpRequest</code> (e.g. <code>HttpGet</code>, <code>HttpPost</code>, etc)
+				that didn't release its associated resources.  Code like the following: <br/>
+				<code>
+				private HttpGet httpGet; <br/>
+				...</br>
+				public String requestInfo(URI u) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
+				}</br>
+				</code>
+				will freeze after a few requests, usually with no indication as to why.  </p>
+				
+			<p>
+				The reason this code freezes is because <code>org.apache.http.HttpRequest</code>s need explicitly release their connection
+				with a call to either <code>reset()</code> or <code>releaseConnection()</code>.  The above example can be easily fixed:<br/>
+				<code>
+				private HttpGet httpGet; <br/>
+				...</br>
+				public String requestInfo(URI u) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet.reset();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</b></br>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
+				}</br>
+				</code>
+			</p>
+            ]]>
+        </Details>
+    </BugPattern>
+	
+	<BugPattern type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL">
+        <ShortDescription>Unreleased HttpRequest network resources (local)</ShortDescription>
+        <LongDescription>The local HttpRequest {1} does not release its network resources before being garbage collected, which could freeze the running code</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>FindBugs has detected an <code>org.apache.http.HttpRequest</code> (e.g. <code>HttpGet</code>, <code>HttpPost</code>, etc)
+				that didn't release its associated resources.  Code like the following: <br/>
+				<code>
+				public String requestInfo(URI u) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
+				}</br>
+				</code>
+				will freeze after a few requests, usually with no indication as to why. </p>
+				
+			<p>
+				The reason this code freezes is because <code>org.apache.http.HttpRequest</code>s need explicitly release their connection
+				with a call to either <code>reset()</code> or <code>releaseConnection()</code>, <b>even if the request is a local</b>. 
+				The garbage collector will not release these resources, leading to the frustrating freezing scenario described above.
+				
+				<br/>The above example can be easily fixed:<br/>
+				<code>
+				public String requestInfo(URI u) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( </br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpGet.reset();</br>
+				&nbsp;&nbsp;&nbsp;&nbsp;}</b></br>
+				&nbsp;&nbsp;&nbsp;&nbsp;return null;</br>
+				}</br>
+				</code>
+			</p>
             ]]>
         </Details>
     </BugPattern>
@@ -4271,5 +4577,6 @@
 	<BugCode abbrev="MUC">Modifying Unmodifiable Collection</BugCode>
 	<BugCode abbrev="UJM">Unjitable method</BugCode>
 	<BugCode abbrev="HES">Hanging ExecutorService</BugCode>
+	<BugCode abbrev="HCP">HttpClient Problems</BugCode>
 	<BugCode abbrev="CTU">Conflicting Time Units</BugCode>
 </MessageCollection>

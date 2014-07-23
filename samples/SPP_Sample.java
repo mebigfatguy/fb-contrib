@@ -9,6 +9,7 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -96,21 +97,10 @@ public class SPP_Sample implements Serializable {
     }
 
     public void testDoubleAppendLiteral(StringBuilder sb, String s) {
-        sb.append("hello").append("there");
+        sb.append("hello").append("there");     
         sb.append("Hello").append(s).append("there");
     }
 
-    public boolean testStringBuilderEquals(StringBuilder sb1, StringBuilder sb2) {
-    	if (sb1.equals(sb2)) {
-    		StringBuffer sbu1 = new StringBuffer(sb1.toString());
-    		StringBuffer sbu2 = new StringBuffer(sb2.toString());
-    		
-    		return sbu1.equals(sbu2);
-    	}
-    	
-    	return false;
-    }
-    
     public String testFPDoubleAppendListeralStatic() {
         StringBuilder sb = new StringBuilder();
         sb.append("literal").append(LIT).append("literal");
@@ -323,7 +313,31 @@ public class SPP_Sample implements Serializable {
     }
     
     public String testStringToString(String x) {
-        return x.toString();
+    	//tag SPP_TOSTRING_ON_STRING (fb-contrib) and DM_STRING_TOSTRING (FindBugs)
+        System.out.println(x.toString());
+        
+        //tag DM_CONVERT_CASE (FindBugs) and SPP_CONVERSION_OF_STRING_LITERAL
+        System.out.println("SomeUpperCase".toLowerCase());
+        //tag SPP_CONVERSION_OF_STRING_LITERAL
+        System.out.println("SomeUpperCase".toLowerCase(Locale.US));
+        //tag SPP_CONVERSION_OF_STRING_LITERAL
+        System.out.println("SomeUpperCase".toUpperCase());
+        //tag SPP_CONVERSION_OF_STRING_LITERAL
+        System.out.println("SomeUpperCase".toUpperCase(Locale.CANADA));
+        //tag SPP_CONVERSION_OF_STRING_LITERAL
+        System.out.println("  SomeUpperCase ".trim());
+        
+        //no tag
+        System.out.println(x.toLowerCase());
+        //no tag
+        System.out.println(x.toLowerCase(Locale.US));
+        //no tag
+        System.out.println(x.toUpperCase());
+        //no tag
+        System.out.println(x.toUpperCase(Locale.CANADA));
+        //no tag
+        System.out.println(x.trim());
+        return x;
     }
 
     public boolean fpNullAndInstanceOf(Object o) {
@@ -341,9 +355,11 @@ public class SPP_Sample implements Serializable {
         System.out.println(s.toString());
         /* only report it once */
         System.out.println(s.toString());
+        
     }
 
     public void testFPToString(Object o) {
         System.out.println(o);
     }
+    
 }
