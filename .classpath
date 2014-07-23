@@ -17,8 +17,6 @@
 	<classpathentry kind="lib" path="lib/fluent-hc-4.3.4.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.3.4.jar"/>
 	<classpathentry kind="lib" path="lib/httpmime-4.3.4.jar"/>
-	<classpathentry kind="lib" path="lib/fluent-hc-4.3.2.jar"/>
-	<classpathentry kind="lib" path="lib/httpmime-4.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.3.4.jar"/>
 	<classpathentry kind="lib" path="lib/annotations-3.0.0.jar"/>
