@@ -341,7 +341,7 @@ class LocalHangingExecutor extends LocalTypeDetector {
 	@Override
 	protected void reportBug(RegisterInfo cri) {
 		//very important to report the bug under the top, parent detector, otherwise it gets filtered out
-		bugReporter.reportBug(new BugInstance(delegatingDetector, "HES_LOCAL_EXECUTOR_SERVICE", NORMAL_PRIORITY)
+		bugReporter.reportBug(new BugInstance(delegatingDetector, "HES_LOCAL_EXECUTOR_SERVICE", LOW_PRIORITY)
 		.addClass(this)
 		.addMethod(this)
 		.addSourceLine(cri.getSourceLineAnnotation()));

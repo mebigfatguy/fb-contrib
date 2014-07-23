@@ -39,7 +39,6 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.classfile.DescriptorFactory;
 
 /** looks for odd uses of the Assert class of the JUnit framework */
 @CustomUserValue
@@ -73,13 +72,11 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
             testCaseClass = Repository.lookupClass(TESTCASE_CLASS);
         } catch (ClassNotFoundException cnfe) {
             testCaseClass = null;
-            bugReporter.reportMissingClass(DescriptorFactory.createClassDescriptor(TESTCASE_CLASS.replaceAll("\\.",  "/")));
         }
         try {
             testAnnotationClass = Repository.lookupClass(TEST_CLASS);
         } catch (ClassNotFoundException cnfe) {
             testAnnotationClass = null;
-            bugReporter.reportMissingClass(DescriptorFactory.createClassDescriptor(TEST_CLASS.replaceAll("\\.",  "/")));
         }
 	}
 
