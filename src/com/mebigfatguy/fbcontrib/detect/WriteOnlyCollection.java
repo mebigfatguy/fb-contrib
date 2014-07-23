@@ -18,8 +18,10 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -31,12 +33,22 @@ import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.NavigableMap;
+import java.util.Queue;
 import java.util.Set;
 import java.util.SortedMap;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.ConcurrentNavigableMap;
+import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.concurrent.ConcurrentSkipListSet;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingDeque;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -67,18 +79,18 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 		collectionClasses.add(Vector.class.getName());
 		collectionClasses.add(ArrayList.class.getName());
 		collectionClasses.add(LinkedList.class.getName());
-		/* these are java 6 classes */
-        collectionClasses.add("java.util.Deque");
-        collectionClasses.add("java.util.Queue");
-        collectionClasses.add("java.util.ArrayDeque");
-        collectionClasses.add("java.util.LinkedBlockingDeque");
-        collectionClasses.add("java.util.NavigableMap");
-        collectionClasses.add("java.util.concurrent.ConcurrentMap");
-        collectionClasses.add("java.util.concurrent.ConcurrentNavigableMap");
-        collectionClasses.add("java.util.concurrent.ConcurrentSkipListMap");
-        collectionClasses.add("java.util.concurrent.ConcurrentHashMap");
-        collectionClasses.add("java.util.concurrent.ConcurrentSkipListSet");
-        collectionClasses.add("java.util.concurrent.CopyOnWriteArrayList");
+        collectionClasses.add(Deque.class.getName());
+        collectionClasses.add(Queue.class.getName());
+        collectionClasses.add(ArrayDeque.class.getName());
+        collectionClasses.add(LinkedBlockingDeque.class.getName());
+        collectionClasses.add(NavigableMap.class.getName());
+        collectionClasses.add(ConcurrentLinkedQueue.class.getName());
+        collectionClasses.add(ConcurrentMap.class.getName());
+        collectionClasses.add(ConcurrentNavigableMap.class.getName());
+        collectionClasses.add(ConcurrentSkipListMap.class.getName());
+        collectionClasses.add(ConcurrentHashMap.class.getName());
+        collectionClasses.add(ConcurrentSkipListSet.class.getName());
+        collectionClasses.add(CopyOnWriteArrayList.class.getName());
 	}
 
 	private static Set<String> nonInformationalMethods = new HashSet<String>();

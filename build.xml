@@ -13,12 +13,12 @@
 	<property name="samples.dir" value="${basedir}/samples" />
 	<property name="javadoc.dir" value="${basedir}/javadoc" />
 	<property name="htdocs.dir" value="${basedir}/htdocs" />
-	<property name="javac.source" value="1.5" />
-	<property name="javac.target" value="1.5" />
+	<property name="javac.source" value="1.6" />
+	<property name="javac.target" value="1.6" />
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
-	<property name="fb-contrib.version" value="5.2.0" />
+	<property name="fb-contrib.version" value="5.9.0" />
 	
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
 	
@@ -36,7 +36,7 @@
 		<delete dir="${basedir}/plugin" />
 	</target>
 	
-	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank">
+	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank" unless="no.yank">
         <mkdir dir="${lib.dir}" />
         <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" proxyServer="${proxy.server}" source="true">
             <server url="http://repo1.maven.org/maven2" />
@@ -59,9 +59,9 @@
 		<mkdir dir="${javadoc.dir}" />
 		<path id="fb-contrib.classpath">
 			<pathelement location="${lib.dir}/findbugs-${findbugs.version}.jar" />
-			<pathelement location="${lib.dir}/bcel-${bcel.version}.jar" />
+			<pathelement location="${lib.dir}/bcel-findbugs-${bcel-findbugs.version}.jar" />
 			<pathelement location="${lib.dir}/annotations-${annotations.version}.jar" />
-			<pathelement location="${lib.dir}/asm-tree-${asm-tree.version}.jar" />
+			<pathelement location="${lib.dir}/asm-debug-all-${asm-debug-all.version}.jar" />
 		</path>
 		<path id="fb-contrib.samples.classpath">
 			<pathelement location="${lib.dir}/javax.servlet.jsp-api-${javax.servlet.jsp-api.version}.jar" />
@@ -95,7 +95,7 @@
 	</target>
 
 	<target name="compile_samples" depends="-init" description="compiles sample problem files">
-		<javac srcdir="${samples.dir}" destdir="${samples.dir}" source="1.7" target="1.7" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
+		<javac srcdir="${samples.dir}" destdir="${samples.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
         	<compilerarg value="-XDignore.symbol.file"/>
         	<classpath refid="fb-contrib.classpath" />
 			<classpath refid="fb-contrib.samples.classpath" />
@@ -170,9 +170,8 @@
 	</target>
 
 	<target name="install" depends="build" description="installs the plugin into FindBugs">
-		<property environment="env" />
-		<echo message="Findbugs: ${env.FINDBUGS_ECLIPSE}"/>
-		<copy todir="${env.FINDBUGS_ECLIPSE}/plugin">
+		<echo message="Findbugs: ${findbugs.dir}/plugin"/>		
+		<copy todir="${findbugs.dir}/plugin">
 			<fileset dir="${basedir}">
 				<include name="fb-contrib-${fb-contrib.version}.jar" />
 			</fileset>
