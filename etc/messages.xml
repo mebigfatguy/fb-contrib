@@ -3671,7 +3671,7 @@
 			<code>
 				class A {}</br>
 				class B extends A {}</br>
-<				/br>
+				</br>
 				B[] b = new B[2];</br>
 				A[] a = b;</br>
 				a[0] = new A(); // results in ArrayStoreException (Runtime)</br>
