@@ -90,7 +90,7 @@
 	</target>
 
 	<target name="compile_samples" depends="-init" description="compiles sample problem files">
-		<javac srcdir="${samples.dir}" destdir="${samples.dir}" source="1.7" target="1.7" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
+		<javac srcdir="${samples.dir}" destdir="${samples.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
         	<compilerarg value="-XDignore.symbol.file"/>
         	<classpath refid="fb-contrib.classpath" />
 			<classpath refid="fb-contrib.samples.classpath" />
