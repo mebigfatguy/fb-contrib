@@ -53,10 +53,10 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_2), "(jdk|j2?re)1.2");
 		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_3), "(jdk|j2?re)1.3");
 		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_4), "(jdk|j2?re)1.4");
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_5), "(jdk|j2?re)1.5");
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_6), "(jdk|j2?re)1.6");
-        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_7), "(jdk|j2?re)1.7");
-        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_8), "(jdk|j2?re)1.8");
+		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_5), "((jdk|j2?re)1.5)|(java-5)");
+		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_6), "((jdk|j2?re)1.6)|(java-6)");
+        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_7), "((jdk|j2?re)1.7)|(java-7)");
+        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_8), "((jdk|j2?re)1.8)|(java-8)");
 	}
 	private static final Map<Integer, String> versionStrings = new HashMap<Integer, String>();
 	static {
