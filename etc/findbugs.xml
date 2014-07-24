@@ -157,7 +157,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UseSplit" speed="fast" reports="USS_USE_STRING_SPLIT" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousJDKVersionUse" speed="slow" reports="SJVU_SUSPICIOUS_JDK_VERSION_USE" disabled="true" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousJDKVersionUse" speed="slow" reports="SJVU_SUSPICIOUS_JDK_VERSION_USE" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UseAddAll" speed="fast" reports="UAA_USE_ADD_ALL" />
 
