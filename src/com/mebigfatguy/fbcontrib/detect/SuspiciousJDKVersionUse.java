@@ -238,6 +238,8 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		File rtPath = versionPaths.get(versionStr);
 		if (rtPath != null)
 			return rtPath;
+		if (versionPaths.containsKey(versionStr))
+			return null;
 
 		if (jdksRoot == null) {
 			URL jdkUrl = SuspiciousJDKVersionUse.class.getResource("/java/lang/Object.class");
@@ -254,13 +256,16 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 						m = verPat.matcher(jdksRoot.getName());
 					}
 
-					if (jdksRoot.getParentFile() == null)
+					if (jdksRoot.getParentFile() == null) {
+						versionPaths.put(versionStr, null);
 						return null;
+					}
 
 					try {
 						String encoding = System.getProperty("file.encoding");
 						jdksRoot = new File(URLDecoder.decode(jdksRoot.getParentFile().getPath(), encoding));
 					} catch (UnsupportedEncodingException uee) {
+						versionPaths.put(versionStr, null);
 						return null;
 					}
 				}
@@ -269,21 +274,27 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 
 		if (jdksRoot != null) {
 			File[] possibleJdks = jdksRoot.listFiles();
-			for (File possibleJdk : possibleJdks) {
-				Pattern verPat = Pattern.compile(versionStr);
-				Matcher m = verPat.matcher(possibleJdk.getName());
-				if (m.find()) {
-					File wantedRtJar = new File(possibleJdk, "lib/rt.jar");
-					if (!wantedRtJar.exists()) {
-						wantedRtJar = new File(possibleJdk, "jre/lib/rt.jar");
-						if (!wantedRtJar.exists())
-							return null;
+			if (possibleJdks != null) {
+				for (File possibleJdk : possibleJdks) {
+					Pattern verPat = Pattern.compile(versionStr);
+					Matcher m = verPat.matcher(possibleJdk.getName());
+					if (m.find()) {
+						File wantedRtJar = new File(possibleJdk, "lib/rt.jar");
+						if (!wantedRtJar.exists()) {
+							wantedRtJar = new File(possibleJdk, "jre/lib/rt.jar");
+							if (!wantedRtJar.exists()) {
+								versionPaths.put(versionStr, null);
+								return null;
+							}
+						}
+						versionPaths.put(versionStr, wantedRtJar);
+						return wantedRtJar;
 					}
-					versionPaths.put(versionStr, wantedRtJar);
-					return wantedRtJar;
 				}
 			}
 		}
+		
+		versionPaths.put(versionStr, null);
 
 		return null;
 	}
