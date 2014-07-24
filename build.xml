@@ -72,9 +72,7 @@
             <pathelement location="${lib.dir}/backport-util-concurrent-${backport-util-concurrent.version}.jar" />
             <pathelement location="${lib.dir}/slf4j-api-${slf4j-api.version}.jar" />
             <pathelement location="${lib.dir}/guava-${guava.version}.jar" />
-			<pathelement location="${lib.dir}/fluent-hc-${fluent-hc.version}.jar" />
 			<pathelement location="${lib.dir}/httpclient-cache-${httpclient-cache.version}.jar" />
-			<pathelement location="${lib.dir}/httpmime-${httpmime.version}.jar" />
 			<pathelement location="${lib.dir}/httpcore-${httpcore.version}.jar" />
 			<pathelement location="${lib.dir}/httpclient-${httpclient.version}.jar" />
 		</path>
