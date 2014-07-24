@@ -55,8 +55,8 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_4), "(jdk|j2?re)1.4");
 		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_5), "(jdk|j2?re)1.5");
 		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_6), "(jdk|j2?re)1.6");
-        verRegEx.put(Integer.valueOf(51), "(jdk|j2?re)1.7");
-        verRegEx.put(Integer.valueOf(52), "(jdk|j2?re)1.8");
+        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_7), "(jdk|j2?re)1.7");
+        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_8), "(jdk|j2?re)1.8");
 	}
 	private static final Map<Integer, String> versionStrings = new HashMap<Integer, String>();
 	static {
@@ -66,8 +66,8 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		versionStrings.put(Integer.valueOf(Constants.MAJOR_1_4), "JDK 1.4");
 		versionStrings.put(Integer.valueOf(Constants.MAJOR_1_5), "JDK 1.5");
         versionStrings.put(Integer.valueOf(Constants.MAJOR_1_6), "JDK 1.6");
-        versionStrings.put(Integer.valueOf(51), "JDK 1.7");
-        versionStrings.put(Integer.valueOf(52), "JDK 1.8");
+        versionStrings.put(Integer.valueOf(Constants.MAJOR_1_7), "JDK 1.7");
+        versionStrings.put(Integer.valueOf(Constants.MAJOR_1_8), "JDK 1.8");
 	}
 	private static final Pattern jarPattern = Pattern.compile("jar:file:/*([^!]*)");
 	private static final String SJVU_JDKHOME = "fb-contrib.sjvu.jdkhome";
