@@ -625,7 +625,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			
 				OpcodeStack.Item itm = stack.getStackItem(stackOffset.intValue());
 				Object constant = itm.getConstant();
-				if ((constant != null) && constant.getClass().equals(String.class)) {
+				if ((constant != null) && constant.getClass().equals(String.class) && (itm.getFieldAnnotation() == null)) {
 					int priority = NORMAL_PRIORITY;
 					if (Type.getArgumentTypes(getSigConstantOperand()).length > 0) {
 						//if an argument is passed in, it may be locale-specific
