@@ -104,7 +104,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
 	public void visitCode(Code obj) {
 		Method method = getMethod();
 		if (!method.getSignature().startsWith("()")) {
-			if (prescreen(getMethod())) {
+			if (prescreen(method)) {
 				stack.resetForMethodEntry(this);
 				super.visitCode(obj);
 			}
