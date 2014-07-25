@@ -57,6 +57,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
     }
     
+    @Override
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
@@ -72,6 +73,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         }
     }
     
+    @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
         stack.resetForMethodEntry(this);
@@ -95,6 +97,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         }
     }
     
+    @Override
     public void sawOpcode(int seen) {
         Integer size = null;
         boolean sizeSet = false;

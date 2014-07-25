@@ -75,6 +75,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
      *
      * @param classContext the context object that holds the JavaClass being parsed
      */
+    @Override
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();

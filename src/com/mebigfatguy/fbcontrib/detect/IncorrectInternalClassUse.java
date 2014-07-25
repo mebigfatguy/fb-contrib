@@ -64,6 +64,7 @@ public class IncorrectInternalClassUse implements Detector
      * 
      * @param context the context object of the currently parsed class
      */
+    @Override
     public void visitClassContext(ClassContext context) {
         JavaClass cls = context.getJavaClass();
         if (!isInternal(cls.getClassName())) {
@@ -86,6 +87,7 @@ public class IncorrectInternalClassUse implements Detector
     /**
      * implementation stub for Detector interface
      */
+    @Override
     public void report() {
     }
 

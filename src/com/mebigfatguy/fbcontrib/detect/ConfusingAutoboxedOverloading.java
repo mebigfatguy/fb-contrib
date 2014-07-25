@@ -72,6 +72,7 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 	 * 
 	 * @param classContext the context object that holds the JavaClass currently being parsed
 	 */
+	@Override
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass cls = classContext.getJavaClass();
 		
@@ -192,6 +193,7 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 	/**
 	 * implements the detector with null implementation
 	 */
+	@Override
 	public void report() {		
 	}
 }

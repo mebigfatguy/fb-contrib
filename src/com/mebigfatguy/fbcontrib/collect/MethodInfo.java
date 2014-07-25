@@ -51,6 +51,7 @@ public class MethodInfo {
         immutabilityOrdinal = (byte) imType.ordinal();
     }
     
+    @Override
     public String toString() {
         return "NumMethodBytes: " + getNumBytes() + " NumMethodCalls: " + getNumMethodCalls() + " ImmutabilityType: " + getImmutabilityType();
     }

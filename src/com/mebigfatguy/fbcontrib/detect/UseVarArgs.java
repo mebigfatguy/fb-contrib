@@ -38,6 +38,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector
 		this.bugReporter = bugReporter;
 	}
 	
+	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			javaClass = classContext.getJavaClass();
@@ -93,6 +94,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector
 		}
 	}
 	
+	@Override
 	public void report() {
 	}
 	

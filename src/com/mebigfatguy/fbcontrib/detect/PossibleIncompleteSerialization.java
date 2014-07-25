@@ -50,6 +50,7 @@ public class PossibleIncompleteSerialization implements Detector
 	 * 
 	 * @param classContext the context object of the currently parsed class
 	 */
+	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			JavaClass cls = classContext.getJavaClass();
@@ -126,6 +127,8 @@ public class PossibleIncompleteSerialization implements Detector
 		}
 		return false;
 	}
+	
+	@Override
 	public void report() {
 	}
 }

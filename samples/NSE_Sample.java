@@ -2,6 +2,7 @@ public class NSE_Sample {
     class One {
         private int o;
 
+        @Override
         public boolean equals(Object that) {
             if (that instanceof One) {
                 return o == ((One) that).o;
@@ -16,6 +17,7 @@ public class NSE_Sample {
     class Two {
         public int t;
 
+        @Override
         public boolean equals(Object that) {
             if (that instanceof Two) {
                 return t == ((Two) that).t;
@@ -28,6 +30,7 @@ public class NSE_Sample {
     class Parent {
         private int o;
 
+        @Override
         public boolean equals(Object that) {
             if (that instanceof Parent) {
                 return o == ((Parent) that).o;
@@ -42,6 +45,7 @@ public class NSE_Sample {
     class Child extends Parent {
         public int t;
 
+        @Override
         public boolean equals(Object that) {
             if (that instanceof Child) {
                 return t == ((Child) that).t;

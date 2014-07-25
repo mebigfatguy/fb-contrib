@@ -44,11 +44,13 @@ public class OCSDebugger extends BytecodeScanningDetector {
     public OCSDebugger(BugReporter bugReporter) {
     }
     
+    @Override
     public void visitClassContext(ClassContext classContext) {
         if ((OUTPUT_FILE_NAME != null) && (METHOD_DESC != null))
             super.visitClassContext(classContext);
     }
     
+    @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
         
@@ -67,6 +69,7 @@ public class OCSDebugger extends BytecodeScanningDetector {
         }
     }
     
+    @Override
     public void sawOpcode(int seen) {
         stack.precomputation(this);
         stack.sawOpcode(this, seen);

@@ -52,6 +52,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 	 *
 	 * @param classContext the context object of the currently parsed class
 	 */
+	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			JavaClass cls = classContext.getJavaClass();
@@ -99,6 +100,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 	/**
 	 * required for implementing the interface
 	 */
+	@Override
 	public void report() {
 	}
 
