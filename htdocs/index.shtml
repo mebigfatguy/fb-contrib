@@ -68,11 +68,12 @@ function toggleBlock(divId, imgId)
 			</li>
 			</ul>
 		</p>
-		<p style="font-weight: bold;">The latest version of fb-contrib is 5.2.1 available for download 
-		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-5.2.1.jar/download">here</a>.</p>
+		<p style="font-weight: bold;">The latest version of fb-contrib is 6.0.0 available for download 
+		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-6.0.0.jar/download">here</a>.</p>
+		<p style="font-weight: bold;">This version requires FindBugs 3.0 or better</p>
 		</div>
 
-        <hr/>
+		<hr/>
         <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
         Detectors added in git<br/>
         <div id="git" style="display:none;">
@@ -82,6 +83,14 @@ function toggleBlock(divId, imgId)
                 same kind of exception, and throw the same exception always. These blocks can
                 be coalesced into one.
                 </li>
+            </ul>
+        </div>
+        
+        <hr/>
+        
+        <img id="v6_0_0_image" src="flip2.gif" onClick="toggleBlock('v6_0_0', 'v6_0_0_image');" align="top"/>
+        Detectors added in v6.0.0<br/>
+        <div id="v6_0_0" style="display:block;">
                 <li><b>[PSC] Presize Collections</b><br/>
                 Looks for methods that create and populate collections, and while knowing
                 the end size of those collections, does not pre allocate the collection
@@ -110,12 +119,17 @@ function toggleBlock(divId, imgId)
                 Looks for methods that perform arithmetic operations on values representing time
 				where the time unit is incompatible, ie adding a millisecond value to a nanosecond value.
 				</li>
+				<li><b>[HCP] Http Client Problems</b><br/>
+				The HttpRequests from the apache.httpComponents have some little-known quirks about them.  
+				This is a set of detectors that helps guard against resource starvation.<br/>
+				<span style="color: #0000FF;">--contributed by Kevin Lubick - THANKS!</span>
+				</li>
             </ul>
         </div>
         <hr/>
-        <img id="v5_2_0_image" src="flip2.gif" onClick="toggleBlock('v5_2_0', 'v5_2_0_image');" align="top"/>
+        <img id="v5_2_0_image" src="flip1.gif" onClick="toggleBlock('v5_2_0', 'v5_2_0_image');" align="top"/>
         Detectors added in v5.2.0<br/>
-        <div id="git" style="display:block;">
+        <div id="v5_2_0" style="display:none;">
             <ul>
         		<li><b>[CNC] Collection Naming Confusion</b><br/>
         		Looks for fields and local variables that have Map, Set, List in their names
