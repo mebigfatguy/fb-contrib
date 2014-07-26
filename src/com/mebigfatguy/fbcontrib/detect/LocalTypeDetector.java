@@ -62,7 +62,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 	/**
 	 * Should return a map of a class and a set of "factory" methods that create types
 	 * that should be reported buggy (when made as local variables).
-	 * @return
+	 * @return map of factory methods
 	 */
 	protected abstract Map<String, Set<String>> getWatchedClassMethods();
 
