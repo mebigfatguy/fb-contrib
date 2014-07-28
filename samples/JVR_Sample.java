@@ -21,44 +21,55 @@ class VendorBlob implements Blob {
         return "Booya";
     }
 
+    @Override
     public InputStream getBinaryStream() throws SQLException {
         return null;
     }
 
+    @Override
     public byte[] getBytes(long arg0, int arg1) throws SQLException {
         return null;
     }
 
+    @Override
     public long length() throws SQLException {
         return 0;
     }
 
+    @Override
     public long position(Blob arg0, long arg1) throws SQLException {
         return 0;
     }
 
+    @Override
     public long position(byte[] arg0, long arg1) throws SQLException {
         return 0;
     }
 
+    @Override
     public OutputStream setBinaryStream(long arg0) throws SQLException {
         return null;
     }
 
+    @Override
     public int setBytes(long arg0, byte[] arg1, int arg2, int arg3) throws SQLException {
         return 0;
     }
 
+    @Override
     public int setBytes(long arg0, byte[] arg1) throws SQLException {
         return 0;
     }
 
+    @Override
     public void truncate(long arg0) throws SQLException {
     }
 
+    @Override
     public void free() throws SQLException {
     }
 
+    @Override
     public InputStream getBinaryStream(long arg0, long arg1) throws SQLException {
         return null;
     }

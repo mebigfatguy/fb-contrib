@@ -28,6 +28,7 @@ public class ABC_Sample {
 
         public UseComparator() {
             testComp = new TreeMap<byte[], byte[]>(new Comparator<byte[]>() {
+            	@Override
                 public int compare(byte[] b1, byte[] b2) {
                     return b1.length - b2.length;
                 }

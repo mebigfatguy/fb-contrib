@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mebigfatguy.fb-contrib</groupId>
     <artifactId>fb-contrib</artifactId>
-    <version>6.0.0</version>
+    <version>6.1.0</version>
     
     <parent>
         <groupId>org.sonatype.oss</groupId>
@@ -109,6 +109,18 @@
             <version>3.0.0</version>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>bcel-findbugs</artifactId>
+            <version>6.0</version>
+            <scope>provided</scope>
+        </dependency>        
+        <dependency>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>annotations</artifactId>
+            <version>3.0.0</version>
+            <scope>provided</scope>
+        </dependency>   
     </dependencies>
 
     <build>

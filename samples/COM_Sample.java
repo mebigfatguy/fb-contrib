@@ -46,11 +46,13 @@ interface Inf {
 }
 
 abstract class c1 implements Inf {
+	@Override
     public void m1() {
     }
 }
 
 abstract class c2 extends c1 {
+	@Override
     public void m2() {
     }
 }

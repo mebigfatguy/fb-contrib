@@ -53,10 +53,10 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_2), "(jdk|j2?re)1.2");
 		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_3), "(jdk|j2?re)1.3");
 		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_4), "(jdk|j2?re)1.4");
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_5), "(jdk|j2?re)1.5");
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_6), "(jdk|j2?re)1.6");
-        verRegEx.put(Integer.valueOf(51), "(jdk|j2?re)1.7");
-        verRegEx.put(Integer.valueOf(52), "(jdk|j2?re)1.8");
+		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_5), "((jdk|j2?re)1.5)|(java-5)");
+		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_6), "((jdk|j2?re)1.6)|(java-6)");
+        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_7), "((jdk|j2?re)1.7)|(java-7)");
+        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_8), "((jdk|j2?re)1.8)|(java-8)");
 	}
 	private static final Map<Integer, String> versionStrings = new HashMap<Integer, String>();
 	static {
@@ -66,8 +66,8 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		versionStrings.put(Integer.valueOf(Constants.MAJOR_1_4), "JDK 1.4");
 		versionStrings.put(Integer.valueOf(Constants.MAJOR_1_5), "JDK 1.5");
         versionStrings.put(Integer.valueOf(Constants.MAJOR_1_6), "JDK 1.6");
-        versionStrings.put(Integer.valueOf(51), "JDK 1.7");
-        versionStrings.put(Integer.valueOf(52), "JDK 1.8");
+        versionStrings.put(Integer.valueOf(Constants.MAJOR_1_7), "JDK 1.7");
+        versionStrings.put(Integer.valueOf(Constants.MAJOR_1_8), "JDK 1.8");
 	}
 	private static final Pattern jarPattern = Pattern.compile("jar:file:/*([^!]*)");
 	private static final String SJVU_JDKHOME = "fb-contrib.sjvu.jdkhome";
@@ -238,6 +238,8 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		File rtPath = versionPaths.get(versionStr);
 		if (rtPath != null)
 			return rtPath;
+		if (versionPaths.containsKey(versionStr))
+			return null;
 
 		if (jdksRoot == null) {
 			URL jdkUrl = SuspiciousJDKVersionUse.class.getResource("/java/lang/Object.class");
@@ -254,13 +256,16 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 						m = verPat.matcher(jdksRoot.getName());
 					}
 
-					if (jdksRoot.getParentFile() == null)
+					if (jdksRoot.getParentFile() == null) {
+						versionPaths.put(versionStr, null);
 						return null;
+					}
 
 					try {
 						String encoding = System.getProperty("file.encoding");
 						jdksRoot = new File(URLDecoder.decode(jdksRoot.getParentFile().getPath(), encoding));
 					} catch (UnsupportedEncodingException uee) {
+						versionPaths.put(versionStr, null);
 						return null;
 					}
 				}
@@ -269,21 +274,27 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 
 		if (jdksRoot != null) {
 			File[] possibleJdks = jdksRoot.listFiles();
-			for (File possibleJdk : possibleJdks) {
-				Pattern verPat = Pattern.compile(versionStr);
-				Matcher m = verPat.matcher(possibleJdk.getName());
-				if (m.find()) {
-					File wantedRtJar = new File(possibleJdk, "lib/rt.jar");
-					if (!wantedRtJar.exists()) {
-						wantedRtJar = new File(possibleJdk, "jre/lib/rt.jar");
-						if (!wantedRtJar.exists())
-							return null;
+			if (possibleJdks != null) {
+				for (File possibleJdk : possibleJdks) {
+					Pattern verPat = Pattern.compile(versionStr);
+					Matcher m = verPat.matcher(possibleJdk.getName());
+					if (m.find()) {
+						File wantedRtJar = new File(possibleJdk, "lib/rt.jar");
+						if (!wantedRtJar.exists()) {
+							wantedRtJar = new File(possibleJdk, "jre/lib/rt.jar");
+							if (!wantedRtJar.exists()) {
+								versionPaths.put(versionStr, null);
+								return null;
+							}
+						}
+						versionPaths.put(versionStr, wantedRtJar);
+						return wantedRtJar;
 					}
-					versionPaths.put(versionStr, wantedRtJar);
-					return wantedRtJar;
 				}
 			}
 		}
+		
+		versionPaths.put(versionStr, null);
 
 		return null;
 	}

@@ -66,6 +66,7 @@ public class CopiedOverriddenMethod extends DismantleBytecode implements Detecto
 	 * 
 	 * @param clsContext the context object of the currently parsed class
 	 */
+	@Override
 	public void visitClassContext(ClassContext clsContext) {
 		try {
 			JavaClass cls = clsContext.getJavaClass();
@@ -243,6 +244,7 @@ public class CopiedOverriddenMethod extends DismantleBytecode implements Detecto
 	/**
 	 * implements the detector with an empty implementation
 	 */
+	@Override
 	public void report() {
 	}
 }

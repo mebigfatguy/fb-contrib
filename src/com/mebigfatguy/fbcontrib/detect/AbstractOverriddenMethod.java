@@ -49,6 +49,7 @@ public class AbstractOverriddenMethod extends PreorderVisitor implements Detecto
 	 * 
 	 * @param classContext the context object for the currently parsed class
 	 */
+	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			clsContext = classContext;
@@ -101,6 +102,7 @@ public class AbstractOverriddenMethod extends PreorderVisitor implements Detecto
 	/**
 	 * implements the Detector with a nop
 	 */
+	@Override
 	public void report() {
 	}
 }

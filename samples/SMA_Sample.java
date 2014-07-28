@@ -40,13 +40,12 @@ public class SMA_Sample implements ActionListener {
     }
 
     public void doubleSMAs(SMA_Sample s1, SMA_Sample s2) {
-
     }
 
     public void twoInfs(SMA_Sample a, ActionListener al) {
-
     }
 
+    @Override
     public void actionPerformed(ActionEvent ae) {
     }
 }

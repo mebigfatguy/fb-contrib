@@ -69,6 +69,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 	 * 
 	 * @param classContext the context object for the currently parsed class
 	 */
+	@Override
 	public void visitClassContext(final ClassContext classContext) {
 		if (runtimeExceptionClass != null)
 			classContext.getJavaClass().accept(this);
@@ -127,6 +128,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 	/**
 	 * implementation of the detector, with null implementation
 	 */
+	@Override
 	public void report() {
 	}
 
