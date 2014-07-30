@@ -279,7 +279,7 @@
     
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.CharsetIssues" speed="fast" reports="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET,CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.CharsetIssues" speed="fast" reports="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET,CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING,CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" />
 
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
@@ -495,6 +495,7 @@
 	<BugPattern abbrev="HCP" type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD" category="CORRECTNESS"/>
 	<BugPattern abbrev="CTU" type="CTU_CONFLICTING_TIME_UNITS" category="CORRECTNESS" />
 	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING" category="CORRECTNESS" experimental="true"/>
 	
 </FindbugsPlugin>
