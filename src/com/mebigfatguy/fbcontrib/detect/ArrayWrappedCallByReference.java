@@ -29,6 +29,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -128,7 +129,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 						OpcodeStack.Item itm = stack.getStackItem(0);
 						Integer size = (Integer)itm.getConstant();
 						if ((size != null) && (size.intValue() == 1)) {
-							userValue = Integer.valueOf(-1);
+							userValue = Values.NEGATIVE_ONE;
 						}
 					}
 				}

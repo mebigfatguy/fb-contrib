@@ -29,6 +29,8 @@ import java.util.Set;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.Values;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -44,20 +46,20 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	private static Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS = new HashMap<String, Integer>();
 	private static Set<String> STANDARD_JDK7_ENCODINGS = new HashSet<String>();
 	static {
-		REPLACEABLE_ENCODING_METHODS.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Integer.valueOf(0));
-		REPLACEABLE_ENCODING_METHODS.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Integer.valueOf(0));
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([CLjava/lang/String;)V", Integer.valueOf(0));
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([CIILjava/lang/String;)V", Integer.valueOf(0));
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.getBytes(Ljava/lang/String;)[B", Integer.valueOf(0));
+		REPLACEABLE_ENCODING_METHODS.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
+		REPLACEABLE_ENCODING_METHODS.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([CLjava/lang/String;)V", Values.ZERO);
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([CIILjava/lang/String;)V", Values.ZERO);
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.getBytes(Ljava/lang/String;)[B", Values.ZERO);
 		
 		
-		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Integer.valueOf(0));
-		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLDecoder.decode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Integer.valueOf(0));
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/lang/String;Ljava/lang/String;)V", Integer.valueOf(0));
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/io/File;Ljava/lang/String;)V", Integer.valueOf(0));
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/io/OutputStream;BLjava/lang/String;)V", Integer.valueOf(0));
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Integer.valueOf(0));
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/io/File;Ljava/lang/String;)V", Integer.valueOf(0));
+		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLDecoder.decode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/io/OutputStream;BLjava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
 		
 		STANDARD_JDK7_ENCODINGS.add("US-ASCII");
 		STANDARD_JDK7_ENCODINGS.add("ISO-8859-1");
