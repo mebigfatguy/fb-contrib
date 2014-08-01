@@ -278,7 +278,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 	 *
 	 * @return a signature string minus the return type
 	 */
-	private String buildReflectionSignature(String methodName, String[] parmTypes) {
+	private static String buildReflectionSignature(String methodName, String[] parmTypes) {
 		StringBuilder sb = new StringBuilder(64);
 		sb.append(methodName);
 		sb.append("(");
@@ -305,7 +305,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 	 *
 	 * @return the Method of the static initializer or null if this class has none
 	 */
-	private Method findStaticInitializer(JavaClass cls) {
+	private static Method findStaticInitializer(JavaClass cls) {
 		Method[] methods = cls.getMethods();
 		for (Method m : methods) {
 			if ("<clinit>".equals(m.getName())) {

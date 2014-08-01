@@ -188,7 +188,7 @@ public class StutteredMethodArguments extends BytecodeScanningDetector {
 	 * @param parms the arguments to the method being called
 	 * @return if there are duplicates
 	 */
-	private boolean duplicateArguments(OpcodeStack opStack, Type[] parms)
+	private static boolean duplicateArguments(OpcodeStack opStack, Type[] parms)
 	{
 		Set<String> args = new HashSet<String>();
 		for (int i = 0; i < parms.length; i++) {

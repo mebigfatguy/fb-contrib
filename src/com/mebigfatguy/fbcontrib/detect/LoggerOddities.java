@@ -423,7 +423,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
      * @param formatString the format string
      * @return the number of anchors
      */
-    private int countAnchors(String formatString) {
+    private static int countAnchors(String formatString) {
         Matcher m = FORMATTER_ANCHOR.matcher(formatString);
         int count = 0;
         int start = 0;
