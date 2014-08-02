@@ -48,18 +48,31 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	static {
 		REPLACEABLE_ENCODING_METHODS.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
 		REPLACEABLE_ENCODING_METHODS.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([CLjava/lang/String;)V", Values.ZERO);
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([CIILjava/lang/String;)V", Values.ZERO);
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BLjava/lang/String;)V", Values.ZERO);
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BIILjava/lang/String;)V", Values.ZERO);
 		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.getBytes(Ljava/lang/String;)[B", Values.ZERO);
+		REPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
 		
 		
 		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLDecoder.decode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/io/ByteArrayOutputStream.toString(Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/io/OutputStream;BLjava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.toCharset(Ljava/lang/String;)Ljava/nio/charset/Charset;", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.toCharset(Ljava/lang/String;)Ljava/nio/charset/Charset;", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.encode(Ljava/lang/String;[CII)[B", Values.THREE);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/OutputStream;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.toCharset(Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
 		UNREPLACEABLE_ENCODING_METHODS.put("javax/servlet/ServletResponse.setCharacterEncoding(Ljava/lang/String;)V", Values.ZERO);
 		
 		STANDARD_JDK7_ENCODINGS.add("US-ASCII");

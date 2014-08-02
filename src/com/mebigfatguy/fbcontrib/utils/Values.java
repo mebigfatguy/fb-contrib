@@ -24,6 +24,7 @@ public class Values {
 	public static final Integer ZERO = Integer.valueOf(0);
 	public static final Integer ONE = Integer.valueOf(1);
 	public static final Integer TWO = Integer.valueOf(2);
+	public static final Integer THREE = Integer.valueOf(3);
 	
 	private Values() {
 	}
