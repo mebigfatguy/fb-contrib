@@ -1613,7 +1613,7 @@
 					private void appendToList(List<String> list) {<br/>
 					...<br/>
 				</code>
-				If the design ever changes, e.g. a LinkedList is used instead, this code won't have to change.
+				If the design ever changes, e.g. a <code>LinkedList</code> is used instead, this code won't have to change.
 
 			</p>
 
