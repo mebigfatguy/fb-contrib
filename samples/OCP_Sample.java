@@ -113,18 +113,30 @@ public class OCP_Sample extends Z implements ActionListener, Serializable {
     
     //tag OCP request -> HTTPMessage
     public static void httpComponent(HttpPut request, String auth) {
+    	auth = auth + "password";
     	request.addHeader("Authorization", Base64.encodeBase64String(auth.getBytes(StandardCharsets.UTF_8)));
     }
   
     
     //should tag OCP request -> HTTPMessage, but doesnt
-    public static void httpComponentWithTry(HttpPut request, String auth) {
-    	
+    public static void httpComponentWithTryFalseNegative(HttpPut request, String auth) {
+    	auth = auth + "password";
     	try {
     		//this will probably be tagged with CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET, if compiled under JDK 7 or later
 			request.addHeader("Authorization", Base64.encodeBase64String(auth.getBytes("UTF-8")));
 		} catch (UnsupportedEncodingException e) {
 			logger.fatal("There was a problem encoding "+ auth, e);
+		}
+    }
+    
+    //tag OCP request -> HTTPMessage 
+    public static void httpComponentWithTry(HttpPut request, String auth) {
+    	auth = auth + "password";
+    	try {
+    		//this will probably be tagged with CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET, if compiled under JDK 7 or later
+			request.addHeader("Authorization", Base64.encodeBase64String(auth.getBytes("UTF-8")));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
 		}
     }
     
