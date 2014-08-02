@@ -3911,6 +3911,8 @@
 			<p>The behavior of the <code>String(byte[] bytes)</code> and <code>String.getBytes()</code> is undefined if the string cannot be encoded in the platform's default charset. Instead, use the <code>String(byte[] bytes, String encoding)</code> or <code>String.getBytes(String encoding)</code> constructor which accepts the string's encoding as an argument. Be sure to specify the encoding used for the user's locale.</p>
 
 			<p>As per the Java specifications, "UTF-8", "US-ASCII", "UTF-16" and "ISO-8859-1" will all be valid <a href = "http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#standard">encoding charsets</a>.  If you aren't sure, try "UTF-8".</p>
+
+			<p><b>New in Java 1.7</b>, You can specify an encoding from <code>StandardCharsets</code>, like <code>StandardCharsets.UTF_8</code>.  These are generally preferrable because you don't have to deal with <code>UnsupportedEncodingException</code>.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4523,8 +4525,8 @@
     		alternative signature that takes a Charset object. You should use this signature, as this class is compiled
     		with JDK 7 (or better), and the charset in question is available as a constant from the 
     		java.nio.charset.StandardCharsets class.</p>
-    		<p>So instead of specifying "UTF-8", use StandardCharsets.UTF_8, for instance. An added benefit of this is 
-    		that you will not need to catch UnsupportedEncodingException.</p>
+    		<p>So instead of specifying "UTF-8", use <code>StandardCharsets.UTF_8</code>, for instance. An added benefit of this is 
+    		that you will not need to catch <code>UnsupportedEncodingException</code>.</p>
     		]]>
     	</Details>
     </BugPattern>
