@@ -47,6 +47,7 @@ import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -89,11 +90,14 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		}
 	}
 
-	private static Set<String> methodsThatAreSillyOnStringLiterals = new HashSet<String>();
+	private static Map<String, Integer> methodsThatAreSillyOnStringLiterals = new HashMap<String, Integer>();
 	static {
-		methodsThatAreSillyOnStringLiterals.add("toLowerCase");
-		methodsThatAreSillyOnStringLiterals.add("toUpperCase");
-		methodsThatAreSillyOnStringLiterals.add("trim");
+		methodsThatAreSillyOnStringLiterals.put("toLowerCase()Ljava/lang/String;", Values.ZERO);
+		methodsThatAreSillyOnStringLiterals.put("toUpperCase()Ljava/lang/String;", Values.ZERO);
+		methodsThatAreSillyOnStringLiterals.put("toLowerCase(Ljava/util/Locale;)Ljava/lang/String;", Values.ONE);
+		methodsThatAreSillyOnStringLiterals.put("toUpperCase(Ljava/util/Locale;)Ljava/lang/String;", Values.ONE);
+		methodsThatAreSillyOnStringLiterals.put("trim()Ljava/lang/String;", Values.ZERO);
+		methodsThatAreSillyOnStringLiterals.put("isEmpty()Z", Values.ZERO);
 	}
 
 	private final BugReporter bugReporter;
@@ -538,7 +542,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		} else if ("java/lang/StringBuilder".equals(className) || "java/lang/StringBuffer".equals(className)) {
 			userValue = stringBufferSilliness(userValue, methodName);
 		} else if ("java/lang/String".equals(className)) {
-			userValue = stringSilliness(userValue, methodName);
+			userValue = stringSilliness(userValue, methodName, getSigConstantOperand());
 		} else if ("equals(Ljava/lang/Object;)Z".equals(methodName + getSigConstantOperand())) {
 			equalsSilliness(className);      	
 		} else if ("java/lang/Boolean".equals(className) && "booleanValue".equals(methodName)) {
@@ -614,16 +618,15 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		return userValue;
 	}
 
-	private String stringSilliness(String userValue, String methodName) {
+	private String stringSilliness(String userValue, String methodName, String signature) {
 
-		if (methodsThatAreSillyOnStringLiterals.contains(methodName)) {
-			//When locales are passed in, the top item is not necessarily the string literal that 
-			//this method is being invoked on.  So, we loop
-			for(int i = 0;i<stack.getStackDepth();i++) 
-			{
-				OpcodeStack.Item itm = stack.getStackItem(i);
+		Integer stackOffset = methodsThatAreSillyOnStringLiterals.get(methodName + signature);
+		if (stackOffset != null) {
+			if (stack.getStackDepth() > stackOffset) {
+			
+				OpcodeStack.Item itm = stack.getStackItem(stackOffset.intValue());
 				Object constant = itm.getConstant();
-				if ((constant != null) && constant.getClass().equals(String.class)) {
+				if ((constant != null) && constant.getClass().equals(String.class) && (itm.getXField() == null)) {
 					int priority = NORMAL_PRIORITY;
 					if (Type.getArgumentTypes(getSigConstantOperand()).length > 0) {
 						//if an argument is passed in, it may be locale-specific
@@ -634,7 +637,6 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					.addMethod(this)
 					.addSourceLine(this)
 					.addCalledMethod(this));
-					break;
 				}
 			}
 		} 

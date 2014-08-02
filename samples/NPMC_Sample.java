@@ -28,6 +28,7 @@ public class NPMC_Sample implements Cloneable {
         hashCode();
     }
 
+    @Override
     public NPMC_Sample clone() {
         try {
             super.clone();

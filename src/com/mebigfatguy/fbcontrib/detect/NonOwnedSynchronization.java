@@ -29,6 +29,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -50,7 +51,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 	private static final Integer OWNED = Integer.valueOf(Integer.MAX_VALUE);
 	private static final Integer LOW = Integer.valueOf(LOW_PRIORITY);
 	private static final Integer NORMAL = Integer.valueOf(NORMAL_PRIORITY);
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private Map<Integer, Integer> regPriorities;
 
@@ -103,7 +104,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 			for (int reg : parmRegs)
 				regPriorities.put(Integer.valueOf(reg), NORMAL);
 			if (!method.isStatic())
-				regPriorities.put(Integer.valueOf(0), LOW);
+				regPriorities.put(Values.ZERO, LOW);
 			super.visitCode(obj);
 		}
 	}

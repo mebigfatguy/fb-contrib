@@ -26,6 +26,8 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.Values;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -41,21 +43,19 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 {
 	private static Map<String, Integer> characterMethods = new HashMap<String, Integer>();
 	static {
-	    Integer ZERO = Integer.valueOf(0);
-	    Integer ONE = Integer.valueOf(1);
-		//characterMethods.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", ZERO);
-		//characterMethods.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", ZERO);
-		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;)I", ZERO);
-		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;I)I", ONE);
-		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;)I", ZERO);
-		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;I)I", ONE);
-		//characterMethods.put("java/lang/String:startsWith:(Ljava/lang/String;)Z", ZERO);
-		characterMethods.put("java/io/PrintStream:print:(Ljava/lang/String;)V", ZERO);
-		characterMethods.put("java/io/PrintStream:println:(Ljava/lang/String;)V", ZERO);
-		characterMethods.put("java/io/StringWriter:write:(Ljava/lang/String;)V", ZERO);
+		//characterMethods.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
+		//characterMethods.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
+		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;)I", Values.ZERO);
+		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;I)I", Values.ONE);
+		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;)I", Values.ZERO);
+		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;I)I", Values.ONE);
+		//characterMethods.put("java/lang/String:startsWith:(Ljava/lang/String;)Z", Values.ZERO);
+		characterMethods.put("java/io/PrintStream:print:(Ljava/lang/String;)V", Values.ZERO);
+		characterMethods.put("java/io/PrintStream:println:(Ljava/lang/String;)V", Values.ZERO);
+		characterMethods.put("java/io/StringWriter:write:(Ljava/lang/String;)V", Values.ZERO);
 	}
 	
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	
     /**
@@ -77,7 +77,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 		try {
 			stack = new OpcodeStack();
 			if (context.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
-				characterMethods.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Integer.valueOf(0));
+				characterMethods.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
 			}
 			super.visitClassContext(context);
 		} finally {

@@ -27,6 +27,7 @@ import com.mebigfatguy.fbcontrib.collect.ImmutabilityType;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -45,19 +46,18 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     private static Map<String, Integer> MODIFYING_METHODS = null;
     
     static {
-        Integer one = Integer.valueOf(1);
         MODIFYING_METHODS = new HashMap<String, Integer>();
-        MODIFYING_METHODS.put("add(Ljava/lang/Object;)Z", one);
-        MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Z", one);
-        MODIFYING_METHODS.put("addAll(Ljava/util/Collection;)Z", one);
-        MODIFYING_METHODS.put("retainAll(Ljava/util/Collection;)Z", one);
-        MODIFYING_METHODS.put("removeAll(Ljava/util/Collection;)Z", one);
-        MODIFYING_METHODS.put("put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", Integer.valueOf(2));
-        MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Ljava/lang/Object;", one);
-        MODIFYING_METHODS.put("putAll(Ljava/util/Map;)V;", one);
+        MODIFYING_METHODS.put("add(Ljava/lang/Object;)Z", Values.ONE);
+        MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Z", Values.ONE);
+        MODIFYING_METHODS.put("addAll(Ljava/util/Collection;)Z", Values.ONE);
+        MODIFYING_METHODS.put("retainAll(Ljava/util/Collection;)Z", Values.ONE);
+        MODIFYING_METHODS.put("removeAll(Ljava/util/Collection;)Z", Values.ONE);
+        MODIFYING_METHODS.put("put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", Values.TWO);
+        MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Ljava/lang/Object;", Values.ONE);
+        MODIFYING_METHODS.put("putAll(Ljava/util/Map;)V;", Values.ONE);
     }
     
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
     private OpcodeStack stack;
     private ImmutabilityType reportedType;
     
@@ -103,6 +103,7 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
      * 
      * @param seen the currently parsed opcode
      */
+    @Override
     public void sawOpcode(int seen) {
         
         if (reportedType == ImmutabilityType.IMMUTABLE) {

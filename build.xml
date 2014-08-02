@@ -18,7 +18,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
-	<property name="fb-contrib.version" value="5.9.0" />
+	<property name="fb-contrib.version" value="6.1.0" />
 	
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
 	
@@ -72,9 +72,7 @@
             <pathelement location="${lib.dir}/backport-util-concurrent-${backport-util-concurrent.version}.jar" />
             <pathelement location="${lib.dir}/slf4j-api-${slf4j-api.version}.jar" />
             <pathelement location="${lib.dir}/guava-${guava.version}.jar" />
-			<pathelement location="${lib.dir}/fluent-hc-${fluent-hc.version}.jar" />
 			<pathelement location="${lib.dir}/httpclient-cache-${httpclient-cache.version}.jar" />
-			<pathelement location="${lib.dir}/httpmime-${httpmime.version}.jar" />
 			<pathelement location="${lib.dir}/httpcore-${httpcore.version}.jar" />
 			<pathelement location="${lib.dir}/httpclient-${httpclient.version}.jar" />
 		</path>

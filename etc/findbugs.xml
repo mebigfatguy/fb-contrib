@@ -157,7 +157,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UseSplit" speed="fast" reports="USS_USE_STRING_SPLIT" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousJDKVersionUse" speed="slow" reports="SJVU_SUSPICIOUS_JDK_VERSION_USE" disabled="true" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousJDKVersionUse" speed="slow" reports="SJVU_SUSPICIOUS_JDK_VERSION_USE" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UseAddAll" speed="fast" reports="UAA_USE_ADD_ALL" />
 
@@ -264,9 +264,7 @@
     <Detector class="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" speed="fast" reports="" hidden="true" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ModifyingUnmodifiableCollection" speed="fast" reports="MUC_MODIFYING_UNMODIFIABLE_COLLECTION"/>
-	
 
-    <!--  COMMENT OUT FOR POINT RELEASE  -->
     <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections" speed="fast" reports="PSC_PRESIZE_COLLECTIONS" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" speed="fast" reports="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS,AIOB_ARRAY_STORE_TO_NULL_REFERENCE" />
@@ -279,7 +277,11 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConflictingTimeUnits" speed="fast" reports="CTU_CONFLICTING_TIME_UNITS" />
     
-    <!--  COMMENT OUT FOR POINT RELEASE  -->
+    <!--  COMMENT OUT FOR POINT RELEASE -->
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.CharsetIssues" speed="fast" reports="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET,CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING,CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" />
+
+    <!--  COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
@@ -477,19 +479,23 @@
     <BugPattern abbrev="PSC" type="PSC_PRESIZE_COLLECTIONS" category="PERFORMANCE" />
     <BugPattern abbrev="UMTP" type="UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER" category="CORRECTNESS" />
     <BugPattern abbrev="NPMC" type="NPMC_NON_PRODUCTIVE_METHOD_CALL" category="CORRECTNESS" />
-    <BugPattern abbrev="AIOB" type="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS" category="CORRECTNESS" experimental="true"  />
-    <BugPattern abbrev="AIOB" type="AIOB_ARRAY_STORE_TO_NULL_REFERENCE" category="CORRECTNESS" experimental="true"  />
+    <BugPattern abbrev="AIOB" type="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS" category="CORRECTNESS"  />
+    <BugPattern abbrev="AIOB" type="AIOB_ARRAY_STORE_TO_NULL_REFERENCE" category="CORRECTNESS"  />
     <BugPattern abbrev="ICA" type="ICA_INVALID_CONSTANT_ARGUMENT" category="CORRECTNESS"  />
-    <BugPattern abbrev="CNC" type="CNC_COLLECTION_NAMING_CONFUSION" category="STYLE" experimental="true"  />
-    <BugPattern abbrev="PME" type="PME_POOR_MANS_ENUM" category="STYLE" experimental="true"  />
-    <BugPattern abbrev="UP" type="UP_UNUSED_PARAMETER" category="STYLE" experimental="true"  />
+    <BugPattern abbrev="CNC" type="CNC_COLLECTION_NAMING_CONFUSION" category="STYLE"  />
+    <BugPattern abbrev="PME" type="PME_POOR_MANS_ENUM" category="STYLE"  />
+    <BugPattern abbrev="UP" type="UP_UNUSED_PARAMETER" category="STYLE"  />
     <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="CORRECTNESS" />
-    <BugPattern abbrev="MUC" type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION" category="CORRECTNESS" experimental="true" />
-    <BugPattern abbrev="UJM" type="UJM_UNJITABLE_METHOD" category="PERFORMANCE" experimental="true" />
-	<BugPattern abbrev="HES" type="HES_EXECUTOR_NEVER_SHUTDOWN" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="HES" type="HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="HES" type="HES_LOCAL_EXECUTOR_SERVICE" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="HCP" type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="HCP" type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="CTU" type="CTU_CONFLICTING_TIME_UNITS" category="CORRECTNESS" experimental="true" />
+    <BugPattern abbrev="MUC" type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION" category="CORRECTNESS" />
+    <BugPattern abbrev="UJM" type="UJM_UNJITABLE_METHOD" category="PERFORMANCE" />
+	<BugPattern abbrev="HES" type="HES_EXECUTOR_NEVER_SHUTDOWN" category="CORRECTNESS" />
+	<BugPattern abbrev="HES" type="HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN" category="CORRECTNESS" />
+	<BugPattern abbrev="HES" type="HES_LOCAL_EXECUTOR_SERVICE" category="CORRECTNESS" />
+	<BugPattern abbrev="HCP" type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL" category="CORRECTNESS"/>
+	<BugPattern abbrev="HCP" type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD" category="CORRECTNESS"/>
+	<BugPattern abbrev="CTU" type="CTU_CONFLICTING_TIME_UNITS" category="CORRECTNESS" />
+	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING" category="CORRECTNESS" experimental="true"/>
+	
 </FindbugsPlugin>

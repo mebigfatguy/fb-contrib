@@ -81,6 +81,7 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
      *
      * @param obj the currently code block
      */
+    @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         super.visitCode(obj);

@@ -49,6 +49,7 @@ public class MisleadingOverloadModel  extends PreorderVisitor implements Detecto
 		this.bugReporter = bugReporter;
 	}
 	
+	@Override
 	public void visitClassContext(ClassContext classContext) {
 		JavaClass cls = classContext.getJavaClass();
 		String clsName = cls.getClassName();
@@ -83,6 +84,7 @@ public class MisleadingOverloadModel  extends PreorderVisitor implements Detecto
 	}
 
 	/** implements the visitor to do nothing */
+	@Override
 	public void report() {
 	}
 }

@@ -308,7 +308,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	private static class FieldInfo {
 		private final FieldAnnotation fieldAnnotation;
 		private SourceLineAnnotation srcLineAnnotation;
-		private boolean hasAnnotation;
+		private final boolean hasAnnotation;
 
 		/**
 		 * creates a FieldInfo from an annotation, and assumes no source line information
@@ -422,11 +422,11 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 					uncheckedFields = new HashSet<String>(uncheckedFields);
 					fieldsAreSharedWithParent = false;
 					uncheckedFields.remove(field);
-					return true;
 				} else {
 					uncheckedFields.remove(field);
-					return true;
 				}
+
+				return true;
 			}
 			return false;
 		}
@@ -439,8 +439,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	
 	private static class FieldModifier extends BytecodeScanningDetector {
 	    
-	    private Map<String, Set<String>> methodCallChain = new HashMap<String, Set<String>>();
-	    private Map<String, Set<String>> mfModifiers = new HashMap<String, Set<String>>();
+	    private final Map<String, Set<String>> methodCallChain = new HashMap<String, Set<String>>();
+	    private final Map<String, Set<String>> mfModifiers = new HashMap<String, Set<String>>();
 	    private String clsName;
 
 	    public Map<String, Set<String>> getMethodFieldModifiers() {

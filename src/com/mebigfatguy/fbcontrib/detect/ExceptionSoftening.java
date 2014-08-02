@@ -232,7 +232,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	 * @param exceptions the exceptions from the class file
 	 * @return the filtered exceptions keyed by catch end pc
 	 */
-	private LinkedHashMap<Integer, CodeException> collectExceptions(CodeException[] exceptions) {
+	private static LinkedHashMap<Integer, CodeException> collectExceptions(CodeException[] exceptions) {
 		List<CodeException> filteredEx = new ArrayList<CodeException>();
 		for (CodeException ce : exceptions) {
 			if ((ce.getCatchType() != 0) && (ce.getStartPC() < ce.getEndPC()) && (ce.getEndPC() <= ce.getHandlerPC())) {
@@ -254,7 +254,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	 * @param infos the exception handlers installed
 	 * @param pc the current pc
 	 */
-	private void removeFinishedCatchBlocks(List<CatchInfo> infos, int pc) {
+	private static void removeFinishedCatchBlocks(List<CatchInfo> infos, int pc) {
 		Iterator<CatchInfo> it = infos.iterator();
 		while (it.hasNext()) {
 			if (it.next().getFinish() < pc)
@@ -323,11 +323,11 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 				Method infMethod = findMethod(infCls, methodName, methodSig);
 				if (infMethod != null) {
 					return buildConstrainingInfo(infCls, infMethod);
-				} else {
-					Map<String, Set<String>> constrainingExs = getConstrainingInfo(infCls, m);
-					if (constrainingExs != null) {
-						return constrainingExs;
-					}
+				}
+				
+				Map<String, Set<String>> constrainingExs = getConstrainingInfo(infCls, m);
+				if (constrainingExs != null) {
+					return constrainingExs;
 				}
 			}
 		}
@@ -356,7 +356,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	 * 
 	 * @return the method or null
 	 */
-	private Method findMethod(JavaClass cls, String methodName, String methodSig) {
+	private static Method findMethod(JavaClass cls, String methodName, String methodSig) {
 		Method[] methods = cls.getMethods();
 		for (Method method : methods) {
 			if (method.getName().equals(methodName) && method.getSignature().equals(methodSig)) {
@@ -372,7 +372,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	 * @param m the method to add exceptions from
 	 * @return a map with one entry of a class name to a set of exceptions that constrain what can be thrown.
 	 */
-	private Map<String, Set<String>> buildConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
+	private static Map<String, Set<String>> buildConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
 		Map<String, Set<String>> constraintInfo = new HashMap<String, Set<String>>();
 		Set<String> exs = new HashSet<String>();
 		ExceptionTable et = m.getExceptionTable();

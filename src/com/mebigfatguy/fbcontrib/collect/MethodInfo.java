@@ -52,7 +52,7 @@ public class MethodInfo {
     }
     
     @Override
-	public String toString() {
+    public String toString() {
         return "NumMethodBytes: " + getNumBytes() + " NumMethodCalls: " + getNumMethodCalls() + " ImmutabilityType: " + getImmutabilityType();
     }
 }

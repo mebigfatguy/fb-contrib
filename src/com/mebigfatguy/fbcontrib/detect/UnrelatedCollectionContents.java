@@ -232,7 +232,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector
 		}
 	}
 	
-	private void addNewItem(final Set<String> supers, final OpcodeStack.Item addItm) 
+	private static void addNewItem(final Set<String> supers, final OpcodeStack.Item addItm) 
 		throws ClassNotFoundException {
 		
 		String itemSignature = addItm.getSignature();

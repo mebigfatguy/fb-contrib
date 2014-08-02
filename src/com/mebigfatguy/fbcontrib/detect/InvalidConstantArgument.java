@@ -89,6 +89,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         super.visitMethod(obj);
     }
     
+    @Override
     public void sawOpcode(int seen) {
         try {
             switch (seen) {

@@ -19,7 +19,9 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import static com.mebigfatguy.fbcontrib.utils.OpcodeUtils.*;
+import static com.mebigfatguy.fbcontrib.utils.OpcodeUtils.isALoad;
+import static com.mebigfatguy.fbcontrib.utils.OpcodeUtils.isAStore;
+import static com.mebigfatguy.fbcontrib.utils.OpcodeUtils.isInvokeInterfaceSpecialStaticOrVirtual;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -33,6 +35,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -62,7 +65,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 	/**
 	 * Should return a map of a class and a set of "factory" methods that create types
 	 * that should be reported buggy (when made as local variables).
-	 * @return
+	 * @return map of factory methods
 	 */
 	protected abstract Map<String, Set<String>> getWatchedClassMethods();
 
@@ -229,7 +232,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 		for (Entry<String, Set<String>> entry: mapOfClassToMethods.entrySet())
 			if (entry.getKey().equals(getClassConstantOperand())) {
 				if (entry.getValue().contains(getNameConstantOperand())) {
-					tosIsSyncColReg = Integer.valueOf(-1);
+					tosIsSyncColReg = Values.NEGATIVE_ONE;
 				}
 			}
 		return tosIsSyncColReg;
@@ -240,7 +243,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 		if ("<init>".equals(getNameConstantOperand())) {
 			Integer minVersion = getWatchedConstructors().get(getClassConstantOperand());
 			if ((minVersion != null) && (classVersion >= minVersion.intValue())) {
-				tosIsSyncColReg = Integer.valueOf(-1);
+				tosIsSyncColReg = Values.NEGATIVE_ONE;
 			}
 		}
 		return tosIsSyncColReg;
