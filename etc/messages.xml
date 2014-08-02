@@ -1579,12 +1579,34 @@
 
 	<BugPattern type="OCP_OVERLY_CONCRETE_PARAMETER">
 		<ShortDescription>Method needlessly defines parameter with concrete classes</ShortDescription>
-		<LongDescription>Method {1} needlessly defines parameter with concrete classes</LongDescription>
+		<LongDescription>{3}</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method uses concrete classes for parameters when only methods defined in an implemented
 			interface or super class are used. Consider increasing the abstraction of the interface to
 			make low impact changes easier to accomplish in the future.</p>
+
+			<p>Take the following example:<br/>
+				<code>
+					private void appendToList(ArrayList<String> list) {<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;if (list.size() < 100) {<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list.add("Foo");<br/>
+					&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
+					}<br/>
+				</code>
+
+				The parameter list is currently defined as an <code>ArrayList</code>, which is a concrete implementation of the <code>List</code> interface.  
+				Specifying <code>ArrayList</code> is unnecessary here, because we aren't using any <code>ArrayList</code>-specific methods (like <code>ensureCapacity()</code> or <code>trimToSize()</code>).
+				Instead of using the concrete definition, it is better to do something like:<br/>
+				<code>
+					private void appendToList(List<String> list) {<br/>
+					...<br/>
+				</code>
+				If the design ever changes, e.g. a LinkedList is used instead, this code won't have to change.
+
+			</p>
+
+			<p>IDEs tend to have tools to help generalize parameters.  For example, in Eclipse, the refactoring tool <a href="http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Freference%2Fref-menu-refactor.htm">Generalize Declared Type</a> helps find an appropriate level of concreteness.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3875,7 +3897,9 @@
 		<LongDescription>Method {1} encodes String bytes without specifying the character encoding</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>The behavior of the <code>String(byte[] bytes)</code> and <code>String.getBytes()</code> is undefined if the string cannot be encoded in the platform's default charset. Instead, use the <code>String(byte[] bytes, String encoding)</code> or <code>String.getBytes(String encoding)></code> constructor which accepts the string's encoding as an argument. Be sure to specify the encoding used for the user's locale.</p>
+			<p>The behavior of the <code>String(byte[] bytes)</code> and <code>String.getBytes()</code> is undefined if the string cannot be encoded in the platform's default charset. Instead, use the <code>String(byte[] bytes, String encoding)</code> or <code>String.getBytes(String encoding)</code> constructor which accepts the string's encoding as an argument. Be sure to specify the encoding used for the user's locale.</p>
+
+			<p>As per the Java specifications, "UTF-8", "US-ASCII", "UTF-16" and "ISO-8859-1" will all be valid <a href = "http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#standard">encoding charsets</a>.  If you aren't sure, try "UTF-8".</p>
 			]]>
 		</Details>
 	</BugPattern>
