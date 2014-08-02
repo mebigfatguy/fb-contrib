@@ -46,7 +46,10 @@ The master branch is the main branch of development currently targeting the new 
 ##Contributing##
 Once you have the dev environment set up, feel free to make changes and pull requests.
 Any edits are much appreciated, from finding typos, to adding examples in the [messages](https://github.com/mebigfatguy/fb-contrib/blob/master/etc/messages.xml), to creating new detectors, all help is welcome.
-//TODO add in links for developing detectors
+
+External guides for making detectors:
+- https://www.ibm.com/developerworks/library/j-findbug2/
+- http://kjlubick.github.io/#/blog/post/1?building-my-first-findbugs-detector
 
 For making detectors, it best to make several test cases, like those in the [sample directory](https://github.com/mebigfatguy/fb-contrib/tree/master/samples).  Even better is if you can comment where you expect bug markers to appear and why, like [this](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/samples/HES_Sample.java#L313).
 
