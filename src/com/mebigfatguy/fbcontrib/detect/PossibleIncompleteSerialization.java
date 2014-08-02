@@ -33,7 +33,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class PossibleIncompleteSerialization implements Detector
 {
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
 
 	/**
      * constructs a PIS detector given the reporter to report bugs on
@@ -79,7 +79,7 @@ public class PossibleIncompleteSerialization implements Detector
 	 * 
 	 * @return if the class implements Serializable or Externalizable
 	 */
-	private boolean isSerializable(JavaClass cls) throws ClassNotFoundException {
+	private static boolean isSerializable(JavaClass cls) throws ClassNotFoundException {
 		JavaClass[] infs = cls.getAllInterfaces();
 		for (JavaClass inf : infs) {
 			String clsName = inf.getClassName();
@@ -96,7 +96,7 @@ public class PossibleIncompleteSerialization implements Detector
 	 * @arg class the class to look for fields
 	 * @return if their is a field that looks like it should be serialized
 	 */
-	private boolean hasSerializableFields(JavaClass cls) {
+	private static boolean hasSerializableFields(JavaClass cls) {
 		Field[] fields = cls.getFields();
 		for (Field f : fields) {
 			if (!f.isStatic() && !f.isTransient() && !f.isSynthetic())
@@ -108,10 +108,10 @@ public class PossibleIncompleteSerialization implements Detector
 	/**
 	 * looks to see if this class implements method described by Serializable or Externalizable
 	 * 
-	 * @arg cls the class to examine for serializing methods
+	 * @param cls the class to examine for serializing methods
 	 * @return whether the class handles it's own serializing/externalizing
 	 */
-	private boolean hasSerializingMethods(JavaClass cls) {
+	private static boolean hasSerializingMethods(JavaClass cls) {
 		Method[] methods = cls.getMethods();
 		for (Method m : methods) {
 			if (!m.isStatic()) {

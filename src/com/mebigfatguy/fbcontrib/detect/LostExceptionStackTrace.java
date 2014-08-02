@@ -351,7 +351,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
      * @param cls the class to check
      * @return whether the class is compiled with a jdk less than 1.4
      */
-    private boolean isPre14Class(JavaClass cls)
+    private static boolean isPre14Class(JavaClass cls)
     {
         return cls != null && cls.getMajor() < Constants.MAJOR_1_4;
     }

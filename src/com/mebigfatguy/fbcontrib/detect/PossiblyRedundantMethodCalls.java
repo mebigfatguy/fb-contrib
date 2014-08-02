@@ -363,7 +363,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 	 * @param methodName the method name to check
 	 * @return whether the method sounds like it modifies this
 	 */
-	private boolean isRiskyName(String className, String methodName) {
+	private static boolean isRiskyName(String className, String methodName) {
         if (riskyClassNames.contains(className)) {
 			return true;
 		}

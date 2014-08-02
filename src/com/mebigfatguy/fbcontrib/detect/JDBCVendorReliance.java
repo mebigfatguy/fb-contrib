@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class JDBCVendorReliance extends BytecodeScanningDetector
 {	
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private Map<Integer, Integer> jdbcLocals = new HashMap<Integer, Integer>();
 	
@@ -165,7 +165,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector
      * 
      * @return if the class name is a jdbc one
      */
-    private boolean isJDBCClass(String clsName) {
+    private static boolean isJDBCClass(String clsName) {
         if (clsName.endsWith(";"))
             clsName = clsName.substring(1, clsName.length() - 1);
         clsName = clsName.replace('.', '/');

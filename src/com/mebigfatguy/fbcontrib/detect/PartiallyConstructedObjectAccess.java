@@ -143,7 +143,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector
 		}
 	}
 	
-	private Method findMethod(final JavaClass cls, final String methodName, final String methodSig) {
+	private static Method findMethod(final JavaClass cls, final String methodName, final String methodSig) {
 		Method[] methods = cls.getMethods();
 		for (Method m : methods) {
 			if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {

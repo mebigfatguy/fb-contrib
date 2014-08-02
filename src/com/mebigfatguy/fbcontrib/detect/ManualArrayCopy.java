@@ -45,7 +45,7 @@ public class ManualArrayCopy extends BytecodeScanningDetector
 		arrayLoadOps.set(DALOAD);
 		arrayLoadOps.set(FALOAD);
 	}
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
 	private State state;
 	private int arrayIndexReg;
 	private int loadInstruction;
@@ -175,7 +175,7 @@ public class ManualArrayCopy extends BytecodeScanningDetector
 		}
 	}
 	
-	private boolean similarArrayInstructions(int load, int store) {
+	private static boolean similarArrayInstructions(int load, int store) {
 		if ((load == AALOAD) && (store == AASTORE))
 			return true;
 		if ((load == IALOAD) && (store == IASTORE))

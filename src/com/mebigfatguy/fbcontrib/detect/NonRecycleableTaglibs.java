@@ -122,7 +122,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector
 	 * 
 	 * @return the map of possible attributes/types
 	 */
-	private Map<String, String> getAttributes(JavaClass cls) {
+	private static Map<String, String> getAttributes(JavaClass cls) {
 		Map<String, String> atts = new HashMap<String, String>();
 		Method[] methods = cls.getMethods();
 		for (Method m : methods) {
