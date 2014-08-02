@@ -47,6 +47,7 @@ import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -91,12 +92,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 	private static Map<String, Integer> methodsThatAreSillyOnStringLiterals = new HashMap<String, Integer>();
 	static {
-		methodsThatAreSillyOnStringLiterals.put("toLowerCase()Ljava/lang/String;", Integer.valueOf(0));
-		methodsThatAreSillyOnStringLiterals.put("toUpperCase()Ljava/lang/String;", Integer.valueOf(0));
-		methodsThatAreSillyOnStringLiterals.put("toLowerCase(Ljava/util/Locale;)Ljava/lang/String;", Integer.valueOf(1));
-		methodsThatAreSillyOnStringLiterals.put("toUpperCase(Ljava/util/Locale;)Ljava/lang/String;", Integer.valueOf(1));
-		methodsThatAreSillyOnStringLiterals.put("trim()Ljava/lang/String;", Integer.valueOf(0));
-		methodsThatAreSillyOnStringLiterals.put("isEmpty()Z", Integer.valueOf(0));
+		methodsThatAreSillyOnStringLiterals.put("toLowerCase()Ljava/lang/String;", Values.ZERO);
+		methodsThatAreSillyOnStringLiterals.put("toUpperCase()Ljava/lang/String;", Values.ZERO);
+		methodsThatAreSillyOnStringLiterals.put("toLowerCase(Ljava/util/Locale;)Ljava/lang/String;", Values.ONE);
+		methodsThatAreSillyOnStringLiterals.put("toUpperCase(Ljava/util/Locale;)Ljava/lang/String;", Values.ONE);
+		methodsThatAreSillyOnStringLiterals.put("trim()Ljava/lang/String;", Values.ZERO);
+		methodsThatAreSillyOnStringLiterals.put("isEmpty()Z", Values.ZERO);
 	}
 
 	private final BugReporter bugReporter;

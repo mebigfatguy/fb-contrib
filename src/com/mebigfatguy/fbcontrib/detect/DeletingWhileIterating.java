@@ -38,6 +38,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -85,17 +86,16 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	}
 	private static final Map<String, Integer> modifyingMethods = new HashMap<String, Integer>(8);
 	static {
-	    Integer ONE = Integer.valueOf(1);
-		modifyingMethods.put("add(Ljava/lang/Object;)Z", ONE);
-		modifyingMethods.put("addAll(Ljava/util/Collection;)Z", ONE);
-		modifyingMethods.put("addAll(ILjava/util/Collection;)Z", Integer.valueOf(2));
-		modifyingMethods.put("clear()V", Integer.valueOf(0));
-		modifyingMethods.put("remove(I)Ljava/lang/Object;", ONE);
-		modifyingMethods.put("removeAll(Ljava/util/Collection;)Z", ONE);
-		modifyingMethods.put("retainAll(Ljava/util/Collection;)Z", ONE);
+		modifyingMethods.put("add(Ljava/lang/Object;)Z", Values.ONE);
+		modifyingMethods.put("addAll(Ljava/util/Collection;)Z", Values.ONE);
+		modifyingMethods.put("addAll(ILjava/util/Collection;)Z", Values.TWO);
+		modifyingMethods.put("clear()V", Values.ZERO);
+		modifyingMethods.put("remove(I)Ljava/lang/Object;", Values.ONE);
+		modifyingMethods.put("removeAll(Ljava/util/Collection;)Z", Values.ONE);
+		modifyingMethods.put("retainAll(Ljava/util/Collection;)Z", Values.ONE);
 	}
 
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private List<GroupPair> collectionGroups;
 	private Map<Integer, Integer> groupToIterator;
@@ -496,8 +496,8 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	}
 	
 	static class GroupPair {
-	    private Set<Comparable<?>> groupMembers;
-	    private String colClass;
+	    private final Set<Comparable<?>> groupMembers;
+	    private final String colClass;
 	    
 	    public GroupPair(Comparable<?> member, String cls) {
 	        groupMembers = new HashSet<Comparable<?>>();

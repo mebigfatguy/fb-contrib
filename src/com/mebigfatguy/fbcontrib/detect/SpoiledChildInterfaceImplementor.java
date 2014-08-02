@@ -110,7 +110,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 	 * @param cls the class to build the method set from
 	 * @return a set of method names/signatures
 	 */
-	private Set<String> buildMethodSet(JavaClass cls) {
+	private static Set<String> buildMethodSet(JavaClass cls) {
 		Set<String> methods = new HashSet<String>();
 
 		for (Method m : cls.getMethods()) {

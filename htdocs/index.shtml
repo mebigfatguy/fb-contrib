@@ -83,6 +83,9 @@ function toggleBlock(divId, imgId)
                 same kind of exception, and throw the same exception always. These blocks can
                 be coalesced into one.
                 </li>
+                <li><b>[CSI] Charset Issues</b><br/>
+                Looks for issues related to manually specified charsets by using string literals.
+                </li>
             </ul>
         </div>
         

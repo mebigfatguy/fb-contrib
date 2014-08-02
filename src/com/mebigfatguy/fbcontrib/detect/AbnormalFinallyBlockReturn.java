@@ -185,7 +185,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
 	 *
 	 * @return the Method object for the specified information
 	 */
-	private Method findMethod(JavaClass cls, String name, String sig) {
+	private static Method findMethod(JavaClass cls, String name, String sig) {
 		Method[] methods = cls.getMethods();
 		for (Method m : methods) {
 			if (m.getName().equals(name) && m.getSignature().equals(sig)) {

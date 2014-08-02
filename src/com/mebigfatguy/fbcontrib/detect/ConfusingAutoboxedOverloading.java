@@ -57,7 +57,7 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 		primitiveSigs.add("D");
 		primitiveSigs.add("F");
 	}
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
 	
 	/**
      * constructs a CAO detector given the reporter to report bugs on
@@ -108,7 +108,7 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 	 * 
 	 * @return if one signature is a Character and the other a primitive
 	 */
-	private boolean confusingSignatures(String sig1, String sig2) {
+	private static boolean confusingSignatures(String sig1, String sig2) {
 		if (sig1.equals(sig2))
 			return false;
 		
@@ -178,13 +178,11 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 	 * 
 	 * @return whether a method signature has either a Character or primitive
 	 */
-	private boolean isPossiblyConfusingSignature(String sig) {
+	private static boolean isPossiblyConfusingSignature(String sig) {
 		Type[] types = Type.getArgumentTypes(sig);
 		for (Type t : types) {
 			sig = t.getSignature();
-			if (primitiveSigs.contains(sig))
-				return true;
-			if ("Ljava/lang/Character;".equals(sig))
+			if (primitiveSigs.contains(sig) || "Ljava/lang/Character;".equals(sig))
 				return true;
 		}
 		return false;

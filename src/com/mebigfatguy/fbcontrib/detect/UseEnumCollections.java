@@ -255,18 +255,18 @@ public class UseEnumCollections extends BytecodeScanningDetector
 	 * @return whether the collection has already been reported.
 	 */
 	private boolean alreadyReported(int stackPos) {
-		if (stack.getStackDepth() > stackPos) {
-			OpcodeStack.Item item = stack.getStackItem(stackPos);
-			XField field = item.getXField();
-			if (field == null)
-				return false;
-			else {
-				String fieldName = field.getName();
-				boolean checked = checkedFields.contains(fieldName);
-				checkedFields.add(fieldName);
-				return checked;
-			}
+		if (stack.getStackDepth() <= stackPos) {
+			return false;
 		}
-		return false;
+			
+		OpcodeStack.Item item = stack.getStackItem(stackPos);
+		XField field = item.getXField();
+		if (field == null)
+			return false;
+
+		String fieldName = field.getName();
+		boolean checked = checkedFields.contains(fieldName);
+		checkedFields.add(fieldName);
+		return checked;
 	}
 }
