@@ -60,6 +60,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/io/OutputStream;BLjava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("javax/servlet/ServletResponse.setCharacterEncoding(Ljava/lang/String;)V", Values.ZERO);
 		
 		STANDARD_JDK7_ENCODINGS.add("US-ASCII");
 		STANDARD_JDK7_ENCODINGS.add("ISO-8859-1");
