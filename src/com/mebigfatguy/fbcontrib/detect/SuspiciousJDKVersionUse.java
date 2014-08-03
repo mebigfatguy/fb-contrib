@@ -40,6 +40,8 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.Values;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -47,27 +49,38 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 {
-	private static final Map<Integer, String> verRegEx = new HashMap<Integer, String>();
+	private static final Map<Integer, String> VER_REG_EX = new HashMap<Integer, String>();
 	static {
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_1), "(jdk|j2?re)1.1");
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_2), "(jdk|j2?re)1.2");
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_3), "(jdk|j2?re)1.3");
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_4), "(jdk|j2?re)1.4");
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_5), "((jdk|j2?re)1.5)|(java-5)");
-		verRegEx.put(Integer.valueOf(Constants.MAJOR_1_6), "((jdk|j2?re)1.6)|(java-6)");
-        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_7), "((jdk|j2?re)1.7)|(java-7)");
-        verRegEx.put(Integer.valueOf(Constants.MAJOR_1_8), "((jdk|j2?re)1.8)|(java-8)");
+		VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_1), "(jdk|j2?re)1.1");
+		VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_2), "(jdk|j2?re)1.2");
+		VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_3), "(jdk|j2?re)1.3");
+		VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_4), "(jdk|j2?re)1.4");
+		VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_5), "((jdk|j2?re)1.5)|(java-5)");
+		VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_6), "((jdk|j2?re)1.6)|(java-6)");
+        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_7), "((jdk|j2?re)1.7)|(java-7)");
+        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_8), "((jdk|j2?re)1.8)|(java-8)");
 	}
-	private static final Map<Integer, String> versionStrings = new HashMap<Integer, String>();
+	private static final Map<Integer, String> VERSION_STRINGS = new HashMap<Integer, String>();
 	static {
-		versionStrings.put(Integer.valueOf(Constants.MAJOR_1_1), "JDK 1.1");
-		versionStrings.put(Integer.valueOf(Constants.MAJOR_1_2), "JDK 1.2");
-		versionStrings.put(Integer.valueOf(Constants.MAJOR_1_3), "JDK 1.3");
-		versionStrings.put(Integer.valueOf(Constants.MAJOR_1_4), "JDK 1.4");
-		versionStrings.put(Integer.valueOf(Constants.MAJOR_1_5), "JDK 1.5");
-        versionStrings.put(Integer.valueOf(Constants.MAJOR_1_6), "JDK 1.6");
-        versionStrings.put(Integer.valueOf(Constants.MAJOR_1_7), "JDK 1.7");
-        versionStrings.put(Integer.valueOf(Constants.MAJOR_1_8), "JDK 1.8");
+		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_1), "JDK 1.1");
+		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_2), "JDK 1.2");
+		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_3), "JDK 1.3");
+		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_4), "JDK 1.4");
+		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_5), "JDK 1.5");
+        VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_6), "JDK 1.6");
+        VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_7), "JDK 1.7");
+        VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_8), "JDK 1.8");
+	}
+	private static final Map<Integer, Integer> HUMAN_VERSIONS = new HashMap<Integer, Integer>();
+	static {
+		HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_1), Values.ONE);
+		HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_2), Values.TWO);
+		HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_3), Values.THREE);
+		HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_4), Values.FOUR);
+		HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_5), Values.FIVE);
+		HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_6), Values.SIX);
+		HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_7), Values.SEVEN);
+		HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_8), Values.EIGHT);
 	}
 	private static final Pattern jarPattern = Pattern.compile("jar:file:/*([^!]*)");
 	private static final String SJVU_JDKHOME = "fb-contrib.sjvu.jdkhome";
@@ -75,14 +88,16 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 	private final Map<String, File> versionPaths;
 	private final Map<Integer, Map<String, Set<String>>> validMethodsByVersion;
 	private final Map<String, String> superNames;
+	private final Map<Integer, ZipFile> jdkZips;
 	private File jdksRoot = null;
-	private ZipFile jdkZip;
 	private Integer clsMajorVersion;
+	private ZipFile jdkZip;
 	private final BugReporter bugReporter;
 
 	public SuspiciousJDKVersionUse(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		versionPaths = new HashMap<String, File>();
+		jdkZips = new HashMap<Integer, ZipFile>();
 		validMethodsByVersion = new HashMap<Integer, Map<String, Set<String>>>();
 		superNames = new HashMap<String, String>();
 	}
@@ -91,32 +106,25 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			clsMajorVersion = Integer.valueOf(classContext.getJavaClass().getMajor());
-			File rtJar = getRTJarFile();
-			if (rtJar == null)
-				rtJar = getRTJarFromProperty();
-
-			if (rtJar != null) {
-				jdkZip = new ZipFile(rtJar);
-				super.visitClassContext(classContext);
-			} else {
-				String version = versionStrings.get(clsMajorVersion);
-				ClassNotFoundException cnfe;
-				if (version != null)
-					cnfe = new ClassNotFoundException("The " + version + " rt.jar was not found. This file is needed for finding invalid methods with the SuspiciousJDKVersionUse detector. The system property 'fb-contrib.sjvu.jdkhome' can be used to specify the location of the appropriate JDK.");
-				else
-					cnfe = new ClassNotFoundException("The JDK's rt.jar for classes with class version " + clsMajorVersion + " was not found. This file is needed for finding invalid methods with the SuspiciousJDKVersionUse detector. The system property 'fb-contrib.sjvu.jdkhome' can be used to specify the location of the appropriate JDK.");
-				cnfe.fillInStackTrace();
-				bugReporter.reportMissingClass(cnfe);
+			jdkZip = jdkZips.get(clsMajorVersion);
+			if (jdkZip == null) {
+				File rtJar = getRTJarFile();
+				if (rtJar == null)
+					rtJar = getRTJarFromProperty(clsMajorVersion);
+				if (rtJar != null) {
+					jdkZip = new ZipFile(rtJar);
+					jdkZips.put(clsMajorVersion,  jdkZip);
+				}
 			}
+			
+			if (jdkZip == null)
+				return;
+
+			super.visitClassContext(classContext);
 		} catch (IOException ioe) {
 			//Hmm What to do
 		} finally {
 			clsMajorVersion = null;
-			try {
-				if (jdkZip != null)
-					jdkZip.close();
-			} catch (IOException ioe) {
-			}
 			jdkZip = null;
 		}
 	}
@@ -231,7 +239,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 	}
 
 	private File getRTJarFile(){
-		String versionStr = verRegEx.get(clsMajorVersion);
+		String versionStr = VER_REG_EX.get(clsMajorVersion);
 		if (versionStr == null)
 			return null;
 
@@ -299,8 +307,8 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		return null;
 	}
 
-	private File getRTJarFromProperty() {
-		String jdkHome = System.getProperty(SJVU_JDKHOME);
+	private static File getRTJarFromProperty(int requestedVersion) {
+		String jdkHome = System.getProperty(SJVU_JDKHOME + "." + HUMAN_VERSIONS.get(requestedVersion));
 		if (jdkHome == null)
 			return null;
 
