@@ -276,12 +276,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 		}
 	}
 
-	private boolean methodIsSpecial(String methodName, String methodSig) {
-		if ("readObject".equals(methodName) && "(Ljava/io/ObjectInputStream;)V".equals(methodSig)) {
-			return true;
-		}
-
-		return false;
+	private static boolean methodIsSpecial(String methodName, String methodSig) {
+		return ("readObject".equals(methodName) && "(Ljava/io/ObjectInputStream;)V".equals(methodSig));
 	}
 
 	private void reportBugs() {
@@ -321,7 +317,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 		}
 	}
 	
-	private String getCardinality(int num) {
+	private static String getCardinality(int num) {
 		if (num == 1) {
 			return "1st";
 		}
@@ -380,7 +376,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 	 * @return a map of (method name)(method sig) by interface
 	 * @throws ClassNotFoundException if unable to load the class
 	 */
-	private Map<JavaClass, List<MethodInfo>> getClassDefiners(final JavaClass cls)
+	private static Map<JavaClass, List<MethodInfo>> getClassDefiners(final JavaClass cls)
 		throws ClassNotFoundException {
 		Map<JavaClass, List<MethodInfo>> definers = new HashMap<JavaClass, List<MethodInfo>>();
 
@@ -402,7 +398,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 	 * @param cls the class to look for methods
 	 * @return a map of (method name)(method signature)
 	 */
-	private List<MethodInfo> getPublicMethodInfos(final JavaClass cls) {
+	private static List<MethodInfo> getPublicMethodInfos(final JavaClass cls) {
 		List<MethodInfo> methodInfos = new ArrayList<MethodInfo>();
 		Method[] methods = cls.getMethods();
 		for (Method m : methods) {
