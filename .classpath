@@ -19,7 +19,12 @@
 	<classpathentry kind="lib" path="lib/httpclient-4.3.4.jar"/>
 	<classpathentry kind="lib" path="lib/annotations-3.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/asm-debug-all-5.0.2.jar"/>
-	<classpathentry kind="lib" path="lib/bcel-findbugs-6.0.jar"/>
+	<classpathentry kind="lib" path="lib/bcel-findbugs-6.0.jar">
+		<attributes>
+			<attribute name="javadoc_location" value="http://commons.apache.org/proper/commons-bcel/apidocs/"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/findbugs-3.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>

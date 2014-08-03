@@ -89,7 +89,9 @@ public class RegisterUtils {
 			return seen - Constants.FSTORE_0;
 		else if (seen <= Constants.DSTORE_3)
 			return seen - Constants.DSTORE_0;
-		return seen - Constants.ASTORE_0;
+		else if ((seen >= Constants.ASTORE_0) && (seen <= Constants.ASTORE_3))
+			return seen - Constants.ASTORE_0;
+		return -1;
 	}
 	
     /**
@@ -114,7 +116,9 @@ public class RegisterUtils {
 			return seen - Constants.FLOAD_0;
 		else if (seen <= Constants.DLOAD_3)
 			return seen - Constants.DLOAD_0;
-		return seen - Constants.ALOAD_0;
+		else if ((seen >= Constants.ALOAD_0) && (seen <= Constants.ALOAD_3))
+			return seen - Constants.ALOAD_0;
+		return -1;
 	}
 	
     /**

@@ -316,9 +316,22 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this, 0)
-					.addString("Parameter [" + parm + "] " + name + " implements " + infName));
+					.addString(getCardinality(parm)+" parameter '" + name + "' could be declared as " + infName +" instead"));
 			}
 		}
+	}
+	
+	private String getCardinality(int num) {
+		if (num == 1) {
+			return "1st";
+		}
+		if (num == 2) {
+			return "2nd";
+		}
+		if (num == 3) {
+			return "3rd";
+		}
+		return num + "th";
 	}
 
 	/**
