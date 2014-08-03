@@ -196,6 +196,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 					}
 				}
 				
+				//previousSetBit is a jdk1.7 api - gonna cheat cause findbugs runs on 1.7
 				if (getPC() >= details.getSwitchTargets().previousSetBit(Integer.MAX_VALUE)) {
 					lookupSwitches.remove(innerMostSwitch);
 				}
