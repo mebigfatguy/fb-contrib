@@ -17,3 +17,4 @@ javadoc
 version.properties
 .~lock.yank.*
 /classes
+user.properties

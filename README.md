@@ -38,9 +38,9 @@ The master branch is the main branch of development currently targeting the new 
 4.  Open Eclipse.  File>Import and then choose "Existing projects into workspace", and find the fb-contrib folder you created in step 3.  Ignore any compile errors (for now).
 5. Using git, clone the FindBugs repository using `git clone https://code.google.com/p/findbugs/`  You will only need the findbugs subfolder (the one that has README.txt in it).  You can delete the rest, if you wish.
 6. Import this project into Eclipse as well.  You may wish to mark these files as read-only, so you modify the "correct" files.
-7. In the fb-contrib project, create a `user.properties` file and create a [findbugs.dir](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/build.properties#L13) property to whereever you have the FindBugs distribution installed.  This is the [executable FindBugs](http://findbugs.sourceforge.net/downloads.html) folder, *not* the source folder.  The jar will be "installed" to (findbugs.dir)\plugin.  
+7. In the fb-contrib project, find the `user.properties.example` file.  Make a copy of it named user.properties (this will not be tracked by version control). Modify the findbugs.dir property to where ever you have the FindBugs distribution installed.  This is the [executable FindBugs](http://findbugs.sourceforge.net/downloads.html) folder, *not* the source folder.  The jar will be "installed" to (findbugs.dir)\plugin.  
 For example, If you are using FindBugs with Eclipse (and you extracted Eclipse to C:\\), you'll set this to something like `findbugs.dir=/eclipse/plugins/edu.umd.cs.findbugs.plugin.eclipse_3.0.0.20140706-2cfb468`
-10. Finally, build fb-contrib by finding the [build.xml](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/build.xml) file in Eclipse, right-click it, and select Run As > Ant Build.  The dependencies needed should be downloaded to fb-contrib/lib and the fb-contrib-VERSION.jar should be built. 
+8. Finally, build fb-contrib by finding the [build.xml](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/build.xml) file in Eclipse, right-click it, and select Run As > Ant Build.  The dependencies needed should be downloaded to fb-contrib/lib and the fb-contrib-VERSION.jar should be built. 
 
 
 ##Contributing##
