@@ -7,11 +7,16 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.methods.HttpPut;
@@ -20,10 +25,6 @@ import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.DefaultHandler;
-
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 @SuppressWarnings("all")
 public class OCP_Sample extends Z implements ActionListener, Serializable {
@@ -146,4 +147,14 @@ class Z {
     @SuppressWarnings("unused")
 	public void usesOCP(LinkedList<String> ll) {
     }
+}
+
+class fpOverride {
+    public static final Comparator<Date> COMPARATOR = new Comparator<Date>() {
+
+    	@Override   //no tag, override
+        public int compare(Date o1, Date o2) {
+            return o1.getYear() - o2.getYear();
+        }
+    }; 
 }
