@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.ba.SourceFinder;
  */
 public class FinalParameters extends BytecodeScanningDetector
 {
-	private BugReporter bugReporter;
+	private final BugReporter bugReporter;
 	private BitSet changedParms;
 	private String methodName;
 	private int firstLocalReg;
@@ -229,7 +229,7 @@ public class FinalParameters extends BytecodeScanningDetector
 	 *
 	 * @return the variable name of the specified register
 	 */
-	private String getRegisterName(final Code obj, final int reg) {
+	private static String getRegisterName(final Code obj, final int reg) {
 		LocalVariableTable lvt = obj.getLocalVariableTable();
 		if (lvt != null) {
 			LocalVariable lv = lvt.getLocalVariable(reg, 0);

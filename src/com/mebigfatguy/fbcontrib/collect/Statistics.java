@@ -32,7 +32,7 @@ public class Statistics {
 	private static Statistics statistics = new Statistics();
 	private static final MethodInfo NOT_FOUND_METHOD_INFO = new MethodInfo();
 	
-	private Map<Long, MethodInfo> methodStatistics = new HashMap<Long, MethodInfo>();
+	private final Map<Long, MethodInfo> methodStatistics = new HashMap<Long, MethodInfo>();
 	
 
 	private Statistics() {
@@ -65,7 +65,7 @@ public class Statistics {
 		return mi;
 	}
 	
-	private Long getKey(String className, String methodName, String signature) {
+	private static Long getKey(String className, String methodName, String signature) {
 		long hashCode = className.hashCode();
 		hashCode <<= 16;
 		hashCode |= methodName.hashCode();

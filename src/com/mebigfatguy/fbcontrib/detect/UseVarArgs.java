@@ -98,7 +98,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector
 	public void report() {
 	}
 	
-	private boolean hasSimilarParms(Type[] argTypes) {
+	private static boolean hasSimilarParms(Type[] argTypes) {
 		
 		for (int i = 0; i < argTypes.length - 1; i++) {
 			if (argTypes[i].getSignature().startsWith("[")) {
@@ -136,7 +136,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector
 		return false;
 	}
 	
-	private boolean hasMethod(JavaClass c, Method candidateMethod) {
+	private static boolean hasMethod(JavaClass c, Method candidateMethod) {
 		String name = candidateMethod.getName();
 		String sig = candidateMethod.getSignature();
 		

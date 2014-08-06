@@ -363,7 +363,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 		}
 	}
 
-	private Comparable<?> getGroupElement(OpcodeStack.Item itm) {
+	private static Comparable<?> getGroupElement(OpcodeStack.Item itm) {
 		Comparable<?> groupElement = null;
 
 		int reg = itm.getRegisterNumber();

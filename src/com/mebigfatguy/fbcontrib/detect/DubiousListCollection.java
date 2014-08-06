@@ -66,9 +66,9 @@ public class DubiousListCollection extends BytecodeScanningDetector
 		
 		//Theoretically get(i) and indexOf(Object) are list Methods but are so abused, as to be meaningless
 	}
-	private BugReporter bugReporter;
-	private OpcodeStack stack = new OpcodeStack();
-	private Map<String, FieldInfo> fieldsReported = new HashMap<String, FieldInfo>(10);
+	private final BugReporter bugReporter;
+	private final OpcodeStack stack = new OpcodeStack();
+	private final Map<String, FieldInfo> fieldsReported = new HashMap<String, FieldInfo>(10);
 	
 	/**
      * constructs a DLC detector given the reporter to report bugs on
@@ -177,7 +177,7 @@ public class DubiousListCollection extends BytecodeScanningDetector
 	 * 
 	 * @return the field annotation for the field whose method was executed
 	 */
-	private XField getFieldFromStack(final OpcodeStack stk, final String signature) {
+	private static XField getFieldFromStack(final OpcodeStack stk, final String signature) {
 		int parmCount = Type.getArgumentTypes(signature).length;
 		if (stk.getStackDepth() > parmCount) {
 			OpcodeStack.Item itm = stk.getStackItem(parmCount);

@@ -109,7 +109,7 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
 		}
 	}
 	
-	private boolean hasOuterClassSyntheticReference(JavaClass cls) {
+	private static boolean hasOuterClassSyntheticReference(JavaClass cls) {
 		Field[] fields = cls.getFields();
 		for (Field f : fields) {
 			if (f.isSynthetic()) {
