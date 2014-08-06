@@ -80,11 +80,13 @@
 	</target>
 
 	<target name="validate_xml" depends="-init" description="validates the xml files">
+		<taskdef name="bug-rank-check-style" classname="text.style.check.BugRankCheckStyleTask"/>
 		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true" />
 			<attribute name="http://xml.org/sax/features/namespaces" value="true" />
 			<fileset dir="${etc.dir}" includes="*.xml" />
 		</xmlvalidate>
+		<bug-rank-check-style></bug-rank-check-style>
 	</target>
 
 	<target name="compile" depends="-init" description="compiles java files">
