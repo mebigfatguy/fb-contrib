@@ -210,7 +210,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 	 * @param item the stack item representing the array
 	 * @return if the array was returned from a common method
 	 */
-	private boolean isArrayFromUbiquitousMethod(OpcodeStack.Item item) {
+	private static boolean isArrayFromUbiquitousMethod(OpcodeStack.Item item) {
 		XMethod method = item.getReturnValueOf();
 		if (method == null)
 			return false;

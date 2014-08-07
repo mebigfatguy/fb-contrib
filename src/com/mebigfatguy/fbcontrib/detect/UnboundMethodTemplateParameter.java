@@ -43,7 +43,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
 
     private static final Pattern TEMPLATED_SIGNATURE = Pattern.compile("(\\<[^\\>]+\\>)(.+)");
     private static final Pattern TEMPLATE = Pattern.compile("\\<?([^:]+):[^;]*;");
-    private BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
 
     public UnboundMethodTemplateParameter(BugReporter bugReporter) {
@@ -99,7 +99,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
      * @param signatureAttribute the signature attribute
      * @return a template signature if there are templates defined, otherwise null
      */
-    private TemplateSignature parseSignatureAttribute(Signature signatureAttribute) {
+    private static TemplateSignature parseSignatureAttribute(Signature signatureAttribute) {
 
         Matcher m = TEMPLATED_SIGNATURE.matcher(signatureAttribute.getSignature());
         if (m.matches()) {

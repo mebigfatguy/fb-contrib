@@ -97,7 +97,7 @@ public class IncorrectInternalClassUse implements Detector
      * @param clsName the name of the class to check
      * @returns whether the class is internal
      */
-    private boolean isInternal(String clsName) {
+    private static boolean isInternal(String clsName) {
         boolean internal = false;
         for (String internalPackage : internalPackages) {
             if (clsName.startsWith(internalPackage)) {

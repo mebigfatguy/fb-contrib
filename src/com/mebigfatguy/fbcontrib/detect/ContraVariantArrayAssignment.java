@@ -145,11 +145,11 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 		}
 	}
 
-	private boolean isArrayType(String signature){
+	private static boolean isArrayType(String signature){
 	    return Type.getType(signature) instanceof ArrayType;
 	}
 
-	private boolean isObjectType(String signature){
+	private static boolean isObjectType(String signature){
 		return ((ArrayType)Type.getType(signature)).getBasicType() instanceof ObjectType;
 	}
 

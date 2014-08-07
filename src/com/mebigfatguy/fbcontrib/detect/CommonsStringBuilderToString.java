@@ -57,8 +57,8 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
     }
     
     private final BugReporter bugReporter;
-    private Stack<Pair> stackTracker = new Stack<Pair>();
-    private Map<Integer, Boolean> registerTracker = new HashMap<Integer, Boolean>(10);
+    private final Stack<Pair> stackTracker = new Stack<Pair>();
+    private final Map<Integer, Boolean> registerTracker = new HashMap<Integer, Boolean>(10);
 
     /**
      * constructs a CSBTS detector given the reporter to report bugs on.
@@ -165,7 +165,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
         }
     }
 
-    private boolean isToStringBuilder(String signature) {
+    private static boolean isToStringBuilder(String signature) {
         return "Lorg/apache/commons/lang3/builder/ToStringBuilder;"
                 .equals(signature)
                 || "Lorg/apache/commons/lang/builder/ToStringBuilder;"

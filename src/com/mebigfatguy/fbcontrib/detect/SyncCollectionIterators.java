@@ -212,7 +212,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector
 		}
 	}
 	
-	private boolean syncIsMap(Object syncObject, Object colInfo) {
+	private static boolean syncIsMap(Object syncObject, Object colInfo) {
 		if ((syncObject != null) && (colInfo != null) && syncObject.getClass().equals(colInfo.getClass()))
 			return syncObject.equals(colInfo);
 		
