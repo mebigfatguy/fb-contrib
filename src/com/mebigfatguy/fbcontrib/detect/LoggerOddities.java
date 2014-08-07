@@ -159,10 +159,12 @@ public class LoggerOddities extends BytecodeScanningDetector {
             } else if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (THROWABLE_CLASS != null)) {
                 String mthName = getNameConstantOperand();
                 if ("getName".equals(mthName)) {
-                	//Foo.class.getName() is being called, so we pass the name of the class to the current top of the stack
-                	//(the name of the class is currently on the top of the stack, but won't be on the stack at all next opcode)
-                	Item stackItem = stack.getStackItem(0);
-					ldcClassName = (String) stackItem.getUserValue();
+                	if (stack.getStackDepth() >= 1) {
+	                	//Foo.class.getName() is being called, so we pass the name of the class to the current top of the stack
+	                	//(the name of the class is currently on the top of the stack, but won't be on the stack at all next opcode)
+	                	Item stackItem = stack.getStackItem(0);
+						ldcClassName = (String) stackItem.getUserValue();
+                	}
                 }
                 else if ("getMessage".equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
