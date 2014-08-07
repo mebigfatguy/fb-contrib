@@ -221,7 +221,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 					//and then pull out the types.
 					//if the last type is a ThreadFactory, set the priority to low
 					XMethod method = stack.getStackItem(0).getReturnValueOf();
-					if ((method != null) && method.getName().equals("<init>")) {
+					if (method != null) {
 						Type[] argumentTypes = Type.getArgumentTypes(method.getSignature());
 						if (argumentTypes.length != 0) {
 							if ("Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes[argumentTypes.length-1].getSignature())) {
