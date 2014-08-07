@@ -53,6 +53,10 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
 	static {
 		hangableSig.add("Ljava/util/concurrent/ExecutorService;");
+		hangableSig.add("Ljava/util/concurrent/AbstractExecutorService;");
+		hangableSig.add("Ljava/util/concurrent/ForkJoinPool;");
+		hangableSig.add("Ljava/util/concurrent/ScheduledThreadPoolExecutor;");
+		hangableSig.add("Ljava/util/concurrent/ThreadPoolExecutor;");
 	}
 
 
@@ -70,7 +74,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 	private OpcodeStack stack;
 	private String methodName;
 
-	private LocalHangingExecutor localHEDetector;
+	private final LocalHangingExecutor localHEDetector;
 
 
 
@@ -212,13 +216,13 @@ public class HangingExecutors extends BytecodeScanningDetector {
 			stack.precomputation(this);
 			if (seen == PUTFIELD) {
 				XField f = getXFieldOperand();
-				if (f != null && "Ljava/util/concurrent/ExecutorService;".equals(f.getSignature())){
+				if (f != null && hangableSig.contains(f.getSignature())){
 					//look at the top of the stack, get the arguments passed into the function that was called
 					//and then pull out the types.
 					//if the last type is a ThreadFactory, set the priority to low
-					XMethod probableConstructor = stack.getStackItem(0).getReturnValueOf();
-					if (probableConstructor != null) {
-						Type[] argumentTypes = Type.getArgumentTypes(probableConstructor.getSignature());
+					XMethod method = stack.getStackItem(0).getReturnValueOf();
+					if ((method != null) && method.getName().equals("<init>")) {
+						Type[] argumentTypes = Type.getArgumentTypes(method.getSignature());
 						if (argumentTypes.length != 0) {
 							if ("Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes[argumentTypes.length-1].getSignature())) {
 								AnnotationPriority ap = this.hangingFieldCandidates.get(f);
@@ -320,8 +324,8 @@ class LocalHangingExecutor extends LocalTypeDetector {
 		syncCtors.put("java/util/concurrent/ScheduledThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
 	}
 
-	private BugReporter bugReporter;
-	private Detector delegatingDetector;
+	private final BugReporter bugReporter;
+	private final Detector delegatingDetector;
 
 	public LocalHangingExecutor(Detector delegatingDetector, BugReporter reporter) {
 		this.bugReporter = reporter;
