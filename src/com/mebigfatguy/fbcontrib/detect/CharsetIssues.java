@@ -19,8 +19,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.nio.charset.Charset;
-import java.nio.charset.IllegalCharsetNameException;
-import java.nio.charset.UnsupportedCharsetException;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -143,7 +141,8 @@ public class CharsetIssues extends BytecodeScanningDetector {
 								bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET", NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
-											.addSourceLine(this));
+											.addSourceLine(this)
+											.addCalledMethod(this));
 							}
 						}
 					} else {
@@ -157,7 +156,8 @@ public class CharsetIssues extends BytecodeScanningDetector {
 									bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME", NORMAL_PRIORITY)
 												.addClass(this)
 												.addMethod(this)
-												.addSourceLine(this));
+												.addSourceLine(this)
+												.addCalledMethod(this));
 								}
 							}
 						}
@@ -166,16 +166,12 @@ public class CharsetIssues extends BytecodeScanningDetector {
 					if (encoding != null) {
 						try {
 							Charset.forName(encoding);
-						} catch (IllegalCharsetNameException e) {
+						} catch (IllegalArgumentException e) {  //encompasses both IllegalCharsetNameException and UnsupportedCharsetException
 							bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING", NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
-										.addSourceLine(this));
-						} catch (UnsupportedCharsetException e) {
-							bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING", NORMAL_PRIORITY)
-							.addClass(this)
-							.addMethod(this)
-							.addSourceLine(this));
+										.addSourceLine(this)
+										.addCalledMethod(this));
 						}
 					}
 				break;
