@@ -40,16 +40,21 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class CharsetIssues extends BytecodeScanningDetector {
 	
-	private static Map<String, Integer> REPLACEABLE_ENCODING_METHODS = new HashMap<String, Integer>();
+	private static final String STRING_SIG = "Ljava/lang/String;";
+	private static final String CHARSET_SIG = "Ljava/nio/charset/Charset;";
+	
+	private static Map<String, Pair> REPLACEABLE_ENCODING_METHODS = new HashMap<String, Pair>();
 	private static Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS = new HashMap<String, Integer>();
 	private static Set<String> STANDARD_JDK7_ENCODINGS = new HashSet<String>();
-	static {
-		REPLACEABLE_ENCODING_METHODS.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
-		REPLACEABLE_ENCODING_METHODS.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BLjava/lang/String;)V", Values.ZERO);
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BIILjava/lang/String;)V", Values.ZERO);
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.getBytes(Ljava/lang/String;)[B", Values.ZERO);
-		REPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
+	
+	static {			   //			  0         10        20        30        40        50        60        70
+						   //For counting 012345678901234567890123456789012345678901234567890123456789012345678901234567890
+		REPLACEABLE_ENCODING_METHODS.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new Pair(0, 54));
+		REPLACEABLE_ENCODING_METHODS.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new Pair(0, 56));
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BLjava/lang/String;)V", new Pair(0, 26));		//I'm not sure about this
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BIILjava/lang/String;)V", new Pair(0, 28));		// or this.  When is this invoked?
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new Pair(0, 56));
+		REPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new Pair(1, 41));
 		
 		
 		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
@@ -118,6 +123,12 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		stack.resetForMethodEntry(this);
 	}
 	
+	private String replaceStringSigWithCharsetString(String sig, int startIndex) {
+		StringBuilder sb = new StringBuilder(sig);
+		sb.replace(startIndex, startIndex + STRING_SIG.length(), CHARSET_SIG);
+		return sb.toString();
+	}
+	
 	@Override
 	public void sawOpcode(int seen) {
 		try {
@@ -129,26 +140,33 @@ public class CharsetIssues extends BytecodeScanningDetector {
 				case INVOKEINTERFACE:
 				case INVOKEVIRTUAL:
 					String encoding = null;
-					String methodInfo = getClassConstantOperand() + "." + getNameConstantOperand() + getSigConstantOperand();
-					Integer stackOffset = REPLACEABLE_ENCODING_METHODS.get(methodInfo);
-					if (stackOffset != null) {
-						int offset = stackOffset.intValue();
+				String className = getClassConstantOperand();
+				String methodName = getNameConstantOperand();
+				String methodSig = getSigConstantOperand();
+				String methodInfo = className + "." + methodName + methodSig;
+					Pair offsetInfo = REPLACEABLE_ENCODING_METHODS.get(methodInfo);
+					if (offsetInfo != null) {
+						int offset = offsetInfo.stackDepth;
 						if (stack.getStackDepth() > offset) {
 							OpcodeStack.Item item = stack.getStackItem(offset);
 							encoding = (String) item.getConstant();
 							
 							if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
+								// the counts put in the Pair are indexed from the beginning of
+								String changedMethodSig = replaceStringSigWithCharsetString(
+										methodInfo, offsetInfo.indexOfStringSig).substring(className.length() + methodName.length()+ 1);
 								bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET", NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
 											.addSourceLine(this)
-											.addCalledMethod(this));
+											.addCalledMethod(this)
+											.addCalledMethod(className, methodName, changedMethodSig, seen == INVOKESTATIC));
 							}
 						}
 					} else {
-						stackOffset = UNREPLACEABLE_ENCODING_METHODS.get(methodInfo);
-						if (stackOffset != null) {
-							int offset = stackOffset.intValue();
+						Integer offsetValue = UNREPLACEABLE_ENCODING_METHODS.get(methodInfo);
+						if (offsetValue != null) {
+							int offset = offsetValue.intValue();
 							if (stack.getStackDepth() > offset) {
 								OpcodeStack.Item item = stack.getStackItem(offset);
 								encoding = (String) item.getConstant();
@@ -171,7 +189,8 @@ public class CharsetIssues extends BytecodeScanningDetector {
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this)
-										.addCalledMethod(this));
+										.addCalledMethod(this)
+										.addString(encoding));
 						}
 					}
 				break;
@@ -179,5 +198,14 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		} finally {
 			stack.sawOpcode(this, seen);
 		}
+	}
+
+	private static class Pair{
+		public final int stackDepth;
+		public final int indexOfStringSig; //to replace
+		public Pair(int stackDepth, int indexOfStringSig) {
+			this.stackDepth = stackDepth;
+			this.indexOfStringSig = indexOfStringSig;
+		}	
 	}
 }

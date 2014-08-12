@@ -4518,13 +4518,13 @@
     
     <BugPattern type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET">
     	<ShortDescription>This method needlessly uses a String literal as a Charset encoding</ShortDescription>
-    	<LongDescription>This method {1} needlessly uses a String literal as a Charset encoding</LongDescription>
+    	<LongDescription>This method "{3}" needlessly uses a String literal to define an encoding.  A built-in Charset could be used instead like: {4}</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method uses a string literal to specify a Charset encoding. However the method invoked has an 
-    		alternative signature that takes a Charset object. You should use this signature, as this class is compiled
-    		with JDK 7 (or better), and the charset in question is available as a constant from the 
-    		java.nio.charset.StandardCharsets class.</p>
+    		<p>This method uses a string literal to specify a <code>Charset</code> encoding. However the method invoked has an 
+    		alternative signature that takes a <code>Charset</code> object. You should use this signature, as this class is compiled
+    		with JDK 7 (or better), and the <code>Charset</code> in question is available as a constant from the 
+    		<code>java.nio.charset.StandardCharsets</code> class.</p>
     		<p>So instead of specifying "UTF-8", use <code>StandardCharsets.UTF_8</code>, for instance. An added benefit of this is 
     		that you will not need to catch <code>UnsupportedEncodingException</code>.</p>
     		]]>
@@ -4533,27 +4533,30 @@
     
     <BugPattern type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME">
     	<ShortDescription>This method should use a StandardCharsets.XXX.name() to specify an encoding</ShortDescription>
-    	<LongDescription>This method {1} should use a StandardCharsets.XXX.name() to specify an encoding</LongDescription>
+    	<LongDescription>This method {3} should use a StandardCharsets.XXX.name() to specify an encoding</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method uses a string literal to specify a Charset encoding. As this class is compiled
-    		with JDK 7 (or better), and the charset in question is available as a constant from the 
-    		java.nio.charset.StandardCharsets class, it is better to use the .name() method of the appropriate
-    		StandarCharsets constants.</p>
-    		<p>So instead of specifying "UTF-8", use StandardCharsets.UTF_8.name(), for instance. An added benefit of this is 
-    		that you will not need to catch UnsupportedEncodingException.</p>
+    		<p>This method uses a <code>String</code> literal to specify a <code>Charset</code>  encoding. As this class is compiled
+    		with JDK 7 (or better), and the <code>Charset</code>  in question is available as a constant from the 
+    		<code>java.nio.charset.StandardCharsets</code> class, it is better to use the .name() method of the appropriate
+    		<code>StandardCharsets</code> constants.</p>
+    		<p>So instead of specifying "UTF-8", use <code>StandardCharsets.UTF_8.name()</code>, for instance. An added benefit of this is 
+    		that you will not need to catch <code>UnsupportedEncodingException</code>.</p>
     		]]>
     	</Details>
     </BugPattern>
 
     <BugPattern type="CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING">
     	<ShortDescription>This method uses an unknown character encoding literal</ShortDescription>
-    	<LongDescription>This method {1} uses an unknown character encoding literal</LongDescription>
+    	<LongDescription>This method {3} uses an unknown character encoding literal "{4}"</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method specifies a charset encoding with a string literal that is not recognized by the current
+    		<p>This method specifies a <code>Charset</code> encoding with a String literal that is not recognized by the current
     		JDK. It's possible that this application will only be deployed on a JVM that does recognize this encoding, but
     		it seem dubious that this is the case.</p>
+    		<p>
+    		The standard JDK encodings are "UTF-8", "US-ASCII", "ISO-8859-1", "UTF-16BE", "UTF-16LE", "UTF-16".  These are all case-sensitive.
+    		</p>
     		]]>
     	</Details>
     </BugPattern>
