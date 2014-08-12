@@ -7,6 +7,7 @@ import java.io.PrintWriter;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Scanner;
 
 
 public class CSI_Sample {
@@ -27,6 +28,14 @@ public class CSI_Sample {
 	public void testUseConstants(File f) throws UnsupportedEncodingException, FileNotFoundException {
 		try (PrintWriter pw = new PrintWriter(f, "UTF-8")) {
 			pw.println("Hello world");
+		}
+		
+		try (Scanner s = new Scanner(f, "UTF-8")) {
+			System.out.println(s.nextLine());
+		}
+		
+		try (Scanner s = new Scanner(new FileInputStream(f), "UTF-8")) {
+			System.out.println(s.nextLine());
 		}
 	}
 }

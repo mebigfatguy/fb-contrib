@@ -74,8 +74,13 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.toCharset(Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/logging/Handler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/logging/StreamHandler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/nio/file/Path;Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
 		UNREPLACEABLE_ENCODING_METHODS.put("javax/servlet/ServletResponse.setCharacterEncoding(Ljava/lang/String;)V", Values.ZERO);
+		
 		
 		STANDARD_JDK7_ENCODINGS.add("US-ASCII");
 		STANDARD_JDK7_ENCODINGS.add("ISO-8859-1");
@@ -148,7 +153,6 @@ public class CharsetIssues extends BytecodeScanningDetector {
 							if (stack.getStackDepth() > offset) {
 								OpcodeStack.Item item = stack.getStackItem(offset);
 								encoding = (String) item.getConstant();
-								
 								if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
 									bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME", NORMAL_PRIORITY)
 												.addClass(this)
