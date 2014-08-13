@@ -47,14 +47,18 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	private static Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS = new HashMap<String, Integer>();
 	private static Set<String> STANDARD_JDK7_ENCODINGS = new HashSet<String>();
 	
-	static {			   //			  0         10        20        30        40        50        60        70
-						   //For counting 012345678901234567890123456789012345678901234567890123456789012345678901234567890
-		REPLACEABLE_ENCODING_METHODS.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new Pair(0, 54));
-		REPLACEABLE_ENCODING_METHODS.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new Pair(0, 56));
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BLjava/lang/String;)V", new Pair(0, 26));		//I'm not sure about this
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BIILjava/lang/String;)V", new Pair(0, 28));		// or this.  When is this invoked?
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new Pair(0, 56));
-		REPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new Pair(1, 41));
+	/*
+	 * The stack offset refers to the relative position of the Ljava/lang/String; of interest (i.e. the one
+	 * that is the charset)  For example, a stack offset of 0 means the String charset was the last param, 
+	 * and a stack offset of 2 means it was the 3rd to last.
+	 */
+	static {
+		REPLACEABLE_ENCODING_METHODS.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new Pair(0, 0));
+		REPLACEABLE_ENCODING_METHODS.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new Pair(0, 0));
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BLjava/lang/String;)V", new Pair(0, 0));
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BIILjava/lang/String;)V", new Pair(0, 0));
+		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new Pair(0, 0));
+		REPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new Pair(1, 0));
 		
 		
 		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
@@ -83,6 +87,8 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
 		UNREPLACEABLE_ENCODING_METHODS.put("javax/servlet/ServletResponse.setCharacterEncoding(Ljava/lang/String;)V", Values.ZERO);
+		
+		UNREPLACEABLE_ENCODING_METHODS.put("java/beans/XMLEncoder.<init>(Ljava/io/OutputStream;Ljava/lang/String;ZI)V", Values.TWO);
 		
 		
 		STANDARD_JDK7_ENCODINGS.add("US-ASCII");
@@ -123,9 +129,15 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		stack.resetForMethodEntry(this);
 	}
 	
-	private String replaceStringSigWithCharsetString(String sig, int startIndex) {
+	private String replaceStringSigWithCharsetString(String sig, int nthInstance) {
+		int start = 0;
+		for(;nthInstance>0;nthInstance--) {
+			start = sig.indexOf(STRING_SIG, start) + 1;
+		}
+		
 		StringBuilder sb = new StringBuilder(sig);
-		sb.replace(startIndex, startIndex + STRING_SIG.length(), CHARSET_SIG);
+		int replaceIndex = sig.indexOf(STRING_SIG, start);
+		sb.replace(replaceIndex, replaceIndex + STRING_SIG.length(), CHARSET_SIG);
 		return sb.toString();
 	}
 	
@@ -140,10 +152,10 @@ public class CharsetIssues extends BytecodeScanningDetector {
 				case INVOKEINTERFACE:
 				case INVOKEVIRTUAL:
 					String encoding = null;
-				String className = getClassConstantOperand();
-				String methodName = getNameConstantOperand();
-				String methodSig = getSigConstantOperand();
-				String methodInfo = className + "." + methodName + methodSig;
+					String className = getClassConstantOperand();
+					String methodName = getNameConstantOperand();
+					String methodSig = getSigConstantOperand();
+					String methodInfo = className + "." + methodName + methodSig;
 					Pair offsetInfo = REPLACEABLE_ENCODING_METHODS.get(methodInfo);
 					if (offsetInfo != null) {
 						int offset = offsetInfo.stackDepth;
@@ -153,8 +165,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 							
 							if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
 								// the counts put in the Pair are indexed from the beginning of
-								String changedMethodSig = replaceStringSigWithCharsetString(
-										methodInfo, offsetInfo.indexOfStringSig).substring(className.length() + methodName.length()+ 1);
+								String changedMethodSig = replaceStringSigWithCharsetString(methodSig, offsetInfo.indexOfStringSig);
 								bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET", NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
@@ -194,6 +205,8 @@ public class CharsetIssues extends BytecodeScanningDetector {
 						}
 					}
 				break;
+				default:
+					break;
 			}
 		} finally {
 			stack.sawOpcode(this, seen);
