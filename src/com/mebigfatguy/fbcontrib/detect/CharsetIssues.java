@@ -80,16 +80,18 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.toCharset(Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/logging/Handler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
+		UNREPLACEABLE_ENCODING_METHODS.put("java/util/logging/MemoryHandler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/logging/StreamHandler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/nio/file/Path;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)V", Values.ZERO);
 		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
-		UNREPLACEABLE_ENCODING_METHODS.put("javax/servlet/ServletResponse.setCharacterEncoding(Ljava/lang/String;)V", Values.ZERO);
-		
+		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.encode(Ljava/lang/String;[CII)[B", Values.THREE);
+		UNREPLACEABLE_ENCODING_METHODS.put("javax/servlet/ServletResponse.setCharacterEncoding(Ljava/lang/String;)V", Values.ZERO);	
 		UNREPLACEABLE_ENCODING_METHODS.put("java/beans/XMLEncoder.<init>(Ljava/io/OutputStream;Ljava/lang/String;ZI)V", Values.TWO);
-		
+		UNREPLACEABLE_ENCODING_METHODS.put("java/nio/channels/Channels.newReader(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)Ljava/io/Reader;", Values.ZERO);	
+		UNREPLACEABLE_ENCODING_METHODS.put("java/nio/channels/Channels.newWriter(Ljava/nio/channels/WritableByteChannel;Ljava/lang/String;)Ljava/io/Writer;", Values.ZERO);	
 		
 		STANDARD_JDK7_ENCODINGS.add("US-ASCII");
 		STANDARD_JDK7_ENCODINGS.add("ISO-8859-1");
