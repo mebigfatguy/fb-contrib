@@ -2598,7 +2598,7 @@
 			<![CDATA[
 			<p>This method passes a constant literal <code>String</code> of length 1 as a parameter to a method, that
 			exposes a similar method that takes a <code>char</code>. It is simpler and more expedient to handle one
-			character, rather than a <code>String</code.</p>
+			character, rather than a <code>String</code>.</p>
 			
 			<p>
 			Instead of making calls like: <br/>
