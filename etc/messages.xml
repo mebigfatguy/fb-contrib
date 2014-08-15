@@ -142,7 +142,8 @@
 			<![CDATA[
 			<p>Looks for constructors of non final classes that make method calls to non final methods.
 			As these methods could be overridden, the overridden method will be accessing an object that
-			is only partially constructed, perhaps causing problems.</p>
+			is only partially constructed, perhaps causing problems. Making these called methods final is
+			an easy fix, where possible.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
