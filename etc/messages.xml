@@ -4275,7 +4275,7 @@
 	
 	<BugPattern type="CNC_COLLECTION_NAMING_CONFUSION">
 	    <ShortDescription>Collection variable is named with a different type of collection in the name</ShortDescription>
-        <LongDescription>Collection variable {2} is named with a different type of collection in the name</LongDescription>
+        <LongDescription>Collection variable {1} is named with a different type of collection in the name</LongDescription>
         <Details>
             <![CDATA[
             <p>This class defines a field or local collection variable with a name that contains a different type

@@ -52,6 +52,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
         }
     }
     private BugReporter bugReporter;
+	private ClassContext classContext;
 
     public CollectionNamingConfusion(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -60,6 +61,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     @Override
     public void visitClassContext(ClassContext classContext) {
         if (MAP_CLASS != null) {
+        	this.classContext = classContext;
             classContext.getJavaClass().accept(this);
         }
     }
@@ -83,8 +85,8 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
                 if (checkConfusedName(lv.getName(), lv.getSignature())) {
                     bugReporter.reportBug(new BugInstance(this, "CNC_COLLECTION_NAMING_CONFUSION", NORMAL_PRIORITY)
                     .addClass(this)
-                    .addMethod(this)
-                    .addString(lv.getName()));
+                    .addString(lv.getName())
+                    .addSourceLine(this.classContext,this,lv.getStartPC()));
                 }
             }
         }
