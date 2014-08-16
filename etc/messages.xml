@@ -167,7 +167,7 @@
 			<p>Looks for classes that maintain two or more lists or arrays associated one-for-one through the same index
 			to hold two or more pieces of related information. It would be better to create a new class that holds
 			all of these pieces of information, and place instances of this class in one list. Or if the two list are
-			related in key/value fashion, then a map.</p>
+			related in key/value fashion, then use a map instead.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
