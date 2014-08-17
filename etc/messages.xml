@@ -260,7 +260,10 @@
 			<pre>
 				public void test(Character c)
 			</pre>
-			but instead maps to one that takes an int, long, float or double.
+			but instead maps to one that takes an int, long, float or double, such as
+			<pre>
+				<public void test(int i)
+			</pre>
 			</p>
 			<p>It is a fast detector</p>
 			]]>
