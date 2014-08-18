@@ -320,6 +320,8 @@
 				<li>new Float(Float)</li>
 				<li>new Double(Double)</li>
 			</ul>
+			Since primitive wrapper classes are immutable this is needless garbage being created. Just
+			use the original reference.
 			</p>
 			<p>It also looks for calls to BoxedClass.valueOf(x) where X is already a Boxed class</p>
 			<p>It also looks for calls to BoxedClass.valueOf(myString).boxedValue(), when instead it is
