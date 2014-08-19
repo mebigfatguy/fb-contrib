@@ -367,7 +367,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OrphanedDOMNode">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that create DOM nodes but do not add them to any DOM Document.</p>
+			<p>Looks for methods that create DOM nodes but do not add them to any DOM Document.
+			Either the node was needed to be added to the tree, or the node likely was created in error.</p>
 			<p>It is a fast Detector</p>
 			]]>
 		</Details>
