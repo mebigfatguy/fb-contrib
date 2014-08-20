@@ -414,7 +414,8 @@
 			<p>Looks for methods that access arrays or classes that implement java.util.List
 			using a constant integer for the index. This is often a typo intended to be a loop
 			variable, but if specific indices mean certain things, perhaps a first class object
-			would be a better choice for a container.</p>
+			would be a better choice for a container, on even a map with informative key names
+			would be better.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
