@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <?eclipse version="3.4"?>
-<plugin id="fb-contrib" name="fb-contrib" version="6.0.0">
+<plugin>
     <extension point="edu.umd.cs.findbugs.plugin.eclipse.findbugsPlugins">
         <findbugsPlugin fbPluginId="com.mebigfatguy.fbcontrib" libraryPath="."></findbugsPlugin>
     </extension>

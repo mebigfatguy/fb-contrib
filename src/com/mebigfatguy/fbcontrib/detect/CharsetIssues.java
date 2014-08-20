@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.nio.charset.Charset;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -43,7 +44,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	private static final String STRING_SIG = "Ljava/lang/String;";
 	private static final String CHARSET_SIG = "Ljava/nio/charset/Charset;";
 	
-	private static Map<String, Pair> REPLACEABLE_ENCODING_METHODS = new HashMap<String, Pair>();
+	public static final Map<String, Pair> REPLACEABLE_ENCODING_METHODS;
 	private static Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS = new HashMap<String, Integer>();
 	private static Set<String> STANDARD_JDK7_ENCODINGS = new HashSet<String>();
 	
@@ -53,12 +54,15 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	 * and a stack offset of 2 means it was the 3rd to last.
 	 */
 	static {
-		REPLACEABLE_ENCODING_METHODS.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new Pair(0, 0));
-		REPLACEABLE_ENCODING_METHODS.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new Pair(0, 0));
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BLjava/lang/String;)V", new Pair(0, 0));
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.<init>([BIILjava/lang/String;)V", new Pair(0, 0));
-		REPLACEABLE_ENCODING_METHODS.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new Pair(0, 0));
-		REPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new Pair(1, 0));
+		HashMap<String, Pair> replacable = new HashMap<String, Pair>();
+		replacable.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new Pair(0, 0));
+		replacable.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new Pair(0, 0));
+		replacable.put("java/lang/String.<init>([BLjava/lang/String;)V", new Pair(0, 0));
+		replacable.put("java/lang/String.<init>([BIILjava/lang/String;)V", new Pair(0, 0));
+		replacable.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new Pair(0, 0));
+		replacable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new Pair(1, 0));
+		
+		REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replacable);
 		
 		
 		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
