@@ -172,8 +172,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 			if (fieldAn != null) {
 				bugReporter.reportBug(new BugInstance(this, "PMB_POSSIBLE_MEMORY_BLOAT", NORMAL_PRIORITY)
 				.addClass(this)
-				.addField(fieldAn)
-				.addField(entry.getKey()));
+				.addField(fieldAn));
 			}
 		}
 	}

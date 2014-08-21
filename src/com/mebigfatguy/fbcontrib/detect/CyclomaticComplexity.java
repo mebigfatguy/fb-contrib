@@ -131,11 +131,15 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector
 			}
 			
 			if (branches > reportLimit) {
-				bugReporter.reportBug( new BugInstance( this, "CC_CYCLOMATIC_COMPLEXITY", NORMAL_PRIORITY)
+				
+				int priority = (branches > (reportLimit * 2) ? HIGH_PRIORITY: NORMAL_PRIORITY);
+				BugInstance bug = new BugInstance(this, "CC_CYCLOMATIC_COMPLEXITY", priority)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(classContext, this, 0)
-						.addInt(branches));
+						.addInt(branches);
+				
+				bugReporter.reportBug(bug);
 			}
 		} catch (CFGBuilderException cbe) {
 			bugReporter.logError("Failure examining basic blocks for method " + classContext.getJavaClass().getClassName() + "." + obj.getName() + " in Cyclomatic Complexity detector", cbe);

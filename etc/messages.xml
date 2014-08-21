@@ -2306,7 +2306,7 @@
 
 	<BugPattern type="PMB_POSSIBLE_MEMORY_BLOAT">
 		<ShortDescription>Potential memory bloat in static field</ShortDescription>
-		<LongDescription>Class {0} defines static field "{2}" which appears to allow memory bloat</LongDescription>
+		<LongDescription>Class {0} defines static field "{1}" which appears to allow memory bloat</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This class defines static fields that are <code>Collection</code>s, <code>StringBuffer</code>s, or <code>StringBuilder</code>s
@@ -2606,7 +2606,7 @@
 			<![CDATA[
 			<p>This method passes a constant literal <code>String</code> of length 1 as a parameter to a method, that
 			exposes a similar method that takes a <code>char</code>. It is simpler and more expedient to handle one
-			character, rather than a <code>String</code.</p>
+			character, rather than a <code>String</code>.</p>
 			
 			<p>
 			Instead of making calls like: <br/>
@@ -2858,18 +2858,36 @@
 	</BugPattern>
 
 	<BugPattern type="SPP_SUSPECT_STRING_TEST">
-		<ShortDescription>Method treats null and normal strings differently than an empty strings</ShortDescription>
-		<LongDescription>Method {1} treats null and normal strings differently than an empty strings</LongDescription>
+		<ShortDescription>Method possibly mixes up normal strings and empty strings in branching logic</ShortDescription>
+		<LongDescription>Method {1} treats null and normal strings the same, when it should probably 
+		treat null and empty strings the same</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method tests a string, and groups null values with real strings, leaving empty strings as another
-			case. This might be perfectly valid, but normally, null strings and empty strings are logically handled the same way,
+			case. That is, FindBugs has detected a structure like: <br/>
+			<code>
+			String a = null, b = "", c = "someString"; <br/>
+			...<br/>
+			String testStr = ...;  //one of a, b or c<br/>
+			if (<b>FLAWED_TEST_LOGIC</b>) { <br/>
+			// Strings a and c fall into this branch... which is not typical.  <br/>
+			} else { <br/>
+			// String b falls into this branch. <br/>
+			} <br/>
+			</code>
+			
+			This might be perfectly valid, but normally, null strings and empty strings are logically handled the same way,
 			and so this test may be flawed.</p>
-			<p>Pattern found is one of the following
-			<pre>if ((s == null) || (s.length() > 0))</pre> -- did you mean ((s == null) || (s.length() == 0))?
-			<pre>if ((s == null) || (s.length() != 0))</pre> -- did you mean ((s == null) || (s.length() == 0))?
-			<pre>if ((s != null) && (s.length() == 0))</pre> -- did you mean ((s != null) && (s.length() > 0))?
-			or perhaps ((s == null) || (s.length() == 0))?
+			<p>Pattern found is one of the following:
+			<ul>
+				<li><code>if ((s == null) || (s.length() > 0))</code> --- did you mean 
+				<code>((s == null) || (s.length() == 0))</code>?</li>
+				<li><code>if ((s == null) || (s.length() != 0))</code> -- did you mean 
+				<code>((s == null) || (s.length() == 0))</code>? </li>
+				<li><code>if ((s != null) && (s.length() == 0))</code> -- did you mean 
+				<code>((s != null) && (s.length() > 0))</code> or perhaps 
+				<code>((s == null) || (s.length() == 0))</code>? </li>
+			</ul>
 			</p>
 			]]>
 		</Details>
@@ -3002,9 +3020,9 @@
 		<LongDescription>Method {1} needlessly assigns a StringBuilder to itself, as it's mutable</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method calls StringBuilder.append and assigns the results to the same StringBuilder as</p>
-			<pre>sb = sb.append("foo")</pre>
-			<p>As StringBuilder is mutable this is not necessary.
+			<p>This method calls StringBuilder.append and assigns the results to the same StringBuilder like:</p>
+			<code>sb = sb.append("foo")</code>
+			<p>StringBuilder is mutable this is not necessary.
 			This is also true of StringBuffer.</p>
 			]]>
 		</Details>
@@ -3190,12 +3208,12 @@
 			and easier to use the String.split method.</p>
 			<p>PLEASE NOTE: String.split will return an array of 1 element when passed the
 			empty string, as opposed to using StringTokenizer which returns false on the first
-			hasMoreElements/hasMoreTokens call. So you may need to use</p>
-			<pre>
-				if (s.length() > 0)
-					return s.split(";");
-				return new String[0];
-			</pre>
+			hasMoreElements/hasMoreTokens call. So you may need to use:</p>
+			<code>
+				if (s.length() > 0) <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;return s.split(";");<br/>
+				return new String[0];<br/>
+			</code>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4265,7 +4283,7 @@
 	
 	<BugPattern type="CNC_COLLECTION_NAMING_CONFUSION">
 	    <ShortDescription>Collection variable is named with a different type of collection in the name</ShortDescription>
-        <LongDescription>Collection variable {2} is named with a different type of collection in the name</LongDescription>
+        <LongDescription>Collection variable {1} is named with a different type of collection in the name</LongDescription>
         <Details>
             <![CDATA[
             <p>This class defines a field or local collection variable with a name that contains a different type
@@ -4526,13 +4544,13 @@
     
     <BugPattern type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET">
     	<ShortDescription>This method needlessly uses a String literal as a Charset encoding</ShortDescription>
-    	<LongDescription>This method {1} needlessly uses a String literal as a Charset encoding</LongDescription>
+    	<LongDescription>This method "{3}" needlessly uses a String literal to define an encoding.  A built-in Charset could be used instead like: {4}</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method uses a string literal to specify a Charset encoding. However the method invoked has an 
-    		alternative signature that takes a Charset object. You should use this signature, as this class is compiled
-    		with JDK 7 (or better), and the charset in question is available as a constant from the 
-    		java.nio.charset.StandardCharsets class.</p>
+    		<p>This method uses a string literal to specify a <code>Charset</code> encoding. However the method invoked has an 
+    		alternative signature that takes a <code>Charset</code> object. You should use this signature, as this class is compiled
+    		with JDK 7 (or better), and the <code>Charset</code> in question is available as a constant from the 
+    		<code>java.nio.charset.StandardCharsets</code> class.</p>
     		<p>So instead of specifying "UTF-8", use <code>StandardCharsets.UTF_8</code>, for instance. An added benefit of this is 
     		that you will not need to catch <code>UnsupportedEncodingException</code>.</p>
     		]]>
@@ -4541,27 +4559,32 @@
     
     <BugPattern type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME">
     	<ShortDescription>This method should use a StandardCharsets.XXX.name() to specify an encoding</ShortDescription>
-    	<LongDescription>This method {1} should use a StandardCharsets.XXX.name() to specify an encoding</LongDescription>
+    	<LongDescription>This method {3} should use a StandardCharsets.XXX.name() to specify an encoding</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method uses a string literal to specify a Charset encoding. As this class is compiled
+    		<p>This method uses a hand-typed <code>String</code> literal to specify a <code>Charset</code> encoding. As this class is compiled
     		with JDK 7 (or better), and the charset in question is available as a constant from the 
-    		java.nio.charset.StandardCharsets class, it is better to use the .name() method of the appropriate
-    		StandarCharsets constants.</p>
-    		<p>So instead of specifying "UTF-8", use StandardCharsets.UTF_8.name(), for instance. An added benefit of this is 
-    		that you will not need to catch UnsupportedEncodingException.</p>
+    		<code>java.nio.charset.StandardCharsets</code> class, it is better to use the .name() method of the appropriate
+    		<code>StandardCharsets</code> constant.</p>
+    		
+			<p>The method in question doesn't directly support a <code>Charset</code> as a parameter, only a <code>String</code>.
+				Still, instead of specifying something like "UTF-8" (and potentially mistyping it), use <code>StandardCharsets.UTF_8.name()</code>.
+			</p>
     		]]>
     	</Details>
     </BugPattern>
 
     <BugPattern type="CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING">
     	<ShortDescription>This method uses an unknown character encoding literal</ShortDescription>
-    	<LongDescription>This method {1} uses an unknown character encoding literal</LongDescription>
+    	<LongDescription>This method {3} uses an unknown character encoding literal "{4}"</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method specifies a charset encoding with a string literal that is not recognized by the current
+    		<p>This method specifies a <code>Charset</code> encoding with a String literal that is not recognized by the current
     		JDK. It's possible that this application will only be deployed on a JVM that does recognize this encoding, but
     		it seem dubious that this is the case.</p>
+    		<p>
+    		The standard JDK encodings are "UTF-8", "US-ASCII", "ISO-8859-1", "UTF-16BE", "UTF-16LE", "UTF-16".  These are all case-sensitive.
+    		</p>
     		]]>
     	</Details>
     </BugPattern>
