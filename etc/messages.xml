@@ -142,7 +142,8 @@
 			<![CDATA[
 			<p>Looks for constructors of non final classes that make method calls to non final methods.
 			As these methods could be overridden, the overridden method will be accessing an object that
-			is only partially constructed, perhaps causing problems.</p>
+			is only partially constructed, perhaps causing problems. Making these called methods final is
+			an easy fix, where possible.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -166,7 +167,7 @@
 			<p>Looks for classes that maintain two or more lists or arrays associated one-for-one through the same index
 			to hold two or more pieces of related information. It would be better to create a new class that holds
 			all of these pieces of information, and place instances of this class in one list. Or if the two list are
-			related in key/value fashion, then a map.</p>
+			related in key/value fashion, then use a map instead.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -259,7 +260,10 @@
 			<pre>
 				public void test(Character c)
 			</pre>
-			but instead maps to one that takes an int, long, float or double.
+			but instead maps to one that takes an int, long, float or double, such as
+			<pre>
+				<public void test(int i)
+			</pre>
 			</p>
 			<p>It is a fast detector</p>
 			]]>
@@ -316,6 +320,8 @@
 				<li>new Float(Float)</li>
 				<li>new Double(Double)</li>
 			</ul>
+			Since primitive wrapper classes are immutable this is needless garbage being created. Just
+			use the original reference.
 			</p>
 			<p>It also looks for calls to BoxedClass.valueOf(x) where X is already a Boxed class</p>
 			<p>It also looks for calls to BoxedClass.valueOf(myString).boxedValue(), when instead it is
@@ -361,7 +367,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OrphanedDOMNode">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that create DOM nodes but do not add them to any DOM Document.</p>
+			<p>Looks for methods that create DOM nodes but do not add them to any DOM Document.
+			Either the node was needed to be added to the tree, or the node likely was created in error.</p>
 			<p>It is a fast Detector</p>
 			]]>
 		</Details>
@@ -407,7 +414,8 @@
 			<p>Looks for methods that access arrays or classes that implement java.util.List
 			using a constant integer for the index. This is often a typo intended to be a loop
 			variable, but if specific indices mean certain things, perhaps a first class object
-			would be a better choice for a container.</p>
+			would be a better choice for a container, on even a map with informative key names
+			would be better.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
