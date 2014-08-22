@@ -135,18 +135,6 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		stack.resetForMethodEntry(this);
 	}
 	
-	private String replaceStringSigWithCharsetString(String sig, int nthInstance) {
-		int start = 0;
-		for(;nthInstance>0;nthInstance--) {
-			start = sig.indexOf(STRING_SIG, start) + 1;
-		}
-		
-		StringBuilder sb = new StringBuilder(sig);
-		int replaceIndex = sig.indexOf(STRING_SIG, start);
-		sb.replace(replaceIndex, replaceIndex + STRING_SIG.length(), CHARSET_SIG);
-		return sb.toString();
-	}
-	
 	@Override
 	public void sawOpcode(int seen) {
 		try {
@@ -219,9 +207,22 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		}
 	}
 
-	private static class Pair{
+	private static String replaceStringSigWithCharsetString(String sig, int nthInstance) {
+		int start = 0;
+		for(;nthInstance>0;nthInstance--) {
+			start = sig.indexOf(STRING_SIG, start) + 1;
+		}
+		
+		StringBuilder sb = new StringBuilder(sig);
+		int replaceIndex = sig.indexOf(STRING_SIG, start);
+		sb.replace(replaceIndex, replaceIndex + STRING_SIG.length(), CHARSET_SIG);
+		return sb.toString();
+	}
+	
+	private static class Pair {
 		public final int stackDepth;
 		public final int indexOfStringSig; //to replace
+		
 		public Pair(int stackDepth, int indexOfStringSig) {
 			this.stackDepth = stackDepth;
 			this.indexOfStringSig = indexOfStringSig;
