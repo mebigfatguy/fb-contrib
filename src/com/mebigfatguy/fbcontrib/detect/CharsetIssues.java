@@ -44,9 +44,9 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	private static final String STRING_SIG = "Ljava/lang/String;";
 	private static final String CHARSET_SIG = "Ljava/nio/charset/Charset;";
 	
-	public static final Map<String, Pair> REPLACEABLE_ENCODING_METHODS;
-	private static Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS = new HashMap<String, Integer>();
-	private static Set<String> STANDARD_JDK7_ENCODINGS = new HashSet<String>();
+	public static final Map<String, CSI_Pair> REPLACEABLE_ENCODING_METHODS;
+	public static final Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS;
+	public static final Set<String> STANDARD_JDK7_ENCODINGS;
 	
 	/*
 	 * The stack offset refers to the relative position of the Ljava/lang/String; of interest (i.e. the one
@@ -54,55 +54,60 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	 * and a stack offset of 2 means it was the 3rd to last.
 	 */
 	static {
-		HashMap<String, Pair> replacable = new HashMap<String, Pair>();
-		replacable.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new Pair(0, 0));
-		replacable.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new Pair(0, 0));
-		replacable.put("java/lang/String.<init>([BLjava/lang/String;)V", new Pair(0, 0));
-		replacable.put("java/lang/String.<init>([BIILjava/lang/String;)V", new Pair(0, 0));
-		replacable.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new Pair(0, 0));
-		replacable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new Pair(1, 0));
+		Map<String, CSI_Pair> replacable = new HashMap<String, CSI_Pair>();
+		replacable.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new CSI_Pair(0, 0));
+		replacable.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new CSI_Pair(0, 0));
+		replacable.put("java/lang/String.<init>([BLjava/lang/String;)V", new CSI_Pair(0, 0));
+		replacable.put("java/lang/String.<init>([BIILjava/lang/String;)V", new CSI_Pair(0, 0));
+		replacable.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new CSI_Pair(0, 0));
+		replacable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new CSI_Pair(1, 0));
 		
 		REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replacable);
 		
+		Map<String, Integer> unreplaceable = new HashMap<String, Integer>();
+		unreplaceable.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
+		unreplaceable.put("java/net/URLDecoder.decode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
+		unreplaceable.put("java/io/ByteArrayOutputStream.toString(Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/io/PrintStream.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/io/PrintStream.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/io/PrintStream.<init>(Ljava/io/OutputStream;BLjava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/io/PrintStream.toCharset(Ljava/lang/String;)Ljava/nio/charset/Charset;", Values.ZERO);
+		unreplaceable.put("java/io/PrintWriter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/io/PrintWriter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/io/PrintWriter.toCharset(Ljava/lang/String;)Ljava/nio/charset/Charset;", Values.ZERO);
+		unreplaceable.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
+		unreplaceable.put("java/lang/StringCoding.encode(Ljava/lang/String;[CII)[B", Values.THREE);
+		unreplaceable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/Formatter.<init>(Ljava/io/OutputStream;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
+		unreplaceable.put("java/util/Formatter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/Formatter.<init>(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
+		unreplaceable.put("java/util/Formatter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/Formatter.toCharset(Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/logging/Handler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/logging/MemoryHandler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/logging/StreamHandler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/Scanner.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/Scanner.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/Scanner.<init>(Ljava/nio/file/Path;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/util/Scanner.<init>(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)V", Values.ZERO);
+		unreplaceable.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
+		unreplaceable.put("java/lang/StringCoding.encode(Ljava/lang/String;[CII)[B", Values.THREE);
+		unreplaceable.put("javax/servlet/ServletResponse.setCharacterEncoding(Ljava/lang/String;)V", Values.ZERO);	
+		unreplaceable.put("java/beans/XMLEncoder.<init>(Ljava/io/OutputStream;Ljava/lang/String;ZI)V", Values.TWO);
+		unreplaceable.put("java/nio/channels/Channels.newReader(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)Ljava/io/Reader;", Values.ZERO);	
+		unreplaceable.put("java/nio/channels/Channels.newWriter(Ljava/nio/channels/WritableByteChannel;Ljava/lang/String;)Ljava/io/Writer;", Values.ZERO);	
 		
-		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLDecoder.decode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/ByteArrayOutputStream.toString(Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.<init>(Ljava/io/OutputStream;BLjava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintStream.toCharset(Ljava/lang/String;)Ljava/nio/charset/Charset;", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/io/PrintWriter.toCharset(Ljava/lang/String;)Ljava/nio/charset/Charset;", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.encode(Ljava/lang/String;[CII)[B", Values.THREE);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/OutputStream;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Formatter.toCharset(Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/logging/Handler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/logging/MemoryHandler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/logging/StreamHandler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/nio/file/Path;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/util/Scanner.<init>(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)V", Values.ZERO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/lang/StringCoding.encode(Ljava/lang/String;[CII)[B", Values.THREE);
-		UNREPLACEABLE_ENCODING_METHODS.put("javax/servlet/ServletResponse.setCharacterEncoding(Ljava/lang/String;)V", Values.ZERO);	
-		UNREPLACEABLE_ENCODING_METHODS.put("java/beans/XMLEncoder.<init>(Ljava/io/OutputStream;Ljava/lang/String;ZI)V", Values.TWO);
-		UNREPLACEABLE_ENCODING_METHODS.put("java/nio/channels/Channels.newReader(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)Ljava/io/Reader;", Values.ZERO);	
-		UNREPLACEABLE_ENCODING_METHODS.put("java/nio/channels/Channels.newWriter(Ljava/nio/channels/WritableByteChannel;Ljava/lang/String;)Ljava/io/Writer;", Values.ZERO);	
+		UNREPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(unreplaceable);
 		
-		STANDARD_JDK7_ENCODINGS.add("US-ASCII");
-		STANDARD_JDK7_ENCODINGS.add("ISO-8859-1");
-		STANDARD_JDK7_ENCODINGS.add("UTF-8");
-		STANDARD_JDK7_ENCODINGS.add("UTF-16BE");
-		STANDARD_JDK7_ENCODINGS.add("UTF-16LE");
-		STANDARD_JDK7_ENCODINGS.add("UTF-16");
+		Set<String> encodings = new HashSet<String>();
+		encodings.add("US-ASCII");
+		encodings.add("ISO-8859-1");
+		encodings.add("UTF-8");
+		encodings.add("UTF-16BE");
+		encodings.add("UTF-16LE");
+		encodings.add("UTF-16");
+		
+		STANDARD_JDK7_ENCODINGS = Collections.unmodifiableSet(encodings);
 	}
 	
 	private final BugReporter bugReporter;
@@ -162,7 +167,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 					String methodName = getNameConstantOperand();
 					String methodSig = getSigConstantOperand();
 					String methodInfo = className + "." + methodName + methodSig;
-					Pair offsetInfo = REPLACEABLE_ENCODING_METHODS.get(methodInfo);
+					CSI_Pair offsetInfo = REPLACEABLE_ENCODING_METHODS.get(methodInfo);
 					if (offsetInfo != null) {
 						int offset = offsetInfo.stackDepth;
 						if (stack.getStackDepth() > offset) {
@@ -219,10 +224,10 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		}
 	}
 
-	private static class Pair{
+	public static class CSI_Pair{
 		public final int stackDepth;
 		public final int indexOfStringSig; //to replace
-		public Pair(int stackDepth, int indexOfStringSig) {
+		public CSI_Pair(int stackDepth, int indexOfStringSig) {
 			this.stackDepth = stackDepth;
 			this.indexOfStringSig = indexOfStringSig;
 		}	
