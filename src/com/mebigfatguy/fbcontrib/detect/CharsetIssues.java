@@ -54,15 +54,15 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	 * and a stack offset of 2 means it was the 3rd to last.
 	 */
 	static {
-		HashMap<String, Pair> replacable = new HashMap<String, Pair>();
-		replacable.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new Pair(0, 0));
-		replacable.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new Pair(0, 0));
-		replacable.put("java/lang/String.<init>([BLjava/lang/String;)V", new Pair(0, 0));
-		replacable.put("java/lang/String.<init>([BIILjava/lang/String;)V", new Pair(0, 0));
-		replacable.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new Pair(0, 0));
-		replacable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new Pair(1, 0));
+		Map<String, Pair> replaceable = new HashMap<String, Pair>();
+		replaceable.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new Pair(0, 0));
+		replaceable.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new Pair(0, 0));
+		replaceable.put("java/lang/String.<init>([BLjava/lang/String;)V", new Pair(0, 0));
+		replaceable.put("java/lang/String.<init>([BIILjava/lang/String;)V", new Pair(0, 0));
+		replaceable.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new Pair(0, 0));
+		replaceable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new Pair(1, 0));
 		
-		REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replacable);
+		REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replaceable);
 		
 		
 		UNREPLACEABLE_ENCODING_METHODS.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
