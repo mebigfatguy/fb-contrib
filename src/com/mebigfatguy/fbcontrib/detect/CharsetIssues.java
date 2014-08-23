@@ -19,7 +19,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.nio.charset.Charset;
-import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -30,7 +29,6 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
-import com.mebigfatguy.fbcontrib.debug.Debug;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -44,7 +42,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class CharsetIssues extends BytecodeScanningDetector {
 	
-	private static final String STRING_SIG = "Ljava/lang/String;";
 	private static final String CHARSET_SIG = "Ljava/nio/charset/Charset;";
 	
 	public static final Map<String, Integer> REPLACEABLE_ENCODING_METHODS;
@@ -169,7 +166,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 							
 							if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
 								// the counts put in the Pair are indexed from the beginning of
-								String changedMethodSig = replaceStringSigWithCharsetString(methodSig, offset);
+								String changedMethodSig = replaceNthArgWithCharsetString(methodSig, offset);
 								bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET", NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
@@ -217,9 +214,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		}
 	}
 
-	private static String replaceStringSigWithCharsetString(String sig, Integer stackOffset) {
-	
-		Debug.println(sig);
+	private static String replaceNthArgWithCharsetString(String sig, Integer stackOffset) {
 		Type[] arguments = Type.getArgumentTypes(sig);
 		
 		StringBuilder sb = new StringBuilder("(");
@@ -234,7 +229,6 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		}
 		
 		sb.append(sig.substring(sig.lastIndexOf(')'), sig.length()));
-		Debug.println(sb);
 		return sb.toString();
 	}
 	
