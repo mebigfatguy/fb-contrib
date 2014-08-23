@@ -60,17 +60,6 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_7), "((jdk|j2?re)1.7)|(java-7)");
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_8), "((jdk|j2?re)1.8)|(java-8)");
 	}
-	private static final Map<Integer, String> VERSION_STRINGS = new HashMap<Integer, String>();
-	static {
-		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_1), "JDK 1.1");
-		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_2), "JDK 1.2");
-		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_3), "JDK 1.3");
-		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_4), "JDK 1.4");
-		VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_5), "JDK 1.5");
-        VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_6), "JDK 1.6");
-        VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_7), "JDK 1.7");
-        VERSION_STRINGS.put(Integer.valueOf(Constants.MAJOR_1_8), "JDK 1.8");
-	}
 	private static final Map<Integer, Integer> HUMAN_VERSIONS = new HashMap<Integer, Integer>();
 	static {
 		HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_1), Values.ONE);

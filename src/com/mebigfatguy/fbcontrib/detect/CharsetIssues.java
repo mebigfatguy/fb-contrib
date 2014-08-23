@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.nio.charset.Charset;
+import java.sql.Types;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -27,7 +28,9 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.debug.Debug;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -44,7 +47,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	private static final String STRING_SIG = "Ljava/lang/String;";
 	private static final String CHARSET_SIG = "Ljava/nio/charset/Charset;";
 	
-	public static final Map<String, CSI_Pair> REPLACEABLE_ENCODING_METHODS;
+	public static final Map<String, Integer> REPLACEABLE_ENCODING_METHODS;
 	public static final Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS;
 	public static final Set<String> STANDARD_JDK7_ENCODINGS;
 	
@@ -52,17 +55,19 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	 * The stack offset refers to the relative position of the Ljava/lang/String; of interest (i.e. the one
 	 * that is the charset)  For example, a stack offset of 0 means the String charset was the last param, 
 	 * and a stack offset of 2 means it was the 3rd to last.
+	 * 
+	 * Not coincidentally, the argument that needs to be replaced is the [(# of arguments) - offset]th one
 	 */
 	static {
-		Map<String, CSI_Pair> replacable = new HashMap<String, CSI_Pair>();
-		replacable.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", new CSI_Pair(0, 0));
-		replacable.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", new CSI_Pair(0, 0));
-		replacable.put("java/lang/String.<init>([BLjava/lang/String;)V", new CSI_Pair(0, 0));
-		replacable.put("java/lang/String.<init>([BIILjava/lang/String;)V", new CSI_Pair(0, 0));
-		replacable.put("java/lang/String.getBytes(Ljava/lang/String;)[B", new CSI_Pair(0, 0));
-		replacable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", new CSI_Pair(1, 0));
+		Map<String, Integer> replaceable = new HashMap<String, Integer>();
+		replaceable.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
+		replaceable.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
+		replaceable.put("java/lang/String.<init>([BLjava/lang/String;)V", Values.ZERO);
+		replaceable.put("java/lang/String.<init>([BIILjava/lang/String;)V", Values.ZERO);
+		replaceable.put("java/lang/String.getBytes(Ljava/lang/String;)[B", Values.ZERO);
+		replaceable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
 		
-		REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replacable);
+		REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replaceable);
 		
 		Map<String, Integer> unreplaceable = new HashMap<String, Integer>();
 		unreplaceable.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
@@ -140,18 +145,6 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		stack.resetForMethodEntry(this);
 	}
 	
-	private String replaceStringSigWithCharsetString(String sig, int nthInstance) {
-		int start = 0;
-		for(;nthInstance>0;nthInstance--) {
-			start = sig.indexOf(STRING_SIG, start) + 1;
-		}
-		
-		StringBuilder sb = new StringBuilder(sig);
-		int replaceIndex = sig.indexOf(STRING_SIG, start);
-		sb.replace(replaceIndex, replaceIndex + STRING_SIG.length(), CHARSET_SIG);
-		return sb.toString();
-	}
-	
 	@Override
 	public void sawOpcode(int seen) {
 		try {
@@ -167,16 +160,16 @@ public class CharsetIssues extends BytecodeScanningDetector {
 					String methodName = getNameConstantOperand();
 					String methodSig = getSigConstantOperand();
 					String methodInfo = className + "." + methodName + methodSig;
-					CSI_Pair offsetInfo = REPLACEABLE_ENCODING_METHODS.get(methodInfo);
-					if (offsetInfo != null) {
-						int offset = offsetInfo.stackDepth;
+					Integer stackOffset = REPLACEABLE_ENCODING_METHODS.get(methodInfo);
+					if (stackOffset != null) {
+						int offset = stackOffset.intValue();
 						if (stack.getStackDepth() > offset) {
 							OpcodeStack.Item item = stack.getStackItem(offset);
 							encoding = (String) item.getConstant();
 							
 							if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
 								// the counts put in the Pair are indexed from the beginning of
-								String changedMethodSig = replaceStringSigWithCharsetString(methodSig, offsetInfo.indexOfStringSig);
+								String changedMethodSig = replaceStringSigWithCharsetString(methodSig, offset);
 								bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET", NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
@@ -224,12 +217,25 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		}
 	}
 
-	public static class CSI_Pair{
-		public final int stackDepth;
-		public final int indexOfStringSig; //to replace
-		public CSI_Pair(int stackDepth, int indexOfStringSig) {
-			this.stackDepth = stackDepth;
-			this.indexOfStringSig = indexOfStringSig;
-		}	
+	private static String replaceStringSigWithCharsetString(String sig, Integer stackOffset) {
+	
+		Debug.println(sig);
+		Type[] arguments = Type.getArgumentTypes(sig);
+		
+		StringBuilder sb = new StringBuilder("(");
+		int argumentIndexToReplace = (arguments.length - stackOffset) - 1;
+		
+		for(int i = 0; i < arguments.length ; i++) {
+			if (i == argumentIndexToReplace) {
+				sb.append(CHARSET_SIG);
+			} else {
+				sb.append(arguments[i].getSignature());
+			}
+		}
+		
+		sb.append(sig.substring(sig.lastIndexOf(')'), sig.length()));
+		Debug.println(sb);
+		return sb.toString();
 	}
+	
 }
