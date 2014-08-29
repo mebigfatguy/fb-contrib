@@ -376,7 +376,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 						bugReporter.reportBug(new BugInstance(this, "SPP_USE_ISNAN", NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
-						.addSourceLine(this));
+						.addSourceLine(this)
+						.addString("double")
+						.addString("Double"));
 					}
 				}
 			} else if (seen == FCMPL) {
@@ -388,9 +390,11 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 					if (((f1 != null) && f1.isNaN()) || ((f2 != null) && f2.isNaN())) {
 						bugReporter.reportBug(new BugInstance(this, "SPP_USE_ISNAN", NORMAL_PRIORITY)
-						.addClass(this)
-						.addMethod(this)
-						.addSourceLine(this));
+                            .addClass(this)
+                            .addMethod(this)
+                            .addSourceLine(this)
+                            .addString("float")
+                            .addString("Float"));
 					}
 				}
 			} else if (OpcodeUtils.isAStore(seen)) {

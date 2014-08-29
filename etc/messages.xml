@@ -2769,12 +2769,14 @@
 	</BugPattern>
 
 	<BugPattern type="SPP_USE_ISNAN">
-		<ShortDescription>Method compares a double to Double.NAN</ShortDescription>
-		<LongDescription>Method {1} compares a double to Double.NAN</LongDescription>
+		<ShortDescription>Method incorrectly compares a floating point number to NaN</ShortDescription>
+		<LongDescription>Method {1} compares a {3} to {4}.NaN</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method compares a double or float to the constant Double.NaN or Float.NaN. You should use
-			Double.isNaN(d) or Float.isNaN(f) if a primitive; or d.isNaN() or f.isNaN() if a boxed double, instead.</p>
+			<p>This method compares a double or float to the constant <code>Double.NaN</code> or <code>Float.NaN</code>.
+			You should use
+			<code>Double.isNaN(d)</code> or <code>Float.isNaN(f)</code>
+			 if the variable is a primitive. If using a boxed primitive <code>d.isNaN()</code> or <code>f.isNaN()</code> should be used.</p>
 			]]>
 		</Details>
 	</BugPattern>
