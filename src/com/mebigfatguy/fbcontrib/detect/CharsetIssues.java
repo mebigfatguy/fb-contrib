@@ -190,7 +190,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 						try {
 							Charset.forName(encoding);
 						} catch (IllegalArgumentException e) {  //encompasses both IllegalCharsetNameException and UnsupportedCharsetException
-							bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING", NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this)
