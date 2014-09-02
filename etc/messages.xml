@@ -4574,7 +4574,7 @@
     	</Details>
     </BugPattern>
 
-    <BugPattern type="CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING">
+    <BugPattern type="CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING">
     	<ShortDescription>This method uses an unknown character encoding literal</ShortDescription>
     	<LongDescription>This method {3} uses an unknown character encoding literal "{4}"</LongDescription>
     	<Details>

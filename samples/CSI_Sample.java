@@ -42,7 +42,7 @@ public class CSI_Sample {
 	}
 	
 	public String testUnknownEncoding(String url) throws UnsupportedEncodingException {
-		//tag CSI_CHAR_SET_ISSUES_UNNNOWN_ENCODING
+		//tag CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING
 		return URLEncoder.encode(url, "FOO");
 	}
 	
