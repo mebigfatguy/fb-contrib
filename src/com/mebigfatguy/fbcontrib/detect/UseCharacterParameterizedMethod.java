@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -41,18 +42,24 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector 
 {
-	private static Map<String, Integer> characterMethods = new HashMap<String, Integer>();
+	public final static Map<String, Integer> characterMethods;
 	static {
-		//characterMethods.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
-		//characterMethods.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
-		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;)I", Values.ZERO);
-		characterMethods.put("java/lang/String:indexOf:(Ljava/lang/String;I)I", Values.ONE);
-		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;)I", Values.ZERO);
-		characterMethods.put("java/lang/String:lastIndexOf:(Ljava/lang/String;I)I", Values.ONE);
+	    Map<String, Integer> methodsMap = new HashMap<String, Integer>();
+		//methodsMap.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
+		//methodsMap.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
+	    methodsMap.put("java/lang/String:indexOf:(Ljava/lang/String;)I", Values.ZERO);
+	    methodsMap.put("java/lang/String:indexOf:(Ljava/lang/String;I)I", Values.ONE);
+		//needs implementation of two params characterMethods.put("java/lang/String:replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;", Values.ONE);
+	    methodsMap.put("java/lang/String:lastIndexOf:(Ljava/lang/String;)I", Values.ZERO);
+	    methodsMap.put("java/lang/String:lastIndexOf:(Ljava/lang/String;I)I", Values.ONE);
 		//characterMethods.put("java/lang/String:startsWith:(Ljava/lang/String;)Z", Values.ZERO);
-		characterMethods.put("java/io/PrintStream:print:(Ljava/lang/String;)V", Values.ZERO);
-		characterMethods.put("java/io/PrintStream:println:(Ljava/lang/String;)V", Values.ZERO);
-		characterMethods.put("java/io/StringWriter:write:(Ljava/lang/String;)V", Values.ZERO);
+	    methodsMap.put("java/io/PrintStream:print:(Ljava/lang/String;)V", Values.ZERO);
+	    methodsMap.put("java/io/PrintStream:println:(Ljava/lang/String;)V", Values.ZERO);
+	    methodsMap.put("java/io/StringWriter:write:(Ljava/lang/String;)V", Values.ZERO);
+	    methodsMap.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
+	    methodsMap.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
+	    
+	    characterMethods = Collections.unmodifiableMap(methodsMap);
 	}
 	
 	private final BugReporter bugReporter;
@@ -76,15 +83,9 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 	public void visitClassContext(final ClassContext context) {
 		try {
 			stack = new OpcodeStack();
-			if (context.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
-				characterMethods.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
-				characterMethods.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
-			}
 			super.visitClassContext(context);
 		} finally {
 			stack = null;
-			characterMethods.remove("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;");
-			characterMethods.remove("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;");
 		}
 	}
 	
