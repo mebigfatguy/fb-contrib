@@ -78,10 +78,12 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 			stack = new OpcodeStack();
 			if (context.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
 				characterMethods.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
+				characterMethods.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
 			}
 			super.visitClassContext(context);
 		} finally {
 			stack = null;
+			characterMethods.remove("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;");
 			characterMethods.remove("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;");
 		}
 	}
