@@ -262,7 +262,7 @@
 			</pre>
 			but instead maps to one that takes an int, long, float or double, such as
 			<pre>
-				<public void test(int i)
+				public void test(int i)
 			</pre>
 			</p>
 			<p>It is a fast detector</p>
@@ -391,7 +391,7 @@
 			<p>Looks for methods that build XML based strings by concatenation strings
 			and custom values together. Doing so makes brittle code, that is difficult to
 			modify, validate and understand. It is cleaner to create external XML files that are
-			transformed at runtime, using parameters set through Transformer.setParameter.
+			transformed at runtime, using parameters set through Transformer.setParameter.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -1436,7 +1436,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.HttpClientProblems">
         <Details>
             <![CDATA[
-            <p>The HttpRequests from the apache.httpComponents have some little-known quirks about them.  
+            <p>The HttpRequests from the Apache HttpComponents have some little-known quirks about them.
 			This is a set of detectors that helps guard against resource starvation.</p>
 			<p>It is a fast detector</p>
             ]]>
@@ -1511,7 +1511,7 @@
 			}<br/>
 			</code><br/>
 			
-			which involves a temporary <code>StringBuilder</code>, which is completely unneccessary.  To prevent this from happening, simply do:<br/>
+			which involves a temporary <code>StringBuilder</code>, which is completely unnecessary.  To prevent this from happening, simply do:<br/>
 			
 			<code>
 			StringBuilder sb = new StringBuilder();<br/>
@@ -1548,7 +1548,7 @@
 			does not suffer the potential for <code>NullPointerException</code>s, and is easier to read.</p>
 			
 			<p>
-			Keep in mind that Java compiles simple <code>String</code> Concatenation to use <code>StringBuilder</code>s, so you may see this bug even when you don't use <code>StringBuilder</code>s explicitly.
+			Keep in mind that Java compiles simple <code>String</code> concatenation to use <code>StringBuilder</code>s, so you may see this bug even when you don't use <code>StringBuilder</code>s explicitly.
 			</p>
 			
 			<p>
@@ -3092,7 +3092,7 @@
 	       <![CDATA[
 	       <p>This method calls toString() on an object that hasn't overridden the toString() method, and thus relies on
 	       the version found in java.lang.Object. This string is just a raw display of the object's class and location, and
-	       provides no information about the information of use. You should implement toString in this class.
+	       provides no information about the information of use. You should implement toString in this class.</p>
 	       ]]>
 	   </Details>
 	</BugPattern>
@@ -3138,7 +3138,7 @@
 			<p>This method calls equals on a StringBuilder or StringBuffer. Surprisingly, these classes do not override
 			the equals method from Object, and so equals is just defined to be == (or same references). This is most
 			likely not what you would like. If you wish to check that the strings have the same characters, you need to
-			call toString() on these object and compare them as Strings.
+			call toString() on these object and compare them as Strings.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3348,7 +3348,7 @@
 		<LongDescription>Method {1} asserts that two doubles are exactly equal</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method calls assert with two doubles or Doubles. Due to the inprecision of doubles, you
+			<p>This method calls assert with two doubles or Doubles. Due to the imprecision of doubles, you
 			should be using the assert method that takes a range parameter that gives a range of error.</p>
 			]]>
 		</Details>
@@ -3533,7 +3533,7 @@
 	       <p>This method uses an Slf4j logger to log a string, where the first (format) string is created using concatenation.
 	       You should use {} markers to inject dynamic content into the string, so that String building is delayed until the
 	       actual log string is needed. If the log level is high enough that this log statement isn't used, then the appends
-	       will never be executed.
+	       will never be executed.</p>
 	       ]]>
 	   </Details>
 	</BugPattern>'
@@ -4313,7 +4313,7 @@
 	       <p>This method defines parameters that are never used. As this method is either static of private,
 	       and can't be derived from, it is safe to remove these parameters and simplify your method.
 	       You should consider, while unlikely, that this method may be used reflectively, and thus you will
-	       want to change that call as well.
+	       want to change that call as well.</p>
 	       ]]>
 	   </Details>
 	</BugPattern>
@@ -4339,7 +4339,7 @@
             <![CDATA[
             <p>This method attempts to modify a collection that it got from a source that could potentially have created an
             immutable collection, thru Arrays.asList, Collections.unmodifiableXXX, or one of guava's methods. Doing so will cause
-            an exception, as these collections are not mutable.
+            an exception, as these collections are not mutable.</p>
             ]]>
         </Details>
     </BugPattern>
@@ -4437,7 +4437,7 @@
 				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) {<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
@@ -4456,7 +4456,7 @@
 				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) {<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {<br/>
@@ -4483,7 +4483,7 @@
 				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) {<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
@@ -4503,7 +4503,7 @@
 				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) ( <br/>
+				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) {<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
 				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {<br/>
@@ -4524,7 +4524,7 @@
     		<![CDATA[
     		<p>This method is longer than 8000 bytes. By default the JIT will not attempt to compile this method no matter
     		how hot it is, and so this method will always be interpreted. If performance is important, you should consider
-    		breaking this method up in smaller chunks. (And probably a good idea for readability too!).
+    		breaking this method up in smaller chunks. (And probably a good idea for readability too!).</p>
     		]]>
     	</Details>
     </BugPattern>
