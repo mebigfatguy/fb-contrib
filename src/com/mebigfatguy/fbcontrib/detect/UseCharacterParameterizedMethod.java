@@ -42,24 +42,33 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector 
 {
-	public final static Map<String, Integer> characterMethods;
+	public final static Map<String, Object> characterMethods;
 	static {
-	    Map<String, Integer> methodsMap = new HashMap<String, Integer>();
-		//methodsMap.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
-		//methodsMap.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
+	    Map<String, Object> methodsMap = new HashMap<String, Object>();
+	    //The values are where the parameter will be on the stack - For example, a value of 0 means the String literal to check
+	    // was the last param, and a stack offset of 2 means it was the 3rd to last. 
 	    methodsMap.put("java/lang/String:indexOf:(Ljava/lang/String;)I", Values.ZERO);
 	    methodsMap.put("java/lang/String:indexOf:(Ljava/lang/String;I)I", Values.ONE);
-		//needs implementation of two params characterMethods.put("java/lang/String:replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;", Values.ONE);
 	    methodsMap.put("java/lang/String:lastIndexOf:(Ljava/lang/String;)I", Values.ZERO);
 	    methodsMap.put("java/lang/String:lastIndexOf:(Ljava/lang/String;I)I", Values.ONE);
-		//characterMethods.put("java/lang/String:startsWith:(Ljava/lang/String;)Z", Values.ZERO);
 	    methodsMap.put("java/io/PrintStream:print:(Ljava/lang/String;)V", Values.ZERO);
 	    methodsMap.put("java/io/PrintStream:println:(Ljava/lang/String;)V", Values.ZERO);
 	    methodsMap.put("java/io/StringWriter:write:(Ljava/lang/String;)V", Values.ZERO);
 	    methodsMap.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
 	    methodsMap.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
 	    
+	    methodsMap.put("java/lang/String:replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;", new IntPair(0, 1));
+	    
 	    characterMethods = Collections.unmodifiableMap(methodsMap);
+	}
+	
+	private static class IntPair {
+	    public final int firstStringParam, secondStringParam;
+
+        public IntPair(int firstStringParam, int secondStringParam) {
+            this.firstStringParam = firstStringParam;
+            this.secondStringParam = secondStringParam;
+        }
 	}
 	
 	private final BugReporter bugReporter;
@@ -124,24 +133,46 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 	        stack.precomputation(this);
 	        
 			if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
-				String key = getClassConstantOperand() + ":" + getNameConstantOperand() + ":" + getSigConstantOperand();
-				Integer parmPos =characterMethods.get(key);
-				if (parmPos != null) {
-					int stackPos = parmPos.intValue();
-					if (stack.getStackDepth() > stackPos) {
-						OpcodeStack.Item itm = stack.getStackItem(stackPos);
-						String con = (String)itm.getConstant();
-						if ((con != null) && (con.length() == 1)) {
-							bugReporter.reportBug(new BugInstance(this, "UCPM_USE_CHARACTER_PARAMETERIZED_METHOD", NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this)
-									.addSourceLine(this));
-						}
-					}
+				String key = getClassConstantOperand() + ':' + getNameConstantOperand() + ':' + getSigConstantOperand();
+				
+				Object posObject = characterMethods.get(key);
+				if (posObject instanceof Integer) {
+				    if (checkSingleParamMethod((Integer) posObject)) {
+				        reportBug();
+				    }
+				} else if (posObject instanceof IntPair) {
+				    if (checkDoubleParamMethod((IntPair) posObject)) {
+				        reportBug();
+				    }
 				}
 			}
 		} finally {
 			stack.sawOpcode(this, seen);
 		}
 	}
+
+    private void reportBug() {
+        bugReporter.reportBug(new BugInstance(this, "UCPM_USE_CHARACTER_PARAMETERIZED_METHOD", NORMAL_PRIORITY)
+        .addClass(this)
+        .addMethod(this)
+        .addSourceLine(this));
+    }
+
+    private boolean checkDoubleParamMethod(IntPair posObject) {
+        return checkSingleParamMethod(posObject.firstStringParam) && checkSingleParamMethod(posObject.secondStringParam);
+    }
+
+    private boolean checkSingleParamMethod(Integer paramPos) {
+        int stackPos = paramPos.intValue();
+        if (stack.getStackDepth() > stackPos) {
+            OpcodeStack.Item itm = stack.getStackItem(stackPos);
+            // casting to CharSequence is safe as FindBugs 3 (and fb-contrib 6) require Java 1.7 or later to run
+            // it's also needed with the addition of support for replace (which takes charSequences
+            CharSequence con = (CharSequence) itm.getConstant();     
+            if ((con != null) && (con.length() == 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
 }
