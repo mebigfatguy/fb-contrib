@@ -340,7 +340,7 @@ function toggleBlock(divId, imgId)
 				Looks for methods that rely on the format of the string fetched from another object's toString
 				method, when that method appears not to be owned by the author of the calling method.
 				As the implementation of toString() is often considered a private implementation detail of a class, 
-				and not something that should be relied on, depending on it's format is dangerous.</li>
+				and not something that should be relied on, depending on its format is dangerous.</li>
 				<li><b>[BED] Bogus Exception Declaration</b><br/>
 				Looks for constructors, private methods or static methods that declare that they
 				throw specific checked exceptions, but that do not. This just causes callers of 
