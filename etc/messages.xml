@@ -3856,7 +3856,13 @@
 		<LongDescription>Method {1} creates an insecure Random object, which may be a security risk</LongDescription>
 		<Details>
 			<![CDATA[
-			<p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: <code>System.currentTimeMillis()</code>. Initialize seed with <code>Random(SecureRandom.getInstance().generateSeed())</code> or use <code>SecureRandom</code> instead.</p>
+			<p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: <code>System.currentTimeMillis()</code>. Initialize seed like <code>new Random(SecureRandom.getInstance("SHA1PRNG").nextLong())</code> or replace <code>Random()</code> with <code>SecureRandom.getInstance("SHA1PRNG")</code> instead.
+			"SHA1PRNG" is the random algorithm supported on all platforms.
+		</p>
+
+			<p>
+				As of Java 6, you may use <code>new Random(new SecureRandom().nextLong())</code> or <code>new SecureRandom()</code> instead.
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
