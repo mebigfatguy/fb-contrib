@@ -115,9 +115,11 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 							} else {
 								state = State.SAW_NOTHING;
 							}
-						} else {
+						} else if (currConstType != null) {
 							state = State.SAW_CONST;
 							constType = currConstType;
+						} else {
+							state = State.SAW_NOTHING;
 						}
 					} else if (seen == GETSTATIC) {
 						state = State.SAW_CONST;
