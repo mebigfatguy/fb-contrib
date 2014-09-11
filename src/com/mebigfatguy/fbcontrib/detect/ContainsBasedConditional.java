@@ -31,7 +31,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class ContainsBasedConditional extends BytecodeScanningDetector {
 
-	private static final int MIN_CONDITIONAL_COUNT = 3;
+	private static final int LOW_CONDITIONAL_COUNT = 3;
+	private static final int NORMAL_CONDITIONAL_COUNT = 4;
+	private static final int HIGH_CONDITIONAL_COUNT = 6;
 	
 	private enum State {SAW_NOTHING, SAW_LOAD, SAW_CONST, SAW_EQUALS, SAW_PATTERN };
 	private BugReporter bugReporter;
@@ -94,8 +96,8 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 							state = State.SAW_LOAD;
 						}
 					} else {
-						if (conditionCount >= MIN_CONDITIONAL_COUNT) {
-							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", NORMAL_PRIORITY)
+						if (conditionCount >= LOW_CONDITIONAL_COUNT) {
+							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", prority(conditionCount))
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this, bugPC));
@@ -146,8 +148,8 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 						state = State.SAW_PATTERN;
 					} else if (seen == IF_ICMPNE) {
 						conditionCount++;
-						if (conditionCount >= MIN_CONDITIONAL_COUNT) {
-							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", NORMAL_PRIORITY)
+						if (conditionCount >= LOW_CONDITIONAL_COUNT) {
+							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", prority(conditionCount))
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this, bugPC));
@@ -164,8 +166,8 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 						state = State.SAW_PATTERN;
 					} else if (seen == IFEQ) {
 						conditionCount++;
-						if (conditionCount >= MIN_CONDITIONAL_COUNT) {
-							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", NORMAL_PRIORITY)
+						if (conditionCount >= LOW_CONDITIONAL_COUNT) {
+							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this, bugPC));
@@ -192,5 +194,9 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 			return true;
 		
 		return false;
+	}
+	
+	private static int prority(int conditionCount) {
+		return (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY;
 	}
 }
