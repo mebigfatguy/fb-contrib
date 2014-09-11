@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantString;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -108,6 +109,8 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 						String currConstType = null;
 						if (c instanceof ConstantString) {
 							currConstType = "java.lang.String";
+						} else if (c instanceof ConstantClass) {
+							currConstType = "java.lang.Class";
 						}
 						if (conditionCount > 0) {
 							if (constType.equals(currConstType)) {
