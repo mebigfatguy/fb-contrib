@@ -607,13 +607,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 				String literal = argIsLiteralString ? LITERAL : "";
 				if (sbItem.getRegisterNumber() > -1) {
-					userValue = "append:" + sbItem.getRegisterNumber() + ":" + literal;
+					userValue = "append:" + sbItem.getRegisterNumber() + ':' + literal;
 				} else {
 					userValue = (String) sbItem.getUserValue();
 					if (userValue != null) {
 						Matcher m = APPEND_PATTERN.matcher(userValue);
 						if (m.matches()) {
-							userValue = "append:" + m.group(1) + ":" + literal;
+							userValue = "append:" + m.group(1) + ':' + literal;
 						}
 					}
 				}

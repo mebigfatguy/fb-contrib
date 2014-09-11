@@ -156,7 +156,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 					String className = getClassConstantOperand();
 					String methodName = getNameConstantOperand();
 					String methodSig = getSigConstantOperand();
-					String methodInfo = className + "." + methodName + methodSig;
+					String methodInfo = className + '.' + methodName + methodSig;
 					Integer stackOffset = REPLACEABLE_ENCODING_METHODS.get(methodInfo);
 					if (stackOffset != null) {
 						int offset = stackOffset.intValue();

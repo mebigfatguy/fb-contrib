@@ -2614,6 +2614,7 @@
 			String myString = ... <br/>
 			if (myString.indexOf("e") != -1) {<br/>
 			int i = myString.lastIndexOf("e");<br/>
+			System.out.println(myString + ":" + i);  //the Java compiler will use a StringBuilder internally here [builder.append(":")]<br/>
 			...<br/>
 			return myString.replace("m","z");<br/>
 			}<br/>
@@ -2624,6 +2625,7 @@
 			String myString = ... <br/>
 			if (myString.indexOf('e') != -1) {<br/>
 			int i = myString.lastIndexOf('e');<br/>
+			System.out.println(myString + ':' + i);  //the Java compiler will use a StringBuilder internally here [builder.append(':')]<br/>
 			...<br/>
 			return myString.replace('m','z');<br/>
 			}<br/>

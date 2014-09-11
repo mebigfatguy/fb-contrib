@@ -121,7 +121,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 	        stack.precomputation(this);
 	        
 			if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
-				String key = getClassConstantOperand() + ":" + getNameConstantOperand() + ":" + getSigConstantOperand();
+				String key = getClassConstantOperand() + ':' + getNameConstantOperand() + ':' + getSigConstantOperand();
 				Integer parmPos =characterMethods.get(key);
 				if (parmPos != null) {
 					int stackPos = parmPos.intValue();
