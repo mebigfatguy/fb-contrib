@@ -108,9 +108,9 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 						Constant c = getConstantRefOperand();
 						String currConstType = null;
 						if (c instanceof ConstantString) {
-							currConstType = "java.lang.String";
+							currConstType = "java/lang/String";
 						} else if (c instanceof ConstantClass) {
-							currConstType = "java.lang.Class";
+							currConstType = getConstantPool().constantToString(getConstantPool().getConstant(((ConstantClass) c).getNameIndex()));
 						}
 						if (conditionCount > 0) {
 							if (constType.equals(currConstType)) {
