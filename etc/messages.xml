@@ -1475,6 +1475,18 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ContainsBasedConditional">
+    	<Details>
+    		<![CDATA[
+    		<p>looks for complex if expressions made up of multiple conditions joined by OR, where the same
+    		local variable is compared to a static value. When the number of conditions grow it is much cleaner
+    		to build a static set of the possible values, and use the contains method on that set. This will
+    		shorten the code, and make it more self documenting.</p>
+    		<p>It is a fast detector</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -4588,6 +4600,19 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="CBC_CONTAINS_BASED_CONDITIONAL">
+    	<ShortDescription>This method uses an excessively complex conditional that can be replaced with Set.contains</ShortDescription>
+    	<LongDescription>This method {1} uses an excessively complex conditional that can be replaced with Set.contains</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method uses an overly complex if expression made up of multiple conditions joined by OR, where the same
+    		local variable is compared to a static value. When the number of conditions grow it is much cleaner
+    		to build a static set of the possible values, and use the contains method on that set. This will
+    		shorten the code, and make it more self documenting.</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -4713,4 +4738,5 @@
 	<BugCode abbrev="HCP">HttpClient Problems</BugCode>
 	<BugCode abbrev="CTU">Conflicting Time Units</BugCode>
 	<BugCode abbrev="CSI">Charset Issues</BugCode>
+	<BugCode abbrev="CBC">Contains Based Conditional</BugCode>
 </MessageCollection>

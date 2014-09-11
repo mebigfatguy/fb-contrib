@@ -281,6 +281,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.CharsetIssues" speed="fast" reports="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET,CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING,CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" />
 
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ContainsBasedConditional" speed="fast" reports="CBC_CONTAINS_BASED_CONDITIONAL" />
+	
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -497,5 +499,6 @@
 	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="CBC" type="CBC_CONTAINS_BASED_CONDITIONAL" category="STYLE" experimental="true"/>
 	
 </FindbugsPlugin>
