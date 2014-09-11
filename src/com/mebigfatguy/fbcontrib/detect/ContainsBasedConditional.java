@@ -110,7 +110,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 						if (c instanceof ConstantString) {
 							currConstType = "java/lang/String";
 						} else if (c instanceof ConstantClass) {
-							currConstType = getConstantPool().constantToString(getConstantPool().getConstant(((ConstantClass) c).getNameIndex()));
+							currConstType = "java/lang/Class";
 						}
 						if (conditionCount > 0) {
 							if (constType.equals(currConstType)) {
@@ -144,6 +144,15 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 					} else if (seen == IF_ICMPEQ) {
 						conditionCount++;
 						state = State.SAW_PATTERN;
+					} else if (seen == IF_ICMPNE) {
+						conditionCount++;
+						if (conditionCount >= MIN_CONDITIONAL_COUNT) {
+							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", NORMAL_PRIORITY)
+										.addClass(this)
+										.addMethod(this)
+										.addSourceLine(this, bugPC));
+						}
+						state = State.SAW_NOTHING;
 					} else {
 						state = State.SAW_NOTHING;
 					}
