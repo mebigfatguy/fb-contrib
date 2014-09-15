@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -38,6 +41,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 	private enum State {SAW_NOTHING, SAW_LOAD, SAW_CONST, SAW_EQUALS, SAW_PATTERN };
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
+	private List<Integer> switchLocs;
 	private State state;
 	private int loadType;
 	private String constType;
@@ -56,8 +60,10 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
+			switchLocs = new ArrayList<Integer>();
 			super.visitClassContext(classContext);
 		} finally {
+			switchLocs = null;
 			stack = null;
 		}
 	}
@@ -70,6 +76,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 		constType = null;
 		conditionCount = 0;
 		bugPC = 0;
+		switchLocs.clear();
 		super.visitCode(obj);
 	}
 	
@@ -77,6 +84,19 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 		try {
 			stack.precomputation(this);
+			
+			if ((seen == LOOKUPSWITCH) || (seen == TABLESWITCH)) {
+				switchLocs.add(Integer.valueOf(getPC()));
+				for (int offset : getSwitchOffsets()) {
+					switchLocs.add(Integer.valueOf(getPC() + offset));
+				}
+			}
+			
+			if (!switchLocs.isEmpty() && (getPC() == switchLocs.get(0).intValue())) {
+				state = State.SAW_NOTHING;
+				switchLocs.remove(0);
+				return;
+			}
 			
 			switch (state) {
 				case SAW_NOTHING:
