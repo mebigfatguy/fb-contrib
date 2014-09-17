@@ -135,7 +135,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 							currConstType = "java/lang/Class";
 						}
 						if (conditionCount > 0) {
-							if (constType.equals(currConstType)) {
+							if ((constType != null) && constType.equals(currConstType)) {
 								state = State.SAW_CONST;
 							} else {
 								state = State.SAW_NOTHING;
