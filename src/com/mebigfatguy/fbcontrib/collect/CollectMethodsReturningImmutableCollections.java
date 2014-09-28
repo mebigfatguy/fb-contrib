@@ -114,7 +114,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
     
     /**
      * overrides the visitor to look for calls to static methods that are known to return immutable collections
-     * It records those variabls, and documents if what the method returns is one of those objects.
+     * It records those variables, and documents if what the method returns is one of those objects.
      */
     @Override
 	public void sawOpcode(int seen) {
