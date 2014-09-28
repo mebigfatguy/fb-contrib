@@ -81,7 +81,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 					MethodInfo mi = Statistics.getStatistics().getMethodStatistics(calledClass, getNameConstantOperand(), sig);
 					if (mi != null) {
 						if (seen == INVOKEINTERFACE) {
-							mi.addCallingAccess(Constants.PUBLIC);
+							mi.addCallingAccess(Constants.ACC_PUBLIC);
 						} else {
 							String calledPackage;
 							int slashPos = calledClass.lastIndexOf('/');
