@@ -20,9 +20,9 @@ package com.mebigfatguy.fbcontrib.collect;
 
 public class StatisticsKey {
 	
-	public String className;
-	public String methodName;
-	public String signature;
+	private String className;
+	private String methodName;
+	private String signature;
 	
 	public StatisticsKey(String clsName, String mName, String sig) {
 		className = clsName;
