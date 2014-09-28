@@ -28,6 +28,7 @@ import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.collect.StatisticsKey;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -127,7 +128,33 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 	@Override
 	public void report() {
 		for (Map.Entry<StatisticsKey, MethodInfo> entry : Statistics.getStatistics()) {
+			MethodInfo mi = entry.getValue();
 			
+			int declaredAccess = mi.getDeclaredAccess();
+			if ((declaredAccess & Constants.ACC_PRIVATE) != 0) {
+				continue;
+			}
+
+			if (mi.wasCalledPublicly() || !mi.wasCalled()) {
+				continue;
+			}
+			
+			StatisticsKey key = entry.getKey();
+			
+			if (isOverlyPermissive(declaredAccess, mi)) {
+				bugReporter.reportBug(new BugInstance(this, "OPM_OVERLY_PERMISSIVE_METHOD", NORMAL_PRIORITY)
+								.addClass(key.getClassName())
+								.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0));
+			}
 		}
+	}
+		
+	private boolean isOverlyPermissive(int declaredAccess, MethodInfo mi) {
+		if ((declaredAccess & Constants.ACC_PUBLIC) != 0) {
+			return true;
+		}
+		
+		//TODO: add more permission checks
+		return false;
 	}
 }
