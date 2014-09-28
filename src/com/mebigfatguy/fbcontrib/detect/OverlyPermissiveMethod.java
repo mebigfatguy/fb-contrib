@@ -80,28 +80,31 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 					String sig = getSigConstantOperand();
 					MethodInfo mi = Statistics.getStatistics().getMethodStatistics(calledClass, getNameConstantOperand(), sig);
 					if (mi != null) {
-						int access;
-						String calledPackage;
-						int slashPos = calledClass.lastIndexOf('/');
-						if (slashPos >= 0) {
-							calledPackage = calledClass.substring(0, slashPos);
+						if (seen == INVOKEINTERFACE) {
+							mi.addCallingAccess(Constants.PUBLIC);
 						} else {
-							calledPackage = "";
-						}
-						boolean sameClass = calledClass.equals(callingClass);
-						boolean samePackage = calledPackage.equals(callingPackage);
-						
-						if (sameClass) {
-							mi.addCallingAccess(Constants.ACC_PRIVATE);
-						} else if (samePackage) {
-							mi.addCallingAccess(0);
-						} else {
-							if (seen == INVOKESTATIC) {
-								mi.addCallingAccess(Constants.ACC_PUBLIC);
-							} else if (isCallingOnThis(sig)) {
-								mi.addCallingAccess(Constants.ACC_PROTECTED);
+							String calledPackage;
+							int slashPos = calledClass.lastIndexOf('/');
+							if (slashPos >= 0) {
+								calledPackage = calledClass.substring(0, slashPos);
 							} else {
-								mi.addCallingAccess(Constants.ACC_PUBLIC);
+								calledPackage = "";
+							}
+							boolean sameClass = calledClass.equals(callingClass);
+							boolean samePackage = calledPackage.equals(callingPackage);
+							
+							if (sameClass) {
+								mi.addCallingAccess(Constants.ACC_PRIVATE);
+							} else if (samePackage) {
+								mi.addCallingAccess(0);
+							} else {
+								if (seen == INVOKESTATIC) {
+									mi.addCallingAccess(Constants.ACC_PUBLIC);
+								} else if (isCallingOnThis(sig)) {
+									mi.addCallingAccess(Constants.ACC_PROTECTED);
+								} else {
+									mi.addCallingAccess(Constants.ACC_PUBLIC);
+								}
 							}
 						}
 					}
