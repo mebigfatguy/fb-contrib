@@ -283,6 +283,8 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ContainsBasedConditional" speed="fast" reports="CBC_CONTAINS_BASED_CONDITIONAL" />
 	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod" speed="fast" reports="OPM_OVERLY_PERMISSIVE_METHOD" />
+	
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -500,5 +502,6 @@
 	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="CBC" type="CBC_CONTAINS_BASED_CONDITIONAL" category="STYLE" experimental="true"/>
+	<BugPattern abbrev="OPM" type="OPM_OVERLY_PERMISSIVE_METHOD" category="STYLE" experimental="true" />
 	
 </FindbugsPlugin>

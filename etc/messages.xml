@@ -1487,6 +1487,19 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod">
+    	<Details>
+    		<![CDATA[
+    		<p>looks for methods that are declared more permissively than the code is using. Having methods more
+    		permissive than they need to be limits your ability to make observations about these methods, like
+    		parameter usage, refactorability, and derivability. This detector will not report on methods that are never
+    		called in the case this method is an API like method intended to be called by client code. If this method
+    		is also called through reflection, this detector may erroneous report it.</p>
+    		<p>It is a fast detector</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -4613,6 +4626,19 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="OPM_OVERLY_PERMISSIVE_METHOD">
+    	<ShortDescription>This method is declared more permissively than is used in the code base</ShortDescription>
+    	<LongDescription>This method {1} is declared more permissively than is used in the code base</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method is declared more permissively than the code is using. Having this method be more
+    		permissive than is needed limits your ability to make observations about this methods, like
+    		parameter usage, refactorability, and derivability. Care should be taken that this method isn't called 
+    		through reflection, or is used by code not present in the FindBugs code scan, like an API-like method.</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -4739,4 +4765,5 @@
 	<BugCode abbrev="CTU">Conflicting Time Units</BugCode>
 	<BugCode abbrev="CSI">Charset Issues</BugCode>
 	<BugCode abbrev="CBC">Contains Based Conditional</BugCode>
+	<BugCode abbrev="OPM">Overly Permissive Method</BugCode>
 </MessageCollection>
