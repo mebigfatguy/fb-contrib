@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.collect;
 
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -27,13 +28,12 @@ import java.util.Map;
  * only a hash of that data is stored. This will allow some false positives, but hopefully not 
  * enough to cause issues.
  */
-public class Statistics {
+public class Statistics implements Iterable<Map.Entry<StatisticsKey, MethodInfo>> {
 
 	private static Statistics statistics = new Statistics();
 	private static final MethodInfo NOT_FOUND_METHOD_INFO = new MethodInfo();
 	
-	private final Map<Long, MethodInfo> methodStatistics = new HashMap<Long, MethodInfo>();
-	
+	private final Map<StatisticsKey, MethodInfo> methodStatistics = new HashMap<StatisticsKey, MethodInfo>();
 
 	private Statistics() {
 	}
@@ -47,7 +47,7 @@ public class Statistics {
 	}
 	
 	public void addMethodStatistics(String className, String methodName, String signature, int access, int numBytes, int numMethodCalls) {
-		Long key = getKey(className, methodName, signature);
+		StatisticsKey key = new StatisticsKey(className, methodName, signature);
 		MethodInfo mi = methodStatistics.get(key);
 		if (mi == null) {
 		    mi = new MethodInfo();
@@ -60,23 +60,19 @@ public class Statistics {
 	}
 	
 	public MethodInfo getMethodStatistics(String className, String methodName, String signature) {
-		MethodInfo mi = methodStatistics.get(getKey(className, methodName, signature));
+		MethodInfo mi = methodStatistics.get(new StatisticsKey(className, methodName, signature));
 		if (mi == null)
 			return NOT_FOUND_METHOD_INFO;
 		return mi;
 	}
 	
-	private static Long getKey(String className, String methodName, String signature) {
-		long hashCode = className.hashCode();
-		hashCode <<= 16;
-		hashCode |= methodName.hashCode();
-		hashCode <<= 16;
-		hashCode |= signature.hashCode();
-		return Long.valueOf(hashCode);
+	@Override
+	public Iterator<Map.Entry<StatisticsKey, MethodInfo>> iterator() {
+		return methodStatistics.entrySet().iterator();
 	}
-
-    public void addImmutabilityStatus(String className, String methodName, String signature, ImmutabilityType imType) {
-        Long key = getKey(className, methodName, signature);
+	
+	public void addImmutabilityStatus(String className, String methodName, String signature, ImmutabilityType imType) {
+    	StatisticsKey key = new StatisticsKey(className, methodName, signature);
         MethodInfo mi = methodStatistics.get(key);
         if (mi == null) {
             mi = new MethodInfo();
