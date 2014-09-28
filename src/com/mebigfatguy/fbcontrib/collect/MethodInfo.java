@@ -18,11 +18,20 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
+import org.apache.bcel.Constants;
+
 public class MethodInfo {
     
+	public static final int PUBLIC_USE = 1;
+	public static final int PRIVATE_USE = 2;
+	public static final int PROTECTED_USE = 4;
+	public static final int PACKAGE_USE = 8;
+	
     private short numMethodBytes;
     private byte numMethodCalls;
     private byte immutabilityOrdinal;
+    private byte declaredAccess;
+    private byte isCalledType;
     
     public int getNumBytes() {
         return 0x0000FFFF & numMethodBytes;
@@ -41,6 +50,42 @@ public class MethodInfo {
             numCalls = 255;
         }
         numMethodCalls = (byte) numCalls;
+    }
+    
+    public void setDeclaredAccess(int access) {
+    	declaredAccess = (byte) access;
+    }
+    
+    public int getDeclaredAccess() {
+    	return declaredAccess;
+    }
+    
+    public void addCallingAccess(int access) {
+    	if ((access & Constants.ACC_PUBLIC) != 0) {
+    		isCalledType |= PUBLIC_USE;
+    	} else if ((access & Constants.ACC_PROTECTED) != 0) {
+    		isCalledType |= PROTECTED_USE;
+    	} else if ((access & Constants.ACC_PRIVATE) != 0) {
+    		isCalledType |= PRIVATE_USE;
+    	} else {
+    		isCalledType |= PACKAGE_USE;
+    	}
+    }
+    
+    public boolean wasCalledPublicly() {
+    	return (isCalledType | PUBLIC_USE) != 0;
+    }
+    
+    public boolean wasCalledProtectedly() {
+    	return (isCalledType | PROTECTED_USE) != 0;
+    }
+    
+    public boolean wasCalledPackagely() {
+    	return (isCalledType | PACKAGE_USE) != 0;
+    }
+    
+    public boolean wasCalledPrivately() {
+    	return (isCalledType | PRIVATE_USE) != 0;
     }
 
     public  ImmutabilityType getImmutabilityType() {

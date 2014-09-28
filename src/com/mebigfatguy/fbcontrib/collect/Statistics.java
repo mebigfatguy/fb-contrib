@@ -46,7 +46,7 @@ public class Statistics {
 		methodStatistics.clear();
 	}
 	
-	public void addMethodStatistics(String className, String methodName, String signature, int numBytes, int numMethodCalls) {
+	public void addMethodStatistics(String className, String methodName, String signature, int access, int numBytes, int numMethodCalls) {
 		Long key = getKey(className, methodName, signature);
 		MethodInfo mi = methodStatistics.get(key);
 		if (mi == null) {
@@ -56,6 +56,7 @@ public class Statistics {
 		
 		mi.setNumBytes(numBytes);
 		mi.setNumMethodCalls(numMethodCalls);
+		mi.setDeclaredAccess(access);
 	}
 	
 	public MethodInfo getMethodStatistics(String className, String methodName, String signature) {
