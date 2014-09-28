@@ -41,4 +41,20 @@ public class StatisticsKey {
 	public String getSignature() {
 		return signature;
 	}
+	
+	@Override
+	public int hashCode() {
+		return className.hashCode() ^ methodName.hashCode() ^ signature.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (!(o instanceof StatisticsKey)) {
+			return false;
+		}
+		
+		StatisticsKey that = (StatisticsKey) o;
+		
+		return className.equals(that.className) && methodName.equals(that.methodName) && signature.equals(that.signature); 
+	}
 }
