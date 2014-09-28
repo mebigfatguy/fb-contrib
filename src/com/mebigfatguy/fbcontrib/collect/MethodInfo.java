@@ -72,20 +72,24 @@ public class MethodInfo {
     	}
     }
     
+    public boolean wasCalled() {
+    	return (isCalledType & (PUBLIC_USE|PROTECTED_USE|PACKAGE_USE|PRIVATE_USE)) != 0;
+    }
+    
     public boolean wasCalledPublicly() {
-    	return (isCalledType | PUBLIC_USE) != 0;
+    	return (isCalledType & PUBLIC_USE) != 0;
     }
     
     public boolean wasCalledProtectedly() {
-    	return (isCalledType | PROTECTED_USE) != 0;
+    	return (isCalledType & PROTECTED_USE) != 0;
     }
     
     public boolean wasCalledPackagely() {
-    	return (isCalledType | PACKAGE_USE) != 0;
+    	return (isCalledType & PACKAGE_USE) != 0;
     }
     
     public boolean wasCalledPrivately() {
-    	return (isCalledType | PRIVATE_USE) != 0;
+    	return (isCalledType & PRIVATE_USE) != 0;
     }
 
     public  ImmutabilityType getImmutabilityType() {
