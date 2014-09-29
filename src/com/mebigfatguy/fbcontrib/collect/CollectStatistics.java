@@ -18,6 +18,10 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -26,6 +30,12 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector
 {
+	private static Set<String> COMMON_METHOD_SIGS = new HashSet<String>();
+	static {
+		COMMON_METHOD_SIGS.add("toString\\(\\).*");
+		COMMON_METHOD_SIGS.add("hashCode\\(\\).*");
+		COMMON_METHOD_SIGS.add("clone\\(\\).*");
+	}
 	private int numMethodCalls;
 
 	public CollectStatistics(BugReporter bugReporter) {
@@ -40,7 +50,13 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 		byte[] code = obj.getCode();
 		if (code != null) {
 			super.visitCode(obj);
-			Statistics.getStatistics().addMethodStatistics(getClassName(), getMethodName(), getMethodSig(), getMethod().getAccessFlags(), obj.getLength(), numMethodCalls);
+			MethodInfo mi = Statistics.getStatistics().addMethodStatistics(getClassName(), getMethodName(), getMethodSig(), getMethod().getAccessFlags(), obj.getLength(), numMethodCalls);
+			String methodSig = getMethodName() + getMethodSig();
+			for (String sig : COMMON_METHOD_SIGS) {
+				if (methodSig.matches(sig)) {
+					mi.addCallingAccess(Constants.ACC_PUBLIC);
+				}
+			}
 		}
 	}
 

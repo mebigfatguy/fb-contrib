@@ -46,7 +46,7 @@ public class Statistics implements Iterable<Map.Entry<StatisticsKey, MethodInfo>
 		methodStatistics.clear();
 	}
 	
-	public void addMethodStatistics(String className, String methodName, String signature, int access, int numBytes, int numMethodCalls) {
+	public MethodInfo addMethodStatistics(String className, String methodName, String signature, int access, int numBytes, int numMethodCalls) {
 		StatisticsKey key = new StatisticsKey(className, methodName, signature);
 		MethodInfo mi = methodStatistics.get(key);
 		if (mi == null) {
@@ -57,6 +57,7 @@ public class Statistics implements Iterable<Map.Entry<StatisticsKey, MethodInfo>
 		mi.setNumBytes(numBytes);
 		mi.setNumMethodCalls(numMethodCalls);
 		mi.setDeclaredAccess(access);
+		return mi;
 	}
 	
 	public MethodInfo getMethodStatistics(String className, String methodName, String signature) {
