@@ -129,7 +129,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 	}
 	
 	@Override
-	public void report() {
+	public void report() {		
 		for (Map.Entry<StatisticsKey, MethodInfo> entry : Statistics.getStatistics()) {
 			MethodInfo mi = entry.getValue();
 			
@@ -158,6 +158,9 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		}
 		
 		//TODO: add more permission checks
+		
+		//TODO Need to see if this method is defined in a superclass or interface and ignore here
+		//TODO really need to see if someone derives from this as well.
 		return false;
 	}
 }
