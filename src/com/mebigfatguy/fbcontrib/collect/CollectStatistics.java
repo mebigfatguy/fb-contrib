@@ -50,11 +50,17 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 		byte[] code = obj.getCode();
 		if (code != null) {
 			super.visitCode(obj);
-			MethodInfo mi = Statistics.getStatistics().addMethodStatistics(getClassName(), getMethodName(), getMethodSig(), getMethod().getAccessFlags(), obj.getLength(), numMethodCalls);
-			String methodSig = getMethodName() + getMethodSig();
-			for (String sig : COMMON_METHOD_SIGS) {
-				if (methodSig.matches(sig)) {
-					mi.addCallingAccess(Constants.ACC_PUBLIC);
+			String clsName = getClassName();
+			int accessFlags = getMethod().getAccessFlags();
+			MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(), numMethodCalls);
+			if (clsName.contains("$")) {
+				mi.addCallingAccess(Constants.ACC_PUBLIC);
+			} else if ((accessFlags & Constants.ACC_PRIVATE)!= 0) {
+				String methodSig = getMethodName() + getMethodSig();
+				for (String sig : COMMON_METHOD_SIGS) {
+					if (methodSig.matches(sig)) {
+						mi.addCallingAccess(Constants.ACC_PUBLIC);
+					}
 				}
 			}
 		}
