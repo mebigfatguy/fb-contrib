@@ -36,10 +36,11 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 {
 	private static Set<String> COMMON_METHOD_SIGS = new HashSet<String>();
 	static {
-		COMMON_METHOD_SIGS.add("toString\\(\\).*");
-		COMMON_METHOD_SIGS.add("hashCode\\(\\).*");
+		COMMON_METHOD_SIGS.add("toString\\(\\)Ljava/lang/String;");
+		COMMON_METHOD_SIGS.add("hashCode\\(\\)I");
 		COMMON_METHOD_SIGS.add("clone\\(\\).*");
 		COMMON_METHOD_SIGS.add("values\\(\\).*");
+		COMMON_METHOD_SIGS.add("main\\([Ljava/lang/String;\\)V");
 	}
 	private int numMethodCalls;
 	private boolean classHasAnnotation;
