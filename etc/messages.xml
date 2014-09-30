@@ -1496,7 +1496,7 @@
     		parameter usage, refactorability, and derivability. This detector will not report on methods that are never
     		called in the case this method is an API like method intended to be called by client code. If this method
     		is also called through reflection, this detector may erroneous report it.</p>
-    		<p>It is a fast detector</p>
+    		<p>It is a moderately fast detector</p>
     		]]>
     	</Details>
     </Detector>
@@ -4634,8 +4634,14 @@
     		<![CDATA[
     		<p>This method is declared more permissively than the code is using. Having this method be more
     		permissive than is needed limits your ability to make observations about this methods, like
-    		parameter usage, refactorability, and derivability. Care should be taken that this method isn't called 
-    		through reflection, or is used by code not present in the FindBugs code scan, like an API-like method.</p>
+    		parameter usage, refactorability, and derivability. It is possible that this detector will report 
+    		erroneously if:
+    		<ul>
+    			<li>The method is called from code not being scanned, such as unit tests</li>
+    			<li>The method is an api method, expected to be used by unknown client code</li>
+    			<li>The method is called through reflection
+    		</ul>	
+    		</p>
     		]]>
     	</Details>
     </BugPattern>
