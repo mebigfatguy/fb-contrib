@@ -22,6 +22,8 @@ import java.util.Map;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
@@ -145,21 +147,50 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 			StatisticsKey key = entry.getKey();
 			
 			if (isOverlyPermissive(declaredAccess, mi)) {
-				//TODO: check to see that this method isn't derived from something
+				if (!isDerived(getClassContext().getJavaClass(), getMethod())) {
 				
-				bugReporter.reportBug(new BugInstance(this, "OPM_OVERLY_PERMISSIVE_METHOD", NORMAL_PRIORITY)
-								.addClass(key.getClassName())
-								.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0));
+					bugReporter.reportBug(new BugInstance(this, "OPM_OVERLY_PERMISSIVE_METHOD", NORMAL_PRIORITY)
+									.addClass(key.getClassName())
+									.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0));
+				}
 			}
 		}
 	}
 		
-	private boolean isOverlyPermissive(int declaredAccess, MethodInfo mi) {
+	private static boolean isOverlyPermissive(int declaredAccess, MethodInfo mi) {
 		if ((declaredAccess & Constants.ACC_PUBLIC) != 0) {
 			return true;
 		}
 		
 		//TODO: add more permission checks
 		return false;
+	}
+	
+	private boolean isDerived(JavaClass cls, Method m) {
+		try {
+			for (JavaClass infCls : cls.getInterfaces()) {
+				for (Method infMethod : infCls.getMethods()) {
+					if (m.getName().equals(infMethod.getName()) && m.getSignature().equals(infMethod.getSignature())) {
+						return true;
+					}
+				}
+			}
+			
+			JavaClass superClass = cls.getSuperClass();
+			if ("java/lang/Object".equals(superClass.getClassName())) {
+				return false;
+			}
+			
+			for (Method superMethod : superClass.getMethods()) {
+				if (m.getName().equals(superMethod.getName()) && m.getSignature().equals(superMethod.getSignature())) {
+					return true;
+				}
+			}
+			
+			return isDerived(superClass, m);
+		} catch (ClassNotFoundException cnfe) {
+			bugReporter.reportMissingClass(cnfe);
+			return true;
+		}
 	}
 }
