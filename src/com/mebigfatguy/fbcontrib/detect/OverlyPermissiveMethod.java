@@ -145,6 +145,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 			StatisticsKey key = entry.getKey();
 			
 			if (isOverlyPermissive(declaredAccess, mi)) {
+				//TODO: check to see that this method isn't derived from something
+				
 				bugReporter.reportBug(new BugInstance(this, "OPM_OVERLY_PERMISSIVE_METHOD", NORMAL_PRIORITY)
 								.addClass(key.getClassName())
 								.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0));
@@ -158,9 +160,6 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		}
 		
 		//TODO: add more permission checks
-		
-		//TODO Need to see if this method is defined in a superclass or interface and ignore here
-		//TODO really need to see if someone derives from this as well.
 		return false;
 	}
 }
