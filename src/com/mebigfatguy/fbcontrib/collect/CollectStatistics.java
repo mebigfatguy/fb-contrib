@@ -51,12 +51,10 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-    	if (classContext.getAnalysisContext().isApplicationClass(classContext.getJavaClass())) {
-	    	JavaClass cls = classContext.getJavaClass();
-	    	AnnotationEntry[] annotations = cls.getAnnotationEntries();
-	    	classHasAnnotation = (annotations != null) && (annotations.length > 0);
-	    	super.visitClassContext(classContext);
-    	}
+    	JavaClass cls = classContext.getJavaClass();
+    	AnnotationEntry[] annotations = cls.getAnnotationEntries();
+    	classHasAnnotation = (annotations != null) && (annotations.length > 0);
+    	super.visitClassContext(classContext);
 	}
 
 	@Override
