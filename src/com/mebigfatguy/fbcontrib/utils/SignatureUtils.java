@@ -171,5 +171,36 @@ public class SignatureUtils {
 	    
 	    return parmSigs;
 	}
+
+	public static boolean compareGenericSignature(String genericSignature, String regularSignature) {
+		Type[] genParms = Type.getArgumentTypes(genericSignature);
+		Type[] regParms = Type.getArgumentTypes(regularSignature);
+		
+		if (genParms.length != regParms.length) {
+			return false;
+		}
+		
+		for (int i = 0; i < genParms.length; i++) {
+			if ("LT;".equals(genParms[i].getSignature())) {
+				if (!regParms[i].getSignature().startsWith("L")) {
+					return false;
+				}
+			} else if (!genParms[i].getSignature().equals(regParms[i].getSignature())) {
+				return false;
+			}
+		}
+		
+		Type genReturn = Type.getReturnType(genericSignature);
+		Type regReturn = Type.getReturnType(regularSignature);
+		if ("LT;".equals(genReturn.getSignature())) {
+			if (!regReturn.getSignature().startsWith("L")) {
+				return false;
+			}
+		} else if (!genReturn.getSignature().equals(regReturn.getSignature())) {
+			return false;
+		}
+		
+		return true;
+	}
 	
 }

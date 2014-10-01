@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -29,6 +30,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.collect.StatisticsKey;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -147,11 +149,15 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 			StatisticsKey key = entry.getKey();
 
 			if (isOverlyPermissive(declaredAccess, mi)) {
-				if (!isDerived(getClassContext().getJavaClass(), key)) {
-
-					bugReporter.reportBug(new BugInstance(this, "OPM_OVERLY_PERMISSIVE_METHOD", NORMAL_PRIORITY)
-									.addClass(key.getClassName())
-									.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0));
+				try {
+					if (!isDerived(Repository.lookupClass(key.getClassName()), key)) {
+	
+						bugReporter.reportBug(new BugInstance(this, "OPM_OVERLY_PERMISSIVE_METHOD", NORMAL_PRIORITY)
+										.addClass(key.getClassName())
+										.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0));
+					}
+				} catch (ClassNotFoundException cnfe) {
+					bugReporter.reportMissingClass(cnfe);
 				}
 			}
 		}
@@ -170,8 +176,15 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		try {
 			for (JavaClass infCls : cls.getInterfaces()) {
 				for (Method infMethod : infCls.getMethods()) {
-					if (key.getMethodName().equals(infMethod.getName()) && key.getSignature().equals(infMethod.getSignature())) {
-						return true;
+					if (key.getMethodName().equals(infMethod.getName())) {
+						if (infMethod.getGenericSignature() != null) { 
+							if (SignatureUtils.compareGenericSignature(infMethod.getGenericSignature(), key.getSignature())) {
+								return true;
+							}
+						}
+						else if (infMethod.getSignature().equals(key.getSignature())) {
+							return true;
+						}
 					}
 				}
 			}
@@ -182,8 +195,15 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 			}
 
 			for (Method superMethod : superClass.getMethods()) {
-				if (key.getMethodName().equals(superMethod.getName()) && key.getSignature().equals(superMethod.getSignature())) {
-					return true;
+				if (key.getMethodName().equals(superMethod.getName())) {
+					if (superMethod.getGenericSignature() != null) { 
+						if (SignatureUtils.compareGenericSignature(superMethod.getGenericSignature(), key.getSignature())) {
+							return true;
+						}
+					}
+					else if (superMethod.getSignature().equals(key.getSignature())) {
+						return true;
+					}
 				}
 			}
 
