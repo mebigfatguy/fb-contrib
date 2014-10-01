@@ -40,7 +40,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 		COMMON_METHOD_SIGS.add("hashCode\\(\\)I");
 		COMMON_METHOD_SIGS.add("clone\\(\\).*");
 		COMMON_METHOD_SIGS.add("values\\(\\).*");
-		COMMON_METHOD_SIGS.add("main\\([Ljava/lang/String;\\)V");
+		COMMON_METHOD_SIGS.add("main\\(\\[Ljava/lang/String;\\)V");
 	}
 	private int numMethodCalls;
 	private boolean classHasAnnotation;
