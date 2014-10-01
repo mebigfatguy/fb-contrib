@@ -177,7 +177,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 			}
 
 			JavaClass superClass = cls.getSuperClass();
-			if ((superClass == null) || "java/lang/Object".equals(superClass.getClassName())) {
+			if ((superClass == null) || "java.lang.Object".equals(superClass.getClassName())) {
 				return false;
 			}
 
