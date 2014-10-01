@@ -57,4 +57,9 @@ public class StatisticsKey {
 		
 		return className.equals(that.className) && methodName.equals(that.methodName) && signature.equals(that.signature); 
 	}
+	
+	@Override
+	public String toString() {
+		return "StatisticsKey[className=" + className + ", methodName=" + methodName + ", signature=" + signature + "]";
+	}
 }
