@@ -203,7 +203,11 @@ public class SignatureUtils {
 
 		Type regReturnParms = Type.getReturnType(genericSignature);
 		String genReturnSig = genParser.getReturnTypeSignature();
-
+		int bracketPos = genReturnSig.indexOf('<');
+		if (bracketPos >= 0) {
+			genReturnSig = genReturnSig.substring(0, bracketPos) + ';';
+		}
+		
 		if (!regReturnParms.getSignature().equals(genReturnSig) && !genReturnSig.startsWith("T")) {
 			return false;
 		}
