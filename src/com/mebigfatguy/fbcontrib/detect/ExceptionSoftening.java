@@ -291,7 +291,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	 * @param pc the current pc
 	 * @return an set of catch exception types that the pc is currently in
 	 */
-	public Set<String> findPossibleCatchSignatures(List<CatchInfo> infos, int pc) {
+	private static Set<String> findPossibleCatchSignatures(List<CatchInfo> infos, int pc) {
 		Set<String> catchTypes = new HashSet<String>(6);
 		ListIterator<CatchInfo> it = infos.listIterator(infos.size());
 		while (it.hasPrevious()) {
@@ -311,7 +311,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	 * @param m the method to check
 	 * @return a map containing the class name to a set of exceptions that constrain this method
 	 */
-	public Map<String, Set<String>> getConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
+	private Map<String, Set<String>> getConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
 		String methodName = m.getName();
 		String methodSig = m.getSignature();
 

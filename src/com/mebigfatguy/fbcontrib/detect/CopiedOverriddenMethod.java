@@ -142,7 +142,7 @@ public class CopiedOverriddenMethod extends DismantleBytecode implements Detecto
 	 * @return whether the code blocks are the same
 	 */
 	@SuppressWarnings("deprecation")
-	public boolean codeEquals(Code child, Code parent) {
+	private boolean codeEquals(Code child, Code parent) {
 		byte[] childBytes = child.getCode();
 		byte[] parentBytes = parent.getCode();
 

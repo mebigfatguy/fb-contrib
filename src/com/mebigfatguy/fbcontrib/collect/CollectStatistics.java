@@ -100,7 +100,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 		}
 	}
 
-	public boolean isAssociationedWithAnnotations(Method m) {
+	private boolean isAssociationedWithAnnotations(Method m) {
 		if (classHasAnnotation) {
 			return true;
 		}

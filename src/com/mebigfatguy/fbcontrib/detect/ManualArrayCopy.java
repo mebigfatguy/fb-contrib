@@ -64,7 +64,7 @@ public class ManualArrayCopy extends BytecodeScanningDetector
 	 * @param method the context object of the current method
 	 * @return if the class loads array contents
 	 */
-	public boolean prescreen(Method method) {
+	private boolean prescreen(Method method) {
 		BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
 		return (bytecodeSet != null) && bytecodeSet.intersects(arrayLoadOps);
 	}

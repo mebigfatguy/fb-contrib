@@ -48,7 +48,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 	private boolean sawTernary;
 	private boolean isInnerClass;
 
-	public MissingMethodsDetector(BugReporter bugReporter) {
+	protected MissingMethodsDetector(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
 
