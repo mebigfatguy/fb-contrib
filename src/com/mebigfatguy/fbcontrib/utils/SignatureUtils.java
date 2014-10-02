@@ -1,23 +1,24 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2014 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,14 +27,16 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
+
 public class SignatureUtils {
 
     /**
      * private to reinforce the helper status of the class
      */
-    private SignatureUtils() {       
+    private SignatureUtils() {
     }
-    
+
 	public static boolean isInheritedMethod(JavaClass cls, String methodName, String signature) throws ClassNotFoundException {
 		JavaClass[] infs = cls.getAllInterfaces();
 		if (findInheritedMethod(infs, methodName, signature) != null) {
@@ -51,9 +54,9 @@ public class SignatureUtils {
 
 	/**
 	 * parses the package name from a fully qualified class name
-	 * 
+	 *
 	 * @param className the class in question
-	 * 
+	 *
 	 * @return the package of the class
 	 */
 	public static String getPackageName(final String className) {
@@ -66,11 +69,11 @@ public class SignatureUtils {
 
 	/**
 	 * returns whether or not the two packages have the same first 'depth' parts, if they exist
-	 * 
+	 *
 	 * @param packName1 the first package to check
 	 * @param packName2 the second package to check
 	 * @param depth the number of package parts to check
-	 * 
+	 *
 	 * @return if they are similar
 	 */
 	public static boolean similarPackages(String packName1, String packName2, int depth) {
@@ -98,7 +101,7 @@ public class SignatureUtils {
 
 		return similarPackages(packName1.substring(dot1+1), packName2.substring(dot2+1), depth-1);
 	}
-	
+
 	/**
 	 * converts a primitive type code to a signature
      */
@@ -106,29 +109,29 @@ public class SignatureUtils {
 		switch (typeCode) {
 			case Constants.T_BOOLEAN:
 				return "Z";
-				
+
 			case Constants.T_CHAR:
 				return "C";
-				
+
 			case Constants.T_FLOAT:
 				return "F";
-				
+
 			case Constants.T_DOUBLE:
 				return "D";
-				
+
 			case Constants.T_BYTE:
 				return "B";
-				
+
 			case Constants.T_SHORT:
 				return "S";
-				
+
 			case Constants.T_INT:
 				return "I";
-				
+
 			case Constants.T_LONG:
 				return "L";
 		}
-		
+
 		return "Ljava/lang/Object;";
 	}
 
@@ -150,57 +153,62 @@ public class SignatureUtils {
 		}
 		return null;
 	}
-	
+
 	/**
 	 * returns a Map that represents the type of the parameter in slot x
-	 * 
-	 * @param m the method for which you want the parameters 
+	 *
+	 * @param m the method for which you want the parameters
 	 * @return a map of parameter types (expect empty slots when doubles/longs are used
 	 */
 	public static Map<Integer, String> getParameterSignatures(Method m) {
 	    Type[] parms = m.getArgumentTypes();
-	    
+
 	    Map<Integer, String> parmSigs = new LinkedHashMap<Integer, String>(parms.length);
-	    
+
 	    int slot = m.isStatic() ? 0 : 1;
 	    for (Type t : parms) {
 	        String signature = t.getSignature();
 	        parmSigs.put(Integer.valueOf(slot), signature);
 	        slot += ("J".equals(signature) || "D".equals(signature)) ? 2 : 1;
 	    }
-	    
+
 	    return parmSigs;
 	}
 
 	public static boolean compareGenericSignature(String genericSignature, String regularSignature) {
-		Type[] genParms = Type.getArgumentTypes(genericSignature);
 		Type[] regParms = Type.getArgumentTypes(regularSignature);
-		
-		if (genParms.length != regParms.length) {
-			return false;
-		}
-		
-		for (int i = 0; i < genParms.length; i++) {
-			if ("LT;".equals(genParms[i].getSignature())) {
-				if (!regParms[i].getSignature().startsWith("L")) {
-					return false;
-				}
-			} else if (!genParms[i].getSignature().equals(regParms[i].getSignature())) {
+
+		GenericSignatureParser genParser = new GenericSignatureParser(genericSignature);
+		Iterator<String> genIt = genParser.parameterSignatureIterator();
+
+		for (Type regParm : regParms) {
+			if (!genIt.hasNext()) {
+				return false;
+			}
+
+			String genSig = genIt.next();
+			int bracketPos = genSig.indexOf('<');
+			if (bracketPos >= 0) {
+				genSig = genSig.substring(0, bracketPos) + ';';
+			}
+
+			if (!regParm.getSignature().equals(genSig) && !genSig.startsWith("T")) {
 				return false;
 			}
 		}
-		
-		Type genReturn = Type.getReturnType(genericSignature);
-		Type regReturn = Type.getReturnType(regularSignature);
-		if ("LT;".equals(genReturn.getSignature())) {
-			if (!regReturn.getSignature().startsWith("L")) {
-				return false;
-			}
-		} else if (!genReturn.getSignature().equals(regReturn.getSignature())) {
+
+		if (genIt.hasNext()) {
 			return false;
 		}
-		
+
+		Type regReturnParms = Type.getReturnType(genericSignature);
+		String genReturnSig = genParser.getReturnTypeSignature();
+
+		if (!regReturnParms.getSignature().equals(genReturnSig) && !genReturnSig.startsWith("T")) {
+			return false;
+		}
+
 		return true;
 	}
-	
+
 }
