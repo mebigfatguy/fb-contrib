@@ -201,7 +201,7 @@ public class SignatureUtils {
 			return false;
 		}
 
-		Type regReturnParms = Type.getReturnType(genericSignature);
+		Type regReturnParms = Type.getReturnType(regularSignature);
 		String genReturnSig = genParser.getReturnTypeSignature();
 		int bracketPos = genReturnSig.indexOf('<');
 		if (bracketPos >= 0) {
