@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
@@ -41,6 +42,14 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
+	private static Map<Integer, String> DECLARED_ACCESS = new HashMap<Integer, String>();
+	static {
+		DECLARED_ACCESS.put(Integer.valueOf(Constants.ACC_PRIVATE), "private");
+		DECLARED_ACCESS.put(Integer.valueOf(Constants.ACC_PROTECTED), "protected");
+		DECLARED_ACCESS.put(Integer.valueOf(Constants.ACC_PUBLIC), "public");
+		DECLARED_ACCESS.put(Integer.valueOf(0), "package private");
+	}
+	
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
 	private String callingPackage;
@@ -152,9 +161,14 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 				try {
 					if (!isDerived(Repository.lookupClass(key.getClassName()), key)) {
 	
-						bugReporter.reportBug(new BugInstance(this, "OPM_OVERLY_PERMISSIVE_METHOD", NORMAL_PRIORITY)
+						BugInstance bi = new BugInstance(this, "OPM_OVERLY_PERMISSIVE_METHOD", NORMAL_PRIORITY)
 										.addClass(key.getClassName())
-										.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0));
+										.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0);
+
+						String descr = String.format("- Method declared %s but could be declared %s", getDeclaredAccessValue(declaredAccess), getNeededAccessValue(mi));
+						bi.addString(descr);
+						
+						bugReporter.reportBug(bi);
 					}
 				} catch (ClassNotFoundException cnfe) {
 					bugReporter.reportMissingClass(cnfe);
@@ -212,5 +226,17 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 			bugReporter.reportMissingClass(cnfe);
 			return true;
 		}
+	}
+	
+	private String getDeclaredAccessValue(int declaredAccess) {
+		return DECLARED_ACCESS.get(declaredAccess & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC));
+	}
+	
+	private Object getNeededAccessValue(MethodInfo mi) {
+		if (mi.wasCalledProtectedly())
+			return "protected";
+		if (mi.wasCalledPackagely())
+			return "package private";
+		return "private";
 	}
 }
