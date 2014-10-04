@@ -1491,11 +1491,12 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod">
     	<Details>
     		<![CDATA[
-    		<p>looks for methods that are declared more permissively than the code is using. Having methods more
-    		permissive than they need to be limits your ability to make observations about these methods, like
-    		parameter usage, refactorability, and derivability. This detector will not report on methods that are never
-    		called in the case this method is an API like method intended to be called by client code. If this method
-    		is also called through reflection, this detector may erroneous report it.</p>
+    		<p>looks for methods that are declared more permissively than the code is using. For instance, declaring
+    		a method public, when it could just be declared private. Having methods more permissive than they 
+    		need to be limits your ability to make observations about these methods, like parameter usage, 
+    		refactorability, and derivability. This detector will not report on methods that are never called in 
+    		the case this method is an API like method intended to be called by client code. If this method is 
+    		also called through reflection, this detector may erroneous report it.</p>
     		<p>It is a moderately fast detector</p>
     		]]>
     	</Details>
