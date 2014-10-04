@@ -1492,8 +1492,8 @@
     	<Details>
     		<![CDATA[
     		<p>looks for methods that are declared more permissively than the code is using. For instance, declaring
-    		a method public, when it could just be declared private. Having methods more permissive than they 
-    		need to be limits your ability to make observations about these methods, like parameter usage, 
+    		a method public, when it could just be declared private. Having methods have more permissive access than they 
+    		need to have limits your ability to make observations about these methods, like parameter usage, 
     		refactorability, and derivability. This detector will not report on methods that are never called in 
     		the case this method is an API like method intended to be called by client code. If this method is 
     		also called through reflection, this detector may erroneous report it.</p>
