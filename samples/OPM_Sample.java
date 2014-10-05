@@ -1,3 +1,4 @@
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
@@ -18,7 +19,7 @@ public class OPM_Sample extends OPMSuper implements Comparator<String> {
 	}
 
 	public void someNormalMethod() {
-		return getFoo(l);
+		List<String> l = getFoo(new ArrayList<String>());
 	}
 	
 	public List<String> getFoo(List<String> l) {
