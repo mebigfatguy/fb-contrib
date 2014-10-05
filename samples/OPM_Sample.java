@@ -1,7 +1,8 @@
 import java.util.Comparator;
+import java.util.List;
 
 
-public class OPM_Sample implements Comparator<String> {
+public class OPM_Sample extends OPMSuper implements Comparator<String> {
 
 	public void testNormalMethodCouldBePrivate() {
 		someNormalMethod();
@@ -17,6 +18,19 @@ public class OPM_Sample implements Comparator<String> {
 	}
 
 	public void someNormalMethod() {
-		
+		return getFoo(l);
 	}
+	
+	public List<String> getFoo(List<String> l) {
+		return l;
+	}
+	
+	public void fpUncalledDontReport() {
+	}
+	
+	
+}
+
+abstract class OPMSuper {
+	public abstract List<String> getFoo(List<String> l);
 }
