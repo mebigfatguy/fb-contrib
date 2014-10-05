@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -198,7 +199,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 						OpcodeStack.Item itm = stack.getStackItem(0);
 						Integer priority = (Integer)itm.getUserValue();
 						if ((priority != null) && (!priority.equals(OWNED))) {
-							bugReporter.reportBug(new BugInstance(this, "NOS_NON_OWNED_SYNCHRONIZATION", priority.intValue())
+							bugReporter.reportBug(new BugInstance(this, BugType.NOS_NON_OWNED_SYNCHRONIZATION.name(), priority.intValue())
 											.addClass(this)
 											.addMethod(this)
 											.addSourceLine(this));

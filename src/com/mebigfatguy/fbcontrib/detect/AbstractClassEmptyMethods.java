@@ -24,6 +24,8 @@ import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -104,7 +106,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector
 			switch (state) {
 				case SAW_NOTHING:
 					if (seen == RETURN) {
-						bugReporter.reportBug(new BugInstance(this, "ACEM_ABSTRACT_CLASS_EMPTY_METHODS", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY)
 							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(this));
@@ -143,7 +145,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector
 				
 				case SAW_INVOKESPECIAL:
 					if (seen == ATHROW) {
-						bugReporter.reportBug(new BugInstance("ACEM_ABSTRACT_CLASS_EMPTY_METHODS", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY)
 							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(this));

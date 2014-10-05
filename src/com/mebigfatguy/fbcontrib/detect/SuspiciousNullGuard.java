@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -122,7 +123,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 						if (!item.isNull()) {
 							NullGuard guard = findNullGuardWithRegister(RegisterUtils.getAStoreReg(this, seen));
 							if (guard != null) {
-								bugReporter.reportBug(new BugInstance(this, "SNG_SUSPICIOUS_NULL_LOCAL_GUARD", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_LOCAL_GUARD.name(), NORMAL_PRIORITY)
 															.addClass(this)
 															.addMethod(this)
 															.addSourceLine(this));
@@ -153,7 +154,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 							if (xf != null) {
 								NullGuard guard = findNullGuardWithField(xf);
 								if (guard != null) {
-									bugReporter.reportBug(new BugInstance(this, "SNG_SUSPICIOUS_NULL_FIELD_GUARD", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_FIELD_GUARD.name(), NORMAL_PRIORITY)
 																.addClass(this)
 																.addMethod(this)
 																.addSourceLine(this));

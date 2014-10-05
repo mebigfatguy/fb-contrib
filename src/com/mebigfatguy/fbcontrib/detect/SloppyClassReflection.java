@@ -29,6 +29,8 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -157,7 +159,7 @@ public class SloppyClassReflection extends BytecodeScanningDetector
 				&&  ("forName".equals(getNameConstantOperand())) 
 				&&  ("java/lang/Class".equals(getClassConstantOperand()))) {
 					if (refClasses.contains(clsName)) {
-						bugReporter.reportBug(new BugInstance(this, "SCR_SLOPPY_CLASS_REFLECTION", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SCR_SLOPPY_CLASS_REFLECTION.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));

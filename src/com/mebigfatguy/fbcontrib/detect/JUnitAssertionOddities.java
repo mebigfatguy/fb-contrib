@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.RuntimeVisibleAnnotations;
 import org.apache.bcel.classfile.Unknown;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -170,7 +171,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
     							OpcodeStack.Item item1 = stack.getStackItem(1);
     							Object cons1 = item1.getConstant();
     							if ((cons1 != null) && (argTypes[argTypes.length-1].equals(Type.BOOLEAN)) && (argTypes[argTypes.length-2].equals(Type.BOOLEAN))) {
-    								bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT", NORMAL_PRIORITY)
+    								bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
     								   .addClass(this)
     								   .addMethod(this)
     								   .addSourceLine(this));
@@ -178,7 +179,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
     							}
     							OpcodeStack.Item item0 = stack.getStackItem(0);
     							if ((item0.getConstant() != null) && (item1.getConstant() == null) && ((argTypes.length == 2) || !isFloatingPtPrimitive(item0.getSignature()))) {
-    								bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT", NORMAL_PRIORITY)
+    								bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT.name(), NORMAL_PRIORITY)
     										   .addClass(this)
     										   .addMethod(this)
     										   .addSourceLine(this));
@@ -186,7 +187,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
     							}
     							if (argTypes[argTypes.length-1].equals(Type.OBJECT) && argTypes[argTypes.length-2].equals(Type.OBJECT)) {
     								if ("Ljava/lang/Double;".equals(item0.getSignature()) && "Ljava/lang/Double;".equals(item1.getSignature())) {
-    									bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE", NORMAL_PRIORITY)
+    									bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
     									   .addClass(this)
     									   .addMethod(this)
     									   .addSourceLine(this));
@@ -198,7 +199,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 					} else if ("assertNotNull".equals(methodName)) {
 						if (stack.getStackDepth() > 0) {
 							if ("valueOf".equals(stack.getStackItem(0).getUserValue())) {
-								bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL.name(), NORMAL_PRIORITY)
 										   .addClass(this)
 										   .addMethod(this)
 										   .addSourceLine(this));
@@ -206,7 +207,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 						}
 					} else if ("assertTrue".equals(methodName)) {
 					    if ((state == State.SAW_ICONST_0) || (state == State.SAW_EQUALS)) {
-					        bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS", NORMAL_PRIORITY)
+					        bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS.name(), NORMAL_PRIORITY)
 					                        .addClass(this)
 					                        .addMethod(this)
 					                        .addSourceLine(this));
@@ -226,7 +227,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 			        OpcodeStack.Item item = stack.getStackItem(0);
     			    String throwClass = item.getSignature();
     			    if ("Ljava/lang/AssertionError;".equals(throwClass)) {
-    			        bugReporter.reportBug(new BugInstance(this, "JAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED", NORMAL_PRIORITY)
+    			        bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED.name(), NORMAL_PRIORITY)
     			                                .addClass(this)
     			                                .addMethod(this)
     			                                .addSourceLine(this));

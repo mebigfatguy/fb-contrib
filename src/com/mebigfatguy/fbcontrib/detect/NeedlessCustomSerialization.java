@@ -22,6 +22,8 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -91,7 +93,7 @@ public class NeedlessCustomSerialization extends BytecodeScanningDetector
 			state = State.SEEN_NOTHING;
 			super.visitCode(obj);	
 			if (state != State.SEEN_INVALID) {
-				bugReporter.reportBug(new BugInstance(this, "NCS_NEEDLESS_CUSTOM_SERIALIZATION", NORMAL_PRIORITY)							.addClass(this)
+				bugReporter.reportBug(new BugInstance(this, BugType.NCS_NEEDLESS_CUSTOM_SERIALIZATION.name(), NORMAL_PRIORITY)							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(this, 1));
 			}

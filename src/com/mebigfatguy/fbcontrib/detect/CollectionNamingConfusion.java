@@ -25,6 +25,8 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -69,7 +71,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     @Override
     public void visitField(Field obj) {
         if (checkConfusedName(obj.getName(), obj.getSignature())) {
-            bugReporter.reportBug(new BugInstance(this, "CNC_COLLECTION_NAMING_CONFUSION", NORMAL_PRIORITY)
+            bugReporter.reportBug(new BugInstance(this, BugType.CNC_COLLECTION_NAMING_CONFUSION.name(), NORMAL_PRIORITY)
                         .addClass(this)
                         .addField(this)
                         .addString(obj.getName()));
@@ -83,7 +85,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
             LocalVariable[] lvs = lvt.getLocalVariableTable();
             for (LocalVariable lv : lvs) {
                 if (checkConfusedName(lv.getName(), lv.getSignature())) {
-                    bugReporter.reportBug(new BugInstance(this, "CNC_COLLECTION_NAMING_CONFUSION", NORMAL_PRIORITY)
+                    bugReporter.reportBug(new BugInstance(this, BugType.CNC_COLLECTION_NAMING_CONFUSION.name(), NORMAL_PRIORITY)
                     .addClass(this)
                     .addString(lv.getName())
                     .addSourceLine(this.classContext,this,lv.getStartPC()));

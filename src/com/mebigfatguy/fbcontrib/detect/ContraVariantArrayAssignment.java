@@ -25,6 +25,7 @@ import org.apache.bcel.generic.ArrayType;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -124,7 +125,7 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 								ObjectType sourceType = (ObjectType) Type.getType(sourceSignature);
 								ObjectType targetType = (ObjectType) ((ArrayType) Type.getType(targetSignature)).getBasicType();
 								if(!sourceType.equals(targetType) && !sourceType.subclassOf(targetType)){
-									bugReporter.reportBug(new BugInstance(this, "CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT", HIGH_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT.name(), HIGH_PRIORITY)
 								    .addClass(this)
 								    .addMethod(this)
 								    .addSourceLine(this));
@@ -164,7 +165,7 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 					ObjectType sourceType = (ObjectType) ((ArrayType) Type.getType(sourceSignature)).getBasicType();
 					ObjectType targetType = (ObjectType) ((ArrayType) Type.getType(targetSignature)).getBasicType();
 					if(!targetType.equals(sourceType) && !targetType.subclassOf(sourceType)) {
-						bugReporter.reportBug(new BugInstance(this, "CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT.name(), NORMAL_PRIORITY)
 						    .addClass(this)
 						    .addMethod(this)
 						    .addSourceLine(this));

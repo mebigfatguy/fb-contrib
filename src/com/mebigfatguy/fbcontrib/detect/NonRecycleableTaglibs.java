@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -206,7 +208,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector
 
 				SourceLineAnnotation sla = fwEntry.getValue().get(fieldInfo);
 				if (sla != null) {
-					bugReporter.reportBug(new BugInstance(this, "NRTL_NON_RECYCLEABLE_TAG_LIB", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.NRTL_NON_RECYCLEABLE_TAG_LIB.name(), NORMAL_PRIORITY)
 					.addClass(this)
 					.addField(fieldAnnotations.get(fieldName))
 					.addSourceLine(sla));

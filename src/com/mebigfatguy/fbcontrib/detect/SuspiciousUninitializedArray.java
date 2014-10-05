@@ -23,6 +23,7 @@ import java.util.BitSet;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -250,7 +251,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector
 					if (stack.getStackDepth() > 0) {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						if (UNINIT_ARRAY.equals(item.getUserValue()))
-							bugReporter.reportBug(new BugInstance(this, "SUA_SUSPICIOUS_UNINITIALIZED_ARRAY", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.SUA_SUSPICIOUS_UNINITIALIZED_ARRAY.name(), NORMAL_PRIORITY)
 							           .addClass(this)
 							           .addMethod(this)
 							           .addSourceLine(this));

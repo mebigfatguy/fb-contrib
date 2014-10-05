@@ -30,6 +30,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -159,7 +161,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 
 	private void reportThreadLocalBugs() {
 		for(FieldAnnotation fieldAn: threadLocalNonStaticFields) {
-			bugReporter.reportBug(new BugInstance(this, "PMB_INSTANCE_BASED_THREAD_LOCAL", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, BugType.PMB_INSTANCE_BASED_THREAD_LOCAL.name(), NORMAL_PRIORITY)
 			.addClass(this)
 			.addField(fieldAn));
 		}
@@ -170,7 +172,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		for (Entry<XField, FieldAnnotation> entry : bloatableFields.entrySet()) {
 			FieldAnnotation fieldAn = entry.getValue();
 			if (fieldAn != null) {
-				bugReporter.reportBug(new BugInstance(this, "PMB_POSSIBLE_MEMORY_BLOAT", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.PMB_POSSIBLE_MEMORY_BLOAT.name(), NORMAL_PRIORITY)
 				.addClass(this)
 				.addField(fieldAn));
 			}

@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -112,7 +113,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector
 					if (stack.getStackDepth() > parmCnt) {
 						OpcodeStack.Item itm = stack.getStackItem(parmCnt);
 						if (itm.getUserValue() != null) {
-							bugReporter.reportBug(new BugInstance(this, "JVR_JDBC_VENDOR_RELIANCE", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.JVR_JDBC_VENDOR_RELIANCE.name(), NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this));

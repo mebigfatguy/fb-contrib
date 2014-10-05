@@ -26,6 +26,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -133,7 +134,7 @@ public class UseAddAll extends BytecodeScanningDetector {
 				if ((loop.getEndPC()-3) <= pc) {
 					int loopPC = loop.getAddPC();
 					if (loopPC > 0) {
-						bugReporter.reportBug(new BugInstance(this, "UAA_USE_ADD_ALL", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.UAA_USE_ADD_ALL.name(), NORMAL_PRIORITY)
 								   .addClass(this)
 								   .addMethod(this)
 								   .addSourceLine(this, loopPC));

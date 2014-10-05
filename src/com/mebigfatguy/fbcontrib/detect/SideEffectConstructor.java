@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -111,7 +112,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
 							OpcodeStack.Item item = stack.getStackItem(i);
 							Integer secPC = (Integer)item.getUserValue();
 							if (secPC != null) {
-								bugReporter.reportBug(new BugInstance(this, "SEC_SIDE_EFFECT_CONSTRUCTOR", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY)
 								.addClass(this)
 								.addMethod(this)
 								.addSourceLine(this, secPC.intValue()));
@@ -124,7 +125,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
 				
 				case SAW_CTOR:
 					if (seen == POP || seen == RETURN) {
-						bugReporter.reportBug(new BugInstance(this, "SEC_SIDE_EFFECT_CONSTRUCTOR", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY)
 															.addClass(this)
 															.addMethod(this)
 															.addSourceLine(this));

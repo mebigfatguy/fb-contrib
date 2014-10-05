@@ -36,6 +36,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -308,7 +309,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 				parm++; //users expect 1 based parameters
 
 				String infName = definers.keySet().iterator().next().getClassName();
-				bugReporter.reportBug( new BugInstance(this, "OCP_OVERLY_CONCRETE_PARAMETER", NORMAL_PRIORITY)
+				bugReporter.reportBug( new BugInstance(this, BugType.OCP_OVERLY_CONCRETE_PARAMETER.name(), NORMAL_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this, 0)

@@ -43,6 +43,8 @@ import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -117,7 +119,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 				for (FieldInfo fi : localizableFields.values()) {
 					FieldAnnotation fa = fi.getFieldAnnotation();
 					SourceLineAnnotation sla = fi.getSrcLineAnnotation();
-					BugInstance bug = new BugInstance(this, "FCBL_FIELD_COULD_BE_LOCAL", NORMAL_PRIORITY)
+					BugInstance bug = new BugInstance(this, BugType.FCBL_FIELD_COULD_BE_LOCAL.name(), NORMAL_PRIORITY)
 													.addClass(this)
 													.addField(fa);
 					if (sla != null)

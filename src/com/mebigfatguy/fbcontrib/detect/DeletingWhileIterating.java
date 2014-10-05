@@ -35,6 +35,7 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -195,7 +196,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
     										boolean breakFollows = breakFollows(loop, !"V".equals(Type.getReturnType(signature).getSignature()));
     
     										if (!breakFollows) {
-    											bugReporter.reportBug(new BugInstance(this, "DWI_DELETING_WHILE_ITERATING", NORMAL_PRIORITY)
+    											bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
     														.addClass(this)
     														.addMethod(this)
     														.addSourceLine(this));
@@ -220,7 +221,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 											if (loop.hasPC(pc)) {
 			                                     boolean breakFollows = breakFollows(loop, !"V".equals(Type.getReturnType(signature).getSignature()));
 			                                     if (!breakFollows) {
-			                                         bugReporter.reportBug(new BugInstance(this, "DWI_MODIFYING_WHILE_ITERATING", NORMAL_PRIORITY)
+			                                         bugReporter.reportBug(new BugInstance(this, BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
 															.addClass(this)
 															.addMethod(this)
 															.addSourceLine(this));

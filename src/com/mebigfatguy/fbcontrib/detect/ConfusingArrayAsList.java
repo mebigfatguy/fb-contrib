@@ -23,6 +23,8 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -106,7 +108,7 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             String sig = item.getSignature();
                             if (PRIMITIVE_ARRAYS.contains(sig)) {
-                                bugReporter.reportBug(new BugInstance(this, "CAAL_CONFUSING_ARRAY_AS_LIST", NORMAL_PRIORITY)
+                                bugReporter.reportBug(new BugInstance(this, BugType.CAAL_CONFUSING_ARRAY_AS_LIST.name(), NORMAL_PRIORITY)
                                             .addClass(this)
                                             .addMethod(this)
                                             .addSourceLine(this));

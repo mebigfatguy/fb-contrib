@@ -25,6 +25,7 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -177,7 +178,7 @@ public class UseToArray extends BytecodeScanningDetector
 					if ((reg >= 0)
 					&&  (idxItem.getUserValue() != null)
 					&&  (valueItem.getUserValue() != null)) {
-						bugReporter.reportBug(new BugInstance(this, "UTA_USE_TO_ARRAY", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.UTA_USE_TO_ARRAY.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));

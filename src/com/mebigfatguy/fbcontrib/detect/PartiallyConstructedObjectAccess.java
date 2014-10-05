@@ -31,6 +31,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -119,7 +121,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector
 							if (m != null) {
 								if ((m.getAccessFlags() & Constants.ACC_FINAL) == 0) {
 									if (isCtor && (seen != INVOKESPECIAL)) {
-										bugReporter.reportBug( new BugInstance(this, "PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS", NORMAL_PRIORITY)
+										bugReporter.reportBug( new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
 											.addSourceLine(this, getPC()));
@@ -164,7 +166,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector
 				checkedMethods.clear();
 				List<SourceLineAnnotation> slas = foundPrivateInChain(m, checkedMethods);
 				if (slas != null) {
-					BugInstance bi = new BugInstance(this, "PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS", LOW_PRIORITY)
+					BugInstance bi = new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), LOW_PRIORITY)
 							.addClass(cls)
 							.addMethod(cls, m);
 				    for (SourceLineAnnotation sla : slas)

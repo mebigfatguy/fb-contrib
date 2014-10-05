@@ -27,6 +27,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -169,7 +170,7 @@ public class UseEnumCollections extends BytecodeScanningDetector
 				}
 				
 				if (bug) {
-					bugReporter.reportBug(new BugInstance(this, "UEC_USE_ENUM_COLLECTIONS", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.UEC_USE_ENUM_COLLECTIONS.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));

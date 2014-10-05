@@ -22,6 +22,8 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -59,7 +61,7 @@ public class PossibleIncompleteSerialization implements Detector
 				if (!isSerializable(superCls)) {
 					if (hasSerializableFields(superCls)) {
 						if (!hasSerializingMethods(cls)) {
-							bugReporter.reportBug(new BugInstance(this, "PIS_POSSIBLE_INCOMPLETE_SERIALIZATION", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.PIS_POSSIBLE_INCOMPLETE_SERIALIZATION.name(), NORMAL_PRIORITY)
 										.addClass(cls));
 						}
 					}

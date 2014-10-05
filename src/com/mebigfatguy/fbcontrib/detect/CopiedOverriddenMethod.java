@@ -35,6 +35,8 @@ import org.apache.bcel.generic.LDC;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -125,7 +127,7 @@ public class CopiedOverriddenMethod extends DismantleBytecode implements Detecto
 		Code superCode = superclassCode.get(curMethodInfo);
 		if (superCode != null) {
 			if (codeEquals(obj, superCode)) {
-				bugReporter.reportBug(new BugInstance(this, "COM_COPIED_OVERRIDDEN_METHOD", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.COM_COPIED_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY)
 				.addClass(this)
 				.addMethod(this)
 				.addSourceLine(classContext, this, getPC()));

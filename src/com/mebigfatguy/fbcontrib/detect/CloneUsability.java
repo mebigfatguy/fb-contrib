@@ -27,6 +27,8 @@ import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -102,13 +104,13 @@ public class CloneUsability extends BytecodeScanningDetector {
                 if (!clsName.equals(returnClsName))
                 {
                     if ("java.lang.Object".equals(returnClsName)) {
-                        bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_OBJECT_RETURN", NORMAL_PRIORITY)
+                        bugReporter.reportBug(new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY)
                                     .addClass(this)
                                     .addMethod(this));
                     } else {
                         JavaClass cloneClass = Repository.lookupClass(returnClsName);
                         if (!cls.instanceOf(cloneClass)) {
-                            bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_MISMATCHED_RETURN", HIGH_PRIORITY)
+                            bugReporter.reportBug(new BugInstance(this, BugType.CU_CLONE_USABILITY_MISMATCHED_RETURN.name(), HIGH_PRIORITY)
                             .addClass(this)
                             .addMethod(this));
                         }
@@ -126,7 +128,7 @@ public class CloneUsability extends BytecodeScanningDetector {
                     }
                         
                     if (!throwsCNFE) {
-                        bugReporter.reportBug(new BugInstance(this, "CU_CLONE_USABILITY_THROWS", NORMAL_PRIORITY)
+                        bugReporter.reportBug(new BugInstance(this, BugType.CU_CLONE_USABILITY_THROWS.name(), NORMAL_PRIORITY)
                         .addClass(this)
                         .addMethod(this));
                     }

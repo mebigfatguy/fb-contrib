@@ -37,6 +37,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -261,7 +262,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
                                     if (!isPre14Class(itm.getJavaClass()))
                                     {
                                     	int priority = getPrevOpcode(1) == MONITOREXIT ? LOW_PRIORITY : NORMAL_PRIORITY;
-    									bugReporter.reportBug(new BugInstance(this, "LEST_LOST_EXCEPTION_STACK_TRACE", priority)
+    									bugReporter.reportBug(new BugInstance(this, BugType.LEST_LOST_EXCEPTION_STACK_TRACE.name(), priority)
     													.addClass(this)
     													.addMethod(this)
     													.addSourceLine(this));

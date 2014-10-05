@@ -25,6 +25,8 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -103,7 +105,7 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector
 						if (cls != null) {
 							String clsName = cls.getClassName();
 							if (concurrentAwaitClasses.contains(clsName)) {
-								bugReporter.reportBug(new BugInstance(this, "SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT.name(), NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
 											.addSourceLine(this));

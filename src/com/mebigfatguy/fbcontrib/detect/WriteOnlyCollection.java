@@ -50,6 +50,8 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
@@ -129,12 +131,12 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 	
 	@Override
 	protected BugInstance makeFieldBugInstance() {
-		return new BugInstance(this, "WOC_WRITE_ONLY_COLLECTION_FIELD", NORMAL_PRIORITY);
+		return new BugInstance(this, BugType.WOC_WRITE_ONLY_COLLECTION_FIELD.name(), NORMAL_PRIORITY);
 	}
 
 	@Override
 	protected BugInstance makeLocalBugInstance() {
-		return new BugInstance(this, "WOC_WRITE_ONLY_COLLECTION_LOCAL", NORMAL_PRIORITY);
+		return new BugInstance(this, BugType.WOC_WRITE_ONLY_COLLECTION_LOCAL.name(), NORMAL_PRIORITY);
 	}
 
 	

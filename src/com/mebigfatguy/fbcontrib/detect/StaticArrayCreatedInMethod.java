@@ -20,6 +20,8 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -138,7 +140,7 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector
 			case SEEN_INDEX_STORE:
 				if ((seen == ASTORE)
 				||  ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
-					bugReporter.reportBug(new BugInstance(this, "SACM_STATIC_ARRAY_CREATED_IN_METHOD", (arraySize < 3) ? LOW_PRIORITY : ((arraySize < 10) ? NORMAL_PRIORITY : HIGH_PRIORITY))
+					bugReporter.reportBug(new BugInstance(this, BugType.SACM_STATIC_ARRAY_CREATED_IN_METHOD.name(), (arraySize < 3) ? LOW_PRIORITY : ((arraySize < 10) ? NORMAL_PRIORITY : HIGH_PRIORITY))
 							   .addClass(this)
 							   .addMethod(this)
 							   .addSourceLine(this, getPC()));

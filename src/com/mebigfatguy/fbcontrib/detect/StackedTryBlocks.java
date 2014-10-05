@@ -18,6 +18,8 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -116,7 +118,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                                         && (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
                                         && (firstBlock.getMessage().equals(secondBlock.getMessage())
         								&& (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature()))))) {
-        							bugReporter.reportBug(new BugInstance(this, "STB_STACKED_TRY_BLOCKS", NORMAL_PRIORITY)
+        							bugReporter.reportBug(new BugInstance(this, BugType.STB_STACKED_TRY_BLOCKS.name(), NORMAL_PRIORITY)
         									.addClass(this).addMethod(this)
         									.addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
         									.addSourceLineRange(this, secondBlock.getStartPC(), secondBlock.getEndHandlerPC()));

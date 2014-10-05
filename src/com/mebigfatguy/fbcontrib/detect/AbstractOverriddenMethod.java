@@ -22,6 +22,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -84,7 +86,7 @@ public class AbstractOverriddenMethod extends PreorderVisitor implements Detecto
 				if (m.isPrivate() || m.isAbstract())
 					continue;
 				if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
-					BugInstance bug = new BugInstance(this, "AOM_ABSTRACT_OVERRIDDEN_METHOD", NORMAL_PRIORITY)
+					BugInstance bug = new BugInstance(this, BugType.AOM_ABSTRACT_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this);
 					

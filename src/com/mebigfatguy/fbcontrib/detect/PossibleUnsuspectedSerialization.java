@@ -22,6 +22,8 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -93,7 +95,7 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
 							JavaClass cls = item.getJavaClass();
 							
 							if ((cls != null) && cls.getClassName().contains("$") && hasOuterClassSyntheticReference(cls)) {
-								bugReporter.reportBug(new BugInstance(this, "PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION.name(), NORMAL_PRIORITY)
 																.addClass(this)
 																.addMethod(this)
 																.addSourceLine(this));

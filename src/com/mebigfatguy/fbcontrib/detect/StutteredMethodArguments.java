@@ -24,6 +24,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -134,7 +135,7 @@ public class StutteredMethodArguments extends BytecodeScanningDetector {
 							if (parms.length > 1) {
 								if (stack.getStackDepth() > parms.length) {
 									if (duplicateArguments(stack, parms)) {
-										bugReporter.reportBug(new BugInstance(this, "SMA_STUTTERED_METHOD_ARGUMENTS", NORMAL_PRIORITY)
+										bugReporter.reportBug(new BugInstance(this, BugType.SMA_STUTTERED_METHOD_ARGUMENTS.name(), NORMAL_PRIORITY)
 												   .addClass(this)
 												   .addMethod(this)
 												   .addSourceLine(this));

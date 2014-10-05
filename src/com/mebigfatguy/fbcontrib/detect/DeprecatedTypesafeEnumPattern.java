@@ -27,6 +27,8 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -145,7 +147,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector
 						firstEnumPC = getPC();
 					enumCount++;
 					if (enumCount >= 2) {
-						bugReporter.reportBug(new BugInstance(this, "DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this, firstEnumPC));

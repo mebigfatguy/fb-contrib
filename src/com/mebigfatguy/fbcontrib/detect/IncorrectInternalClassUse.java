@@ -25,6 +25,8 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -75,7 +77,7 @@ public class IncorrectInternalClassUse implements Detector
                 if (c instanceof ConstantClass) {
                     String clsName = ((ConstantClass) c).getBytes(pool);
                     if (isInternal(clsName)) {
-                        bugReporter.reportBug(new BugInstance(this, "IICU_INCORRECT_INTERNAL_CLASS_USE", NORMAL_PRIORITY)
+                        bugReporter.reportBug(new BugInstance(this, BugType.IICU_INCORRECT_INTERNAL_CLASS_USE.name(), NORMAL_PRIORITY)
                         .addClass(cls)
                         .addString(clsName));
                     }

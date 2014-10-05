@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -124,7 +125,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
             for (Type t : types) {
                 String parmSig = t.getSignature();
                 if ("Lorg/slf4j/Logger;".equals(parmSig) || "Lorg/apache/log4j/Logger;".equals(parmSig) || "Lorg/apache/commons/logging/Log;".equals(parmSig)) {
-                    bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_PARAMETER", NORMAL_PRIORITY).addClass(this).addMethod(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                 }
             }
         }
@@ -238,7 +239,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		            Object exReg = msgItem.getUserValue();
 		            if (exReg instanceof Integer) {
 		                if (((Integer) exReg).intValue() == exItem.getRegisterNumber()) {
-		                    bugReporter.reportBug(new BugInstance(this, "LO_STUTTERED_MESSAGE", NORMAL_PRIORITY).addClass(this).addMethod(this)
+		                    bugReporter.reportBug(new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
 		                            .addSourceLine(this));
 		                }
 		            }
@@ -247,7 +248,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		        if (stack.getStackDepth() > 0) {
 		            final JavaClass clazz = stack.getStackItem(0).getJavaClass();
 		            if ((clazz != null) && clazz.instanceOf(THROWABLE_CLASS)) {
-		                bugReporter.reportBug(new BugInstance(this, "LO_LOGGER_LOST_EXCEPTION_STACK_TRACE", NORMAL_PRIORITY).addClass(this)
+		                bugReporter.reportBug(new BugInstance(this, BugType.LO_LOGGER_LOST_EXCEPTION_STACK_TRACE.name(), NORMAL_PRIORITY).addClass(this)
 		                        .addMethod(this).addSourceLine(this));
 		            }
 		        }
@@ -264,7 +265,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		                if (con instanceof String) {
 		                    Matcher m = BAD_FORMATTING_ANCHOR.matcher((String) con);
 		                    if (m.find()) {
-		                        bugReporter.reportBug(new BugInstance(this, "LO_INVALID_FORMATTING_ANCHOR", NORMAL_PRIORITY)
+		                        bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_FORMATTING_ANCHOR.name(), NORMAL_PRIORITY)
 		                                    .addClass(this)
 		                                    .addMethod(this)
 		                                    .addSourceLine(this));
@@ -274,7 +275,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		                            int expectedParms = countAnchors((String) con);
 		                            boolean hasEx = hasExceptionOnStack();
 		                            if ((!hasEx && (expectedParms != actualParms)) || (hasEx && ((expectedParms != (actualParms - 1)) && (expectedParms != actualParms)))) {
-		                                bugReporter.reportBug(new BugInstance(this, "LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS", NORMAL_PRIORITY)
+		                                bugReporter.reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY)
 		                                        .addClass(this)
 		                                        .addMethod(this)
 		                                        .addSourceLine(this)
@@ -284,7 +285,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		                        }
 		                    }
 		                } else if ("toString".equals(formatItem.getUserValue())) {
-		                    bugReporter.reportBug(new BugInstance(this, "LO_APPENDED_STRING_IN_FORMAT_STRING", NORMAL_PRIORITY)
+		                    bugReporter.reportBug(new BugInstance(this, BugType.LO_APPENDED_STRING_IN_FORMAT_STRING.name(), NORMAL_PRIORITY)
 		                    .addClass(this)
 		                    .addMethod(this)
 		                    .addSourceLine(this));
@@ -308,7 +309,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		                    OpcodeStack.Item item = stack.getStackItem(types.length - i - 1);
 		                    String cons = (String) item.getConstant();
 		                    if ((cons != null) && cons.contains("{}")) {
-		                        bugReporter.reportBug(new BugInstance(this, "LO_EXCEPTION_WITH_LOGGER_PARMS", NORMAL_PRIORITY)
+		                        bugReporter.reportBug(new BugInstance(this, BugType.LO_EXCEPTION_WITH_LOGGER_PARMS.name(), NORMAL_PRIORITY)
 		                                    .addClass(this)
 		                                    .addMethod(this)
 		                                    .addSourceLine(this));
@@ -410,7 +411,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		            }
 
 		            if (!isAnonClassPrefix) {
-		                bugReporter.reportBug(new BugInstance(this, "LO_SUSPECT_LOG_CLASS", loggingPriority)
+		                bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_CLASS.name(), loggingPriority)
 		                .addClass(this).addMethod(this).addSourceLine(this)
 		                .addString(loggingClassName).addString(nameOfThisClass));
 		            }

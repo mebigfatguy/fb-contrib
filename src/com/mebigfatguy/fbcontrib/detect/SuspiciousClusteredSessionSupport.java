@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -76,7 +77,7 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
 		savedAttributes.clear();
 		super.visitCode(obj);
 		for (Integer pc : changedAttributes.values()) {
-			bugReporter.reportBug(new BugInstance(this, "SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, BugType.SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT.name(), NORMAL_PRIORITY)
 					   .addClass(this)
 					   .addMethod(this)
 					   .addSourceLine(this, pc.intValue()));

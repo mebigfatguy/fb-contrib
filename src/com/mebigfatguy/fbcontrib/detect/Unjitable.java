@@ -23,6 +23,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -70,7 +72,7 @@ public class Unjitable extends PreorderVisitor implements Detector {
 		&&  (!m.getName().contains("enum constant"))) { //a findbugs thing!!
 			byte[] code = obj.getCode();
 			if (code.length >= UNJITABLE_CODE_LENGTH) {
-				bugReporter.reportBug(new BugInstance(this, "UJM_UNJITABLE_METHOD", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.UJM_UNJITABLE_METHOD.name(), NORMAL_PRIORITY)
 								.addClass(this)
 								.addMethod(this)
 								.addString("Code Bytes: " + code.length));

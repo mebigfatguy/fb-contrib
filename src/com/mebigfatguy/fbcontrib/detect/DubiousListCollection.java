@@ -29,6 +29,8 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -199,7 +201,7 @@ public class DubiousListCollection extends BytecodeScanningDetector
 				FieldAnnotation fa = getFieldAnnotation(field);
 				if (fa != null) {
 					//can't use LinkedHashSet in 1.3 so report at LOW
-					bugReporter.reportBug(new BugInstance(this, "DLC_DUBIOUS_LIST_COLLECTION", (major >= MAJOR_1_4) ? NORMAL_PRIORITY : LOW_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.DLC_DUBIOUS_LIST_COLLECTION.name(), (major >= MAJOR_1_4) ? NORMAL_PRIORITY : LOW_PRIORITY)
 							.addClass(this)
 							.addField(fa)
 							.addSourceLine(fi.getSourceLineAnnotation()));

@@ -27,6 +27,8 @@ import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -116,7 +118,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 				if (!declaredCheckedExceptions.isEmpty()) {
 					super.visitCode(obj);
 					if (!declaredCheckedExceptions.isEmpty()) {
-						BugInstance bi = new BugInstance(this, "BED_BOGUS_EXCEPTION_DECLARATION", NORMAL_PRIORITY)
+						BugInstance bi = new BugInstance(this, BugType.BED_BOGUS_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this, 0);

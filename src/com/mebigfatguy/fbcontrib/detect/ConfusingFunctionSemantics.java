@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -124,7 +125,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector
 					super.visitCode(obj);
 					for (ParmUsage pu : possibleParmRegs.values()) {
 						if ((pu.returnPC >= 0) && (pu.alteredPC >= 0)) {
-							bugReporter.reportBug(new BugInstance(this, "CFS_CONFUSING_FUNCTION_SEMANTICS", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.CFS_CONFUSING_FUNCTION_SEMANTICS.name(), NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this, pu.returnPC)

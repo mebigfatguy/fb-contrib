@@ -25,6 +25,8 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -133,7 +135,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector
 			if (branches > reportLimit) {
 				
 				int priority = (branches > (reportLimit * 2) ? HIGH_PRIORITY: NORMAL_PRIORITY);
-				BugInstance bug = new BugInstance(this, "CC_CYCLOMATIC_COMPLEXITY", priority)
+				BugInstance bug = new BugInstance(this, BugType.CC_CYCLOMATIC_COMPLEXITY.name(), priority)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(classContext, this, 0)

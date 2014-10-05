@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -75,7 +77,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                         if (values != null) {
                             if (values.size() >= 3) {
                                 String fieldName = fieldInfo.getKey();
-                                bugReporter.reportBug(new BugInstance(this, "PME_POOR_MANS_ENUM", NORMAL_PRIORITY)
+                                bugReporter.reportBug(new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY)
                                             .addClass(this)
                                             .addField(XFactory.createXField(cls, nameToField.get(fieldName)))
                                             .addSourceLine(firstFieldUse.get(fieldName)));

@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -205,7 +206,7 @@ public class UseSplit extends BytecodeScanningDetector
 								OpcodeStack.Item elemItem = stack.getStackItem(0);
 								State elemType = (State)elemItem.getUserValue();
 								if ((arrayType == State.SEEN_NEWARRAY) && (elemType == State.SEEN_NEXT)) {
-									bugReporter.reportBug(new BugInstance(this, "USS_USE_STRING_SPLIT", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.USS_USE_STRING_SPLIT.name(), NORMAL_PRIORITY)
 											   .addClass(this)
 											   .addMethod(this)
 											   .addSourceLine(this));

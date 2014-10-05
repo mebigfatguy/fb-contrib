@@ -27,6 +27,8 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -97,7 +99,7 @@ public class CircularDependencies extends BytecodeScanningDetector {
             Set<String> loop = lf.findLoop(dependencyGraph, className);
             boolean pruneLeaves;
             if (loop != null) {
-                BugInstance bug = new BugInstance(this, "CD_CIRCULAR_DEPENDENCY", NORMAL_PRIORITY);
+                BugInstance bug = new BugInstance(this, BugType.CD_CIRCULAR_DEPENDENCY.name(), NORMAL_PRIORITY);
                 for (String loopCls : loop) {
                     bug.addClass(loopCls);
                 }

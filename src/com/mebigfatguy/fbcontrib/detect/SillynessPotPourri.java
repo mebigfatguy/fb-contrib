@@ -43,6 +43,7 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -126,7 +127,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		if ("serialVersionUID".equals(field.getName())
 				&&  ((field.getAccessFlags() & ACC_STATIC) != 0)
 				&&  ((field.getAccessFlags() & ACC_PRIVATE) == 0)) {
-			bugReporter.reportBug(new BugInstance(this, "SPP_SERIALVER_SHOULD_BE_PRIVATE", LOW_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, BugType.SPP_SERIALVER_SHOULD_BE_PRIVATE.name(), LOW_PRIORITY)
 			.addClass(this)
 			.addField(this));
 		}
@@ -208,7 +209,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 							int nandtIndex = cmr.getNameAndTypeIndex();
 							ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
 							if ("length".equals(cnt.getName(pool))) {
-								bugReporter.reportBug(new BugInstance(this, "SPP_SUSPECT_STRING_TEST", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.SPP_SUSPECT_STRING_TEST.name(), NORMAL_PRIORITY)
 								.addClass(this)
 								.addMethod(this)
 								.addSourceLine(this));
@@ -222,7 +223,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				if (stack.getStackDepth() == 1) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					if ("size".equals(item.getUserValue())) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_USE_ISEMPTY", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ISEMPTY.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -240,7 +241,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 							if ((ins0 != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[0] + 1) == CodeByteUtils.getbyte(bytes, lastPCs[2] + 1))) {
 								int ifNullTarget = lastPCs[1] + CodeByteUtils.getshort(bytes, lastPCs[1]+1);
 								if (ifNullTarget == getBranchTarget()) {
-									bugReporter.reportBug(new BugInstance(this, "SPP_NULL_BEFORE_INSTANCEOF", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.SPP_NULL_BEFORE_INSTANCEOF.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));
@@ -269,7 +270,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 								nandtIndex = lengthMR.getNameAndTypeIndex();
 								cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
 								if ("length".equals(cnt.getName(pool))) {
-									bugReporter.reportBug(new BugInstance(this, "SPP_USE_STRINGBUILDER_LENGTH", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_STRINGBUILDER_LENGTH.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));
@@ -309,7 +310,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 												nandtIndex = lengthMR.getNameAndTypeIndex();
 												cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
 												if ("equals".equals(cnt.getName(pool))) {
-													bugReporter.reportBug(new BugInstance(this, "SPP_USE_STRINGBUILDER_LENGTH", NORMAL_PRIORITY)
+													bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_STRINGBUILDER_LENGTH.name(), NORMAL_PRIORITY)
 													.addClass(this)
 													.addMethod(this)
 													.addSourceLine(this));
@@ -343,7 +344,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 						}
 
 						if (bug) {
-							bugReporter.reportBug(new BugInstance(this, "SPP_USELESS_TERNARY", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.SPP_USELESS_TERNARY.name(), NORMAL_PRIORITY)
 							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(this));
@@ -359,7 +360,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 					if (((piDelta > 0.0) && (piDelta < 0.002))
 							||  ((eDelta > 0.0) && (eDelta < 0.002))) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_USE_MATH_CONSTANT", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_MATH_CONSTANT.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -373,7 +374,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					Double d2 = (Double)item.getConstant();
 
 					if (((d1 != null) && d1.isNaN()) || ((d2 != null) && d2.isNaN())) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_USE_ISNAN", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ISNAN.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -387,7 +388,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					Float f2 = (Float)item.getConstant();
 
 					if (((f1 != null) && f1.isNaN()) || ((f2 != null) && f2.isNaN())) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_USE_ISNAN", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ISNAN.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -397,7 +398,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				reg = RegisterUtils.getAStoreReg(this, seen);
 				if (seen == lastOpcode) {
 					if (reg == lastReg) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_STUTTERED_ASSIGNMENT", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_STUTTERED_ASSIGNMENT.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -414,7 +415,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 							if (m.matches()) {
 								int appendReg = Integer.parseInt(m.group(1));
 								if (reg == appendReg) {
-									bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUILDER_IS_MUTABLE", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.SPP_STRINGBUILDER_IS_MUTABLE.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));
@@ -445,7 +446,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					OpcodeStack.Item item = stack.getStackItem(0);
 					String ic = (String)item.getUserValue();
 					if ("iconst".equals(ic)) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_USE_CHARAT", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_CHARAT.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -493,7 +494,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					OpcodeStack.Item item = stack.getStackItem(2);
 					String sig = item.getSignature();
 					if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_NON_ARRAY_PARM", HIGH_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -501,7 +502,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					item = stack.getStackItem(4);
 					sig = item.getSignature();
 					if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_NON_ARRAY_PARM", HIGH_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -522,7 +523,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					OpcodeStack.Item item = stack.getStackItem(offset);
 					String sig = item.getSignature();
 					if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_NON_ARRAY_PARM", HIGH_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -568,7 +569,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				Object o =item.getConstant();
 				if (o instanceof Integer) {
 					if (((Integer) o).intValue() < 0) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_NEGATIVE_BITSET_ITEM", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_NEGATIVE_BITSET_ITEM.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -592,7 +593,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					if (existingAppend != null) {
 						Matcher m = APPEND_PATTERN.matcher(existingAppend);
 						if (m.matches() && LITERAL.equals(m.group(2))) {
-							bugReporter.reportBug(new BugInstance(this, "SPP_DOUBLE_APPENDED_LITERALS", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.SPP_DOUBLE_APPENDED_LITERALS.name(), NORMAL_PRIORITY)
 							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(this));
@@ -632,7 +633,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 						//if an argument is passed in, it may be locale-specific
 						priority = LOW_PRIORITY;
 					}
-					bugReporter.reportBug(new BugInstance(this, "SPP_CONVERSION_OF_STRING_LITERAL", priority)
+					bugReporter.reportBug(new BugInstance(this, BugType.SPP_CONVERSION_OF_STRING_LITERAL.name(), priority)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this)
@@ -648,7 +649,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					if (item.getConstant() != null) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_INTERN_ON_CONSTANT", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_INTERN_ON_CONSTANT.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -664,7 +665,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			if (stack.getStackDepth() > 1) {
 				OpcodeStack.Item item = stack.getStackItem(1);
 				if ("IgnoreCase".equals(item.getUserValue())) {
-					bugReporter.reportBug(new BugInstance(this, "SPP_USELESS_CASING", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SPP_USELESS_CASING.name(), NORMAL_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this));
@@ -672,7 +673,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				item = stack.getStackItem(0);
 				String parm = (String)item.getConstant();
 				if ("".equals(parm)) {
-					bugReporter.reportBug(new BugInstance(this, "SPP_EMPTY_CASING", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SPP_EMPTY_CASING.name(), NORMAL_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this));
@@ -684,7 +685,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			if (stack.getStackDepth() > 0) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				if ("trim".equals(item.getUserValue())) {
-					bugReporter.reportBug(new BugInstance(this, "SPP_TEMPORARY_TRIM", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this));
@@ -694,7 +695,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			if (stack.getStackDepth() > 1) {
 				OpcodeStack.Item item = stack.getStackItem(1);
 				if ("trim".equals(item.getUserValue())) {
-					bugReporter.reportBug(new BugInstance(this, "SPP_TEMPORARY_TRIM", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this));
@@ -702,7 +703,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			}
 		}
 		else if ("toString".equals(methodName)) {
-			bugReporter.reportBug(new BugInstance(this, "SPP_TOSTRING_ON_STRING", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, BugType.SPP_TOSTRING_ON_STRING.name(), NORMAL_PRIORITY)
 			.addClass(this)
 			.addMethod(this)
 			.addSourceLine(this));
@@ -714,7 +715,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		try {
 			JavaClass cls = Repository.lookupClass(className);
 			if (cls.isEnum()) {
-				bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_ENUM", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.SPP_EQUALS_ON_ENUM.name(), NORMAL_PRIORITY)
 				.addClass(this)
 				.addMethod(this)
 				.addSourceLine(this));
@@ -725,7 +726,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					if (cls != null) {
 						String clsName = cls.getClassName();
 						if (oddMissingEqualsClasses.contains(clsName)) {
-							bugReporter.reportBug(new BugInstance(this, "SPP_EQUALS_ON_STRING_BUILDER", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.SPP_EQUALS_ON_STRING_BUILDER.name(), NORMAL_PRIORITY)
 							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(this));
@@ -756,7 +757,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 					}
 
 					if (found) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_INVALID_BOOLEAN_NULL_CHECK", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_INVALID_BOOLEAN_NULL_CHECK.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -775,7 +776,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				try {
 					JavaClass cls = Repository.lookupClass(itemSig.substring(1, itemSig.length() - 1));
 					if (!cls.instanceOf(calendarClass)) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_INVALID_CALENDAR_COMPARE", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_INVALID_CALENDAR_COMPARE.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -795,7 +796,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			if (toStringClass != null) {
 				String toStringClassName = toStringClass.getClassName();
 				if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !"java.lang.Object".equals(toStringClassName) && !"java.lang.String".equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
-					bugReporter.reportBug(new BugInstance(this, "SPP_NON_USEFUL_TOSTRING", toStringClass.isFinal() ? NORMAL_PRIORITY : LOW_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SPP_NON_USEFUL_TOSTRING.name(), toStringClass.isFinal() ? NORMAL_PRIORITY : LOW_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this));
@@ -809,7 +810,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			if (stack.getStackDepth() > 1) {
 				OpcodeStack.Item item = stack.getStackItem(1);
 				if ("getProperties".equals(item.getUserValue())) {
-					bugReporter.reportBug(new BugInstance(this, "SPP_USE_GETPROPERTY", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_GETPROPERTY.name(), NORMAL_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this));
@@ -831,7 +832,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				if (stack.getStackDepth() >= 2) {
 					OpcodeStack.Item item = stack.getStackItem(1);
 					if ("keySet".equals(item.getUserValue())) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_USE_CONTAINSKEY", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_CONTAINSKEY.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -849,7 +850,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				if (stack.getStackDepth() >= 1) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					if ("iterator".equals(item.getUserValue())) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_USE_GET0", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_GET0.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -886,7 +887,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 										&&  (parm != 64)
 										&&  ((parm % 10) != 0)
 										&&  ((parm % 5) != 0)) {
-									bugReporter.reportBug(new BugInstance(this, "SPP_NO_CHAR_SB_CTOR", LOW_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.SPP_NO_CHAR_SB_CTOR.name(), LOW_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));
@@ -899,7 +900,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 						OpcodeStack.Item item = stack.getStackItem(0);
 						String con = (String)item.getConstant();
 						if ("".equals(con)) {
-							bugReporter.reportBug(new BugInstance(this, "SPP_STRINGBUFFER_WITH_EMPTY_STRING", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.SPP_STRINGBUFFER_WITH_EMPTY_STRING.name(), NORMAL_PRIORITY)
 							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(this));
@@ -915,7 +916,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				{
 					Double v = (Double) constant;
 					if ((v != 0.0) && (v != 1.0)) {
-						bugReporter.reportBug(new BugInstance(this, "SPP_USE_BIGDECIMAL_STRING_CTOR", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_BIGDECIMAL_STRING_CTOR.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));

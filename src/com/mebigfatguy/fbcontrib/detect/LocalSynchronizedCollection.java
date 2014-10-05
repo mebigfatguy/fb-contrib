@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
@@ -83,7 +85,7 @@ public class LocalSynchronizedCollection extends LocalTypeDetector
 
 	@Override
 	protected void reportBug(RegisterInfo cri) {
-		bugReporter.reportBug(new BugInstance(this, "LSYC_LOCAL_SYNCHRONIZED_COLLECTION", cri.getPriority())
+		bugReporter.reportBug(new BugInstance(this, BugType.LSYC_LOCAL_SYNCHRONIZED_COLLECTION.name(), cri.getPriority())
 		.addClass(this)
 		.addMethod(this)
 		.addSourceLine(cri.getSourceLineAnnotation()));

@@ -31,6 +31,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.collect.StatisticsKey;
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -161,7 +162,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 				try {
 					if (!isDerived(Repository.lookupClass(key.getClassName()), key)) {
 	
-						BugInstance bi = new BugInstance(this, "OPM_OVERLY_PERMISSIVE_METHOD", NORMAL_PRIORITY)
+						BugInstance bi = new BugInstance(this, BugType.OPM_OVERLY_PERMISSIVE_METHOD.name(), NORMAL_PRIORITY)
 										.addClass(key.getClassName())
 										.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0);
 

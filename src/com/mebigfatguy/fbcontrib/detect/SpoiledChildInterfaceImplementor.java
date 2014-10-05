@@ -24,6 +24,8 @@ import java.util.Set;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -76,7 +78,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                             if (infMethods.size() > 0) {
 								if (!superCls.implementationOf(inf)) {
 	                                int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
-									BugInstance bi = new BugInstance(this, "SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR", priority)
+									BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority)
 											   .addClass(cls)
 											   .addString("Implementing interface: " + inf.getClassName())
 											   .addString("Methods:");

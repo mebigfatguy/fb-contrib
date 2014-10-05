@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -237,7 +238,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 								OpcodeStack.Item methodItem = stack.getStackItem(2);
 								String[] arrayTypes = (String[])methodItem.getUserValue();
 								if (arrayTypes != null) {
-									bugReporter.reportBug(new BugInstance(this, "ROOM_REFLECTION_ON_OBJECT_METHODS", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.ROOM_REFLECTION_ON_OBJECT_METHODS.name(), NORMAL_PRIORITY)
 												.addClass(this)
 												.addMethod(this)
 												.addSourceLine(this));

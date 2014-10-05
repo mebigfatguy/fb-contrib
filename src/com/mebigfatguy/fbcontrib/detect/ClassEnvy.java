@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -157,7 +158,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 					return;
 				}
 
-				bugReporter.reportBug( new BugInstance( this, "CE_CLASS_ENVY", NORMAL_PRIORITY)
+				bugReporter.reportBug( new BugInstance( this, BugType.CE_CLASS_ENVY.name(), NORMAL_PRIORITY)
 				.addClass(this)
 				.addMethod(this)
 				.addSourceLineRange(this, 0, obj.getCode().length-1)

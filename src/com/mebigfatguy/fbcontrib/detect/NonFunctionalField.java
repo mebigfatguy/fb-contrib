@@ -22,6 +22,8 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -69,7 +71,7 @@ public class NonFunctionalField extends PreorderVisitor implements Detector {
 				setupVisitorForClass(cls);
 				for (Field f : fields) {
 					if (!f.isStatic() && f.isFinal() && f.isTransient()) {
-						bugReporter.reportBug(new BugInstance(this, "NFF_NON_FUNCTIONAL_FIELD", Priorities.NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.NFF_NON_FUNCTIONAL_FIELD.name(), Priorities.NORMAL_PRIORITY)
 						           .addClass(this)
 						           .addField(cls.getClassName(), f.getName(), f.getSignature(), f.getAccessFlags()));
 					}

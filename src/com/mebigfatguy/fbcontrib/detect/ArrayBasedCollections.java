@@ -24,6 +24,8 @@ import java.util.List;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -148,7 +150,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector
 				}
 				
 				if (found) {
-					BugInstance bi = new BugInstance(this, "ABC_ARRAY_BASED_COLLECTIONS", NORMAL_PRIORITY)
+					BugInstance bi = new BugInstance(this, BugType.ABC_ARRAY_BASED_COLLECTIONS.name(), NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
 											.addSourceLine(this);

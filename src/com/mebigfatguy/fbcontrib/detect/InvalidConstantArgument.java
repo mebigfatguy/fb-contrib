@@ -34,6 +34,8 @@ import javax.swing.border.EtchedBorder;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -110,7 +112,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                            Comparable<?> cons = (Comparable<?>) item.getConstant();
                            if (!info.isValid(cons)) {
                                int badParm = 1 + (info.fromStart ? info.parameterOffset: Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
-                               bugReporter.reportBug(new BugInstance(this, "ICA_INVALID_CONSTANT_ARGUMENT", NORMAL_PRIORITY)
+                               bugReporter.reportBug(new BugInstance(this, BugType.ICA_INVALID_CONSTANT_ARGUMENT.name(), NORMAL_PRIORITY)
                                                            .addClass(this)
                                                            .addMethod(this)
                                                            .addSourceLine(this)

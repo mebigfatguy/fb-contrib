@@ -21,6 +21,8 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -63,7 +65,7 @@ public class NonCollectionMethodUse extends BytecodeScanningDetector
 			
 			String methodInfo = className + "." + methodName + methodSig;
 			if (oldMethods.contains(methodInfo)) {
-				bugReporter.reportBug(new BugInstance(this, "NCMU_NON_COLLECTION_METHOD_USE", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.NCMU_NON_COLLECTION_METHOD_USE.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));

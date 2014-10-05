@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
@@ -148,7 +149,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector
 	                        parmName = "(" + loadedReg + ")";
 	                    }
 	                    
-	                    BugInstance bug = new BugInstance(this, "PDP_POORLY_DEFINED_PARAMETER", NORMAL_PRIORITY)
+	                    BugInstance bug = new BugInstance(this, BugType.PDP_POORLY_DEFINED_PARAMETER.name(), NORMAL_PRIORITY)
 	                               .addClass(this)
 	                               .addMethod(this)
 	                               .addSourceLine(this)

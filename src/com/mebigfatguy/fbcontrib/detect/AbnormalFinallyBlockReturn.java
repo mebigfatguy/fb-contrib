@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -149,7 +151,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
             loadedReg = -1;
 
 		if (((seen >= IRETURN) && (seen <= RETURN)) || (seen == ATHROW)) {
-			bugReporter.reportBug(new BugInstance( this, "AFBR_ABNORMAL_FINALLY_BLOCK_RETURN", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance( this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), NORMAL_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this));
@@ -162,7 +164,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
 					ExceptionTable et = m.getExceptionTable();
 					if ((et != null) && (et.getLength() > 0)) {
 						if (!catchBlockInFinally(fbi)) {
-							bugReporter.reportBug(new BugInstance( this, "AFBR_ABNORMAL_FINALLY_BLOCK_RETURN", LOW_PRIORITY)
+							bugReporter.reportBug(new BugInstance( this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), LOW_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));

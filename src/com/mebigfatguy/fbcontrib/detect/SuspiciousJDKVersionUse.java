@@ -40,6 +40,7 @@ import org.apache.bcel.classfile.ClassParser;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -140,7 +141,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 					}
 
 					if (!isValid(validMethods, clsName)) {
-						bugReporter.reportBug(new BugInstance(this, "SJVU_SUSPICIOUS_JDK_VERSION_USE", HIGH_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY)
 								   .addClass(this)
 								   .addMethod(this)
 								   .addSourceLine(this)
@@ -197,7 +198,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 						methodInfos.add(m.getName() + m.getSignature());
 					}
 				} else if (clsName.startsWith("java/")) {
-					bugReporter.reportBug(new BugInstance(this, "SJVU_SUSPICIOUS_JDK_VERSION_USE", HIGH_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY)
 							   .addClass(this)
 							   .addMethod(this)
 							   .addSourceLine(this)

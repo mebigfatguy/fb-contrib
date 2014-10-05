@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 
 import com.mebigfatguy.fbcontrib.utils.AttributesUtils;
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -145,7 +146,7 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 					OpcodeStack.Item item = stack.getStackItem(0);
 					if (item.getUserValue() != null) {
 						if (AttributesUtils.isValidLineNumber(getCode(), getPC())) {
-							bugReporter.reportBug(new BugInstance(this, "UNNC_UNNECESSARY_NEW_NULL_CHECK", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.UNNC_UNNECESSARY_NEW_NULL_CHECK.name(), NORMAL_PRIORITY)
 							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(this));

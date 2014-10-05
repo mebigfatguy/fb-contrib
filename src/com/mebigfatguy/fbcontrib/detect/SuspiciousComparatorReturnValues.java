@@ -26,6 +26,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -101,7 +103,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector
 			if (!indeterminate) {
 				boolean seenAll = seenNegative & seenPositive & seenZero;
 				if (!seenAll) {
-					bugReporter.reportBug(new BugInstance(this, "SC_SUSPICIOUS_COMPARATOR_RETURN_VALUES", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SC_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), NORMAL_PRIORITY)
 								.addClass(this)
 								.addMethod(this)
 								.addSourceLine(this, 0));

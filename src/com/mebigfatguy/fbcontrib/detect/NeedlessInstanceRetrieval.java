@@ -22,6 +22,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -111,7 +113,7 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector
 				} else if ((seen == INVOKESTATIC) || (seen == GETSTATIC)) {
 				    if (getClassConstantOperand().equals(returnType)) {
                         if (lnTable.getSourceLine(invokePC) == lnTable.getSourceLine(getPC())) {
-        					bugReporter.reportBug(new BugInstance(this, "NIR_NEEDLESS_INSTANCE_RETRIEVAL", NORMAL_PRIORITY)
+        					bugReporter.reportBug(new BugInstance(this, BugType.NIR_NEEDLESS_INSTANCE_RETRIEVAL.name(), NORMAL_PRIORITY)
         									.addClass(this)
         									.addMethod(this)
         									.addSourceLine(this));

@@ -22,6 +22,8 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 
@@ -68,12 +70,12 @@ public class HttpClientProblems extends MissingMethodsDetector {
 
 	@Override
 	protected BugInstance makeFieldBugInstance() {
-		return new BugInstance(this, "HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD", NORMAL_PRIORITY);
+		return new BugInstance(this, BugType.HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD.name(), NORMAL_PRIORITY);
 	}
 
 	@Override
 	protected BugInstance makeLocalBugInstance() {
-		return new BugInstance(this, "HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL", NORMAL_PRIORITY);
+		return new BugInstance(this, BugType.HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL.name(), NORMAL_PRIORITY);
 	}
 
 	@Override

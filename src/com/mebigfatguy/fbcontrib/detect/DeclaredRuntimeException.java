@@ -26,6 +26,8 @@ import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -112,7 +114,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 			}
 		
 			if (foundRuntime) {	
-				BugInstance bug = new BugInstance(this, "DRE_DECLARED_RUNTIME_EXCEPTION", priority)
+				BugInstance bug = new BugInstance(this, BugType.DRE_DECLARED_RUNTIME_EXCEPTION.name(), priority)
 									.addClass(this)
 									.addMethod(this);
 				

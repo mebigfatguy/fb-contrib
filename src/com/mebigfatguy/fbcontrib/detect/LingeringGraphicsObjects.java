@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -77,7 +78,7 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 		graphicsRegs.clear();
 		super.visitCode(obj);
 		for (Integer pc : graphicsRegs.values()) {
-			bugReporter.reportBug(new BugInstance(this, "LGO_LINGERING_GRAPHICS_OBJECT", NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, BugType.LGO_LINGERING_GRAPHICS_OBJECT.name(), NORMAL_PRIORITY)
 					.addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
 		}
 

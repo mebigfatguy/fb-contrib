@@ -25,6 +25,8 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -91,7 +93,7 @@ public class SQLInLoop extends BytecodeScanningDetector
 		for (Integer qLoc : queryLocations) {
 			for (LoopLocation lLoc : loops) {
 				if (lLoc.isInLoop(qLoc.intValue())) {
-					bugReporter.reportBug(new BugInstance(this, "SIL_SQL_IN_LOOP", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SIL_SQL_IN_LOOP.name(), NORMAL_PRIORITY)
 							   .addClass(this)
 							   .addMethod(this)
 							   .addSourceLine(this, qLoc.intValue()));

@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -105,16 +106,16 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 					JavaClass cls = findCommonType(returnTypes.keySet());
 					BugInstance bug;
 					if ((cls != null) && !isInherited) {
-						bug = new BugInstance(this, "URV_CHANGE_RETURN_TYPE", priority)
+						bug = new BugInstance(this, BugType.URV_CHANGE_RETURN_TYPE.name(), priority)
 								.addClass(this)
 								.addMethod(this);
 						bug.addString(cls.getClassName());
 					} else if (!isInherited) {
-						bug = new BugInstance(this, "URV_UNRELATED_RETURN_VALUES", priority)
+						bug = new BugInstance(this, BugType.URV_UNRELATED_RETURN_VALUES.name(), priority)
 								.addClass(this)
 								.addMethod(this);
 					} else {
-						bug = new BugInstance(this, "URV_INHERITED_METHOD_WITH_RELATED_TYPES", priority)
+						bug = new BugInstance(this, BugType.URV_INHERITED_METHOD_WITH_RELATED_TYPES.name(), priority)
 						.addClass(this)
 						.addMethod(this);
 						if (cls != null)

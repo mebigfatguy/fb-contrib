@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -218,7 +219,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector
 		intersection(supers, s);
 		
 		if (supers.isEmpty()) {
-			BugInstance bug = new BugInstance(this, "UCC_UNRELATED_COLLECTION_CONTENTS", NORMAL_PRIORITY)
+			BugInstance bug = new BugInstance(this, BugType.UCC_UNRELATED_COLLECTION_CONTENTS.name(), NORMAL_PRIORITY)
 				.addClass(this);
 			
 			if (addItm.getRegisterNumber() != -1)

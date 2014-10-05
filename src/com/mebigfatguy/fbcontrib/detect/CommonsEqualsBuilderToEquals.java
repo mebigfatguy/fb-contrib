@@ -22,6 +22,8 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -78,7 +80,7 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 			if ("equals".equals(methodName)	&& "(Ljava/lang/Object;)Z".equals(getSigConstantOperand()) && (stack.getStackDepth() > 1)) {
 				String calledClass = stack.getStackItem(1).getSignature();
 				if (LANG3_EQUALS_BUILDER.equals(calledClass) || LANG_EQUALS_BUILDER.equals(calledClass)) {
-					bugReporter.reportBug(new BugInstance(this, "CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS", HIGH_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS.name(), HIGH_PRIORITY)
 					.addClass(this)
 					.addMethod(this)
 					.addSourceLine(this));

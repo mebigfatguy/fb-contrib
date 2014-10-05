@@ -20,6 +20,8 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -95,17 +97,17 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
 								OpcodeStack.Item valueItem = stack.getStackItem(0);
 								String valueSig = valueItem.getSignature();
 								if ("Ljava/lang/String;".equals(valueSig)) {
-									bugReporter.reportBug(new BugInstance(this, "IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY", LOW_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(), LOW_PRIORITY)
 									           .addClass(this)
 									           .addMethod(this)
 									           .addSourceLine(this));
 								} else if (!"Ljava/lang/Object;".equals(valueSig)) {
-									bugReporter.reportBug(new BugInstance(this, "IPU_IMPROPER_PROPERTIES_USE", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE.name(), NORMAL_PRIORITY)
 							           .addClass(this)
 							           .addMethod(this)
 							           .addSourceLine(this));									
 								} else {
-									bugReporter.reportBug(new BugInstance(this, "IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(), NORMAL_PRIORITY)
 							           .addClass(this)
 							           .addMethod(this)
 							           .addSourceLine(this));									

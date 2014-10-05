@@ -22,6 +22,8 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ClassContext;
@@ -78,7 +80,7 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
 
     private void reportBug() {
         bugReporter.reportBug(new BugInstance(this,
-                "BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS", NORMAL_PRIORITY)
+        		BugType.BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS.name(), NORMAL_PRIORITY)
                 .addClass(this).addMethod(this).addSourceLine(this));
     }
 }

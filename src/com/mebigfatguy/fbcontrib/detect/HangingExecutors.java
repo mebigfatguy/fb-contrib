@@ -32,6 +32,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -127,7 +129,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 		for (Entry<XField, AnnotationPriority> entry : hangingFieldCandidates.entrySet()) {
 			AnnotationPriority fieldAn = entry.getValue();
 			if (fieldAn != null) {
-				bugReporter.reportBug(new BugInstance(this, "HES_EXECUTOR_NEVER_SHUTDOWN", fieldAn.priority)
+				bugReporter.reportBug(new BugInstance(this, BugType.HES_EXECUTOR_NEVER_SHUTDOWN.name(), fieldAn.priority)
 				.addClass(this)
 				.addField(fieldAn.annotation)
 				.addField(entry.getKey()));
@@ -245,7 +247,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
 	private void reportOverwrittenField(XField f) {
 		if ("Ljava/util/concurrent/ExecutorService;".equals(f.getSignature()) && !checkException(f)) {
-			bugReporter.reportBug(new BugInstance(this, "HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN", Priorities.NORMAL_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, BugType.HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN.name(), Priorities.NORMAL_PRIORITY)
 			.addClass(this)
 			.addMethod(this)
 			.addField(f)

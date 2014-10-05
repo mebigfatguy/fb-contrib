@@ -22,6 +22,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -115,7 +117,7 @@ public class TailRecursion extends BytecodeScanningDetector
 				}
 	
 				if (isRecursion && possibleTailRecursion && (getPC() >= trPCPos)) {
-					bugReporter.reportBug(new BugInstance(this, "TR_TAIL_RECURSION", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.TR_TAIL_RECURSION.name(), NORMAL_PRIORITY)
 								.addClass(this)
 								.addMethod(this)
 								.addSourceLine(this));

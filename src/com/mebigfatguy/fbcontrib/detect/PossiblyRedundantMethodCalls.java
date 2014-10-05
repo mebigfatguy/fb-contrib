@@ -33,6 +33,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -293,7 +294,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
     								Statistics statistics = Statistics.getStatistics();
     								MethodInfo mi = statistics.getMethodStatistics(getClassConstantOperand(), methodName, signature);
     
-    								bugReporter.reportBug(new BugInstance(this, "PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS",
+    								bugReporter.reportBug(new BugInstance(this, BugType.PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS.name(),
     																	  ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit)) ?
     																			  HIGH_PRIORITY :
     																		      ((mi.getNumBytes() >= normalByteCountLimit) || (mi.getNumMethodCalls() >= normalMethodCallLimit)) ?

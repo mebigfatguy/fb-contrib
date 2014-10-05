@@ -24,6 +24,8 @@ import java.util.Map;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -144,7 +146,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 						if ("<init>".equals(methodName)) {
 							String methodSig = getSigConstantOperand();
 							if (boxSig.equals(methodSig)) {
-								bugReporter.reportBug(new BugInstance(this, "NAB_NEEDLESS_AUTOBOXING_CTOR", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_CTOR.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));
@@ -158,7 +160,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 						if ("valueOf".equals(methodName)) {
 							String methodSig = getSigConstantOperand();
 							if (boxSig.equals(methodSig)) {
-								bugReporter.reportBug(new BugInstance(this, "NAB_NEEDLESS_AUTOBOXING_VALUEOF", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_VALUEOF.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));
@@ -174,12 +176,12 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 				if (seen == INVOKEVIRTUAL) {
 					String[] boxSigs = boxClasses.get(boxClass);
 					if (boxSigs[0].equals(getNameConstantOperand() + getSigConstantOperand())) {
-						bugReporter.reportBug(new BugInstance(this, "NAB_NEEDLESS_BOX_TO_UNBOX", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_UNBOX.name(), NORMAL_PRIORITY)
 								   .addClass(this)
 								   .addMethod(this)
 								   .addSourceLine(this));
 					} else if (getSigConstantOperand().startsWith("()") && getNameConstantOperand().endsWith("Value")) {
-						bugReporter.reportBug(new BugInstance(this, "NAB_NEEDLESS_BOX_TO_CAST", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_CAST.name(), NORMAL_PRIORITY)
 						   .addClass(this)
 						   .addMethod(this)
 						   .addSourceLine(this));
@@ -192,7 +194,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 				if (seen == INVOKEVIRTUAL) {
 					String[] boxSigs = boxClasses.get(boxClass);
 					if (boxSigs[0].equals(getNameConstantOperand() + getSigConstantOperand())) {
-						bugReporter.reportBug(new BugInstance(this, "NAB_NEEDLESS_BOXING_PARSE", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_PARSE.name(), NORMAL_PRIORITY)
 								   .addClass(this)
 								   .addMethod(this)
 								   .addSourceLine(this));
@@ -205,7 +207,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 				if (seen == INVOKESTATIC) {
 					if (boxClass.equals(getClassConstantOperand())) {
 						if ("valueOf".equals(getNameConstantOperand())) {
-							bugReporter.reportBug(new BugInstance(this, "NAB_NEEDLESS_BOXING_VALUEOF", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_VALUEOF.name(), NORMAL_PRIORITY)
 									   .addClass(this)
 									   .addMethod(this)
 									   .addSourceLine(this));
@@ -213,7 +215,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 					}
 				} else if (seen == INVOKESPECIAL) {
 					if ("<init>".equals(getNameConstantOperand()) && (boxClass.equals(getClassConstantOperand()))) {
-						bugReporter.reportBug(new BugInstance(this, "NAB_NEEDLESS_BOXING_STRING_CTOR", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_STRING_CTOR.name(), NORMAL_PRIORITY)
 								   .addClass(this)
 								   .addMethod(this)
 								   .addSourceLine(this));
@@ -227,7 +229,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 					if (("java/lang/Boolean".equals(getClassConstantOperand())
 					&&  ("valueOf".equals(getNameConstantOperand())
 					&&  ("(Z)Ljava/lang/Boolean;".equals(getSigConstantOperand()))))) {
-						bugReporter.reportBug(new BugInstance(this, "NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));
@@ -242,7 +244,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 					if (("java/lang/Boolean".equals(getClassConstantOperand())
 					&&  ("booleanValue".equals(getNameConstantOperand())
 					&&  ("()Z".equals(getSigConstantOperand()))))) {
-						bugReporter.reportBug(new BugInstance(this, "NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));

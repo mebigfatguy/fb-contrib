@@ -24,6 +24,8 @@ import java.util.Map;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -177,7 +179,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
 						Units u2 = (Units) arg2.getUserValue();
 						
 						if ((u1 != null) && (u2 != null) && (u1 != u2)) {
-							bugReporter.reportBug(new BugInstance(this, "CTU_CONFLICTING_TIME_UNITS", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.CTU_CONFLICTING_TIME_UNITS.name(), NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this)

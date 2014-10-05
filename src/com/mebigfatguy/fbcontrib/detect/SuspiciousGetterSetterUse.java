@@ -20,6 +20,8 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -164,7 +166,7 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
 						String name = getNameConstantOperand();
 						if (name.startsWith("set")) {
 							if (propName.equals(name.substring("set".length()))) {
-								bugReporter.reportBug(new BugInstance(this, "SGSU_SUSPICIOUS_GETTER_SETTER_USE", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.SGSU_SUSPICIOUS_GETTER_SETTER_USE.name(), NORMAL_PRIORITY)
 																	.addClass(this)
 																	.addMethod(this)
 																	.addSourceLine(this));

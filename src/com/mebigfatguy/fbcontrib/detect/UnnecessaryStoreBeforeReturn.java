@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -198,7 +199,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector
 
 				case SEEN_LOAD:
 					if ((seen >= IRETURN) && (seen <= ARETURN)) {
-						bugReporter.reportBug(new BugInstance(this, "USBR_UNNECESSARY_STORE_BEFORE_RETURN", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.USBR_UNNECESSARY_STORE_BEFORE_RETURN.name(), NORMAL_PRIORITY)
 							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(this));

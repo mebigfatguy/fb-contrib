@@ -27,6 +27,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -197,7 +199,7 @@ public class SluggishGui extends BytecodeScanningDetector
 				
 			if (expensiveCalls.contains(methodInfo) || expensiveThisCalls.contains(thisMethodInfo)) {
 				if (isListenerMethod) {
-					bugReporter.reportBug(new BugInstance(this, "SG_SLUGGISH_GUI", NORMAL_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.SG_SLUGGISH_GUI.name(), NORMAL_PRIORITY)
 												.addClass(this)
 												.addMethod(this.getClassContext().getJavaClass(), listenerCode.get(this.getCode())));
 				} else {

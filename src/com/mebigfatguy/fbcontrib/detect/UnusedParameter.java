@@ -31,6 +31,8 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -133,7 +135,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
                         LocalVariable lv = (lvt != null) ? lvt.getLocalVariable(reg, 0) : null;
                         if (lv != null) {
                             String parmName = lv.getName();
-                            bugReporter.reportBug(new BugInstance(this, "UP_UNUSED_PARAMETER", NORMAL_PRIORITY)
+                            bugReporter.reportBug(new BugInstance(this, BugType.UP_UNUSED_PARAMETER.name(), NORMAL_PRIORITY)
                                             .addClass(this)
                                             .addMethod(this)
                                             .addString("Parameter " + regToParm.get(reg) + ": " + parmName));

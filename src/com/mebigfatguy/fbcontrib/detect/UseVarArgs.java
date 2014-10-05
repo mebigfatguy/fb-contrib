@@ -23,6 +23,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -84,7 +86,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector
 			}
 			
 			super.visitMethod(obj);
-			bugReporter.reportBug(new BugInstance(this, "UVA_USE_VAR_ARGS", LOW_PRIORITY)
+			bugReporter.reportBug(new BugInstance(this, BugType.UVA_USE_VAR_ARGS.name(), LOW_PRIORITY)
 						.addClass(this)
 						.addMethod(this));
 			

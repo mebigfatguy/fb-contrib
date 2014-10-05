@@ -22,6 +22,8 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -110,7 +112,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						JavaClass entryCls = item.getJavaClass();
 						if (isImplementationOf(entryCls, collectionCls)) {
-							bugReporter.reportBug(new BugInstance(this, "DSOC_DUBIOUS_SET_OF_COLLECTIONS", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.DSOC_DUBIOUS_SET_OF_COLLECTIONS.name(), NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this));
@@ -123,7 +125,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
 						OpcodeStack.Item item = stack.getStackItem(1);
 						JavaClass entryCls = item.getJavaClass();
 						if (isImplementationOf(entryCls, collectionCls)) {
-							bugReporter.reportBug(new BugInstance(this, "DSOC_DUBIOUS_SET_OF_COLLECTIONS", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.DSOC_DUBIOUS_SET_OF_COLLECTIONS.name(), NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this));

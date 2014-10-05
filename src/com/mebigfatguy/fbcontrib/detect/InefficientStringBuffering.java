@@ -22,6 +22,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantString;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -141,14 +142,14 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 					AppendType apValue = (userVal instanceof AppendType ? (AppendType) userVal: AppendType.NONE);
 					switch (apValue) {
 					case NESTED:
-						bugReporter.reportBug(new BugInstance(this, "ISB_INEFFICIENT_STRING_BUFFERING", 
+						bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(), 
 								"toString".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY)
 								.addClass(this)
 								.addMethod(this)
 								.addSourceLine(this));
 						break;
 					case TOSTRING:
-						bugReporter.reportBug(new BugInstance(this, "ISB_TOSTRING_APPENDING", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.ISB_TOSTRING_APPENDING.name(), NORMAL_PRIORITY)
 						.addClass(this)
 						.addMethod(this)
 						.addSourceLine(this));
@@ -184,7 +185,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 					if ((cons instanceof String) && (itm.getRegisterNumber() < 0)) {
 						if (((String)cons).length() == 0) {
 							bugReporter.reportBug(
-								new BugInstance(this, "ISB_EMPTY_STRING_APPENDING", NORMAL_PRIORITY)
+								new BugInstance(this, BugType.ISB_EMPTY_STRING_APPENDING.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));
@@ -211,7 +212,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 					apType = (AppendType)itm.getUserValue();
 					if (apType == AppendType.NESTED) {
 						bugReporter.reportBug( 
-								new BugInstance(this, "ISB_INEFFICIENT_STRING_BUFFERING", NORMAL_PRIORITY)
+								new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(), NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this));

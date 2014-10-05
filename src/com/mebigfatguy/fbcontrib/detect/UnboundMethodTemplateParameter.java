@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -76,7 +78,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
                 if (ts != null) {
                     for (String templateParm : ts.templateParameters) {
                         if (!ts.signature.contains("T" + templateParm + ";") && !ts.signature.contains("[T" + templateParm + ";")) {
-                            bugReporter.reportBug(new BugInstance(this, "UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER", NORMAL_PRIORITY)
+                            bugReporter.reportBug(new BugInstance(this, BugType.UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER.name(), NORMAL_PRIORITY)
                                         .addClass(this)
                                         .addMethod(this)
                                         .addString("Template Parameter: " + templateParm));

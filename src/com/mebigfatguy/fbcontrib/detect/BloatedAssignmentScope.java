@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -863,7 +864,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                             }
                         }
                         if ((!inIgnoreSB) && (childUseCount == 1)) {
-                            bugReporter.reportBug(new BugInstance(BloatedAssignmentScope.this, "BAS_BLOATED_ASSIGNMENT_SCOPE", NORMAL_PRIORITY)
+                            bugReporter.reportBug(new BugInstance(BloatedAssignmentScope.this, BugType.BAS_BLOATED_ASSIGNMENT_SCOPE.name(), NORMAL_PRIORITY)
                                     .addClass(BloatedAssignmentScope.this).addMethod(BloatedAssignmentScope.this)
                                     .addSourceLine(BloatedAssignmentScope.this, entry.getValue().intValue()));
                         }

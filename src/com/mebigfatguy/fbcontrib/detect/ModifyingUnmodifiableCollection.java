@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Code;
 import com.mebigfatguy.fbcontrib.collect.ImmutabilityType;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -134,7 +135,7 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
                                 ImmutabilityType type = (ImmutabilityType) item.getUserValue();
                                 
                                 if ((type == ImmutabilityType.IMMUTABLE) || ((type == ImmutabilityType.POSSIBLY_IMMUTABLE) && (reportedType != ImmutabilityType.POSSIBLY_IMMUTABLE))) {
-                                    bugReporter.reportBug(new BugInstance(this, "MUC_MODIFYING_UNMODIFIABLE_COLLECTION", (type == ImmutabilityType.IMMUTABLE) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                    bugReporter.reportBug(new BugInstance(this, BugType.MUC_MODIFYING_UNMODIFIABLE_COLLECTION.name(), (type == ImmutabilityType.IMMUTABLE) ? HIGH_PRIORITY : NORMAL_PRIORITY)
                                                               .addClass(this)
                                                               .addMethod(this)
                                                               .addSourceLine(this));

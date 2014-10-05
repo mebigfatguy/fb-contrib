@@ -29,6 +29,8 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -106,7 +108,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
         for (List<Integer> pcs : allocToAddPCs.values()) {
             if (pcs.size() > 16) {
-                bugReporter.reportBug(new BugInstance(this, "PSC_PRESIZE_COLLECTIONS", NORMAL_PRIORITY)
+                bugReporter.reportBug(new BugInstance(this, BugType.PSC_PRESIZE_COLLECTIONS.name(), NORMAL_PRIORITY)
                 .addClass(this)
                 .addMethod(this)
                 .addSourceLine(this, pcs.get(0)));
@@ -219,7 +221,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                                 if (pc > target) {
                                     int numDownBranches = countDownBranches(target, pc);
                                     if (numDownBranches == 1) {
-                                        bugReporter.reportBug(new BugInstance(this, "PSC_PRESIZE_COLLECTIONS", NORMAL_PRIORITY)
+                                        bugReporter.reportBug(new BugInstance(this, BugType.PSC_PRESIZE_COLLECTIONS.name(), NORMAL_PRIORITY)
                                                     .addClass(this)
                                                     .addMethod(this)
                                                     .addSourceLine(this, pc));

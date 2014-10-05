@@ -25,6 +25,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -89,7 +90,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 			returnPC = -1;
 			super.visitCode(obj);
 			if (methodSuspect && (returnConstant != null)) {
-				BugInstance bi = new BugInstance(this, "MRC_METHOD_RETURNS_CONSTANT", ((aFlags & Constants.ACC_PRIVATE) != 0) ? NORMAL_PRIORITY : LOW_PRIORITY)
+				BugInstance bi = new BugInstance(this, BugType.MRC_METHOD_RETURNS_CONSTANT.name(), ((aFlags & Constants.ACC_PRIVATE) != 0) ? NORMAL_PRIORITY : LOW_PRIORITY)
 									.addClass(this)
 									.addMethod(this);
 				if (returnPC >= 0) {

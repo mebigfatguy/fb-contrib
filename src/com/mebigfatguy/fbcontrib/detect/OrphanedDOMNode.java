@@ -26,6 +26,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -98,7 +99,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector
 		Set<Integer> reportedPCs = new HashSet<Integer>();
 		for (Integer pc : nodeCreations.values()) {
 			if (!reportedPCs.contains(pc)) {
-				bugReporter.reportBug(new BugInstance(this, "ODN_ORPHANED_DOM_NODE", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.ODN_ORPHANED_DOM_NODE.name(), NORMAL_PRIORITY)
 												.addClass(this)
 												.addMethod(this)
 												.addSourceLine(this, pc.intValue()));
@@ -107,7 +108,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector
 		}
 		for (Integer pc : nodeStores.values()) {
 			if (!reportedPCs.contains(pc)) {
-				bugReporter.reportBug(new BugInstance(this, "ODN_ORPHANED_DOM_NODE", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.ODN_ORPHANED_DOM_NODE.name(), NORMAL_PRIORITY)
 												.addClass(this)
 												.addMethod(this)
 												.addSourceLine(this, pc.intValue()));

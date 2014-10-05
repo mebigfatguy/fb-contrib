@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -89,7 +90,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 
 		for (AllocationInfo info : allocations.values()) {
 			if (info.loopBottom != -1) {
-				bugReporter.reportBug(new BugInstance(this, "PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP.name(), NORMAL_PRIORITY)
 							.addClass(this)
 							.addMethod(this)
 							.addSourceLine(getClassContext(), this, info.allocationPC));

@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -138,7 +139,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 				JavaClass cls = classContext.getJavaClass();
 				if (cls.instanceOf(jcomponentClass)) {
 					if (!cls.implementationOf(accessibleClass)) {
-						bugReporter.reportBug(new BugInstance(this, "S508C_NON_ACCESSIBLE_JCOMPONENT", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_ACCESSIBLE_JCOMPONENT.name(), NORMAL_PRIORITY)
 						.addClass(cls));
 					}
 				}
@@ -149,7 +150,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 			localLabels = new HashMap<Integer, SourceLineAnnotation>();
 			super.visitClassContext(classContext);
 			for (XField fa : fieldLabels) {
-				bugReporter.reportBug(new BugInstance(this, "S508C_NO_SETLABELFOR", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY)
 				.addClass(this)
 				.addField(fa));
 			}
@@ -188,7 +189,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 		localLabels.clear();
 		super.visitCode(obj);
 		for (SourceLineAnnotation sla : localLabels.values()) {
-			BugInstance bug = new BugInstance(this, "S508C_NO_SETLABELFOR", NORMAL_PRIORITY)
+			BugInstance bug = new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY)
 			.addClass(this)
 			.addMethod(this);
 
@@ -336,12 +337,12 @@ public class Section508Compliance extends BytecodeScanningDetector
             if (stack.getStackDepth() > parmIndex.intValue()) {
                 OpcodeStack.Item item = stack.getStackItem(parmIndex.intValue());
                 if (item.getConstant() != null) {
-                    bugReporter.reportBug(new BugInstance(this, "S508C_NON_TRANSLATABLE_STRING", NORMAL_PRIORITY)
+                    bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_TRANSLATABLE_STRING.name(), NORMAL_PRIORITY)
                                 .addClass(this)
                                 .addMethod(this)
                                 .addSourceLine(this));
                 } else if (APPENDED_STRING.equals(item.getUserValue())) {
-                    bugReporter.reportBug(new BugInstance(this, "S508C_APPENDED_STRING", NORMAL_PRIORITY)
+                    bugReporter.reportBug(new BugInstance(this, BugType.S508C_APPENDED_STRING.name(), NORMAL_PRIORITY)
                     .addClass(this)
                     .addMethod(this)
                     .addSourceLine(this));
@@ -363,7 +364,7 @@ public class Section508Compliance extends BytecodeScanningDetector
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     if (item.isNull()) {
-                        bugReporter.reportBug(new BugInstance(this, "S508C_NULL_LAYOUT", NORMAL_PRIORITY)
+                        bugReporter.reportBug(new BugInstance(this, BugType.S508C_NULL_LAYOUT.name(), NORMAL_PRIORITY)
                         .addClass(this)
                         .addMethod(this)
                         .addSourceLine(this));
@@ -391,7 +392,7 @@ public class Section508Compliance extends BytecodeScanningDetector
                     JavaClass cls = item.getJavaClass();
                     if (((jcomponentClass != null) && cls.instanceOf(jcomponentClass))
                             ||  ((componentClass != null) && cls.instanceOf(componentClass))) {
-                        bugReporter.reportBug(new BugInstance(this, "S508C_SET_COMP_COLOR", NORMAL_PRIORITY)
+                        bugReporter.reportBug(new BugInstance(this, BugType.S508C_SET_COMP_COLOR.name(), NORMAL_PRIORITY)
                         .addClass(this)
                         .addMethod(this)
                         .addSourceLine(this));
@@ -415,7 +416,7 @@ public class Section508Compliance extends BytecodeScanningDetector
                 OpcodeStack.Item item = stack.getStackItem(argCount);
                 JavaClass cls = item.getJavaClass();
                 if ((cls != null) && cls.instanceOf(windowClass)) {
-                    bugReporter.reportBug(new BugInstance(this, "S508C_NO_SETSIZE", NORMAL_PRIORITY)
+                    bugReporter.reportBug(new BugInstance(this, BugType.S508C_NO_SETSIZE.name(), NORMAL_PRIORITY)
                     .addClass(this)
                     .addMethod(this)
                     .addSourceLine(this));

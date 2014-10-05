@@ -19,7 +19,16 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
-import static org.apache.bcel.Constants.*;
+import static org.apache.bcel.Constants.ALOAD;
+import static org.apache.bcel.Constants.ALOAD_0;
+import static org.apache.bcel.Constants.ALOAD_3;
+import static org.apache.bcel.Constants.ASTORE;
+import static org.apache.bcel.Constants.ASTORE_0;
+import static org.apache.bcel.Constants.ASTORE_3;
+import static org.apache.bcel.Constants.INVOKEINTERFACE;
+import static org.apache.bcel.Constants.INVOKESPECIAL;
+import static org.apache.bcel.Constants.INVOKESTATIC;
+import static org.apache.bcel.Constants.INVOKEVIRTUAL;
 
 public class OpcodeUtils {
 

@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -160,7 +161,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 							if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
 								// the counts put in the Pair are indexed from the beginning of
 								String changedMethodSig = replaceStringSigWithCharsetString(methodSig, offsetInfo.indexOfStringSig);
-								bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET", NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET.name(), NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
 											.addSourceLine(this)
@@ -176,7 +177,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 								OpcodeStack.Item item = stack.getStackItem(offset);
 								encoding = (String) item.getConstant();
 								if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
-									bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME.name(), NORMAL_PRIORITY)
 												.addClass(this)
 												.addMethod(this)
 												.addSourceLine(this)
@@ -190,7 +191,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 						try {
 							Charset.forName(encoding);
 						} catch (IllegalArgumentException e) {  //encompasses both IllegalCharsetNameException and UnsupportedCharsetException
-							bugReporter.reportBug(new BugInstance(this, "CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING.name(), NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this)

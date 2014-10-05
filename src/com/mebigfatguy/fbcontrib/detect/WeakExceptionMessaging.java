@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -130,7 +131,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
 					if (item.getUserValue() != null) {
 						JavaClass exClass = item.getJavaClass();
 						if ((exClass == null) || !ignorableExceptionTypes.contains(exClass.getClassName())) {
-							bugReporter.reportBug(new BugInstance(this, "WEM_WEAK_EXCEPTION_MESSAGING", LOW_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.WEM_WEAK_EXCEPTION_MESSAGING.name(), LOW_PRIORITY)
 									   .addClass(this)
 									   .addMethod(this)
 									   .addSourceLine(this));

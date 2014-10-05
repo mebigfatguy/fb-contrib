@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -179,7 +180,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 							if (elReg != null) {
 								int reg = RegisterUtils.getAStoreReg(this, seen);
 								if (elReg.intValue() == reg) {
-									bugReporter.reportBug(new BugInstance(this, "AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE", NORMAL_PRIORITY )
+									bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY )
 													.addClass(this)
 													.addMethod(this)
 													.addSourceLine(this));
@@ -269,7 +270,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 						if (elReg != null) {
 							int reg = RegisterUtils.getStoreReg(this, seen);
 							if (elReg.intValue() == reg) {
-								bugReporter.reportBug(new BugInstance(this, "AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE", NORMAL_PRIORITY )
+								bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY )
 												.addClass(this)
 												.addMethod(this)
 												.addSourceLine(this));

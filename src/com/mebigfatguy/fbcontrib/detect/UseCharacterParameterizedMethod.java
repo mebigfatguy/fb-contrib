@@ -26,6 +26,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -129,7 +130,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 						OpcodeStack.Item itm = stack.getStackItem(stackPos);
 						String con = (String)itm.getConstant();
 						if ((con != null) && (con.length() == 1)) {
-							bugReporter.reportBug(new BugInstance(this, "UCPM_USE_CHARACTER_PARAMETERIZED_METHOD", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.UCPM_USE_CHARACTER_PARAMETERIZED_METHOD.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));

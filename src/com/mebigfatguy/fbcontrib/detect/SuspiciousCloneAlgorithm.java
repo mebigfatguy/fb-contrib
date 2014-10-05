@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -146,7 +147,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
 					if (stack.getStackDepth() >= 2) {
 						OpcodeStack.Item item = stack.getStackItem(1);
 						if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
-							bugReporter.reportBug(new BugInstance(this, "SCA_SUSPICIOUS_CLONE_ALGORITHM", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), NORMAL_PRIORITY)
 									   .addClass(this)
 									   .addMethod(this)
 									   .addSourceLine(this));
@@ -165,7 +166,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
 							String name = getNameConstantOperand();
 							Integer priority = changingMethods.get(name);
 							if (priority != null)
-								bugReporter.reportBug(new BugInstance(this, "SCA_SUSPICIOUS_CLONE_ALGORITHM", priority.intValue())
+								bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), priority.intValue())
 								   .addClass(this)
 								   .addMethod(this)
 								   .addSourceLine(this));

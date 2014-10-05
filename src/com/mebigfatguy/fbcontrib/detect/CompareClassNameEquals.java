@@ -22,6 +22,8 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
@@ -80,7 +82,7 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
                 item = stack.getStackItem(0);
                 Object dstValue = item.getUserValue();
                 if (Boolean.TRUE.equals(srcValue) && Boolean.TRUE.equals(dstValue)) {
-                    bugReporter.reportBug(new BugInstance(this, "CCNE_COMPARE_CLASS_EQUALS_NAME",NORMAL_PRIORITY)
+                    bugReporter.reportBug(new BugInstance(this, BugType.CCNE_COMPARE_CLASS_EQUALS_NAME.name(),NORMAL_PRIORITY)
                     .addClass(this)
                     .addMethod(this)
                     .addSourceLine(this));

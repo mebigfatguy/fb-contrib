@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.ConstantInteger;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -90,7 +91,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         super.visitCode(obj);
         
         for (Integer pc : nullStoreToLocation.values()) {
-            bugReporter.reportBug(new BugInstance(this, "AIOB_ARRAY_STORE_TO_NULL_REFERENCE", HIGH_PRIORITY)
+            bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_STORE_TO_NULL_REFERENCE.name(), HIGH_PRIORITY)
             .addClass(this)
             .addMethod(this)
             .addSourceLine(this, pc.intValue()));
@@ -195,7 +196,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                         Integer sz = (Integer) arrayItem.getUserValue();
                         if (sz != null) {
                             if (index.intValue() >= sz.intValue()) {
-                                bugReporter.reportBug(new BugInstance(this, "AIOB_ARRAY_INDEX_OUT_OF_BOUNDS", HIGH_PRIORITY)
+                                bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY)
                                             .addClass(this)
                                             .addMethod(this)
                                             .addSourceLine(this));
@@ -226,7 +227,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                         Integer sz = (Integer) arrayItem.getUserValue();
                         if (sz != null) {
                             if (index.intValue() >= sz.intValue()) {
-                                bugReporter.reportBug(new BugInstance(this, "AIOB_ARRAY_INDEX_OUT_OF_BOUNDS", HIGH_PRIORITY)
+                                bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY)
                                             .addClass(this)
                                             .addMethod(this)
                                             .addSourceLine(this));

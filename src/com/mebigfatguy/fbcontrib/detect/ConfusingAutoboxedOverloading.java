@@ -27,6 +27,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -90,7 +92,7 @@ public class ConfusingAutoboxedOverloading  extends PreorderVisitor implements D
 				if (sigs != null) {
 					for (String sig : sigs) {
 						if (confusingSignatures(sig, signature)) {
-							bugReporter.reportBug(new BugInstance(this, "CAO_CONFUSING_AUTOBOXED_OVERLOADING", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.CAO_CONFUSING_AUTOBOXED_OVERLOADING.name(), NORMAL_PRIORITY)
 								.addClass(cls.getClassName())
 								.addString(name + signature)
 								.addString(name + sig));

@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -118,7 +120,7 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
                             Matcher m = p.matcher(mInfo);
                             
                             if (m.matches()) {
-                                bugReporter.reportBug(new BugInstance(this, "NPMC_NON_PRODUCTIVE_METHOD_CALL", NORMAL_PRIORITY)
+                                bugReporter.reportBug(new BugInstance(this, BugType.NPMC_NON_PRODUCTIVE_METHOD_CALL.name(), NORMAL_PRIORITY)
                                             .addClass(this)
                                             .addMethod(this)
                                             .addSourceLine(this)

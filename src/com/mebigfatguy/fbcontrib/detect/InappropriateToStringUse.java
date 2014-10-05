@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -156,7 +157,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
 									tsPackage = xm.getPackageName();
 								}
 								if ((tsPackage == null) || !SignatureUtils.similarPackages(tsPackage, packageName, 2)) {
-									bugReporter.reportBug(new BugInstance(this, "ITU_INAPPROPRIATE_TOSTRING_USE", NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.ITU_INAPPROPRIATE_TOSTRING_USE.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
 									.addSourceLine(this));

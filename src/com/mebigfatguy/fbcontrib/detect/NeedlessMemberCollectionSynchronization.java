@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -128,7 +129,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 				super.visitClassContext(classContext);
 				for (FieldInfo fi : collectionFields.values()) {
 					if (fi.isSynchronized()) {
-						bugReporter.reportBug(new BugInstance(this, "NMCS_NEEDLESS_MEMBER_COLLECTION_SYNCHRONIZATION", NORMAL_PRIORITY)
+						bugReporter.reportBug(new BugInstance(this, BugType.NMCS_NEEDLESS_MEMBER_COLLECTION_SYNCHRONIZATION.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addField(fi.getFieldAnnotation()));
 					}

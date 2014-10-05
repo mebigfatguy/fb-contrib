@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.ConstantInteger;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -153,7 +155,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
         							if (state == State.SAW_CONSTANT_0)
         								iConst0Looped.set(getPC());
         							else {
-										bugReporter.reportBug(new BugInstance(this, "CLI_CONSTANT_LIST_INDEX", NORMAL_PRIORITY)
+										bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY)
 													.addClass(this)
 													.addMethod(this)
 													.addSourceLine(this));
@@ -169,7 +171,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 									if (state == State.SAW_CONSTANT_0) 
 										iConst0Looped.set(getPC());
 									else {
-										bugReporter.reportBug(new BugInstance(this, "CLI_CONSTANT_LIST_INDEX", NORMAL_PRIORITY)
+										bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY)
 																.addClass(this)
 																.addMethod(this)
 																.addSourceLine(this));
@@ -189,7 +191,7 @@ public class ConstantListIndex extends BytecodeScanningDetector
 				for (int bugPC = iConst0Looped.nextSetBit(0); bugPC >= 0; bugPC = iConst0Looped.nextSetBit(bugPC+1)) {
 					if (branchTarget < bugPC) {
 						if ((bugPC - branchTarget) < max_iConst0LoopDistance) {
-							bugReporter.reportBug(new BugInstance(this, "CLI_CONSTANT_LIST_INDEX", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY)
 													.addClass(this)
 													.addMethod(this)
 													.addSourceLine(this, bugPC));

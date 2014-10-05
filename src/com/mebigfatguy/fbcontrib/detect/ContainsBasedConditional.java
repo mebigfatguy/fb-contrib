@@ -26,6 +26,8 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantString;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -117,7 +119,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 						}
 					} else {
 						if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", prority(conditionCount))
+							bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), prority(conditionCount))
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this, bugPC));
@@ -169,7 +171,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 					} else if (seen == IF_ICMPNE) {
 						conditionCount++;
 						if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", prority(conditionCount))
+							bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), prority(conditionCount))
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this, bugPC));
@@ -187,7 +189,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 					} else if (seen == IFEQ) {
 						conditionCount++;
 						if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-							bugReporter.reportBug(new BugInstance(this, "CBC_CONTAINS_BASED_CONDITIONAL", (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this, bugPC));

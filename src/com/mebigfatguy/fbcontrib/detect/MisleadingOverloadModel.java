@@ -24,6 +24,8 @@ import java.util.Map;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
@@ -75,7 +77,7 @@ public class MisleadingOverloadModel  extends PreorderVisitor implements Detecto
 			
 			declMethods.put(methodName, newType);
 			if (report) {
-				bugReporter.reportBug(new BugInstance(this, "MOM_MISLEADING_OVERLOAD_MODEL", NORMAL_PRIORITY)
+				bugReporter.reportBug(new BugInstance(this, BugType.MOM_MISLEADING_OVERLOAD_MODEL.name(), NORMAL_PRIORITY)
 							.addClass(cls)
 							.addMethod(XFactory.createXMethod(clsName, m))
 							.addString(methodName));
