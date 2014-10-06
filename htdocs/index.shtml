@@ -74,9 +74,9 @@ function toggleBlock(divId, imgId)
 		</div>
 
 		<hr/>
-        <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
+        <img id="git_image" src="flip2.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
         Detectors added in git<br/>
-        <div id="git" style="display:none;">
+        <div id="git" style="display:block;">
             <ul>
                 <li><b>[STB] Stacked Try Blocks</b><br/>
                 Looks for two or more try catch blocks that are consecutive and catch the
@@ -86,14 +86,22 @@ function toggleBlock(divId, imgId)
                 <li><b>[CSI] Charset Issues</b><br/>
                 Looks for issues related to manually specified charsets by using string literals.
                 </li>
+                <li><b>[CBC] Contains based Conditional</b><br/>
+                Looks for complex if expressions made up of multiple conditions joined by OR, whereit is much cleaner
+    		    to build a static set of the possible values, and use the contains method on that set.
+    		    </li>
+    		    <li><b>[OPM] Overly Permissive Method</b><br/>
+    		    Looks for methods that are declared more permissively than the code is using. For instance, declaring
+    			a method public, when it could just be declared private.
+    			</li>
             </ul>
         </div>
         
         <hr/>
         
-        <img id="v6_0_0_image" src="flip2.gif" onClick="toggleBlock('v6_0_0', 'v6_0_0_image');" align="top"/>
+        <img id="v6_0_0_image" src="flip1.gif" onClick="toggleBlock('v6_0_0', 'v6_0_0_image');" align="top"/>
         Detectors added in v6.0.0<br/>
-        <div id="v6_0_0" style="display:block;">
+        <div id="v6_0_0" style="display:none;">
                 <li><b>[PSC] Presize Collections</b><br/>
                 Looks for methods that create and populate collections, and while knowing
                 the end size of those collections, does not pre allocate the collection
