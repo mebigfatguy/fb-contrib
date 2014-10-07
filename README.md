@@ -52,6 +52,9 @@ External guides for making detectors:
 - https://www.ibm.com/developerworks/library/j-findbug2/
 - http://kjlubick.github.io/#/blog/post/1?building-my-first-findbugs-detector
 
+Misc references about bytecode:
+- http://www.jroller.com/dbrosius/entry/the_jvm_class_file_format
+
 For making detectors, it best to make several test cases, like those in the [sample directory](https://github.com/mebigfatguy/fb-contrib/tree/master/samples).  Even better is if you can comment where you expect bug markers to appear and why, like [this](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/samples/HES_Sample.java#L313).
 
 In your pull request, give an overview of your changes along with the related commits.

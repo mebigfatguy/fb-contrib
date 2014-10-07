@@ -55,6 +55,26 @@ public class SPP_Sample implements Serializable {
             System.out.println("It's a nan");
         }
     }
+    
+    public void testNAN2(Double d) {
+        if (d == Double.NaN) {
+            System.out.println("It's a nan");
+        }
+        
+        if (d.isNaN()) {
+            System.out.println("It's properly a nan");
+        }
+    }
+    
+    public void testNotNAN(double d) {
+        if (d != Double.NaN) {
+            System.out.println("It's not a nan");
+        }
+        
+        if (!Double.isNaN(d)) {
+            System.out.println("It's properly not a nan");
+        }
+    }
 
     public void testNAN(float f) {
         if (f == Float.NaN) {
@@ -64,6 +84,7 @@ public class SPP_Sample implements Serializable {
 
     public void testBigDecimal() {
         BigDecimal d = new BigDecimal(2.1);
+        System.out.println(d);
     }
 
     public void testEmptySB() {
@@ -306,7 +327,7 @@ public class SPP_Sample implements Serializable {
     }
 
     public boolean nullAndInstanceOf(double d1, double d2, double d3, Object o) {
-        if ((o != null) && (o instanceof String)) {
+        if ((o != null) && (o instanceof String) && d1 < d2) {
             return true;
         }
         return false;
