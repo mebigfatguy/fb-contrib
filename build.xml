@@ -53,7 +53,7 @@
         
     	<echo message="===="/>
     	<echo message="    Additionally, this project uses bug-rank-check-style to validate etc/bugrank.txt"/>
-    	<echo message="    bug-rank-check-style-1.0.0.jar can be downloaded under https://github.com/kjlubick/fb-contrib/releases"/>
+    	<echo message="    bug-rank-check-style-1.0.0.jar can be downloaded at https://bitbucket.org/klubick/bugrankcheckstyle/downloads"/>
     	<echo message="    and put in ~/.ant/lib alongside yank"/>
     	<antcall target="install"/>
     </target>
