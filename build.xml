@@ -48,9 +48,14 @@
         <echo message="fb-contrib - a findbugs plugin"/>
         <echo message=""/>
         <echo message="    this project uses yank (https://github.com/mebigfatguy/yank) for dependency management"/>
-        <echo message="    download yank.jar and place in ant/lib directory"/>
+        <echo message="    download yank.jar and place in ~/.ant/lib directory"/>
         <echo message="    http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.mebigfatguy.yank%22"/>
-        <antcall target="install"/>
+        
+    	<echo message="===="/>
+    	<echo message="    Additionally, this project uses bug-rank-check-style to validate etc/bugrank.txt"/>
+    	<echo message="    bug-rank-check-style-1.0.0.jar can be downloaded under https://github.com/kjlubick/fb-contrib/releases"/>
+    	<echo message="    and put in ~/.ant/lib alongside yank"/>
+    	<antcall target="install"/>
     </target>
 
 	<target name="-init" depends="yank" description="prepares repository for a build">
@@ -80,11 +85,13 @@
 	</target>
 
 	<target name="validate_xml" depends="-init" description="validates the xml files">
+		<taskdef name="bug-rank-check-style" classname="text.style.check.BugRankCheckStyleTask"/>
 		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true" />
 			<attribute name="http://xml.org/sax/features/namespaces" value="true" />
 			<fileset dir="${etc.dir}" includes="*.xml" />
 		</xmlvalidate>
+		<bug-rank-check-style findbugsxml="etc/findbugs.xml" failOnMissingDetector="false" />
 	</target>
 
 	<target name="compile" depends="-init" description="compiles java files">
