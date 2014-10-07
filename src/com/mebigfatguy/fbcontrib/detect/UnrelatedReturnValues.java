@@ -163,7 +163,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector
 	 * @param classes the set of classes to look for a common super class or interface
 	 * @return the type that is the common interface or superclass (not Object, tho).
 	 */
-	private JavaClass findCommonType(Set<JavaClass> classes) throws ClassNotFoundException {
+	private static JavaClass findCommonType(Set<JavaClass> classes) throws ClassNotFoundException {
 		Set<JavaClass> possibleCommonTypes = new HashSet<JavaClass>();
 
 		boolean populate = true;
