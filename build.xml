@@ -1,6 +1,6 @@
 <!-- fb-contrib Ant build script. Dave Brosius -->
 
-<project name="fb-contrib" default="info">
+<project name="fb-contrib" default="default">
 
     <property file="user.properties" />
     <property file="build.properties" />
@@ -63,10 +63,11 @@
     	<echo message="    and put in ~/.ant/lib alongside yank"/>
     	<echo message=""/>
     	<echo message="    This task can be automated by running ant infra_jars"/>
-    	<antcall target="install"/>
     </target>
+	
+	<target name="default" depends="info, install"/>
 
-	<target name="-init" depends="yank" description="prepares repository for a build">
+	<target name="-init" depends="yank">
 		<mkdir dir="${lib.dir}" />
 		<mkdir dir="${classes.dir}" />
 		<mkdir dir="${javadoc.dir}" />
