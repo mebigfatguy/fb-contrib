@@ -36,6 +36,12 @@
 		<delete dir="${basedir}/plugin" />
 	</target>
 	
+	<target name="infra_jars" description="pull jars needed to build fb-contrib to ${user.dir}/.ant/lib">
+		<mkdir dir="${user.home}/.ant/lib" />
+		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/1.2.0/yank-1.2.0.jar" dest="${user.home}/.ant/lib"/>
+		<get src="https://bitbucket.org/klubick/bugrankcheckstyle/downloads/bug-rank-check-style-1.0.0.jar" dest="${user.home}/.ant/lib"/>
+	</target>
+	
 	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank" unless="no.yank">
         <mkdir dir="${lib.dir}" />
         <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" proxyServer="${proxy.server}" source="true" separateClassifierTypes="true">
@@ -55,6 +61,8 @@
     	<echo message="    Additionally, this project uses bug-rank-check-style to validate etc/bugrank.txt"/>
     	<echo message="    bug-rank-check-style-1.0.0.jar can be downloaded at https://bitbucket.org/klubick/bugrankcheckstyle/downloads"/>
     	<echo message="    and put in ~/.ant/lib alongside yank"/>
+    	<echo message=""/>
+    	<echo message="    This task can be automated by running ant infra_jars"/>
     	<antcall target="install"/>
     </target>
 
