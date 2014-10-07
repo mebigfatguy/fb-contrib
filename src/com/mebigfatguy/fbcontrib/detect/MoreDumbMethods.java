@@ -25,6 +25,7 @@ import java.util.Map;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for method calls that are unsafe or might indicate bugs.
@@ -73,9 +74,6 @@ public class MoreDumbMethods extends BytecodeScanningDetector
 		// Random Number Generator checks
 		//
 		dumbMethods.put("java/util/Random.<init>()V",				new ReportInfo("MDM_RANDOM_SEED", LOW_PRIORITY));
-		dumbMethods.put("java/security/SecureRandom.<init>()V",		new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
-		dumbMethods.put("java/security/SecureRandom.<init>([B)V",	new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
-		dumbMethods.put("java/security/SecureRandom.getSeed(I)[B",	new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
 
 		//
 		// Thread checks
@@ -119,6 +117,22 @@ public class MoreDumbMethods extends BytecodeScanningDetector
 	 */
 	public MoreDumbMethods(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
+	}
+	
+	@Override
+	public void visitClassContext(ClassContext classContext) {
+	    if (classContext.getJavaClass().getMajor() <= MAJOR_1_5) {
+	        dumbMethods.put("java/security/SecureRandom.<init>()V",     new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
+	        dumbMethods.put("java/security/SecureRandom.<init>([B)V",   new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
+	        dumbMethods.put("java/security/SecureRandom.getSeed(I)[B",  new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
+	    } else {
+	        dumbMethods.remove("java/security/SecureRandom.<init>()V");
+	        dumbMethods.remove("java/security/SecureRandom.<init>([B)V");
+	        dumbMethods.remove("java/security/SecureRandom.getSeed(I)[B");
+	    }
+	    
+	    // TODO Auto-generated method stub
+	    super.visitClassContext(classContext);
 	}
 	
 	@Override

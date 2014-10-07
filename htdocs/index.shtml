@@ -122,7 +122,7 @@ function toggleBlock(divId, imgId)
                 <li><b>[UJM] Unjitable Methods</b><br/>
                 Looks for methods that are too big that the JIT will not compile them no matter how often they are run
                 </li>
-                <li><b>[HE] Hangable Executors</b><br/>
+                <li><b>[HE] Hanging Executors</b><br/>
                 Looks for executors that are never shutdown, which will not allow the application to terminate<br/>
                 <span style="color: #0000FF;">--contributed by Kevin Lubick - THANKS!</span>
                 </li>
@@ -130,7 +130,7 @@ function toggleBlock(divId, imgId)
                 Looks for methods that perform arithmetic operations on values representing time
 				where the time unit is incompatible, ie adding a millisecond value to a nanosecond value.
 				</li>
-				<li><b>[HCP] Http Client Problems</b><br/>
+				<li><b>[HCP] HttpClient Problems</b><br/>
 				The HttpRequests from the apache.httpComponents have some little-known quirks about them.  
 				This is a set of detectors that helps guard against resource starvation.<br/>
 				<span style="color: #0000FF;">--contributed by Kevin Lubick - THANKS!</span>
@@ -348,7 +348,7 @@ function toggleBlock(divId, imgId)
 				Looks for methods that rely on the format of the string fetched from another object's toString
 				method, when that method appears not to be owned by the author of the calling method.
 				As the implementation of toString() is often considered a private implementation detail of a class, 
-				and not something that should be relied on, depending on it's format is dangerous.</li>
+				and not something that should be relied on, depending on its format is dangerous.</li>
 				<li><b>[BED] Bogus Exception Declaration</b><br/>
 				Looks for constructors, private methods or static methods that declare that they
 				throw specific checked exceptions, but that do not. This just causes callers of 

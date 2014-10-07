@@ -2640,6 +2640,7 @@
 			String myString = ... <br/>
 			if (myString.indexOf("e") != -1) {<br/>
 			int i = myString.lastIndexOf("e");<br/>
+			System.out.println(myString + ":" + i);  //the Java compiler will use a StringBuilder internally here [builder.append(":")]<br/>
 			...<br/>
 			return myString.replace("m","z");<br/>
 			}<br/>
@@ -2650,6 +2651,7 @@
 			String myString = ... <br/>
 			if (myString.indexOf('e') != -1) {<br/>
 			int i = myString.lastIndexOf('e');<br/>
+			System.out.println(myString + ':' + i);  //the Java compiler will use a StringBuilder internally here [builder.append(':')]<br/>
 			...<br/>
 			return myString.replace('m','z');<br/>
 			}<br/>
@@ -2795,12 +2797,14 @@
 	</BugPattern>
 
 	<BugPattern type="SPP_USE_ISNAN">
-		<ShortDescription>Method compares a double to Double.NAN</ShortDescription>
-		<LongDescription>Method {1} compares a double to Double.NAN</LongDescription>
+		<ShortDescription>Method incorrectly compares a floating point number to NaN</ShortDescription>
+		<LongDescription>Method {1} compares a {3} to {4}.NaN</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method compares a double or float to the constant Double.NaN or Float.NaN. You should use
-			Double.isNaN(d) or Float.isNaN(f) if a primitive; or d.isNaN() or f.isNaN() if a boxed double, instead.</p>
+			<p>This method compares a double or float to the constant <code>Double.NaN</code> or <code>Float.NaN</code>.
+			You should use
+			<code>Double.isNaN(d)</code> or <code>Float.isNaN(f)</code>
+			 if the variable is a primitive. If using a boxed primitive <code>d.isNaN()</code> or <code>f.isNaN()</code> should be used.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3880,7 +3884,13 @@
 		<LongDescription>Method {1} creates an insecure Random object, which may be a security risk</LongDescription>
 		<Details>
 			<![CDATA[
-			<p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: <code>System.currentTimeMillis()</code>. Initialize seed with <code>Random(SecureRandom.getInstance().generateSeed())</code> or use <code>SecureRandom</code> instead.</p>
+			<p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: <code>System.currentTimeMillis()</code>. Initialize seed like <code>new Random(SecureRandom.getInstance("SHA1PRNG").nextLong())</code> or replace <code>Random()</code> with <code>SecureRandom.getInstance("SHA1PRNG")</code> instead.
+			"SHA1PRNG" is the random algorithm supported on all platforms.
+		</p>
+
+			<p>
+				As of Java 6, you may use <code>new Random(new SecureRandom().nextLong())</code> or <code>new SecureRandom()</code> instead.
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
