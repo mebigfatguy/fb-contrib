@@ -166,7 +166,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 										.addClass(key.getClassName())
 										.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0);
 
-						String descr = String.format("- Method declared %s but could be declared %s", getDeclaredAccessValue(declaredAccess), getNeededAccessValue(mi));
+						String descr = String.format("- Method declared %s but could be declared %s", getDeclaredAccessValue(declaredAccess), getRequiredAccessValue(mi));
 						bi.addString(descr);
 						
 						bugReporter.reportBug(bi);
@@ -229,11 +229,11 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		}
 	}
 	
-	private String getDeclaredAccessValue(int declaredAccess) {
+	private static String getDeclaredAccessValue(int declaredAccess) {
 		return DECLARED_ACCESS.get(declaredAccess & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC));
 	}
 	
-	private Object getNeededAccessValue(MethodInfo mi) {
+	private static Object getRequiredAccessValue(MethodInfo mi) {
 		if (mi.wasCalledProtectedly())
 			return "protected";
 		if (mi.wasCalledPackagely())
