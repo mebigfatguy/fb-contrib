@@ -109,12 +109,14 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 		try {
 			Method method = getMethod();
 			if (prescreen(method)) {
-				stack.resetForMethodEntry(this);
 				catchHandlerPCs = collectExceptions(obj.getExceptionTable());
-				catchInfos = new ArrayList<CatchInfo>();
-				lvt = method.getLocalVariableTable();
-				constrainingInfo = null;
-				super.visitCode(obj);
+				if (!catchHandlerPCs.isEmpty()) {
+					stack.resetForMethodEntry(this);
+					catchInfos = new ArrayList<CatchInfo>();
+					lvt = method.getLocalVariableTable();
+					constrainingInfo = null;
+					super.visitCode(obj);
+				}
 			}
 		} finally {
 			catchInfos = null;
