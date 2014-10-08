@@ -256,13 +256,12 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 			TernaryPatcher.pre(stack, seen);
 			stack.sawOpcode(this, seen);
 			TernaryPatcher.post(stack, seen);
-			if (arraySize != null) {
-				if (stack.getStackDepth() >= 1) {
+			
+			if (stack.getStackDepth() >= 1) {
+				if (arraySize != null) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					item.setUserValue(new String[arraySize.intValue()]);
-				}
-			} else if (loadedTypes != null) {
-				if (stack.getStackDepth() >= 1) {
+				} else if (loadedTypes != null) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					item.setUserValue(loadedTypes);
 				}
