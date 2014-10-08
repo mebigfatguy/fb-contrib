@@ -100,7 +100,8 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 		}
 	}
 		
-	/** overrides the visitor to look for methods that catch exceptions
+	/** overrides the visitor to look for methods that catch checked exceptions
+	 * and rethrow runtime exceptions
 	 * 
 	 * @param obj the context object of the currently parsed code block
 	 */
