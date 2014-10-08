@@ -38,7 +38,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 /**
  * looks for methods that pass single character string constants as parameters to 
  * methods that alternatively have an overridden method that accepts a character instead.
- * It is easier for the method to handle a single character than a String.
+ * It is more performant for the method to handle a single character than a String.
  */
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector 
 {
@@ -46,7 +46,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 	static {
 	    Map<String, Object> methodsMap = new HashMap<String, Object>();
 	    //The values are where the parameter will be on the stack - For example, a value of 0 means the String literal to check
-	    // was the last param, and a stack offset of 2 means it was the 3rd to last. 
+	    // was the last parameter, and a stack offset of 2 means it was the 3rd to last. 
 	    methodsMap.put("java/lang/String:indexOf:(Ljava/lang/String;)I", Values.ZERO);
 	    methodsMap.put("java/lang/String:indexOf:(Ljava/lang/String;I)I", Values.ONE);
 	    methodsMap.put("java/lang/String:lastIndexOf:(Ljava/lang/String;)I", Values.ZERO);
@@ -57,6 +57,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 	    methodsMap.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
 	    methodsMap.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
 	    
+	    // same thing as above, except now with two params
 	    methodsMap.put("java/lang/String:replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;", new IntPair(0, 1));
 	    
 	    characterMethods = Collections.unmodifiableMap(methodsMap);
@@ -111,7 +112,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 	}
 	
 	/**
-	 * implement the visitor prescreen the method, and reset the stack
+	 * prescreens the method, and reset the stack
 	 * 
 	 * @param obj the context object for the currently parsed method
 	 */
