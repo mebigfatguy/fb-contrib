@@ -57,7 +57,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	 * Not coincidentally, the argument that needs to be replaced is the [(# of arguments) - offset]th one
 	 */
 	static {
-		Map<String, Integer> replaceable = new HashMap<String, Integer>();
+		Map<String, Integer> replaceable = new HashMap<String, Integer>(8);
 		replaceable.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
 		replaceable.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
 		replaceable.put("java/lang/String.<init>([BLjava/lang/String;)V", Values.ZERO);
@@ -67,7 +67,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		
 		REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replaceable);
 		
-		Map<String, Integer> unreplaceable = new HashMap<String, Integer>();
+		Map<String, Integer> unreplaceable = new HashMap<String, Integer>(32);
 		unreplaceable.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
 		unreplaceable.put("java/net/URLDecoder.decode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
 		unreplaceable.put("java/io/ByteArrayOutputStream.toString(Ljava/lang/String;)V", Values.ZERO);
