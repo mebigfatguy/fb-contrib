@@ -317,14 +317,15 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 	}
 
 	private void sawAStore(int seen) {
-		if (stack.getStackDepth() > 0) {
+		int depth = stack.getStackDepth();
+		if (depth > 0) {
 			OpcodeStack.Item item = stack.getStackItem(0);
 			Object uo = item.getUserValue();
 			if (uo != null) {
 				if (uo instanceof Boolean) {
 					int reg = RegisterUtils.getAStoreReg(this, seen);
 					localSpecialObjects.put(Integer.valueOf(reg), Integer.valueOf(getPC()));
-					if (stack.getStackDepth() > 1) {
+					if (depth > 1) {
 						//the astore was preceded by a dup
 						item = stack.getStackItem(1);
 						item.setUserValue(Integer.valueOf(reg));
