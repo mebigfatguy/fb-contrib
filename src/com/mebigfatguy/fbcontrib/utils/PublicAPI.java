@@ -1,6 +1,5 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
- * Copyright (C) 2005-2014 Kevin Lubick
  * Copyright (C) 2005-2014 Dave Brosius
  * 
  * This library is free software; you can redistribute it and/or
@@ -24,6 +23,11 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+/**
+ * used to denote a method is used by an external tool to access
+ * bug information. The value is any description about how it is used,
+ * but is not required.
+ */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface PublicAPI {

@@ -5,6 +5,7 @@ Bundle-SymbolicName: fb-contrib; singleton:=true
 Bundle-Version: 6.1.0
 Bundle-Localization: plugin
 Bundle-ActivationPolicy: lazy
-Export-Package: com.mebigfatguy.fbcontrib.detect,
+Export-Package: com.mebigfatguy.fbcontrib.collect,
+ com.mebigfatguy.fbcontrib.detect,
  com.mebigfatguy.fbcontrib.utils
 Require-Bundle: findbugs;bundle-version="1.0.0";resolution:=optional
