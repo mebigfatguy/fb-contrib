@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector 
 {
-	public final static Map<String, Object> characterMethods;
+	private final static Map<String, Object> characterMethods;
 	static {
 	    Map<String, Object> methodsMap = new HashMap<String, Object>();
 	    //The values are where the parameter will be on the stack - For example, a value of 0 means the String literal to check

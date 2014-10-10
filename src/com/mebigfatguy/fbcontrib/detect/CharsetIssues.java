@@ -25,11 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
-
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.PublicAPI;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -38,6 +35,10 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
+
 /**
  * looks for issues related to manually specified charsets by using string literals.
  */
@@ -45,8 +46,8 @@ public class CharsetIssues extends BytecodeScanningDetector {
 	
 	private static final String CHARSET_SIG = "Ljava/nio/charset/Charset;";
 	
-	public static final Map<String, Integer> REPLACEABLE_ENCODING_METHODS;
-	public static final Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS;
+	private static final Map<String, Integer> REPLACEABLE_ENCODING_METHODS;
+	private static final Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS;
 	public static final Set<String> STANDARD_JDK7_ENCODINGS;
 	
 	/*
@@ -232,5 +233,15 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		sb.append(sig.substring(sig.lastIndexOf(')'), sig.length()));
 		return sb.toString();
 	}
+	
+	@PublicAPI(value = "Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
+	public static Map<String, Integer> getUnreplaceableCharsetEncodings() {
+	    return UNREPLACEABLE_ENCODING_METHODS;
+	}
+	
+	@PublicAPI(value = "Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
+	public static Map<String, Integer> getReplaceableCharsetEncodings() {
+        return REPLACEABLE_ENCODING_METHODS;
+    }
 	
 }
