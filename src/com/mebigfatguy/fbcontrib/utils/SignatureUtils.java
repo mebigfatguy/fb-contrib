@@ -104,6 +104,9 @@ public class SignatureUtils {
 
 	/**
 	 * converts a primitive type code to a signature
+	 * 
+	 * @param typeCode the raw JVM type value
+	 * @return the signature of the type
      */
 	public static String getTypeCodeSignature(int typeCode) {
 		switch (typeCode) {

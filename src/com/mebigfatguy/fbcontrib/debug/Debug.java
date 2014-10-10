@@ -57,8 +57,8 @@ public class Debug {
 	 * will print
 	 * [PC:42] Hello world
 	 * 
-	 * @param pc
-	 * @param obj
+	 * @param pc the program counter
+	 * @param obj the object to output
 	 */
 	public static void println(int pc, Object obj) {
 		out.printf("[PC:%d] %s%n", pc,obj);

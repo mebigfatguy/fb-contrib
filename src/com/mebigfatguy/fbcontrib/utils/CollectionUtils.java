@@ -47,6 +47,8 @@ public class CollectionUtils {
      * 
      * @param clsName the class to determine it's parentage
      * @return if the class is a List, Set or Map
+     * 
+     * @throws ClassNotFoundException if the cls parameter can't be found
      */
     public static boolean isListSetMap(String clsName) throws ClassNotFoundException {
         JavaClass cls = Repository.lookupClass(clsName);

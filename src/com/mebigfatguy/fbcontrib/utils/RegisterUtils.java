@@ -143,6 +143,8 @@ public class RegisterUtils {
      * gets the set of registers used for parameters
      * 
      * @param obj the context object for the method to find the parameter registers of
+     * 
+     * @return the set of registers that parameters are using
      */
     public static int[] getParameterRegisters(Method obj) {
 	    Type[] argTypes = obj.getArgumentTypes();

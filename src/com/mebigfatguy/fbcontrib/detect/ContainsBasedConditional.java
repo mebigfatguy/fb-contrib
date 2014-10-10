@@ -52,7 +52,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 	
 	/**
      * constructs a CBC detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
+     * @param reporter the sync of bug reports
 	 */	
 	public ContainsBasedConditional(BugReporter reporter) {
 		bugReporter = reporter;

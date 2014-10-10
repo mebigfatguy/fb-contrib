@@ -55,10 +55,9 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 	 * e.g. StringBuffer was the only way to efficiently concatenate a string until
 	 * the faster, non-thread safe StringBuilder was introduced in 1.5.  Thus, in code
 	 * that targets before 1.5, FindBugs should not report a LocalSynchronizedCollection bug.
-	 * Therefore, the entry <"java/lang/StringBuffer", Constants.MAJOR_1_5> is in the returned map.
+	 * Therefore, the entry &lt;"java/lang/StringBuffer", Constants.MAJOR_1_5&gt; is in the returned map.
 	 * 
-	 * 
-	 * 
+	 * @return the map of watched constructors
 	 */
 	protected abstract Map<String, Integer> getWatchedConstructors();
 
@@ -71,7 +70,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 
 	/**
 	 * Given this RegisterInfo, report an appropriate bug.
-	 * @param cri
+	 * @param cri the register info
 	 */
 	protected abstract void reportBug(RegisterInfo cri);
 

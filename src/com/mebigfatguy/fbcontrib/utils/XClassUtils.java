@@ -39,7 +39,7 @@ public class XClassUtils {
 	 * @param classDesc
 	 *            the class descriptor for which to find the XClass object
 	 * @return the class
-	 * @throws AssertionError
+	 * @throws AssertionError if the analysis of the class failed
 	 */
 	public XClass getXClass(final ClassDescriptor classDesc) throws AssertionError {
 		try {
@@ -58,7 +58,7 @@ public class XClassUtils {
 	 * @param slashedClassName
 	 *            the class name for which to find the XClass object
 	 * @return the class
-	 * @throws AssertionError
+	 * @throws AssertionError if the analysis of the class failed
 	 */
 	public XClass getXClass(String slashedClassName) {
 		return getXClass(DescriptorFactory

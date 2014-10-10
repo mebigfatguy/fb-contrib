@@ -323,6 +323,8 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 	 * and if one of the parameters is the original exception
 	 * @param excReg the register of the original exception caught
 	 * @return whether this method call could be an exception builder method
+	 * 
+	 * @throws ClassNotFoundException if the class of the return type can't be found
 	 */
 	public boolean isPossibleExBuilder(int excReg) throws ClassNotFoundException {
 		String sig = getSigConstantOperand();
