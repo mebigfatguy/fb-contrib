@@ -132,6 +132,11 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		}
 	}
 
+	/**
+	 * checks to see if an instance method is called on the 'this' object
+	 * @param sig the signature of the method called to find the called-on object
+	 * @return when it is called on this or not
+	 */
 	private boolean isCallingOnThis(String sig) {
 		Type[] argTypes = Type.getArgumentTypes(sig);
 		if (stack.getStackDepth() < argTypes.length) {
@@ -142,6 +147,10 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		return item.getRegisterNumber() == 0;
 	}
 
+	/**
+	 * after collecting all method calls, build a report of all methods that have been called,
+	 * but in a way that is less permissive then is defined.
+	 */
 	@Override
 	public void report() {
 		for (Map.Entry<StatisticsKey, MethodInfo> entry : Statistics.getStatistics()) {
@@ -187,6 +196,13 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		return false;
 	}
 
+	/**
+	 * looks to see if this method described by key is derived from a superclass or interface
+	 * 
+	 * @param cls the class that the method is defined in
+	 * @param key the information about the method
+	 * @return whether this method derives from something or not
+	 */
 	private boolean isDerived(JavaClass cls, StatisticsKey key) {
 		try {
 			for (JavaClass infCls : cls.getInterfaces()) {
