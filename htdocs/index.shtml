@@ -384,7 +384,8 @@ function toggleBlock(divId, imgId)
 				to the respective products and subject to change or removal, these should not be used.</li>
 				<li><b>[LO] Logger Oddities</b><br/>
 				Looks for uses of log4j or slf4j where the class specified when creating the logger
-				is not the same as the class in which this logger is used.</li>
+				is not the same as the class in which this logger is used. Also looks for using concatenation
+                with slf4j logging rather than using the parameterized interface.</li>
 				<li><b>[SCSS] Suspicious Clustered Session Support</b><br/>
 				Looks for methods that access objects in http sessions, that are complex objects,
 				modifies those objects, but does not call setAttribute to signify a change so that

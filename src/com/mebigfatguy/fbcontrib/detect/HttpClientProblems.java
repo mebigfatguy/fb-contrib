@@ -27,6 +27,11 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 
+/**
+ * looks for problems surrounding use of HttpRequests from the Apache HttpComponents library which 
+ * have have some little-known quirks about them. This is a set of detectors that helps guard 
+ * against resource starvation.
+ */
 public class HttpClientProblems extends MissingMethodsDetector {
 
 	private static Set<String> httpRequestClasses = new HashSet<String>();

@@ -44,6 +44,13 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for uses of log4j or slf4j where the class specified when creating the logger is 
+ * not the same as the class in which this logger is used. Also looks for using concatenation
+ * with slf4j logging rather than using the parameterized interface.
+ * @author dave
+ *
+ */
 @CustomUserValue
 public class LoggerOddities extends BytecodeScanningDetector {
     private static JavaClass THROWABLE_CLASS;
