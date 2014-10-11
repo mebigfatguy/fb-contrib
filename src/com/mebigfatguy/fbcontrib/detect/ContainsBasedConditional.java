@@ -34,6 +34,12 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for complex if conditions where multiple or clauses are joined together
+ * where the same variable is compared against a number of static values. This pattern
+ * is much more easy to read if you put those values in a static set, and just use one
+ * contains(value) call. The set name adds self-documentation as well.
+ */
 public class ContainsBasedConditional extends BytecodeScanningDetector {
 
 	private static final int LOW_CONDITIONAL_COUNT = 3;
