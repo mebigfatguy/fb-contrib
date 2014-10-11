@@ -27,8 +27,6 @@ import edu.umd.cs.findbugs.classfile.Global;
 
 /**
  * Utility class for XClass and XMethod classes.
- * 
- * @author Jean-Noel Rouvignac
  */
 public class XClassUtils {
 
