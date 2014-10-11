@@ -30,6 +30,9 @@ import static org.apache.bcel.Constants.INVOKESPECIAL;
 import static org.apache.bcel.Constants.INVOKESTATIC;
 import static org.apache.bcel.Constants.INVOKEVIRTUAL;
 
+/**
+ * a collection of static methods for categorizing opcodes into groups 
+ */
 public class OpcodeUtils {
 
 	private OpcodeUtils(){}
