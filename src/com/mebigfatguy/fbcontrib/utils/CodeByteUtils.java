@@ -18,6 +18,11 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+/**
+ * a collection of static methods for working with retrieving 
+ * arbitrary code bytes in a code byte array
+ *
+ */
 public class CodeByteUtils {
 	
     private CodeByteUtils() {       
