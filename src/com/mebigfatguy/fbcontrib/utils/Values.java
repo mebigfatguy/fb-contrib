@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+/**
+ * a class holding common constants used throughout fb-contrib
+ */
 public class Values {
 
 	public static final Integer NEGATIVE_ONE = Integer.valueOf(-1);
