@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+/**
+ * an enumeration of all the bug instance types that fb-contrib produces
+ */
 public enum BugType {
 	
 	ABC_ARRAY_BASED_COLLECTIONS,
