@@ -518,6 +518,9 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 		}
 	}
 
+	/**
+	 * an inner helper class that holds basic information about a method
+	 */
 	public static class MethodInfo
 	{
 		private final String methodName;

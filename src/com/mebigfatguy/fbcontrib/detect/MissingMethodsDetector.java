@@ -36,6 +36,10 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
+/**
+ * an abstract base class for WriteOnlyCollections and HttpClientProblems, looks
+ * for calls that are expected to be made, but are not.
+ */
 public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
 	private final BugReporter bugReporter;

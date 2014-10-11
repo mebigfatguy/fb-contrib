@@ -48,6 +48,11 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for calls to classes and methods that do not exist in the JDK for which this class is
+ * compiled. This can happen if you specify the -source and -target options of the javac compiler, and
+ * specify a target that is less than the jdk version of the javac compiler.
+ */
 public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 {
 	private static final Map<Integer, String> VER_REG_EX = new HashMap<Integer, String>();

@@ -56,6 +56,11 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 
+/**
+ * Looks for allocations and initializations of java collections, but that are never
+ * read from or accessed to gain information. This represents a collection of no use, and most probably
+ * can be removed. It is similar to a dead local store.
+ */
 @CustomUserValue
 public class WriteOnlyCollection extends MissingMethodsDetector {
 

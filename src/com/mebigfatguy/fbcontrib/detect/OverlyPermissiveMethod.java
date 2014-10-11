@@ -41,6 +41,10 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
+/**
+ * looks for methods that are declared more permissively than the code is using. 
+ * For instance, declaring a method public, when it could just be declared private.
+ */
 public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
 	private static Map<Integer, String> DECLARED_ACCESS = new HashMap<Integer, String>();

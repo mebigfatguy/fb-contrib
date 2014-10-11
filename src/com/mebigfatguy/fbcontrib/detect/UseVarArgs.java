@@ -31,6 +31,11 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
+/**
+ * looks for definitions of methods that have an array as the last parameter.
+ * Since this class is compiled with java 1.5 or better, it would be more flexible for clients of this
+ * method to define this parameter as a vararg parameter.
+ */
 public class UseVarArgs extends PreorderVisitor implements Detector 
 {
 	private final BugReporter bugReporter;

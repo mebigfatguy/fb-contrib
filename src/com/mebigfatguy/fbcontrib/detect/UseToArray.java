@@ -36,6 +36,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for code that builds an array of values from a collection, by manually looping
+ * over the elements of the collection, and adding them to the array. It is simpler and
+ * cleaner to use mycollection.toArray(new type[mycollection.size()].
+ */
 @CustomUserValue
 public class UseToArray extends BytecodeScanningDetector 
 {

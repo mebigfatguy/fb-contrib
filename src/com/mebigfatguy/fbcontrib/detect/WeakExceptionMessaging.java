@@ -40,6 +40,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for exceptions that are thrown with static strings as messages. Using static strings
+ * doesn't differentiate one use of this method versus another, and so it may be difficult
+ * to determine how this exception occurred without showing context.
+ */
 @CustomUserValue
 public class WeakExceptionMessaging extends BytecodeScanningDetector {
 

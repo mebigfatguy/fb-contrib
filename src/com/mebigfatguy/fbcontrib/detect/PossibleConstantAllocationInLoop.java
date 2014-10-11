@@ -41,6 +41,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for allocations of objects using the default constructor in a loop, where
+ * the object allocated is never assigned to any object that is used outside the loop.
+ * It is possible that this allocation can be done outside the loop to avoid excessive garbage.
+ */
 @CustomUserValue
 public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 
