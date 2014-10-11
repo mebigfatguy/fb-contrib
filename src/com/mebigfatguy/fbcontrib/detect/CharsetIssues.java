@@ -234,12 +234,12 @@ public class CharsetIssues extends BytecodeScanningDetector {
 		return sb.toString();
 	}
 	
-	@PublicAPI(value = "Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
+	@PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
 	public static Map<String, Integer> getUnreplaceableCharsetEncodings() {
 	    return UNREPLACEABLE_ENCODING_METHODS;
 	}
 	
-	@PublicAPI(value = "Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
+	@PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
 	public static Map<String, Integer> getReplaceableCharsetEncodings() {
         return REPLACEABLE_ENCODING_METHODS;
     }
