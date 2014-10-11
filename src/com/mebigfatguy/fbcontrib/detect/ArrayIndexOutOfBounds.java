@@ -40,6 +40,13 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for usage of arrays with staticly known indices where it can be determined
+ * that the index is out of bounds based on how the array was allocated. This 
+ * deletor is obviously limited to a small subset of out of bounds exceptions that
+ * can be statically determined, and not the large family of problems that can 
+ * occur at runtime.
+ */
 @CustomUserValue
 public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
 
