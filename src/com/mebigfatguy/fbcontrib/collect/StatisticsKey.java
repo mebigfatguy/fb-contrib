@@ -18,6 +18,10 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
+/**
+ * information about a method call for use in the Collect phase of statistics building,
+ * used in the key of the statistics map.
+ */
 public class StatisticsKey {
 	
 	private String className;
