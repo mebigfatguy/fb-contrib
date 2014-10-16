@@ -60,6 +60,10 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 	private String callingPackage;
 	private String callingClass;
 
+	/**
+     * constructs a OPM detector given the reporter to report bugs on
+     * @param bugReporter the sync of bug reports
+	 */
 	public OverlyPermissiveMethod(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
