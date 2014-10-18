@@ -432,5 +432,10 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 		public String getSignature() {
 			return catchSignature;
 		}
+		
+		@Override
+		public String toString() {
+			return "CatchInfo[catchStart=" + catchStart + ", catchFinish=" + catchFinish + ", catchSignature=" + catchSignature + "]";
+		}
 	}
 }
