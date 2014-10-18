@@ -245,5 +245,10 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
 			monitorCount = 0;
             exReg = -1;
 		}
+		
+		@Override
+		public String toString() {
+			return "FinallyBlockInfo[startPC=" + startPC + ", monitorCount=" + monitorCount + ", exReg=" + exReg + "]";
+		}
 	}
 }
