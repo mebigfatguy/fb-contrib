@@ -40,7 +40,9 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
@@ -74,6 +76,9 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	private List<CatchInfo> catchInfos;
 	private LocalVariableTable lvt;
 	private Map<String, Set<String>> constrainingInfo;
+	private boolean isBooleanMethod;
+	private boolean hasValidFalseReturn;
+	private int catchFalseReturnPC;
 
 	
     /** constructs a EXS detector given the reporter to report bugs on.
@@ -109,14 +114,24 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	public void visitCode(Code obj) {
 		try {
 			Method method = getMethod();
-			if (prescreen(method)) {
+			isBooleanMethod = Type.BOOLEAN.equals(method.getReturnType());
+			if (isBooleanMethod || prescreen(method)) {
 				catchHandlerPCs = collectExceptions(obj.getExceptionTable());
 				if (!catchHandlerPCs.isEmpty()) {
 					stack.resetForMethodEntry(this);
 					catchInfos = new ArrayList<CatchInfo>();
 					lvt = method.getLocalVariableTable();
 					constrainingInfo = null;
+					hasValidFalseReturn = false;
+					catchFalseReturnPC = -1;
 					super.visitCode(obj);
+					
+					if (!hasValidFalseReturn && (catchFalseReturnPC >= 0)) {
+						bugReporter.reportBug(new BugInstance(this, BugType.EXS_EXCEPTION_SOFTENING_RETURN_FALSE.name(), NORMAL_PRIORITY)
+									.addClass(this)
+									.addMethod(this)
+									.addSourceLine(this, catchFalseReturnPC));
+					}
 				}
 			}
 		} finally {
@@ -177,15 +192,15 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 										if (constrainingInfo == null)
 											constrainingInfo = getConstrainingInfo(getClassContext().getJavaClass(), getMethod());
 			
-										String bug = null;
+										BugType bug = null;
 										int priority = NORMAL_PRIORITY;
 										
 										if (constrainingInfo == null) {
-											bug = "EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS";
+											bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS;
 											priority = HIGH_PRIORITY;
 										}
 										else if (!constrainingInfo.values().iterator().next().isEmpty()) {
-											bug = "EXS_EXCEPTION_SOFTENING_HAS_CHECKED";
+											bug = BugType.EXS_EXCEPTION_SOFTENING_HAS_CHECKED;
 											priority = NORMAL_PRIORITY;
 										}
 										else {
@@ -202,13 +217,13 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 											else
 												pack2 = "";
 											if (SignatureUtils.similarPackages(pack1, pack2, 2)) {
-												bug = "EXS_EXCEPTION_SOFTENING_NO_CHECKED";
+												bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CHECKED;
 												priority = NORMAL_PRIORITY;
 											}
 										}
 										
 										if (bug != null) {
-											bugReporter.reportBug(new BugInstance(this, bug, priority)
+											bugReporter.reportBug(new BugInstance(this, bug.name(), priority)
 														.addClass(this)
 														.addMethod(this)
 														.addSourceLine(this));
@@ -220,6 +235,27 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 					}
 				} catch (ClassNotFoundException cnfe) {
 					bugReporter.reportMissingClass(cnfe);
+				}
+			} else if (seen == IRETURN) {
+				if (isBooleanMethod && !hasValidFalseReturn) {
+					if (stack.getStackDepth() > 0) {
+						OpcodeStack.Item item = stack.getStackItem(0);
+						Integer returnVal = (Integer) item.getConstant();
+						if (returnVal == null) {
+							hasValidFalseReturn = true;
+						} else if ((returnVal.intValue() == 0) && (catchFalseReturnPC < 0)) {
+							Set<String> sigs = findPossibleCatchSignatures(catchInfos, getPC());
+							for (String sig : sigs) {
+								if (!sig.isEmpty()) {
+									catchFalseReturnPC = getPC();
+									break;
+								}
+							}
+							if (catchFalseReturnPC < 0) {
+								hasValidFalseReturn = true;
+							}
+						}
+					}
 				}
 			}
 			

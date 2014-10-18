@@ -3345,6 +3345,18 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="EXS_EXCEPTION_SOFTENING_RETURN_FALSE">
+	   <ShortDescription>method converts an exception into a boolean 'error code' value</ShortDescription>
+	   <LongDescription>method {1} converts an exception into a boolean 'error code' value</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This method catches and exception and returns a boolean that represents whether an exception occurred or not.
+	       This throws away the value of exception handling and lets code ignore the resultant 'error code' return value.
+	       You should just throw the exception to the caller instead.</p>
+	       ]]>
+	   </Details>
+	</BugPattern>
 
 	<BugPattern type="CFS_CONFUSING_FUNCTION_SEMANTICS">
 		<ShortDescription>Method returns modified parameter</ShortDescription>

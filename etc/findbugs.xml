@@ -167,7 +167,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.MisleadingOverloadModel" speed="fast" reports="MOM_MISLEADING_OVERLOAD_MODEL" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.ExceptionSoftening" speed="moderate" reports="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS,EXS_EXCEPTION_SOFTENING_HAS_CHECKED,EXS_EXCEPTION_SOFTENING_NO_CHECKED" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ExceptionSoftening" speed="moderate" reports="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS,EXS_EXCEPTION_SOFTENING_HAS_CHECKED,EXS_EXCEPTION_SOFTENING_NO_CHECKED,EXS_EXCEPTION_SOFTENING_RETURN_FALSE" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ConfusingFunctionSemantics" speed="fast" reports="CFS_CONFUSING_FUNCTION_SEMANTICS" />
 
@@ -407,6 +407,7 @@
 	<BugPattern abbrev="EXS" type="EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS" category="STYLE" />
 	<BugPattern abbrev="EXS" type="EXS_EXCEPTION_SOFTENING_HAS_CHECKED" category="STYLE" />
 	<BugPattern abbrev="EXS" type="EXS_EXCEPTION_SOFTENING_NO_CHECKED" category="STYLE" />
+	<BugPattern abbrev="EXS" type="EXS_EXCEPTION_SOFTENING_RETURN_FALSE" category="STYLE" />
 	<BugPattern abbrev="CFS" type="CFS_CONFUSING_FUNCTION_SEMANTICS" category="STYLE" />
 	<BugPattern abbrev="JAO" type="JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT" category="STYLE" />
 	<BugPattern abbrev="JAO" type="JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE" category="STYLE" />
