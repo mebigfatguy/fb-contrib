@@ -55,6 +55,11 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 			wrappedReg = reg;
 			wasArg = false;
 		}
+		
+		@Override
+		public String toString() {
+			return "WrapperInfo[wrappedReg=" + wrappedReg + ", wasArg=" + wasArg + "]";
+		}
 	}
 	
 	private final BugReporter bugReporter;
