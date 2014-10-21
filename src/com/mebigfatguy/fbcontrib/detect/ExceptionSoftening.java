@@ -126,7 +126,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 					catchFalseReturnPC = -1;
 					super.visitCode(obj);
 					
-					if (!hasValidFalseReturn && (catchFalseReturnPC >= 0)) {
+					if (!hasValidFalseReturn && (catchFalseReturnPC >= 0) && !method.getName().startsWith("is")) {
 						bugReporter.reportBug(new BugInstance(this, BugType.EXS_EXCEPTION_SOFTENING_RETURN_FALSE.name(), NORMAL_PRIORITY)
 									.addClass(this)
 									.addMethod(this)
