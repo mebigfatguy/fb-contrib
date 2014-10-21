@@ -42,6 +42,15 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
 
     private static Set<String> PRIMITIVE_ARRAYS = new HashSet<String>(8);
     static {
+        PRIMITIVE_ARRAYS.add("[B");
+        PRIMITIVE_ARRAYS.add("[C");
+        PRIMITIVE_ARRAYS.add("[S");
+        PRIMITIVE_ARRAYS.add("[I");
+        PRIMITIVE_ARRAYS.add("[J");
+        PRIMITIVE_ARRAYS.add("[F");
+        PRIMITIVE_ARRAYS.add("[D");
+        PRIMITIVE_ARRAYS.add("[Z");
+        // oddly findbugs opcode stack reports single dim arrays as the following
         PRIMITIVE_ARRAYS.add("[[B");
         PRIMITIVE_ARRAYS.add("[[C");
         PRIMITIVE_ARRAYS.add("[[S");
@@ -104,7 +113,7 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
                 if ("java/util/Arrays".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     if ("asList".equals(methodName)) {
-                        if (stack.getStackDepth() == 1) {
+                        if (stack.getStackDepth() >= 1) {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             String sig = item.getSignature();
                             if (PRIMITIVE_ARRAYS.contains(sig)) {
