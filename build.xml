@@ -40,6 +40,7 @@
 		<mkdir dir="${user.home}/.ant/lib" />
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/1.2.0/yank-1.2.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://bitbucket.org/klubick/bugrankcheckstyle/downloads/bug-rank-check-style-1.0.0.jar" dest="${user.home}/.ant/lib"/>
+		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/vcsversion/vcsversion/0.2.0/vcsversion-0.2.0.jar" dest="${user.home}/.ant/lib"/>
 	</target>
 	
 	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank" unless="no.yank">
@@ -53,6 +54,8 @@
     <target name="info">
         <echo message="fb-contrib - a findbugs plugin"/>
         <echo message=""/>
+    	<echo message="    This project requires three jars to build fb-contrib: yank, bug-rank-check-style and vcsversion" />
+    	<echo message=""/>
         <echo message="    This project uses yank (https://github.com/mebigfatguy/yank) for dependency management"/>
         <echo message="    download yank.jar and place in ~/.ant/lib directory"/>
         <echo message="    http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.mebigfatguy.yank%22"/>
@@ -61,7 +64,10 @@
     	<echo message="    Additionally, this project uses bug-rank-check-style to validate etc/bugrank.txt"/>
     	<echo message="    bug-rank-check-style-1.0.0.jar can be downloaded at https://bitbucket.org/klubick/bugrankcheckstyle/downloads"/>
     	<echo message="    and put in ~/.ant/lib alongside yank"/>
-    	<echo message=""/>
+        <echo message="===="/>
+    	<echo message="    Finally, this project uses vcsversion to inject the git version information into the manifest file"/>
+    	<echo message="    and can be downloaded and placed in ~/.ant/lib as well"/>
+    	<echo message="    http://search.maven.org/#search%7Cga%7C1%7Cvcsversion"/>
     	<echo message="    This task can be automated by running ant infra_jars"/>
     </target>
 	
@@ -123,7 +129,8 @@
 		</javac>
 	</target>
 
-	<target name="jar" depends="compile" description="produces the fb-contrib jar file">
+	<target name="jar" depends="compile" xmlns:vcs="antlib:com.mebigfatguy.vcsversion" description="produces the fb-contrib jar file">
+		<vcs:vcsversion vcs="git" revisionProperty="_rev_" dateProperty="_date_" branchProperty="_branch_"/>
 		<jar destfile="${basedir}/fb-contrib-${fb-contrib.version}.jar">
 			<fileset dir="etc">
 				<include name="findbugs.xml" />
@@ -141,6 +148,7 @@
 			<manifest>
 				<attribute name="fb-contrib-version" value="${fb-contrib.version}" />
 				<attribute name="Main-Class" value="com.mebigfatguy.fbcontrib.FBContrib" />
+				<attribute name="git-revision" value="${_branch_} ${_rev_} ${_date_}" />
 				<attribute name="Eclipse-RegisterBuddy" value="edu.umd.cs.findbugs.plugin.eclipse" />
 				<attribute name="Bundle-ManifestVersion" value="2" />
 				<attribute name="Bundle-Name" value="fb-contrib plugin" />
