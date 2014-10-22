@@ -199,5 +199,10 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector
 			if (alteredPC < 0)
 				alteredPC = pc;
 		}
+		
+		@Override
+		public String toString() {
+			return "ParmUsage[returnPC=" + returnPC + ", alteredPC=" + alteredPC + "]";
+		}
 	}
 }
