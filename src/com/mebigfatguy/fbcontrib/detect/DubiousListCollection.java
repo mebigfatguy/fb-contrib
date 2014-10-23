@@ -252,5 +252,10 @@ public class DubiousListCollection extends BytecodeScanningDetector
 		{
 			return setCnt;
 		}
+		
+		@Override
+		public String toString() {
+			return "FieldInfo[setCnt=" + setCnt + ", slAnnotation=" + slAnnotation + "]";
+		}
 	}
 }
