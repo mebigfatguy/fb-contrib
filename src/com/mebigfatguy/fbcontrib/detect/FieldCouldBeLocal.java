@@ -355,6 +355,11 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		public boolean hasAnnotation() {
 		    return hasAnnotation;
 		}
+		
+		@Override
+		public String toString() {
+			return "FieldInfo[fieldAnnotation=" + fieldAnnotation + ", srcLineAnnotation=" +  srcLineAnnotation + ", hasAnnotation=" + hasAnnotation + "]";
+		}
 	}
 
 	/**
