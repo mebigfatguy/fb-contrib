@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ClassImpersonatingString extends BytecodeScanningDetector {
 
+	private static final String TO_STRING = "toString";
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
 	
@@ -67,9 +68,27 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 					String clsName = getClassConstantOperand();
 					String methodName = getNameConstantOperand();
 					String sig = getSigConstantOperand();
-					if (!"java/lang/StringBuilder".equals(clsName) && !"java/lang/StringBuffer".equals(clsName)
-					&& "toString".equals(methodName) && "()Ljava/lang/String;".equals(sig)) {
-						userValue = "toString";
+					boolean isStringBuilder = "java/lang/StringBuilder".equals(clsName) || "java/lang/StringBuffer".equals(clsName);
+					
+					if (TO_STRING.equals(methodName) && "()Ljava/lang/String;".equals(sig)) {
+						if (isStringBuilder) {
+							if (stack.getStackDepth() > 0) {
+								OpcodeStack.Item item = stack.getStackItem(0);
+								userValue = (String) item.getUserValue();
+							}
+						} else {
+							userValue = TO_STRING;
+						}
+					} else if (isStringBuilder && "append".equals(methodName)) {
+						if (stack.getStackDepth() > 0) {
+							OpcodeStack.Item item = stack.getStackItem(0);
+							userValue = (String) item.getUserValue();
+							if (userValue == null) {
+								if (!"Ljava/lang/String;".equals(item.getSignature())) {
+									userValue = TO_STRING;
+								}
+							}
+						}
 					}
 				}
 				break;
