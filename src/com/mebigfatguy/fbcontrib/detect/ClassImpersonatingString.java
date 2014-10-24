@@ -85,10 +85,7 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 							userValue = (String) item.getUserValue();
 							if (userValue == null) {
 								if (!"Ljava/lang/String;".equals(item.getSignature())) {
-									if (stack.getStackDepth() > 1) {
-										item = stack.getStackItem(1);
-										item.setUserValue(TO_STRING);
-									}
+									userValue = TO_STRING;
 								}
 							}
 						}
