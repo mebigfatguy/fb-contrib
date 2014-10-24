@@ -1501,6 +1501,23 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ClassImpersonatingString">
+        <Details>
+            <![CDATA[
+            <p>looks for classes that store fields that are Strings that impersonate instances of classes, or collections that are 
+            fields that hold Strings that impersonate a class. Examples of String impersonating are Storing:
+            <ul>
+                <li>the result of a toString call</li>
+                <li>Strings build from parsing or building strings from other objects, such as "1,2,3,4" or "Project:3"</li>
+            </ul>
+            By using Strings you are throwing away type-safety, and making it difficult to reason about what the values of variables
+            in use is. If a String has multiple parts to it, it probably belongs as a first class Class.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -4668,6 +4685,20 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="CIS_TOSTRING_STORED_IN_FIELD">
+        <ShortDescription>This method stores the value of a toString() call into a field</ShortDescription>
+        <LongDescription>This method {0} stores the value of a toString() call into a field</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method calls the toString() method on an object and stores the value in a field. Doing this
+            throws away the type safety of having the object defined by a Class. Using String makes it very easy to
+            use the wrong type of value, and the compiler will not catch these mistakes. You should delay converting
+            values to Strings for as long as possible, and thus not store them as fields.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -4795,4 +4826,5 @@
 	<BugCode abbrev="CSI">Charset Issues</BugCode>
 	<BugCode abbrev="CBC">Contains Based Conditional</BugCode>
 	<BugCode abbrev="OPM">Overly Permissive Method</BugCode>
+	<BugCode abbrev="CIS">Class Impersonating String</BugCode>
 </MessageCollection>
