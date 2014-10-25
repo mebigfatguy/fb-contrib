@@ -18,7 +18,14 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.generic.Type;
+
+import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -34,6 +41,32 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ClassImpersonatingString extends BytecodeScanningDetector {
 
+	private static Map<CollectionMethod, int[]> COLLECTION_PARMS = new HashMap<CollectionMethod, int[]>();
+	static {
+		int[] parm0 = new int[] { Values.ZERO };
+		int[] parm0N1 = new int[] { Values.NEGATIVE_ONE, Values.ZERO };
+		int[] parm01N1 = new int[] { Values.NEGATIVE_ONE, Values.ZERO, Values.ONE };
+		
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "contains", "(Ljava/lang/Object;)Z"), parm0);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "add", "(Ljava/lang/Object;)Z"), parm0);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "remove", "(Ljava/lang/Object;)Z"), parm0);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "set", "(ILjava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "add", "(ILjava/lang/Object;)V"), parm0);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "indexOf", "(Ljava/lang/Object;)I"), parm0);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "lastIndexOf", "(Ljava/lang/Object;)I"), parm0);
+
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/Set", "contains", "(Ljava/lang/Object;)Z"), parm0);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/Set", "add", "(Ljava/lang/Object;)Z"), parm0);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/Set", "remove", "(Ljava/lang/Object;)Z"), parm0);
+		
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "containsKey", "(Ljava/lang/Object;)Z"), parm0);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "containsValue", "(Ljava/lang/Object;)Z"), parm0);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
+		COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+	}
+	
 	private static final String TO_STRING = "toString";
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
@@ -61,6 +94,7 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		String userValue = null;
+		int[] checkParms = null;
 		try {
 			stack.precomputation(this);
 			switch (seen) {
@@ -89,6 +123,33 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 								}
 							}
 						}
+					} else {
+						Type[] parmTypes = Type.getArgumentTypes(sig);
+						if (stack.getStackDepth() > parmTypes.length) {
+							CollectionMethod cm = new CollectionMethod(clsName, methodName, sig);
+							checkParms = COLLECTION_PARMS.get(cm);
+							if (checkParms != null) {
+								OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
+								if (item.getXField() != null) {
+									for (int parm : checkParms) {
+										if (parm >= 0) {
+											item = stack.getStackItem(parm);
+											if (TO_STRING.equals(item.getUserValue())) {
+												bugReporter.reportBug(new BugInstance(this, BugType.CIS_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
+															.addClass(this)
+															.addMethod(this)
+															.addSourceLine(this));
+												break;
+											}
+										}
+									}
+								} else {
+									checkParms = null;
+								}
+							} else {
+								checkParms = null;
+							}
+						}
 					}
 				}
 				break;
@@ -97,7 +158,7 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 					if (stack.getStackDepth() > 0) {
 						OpcodeStack.Item item = stack.getStackItem(0);
 						if ("toString".equals(item.getUserValue())) {
-							bugReporter.reportBug(new BugInstance(this, "CIS_TOSTRING_STORED_IN_FIELD", NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.CIS_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this));
@@ -113,6 +174,38 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 					item.setUserValue(userValue);
 				}
 			}
+		}
+	}
+	
+	static class CollectionMethod {
+		private String clsName;
+		private String methodName;
+		private String signature;
+		
+		public CollectionMethod(String clsN, String methodN, String sig) {
+			clsName = clsN;
+			methodName = methodN;
+			signature = sig;
+		}
+		
+		@Override
+		public int hashCode() {
+			return clsName.hashCode() ^ methodName.hashCode() ^ signature.hashCode();
+		}
+		
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof CollectionMethod)) {
+				return false;
+			}
+			
+			CollectionMethod that = (CollectionMethod) o;
+			return clsName.equals(that.clsName) && methodName.equals(that.methodName) && signature.equals(that.signature); 
+		}
+		
+		@Override
+		public String toString() {
+			return "CollectionMethod[clsName=" + clsName + ", methodName=" + methodName + ", signature=" + signature + "]";
 		}
 	}
 }
