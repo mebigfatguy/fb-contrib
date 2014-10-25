@@ -123,32 +123,39 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 								}
 							}
 						}
-					} else {
-						Type[] parmTypes = Type.getArgumentTypes(sig);
-						if (stack.getStackDepth() > parmTypes.length) {
-							CollectionMethod cm = new CollectionMethod(clsName, methodName, sig);
-							checkParms = COLLECTION_PARMS.get(cm);
-							if (checkParms != null) {
-								OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
-								if (item.getXField() != null) {
-									for (int parm : checkParms) {
-										if (parm >= 0) {
-											item = stack.getStackItem(parm);
-											if (TO_STRING.equals(item.getUserValue())) {
-												bugReporter.reportBug(new BugInstance(this, BugType.CIS_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
-															.addClass(this)
-															.addMethod(this)
-															.addSourceLine(this));
-												break;
-											}
+					} 
+				}
+				break;
+					
+				case INVOKEINTERFACE: {
+					String clsName = getClassConstantOperand();
+					String methodName = getNameConstantOperand();
+					String sig = getSigConstantOperand();
+					
+					Type[] parmTypes = Type.getArgumentTypes(sig);
+					if (stack.getStackDepth() > parmTypes.length) {
+						CollectionMethod cm = new CollectionMethod(clsName, methodName, sig);
+						checkParms = COLLECTION_PARMS.get(cm);
+						if (checkParms != null) {
+							OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
+							if (item.getXField() != null) {
+								for (int parm : checkParms) {
+									if (parm >= 0) {
+										item = stack.getStackItem(parm);
+										if (TO_STRING.equals(item.getUserValue())) {
+											bugReporter.reportBug(new BugInstance(this, BugType.CIS_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
+														.addClass(this)
+														.addMethod(this)
+														.addSourceLine(this));
+											break;
 										}
 									}
-								} else {
-									checkParms = null;
 								}
 							} else {
 								checkParms = null;
 							}
+						} else {
+							checkParms = null;
 						}
 					}
 				}
