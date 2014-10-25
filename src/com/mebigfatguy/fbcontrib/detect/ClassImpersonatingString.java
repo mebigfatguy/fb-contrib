@@ -19,7 +19,9 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
@@ -65,6 +67,16 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 		COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
 		COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
 		COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+	}
+	
+	private static final Set<String> STRING_PARSE_METHODS = new HashSet<String>();
+	static {
+		STRING_PARSE_METHODS.add("indexOf");
+		STRING_PARSE_METHODS.add("lastIndexOf");
+		STRING_PARSE_METHODS.add("substring");
+		STRING_PARSE_METHODS.add("split");
+		STRING_PARSE_METHODS.add("startsWith");
+		STRING_PARSE_METHODS.add("endsWith");
 	}
 	
 	private static final String TO_STRING = "toString";
@@ -125,7 +137,18 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 								}
 							}
 						}
-					} 
+					} else if ("java/lang/String".equals(clsName) && STRING_PARSE_METHODS.contains(methodName)) {
+						Type[] parmTypes = Type.getArgumentTypes(sig);
+						if (stack.getStackDepth() > parmTypes.length) {
+							OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
+							if ((item.getXField() != null) || FROM_FIELD.equals(item.getUserValue())) {
+								bugReporter.reportBug(new BugInstance(this, BugType.CIS_STRING_PARSING_A_FIELD.name(), NORMAL_PRIORITY)
+											.addClass(this)
+											.addMethod(this)
+											.addSourceLine(this));
+							}
+						}
+					}
 				}
 				break;
 					

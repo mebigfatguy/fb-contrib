@@ -4699,6 +4699,20 @@
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="CIS_STRING_PARSING_A_FIELD">
+        <ShortDescription>This method parses a String that is a field</ShortDescription>
+        <LongDescription>This method {1} parses a String that is a field</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method calls a parsing method (indexOf, lastIndexOf, startsWith, endsWith, substring, indexOf) on a String
+            that is a field, or comes from a collection that is a field. This implies that the String in question is holding 
+            multiple parts of information inside the string, which would be more maintanable and type safe if that value was a
+            true collection, rather than a String.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
