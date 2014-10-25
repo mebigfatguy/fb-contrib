@@ -302,12 +302,13 @@ public class HangingExecutors extends BytecodeScanningDetector {
 			this.annotation = annotation;
 			this.priority = priority;
 		}
-
-
+		
+		@Override
+		public String toString() {
+			return "AnnotationPriority[priority=" + priority + ", annotation=" + annotation + "]";
+		}
 	}
-
 }
-
 
 class LocalHangingExecutor extends LocalTypeDetector {
 
