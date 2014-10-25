@@ -218,5 +218,10 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
             isStatic = mStatic;
             srcLine = annotation;
         }
+        
+        @Override
+        public String toString() {
+        	return "SourceInfo[clsName=" + clsName + ", methodName=" + methodName + ", signature=" + signature + ", isStatic=" + isStatic + ", srcLine=" + srcLine + "]";
+        }
     }
 }
