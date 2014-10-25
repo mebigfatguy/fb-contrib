@@ -27,6 +27,13 @@ public class CIS_Sample {
 		return map.get(d1 + "-" + d2);
 	}
 	
+	public String testParseOfMapResult() {
+		String s = (String) map.get("foo");
+		int colonPos = s.indexOf(":");
+		return s.substring(0, colonPos);
+	}
+	
+	
 	public void fpTestToStringToFieldSB(String s) {
 		val = s + "wow";
 	}
