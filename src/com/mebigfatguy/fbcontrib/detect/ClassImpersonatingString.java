@@ -68,6 +68,8 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 	}
 	
 	private static final String TO_STRING = "toString";
+	private static final String FROM_FIELD = "FROM_FIELD";
+	
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
 	
@@ -179,6 +181,12 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					item.setUserValue(userValue);
+				}
+			}
+			if ((checkParms != null) && (checkParms[0] == -1)) {
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item item = stack.getStackItem(0);
+					item.setUserValue(FROM_FIELD);
 				}
 			}
 		}
