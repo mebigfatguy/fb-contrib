@@ -166,7 +166,7 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 							if (stack.getStackDepth() > parmTypes.length) {
 								OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
 								if ((item.getXField() != null) || FROM_FIELD.equals(item.getUserValue())) {
-									bugReporter.reportBug(new BugInstance(this, BugType.CIS_STRING_PARSING_A_FIELD.name(), NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.CIS_STRING_PARSING_A_FIELD.name(), priority.intValue())
 												.addClass(this)
 												.addMethod(this)
 												.addSourceLine(this));
