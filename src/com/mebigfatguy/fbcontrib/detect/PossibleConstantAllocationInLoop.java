@@ -332,6 +332,11 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 			loopTop = -1;
 			loopBottom = -1;
 		}
+		
+		@Override
+		public String toString() {
+			return "AllocationInfo[allocationPC=" + allocationPC + ", loopTop=" + loopTop + ", loopBottom=" + loopBottom + "]";
+		}
 	}
 	
 	static class SwitchInfo {
