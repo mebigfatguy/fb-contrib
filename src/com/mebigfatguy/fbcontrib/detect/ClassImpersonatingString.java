@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -27,6 +28,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -84,6 +86,7 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 	
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
+	private BitSet toStringStringBuilders;
 	
 	public ClassImpersonatingString(BugReporter reporter) {
 		bugReporter = reporter;
@@ -93,15 +96,18 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			stack = new OpcodeStack();
+			toStringStringBuilders = new BitSet();
 			super.visitClassContext(classContext);
 		} finally {
 			stack = null;
+			toStringStringBuilders = null;
 		}
 	}
 	
 	@Override
 	public void visitCode(Code obj) {
 		stack.resetForMethodEntry(this);
+		toStringStringBuilders.clear();
 		super.visitCode(obj);
 	}
 	
@@ -127,13 +133,31 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 						} else {
 							userValue = TO_STRING;
 						}
-					} else if (isStringBuilder && "append".equals(methodName)) {
-						if (stack.getStackDepth() > 0) {
-							OpcodeStack.Item item = stack.getStackItem(0);
-							userValue = (String) item.getUserValue();
-							if (userValue == null) {
-								if (!"Ljava/lang/String;".equals(item.getSignature())) {
-									userValue = TO_STRING;
+					} else if (isStringBuilder) { 
+						if ("append".equals(methodName)) {
+							if (stack.getStackDepth() > 0) {
+								OpcodeStack.Item item = stack.getStackItem(0);
+								userValue = (String) item.getUserValue();
+								if (userValue == null) {
+									if (!"Ljava/lang/String;".equals(item.getSignature())) {
+										userValue = TO_STRING;
+										if (stack.getStackDepth() > 1) {
+											item = stack.getStackItem(1);
+											int reg = item.getRegisterNumber();
+											if (reg >= 0) {
+												toStringStringBuilders.set(reg);
+											}
+										}
+									}
+								}
+							}
+						} else if ("setLength".equals(methodName)) {
+							if (stack.getStackDepth() > 1) {
+								OpcodeStack.Item item = stack.getStackItem(1);
+								item.setUserValue(null);
+								int reg = item.getRegisterNumber();
+								if (reg >= 0) {
+									toStringStringBuilders.clear(reg);
 								}
 							}
 						}
@@ -196,6 +220,31 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 										.addSourceLine(this));
 						}
 					}
+				break;
+				
+				case ALOAD:
+				case ALOAD_0:
+				case ALOAD_1:
+				case ALOAD_2:
+				case ALOAD_3: {
+					int reg = RegisterUtils.getALoadReg(this,  seen);
+					if (toStringStringBuilders.get(reg)) {
+						userValue = TO_STRING;
+					}
+				}
+				break;
+				
+				case ASTORE:
+				case ASTORE_0:
+				case ASTORE_1:
+				case ASTORE_2:
+				case ASTORE_3: {
+					int reg = RegisterUtils.getAStoreReg(this, seen);
+					toStringStringBuilders.clear(reg);
+				}
+				break;
+					
+					
 					
 			}
 		} finally {
