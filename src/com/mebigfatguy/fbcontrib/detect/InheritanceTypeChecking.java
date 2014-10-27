@@ -173,5 +173,11 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector
 			
 			return IfStatement.Action.REMOVE_ACTION;
 		}
+		
+		@Override
+		public String toString() {
+			return "IfStatement[state=" + state + ", reg=" + reg + ", firstPC=" + firstPC + ", "
+					+ "branchTarget=" + branchTarget + ", matchCount=" + matchCount + ", instanceOfTypes=" + instanceOfTypes + "]";
+		}
 	}
 }
