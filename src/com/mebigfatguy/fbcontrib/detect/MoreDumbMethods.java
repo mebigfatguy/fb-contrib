@@ -48,6 +48,11 @@ public class MoreDumbMethods extends BytecodeScanningDetector
 		int getPriority() {
 			return bugPriority;
 		}
+		
+		@Override
+		public String toString() {
+			return "ReportInfo[bugPattern=" + bugPattern + ", bugPriority=" + bugPriority + "]";
+		}
 	}
 	
 	private final static Map<String,ReportInfo> dumbMethods = new HashMap<String,ReportInfo>();
