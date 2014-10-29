@@ -294,7 +294,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
     								Statistics statistics = Statistics.getStatistics();
     								MethodInfo mi = statistics.getMethodStatistics(getClassConstantOperand(), methodName, signature);
     
-    								bugReporter.reportBug(new BugInstance(this, BugType.PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS.name(), getBugPriority(mi))
+    								bugReporter.reportBug(new BugInstance(this, BugType.PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS.name(), getBugPriority(methodName, mi))
     											.addClass(this)
     											.addMethod(this)
     											.addSourceLine(this)
@@ -352,12 +352,16 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 
 	/**
 	 * returns the bug priority based on metrics about the method
+	 * @param methodName TODO
 	 * @param mi metrics about the method
 	 * @return the bug priority
 	 */
-	private int getBugPriority(MethodInfo mi) {
+	private int getBugPriority(String methodName, MethodInfo mi) {
 		if ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit))
 			return HIGH_PRIORITY;
+		
+		if ("<clinit>".equals(methodName))
+			return LOW_PRIORITY;
 		
 		if ((mi.getNumBytes() >= normalByteCountLimit) || (mi.getNumMethodCalls() >= normalMethodCallLimit))
 			return NORMAL_PRIORITY;
