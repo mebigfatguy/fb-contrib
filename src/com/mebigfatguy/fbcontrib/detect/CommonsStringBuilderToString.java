@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -143,7 +144,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
                     || "org/apache/commons/lang/builder/ToStringBuilder"
                             .equals(loadClassName)) {
                 String calledMethodSig = getSigConstantOperand();
-                if ("<init>".equals(calledMethodName)
+                if (Values.CONSTRUCTOR.equals(calledMethodName)
                         && TOSTRINGBUILDER_CTOR_SIGS.contains(calledMethodSig)) {
                     stackTracker.add(new Pair(-1, false));
                 } else if ("append".equals(calledMethodName)) {

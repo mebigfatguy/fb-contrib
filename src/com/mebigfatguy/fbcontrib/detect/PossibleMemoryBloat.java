@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -213,7 +214,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 	public void visitCode(Code obj) {
 		stack.resetForMethodEntry(this);
 
-		if ("<clinit>".equals(methodName) || "<init>".equals(methodName))
+		if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName))
 			return;
 
 		if (bloatableCandidates.size() > 0)

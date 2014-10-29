@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -62,7 +63,7 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector
 	 */
 	@Override
 	public void visitCode(Code obj) {
-		if (!"<clinit>".equals(getMethodName())) {
+		if (!Values.STATIC_INITIALIZER.equals(getMethodName())) {
 			state = State.SEEN_NOTHING;
 			super.visitCode(obj);
 		}

@@ -33,6 +33,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -148,7 +149,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 				break;
 
 				case INVOKESPECIAL:
-					if ("<init>".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+					if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
 						String clsName = getClassConstantOperand();
 						if (!SYNTHETIC_ALLOCATION_CLASSES.contains(clsName)) {
 							if (switchInfos.isEmpty()) {

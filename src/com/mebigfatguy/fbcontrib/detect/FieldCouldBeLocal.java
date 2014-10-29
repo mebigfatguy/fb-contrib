@@ -44,6 +44,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -187,7 +188,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		Method m = getMethod();
 		if (prescreen(m)) {
 			String methodName = m.getName();
-			if ("<clinit".equals(methodName) || "<init>".equals(methodName))
+			if ("<clinit".equals(methodName) || Values.CONSTRUCTOR.equals(methodName))
 				super.visitCode(obj);
 		}
 	}
@@ -258,7 +259,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 				} else if (ins instanceof INVOKESPECIAL) {
 				    INVOKESPECIAL is = (INVOKESPECIAL) ins;
 				    
-				    if ("<init>".equals(is.getMethodName(cpg)) && (is.getClassName(cpg).startsWith(clsContext.getJavaClass().getClassName() + "$"))) {  
+				    if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg)) && (is.getClassName(cpg).startsWith(clsContext.getJavaClass().getClassName() + "$"))) {  
 				        localizableFields.clear();
 				    }
 				} else if (ins instanceof INVOKEVIRTUAL) {

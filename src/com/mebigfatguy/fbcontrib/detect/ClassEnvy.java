@@ -35,6 +35,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -128,7 +129,7 @@ public class ClassEnvy extends BytecodeScanningDetector
 	public void visitCode(final Code obj) {
 		stack.resetForMethodEntry(this);
 		thisClsAccessCount = 0;
-		if ("<clinit>".equals(methodName)) {
+		if (Values.STATIC_INITIALIZER.equals(methodName)) {
 			return;
 		}
 

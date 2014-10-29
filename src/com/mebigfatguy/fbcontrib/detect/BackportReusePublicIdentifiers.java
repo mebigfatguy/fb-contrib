@@ -23,6 +23,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -68,7 +69,7 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
             case INVOKESPECIAL: {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
-                if (className.startsWith("edu/emory/mathcs/backport/") && "<init>".equals(methodName)) {
+                if (className.startsWith("edu/emory/mathcs/backport/") && Values.CONSTRUCTOR.equals(methodName)) {
                     reportBug();
                 }
             }

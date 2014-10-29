@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -87,7 +88,7 @@ public class SloppyClassReflection extends BytecodeScanningDetector
 	 */	
 	@Override
 	public void visitMethod(Method obj) {
-		if ("<clinit>".equals(obj.getName()))
+		if (Values.STATIC_INITIALIZER.equals(obj.getName()))
 			return;
 		
 		if (state == State.COLLECT) {

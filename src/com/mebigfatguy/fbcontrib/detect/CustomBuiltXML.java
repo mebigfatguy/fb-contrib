@@ -25,6 +25,8 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.Values;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -134,7 +136,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector
 				if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
 					String methodName = getNameConstantOperand();
 					String methodSig = getSigConstantOperand();
-					if ("<init>".equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ";").equals(methodSig)) {
+					if (Values.CONSTRUCTOR.equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ";").equals(methodSig)) {
 						if (stack.getStackDepth() > 0) {
 							OpcodeStack.Item itm = stack.getStackItem(0);
 							strCon = (String)itm.getConstant();

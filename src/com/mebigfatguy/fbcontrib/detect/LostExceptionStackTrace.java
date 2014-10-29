@@ -40,6 +40,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -209,7 +210,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 						break;
 					} else if (pc > catchInfo.getStart() && pc <= catchInfo.getFinish()) {
 						if (seen == INVOKESPECIAL) {
-							if ("<init>".equals(getNameConstantOperand())) {
+							if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
 								String className = getClassConstantOperand();
 								JavaClass exClass = Repository.lookupClass(className);
 								if (exClass.instanceOf(throwableClass)) {

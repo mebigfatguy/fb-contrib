@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -169,7 +170,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 	 */
 	@Override
 	public void sawOpcode(int seen) {
-		if ("<clinit>".equals(methodName) || "<init>".equals(methodName))
+		if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName))
 		{
 			lookForCustomThreadFactoriesInConstructors(seen);
 			return;

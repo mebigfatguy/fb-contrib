@@ -38,6 +38,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -103,8 +104,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 		methodSignatureIsConstrained = false;
 		String methodName = obj.getName();
 
-		if (!"<init>".equals(methodName)
-		&&  !"<clinit>".equals(methodName)) {
+		if (!Values.CONSTRUCTOR.equals(methodName)
+		&&  !Values.STATIC_INITIALIZER.equals(methodName)) {
 			String methodSig = obj.getSignature();
 
 			methodSignatureIsConstrained = methodIsSpecial(methodName, methodSig);

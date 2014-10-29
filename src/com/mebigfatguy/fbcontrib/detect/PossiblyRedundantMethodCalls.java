@@ -35,6 +35,7 @@ import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -360,7 +361,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 		if ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit))
 			return HIGH_PRIORITY;
 		
-		if ("<clinit>".equals(methodName))
+		if (Values.STATIC_INITIALIZER.equals(methodName))
 			return LOW_PRIORITY;
 		
 		if ((mi.getNumBytes() >= normalByteCountLimit) || (mi.getNumMethodCalls() >= normalMethodCallLimit))

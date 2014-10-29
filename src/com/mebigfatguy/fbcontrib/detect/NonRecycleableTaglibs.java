@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -155,7 +156,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector
 	@Override
 	public void visitCode(Code obj) {
 		Method m = getMethod();
-		if (!"<init>".equals(m.getName())) {
+		if (!Values.CONSTRUCTOR.equals(m.getName())) {
 			super.visitCode(obj);
 		}
 	}

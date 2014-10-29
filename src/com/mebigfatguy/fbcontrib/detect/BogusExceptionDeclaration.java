@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -101,7 +102,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 		declaredCheckedExceptions.clear();
 		stack.resetForMethodEntry(this);
 		Method method = getMethod();
-		if (classIsFinal || method.isStatic() || method.isPrivate() || method.isFinal() || (("<init>".equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
+		if (classIsFinal || method.isStatic() || method.isPrivate() || method.isFinal() || ((Values.CONSTRUCTOR.equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
 			ExceptionTable et = method.getExceptionTable();
 			if (et != null) {
 				String[] exNames = et.getExceptionNames();
@@ -140,7 +141,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 	 * @return whether this method is a ctor of an instance based anonymous inner class
 	 */
 	private static boolean isAnonymousInnerCtor(Method m, JavaClass cls) {
-	    if (!"<init>".equals(m.getName())) {
+	    if (!Values.CONSTRUCTOR.equals(m.getName())) {
 			return false;
 		}
 

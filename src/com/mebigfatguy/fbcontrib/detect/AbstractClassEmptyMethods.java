@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -89,7 +90,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector
 	 */
 	@Override
 	public void visitCode(Code obj) {
-		if ("<init>".equals(methodName) || "<clinit>".equals(methodName))
+		if (Values.CONSTRUCTOR.equals(methodName) || Values.STATIC_INITIALIZER.equals(methodName))
 			return;
 		
 		super.visitCode(obj);
@@ -137,7 +138,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector
 				break;
 				
 				case SAW_LDC:
-					if ((seen == INVOKESPECIAL) && "<init>".equals(getNameConstantOperand()))
+					if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand()))
 						state = State.SAW_INVOKESPECIAL;
 					else
 						state = State.SAW_DONE;

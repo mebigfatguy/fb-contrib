@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -68,7 +69,7 @@ public class Unjitable extends PreorderVisitor implements Detector {
 	public void visitCode(Code obj) {
 		
 		Method m = getMethod();
-		if ((((m.getAccessFlags() & Constants.ACC_STATIC) == 0) || !"<clinit>".equals(m.getName()))
+		if ((((m.getAccessFlags() & Constants.ACC_STATIC) == 0) || !Values.STATIC_INITIALIZER.equals(m.getName()))
 		&&  (!m.getName().contains("enum constant"))) { //a findbugs thing!!
 			byte[] code = obj.getCode();
 			if (code.length >= UNJITABLE_CODE_LENGTH) {

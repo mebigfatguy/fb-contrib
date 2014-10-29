@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.ConstantString;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -199,7 +200,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector
 	private AppendType sawInvokeSpecial(AppendType apType) {
 		String calledClass = getClassConstantOperand();
 		if (("java/lang/StringBuffer".equals(calledClass) ||  "java/lang/StringBuilder".equals(calledClass))
-		&&  "<init>".equals(getNameConstantOperand())) {
+		&&  Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
 		    String signature = getSigConstantOperand();
 			if ("()V".equals(signature)) {
 				OpcodeStack.Item itm = getStringBufferItemAt(2);

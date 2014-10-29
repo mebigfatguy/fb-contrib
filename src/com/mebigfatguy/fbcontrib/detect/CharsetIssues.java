@@ -25,6 +25,10 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
+
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.PublicAPI;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -34,10 +38,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
-
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 /**
  * looks for issues related to manually specified charsets by using string literals.

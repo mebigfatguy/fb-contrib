@@ -31,6 +31,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -175,9 +176,9 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 		if (collectionFields.size() > 0) {
 			aliases.clear();
 			String methodName = getMethodName();
-			if ("<clinit>".equals(methodName))
+			if (Values.STATIC_INITIALIZER.equals(methodName))
 				state = State.IN_CLINIT;
-			else if ("<init>".equals(methodName))
+			else if (Values.CONSTRUCTOR.equals(methodName))
 				state = State.IN_INIT;
 			else
 				state = State.IN_METHOD;
@@ -352,7 +353,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 	 */
 	private boolean isSyncCollectionCreation(int seen) {
 		if (seen == INVOKESPECIAL) {
-			if ("<init>".equals(getNameConstantOperand())) {
+			if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
 				return (syncCollections.contains(getClassConstantOperand()));
 			}
 		} else if (seen == INVOKESTATIC) {

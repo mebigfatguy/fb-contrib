@@ -30,6 +30,7 @@ import com.mebigfatguy.fbcontrib.utils.AttributesUtils;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -110,7 +111,7 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector
 				break;
 				
 			case INVOKESPECIAL:
-			    if ("<init>".equals(getNameConstantOperand())) {
+			    if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
 			        sawAlloc = true;
 			    }
 			    break;

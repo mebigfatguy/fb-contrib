@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -308,7 +309,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 	private static Method findStaticInitializer(JavaClass cls) {
 		Method[] methods = cls.getMethods();
 		for (Method m : methods) {
-			if ("<clinit>".equals(m.getName())) {
+			if (Values.STATIC_INITIALIZER.equals(m.getName())) {
 				return m;
 			}
 		}

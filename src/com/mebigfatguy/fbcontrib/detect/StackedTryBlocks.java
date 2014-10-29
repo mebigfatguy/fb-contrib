@@ -19,6 +19,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -207,7 +208,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 							inBlocks.remove(inBlocks.size() - 1);
 							innerBlock.setState(TryBlock.State.AFTER);
 						}
-					} else if ((seen == INVOKESPECIAL) && "<init>".equals(getNameConstantOperand())) {
+					} else if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
 					    String cls = getClassConstantOperand();
 					    JavaClass exCls = Repository.lookupClass(cls);
 					    if (exCls.instanceOf(THROWABLE_CLASS)) {

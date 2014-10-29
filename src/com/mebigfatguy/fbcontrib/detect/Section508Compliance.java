@@ -235,7 +235,7 @@ public class Section508Compliance extends BytecodeScanningDetector
 				String className = getClassConstantOperand();
 				String methodName = getNameConstantOperand();
 				if ("javax/swing/JLabel".equals(className)
-						&&  "<init>".equals(methodName)) {
+						&&  Values.CONSTRUCTOR.equals(methodName)) {
 					String signature = getSigConstantOperand();
 					if (signature.indexOf("Ljava/lang/String;") >= 0) {
 						sawTextLabel = true;

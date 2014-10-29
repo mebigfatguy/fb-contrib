@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -72,7 +73,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector
     public void visitCode(Code obj) {
         try {
             Method m = getMethod();
-            if (m.isStatic() || m.isPrivate() || "<init>".equals(m.getName())) {
+            if (m.isStatic() || m.isPrivate() || Values.CONSTRUCTOR.equals(m.getName())) {
                 parmSigs = SignatureUtils.getParameterSignatures(m);
                 if ((parmSigs.size() > 0) && prescreen(m)) {
                     state = State.SAW_NOTHING;

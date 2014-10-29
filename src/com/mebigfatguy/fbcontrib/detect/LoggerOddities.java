@@ -35,6 +35,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -125,7 +126,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         Method m = getMethod();
-        if ("<init>".equals(m.getName())) {
+        if (Values.CONSTRUCTOR.equals(m.getName())) {
             Type[] types = Type.getArgumentTypes(m.getSignature());
             for (Type t : types) {
                 String parmSig = t.getSignature();
@@ -303,7 +304,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 	}
 
 	private void checkForLoggerParam() {
-		if ("<init>".equals(getNameConstantOperand())) {         
+		if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {         
 		    String cls = getClassConstantOperand();
 		    if ((cls.startsWith("java/") || cls.startsWith("javax/")) && cls.endsWith("Exception")) {
 		        String sig = getSigConstantOperand();

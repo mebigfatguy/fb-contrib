@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -124,7 +125,7 @@ public class UseEnumCollections extends BytecodeScanningDetector
 			} else if (seen == INVOKESPECIAL) {
 				String clsName = getClassConstantOperand();
 				String methodName = getNameConstantOperand();
-				if ("java/util/EnumMap".equals(clsName) && "<init>".equals(methodName))
+				if ("java/util/EnumMap".equals(clsName) && Values.CONSTRUCTOR.equals(methodName))
 					sawEnumCollectionCreation = Boolean.TRUE;
 				else if (clsName.startsWith("java/util/")) {
 					if (clsName.endsWith("Map") || clsName.endsWith("Set"))

@@ -23,6 +23,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -95,7 +96,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
 				case SAW_NOTHING:
 					if (seen == INVOKESPECIAL) {
 						String name = getNameConstantOperand();
-						if ("<init>".equals(name)) {
+						if (Values.CONSTRUCTOR.equals(name)) {
 							String sig = getSigConstantOperand();
 							int numArgs = Type.getArgumentTypes(sig).length;
 							if (stack.getStackDepth() > numArgs) {

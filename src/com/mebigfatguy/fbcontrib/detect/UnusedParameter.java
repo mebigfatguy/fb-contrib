@@ -32,6 +32,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -49,8 +50,8 @@ public class UnusedParameter extends BytecodeScanningDetector {
 
     private static Set<String> IGNORE_METHODS = new HashSet<String>();
     static {
-        IGNORE_METHODS.add("<init>");
-        IGNORE_METHODS.add("<clinit>");
+        IGNORE_METHODS.add(Values.CONSTRUCTOR);
+        IGNORE_METHODS.add(Values.STATIC_INITIALIZER);
         IGNORE_METHODS.add("main");
         IGNORE_METHODS.add("premain");
         IGNORE_METHODS.add("agentmain");

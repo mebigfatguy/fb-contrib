@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -133,7 +134,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 String clsName = getClassConstantOperand();
                 if (PRESIZEABLE_COLLECTIONS.contains(clsName)) {
                     String methodName = getNameConstantOperand();
-                    if ("<init>".equals(methodName)) {
+                    if (Values.CONSTRUCTOR.equals(methodName)) {
                         String signature = getSigConstantOperand();
                         if ("()V".equals(signature)) {
                             sawAlloc = true;

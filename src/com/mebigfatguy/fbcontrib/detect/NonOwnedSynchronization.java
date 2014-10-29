@@ -188,7 +188,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector
 
 				case INVOKESPECIAL: {
 					String name = getNameConstantOperand();
-					if ("<init>".equals(name)) {
+					if (Values.CONSTRUCTOR.equals(name)) {
 						tosIsPriority = OWNED;
 					}
 				}

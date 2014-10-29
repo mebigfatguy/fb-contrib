@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.JavaClass;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -140,7 +141,7 @@ public class UseSplit extends BytecodeScanningDetector
 				case SEEN_NOTHING:
 					if (seen == INVOKESPECIAL) {
 						if (("java/util/StringTokenizer".equals(getClassConstantOperand()))
-						&&  ("<init>".equals(getNameConstantOperand()))
+						&&  (Values.CONSTRUCTOR.equals(getNameConstantOperand()))
 						&&  ("(Ljava/lang/String;Ljava/lang/String;)V".equals(getSigConstantOperand())))
 							state = State.SEEN_STRINGTOKENIZER;
 					}

@@ -28,6 +28,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -309,7 +310,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
 	private Object sawInvokeSpecial(Object userObject) {
 		String methodName = getNameConstantOperand();
-		if ("<init>".equals(methodName)) {
+		if (Values.CONSTRUCTOR.equals(methodName)) {
 			String clsName = getClassConstantOperand().replace('/', '.');
 			if (doesObjectNeedToBeWatched(clsName))
 			{

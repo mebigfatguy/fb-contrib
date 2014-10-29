@@ -648,7 +648,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		//not an elseif because the below cases might be in the set methodsThatAreSillyOnStringLiterals
 		if ("intern".equals(methodName)) {
 			String owningMethod = getMethod().getName();
-			if (!"<clinit>".equals(owningMethod))
+			if (!Values.STATIC_INITIALIZER.equals(owningMethod))
 			{
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
@@ -877,7 +877,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		if ("java/lang/StringBuffer".equals(className)
 				||  "java/lang/StringBuilder".equals(className)) {
 			String methodName = getNameConstantOperand();
-			if ("<init>".equals(methodName)) {
+			if (Values.CONSTRUCTOR.equals(methodName)) {
 				String signature = getSigConstantOperand();
 				if ("(I)V".equals(signature)) {
 					if (lastOpcode == BIPUSH) {

@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -117,7 +118,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 
 		for (Method m : cls.getMethods()) {
 			String methodName = m.getName();
-			if (!"<init>".equals(methodName) && !"<clinit>".equals(methodName) && (!"clone".equals(methodName))) {
+			if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName) && (!"clone".equals(methodName))) {
 				methods.add(methodName + ":" + m.getSignature());
 			}
 		}

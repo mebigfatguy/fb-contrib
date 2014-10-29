@@ -32,6 +32,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -89,9 +90,9 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector
 	public void visitCode(final Code obj) {
 		stack.resetForMethodEntry(this);
 		String methodName = getMethodName();
-		isCtor = "<init>".equals(methodName);
+		isCtor = Values.CONSTRUCTOR.equals(methodName);
 		
-		if (!"<clinit>".equals(methodName)) {
+		if (!Values.STATIC_INITIALIZER.equals(methodName)) {
 			Method m = getMethod();
 			methodToCalledMethods.put(m, new HashMap<Method, SourceLineAnnotation>());
 			reportedCtor = false;
@@ -127,7 +128,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector
 											.addSourceLine(this, getPC()));
 										reportedCtor = true;
 									} else {
-										if (!"<init>".equals(m.getName())) {
+										if (!Values.CONSTRUCTOR.equals(m.getName())) {
 											Map<Method, SourceLineAnnotation> calledMethods = methodToCalledMethods.get(getMethod());
 											calledMethods.put(m, SourceLineAnnotation.fromVisitedInstruction(this));
 										}
@@ -162,7 +163,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector
 		JavaClass cls = getClassContext().getJavaClass();
 		for (Map.Entry<Method, Map<Method, SourceLineAnnotation>> entry : methodToCalledMethods.entrySet()) {
 			Method m = entry.getKey();
-			if ("<init>".equals(m.getName())) {
+			if (Values.CONSTRUCTOR.equals(m.getName())) {
 				checkedMethods.clear();
 				List<SourceLineAnnotation> slas = foundPrivateInChain(m, checkedMethods);
 				if (slas != null) {

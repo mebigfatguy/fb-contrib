@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -165,7 +166,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector
 				String methodName = getNameConstantOperand();
 				String sig = getSigConstantOperand();
 				
-				if ("<init>".equals(methodName)) {
+				if (Values.CONSTRUCTOR.equals(methodName)) {
 					if (!hasMapComparator && "java/util/TreeMap".equals(className)) {
 						Type[] parms = Type.getArgumentTypes(sig);
 						if ((parms.length == 1) && "Ljava/util/Comparator;".equals(parms[0].getSignature()))

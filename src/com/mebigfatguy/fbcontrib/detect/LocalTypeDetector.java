@@ -239,7 +239,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 
 	protected Integer checkConstructors() {
 		Integer tosIsSyncColReg = null;
-		if ("<init>".equals(getNameConstantOperand())) {
+		if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
 			Integer minVersion = getWatchedConstructors().get(getClassConstantOperand());
 			if ((minVersion != null) && (classVersion >= minVersion.intValue())) {
 				tosIsSyncColReg = Values.NEGATIVE_ONE;

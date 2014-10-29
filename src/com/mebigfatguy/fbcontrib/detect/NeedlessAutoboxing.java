@@ -25,6 +25,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -119,7 +120,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 					boxClass = getClassConstantOperand();
 					String[] boxSigs = boxClasses.get(boxClass);
 					if (boxSigs != null) {
-						if ("<init>".equals(getNameConstantOperand()) && boxSigs[1].equals(getSigConstantOperand())) {
+						if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && boxSigs[1].equals(getSigConstantOperand())) {
 							state = State.SEEN_CTOR;
 						}
 					}
@@ -143,7 +144,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 					if (boxClass.equals(getClassConstantOperand())) {
 						String methodName = getNameConstantOperand();
 						String boxSig = boxClasses.get(boxClass)[1];
-						if ("<init>".equals(methodName)) {
+						if (Values.CONSTRUCTOR.equals(methodName)) {
 							String methodSig = getSigConstantOperand();
 							if (boxSig.equals(methodSig)) {
 								bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_CTOR.name(), NORMAL_PRIORITY)
@@ -214,7 +215,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 						}
 					}
 				} else if (seen == INVOKESPECIAL) {
-					if ("<init>".equals(getNameConstantOperand()) && (boxClass.equals(getClassConstantOperand()))) {
+					if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && (boxClass.equals(getClassConstantOperand()))) {
 						bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_STRING_CTOR.name(), NORMAL_PRIORITY)
 								   .addClass(this)
 								   .addMethod(this)

@@ -32,6 +32,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -147,7 +148,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
 				if (getConstantRefOperand() instanceof ConstantString)
 					sawConstant = true;
 			} else if (seen == INVOKESPECIAL) {
-				if ("<init>".equals(getNameConstantOperand())) {
+				if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
 					String clsName = getClassConstantOperand();
 					if (clsName.indexOf("Exception") >= 0) {
 						JavaClass exCls = Repository.lookupClass(clsName);

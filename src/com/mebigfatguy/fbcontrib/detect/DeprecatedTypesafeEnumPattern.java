@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -72,7 +73,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector
 				if (cls.getMajor() >= Constants.MAJOR_1_5) {
 					Method[] methods = cls.getMethods();
 					for (Method m : methods) {
-						if ("<init>".equals(m.getName())) {
+						if (Values.CONSTRUCTOR.equals(m.getName())) {
 							if ((m.getAccessFlags() & Constants.ACC_PRIVATE) == 0)
 								return;
 						}
@@ -122,7 +123,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector
 	 */
 	@Override
 	public void visitCode(Code obj) {
-		if ("<clinit>".equals(getMethod().getName())) {
+		if (Values.STATIC_INITIALIZER.equals(getMethod().getName())) {
 			state = State.SAW_NOTHING;
 			super.visitCode(obj);
 		}

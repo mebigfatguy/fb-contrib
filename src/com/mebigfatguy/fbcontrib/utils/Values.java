@@ -34,6 +34,9 @@ public class Values {
 	public static final Integer SEVEN = Integer.valueOf(7);
 	public static final Integer EIGHT = Integer.valueOf(8);
 	
+	public static final String CONSTRUCTOR = Values.CONSTRUCTOR;
+	public static final String STATIC_INITIALIZER = Values.STATIC_INITIALIZER;
+	
 	private Values() {
 	}
 }

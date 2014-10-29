@@ -36,6 +36,7 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -84,7 +85,7 @@ public class CopiedOverriddenMethod extends DismantleBytecode implements Detecto
 					String methodName = m.getName();
 					if ((m.isPublic() ||  m.isProtected())
 							&&  (!m.isAbstract())
-							&&  (!"<init>".equals(methodName) && !"<clinit>".equals(methodName))) {
+							&&  (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName))) {
 						String methodInfo = methodName + ":" + m.getSignature();
 						superclassCode.put(methodInfo, m.getCode());
 					}
