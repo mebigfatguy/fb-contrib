@@ -294,14 +294,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
     								Statistics statistics = Statistics.getStatistics();
     								MethodInfo mi = statistics.getMethodStatistics(getClassConstantOperand(), methodName, signature);
     
-    								bugReporter.reportBug(new BugInstance(this, BugType.PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS.name(),
-    																	  ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit)) ?
-    																			  HIGH_PRIORITY :
-    																		      ((mi.getNumBytes() >= normalByteCountLimit) || (mi.getNumMethodCalls() >= normalMethodCallLimit)) ?
-    																		    		  NORMAL_PRIORITY :
-    																		    			  ((mi.getNumBytes() == 0) || (mi.getNumMethodCalls() == 0)) ?
-    																		    					  LOW_PRIORITY :
-    																		    				      EXP_PRIORITY)
+    								bugReporter.reportBug(new BugInstance(this, BugType.PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS.name(), getBugPriority(mi))
     											.addClass(this)
     											.addMethod(this)
     											.addSourceLine(this)
@@ -357,6 +350,24 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 		}
 	}
 
+	/**
+	 * returns the bug priority based on metrics about the method
+	 * @param mi metrics about the method
+	 * @return the bug priority
+	 */
+	private int getBugPriority(MethodInfo mi) {
+		if ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit))
+			return HIGH_PRIORITY;
+		
+		if ((mi.getNumBytes() >= normalByteCountLimit) || (mi.getNumMethodCalls() >= normalMethodCallLimit))
+			return NORMAL_PRIORITY;
+		
+		if ((mi.getNumBytes() == 0) || (mi.getNumMethodCalls() == 0)) 
+			return LOW_PRIORITY;
+		
+		return EXP_PRIORITY;
+	}
+	
 	/**
 	 * returns true if the class or method name contains a pattern that is considered likely to be this modifying
 	 *
