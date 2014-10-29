@@ -26,7 +26,6 @@ import com.mebigfatguy.fbcontrib.utils.Values;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for creation of arrays where the contents are constants, or static
@@ -45,15 +44,6 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector
 	
 	public StaticArrayCreatedInMethod(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
-	}
-	
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			super.visitClassContext(classContext);
-		} finally {
-			
-		}
 	}
 	
 	/**
