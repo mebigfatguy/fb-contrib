@@ -26,6 +26,8 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.ToString;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -240,7 +242,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector
 		
 		@Override
 		public String toString() {
-			return "StringReference: " + stringReference + ", SwitchTargets: " + switchTargets;
+			return ToString.build(this);
 		}
 	}
 }

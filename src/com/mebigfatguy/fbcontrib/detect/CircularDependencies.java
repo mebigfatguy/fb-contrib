@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -207,7 +208,7 @@ public class CircularDependencies extends BytecodeScanningDetector {
         
         @Override
         public String toString() {
-        	return "LoopFinder[dGraph=" + dGraph + ", startClass=" + startClass + ", visited=" + visited + ", loop=" + loop + "]";
+        	return ToString.build(this);
         }
     }
 }

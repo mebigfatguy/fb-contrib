@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -186,7 +187,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
         
         @Override
         public String toString() {
-            return "register: " + register + " appendInvoked: " + appendInvoked;
+        	return ToString.build(this);
         }
     }
 }

@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -281,7 +282,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
         @Override
         public String toString() {
-            return "DownBranch[From: " + fromPC + " To: " + toPC + "]";
+        	return ToString.build(this);
         }
     }
 }

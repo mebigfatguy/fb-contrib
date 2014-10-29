@@ -19,6 +19,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -394,8 +395,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
 		@Override
 		public String toString() {
-			return "{" + startPC + " -> " + endPC + "} (catch " + catchTypes.nextSetBit(0) + ") {" + handlerPC + " -> "
-					+ endHandlerPC + "}";
+			return ToString.build(this);
 		}
 	}
 }

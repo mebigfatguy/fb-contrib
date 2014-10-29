@@ -28,6 +28,8 @@ import java.util.Map;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.ToString;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -221,7 +223,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
         
         @Override
         public String toString() {
-        	return "SourceInfo[clsName=" + clsName + ", methodName=" + methodName + ", signature=" + signature + ", isStatic=" + isStatic + ", srcLine=" + srcLine + "]";
+        	return ToString.build(this);
         }
     }
 }

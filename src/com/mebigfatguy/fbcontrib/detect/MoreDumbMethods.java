@@ -22,6 +22,8 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.mebigfatguy.fbcontrib.utils.ToString;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -51,7 +53,7 @@ public class MoreDumbMethods extends BytecodeScanningDetector
 		
 		@Override
 		public String toString() {
-			return "ReportInfo[bugPattern=" + bugPattern + ", bugPriority=" + bugPriority + "]";
+			return ToString.build(this);
 		}
 	}
 	

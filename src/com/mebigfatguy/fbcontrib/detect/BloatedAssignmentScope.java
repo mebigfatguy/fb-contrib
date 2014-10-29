@@ -37,6 +37,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -577,7 +578,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
          */
         @Override
         public String toString() {
-            return "Start=" + startLocation + " Finish=" + finishLocation + " Loads=" + loads + " Stores=" + stores + " Loop=" + isLoop + " Goto=" + isGoto + " Sync=" + isSync + " Try=" + isTry + " Case=" + isCase;
+        	return ToString.build(this);
         }
 
         /**
@@ -962,7 +963,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         @Override
         public String toString() {
-            return "Caller: " + caller + " isRisky: " + isRisky;
+        	return ToString.build(this);
         }
     }
 }

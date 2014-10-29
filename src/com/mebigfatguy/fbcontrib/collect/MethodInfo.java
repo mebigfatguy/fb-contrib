@@ -20,6 +20,8 @@ package com.mebigfatguy.fbcontrib.collect;
 
 import org.apache.bcel.Constants;
 
+import com.mebigfatguy.fbcontrib.utils.ToString;
+
 public class MethodInfo {
     
 	public static final int PUBLIC_USE = 1;
@@ -102,6 +104,6 @@ public class MethodInfo {
     
     @Override
     public String toString() {
-        return "NumMethodBytes: " + getNumBytes() + " NumMethodCalls: " + getNumMethodCalls() + " ImmutabilityType: " + getImmutabilityType();
+    	return ToString.build(this);
     }
 }

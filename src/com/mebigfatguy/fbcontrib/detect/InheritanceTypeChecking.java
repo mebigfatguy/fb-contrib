@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -176,8 +177,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector
 		
 		@Override
 		public String toString() {
-			return "IfStatement[state=" + state + ", reg=" + reg + ", firstPC=" + firstPC + ", "
-					+ "branchTarget=" + branchTarget + ", matchCount=" + matchCount + ", instanceOfTypes=" + instanceOfTypes + "]";
+			return ToString.build(this);
 		}
 	}
 }

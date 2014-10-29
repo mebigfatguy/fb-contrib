@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -306,7 +307,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 		
 		@Override
 		public String toString() {
-			return "AnnotationPriority[priority=" + priority + ", annotation=" + annotation + "]";
+			return ToString.build(this);
 		}
 	}
 }

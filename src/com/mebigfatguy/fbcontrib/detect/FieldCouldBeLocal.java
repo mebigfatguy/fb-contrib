@@ -44,6 +44,7 @@ import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -359,7 +360,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		
 		@Override
 		public String toString() {
-			return "FieldInfo[fieldAnnotation=" + fieldAnnotation + ", srcLineAnnotation=" +  srcLineAnnotation + ", hasAnnotation=" + hasAnnotation + "]";
+			return ToString.build(this);
 		}
 	}
 
@@ -441,7 +442,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 
 		@Override
 		public String toString() {
-			return basicBlock + "|" + uncheckedFields;
+			return ToString.build(this);
 		}
 	}
 	

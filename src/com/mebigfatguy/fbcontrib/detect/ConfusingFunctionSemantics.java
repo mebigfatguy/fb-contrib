@@ -31,6 +31,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -202,7 +203,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector
 		
 		@Override
 		public String toString() {
-			return "ParmUsage[returnPC=" + returnPC + ", alteredPC=" + alteredPC + "]";
+			return ToString.build(this);
 		}
 	}
 }

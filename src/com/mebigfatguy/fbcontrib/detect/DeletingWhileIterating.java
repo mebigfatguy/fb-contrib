@@ -39,6 +39,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -492,7 +493,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 
         @Override
         public String toString() {
-            return "Start=" + loopStart + " Finish=" + loopFinish;
+        	return ToString.build(this);
         }
 	}
 	
@@ -524,7 +525,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	    
 	    @Override
 	    public String toString() {
-	        return groupMembers + ((colClass == null) ? "" : colClass);
+	    	return ToString.build(this);
 	    }
 	}
 }

@@ -35,6 +35,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -308,8 +309,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 
 		@Override
 		public String toString() {
-			return "RegisterInfo [slAnnotation=" + slAnnotation + ", priority=" + priority + ", endPCRange="
-					+ endPCRange + "]";
+			return ToString.build(this);
 		}
 	}
 

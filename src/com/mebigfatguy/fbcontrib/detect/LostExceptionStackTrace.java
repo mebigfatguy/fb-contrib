@@ -40,6 +40,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -465,7 +466,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 		
 		@Override
 		public String toString() {
-		    return "Register: " + exReg + " Range: [" + catchStart + "->" + catchFinish + "]";
+			return ToString.build(this);
 		}
 	}
 }
