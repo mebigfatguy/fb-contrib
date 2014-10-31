@@ -523,27 +523,27 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 	/**
 	 * an inner helper class that holds basic information about a method
 	 */
-	public static class MethodInfo
+	static class MethodInfo
 	{
 		private final String methodName;
 		private final String methodSig;
 		private final String[] methodExceptions;
 
-		public MethodInfo(String name, String sig, String[] excs) {
+		MethodInfo(String name, String sig, String[] excs) {
 			methodName = name;
 			methodSig = sig;
 			methodExceptions = excs;
 		}
 
-		public String getMethodName() {
+		String getMethodName() {
 			return methodName;
 		}
 
-		public String getMethodSignature() {
+		String getMethodSignature() {
 			return methodSig;
 		}
 
-		public String[] getMethodExceptions() {
+		String[] getMethodExceptions() {
 			return methodExceptions;
 		}
 
