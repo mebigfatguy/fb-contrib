@@ -26,6 +26,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -139,6 +140,11 @@ public class SQLInLoop extends BytecodeScanningDetector
 		
 		public boolean isInLoop(int pc) {
 			return (pc >= startPC) && (pc <= endPC);
+		}
+		
+		@Override
+		public String toString() {
+			return ToString.build(this);
 		}
 	}
 }
