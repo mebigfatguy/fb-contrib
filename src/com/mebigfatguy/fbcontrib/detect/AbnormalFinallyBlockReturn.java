@@ -230,7 +230,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
 	/**
 	 * holds the finally block information for a particular method.
 	 */
-	public static class FinallyBlockInfo
+	static class FinallyBlockInfo
 	{
 		public int startPC;
 		public int monitorCount;
@@ -241,7 +241,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
          *
          * @param start the start of the try block
          */
-		public FinallyBlockInfo(int start) {
+		FinallyBlockInfo(int start) {
 			startPC = start;
 			monitorCount = 0;
             exReg = -1;
