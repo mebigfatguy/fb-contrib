@@ -43,7 +43,7 @@ public class ToString {
 				f.setAccessible(true);
 				Object value = f.get(o);
 				if (value == null) {
-					sb.append("null");
+					sb.append((String) null);
 				} else if (value.getClass().isArray()) {
 					sb.append(Arrays.toString((Object[]) value));
 				} else {
