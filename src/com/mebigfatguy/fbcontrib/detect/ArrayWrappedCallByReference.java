@@ -49,10 +49,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 	
 	static class WrapperInfo {
-		public int wrappedReg;
-		public boolean wasArg;
+		int wrappedReg;
+		boolean wasArg;
 		
-		public WrapperInfo(int reg) {
+		WrapperInfo(int reg) {
 			wrappedReg = reg;
 			wasArg = false;
 		}
