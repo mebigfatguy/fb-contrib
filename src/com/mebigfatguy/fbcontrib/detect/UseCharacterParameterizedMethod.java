@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -70,6 +71,11 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
         public IntPair(int firstStringParam, int secondStringParam) {
             this.firstStringParam = firstStringParam;
             this.secondStringParam = secondStringParam;
+        }
+        
+        @Override
+        public String toString() {
+        	return ToString.build(this);
         }
 	}
 	
