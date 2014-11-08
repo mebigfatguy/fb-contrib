@@ -513,5 +513,10 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	            }
 	        }
 	    }
+	    
+	    @Override
+	    public String toString() {
+	        return ToString.build(this);
+	    }
 	}
 }
