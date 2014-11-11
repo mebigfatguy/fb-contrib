@@ -192,11 +192,11 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector
 		int returnPC = -1;
 		int alteredPC = -1;
 		
-		public void setReturnPC(int pc) {
+		void setReturnPC(int pc) {
 			returnPC = pc;
 		}
 		
-		public void setAlteredPC(int pc) {
+		void setAlteredPC(int pc) {
 			if (alteredPC < 0)
 				alteredPC = pc;
 		}
