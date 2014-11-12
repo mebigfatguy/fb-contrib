@@ -479,15 +479,15 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 			loopFinish = finish;
 		}
 
-		public int getLoopFinish() {
+		int getLoopFinish() {
 			return loopFinish;
 		}
 
-		public int getLoopStart() {
+		int getLoopStart() {
 			return loopStart;
 		}
 
-		public boolean hasPC(int pc) {
+		boolean hasPC(int pc) {
 			return (loopStart <= pc) && (pc <= loopFinish);
 		}
 
@@ -507,19 +507,19 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 	        colClass = cls;
 	    }
 	    
-	    public void addMember(Comparable<?> member) {
+	    void addMember(Comparable<?> member) {
 	        groupMembers.add(member);
 	    }
 	    
-	    public void removeMember(Comparable<?> member) {
+	    void removeMember(Comparable<?> member) {
             groupMembers.remove(member);
         }
 	    
-	    public boolean containsMember(Comparable<?> member) {
+	    boolean containsMember(Comparable<?> member) {
 	        return groupMembers.contains(member);
 	    }
 	    
-	    public boolean isStandardCollection() {
+	    boolean isStandardCollection() {
 	        return (colClass == null) || !colClass.contains("/concurrent/");
 	    }
 	    
