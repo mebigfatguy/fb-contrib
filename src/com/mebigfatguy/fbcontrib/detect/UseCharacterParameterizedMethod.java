@@ -66,9 +66,9 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector
 	}
 	
 	private static class IntPair {
-	    public final int firstStringParam, secondStringParam;
+	    final int firstStringParam, secondStringParam;
 
-        public IntPair(int firstStringParam, int secondStringParam) {
+        IntPair(int firstStringParam, int secondStringParam) {
             this.firstStringParam = firstStringParam;
             this.secondStringParam = secondStringParam;
         }
