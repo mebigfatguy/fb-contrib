@@ -40,14 +40,18 @@ public class ToString {
 				sb.append(sep);
 				sep = ", ";
 				sb.append(f.getName()).append('=');
-				f.setAccessible(true);
-				Object value = f.get(o);
-				if (value == null) {
-					sb.append((String) null);
-				} else if (value.getClass().isArray()) {
-					sb.append(Arrays.toString((Object[]) value));
-				} else {
-					sb.append(value);
+				try {
+    				f.setAccessible(true);
+    				Object value = f.get(o);
+    				if (value == null) {
+    					sb.append((String) null);
+    				} else if (value.getClass().isArray()) {
+    					sb.append(Arrays.toString((Object[]) value));
+    				} else {
+    					sb.append(value);
+    				}
+				} catch (SecurityException e) {
+				    sb.append("*SECURITY_EXCEPTION*");
 				}
 			}
 		} catch (Exception e) {
