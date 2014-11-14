@@ -377,27 +377,27 @@ public class UseAddAll extends BytecodeScanningDetector {
 			addPC = 0;
 		}
 				
-		public boolean isInLoop(int pc)
+		boolean isInLoop(int pc)
 		{
 			return ((pc >= start) && (pc <= end));
 		}
 		
-		public void foundAdd(int pc) {
+		void foundAdd(int pc) {
 			if (addPC == 0)
 				addPC = pc;
 			else
 				addPC = -1;
 		}
 		
-		public int getStartPC() {
+		int getStartPC() {
 			return start;
 		}
 		
-		public int getEndPC() {
+		int getEndPC() {
 			return end;
 		}
 		
-		public int getAddPC() {
+		int getAddPC() {
 			return addPC;
 		}
 	}
