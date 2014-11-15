@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Signature;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -129,5 +130,10 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     static class TemplateSignature {
         String[] templateParameters;
         String signature;
+        
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
     }
 }
