@@ -297,10 +297,10 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
 	private static class AnnotationPriority {
 
-		public int priority;
-		public FieldAnnotation annotation;
+		int priority;
+		FieldAnnotation annotation;
 
-		public AnnotationPriority(FieldAnnotation annotation, int priority) {
+		AnnotationPriority(FieldAnnotation annotation, int priority) {
 			this.annotation = annotation;
 			this.priority = priority;
 		}
