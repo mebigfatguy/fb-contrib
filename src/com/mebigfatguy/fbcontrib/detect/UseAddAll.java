@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -370,7 +371,7 @@ public class UseAddAll extends BytecodeScanningDetector {
 		private final int end;
 		private int addPC;
 		
-		public LoopInfo(int loopStart, int loopEnd)
+		LoopInfo(int loopStart, int loopEnd)
 		{
 			start = loopStart;
 			end = loopEnd;
@@ -399,6 +400,11 @@ public class UseAddAll extends BytecodeScanningDetector {
 		
 		int getAddPC() {
 			return addPC;
+		}
+		
+		@Override
+		public String toString() {
+		    return ToString.build(this);
 		}
 	}
 }
