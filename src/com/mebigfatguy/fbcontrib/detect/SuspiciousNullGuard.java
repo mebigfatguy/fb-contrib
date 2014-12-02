@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -243,7 +244,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 		int location;
 		String signature;
 
-		public NullGuard(int reg, int start, String guardSignature) {
+		NullGuard(int reg, int start, String guardSignature) {
 			register = reg;
 			field = null;
 			location = start;
@@ -251,27 +252,32 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 		}
 
 
-		public NullGuard(XField xf, int start, String guardSignature) {
+		NullGuard(XField xf, int start, String guardSignature) {
 			register = -1;
 			field = xf;
 			location = start;
 			signature = guardSignature;
 		}
 
-		public int getRegister() {
+		int getRegister() {
 			return register;
 		}
 
-		public XField getField() {
+		XField getField() {
 			return field;
 		}
 
-		public int getLocation() {
+		int getLocation() {
 			return location;
 		}
 
-		public String getSignature() {
+		String getSignature() {
 			return signature;
+		}
+		
+		@Override
+		public String toString() {
+		    return ToString.build(this);
 		}
 	}
 }
