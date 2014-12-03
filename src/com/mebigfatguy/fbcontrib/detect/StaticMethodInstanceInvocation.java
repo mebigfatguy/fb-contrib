@@ -209,7 +209,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
 		String popSignature;
 		int popDepth;
 
-		public PopInfo(int pc, int lineNum, String signature, int depth) {
+		PopInfo(int pc, int lineNum, String signature, int depth) {
 			popPC = pc;
 			popLineNum = lineNum;
 			popSignature = signature;
