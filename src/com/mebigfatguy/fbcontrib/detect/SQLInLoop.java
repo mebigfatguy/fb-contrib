@@ -133,12 +133,12 @@ public class SQLInLoop extends BytecodeScanningDetector
 		private final int startPC;
 		private final int endPC;
 		
-		public LoopLocation(int start, int end) {
+		LoopLocation(int start, int end) {
 			startPC = start;
 			endPC = end;
 		}
 		
-		public boolean isInLoop(int pc) {
+		boolean isInLoop(int pc) {
 			return (pc >= startPC) && (pc <= endPC);
 		}
 		
