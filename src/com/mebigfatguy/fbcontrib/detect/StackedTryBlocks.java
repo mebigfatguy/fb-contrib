@@ -272,7 +272,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
 	static class TryBlock {
 
-		public enum State {
+		enum State {
 			BEFORE, IN_TRY, IN_CATCH, AFTER
 		};
 
@@ -286,7 +286,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 		String message;
 		State state;
 
-		public TryBlock(CodeException ce) {
+		TryBlock(CodeException ce) {
 			startPC = ce.getStartPC();
 			endPC = ce.getEndPC();
 			handlerPC = ce.getHandlerPC();
@@ -296,28 +296,28 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 			state = State.BEFORE;
 		}
 
-		public void addCatchType(CodeException ce) {
+		void addCatchType(CodeException ce) {
 			catchTypes.set(ce.getCatchType());
 		}
 
-		public void setState(State executionState) {
+		void setState(State executionState) {
 			state = executionState;
 		}
 
-		public boolean inCatch() {
+		boolean inCatch() {
 			return state == State.IN_CATCH;
 		}
 
-		public boolean hasMultipleHandlers() {
+		boolean hasMultipleHandlers() {
 			int bit = catchTypes.nextSetBit(0);
 			return catchTypes.nextSetBit(bit + 1) >= 0;
 		}
 
-		public boolean isFinally() {
+		boolean isFinally() {
 			return catchTypes.get(0);
 		}
 
-		public boolean catchIsThrown(ConstantPool pool, Set<String> thrownExceptions) {
+		boolean catchIsThrown(ConstantPool pool, Set<String> thrownExceptions) {
 			if (thrownExceptions.size() > 0) {
 				int exIndex = catchTypes.nextSetBit(0);
 				String exName = ((ConstantClass) pool.getConstant(exIndex)).getBytes(pool);
@@ -326,55 +326,55 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 			return false;
 		}
 
-		public void setEndHandlerPC(int end) {
+		void setEndHandlerPC(int end) {
 			endHandlerPC = end;
 		}
 
-		public void setExceptionSignature(String sig) {
+		void setExceptionSignature(String sig) {
 		    exSig = sig;
 		}
 
-		public void setThrowSignature(String sig) {
+		void setThrowSignature(String sig) {
 			throwSig = sig;
 		}
 
-		public void setMessage(String m) {
+		void setMessage(String m) {
 		    message = m;
 		}
 
-		public String getExceptionSignature() {
+		String getExceptionSignature() {
 		    return (exSig == null) ? String.valueOf(System.identityHashCode(this)) : exSig;
 		}
 
-		public String getThrowSignature() {
+		String getThrowSignature() {
 			return (throwSig == null) ? String.valueOf(System.identityHashCode(this)) : throwSig;
 		}
 
-		public String getMessage() {
+		String getMessage() {
             return (message == null) ? String.valueOf(System.identityHashCode(this)) : message;
 		}
 
-		public int getStartPC() {
+		int getStartPC() {
 			return startPC;
 		}
 
-		public int getEndHandlerPC() {
+		int getEndHandlerPC() {
 			return endHandlerPC;
 		}
 
-		public boolean atStartPC(int pc) {
+		boolean atStartPC(int pc) {
 			return startPC == pc;
 		}
 
-		public boolean atHandlerPC(int pc) {
+		boolean atHandlerPC(int pc) {
 			return handlerPC == pc;
 		}
 
-		public boolean atEndHandlerPC(int pc) {
+		boolean atEndHandlerPC(int pc) {
 			return (endHandlerPC >= 0) && (endHandlerPC == pc);
 		}
 
-		public int getCatchType() {
+		int getCatchType() {
 			return catchTypes.nextSetBit(0);
 		}
 
