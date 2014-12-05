@@ -275,7 +275,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
         public int fromPC;
         public int toPC;
 
-        public DownBranch(int from, int to) {
+        DownBranch(int from, int to) {
             fromPC = from;
             toPC = to;
         }
