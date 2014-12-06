@@ -213,7 +213,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
         boolean isStatic;
         SourceLineAnnotation srcLine;
         
-        public SourceInfo(String cls, String method, String sig, boolean mStatic, SourceLineAnnotation annotation) {
+        SourceInfo(String cls, String method, String sig, boolean mStatic, SourceLineAnnotation annotation) {
             clsName = cls;
             methodName = method;
             signature = sig;
