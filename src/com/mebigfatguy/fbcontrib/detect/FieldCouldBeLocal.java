@@ -319,7 +319,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		 * @param fa the field annotation for this field
 		 * @param hasExternalAnnotation the field has a non java based annotation
 		 */
-		public FieldInfo(final FieldAnnotation fa, boolean hasExternalAnnotation) {
+		FieldInfo(final FieldAnnotation fa, boolean hasExternalAnnotation) {
 			fieldAnnotation = fa;
 			srcLineAnnotation = null;
 			hasAnnotation = hasExternalAnnotation;
@@ -329,7 +329,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		 * set the source line annotation of first use for this field
 		 * @param sla the source line annotation
 		 */
-		public void setSrcLineAnnotation(final SourceLineAnnotation sla) {
+		void setSrcLineAnnotation(final SourceLineAnnotation sla) {
 			if (srcLineAnnotation == null)
 				srcLineAnnotation = sla;
 		}
@@ -338,7 +338,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		 * get the field annotation for this field
 		 * @return the field annotation
 		 */
-		public FieldAnnotation getFieldAnnotation() {
+		FieldAnnotation getFieldAnnotation() {
 			return fieldAnnotation;
 		}
 
@@ -346,7 +346,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		 * get the source line annotation for the first use of this field
 		 * @return the source line annotation
 		 */
-		public SourceLineAnnotation getSrcLineAnnotation() {
+		SourceLineAnnotation getSrcLineAnnotation() {
 			return srcLineAnnotation;
 		}
 		
@@ -354,7 +354,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 		 * gets whether the field has a non java annotation
 		 * @return if the field has a non java annotation
 		 */
-		public boolean hasAnnotation() {
+		boolean hasAnnotation() {
 		    return hasAnnotation;
 		}
 		
