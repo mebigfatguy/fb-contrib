@@ -132,7 +132,7 @@ function toggleBlock(divId, imgId)
                 </li>
                 <li><b>[CTU] Conflicting Time Units</b><br/>
                 Looks for methods that perform arithmetic operations on values representing time
-				where the time unit is incompatible, ie adding a millisecond value to a nanosecond value.
+				where the time unit is incompatible, i.e. adding a millisecond value to a nanosecond value.
 				</li>
 				<li><b>[HCP] HttpClient Problems</b><br/>
 				The HttpRequests from the apache.httpComponents have some little-known quirks about them.  
@@ -209,7 +209,7 @@ function toggleBlock(divId, imgId)
 				the Garbage collector, bug given the likelyhood that large numbers of these objects can
 				be created in a short period of time, it is better to dispose them as soon as possible.</li>
 				<li><b>[CCNE] Compare Class Name Equals</b><br/>
-				Looks for code that compares to classes by name, rather than by just comparing the
+				Looks for code that compares two classes by name, rather than by just comparing the
 				classes with ==<br/>
 				<span style="color: #0000FF;">--contributed by Bhaskar Maddala - THANKS!</span>
 				</li>
@@ -444,7 +444,7 @@ function toggleBlock(divId, imgId)
  				by just calling the readDefaultObject or writeDefaultObject of the stream parameter.
  				As this is the standard behavior, implementing these methods is not needed.</li>
  				<li><b>[EXS] Exception Softening</b><br/>
- 				looks for methods that catch checked exceptions, and throw unchecked exceptions in their 
+ 				Looks for methods that catch checked exceptions, and throw unchecked exceptions in their 
  				place. There are several levels of concern. Least important are methods constrained by 
  				interface or super class contracts not to throw checked exceptions but appear owned by 
  				the same author. Next are methods constrained by interface or super class contracts and 
@@ -498,7 +498,7 @@ function toggleBlock(divId, imgId)
 				<li><b>[URV] Unrelated Return Values</b><br/>
 				Looks for methods that return Object, and who's code body returns two or more
 				different types of objects that are unrelated (other than by Object).</li>
-				<li><b>[PIS] Possible Incomplete Synchronization</b><br/>
+				<li><b>[PIS] Possible Incomplete Serialization</b><br/>
 				Looks for classes that don't handle serialization of parent class member fields 
 				when the class in question is serializable but is derived from non serializable
 				classes.<br/>
@@ -536,18 +536,18 @@ function toggleBlock(divId, imgId)
 				that are accessed first in each method with a store vs. a load. These fields can be declared as one or more 
 				locals.</li>
 				<li><b>[NOS] Non Owned Synchronization</b><br/>
-				looks for methods that synchronize on variables that are not owned by the
+				Looks for methods that synchronize on variables that are not owned by the
 				current class. Doing this causes confusion when two classes use the same variable
 				for their own synchronization purposes. For cleanest separation of interests, only
 				synchronize on private fields of the class. Note that 'this' is not owned by
 				the current class and synchronization on 'this' should be avoided as well.</li>
 				<li><b>[S508C] Section 508 Compliance</b><br/>
-				looks for classes and methods that do not support coding styles that allow Accessibility
+				Looks for classes and methods that do not support coding styles that allow Accessibility
 				software to make full use of the gui for people with visual impediments. Commonly known as
 				'Section 508 Compliance' this detector finds a varied list of issues that hamper screen readers,
 				and make color/size adjustments difficult.</li>
 				<li><b>[UEC] Use Enum Collections</b><br/>
-				looks for uses of sets or maps where the key is an enum. In these cases, it is 
+				Looks for uses of sets or maps where the key is an enum. In these cases, it is 
 				more efficient to use EnumSet or EnumMap. It is a jdk1.5 only detector.</li>
 			</ul>
 		</div>
@@ -567,7 +567,7 @@ function toggleBlock(divId, imgId)
 				variables, and that do not appear to provide a way to clear or remove items from these members.
 				Such class fields are likely causes of memory bloat.</li>
 				<li><b>[LSYC] Local Synchronized Collection</b><br/>
-				looks for allocations of synchronized collections that are stored in local variables, and 
+				Looks for allocations of synchronized collections that are stored in local variables, and 
 				never stored in fields or returned from methods. As local variables are by definition
 				thread safe, using synchronized collections in this context makes no sense.</li>
 			</ul>
