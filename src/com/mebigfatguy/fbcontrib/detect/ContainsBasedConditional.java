@@ -125,7 +125,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 						}
 					} else {
 						if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-							bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), prority(conditionCount))
+							bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount))
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this, bugPC));
@@ -177,7 +177,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 					} else if (seen == IF_ICMPNE) {
 						conditionCount++;
 						if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-							bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), prority(conditionCount))
+							bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount))
 										.addClass(this)
 										.addMethod(this)
 										.addSourceLine(this, bugPC));
@@ -224,7 +224,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 		return false;
 	}
 	
-	private static int prority(int conditionCount) {
+	private static int priority(int conditionCount) {
 		return (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY;
 	}
 }
