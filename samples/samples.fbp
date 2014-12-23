@@ -14,7 +14,4 @@
   <AuxClasspathEntry>./../lib/httpcore-4.3.2.jar</AuxClasspathEntry>
   <AuxClasspathEntry>../lib/commons-codec-1.6.jar</AuxClasspathEntry>
   <SrcDir>././.</SrcDir>
-  <SuppressionFilter>
-    <LastVersion value="-1" relOp="NEQ"/>
-  </SuppressionFilter>
 </Project>

@@ -30,6 +30,14 @@ public class UVA_Sample<T> extends ArrayList<T> {
 
     public void fpSimilarVarArg(String info, String... data) {
     }
+    
+    public void fpBytes(byte[] data) {
+        
+    }
+    
+    public void fpPass(char[] data) {
+        
+    }
 
     @Override
     public <E> E[] toArray(E[] a) {
