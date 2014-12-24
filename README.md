@@ -50,7 +50,7 @@ Any edits are much appreciated, from finding typos, to adding examples in the [m
 
 External guides for making detectors:
 - https://www.ibm.com/developerworks/library/j-findbug2/
-- http://kjlubick.github.io/#/blog/post/1?building-my-first-findbugs-detector
+- http://kjlubick.github.io/blog/post/1?building-my-first-findbugs-detector
 
 Misc references about bytecode:
 - http://www.jroller.com/dbrosius/entry/the_jvm_class_file_format

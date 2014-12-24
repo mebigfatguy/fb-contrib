@@ -177,7 +177,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		try {
 			stack.precomputation(this);
 
-			if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W)) {
+			if (isBranchByteCode(seen)) {
 				Integer branchTarget = Integer.valueOf(getBranchTarget());
 				BitSet branchInsSet = branchTargets.get(branchTarget);
 				if (branchInsSet == null)
@@ -187,275 +187,41 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				}
 				branchInsSet.set(getPC());
 			}
-
+			//not an else if, because some of the opcodes in the previous branch also matter here.
 			if ((seen == IFEQ) || (seen == IFLE) || (seen == IFNE)) {
-				if (lastLoadWasString && (lastPCs[0] != -1)) {
-					byte[] bytes = getCode().getCode();
-					int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
-					int brOffset = (loadIns == ALOAD) ? 11 : 10;
-
-					if ((((loadIns >= ALOAD_0) && (loadIns <= ALOAD_3)) || (loadIns == ALOAD))
-							&&  (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL)
-							&&  (CodeByteUtils.getbyte(bytes, lastPCs[2]) == loadIns)
-							&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL)
-							&&  (CodeByteUtils.getbyte(bytes, lastPCs[0]) == loadIns)
-							&&  ((loadIns != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[2]+1) == CodeByteUtils.getbyte(bytes, lastPCs[0]+1)))
-							&&  ((seen == IFNE) ? CodeByteUtils.getshort(bytes, lastPCs[1]+1) > brOffset : CodeByteUtils.getshort(bytes, lastPCs[1]+1) == brOffset)) {
-						int nextOp = CodeByteUtils.getbyte(bytes, getNextPC());
-						if ((nextOp != GOTO) && (nextOp != GOTO_W)) {
-							ConstantPool pool = getConstantPool();
-							int mpoolIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
-							ConstantMethodref cmr = (ConstantMethodref)pool.getConstant(mpoolIndex);
-							int nandtIndex = cmr.getNameAndTypeIndex();
-							ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-							if ("length".equals(cnt.getName(pool))) {
-								bugReporter.reportBug(new BugInstance(this, BugType.SPP_SUSPECT_STRING_TEST.name(), NORMAL_PRIORITY)
-								.addClass(this)
-								.addMethod(this)
-								.addSourceLine(this));
-							}
-						}
-					}
-				}
+				checkForEmptyStringAndNullChecks(seen);
 			}
-
+			//see above, several opcodes hit multiple branches.
 			if ((seen == IFEQ) || (seen == IFNE) || (seen == IFGT)) {
-				if (stack.getStackDepth() == 1) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					if ("size".equals(item.getUserValue())) {
-						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ISEMPTY.name(), NORMAL_PRIORITY)
-						.addClass(this)
-						.addMethod(this)
-						.addSourceLine(this));
-					}
-				}
+				checkSizeEquals0();
 			}
-
+			
 			if (seen == IFEQ) {
-				byte[] bytes = getCode().getCode();
-				if ((lastPCs[0] != -1) && (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL) && (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INSTANCEOF)) {
-					int ins0 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
-					if ((ins0 == ALOAD) || (ins0 == ALOAD_0) || (ins0 == ALOAD_1) || (ins0 == ALOAD_2) || (ins0 == ALOAD_3)) {
-						int ins2 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
-						if (ins0 == ins2) {
-							if ((ins0 != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[0] + 1) == CodeByteUtils.getbyte(bytes, lastPCs[2] + 1))) {
-								int ifNullTarget = lastPCs[1] + CodeByteUtils.getshort(bytes, lastPCs[1]+1);
-								if (ifNullTarget == getBranchTarget()) {
-									bugReporter.reportBug(new BugInstance(this, BugType.SPP_NULL_BEFORE_INSTANCEOF.name(), NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this)
-									.addSourceLine(this));
-								}
-							}
-						}
-					}
-				}
+				checkNullAndInstanceOf();
 			}
 
 			if (seen == IFNE) {
-				byte[] bytes = getCode().getCode();
-				if (lastPCs[2] != -1) {
-					if ((CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL)
-							&&  (CodeByteUtils.getbyte(bytes, lastPCs[2]) == INVOKEVIRTUAL)) {
-						ConstantPool pool = getConstantPool();
-						int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[2]+1);
-						ConstantMethodref toStringMR = (ConstantMethodref)pool.getConstant(toStringIndex);
-						String toStringCls = toStringMR.getClass(pool);
-						if (toStringCls.startsWith("java.lang.StringBu")) {
-							int nandtIndex = toStringMR.getNameAndTypeIndex();
-							ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-							if ("toString".equals(cnt.getName(pool))) {
-								int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
-								ConstantMethodref lengthMR = (ConstantMethodref)pool.getConstant(lengthIndex);
-								nandtIndex = lengthMR.getNameAndTypeIndex();
-								cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-								if ("length".equals(cnt.getName(pool))) {
-									bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_STRINGBUILDER_LENGTH.name(), NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this)
-									.addSourceLine(this));
-								}
-							}
-						}
-					}
-				}
+				checkNotEqualsStringBuilderLength();
 			} else if (seen == IFEQ) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item itm = stack.getStackItem(0);
-					lastIfEqWasBoolean = "Z".equals(itm.getSignature());
-				}
-
-				byte[] bytes = getCode().getCode();
-				if (lastPCs[1] != -1) {
-					if (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL) {
-						int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
-						if  (((loadIns == LDC) || (loadIns == LDC_W))
-								&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == INVOKEVIRTUAL)) {
-							ConstantPool pool = getConstantPool();
-							int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[1]+1);
-							Constant cmr = pool.getConstant(toStringIndex);
-							if (cmr instanceof ConstantMethodref) {
-								ConstantMethodref toStringMR = (ConstantMethodref)cmr;
-								String toStringCls = toStringMR.getClass(pool);
-								if (toStringCls.startsWith("java.lang.&&StringBu")) {
-									int consIndex = CodeByteUtils.getbyte(bytes, lastPCs[2]+1);
-									Constant c = pool.getConstant(consIndex);
-									if (c instanceof ConstantString) {
-										if ("".equals(((ConstantString) c).getBytes(pool))) {
-											int nandtIndex = toStringMR.getNameAndTypeIndex();
-											ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-											if ("toString".equals(cnt.getName(pool))) {
-												int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
-												ConstantMethodref lengthMR = (ConstantMethodref)pool.getConstant(lengthIndex);
-												nandtIndex = lengthMR.getNameAndTypeIndex();
-												cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-												if ("equals".equals(cnt.getName(pool))) {
-													bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_STRINGBUILDER_LENGTH.name(), NORMAL_PRIORITY)
-													.addClass(this)
-													.addMethod(this)
-													.addSourceLine(this));
-												}
-											}
-										}
-									}
-								}
-							}
-						}
-					}
-				}
+				checkEqualsStringBufferLength();
 			} else if ((seen == IRETURN) && lastIfEqWasBoolean) {
-				byte[] bytes = getCode().getCode();
-				if ((lastPCs[0] != -1)
-						&&  ((0x00FF & bytes[lastPCs[3]]) == ICONST_0)
-						&&  ((0x00FF & bytes[lastPCs[2]]) == GOTO)
-						&&  ((0x00FF & bytes[lastPCs[1]]) == ICONST_1)
-						&&  ((0x00FF & bytes[lastPCs[0]]) == IFEQ)) {
-					if (getMethod().getSignature().endsWith("Z")) {
-						boolean bug = true;
-						BitSet branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[1]));
-						if (branchInsSet != null)
-						{
-							bug = false;
-						}
-						branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[3]));
-						if ((branchInsSet != null) && (branchInsSet.cardinality() > 1))
-						{
-							bug = false;
-						}
-
-						if (bug) {
-							bugReporter.reportBug(new BugInstance(this, BugType.SPP_USELESS_TERNARY.name(), NORMAL_PRIORITY)
-							.addClass(this)
-							.addMethod(this)
-							.addSourceLine(this));
-						}
-					}
-				}
+				checkForUselessTernaryReturn();
 			} else if (seen == LDC2_W) {
-				Object con = getConstantRefOperand();
-				if (con instanceof ConstantDouble) {
-					double d = ((ConstantDouble) con).getBytes();
-					double piDelta = Math.abs(d - Math.PI);
-					double eDelta = Math.abs(d - Math.E);
-
-					if (((piDelta > 0.0) && (piDelta < 0.002))
-							||  ((eDelta > 0.0) && (eDelta < 0.002))) {
-						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_MATH_CONSTANT.name(), NORMAL_PRIORITY)
-						.addClass(this)
-						.addMethod(this)
-						.addSourceLine(this));
-					}
-				}
+				checkApproximationsOfMathConstants();
 			} else if (seen == DCMPL) {
-				if (stack.getStackDepth() > 1) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					Double d1 = (Double)item.getConstant();
-					item = stack.getStackItem(1);
-					Double d2 = (Double)item.getConstant();
-
-					if (((d1 != null) && d1.isNaN()) || ((d2 != null) && d2.isNaN())) {
-						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ISNAN.name(), NORMAL_PRIORITY)
-						.addClass(this)
-						.addMethod(this)
-						.addSourceLine(this)
-						.addString("double")
-						.addString("Double"));
-					}
-				}
+				checkCompareToNaNDouble();
 			} else if (seen == FCMPL) {
-				if (stack.getStackDepth() > 1) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					Float f1 = (Float)item.getConstant();
-					item = stack.getStackItem(1);
-					Float f2 = (Float)item.getConstant();
-
-					if (((f1 != null) && f1.isNaN()) || ((f2 != null) && f2.isNaN())) {
-						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ISNAN.name(), NORMAL_PRIORITY)
-                            .addClass(this)
-                            .addMethod(this)
-                            .addSourceLine(this)
-                            .addString("float")
-                            .addString("Float"));
-					}
-				}
+				checkCompareToNaNFloat();
 			} else if (OpcodeUtils.isAStore(seen)) {
 				reg = RegisterUtils.getAStoreReg(this, seen);
-				if (seen == lastOpcode) {
-					if (reg == lastReg) {
-						bugReporter.reportBug(new BugInstance(this, BugType.SPP_STUTTERED_ASSIGNMENT.name(), NORMAL_PRIORITY)
-						.addClass(this)
-						.addMethod(this)
-						.addSourceLine(this));
-					}
-				}
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					String mName = (String) item.getUserValue();
-					if (mName != null) {
-						if ("trim".equals(mName)) {
-							item.setUserValue(null);
-						} else {
-							Matcher m = APPEND_PATTERN.matcher(mName);
-							if (m.matches()) {
-								int appendReg = Integer.parseInt(m.group(1));
-								if (reg == appendReg) {
-									bugReporter.reportBug(new BugInstance(this, BugType.SPP_STRINGBUILDER_IS_MUTABLE.name(), NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this)
-									.addSourceLine(this));
-								}
-							}
-						}
-					}
-				}
+				checkStutterdAssignment(seen, reg);
+				checkImmutableUsageOfStringBuilder(reg);
 			} else if (OpcodeUtils.isALoad(seen)) {
-				lastLoadWasString = false;
-				LocalVariableTable lvt = getMethod().getLocalVariableTable();
-				if (lvt != null) {
-					LocalVariable lv = LVTHelper.getLocalVariableAtPC(lvt, RegisterUtils.getALoadReg(this, seen), getPC());
-					if (lv != null) {
-						lastLoadWasString = "Ljava/lang/String;".equals(lv.getSignature());
-					}
-				}
+				sawLoad(seen);
 			} else if ((seen >= ICONST_0) && (seen <= ICONST_3)) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					String tca = (String)item.getUserValue();
-					if ("toCharArray".equals(tca)) {
-						userValue = "iconst";
-					}
-				}
+				userValue = sawIntConst(userValue);
 			} else if (seen == CALOAD) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					String ic = (String)item.getUserValue();
-					if ("iconst".equals(ic)) {
-						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_CHARAT.name(), NORMAL_PRIORITY)
-						.addClass(this)
-						.addMethod(this)
-						.addSourceLine(this));
-					}
-				}
+				checkImproperToCharArrayUse();
 			} else if (seen == INVOKESTATIC) {
 				userValue = sawInvokeStatic(userValue);
 			} else if (seen == INVOKEVIRTUAL) {
@@ -485,6 +251,299 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			System.arraycopy(lastPCs, 1, lastPCs, 0, 3);
 			lastPCs[3] = getPC();
 		}
+	}
+
+	private void checkImproperToCharArrayUse() {
+		if (stack.getStackDepth() > 0) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			String ic = (String)item.getUserValue();
+			if ("iconst".equals(ic)) {
+				bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_CHARAT.name(), NORMAL_PRIORITY)
+				.addClass(this)
+				.addMethod(this)
+				.addSourceLine(this));
+			}
+		}
+	}
+
+	private String sawIntConst(String userValue) {
+		if (stack.getStackDepth() > 0) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			String tca = (String)item.getUserValue();
+			if ("toCharArray".equals(tca)) {
+				userValue = "iconst";
+			}
+		}
+		return userValue;
+	}
+
+	private void sawLoad(int seen) {
+		lastLoadWasString = false;
+		LocalVariableTable lvt = getMethod().getLocalVariableTable();
+		if (lvt != null) {
+			LocalVariable lv = LVTHelper.getLocalVariableAtPC(lvt, RegisterUtils.getALoadReg(this, seen), getPC());
+			if (lv != null) {
+				lastLoadWasString = "Ljava/lang/String;".equals(lv.getSignature());
+			}
+		}
+	}
+
+	private void checkStutterdAssignment(int seen, int reg) {
+		if (seen == lastOpcode && reg == lastReg) {
+				bugReporter.reportBug(new BugInstance(this, BugType.SPP_STUTTERED_ASSIGNMENT.name(), NORMAL_PRIORITY)
+				.addClass(this)
+				.addMethod(this)
+				.addSourceLine(this));
+		}
+	}
+
+	private void checkImmutableUsageOfStringBuilder(int reg) {
+		if (stack.getStackDepth() > 0) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			String mName = (String) item.getUserValue();
+			if (mName != null) {
+				if ("trim".equals(mName)) {
+					item.setUserValue(null);
+				} else {
+					Matcher m = APPEND_PATTERN.matcher(mName);
+					if (m.matches()) {
+						int appendReg = Integer.parseInt(m.group(1));
+						if (reg == appendReg) {
+							bugReporter.reportBug(new BugInstance(this, BugType.SPP_STRINGBUILDER_IS_MUTABLE.name(), NORMAL_PRIORITY)
+							.addClass(this)
+							.addMethod(this)
+							.addSourceLine(this));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void checkCompareToNaNFloat() {
+		if (stack.getStackDepth() > 1) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			Float f1 = (Float)item.getConstant();
+			item = stack.getStackItem(1);
+			Float f2 = (Float)item.getConstant();
+
+			if (((f1 != null) && f1.isNaN()) || ((f2 != null) && f2.isNaN())) {
+				bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ISNAN.name(), NORMAL_PRIORITY)
+				.addClass(this)
+				.addMethod(this)
+				.addSourceLine(this)
+				.addString("float")
+				.addString("Float"));
+			}
+		}
+	}
+
+	private void checkCompareToNaNDouble() {
+		if (stack.getStackDepth() > 1) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			Double d1 = (Double)item.getConstant();
+			item = stack.getStackItem(1);
+			Double d2 = (Double)item.getConstant();
+
+			if (((d1 != null) && d1.isNaN()) || ((d2 != null) && d2.isNaN())) {
+				bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ISNAN.name(), NORMAL_PRIORITY)
+				.addClass(this)
+				.addMethod(this)
+				.addSourceLine(this)
+				.addString("double")
+				.addString("Double"));
+			}
+		}
+	}
+
+	private void checkApproximationsOfMathConstants() {
+		Object con = getConstantRefOperand();
+		if (con instanceof ConstantDouble) {
+			double d = ((ConstantDouble) con).getBytes();
+			double piDelta = Math.abs(d - Math.PI);
+			double eDelta = Math.abs(d - Math.E);
+
+			if (((piDelta > 0.0) && (piDelta < 0.002))
+					||  ((eDelta > 0.0) && (eDelta < 0.002))) {
+				bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_MATH_CONSTANT.name(), NORMAL_PRIORITY)
+				.addClass(this)
+				.addMethod(this)
+				.addSourceLine(this));
+			}
+		}
+	}
+
+	private void checkForUselessTernaryReturn() {
+		byte[] bytes = getCode().getCode();
+		if ((lastPCs[0] != -1)
+				&&  ((0x00FF & bytes[lastPCs[3]]) == ICONST_0)
+				&&  ((0x00FF & bytes[lastPCs[2]]) == GOTO)
+				&&  ((0x00FF & bytes[lastPCs[1]]) == ICONST_1)
+				&&  ((0x00FF & bytes[lastPCs[0]]) == IFEQ)) {
+			if (getMethod().getSignature().endsWith("Z")) {
+				boolean bug = true;
+				BitSet branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[1]));
+				if (branchInsSet != null)
+				{
+					bug = false;
+				}
+				branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[3]));
+				if ((branchInsSet != null) && (branchInsSet.cardinality() > 1))
+				{
+					bug = false;
+				}
+
+				if (bug) {
+					bugReporter.reportBug(new BugInstance(this, BugType.SPP_USELESS_TERNARY.name(), NORMAL_PRIORITY)
+					.addClass(this)
+					.addMethod(this)
+					.addSourceLine(this));
+				}
+			}
+		}
+	}
+
+	private void checkEqualsStringBufferLength() {
+		if (stack.getStackDepth() > 0) {
+			OpcodeStack.Item itm = stack.getStackItem(0);
+			lastIfEqWasBoolean = "Z".equals(itm.getSignature());
+		}
+
+		byte[] bytes = getCode().getCode();
+		if (lastPCs[1] != -1) {
+			if (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL) {
+				int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
+				if  (((loadIns == LDC) || (loadIns == LDC_W))
+						&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == INVOKEVIRTUAL)) {
+					ConstantPool pool = getConstantPool();
+					int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[1]+1);
+					Constant cmr = pool.getConstant(toStringIndex);
+					if (cmr instanceof ConstantMethodref) {
+						ConstantMethodref toStringMR = (ConstantMethodref)cmr;
+						String toStringCls = toStringMR.getClass(pool);
+						if (toStringCls.startsWith("java.lang.&&StringBu")) {
+							int consIndex = CodeByteUtils.getbyte(bytes, lastPCs[2]+1);
+							Constant c = pool.getConstant(consIndex);
+							if (c instanceof ConstantString) {
+								if ("".equals(((ConstantString) c).getBytes(pool))) {
+									int nandtIndex = toStringMR.getNameAndTypeIndex();
+									ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+									if ("toString".equals(cnt.getName(pool))) {
+										int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
+										ConstantMethodref lengthMR = (ConstantMethodref)pool.getConstant(lengthIndex);
+										nandtIndex = lengthMR.getNameAndTypeIndex();
+										cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+										if ("equals".equals(cnt.getName(pool))) {
+											bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_STRINGBUILDER_LENGTH.name(), NORMAL_PRIORITY)
+											.addClass(this)
+											.addMethod(this)
+											.addSourceLine(this));
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void checkNotEqualsStringBuilderLength() {
+		byte[] bytes = getCode().getCode();
+		if (lastPCs[2] != -1) {
+			if ((CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL)
+					&&  (CodeByteUtils.getbyte(bytes, lastPCs[2]) == INVOKEVIRTUAL)) {
+				ConstantPool pool = getConstantPool();
+				int toStringIndex = CodeByteUtils.getshort(bytes, lastPCs[2]+1);
+				ConstantMethodref toStringMR = (ConstantMethodref)pool.getConstant(toStringIndex);
+				String toStringCls = toStringMR.getClass(pool);
+				if (toStringCls.startsWith("java.lang.StringBu")) {
+					int nandtIndex = toStringMR.getNameAndTypeIndex();
+					ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+					if ("toString".equals(cnt.getName(pool))) {
+						int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
+						ConstantMethodref lengthMR = (ConstantMethodref)pool.getConstant(lengthIndex);
+						nandtIndex = lengthMR.getNameAndTypeIndex();
+						cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+						if ("length".equals(cnt.getName(pool))) {
+							bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_STRINGBUILDER_LENGTH.name(), NORMAL_PRIORITY)
+							.addClass(this)
+							.addMethod(this)
+							.addSourceLine(this));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void checkNullAndInstanceOf() {
+		byte[] bytes = getCode().getCode();
+		if ((lastPCs[0] != -1) && (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL) && (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INSTANCEOF)) {
+			int ins0 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
+			if ((ins0 == ALOAD) || (ins0 == ALOAD_0) || (ins0 == ALOAD_1) || (ins0 == ALOAD_2) || (ins0 == ALOAD_3)) {
+				int ins2 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
+				if (ins0 == ins2) {
+					if ((ins0 != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[0] + 1) == CodeByteUtils.getbyte(bytes, lastPCs[2] + 1))) {
+						int ifNullTarget = lastPCs[1] + CodeByteUtils.getshort(bytes, lastPCs[1]+1);
+						if (ifNullTarget == getBranchTarget()) {
+							bugReporter.reportBug(new BugInstance(this, BugType.SPP_NULL_BEFORE_INSTANCEOF.name(), NORMAL_PRIORITY)
+							.addClass(this)
+							.addMethod(this)
+							.addSourceLine(this));
+						}
+					}
+				}
+			}
+		}
+	}
+
+	private void checkSizeEquals0() {
+		if (stack.getStackDepth() == 1) {
+			OpcodeStack.Item item = stack.getStackItem(0);
+			if ("size".equals(item.getUserValue())) {
+				bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ISEMPTY.name(), NORMAL_PRIORITY)
+				.addClass(this)
+				.addMethod(this)
+				.addSourceLine(this));
+			}
+		}
+	}
+
+	private void checkForEmptyStringAndNullChecks(int seen) {
+		if (lastLoadWasString && (lastPCs[0] != -1)) {
+			byte[] bytes = getCode().getCode();
+			int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
+			int brOffset = (loadIns == ALOAD) ? 11 : 10;
+
+			if ((((loadIns >= ALOAD_0) && (loadIns <= ALOAD_3)) || (loadIns == ALOAD))
+					&&  (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL)
+					&&  (CodeByteUtils.getbyte(bytes, lastPCs[2]) == loadIns)
+					&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL)
+					&&  (CodeByteUtils.getbyte(bytes, lastPCs[0]) == loadIns)
+					&&  ((loadIns != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[2]+1) == CodeByteUtils.getbyte(bytes, lastPCs[0]+1)))
+					&&  ((seen == IFNE) ? CodeByteUtils.getshort(bytes, lastPCs[1]+1) > brOffset : CodeByteUtils.getshort(bytes, lastPCs[1]+1) == brOffset)) {
+				int nextOp = CodeByteUtils.getbyte(bytes, getNextPC());
+				if ((nextOp != GOTO) && (nextOp != GOTO_W)) {
+					ConstantPool pool = getConstantPool();
+					int mpoolIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
+					ConstantMethodref cmr = (ConstantMethodref)pool.getConstant(mpoolIndex);
+					int nandtIndex = cmr.getNameAndTypeIndex();
+					ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+					if ("length".equals(cnt.getName(pool))) {
+						bugReporter.reportBug(new BugInstance(this, BugType.SPP_SUSPECT_STRING_TEST.name(), NORMAL_PRIORITY)
+						.addClass(this)
+						.addMethod(this)
+						.addSourceLine(this));
+					}
+				}
+			}
+		}
+	}
+
+	private boolean isBranchByteCode(int seen) {
+		return ((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W);
 	}
 
 	private String sawInvokeStatic(String userValue) {
