@@ -205,8 +205,6 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 							} else {
 								checkParms = null;
 							}
-						} else {
-							checkParms = null;
 						}
 					}
 				}
