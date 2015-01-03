@@ -104,7 +104,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.DeclaredRuntimeException">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that declare Runtime exceptions in their throws clause. While doing
+			<p>Looks for methods that declare RuntimeExceptions in their throws clause. While doing
 			so is not illegal, it may represent a misunderstanding as to the exception in question.
 			If a RuntimeException is declared, it implies that this exception type is expected to happen,
 			which if true should be handled in code, and not propagated. </p>
@@ -675,7 +675,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that are defined to return Object, and return different types of
-			objects based on different code paths. If this method is not based on a interface or
+			objects based on different code paths. If this method is not based on an interface or
 			superclass, it is suggested to change the return type to a type that would accommodate
 			all kinds of return types.</p>
 			<p>It is a fast detector.</p>
@@ -1022,7 +1022,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that use the same name with different casing to access objects in HttpRequest parameters
-			and attributes. As these parameter names are case sensitive this will lead to confusion.</p>
+			and attributes. As these parameter names are case-sensitive this will lead to confusion.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -1031,7 +1031,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OverzealousCasting">
 		<Details>
 			<![CDATA[
-			<p>Looks for manual casts of objects that are more specific then needed as the value is assigned
+			<p>Looks for manual casts of objects that are more specific than needed as the value is assigned
 			to a class or interface higher up in the inheritance chain. You only need to cast to that class
 			or interface.</p>
 			<p>It is a fast detector</p>
@@ -1334,7 +1334,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for common methods that are non mutating where the return value is ignored. As these methods
-			do not change the object they are called on, calling this methods is pointless. They can be removed.</p>
+			do not change the object they are called on, calling these methods is pointless. They can be removed.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -2215,7 +2215,7 @@
 		<LongDescription>Method {1} overly synchronizes a block of code</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This methods implements a synchronized block, but the code found at the beginning
+			<p>This method implements a synchronized block, but the code found at the beginning
 			of this block only accesses local variables, and not member variables, or this.
 			To be better performance move the code that access local variables only, above the
 			synchronized block, and leave the synchronized block only for field accesses, or access
@@ -3019,7 +3019,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method compares two strings with compareToIgnoreCase or equalsIgnoreCase, after having
-			called toUpperCase or toLowerCase on the string in question. As you are comparing with out
+			called toUpperCase or toLowerCase on the string in question. As you are comparing without
 			concern to case, the toUpperCase or toLowerCase calls are pointless and can be removed.</p>
 			]]>
 		</Details>
@@ -3043,7 +3043,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method passes the empty string "" to equalsIgnoreCase or compareToIgnoreCase, as the empty string
-			is not case sensitive using equals is simpler. It would be even simpler to do a length() == 0 test.</p>
+			is not case-sensitive using equals is simpler. It would be even simpler to do a length() == 0 test.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3149,7 +3149,7 @@
 	   <LongDescription>Method {1} calls toString() on a String</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This methods calls toString on a String. Just use the object itself if you want a String.</p>
+	       <p>This method calls toString on a String. Just use the object itself if you want a String.</p>
 	       ]]>
 	   </Details>
 	</BugPattern>
@@ -3159,7 +3159,7 @@
 	   <LongDescription>Method {1} calls {3} on a String Literal</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This methods calls a converting method like <code>toLowerCase()</code> or <code>trim</code>
+	       <p>This method calls a converting method like <code>toLowerCase()</code> or <code>trim</code>
 		   on a <code>String</code> literal. You should make the transformation yourself and use the transformed literal.</p>
 		   
 		   <p>
@@ -3728,7 +3728,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method sets or gets an HttpSession attribute with a parameter name that was used in other locations
-			but with a different casing. As HttpSession attribute are case sensitive, this will be very confusing.</p>
+			but with a different casing. As HttpSession attribute are case-sensitive, this will be very confusing.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3739,7 +3739,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method fetches an HttpServletRequest parameter with a parameter name that was used in other locations
-			but with a different casing. As HttpServletRequest parameters are case sensitive, this will be very confusing.</p>
+			but with a different casing. As HttpServletRequest parameters are case-sensitive, this will be very confusing.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4673,7 +4673,7 @@
     	<Details>
     		<![CDATA[
     		<p>This method is declared more permissively than the code is using. Having this method be more
-    		permissive than is needed limits your ability to make observations about this methods, like
+			permissive than is needed limits your ability to make observations about this method, like
     		parameter usage, refactorability, and derivability. It is possible that this detector will report 
     		erroneously if:
     		<ul>
