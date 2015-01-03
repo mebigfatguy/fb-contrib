@@ -195,7 +195,7 @@
 			<![CDATA[
 			<p>Looks for abstract classes that define empty methods or methods that simply throw an
 			exception. Since this is an abstract class, it may be cleaner to simple define this method
-			as abstract, so that correct subclass behaviour is enforced.</p>
+			as abstract, so that correct subclass behavior is enforced.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -898,7 +898,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LoggerOddities">
 		<Details>
 			<![CDATA[
-			<p>Looks for odd patterns of use of Logger classes from either log4j, SLF4j or commons logging.</p>
+			<p>Looks for odd patterns of use of Logger classes from either log4j, SLF4J or Commons Logging.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -1312,7 +1312,7 @@
 			<![CDATA[
 			<p>Looks for methods that create collections using the default constructor,
 			even though the number of elements that will be placed in the collection is known
-			apriori, and thus could be pre-allocated. Not doing so just causes more intermediate
+			a priori, and thus could be pre-allocated. Not doing so just causes more intermediate
 			reallocations which is unnecessary.</p>
 			<p>It is a fast detector</p>
 			]]>
@@ -1363,7 +1363,7 @@
 			<![CDATA[
 			<p>Looks for method calls that take a parameter value that does not match one of the expected
 			values for that parameter. It is likely this parameter value should really be an enum, but predates
-			the addition of enums to java. Passing an invalid value will likely cause problems in the execution of
+			the addition of enums to Java. Passing an invalid value will likely cause problems in the execution of
 			the method.
 			</p>
 			<p>It is a fast detector</p>
@@ -1457,7 +1457,7 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConflictingTimeUnits">
     	<Details>
     		<![CDATA[
-    		<p>looks for methods that perform arithmetic operations on values representing time
+			<p>Looks for methods that perform arithmetic operations on values representing time
 			where the time unit is incompatible, ie adding a millisecond value to a nanosecond value.
 			</p>
 			<p>It is a fast detector</p>
@@ -1468,7 +1468,7 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.CharsetIssues">
     	<Details>
     		<![CDATA[
-    		<p>looks for manual specification of String encoding using String constants where either
+			<p>Looks for manual specification of String encoding using String constants where either
     		a StandardCharset could be used (JDK7) or where the encoding is not recognized with the
     		current JDK.</p>
     		<p>It is a fast detector.</p>
@@ -1479,7 +1479,7 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.ContainsBasedConditional">
     	<Details>
     		<![CDATA[
-    		<p>looks for complex if expressions made up of multiple conditions joined by OR, where the same
+			<p>Looks for complex if expressions made up of multiple conditions joined by OR, where the same
     		local variable is compared to a static value. When the number of conditions grow it is much cleaner
     		to build a static set of the possible values, and use the contains method on that set. This will
     		shorten the code, and make it more self documenting.</p>
@@ -1491,7 +1491,7 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod">
     	<Details>
     		<![CDATA[
-    		<p>looks for methods that are declared more permissively than the code is using. For instance, declaring
+			<p>Looks for methods that are declared more permissively than the code is using. For instance, declaring
     		a method public, when it could just be declared private. Having methods have more permissive access than they 
     		need to have limits your ability to make observations about these methods, like parameter usage, 
     		refactorability, and derivability. This detector will not report on methods that are never called in 
@@ -1505,14 +1505,14 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.ClassImpersonatingString">
         <Details>
             <![CDATA[
-            <p>looks for classes that store fields that are Strings that impersonate instances of classes, or collections that are 
-            fields that hold Strings that impersonate a class. Examples of String impersonating are Storing:
+            <p>Looks for classes that store fields that are Strings that impersonate instances of classes, or collections that are
+            fields that hold Strings that impersonate a class. Examples of String impersonating are storing:
             <ul>
                 <li>the result of a toString call</li>
                 <li>Strings build from parsing or building strings from other objects, such as "1,2,3,4" or "Project:3"</li>
             </ul>
             By using Strings you are throwing away type-safety, and making it difficult to reason about what the values of variables
-            in use is. If a String has multiple parts to it, it probably belongs as a first class Class.
+            in use are. If a String has multiple parts to it, it probably belongs as a first class Class.
             </p>
             <p>It is a fast detector</p>
             ]]>
@@ -1908,7 +1908,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method invokes the methods wait, notify or notifyAll on a Thread instance.
-			Doing so will confuse the internal thread state behaviour causing spurious thread
+			Doing so will confuse the internal thread state behavior causing spurious thread
 			wakeups/sleeps because the internal mechanism also uses the thread instance for its
 			notifications.</p>
 			]]>
@@ -2198,8 +2198,8 @@
 	</BugPattern>
 
 	<BugPattern type="CBX_CUSTOM_BUILT_XML">
-		<ShortDescription>Method builds XML strings through adhoc concatenation</ShortDescription>
-		<LongDescription>Method {1} builds XML strings through adhoc concatenation</LongDescription>
+		<ShortDescription>Method builds XML strings through ad hoc concatenation</ShortDescription>
+		<LongDescription>Method {1} builds XML strings through ad hoc concatenation</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method generates an XML based string by concatenating together various
@@ -3555,7 +3555,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method attempts to use an SLF4J logger to log a parameterized expression using formatting anchors.
-			However, SLF4j uses simple non numbered anchors such as {}, rather than anchors with digits in them as the
+			However, SLF4J uses simple non numbered anchors such as {}, rather than anchors with digits in them as the
 			code uses. Thus no parameter replacement will occur.</p>
 			]]>
 		</Details>
@@ -3566,7 +3566,7 @@
 		<LongDescription>Method {1} passes an incorrect number of parameters to an SLF4J logging statement</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method passes the wrong number of parameters to a SLF4j logging method (error, warn, info, debug) based on the number of anchors {} in the
+			<p>This method passes the wrong number of parameters to a SLF4J logging method (error, warn, info, debug) based on the number of anchors {} in the
 			format string. An additional exception argument is allowed if found.</p>
 			]]>
 		</Details>
@@ -3577,7 +3577,7 @@
        <LongDescription>Method {1} creates exception with logger parameter markers in message</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This method creates a standard exception passing a message string which contains an slf4j style
+	       <p>This method creates a standard exception passing a message string which contains an SLF4J style
 	       parameter marker '{}'. This marker will not be translated as it is not processed by the Exception class.
 	       </p>
 	       ]]>
@@ -3585,11 +3585,11 @@
 	</BugPattern>
 	
 	<BugPattern type="LO_APPENDED_STRING_IN_FORMAT_STRING">
-	   <ShortDescription>Method passes a concatenated string to Slf4j's format string</ShortDescription>
-	   <LongDescription>Method {1} passes a concatenated string to Slf4j's format string</LongDescription>
+	   <ShortDescription>Method passes a concatenated string to SLF4J's format string</ShortDescription>
+	   <LongDescription>Method {1} passes a concatenated string to SLF4J's format string</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This method uses an Slf4j logger to log a string, where the first (format) string is created using concatenation.
+	       <p>This method uses an SLF4J logger to log a string, where the first (format) string is created using concatenation.
 	       You should use {} markers to inject dynamic content into the string, so that String building is delayed until the
 	       actual log string is needed. If the log level is high enough that this log statement isn't used, then the appends
 	       will never be executed.</p>
@@ -4284,7 +4284,7 @@
 		<Details>
 			<![CDATA[
 			<p>This method allocates a collection using the default constructor even though it is known
-			apriori how many items are going to be placed in the collection (or at least a reasonable guess)
+			a priori how many items are going to be placed in the collection (or at least a reasonable guess)
 			and thus needlessly causes intermediate reallocations of the collection.</p>
 			]]>
 		</Details>
@@ -4480,7 +4480,7 @@
 			it is good practice to explicitly shutdown the <code>ExecutorService</code> at the end of execution, or
 			when it is being replaced.</p>
 			
-			<p><b>Note:</b> <code>ExecutorService</code>s are generally created once in a program's lifecycle.  If you find yourself
+			<p><b>Note:</b> <code>ExecutorService</code>s are generally created once in a program's life cycle.  If you find yourself
 			replacing the <code>ExecutorService</code>, perhaps you may consider restructuring your code to use calls like
 			<code>awaitTermination()</code> or <code>Future</code>s/<code>Callable</code>s to avoid recreating the <code>ExecutorService</code>.</p>
             ]]>
@@ -4678,7 +4678,7 @@
     		erroneously if:
     		<ul>
     			<li>The method is called from code not being scanned, such as unit tests</li>
-    			<li>The method is an api method, expected to be used by unknown client code</li>
+				<li>The method is an API method, expected to be used by unknown client code</li>
     			<li>The method is called through reflection
     		</ul>	
     		</p>
@@ -4707,7 +4707,7 @@
             <![CDATA[
             <p>This method calls a parsing method (indexOf, lastIndexOf, startsWith, endsWith, substring, indexOf) on a String
             that is a field, or comes from a collection that is a field. This implies that the String in question is holding 
-            multiple parts of information inside the string, which would be more maintanable and type safe if that value was a
+            multiple parts of information inside the string, which would be more maintainable and type safe if that value was a
             true collection or a first class object with fields, rather than a String.
             </p>
             ]]>
