@@ -38,7 +38,7 @@
 				sb.append(a + b);
 				return sb.toString();
 			</pre>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -50,7 +50,7 @@
 			<p>As the collection in question was built through Collections.synchronizedXXX, an assumption
 			is made that this collection must be multithreaded safe. However, iterator access is used,
 			which is explicitly unsafe. When iterators are to be used, synchronization should be done manually.</p>
-			<p>It is a slow detector</p>
+			<p>It is a slow detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -60,7 +60,7 @@
 			<![CDATA[
 			<p>Calculates the McCabe Cyclomatic Complexity measure and reports methods that have an
 			excessive value. This report value can be set with system property 'fb-contrib.cc.limit'.</p>
-			<p>It is a slow detector</p>
+			<p>It is a slow detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -71,7 +71,7 @@
 			<p>Looks for parameters that are defined by classes, but where the method only use methods defined by an
 			implemented interface or super class of that class. Relying on concrete classes in public signatures causes cohesion,
 			and makes low impact changes more difficult.</p>
-			<p>It is a slow detector</p>
+			<p>It is a slow detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -82,7 +82,7 @@
 			<p>Looks for for loops that iterate over a java.util.List using an integer index, and get,
 			rather than using an Iterator. An iterator may perform better depending on List implementation,
 			but more importantly will allow the code to be converted to other collection types.</p>
-			<p>It is a moderately fast detector</p>
+			<p>It is a moderately fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -96,7 +96,7 @@
 			determine type. A better design usually can be had by creating a separate class,
 			which defines the different types required, and add an instance of that class to the
 			collection, or array.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -108,7 +108,7 @@
 			so is not illegal, it may represent a misunderstanding as to the exception in question.
 			If a RuntimeException is declared, it implies that this exception type is expected to happen,
 			which if true should be handled in code, and not propagated. </p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -121,7 +121,7 @@
 			methods. When this is the case, it is often better to implement this method in that other class,
 			by refactoring the class to accept parameters it needs from the source class.
 			The reporting percentage can be set with system property 'fb-contrib.ce.percent'.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -132,7 +132,7 @@
 			<p>Looks for methods that compare strings against literal strings, where the literal string
 			is passed as the parameter. If the .equals or .compareTo is called on the literal itself, passing
 			the variable as the parameter, you avoid the possibility of a NullPointerException.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -144,7 +144,7 @@
 			As these methods could be overridden, the overridden method will be accessing an object that
 			is only partially constructed, perhaps causing problems. Making these called methods final is
 			an easy fix, where possible.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -156,7 +156,7 @@
 			Since lookup type operations are performed using a linear search for Lists, the performance for large
 			Lists will be poor. Consideration should be made as to whether these fields should be sets. In the
 			case that order is important, consider using LinkedHashSet.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -168,7 +168,7 @@
 			to hold two or more pieces of related information. It would be better to create a new class that holds
 			all of these pieces of information, and place instances of this class in one list. Or if the two list are
 			related in key/value fashion, then use a map instead.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -185,7 +185,7 @@
 			is to clarify the coders intent that the variable not be changed (which many consider dubious 
 			reason for its usage), and dealing with anonymous inner classes." - http://stackoverflow.com/a/266981/1447621</p>
 			
-			<p>It is a slow detector</p>
+			<p>It is a slow detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -196,7 +196,7 @@
 			<p>Looks for abstract classes that define empty methods or methods that simply throw an
 			exception. Since this is an abstract class, it may be cleaner to simple define this method
 			as abstract, so that correct subclass behavior is enforced.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -206,7 +206,7 @@
 			<![CDATA[
 			<p>Looks for methods that copy data from one array to another using a loop. It is
 			better performing to use System.arraycopy to do such copying as this is a native method.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -218,7 +218,7 @@
 			math is imprecise, rounding errors will occur each time through the loop causing
 			hard to find problems. It is usually better to use integer indexing, and calculating
 			the correct floating point value from the index.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -242,7 +242,7 @@
 				<tr><td>Vector.setElementAt</td><td>List.set</td></tr>
 			</table>
 			</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -265,7 +265,7 @@
 				public void test(int i)
 			</pre>
 			</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -276,7 +276,7 @@
 			<p>Looks for methods that have finally blocks that return values
 			or throw exceptions. This code will swallow normal program flow and
 			hide real program logic.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -287,7 +287,7 @@
 			<p>Looks for methods that make static method calls using an instance reference.
 			For documentation purposes, it is better to call the method using the class name.
 			This may represent a change in definition that should be noticed.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -300,7 +300,7 @@
 			thread itself, introducing client calls will confuse the thread state of the object
 			in question, and will cause spurious thread state changes, either waking threads up
 			when not intended, or removing the thread from the runnable state.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -326,7 +326,7 @@
 			<p>It also looks for calls to BoxedClass.valueOf(x) where X is already a Boxed class</p>
 			<p>It also looks for calls to BoxedClass.valueOf(myString).boxedValue(), when instead it is
 			simpler to use BoxedClass.parseBoxed(myString)</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -337,7 +337,7 @@
 			<p>Looks for methods that store the return result in a local variable and
 			then immediately return that local variable. It is simpler to just return
 			the method (or assignment) result directly.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -346,7 +346,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that are direct copies of the implementation in the super class.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -359,7 +359,7 @@
 			do not, and cannot define an equals method, reference equality is used for these
 			collections, which is probably not desired. If it is, consider using the IdentityHashMap
 			class when using Maps in this case, to better document your intentions.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -369,7 +369,7 @@
 			<![CDATA[
 			<p>Looks for methods that create DOM nodes but do not add them to any DOM Document.
 			Either the node was needed to be added to the tree, or the node likely was created in error.</p>
-			<p>It is a fast Detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -380,7 +380,7 @@
 			<p>Looks for methods that are declared as abstract that override concrete methods in a
 			super class. Doing this casts away the implementation of the super class, and breaks
 			the contract as set forth by the parent class.</p>
-			<p>It is a fast Detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -392,7 +392,7 @@
 			and custom values together. Doing so makes brittle code, that is difficult to
 			modify, validate and understand. It is cleaner to create external XML files that are
 			transformed at runtime, using parameters set through Transformer.setParameter.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -403,7 +403,7 @@
 			<p>Looks for methods that are implemented using synchronized blocks, but are overly
 			synchronized because the beginning of the block only accesses local variables,
 			and not member variables, or this.</p>
-			<p>It is a slow detector</p>
+			<p>It is a slow detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -416,7 +416,7 @@
 			variable, but if specific indices mean certain things, perhaps a first class object
 			would be a better choice for a container, on even a map with informative key names
 			would be better.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -429,7 +429,7 @@
 			XXX.class, and doing so protects the integrity of this code from such transformations
 			as obfuscation. Use of Class.forName should only be used when the class in question
 			isn't already statically bound to this context.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -440,7 +440,7 @@
 			<p>Looks for methods that use an array of length one to pass a variable to achieve call
 			by pointer ala C++. It is better to define a proper return class type that holds all
 			the relevant information retrieved from the called method.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -453,7 +453,7 @@
 			interface to appear sluggish and non-responsive to the user. It is better to
 			use a separate thread to do the time consuming work so that the user
 			has a better experience.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -464,7 +464,7 @@
 			<p>Looks for methods that call a method to retrieve a reference to an object,
 			to use to load a constant. It is simpler and more performant to access the
 			static variable directly from the class itself.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -473,7 +473,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for inefficient comparison of Date objects using two comparisons when one would do.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -483,7 +483,7 @@
 			<![CDATA[
 			<p>Looks for calls to the wait method on mutexes defined in the java.util.concurrent
 			package where it is likely that await was intended.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -493,7 +493,7 @@
 			<![CDATA[
 			<p>Looks for uses of JDBC vendor specific classes and methods making the database
 			access code non portable.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -504,7 +504,7 @@
 			<p>Looks for classes that maintain collections or StringBuffer/StringBuilders in
 			static member variables, and that do not appear to provide a way to clear or remove
 			items from these members. Such class fields are likely causes of memory bloat.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -516,7 +516,7 @@
 			variables, and never stored in fields or returned from methods. As local variables
 			are by definition thread safe, using synchronized collections in this context
 			makes no sense.</p>
-			<p>It is a moderately fast detector</p>
+			<p>It is a moderately fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -527,7 +527,7 @@
 			<p>Looks for classes that define fields that are used in a locals only fashion,
 			specifically private fields that are accessed first in each method with a
 			store vs. a load.</p>
-			<p>It is a slow detector</p>
+			<p>It is a slow detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -540,7 +540,7 @@
 			for their own synchronization purposes. For cleanest separation of interests, only
 			synchronize on private fields of the class. Note that 'this' is not owned by
 			the current class and synchronization on 'this' should be avoided as well.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -550,7 +550,7 @@
 			<![CDATA[
 			<p>Looks for tag libraries that are not recycleable because backing members
 			of taglib attributes are set in areas besides the setter method for the attribute.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -559,7 +559,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for violation of Section 508, Accessibility for People with disabilities Act.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -568,7 +568,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for use of sets and maps using enums. It is more efficient to use EnumSet or EnumMap.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -579,7 +579,7 @@
 			<p>Looks for the execution of SQL queries inside a loop. This pattern tends to be inefficient,
 			and often can be improved upon, by collecting all the keys needed for the query and issuing just
 			one query using an in clause with all the keys for all the queries previously needed in the loop.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -590,7 +590,7 @@
 			<p>Looks for classes that define private synchronized collections as static or instance
 			members, that are only altered in a static initializer or constructor. Since the multithreaded
 			use of this collection is read-only, the use of synchronization is unnecessary.</p>
-			<p>It is a moderately fast detector</p>
+			<p>It is a moderately fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -601,7 +601,7 @@
 			<p>Looks for if/else blocks where a series of them use instanceof on the same
 			variable to determine what to do. If these classes are related by inheritance,
 			this often is better handled through calling a single overridden method.</p>
-			<p>It is a moderately fast detector</p>
+			<p>It is a moderately fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -612,7 +612,7 @@
 			<p>Looks for creation of arrays in methods using constant values. These arrays
 			will need to be recreated each time the method is called. These arrays should probably
 			be defined as static fields, instead.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -622,7 +622,7 @@
 			<![CDATA[
 			<p>Looks for calls of the same method on the same object when that object hasn't changed.
 			This often is redundant, and the second call can be removed, or combined.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -633,7 +633,7 @@
 			<p>Looks for code that builds an array of values from a collection, by manually looping
 			over the elements of the collection, and adding them to the array. It is simpler and
 			cleaner to use mycollection.toArray(new type[mycollection.size()]).</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -644,7 +644,7 @@
 			<p>Looks for methods that catch exceptions, and then throw a different exception
 			without embedding the original exception in the thrown one. Doing so, hides the real
 			source of the exception, making debugging and fixing these problems difficult.</p>
-			<p>It is a moderately fast detector</p>
+			<p>It is a moderately fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -788,7 +788,7 @@
 			<p>Looks for private or static methods that only return one constant value. Since there is no
 			chance for derived classes overriding this behavior, the return of a constant value
 			seems dubious.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -800,7 +800,7 @@
 			standard readObject and writeObject methods by simply deferring to the Stream
 			parameter's defaultReadObject or defaultWriteObject and nothing else. As this is the
 			built in behavior, these methods are not needed.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -811,7 +811,7 @@
 			<p>Looks for classes that define both static and instance methods with the same name.
 			As each type represents a different use model, it doesn't make sense that this name
 			would be overloaded, and will confuse users of the class.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -826,7 +826,7 @@
 			are methods constrained by interface or super class contracts and throw other
 			types of checked exceptions. Most egregious are methods not constrained by any interface
 			or superclass contract.</p>
-			<p>It is a moderately fast detector</p>
+			<p>It is a moderately fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -840,7 +840,7 @@
 			If the purpose of this method is just to modify the parameter, this method should
 			probably be changed to have a void return type. If you must return a variable, perhaps
 			a clone of the parameter should be returned.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -857,7 +857,7 @@
 				<li>Using the assert keyword</li>
 			</ul>
 			</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -868,7 +868,7 @@
 			<p>Looks for implementations of clone where an assignment is made to a field of the
 			source object. It is likely that that store should have occurred on the cloned object, as
 			the clone operation is almost always considered read only.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -879,7 +879,7 @@
 			<p>Looks for exceptions that are thrown with static strings as messages. Using static strings
 			doesn't differentiate one use of this method versus another, and so it may be difficult
 			to determine how this exception occurred without showing context.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -890,7 +890,7 @@
 			<p>Looks for code that fetches a complex object from an HttpSession attribute, modifies the
 			object, but does not call setAttribute again on this object. This will not inform the application server
 			that this object has changed, and thus will not correctly replicate these changes across the cluster.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -899,7 +899,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for odd patterns of use of Logger classes from either log4j, SLF4J or Commons Logging.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -916,7 +916,7 @@
 				<li>org.apache.xerces.xxx</li>
 				<li>org.apache.xalan.xxx</li>
 			</ul>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -933,7 +933,7 @@
 			thus changing hashCodes, etc, while the collection is in the set.</p>
 			<p>If you wish to keep a collection of collections, the outer collection should probably be a list
 			to avoid these problems.</p>
-			<p>It is a moderately fast detector</p>
+			<p>It is a moderately fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -944,7 +944,7 @@
 			<p>Looks for constructors, static methods and private methods that declare that they throw
 			checked exceptions that the actual code never throws. Since these methods can't be overridden,
 			there is no reason to add these exceptions to the method declaration.</p>
-			<p>It is a moderately fast detector</p>
+			<p>It is a moderately fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -956,7 +956,7 @@
 			object is null, or non null. As the new operator is guaranteed to either succeed, or throw
 			an exception, this null check is useless, and denotes a misunderstanding as to how
 			the JVM works. You can remove this guard.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -967,7 +967,7 @@
 			<p>Looks for classes that appear to implement the old style type safe enum pattern
 			that was used before Java added Enum support to the language. Since this class is
 			compiled with Java 1.5 or later, it would be simpler to just use Java enums.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -978,7 +978,7 @@
 			<p>Looks for method calls that pass the same value for two separate parameters, where
 			those arguments are not constants. Often this is a cut/paste mistake, but if not, it is
 			confusing why you would pass the same value for two arguments.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -990,7 +990,7 @@
 			value. As this now allows the method to return 3 values, the use of Boolean is
 			dubious. It would be better to just define a new enumeration with three values,
 			and return that.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1002,7 +1002,7 @@
 			in this method. While it's possible that the calling method will do the work of
 			initializing the array, it is not a usual pattern, and it is suspected that this array
 			was just forgotten to be initialized.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1013,7 +1013,7 @@
 			<p>Looks for methods that perform algorithmic operations on Strings that are returned
 			from a toString() method. As toString should only be used for debug/trace purposes, it
 			shouldn't be used for algorithm use.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1023,7 +1023,7 @@
 			<![CDATA[
 			<p>Looks for methods that use the same name with different casing to access objects in HttpRequest parameters
 			and attributes. As these parameter names are case-sensitive this will lead to confusion.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1034,7 +1034,7 @@
 			<p>Looks for manual casts of objects that are more specific than needed as the value is assigned
 			to a class or interface higher up in the inheritance chain. You only need to cast to that class
 			or interface.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1046,7 +1046,7 @@
 			parameters to more specific types in the method. This is misleading and dangerous
 			as you are not documenting through parameter types what is necessary for these
 			parameters to function correctly.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1058,7 +1058,7 @@
 			symmetry. If a equals b, then b equals a. While it is usually wrong to allow
 			equals to compare different types, at the very least you should make sure that
 			each class knows about each other and is able to compare themselves with each other.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1077,7 +1077,7 @@
 				A[] a = b;
 				a[0] = new A(); // results in ArrayStoreException (Runtime)
 			</pre>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1088,7 +1088,7 @@
 			<p>Looks for fields in serializable classes that are defined as both final and
 			transient. As a transient field is not initialized when streamed, and is not
 			initialized in a constructor, it will remain null because it is defined final.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1100,7 +1100,7 @@
 			before entering a code block either an if, or while statement, and then reassigns that
 			field or local variable. It is likely that guard should have been to see if that
 			field or local variable is null, not, not null.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1109,7 +1109,7 @@
 		<Details>
 			<![CDATA[
 			<p>This detector looks for calls to more pointless or deprecated methods.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1119,7 +1119,7 @@
 			<![CDATA[
 			<p>This detector looks for reflective calls on methods that are found in the class java.lang.Object.
 			As these methods are always available, there is no reason to use reflection to call them.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1132,7 +1132,7 @@
 			String to String only collection, putting other types in the Properties object is
 			incorrect, and takes advantage of a poor design decision by the original Properties class
 			designers to derive from Hashtable, rather than using aggregation.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1143,7 +1143,7 @@
 			<p>This detector looks for allocations of objects using the default constructor in a loop, where
 			the object allocated is never assigned to any object that is used outside the loop.
 			It is possible that this allocation can be done outside the loop to avoid excessive garbage.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1154,7 +1154,7 @@
 			<p>This detector looks for allocations and initializations of Java collections, but that are never
 			read from or accessed to gain information. This represents a collection of no use, and most probably
 			can be removed. It is similar to a dead local store.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1165,7 +1165,7 @@
 			<p>This detector looks for definitions of methods that have an array as the last parameter.
 			Since this class is compiled with Java 1.5 or better, it would be more flexible for clients of this
 			method to define this parameter as a vararg parameter.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1177,7 +1177,7 @@
 			classes of other classes. Since there is a reference to the containing class, this class will be serialized as well.
 			It is often the case that this is not what is wanted, and will cause much more data to be serialized
 			than is necessary.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1188,7 +1188,7 @@
 			<p>This detector looks for object creation where the object isn't assigned to any variable or
 			field. This implies that the class operates through side effects in the constructor, which makes
 			for difficult to maintain code.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1202,7 +1202,7 @@
 				person.setAge(person.getAge());
 			</pre>
 			<p>Typically this is a copy paste typo.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1214,7 +1214,7 @@
 			.dispose() method called on them when finished. These objects will be cleaned up by
 			the Garbage collector, bug given the likelihood that large numbers of these objects can
 			be created in a short period of time, it is better to dispose them as soon as possible.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1226,7 +1226,7 @@
 			and catch the same kind of exception, and each catch block mandatorily throws
 			the same exception. These two catch blocks can and should be made into one
 			catch block to simply the code.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1236,7 +1236,7 @@
 			<![CDATA[
 			<p>This detector looks for uses for Commons-lang EqualsBuilder where the
 			result of equals() is returned instead of calling the method isEquals().</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1246,7 +1246,7 @@
 			<![CDATA[
 			<p>This detector looks for uses for Commons-lang HashCodeBuilder where the
 			result of hashCode() is returned instead of calling the method toHashCode().</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1256,7 +1256,7 @@
 			<![CDATA[
 			<p>This detector looks for uses for Commons-lang ToStringBuilder where the
 			result of toString() is returned without an intermediate invocation of toString().</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1269,7 +1269,7 @@
 			qualified name [JVMSpec 1999].
 
 			Comparing class name ignores the class loader.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1280,7 +1280,7 @@
 			<p>Detects use of Backport Utils concurrent classes. Updated/Efficient version of these
 			classes are available in versions of the JDK 5.0 and higher, and these
 			classes should only be used if you are targeting JDK 1.4 and lower.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1291,7 +1291,7 @@
 			<p>Looks for classes that implement clone() that do not specialize the return value, and do
 			not swallow CloneNotSupportedException. Not doing so makes the clone method not as simple to use,
 			and should be harmless to do so.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1302,7 +1302,7 @@
 			<p>Looks for calls to Arrays.asList where the parameter is a primitive array.
 			This does not produce a list that holds the primitive boxed values, but a list of
 			one item, the array itself.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1314,7 +1314,7 @@
 			even though the number of elements that will be placed in the collection is known
 			a priori, and thus could be pre-allocated. Not doing so just causes more intermediate
 			reallocations which is unnecessary.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1325,7 +1325,7 @@
 			<p>Looks for methods that declare method level template parameter(s) that are not bound to any of the
 			method's parameters, and thus is not adding any validation/type safety to the method, and is
 			just confusing.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1335,7 +1335,7 @@
 			<![CDATA[
 			<p>Looks for common methods that are non mutating where the return value is ignored. As these methods
 			do not change the object they are called on, calling these methods is pointless. They can be removed.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1353,7 +1353,7 @@
 			</li>
 			</ul>
 			</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1366,7 +1366,7 @@
 			the addition of enums to Java. Passing an invalid value will likely cause problems in the execution of
 			the method.
 			</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1378,7 +1378,7 @@
 	       of collection in the name. This is confusing, and is probably a left over from a type change, such as
 	       </p>
 	       <p>List<String> mySet;</p>
-	       <p>It is a fast detector</p>
+	       <p>It is a fast detector.</p>
 	       ]]>
 	   </Details>
 	</Detector>
@@ -1389,7 +1389,7 @@
 	       <p>Looks for fields defined with simple types, (int, String, etc) that are used like an enum. Specifically fields that are 
 	       only assigned a set of constant values. This variable probably should be redefined as an enum.
 	       </p>
-	       <p>It is a fast detector</p>
+	       <p>It is a fast detector.</p>
 	       ]]>
 	   </Details>
 	</Detector>
@@ -1399,7 +1399,7 @@
 	       <![CDATA[
 	       <p>Looks for private or static methods that have parameters that aren't used. These parameters
             can be removed, assuming the method isn't used through reflection.</p>
-            <p>It is fast detector</p>
+            <p>It is fast detector.</p>
 	       ]]>
 	   </Details>
 	</Detector>
@@ -1408,7 +1408,7 @@
         <Details>
             <![CDATA[
             <p>This detector looks circular dependencies among classes. </p>
-            <p>It is a moderately fast detector</p>
+            <p>It is a moderately fast detector.</p>
             ]]>
         </Details>
     </Detector>
@@ -1418,7 +1418,7 @@
             <![CDATA[
             <p>This detector looks for code that attempts to modify a collection that is or may be
             defined as immutable. Doing so will cause exceptions at runtime.</p>
-            <p>It is a fast detector</p>
+            <p>It is a fast detector.</p>
             ]]>
         </Details>
     </Detector>
@@ -1428,7 +1428,7 @@
             <![CDATA[
             <p>Three detectors for hanging ExecutorServices, that is, ExecutorServices that never get a call to shutdown, which
 			can potentially cause the JVM to not exit.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
             ]]>
         </Details>
     </Detector>
@@ -1438,7 +1438,7 @@
             <![CDATA[
             <p>The HttpRequests from the Apache HttpComponents have some little-known quirks about them.
 			This is a set of detectors that helps guard against resource starvation.</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
             ]]>
         </Details>
     </Detector>
@@ -1460,7 +1460,7 @@
 			<p>Looks for methods that perform arithmetic operations on values representing time
 			where the time unit is incompatible, ie adding a millisecond value to a nanosecond value.
 			</p>
-			<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1483,7 +1483,7 @@
     		local variable is compared to a static value. When the number of conditions grow it is much cleaner
     		to build a static set of the possible values, and use the contains method on that set. This will
     		shorten the code, and make it more self documenting.</p>
-    		<p>It is a fast detector</p>
+			<p>It is a fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1497,7 +1497,7 @@
     		refactorability, and derivability. This detector will not report on methods that are never called in 
     		the case this method is an API like method intended to be called by client code. If this method is 
     		also called through reflection, this detector may erroneous report it.</p>
-    		<p>It is a moderately fast detector</p>
+			<p>It is a moderately fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1514,7 +1514,7 @@
             By using Strings you are throwing away type-safety, and making it difficult to reason about what the values of variables
             in use are. If a String has multiple parts to it, it probably belongs as a first class Class.
             </p>
-            <p>It is a fast detector</p>
+            <p>It is a fast detector.</p>
             ]]>
         </Details>
     </Detector>
