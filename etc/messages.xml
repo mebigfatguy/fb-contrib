@@ -4286,6 +4286,15 @@
 			<p>This method allocates a collection using the default constructor even though it is known
 			a priori how many items are going to be placed in the collection (or at least a reasonable guess)
 			and thus needlessly causes intermediate reallocations of the collection.</p>
+			<p>You can use the constructor that takes an initial size and that will be much better, but
+			due to the loadFactor of Maps and Sets, even this will not be a correct estimate.</p>
+			<p>If you are using guava, use its methods that allocate maps and sets with a predetermined size,
+			to get the best chance for no reallocations, such as:
+			<ul>
+			    <li>Sets.newHashSetWithExpectedSize(int)</li>
+			    <li>Maps.newHashMapWithExpectedSize(int)</li>
+			</ul>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
