@@ -1,7 +1,7 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
- * Copyright (C) 2005-2014 Chris Peterson
- * Copyright (C) 2005-2014 Jean-Noel Rouvignac
+ * Copyright (C) 2005-2015 Chris Peterson
+ * Copyright (C) 2005-2015 Jean-Noel Rouvignac
  * 
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
