@@ -542,7 +542,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		}
 	}
 
-	private boolean isBranchByteCode(int seen) {
+	private static boolean isBranchByteCode(int seen) {
 		return ((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W);
 	}
 
