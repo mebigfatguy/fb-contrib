@@ -40,6 +40,11 @@
 			<xsl:for-each select="//BugPattern[starts-with(@type,$abbrev)]">
 				<xsl:sort select="."/>
 				<li>
+					<a>
+					<xsl:attribute name="name">
+						<xsl:value-of select="@type"/>
+					</xsl:attribute>
+					</a>
 					<div class="bugcode">
 						<xsl:value-of select="@type"/>
 					</div>

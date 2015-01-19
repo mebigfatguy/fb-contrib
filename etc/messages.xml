@@ -9,6 +9,8 @@
 			<p>This plugin contains FindBugs detectors from the fb-contrib project</p>
 			]]>
 		</Details>
+		<BugsUrl>http://fb-contrib.sourceforge.net/bugdescriptions.html</BugsUrl>
+		<AllBugsUrl>http://fb-contrib.sourceforge.net/bugdescriptions.html</AllBugsUrl>
 	</Plugin>
 
 	<!-- Detectors -->
