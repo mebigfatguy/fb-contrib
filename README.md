@@ -35,7 +35,7 @@ The master branch is the main branch of development currently targeting the new 
 ##Setting up for Development##
 1. Download/install [Eclipse](https://www.eclipse.org/home/index.php), ideally 4.3 (Kepler) or newer.  The standard release (for Java) will work fine.
 2. **Ant Dependencies** Download [yank, the dependency manager](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.mebigfatguy.yank%22%20AND%20a%3A%22yank%22) and [bug-rank-check-style](https://bitbucket.org/klubick/bugrankcheckstyle/downloads).  Both jars (v1.2.0+ and v1.0.0+) should go in your ~/.ant/lib folder, which you will have to make if it doesn't exist.  Windows people, this goes under [Username]/.ant/lib.  
-Don't have more than one version of either jar in this folder, as it's not clear which one Ant will load, leading to annoying compatibility issues.
+Don't have more than one version of either jar in this folder, as it's not clear which one Ant will load, leading to annoying compatibility issues. This can be done using the ant target ant infra_jars
 3. [Fork](https://help.github.com/articles/fork-a-repo) this git repo and clone it.  [GitHub for Windows](https://windows.github.com/) or [GitHub for Mac](https://mac.github.com/) are good clients if you don't already have one.
 4.  Open Eclipse.  File>Import and then choose "Existing projects into workspace", and find the fb-contrib folder you created in step 3.  Ignore any compile errors (for now).
 5. Using git, clone the FindBugs repository using `git clone https://code.google.com/p/findbugs/`  You will only need the findbugs subfolder (the one that has README.txt in it).  You can delete the rest, if you wish.
