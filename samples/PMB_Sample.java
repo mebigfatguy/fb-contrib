@@ -3,13 +3,16 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.WeakHashMap;
 
 public class PMB_Sample {
     private static Set<String> bl_data = new HashSet<String>();		//tag
     private static List<String> data = new ArrayList<String>();		//no tag
     private static Set<String> inner_data = new HashSet<String>();	//no tag
     private static StringBuilder return_data = new StringBuilder();	//no tag
+    private static Map<String, String> fp_data = new WeakHashMap<String, String>();
     
     private static final Set<String> bloatableSigs = new HashSet<String>();
 	static {
@@ -82,5 +85,9 @@ public class PMB_Sample {
             }
         };
         r.run();
+    }
+    
+    public void fpAddToWeakHashMap() {
+        fp_data.put("Hello", "There");
     }
 }

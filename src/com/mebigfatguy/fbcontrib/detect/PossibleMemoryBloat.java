@@ -51,6 +51,7 @@ import edu.umd.cs.findbugs.ba.XField;
 public class PossibleMemoryBloat extends BytecodeScanningDetector
 {
 	private static final Set<String> bloatableSigs = new HashSet<String>();
+	private static final Set<String> nonBloatableSigs = new HashSet<String>();
 	static {
         bloatableSigs.add("Ljava/util/concurrent/ArrayBlockingQueue;");
         bloatableSigs.add("Ljava/util/ArrayList;");
@@ -84,6 +85,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 		bloatableSigs.add("Ljava/util/TreeMap;");
 		bloatableSigs.add("Ljava/util/TreeSet;");
 		bloatableSigs.add("Ljava/util/Vector;");
+		
+		nonBloatableSigs.add("Ljava/util/WeakHashMap;");
 	}
 	private static final Set<String> decreasingMethods = new HashSet<String>();
 	static {
@@ -247,6 +250,14 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector
 						}
 					}
 				}
+			} else if (seen == PUTSTATIC) {
+			    if (stack.getStackDepth() > 0) {
+			        OpcodeStack.Item item = stack.getStackItem(0);
+			        if (nonBloatableSigs.contains(item.getSignature())) {
+			            XField field = item.getXField();
+			            bloatableFields.remove(field);
+			        }
+			    }
 			}
 			//Should not include private methods
 			else if (seen == ARETURN) {
