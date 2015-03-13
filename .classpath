@@ -4,7 +4,6 @@
 	<classpathentry kind="src" path="src"/>
 	<classpathentry excluding="lib/" kind="src" path="samples"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="lib" path="lib/backport-util-concurrent-3.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet-api-3.1.0.jar"/>
@@ -24,7 +23,8 @@
 			<attribute name="javadoc_location" value="http://commons.apache.org/proper/commons-bcel/apidocs/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/findbugs-3.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
+	<classpathentry kind="lib" path="lib/findbugs-3.0.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="output" path="classes"/>
 </classpath>
