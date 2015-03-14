@@ -67,21 +67,23 @@ public class ToString {
 				visitedObjects.add(identityHC);
 				String sep = "";
 				for (Field f : cls.getDeclaredFields()) {
-					sb.append(sep);
-					sep = ", ";
-					sb.append(f.getName()).append('=');
-					try {
-	    				f.setAccessible(true);
-	    				Object value = f.get(o);
-	    				if (value == null) {
-	    					sb.append((String) null);
-	    				} else if (value.getClass().isArray()) {
-	    					sb.append(Arrays.toString((Object[]) value));
-	    				} else {
-	    					sb.append(value);
-	    				}
-					} catch (SecurityException e) {
-					    sb.append("*SECURITY_EXCEPTION*");
+					if (!f.isSynthetic() && !f.getName().contains("$")) {
+						sb.append(sep);
+						sep = ", ";
+						sb.append(f.getName()).append('=');
+						try {
+		    				f.setAccessible(true);
+		    				Object value = f.get(o);
+		    				if (value == null) {
+		    					sb.append((String) null);
+		    				} else if (value.getClass().isArray()) {
+		    					sb.append(Arrays.toString((Object[]) value));
+		    				} else {
+		    					sb.append(value);
+		    				}
+						} catch (SecurityException e) {
+						    sb.append("*SECURITY_EXCEPTION*");
+						}
 					}
 				}
 			} catch (Exception e) {
