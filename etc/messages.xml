@@ -3931,7 +3931,7 @@
 		<LongDescription>Method {1} calls deprecated SecureRandom method {2}</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>The <code>SecureRandom()</code> constructors and <code>SecureRandom.getSeed()</code> method are deprecated. Call <code>SecureRandom.getInstance()</code> and <code>SecureRandom.getInstance().generateSeed()</code> instead.</p>
+			<p>The <code>In JDK 1.5 or less, SecureRandom()</code> constructors and <code>SecureRandom.getSeed()</code> method are recommended against using. Call <code>SecureRandom.getInstance()</code> and <code>SecureRandom.getInstance().generateSeed()</code> instead.</p>
 			]]>
 		</Details>
 	</BugPattern>
