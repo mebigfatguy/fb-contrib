@@ -1,6 +1,7 @@
 import java.awt.Adjustable;
 import java.awt.Color;
 import java.awt.image.ImageObserver;
+import java.math.BigDecimal;
 
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
@@ -27,6 +28,16 @@ public class ICA_Sample {
 
     public void testJScrollBar() {
         JScrollBar b = new JScrollBar(3);
+    }
+    
+    public BigDecimal testBigDecimalDivide() {
+    	BigDecimal n = new BigDecimal("4.5");
+    	BigDecimal d = new BigDecimal("2.0");
+    	
+    	BigDecimal r = n.divide(d, 12);
+    	r = r.divide(n, 1, 12);
+    	r.setScale(1, 12);
+    	return r;
     }
 
     public void fpICA() {

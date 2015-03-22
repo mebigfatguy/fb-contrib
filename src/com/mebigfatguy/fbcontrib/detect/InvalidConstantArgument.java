@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.awt.Adjustable;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +63,10 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                 new ParameterInfo<Integer>(0, true, Adjustable.HORIZONTAL, Adjustable.VERTICAL));
         PATTERNS.put(Pattern.compile("java/lang/Thread#setPriority\\(I\\)V"), 
                 new ParameterInfo<Integer>(0, true, new Range<Integer>(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY)));
+        PATTERNS.put(Pattern.compile("java/math/BigDecimal#divide\\(Ljava/math/BigDecimal;.*I\\)Ljava/math/BigDecimal;"), 
+        		new ParameterInfo<Integer>(0, false, new Range<Integer>(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
+        PATTERNS.put(Pattern.compile("java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;"), 
+        		new ParameterInfo<Integer>(0, false, new Range<Integer>(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
 
     }
     
