@@ -2,6 +2,11 @@ import java.awt.Adjustable;
 import java.awt.Color;
 import java.awt.image.ImageObserver;
 import java.math.BigDecimal;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 import javax.swing.BorderFactory;
 import javax.swing.JOptionPane;
@@ -38,6 +43,15 @@ public class ICA_Sample {
     	r = r.divide(n, 1, 12);
     	r.setScale(1, 12);
     	return r;
+    }
+    
+    public void testSQLStatement(Connection c) throws SQLException {
+    	
+    	try (Statement s = c.createStatement(ResultSet.CONCUR_READ_ONLY, ResultSet.TYPE_FORWARD_ONLY)) { 
+    	}
+    	
+    	try (PreparedStatement s = c.prepareStatement("SELECT BOO FROM HOO", ResultSet.CONCUR_UPDATABLE, ResultSet.TYPE_SCROLL_INSENSITIVE)) {
+    	}
     }
 
     public void fpICA() {

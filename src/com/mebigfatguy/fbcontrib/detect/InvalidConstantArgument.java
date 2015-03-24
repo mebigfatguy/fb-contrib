@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.awt.Adjustable;
 import java.math.BigDecimal;
+import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -67,7 +68,14 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         		new ParameterInfo<Integer>(0, false, new Range<Integer>(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
         PATTERNS.put(Pattern.compile("java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;"), 
         		new ParameterInfo<Integer>(0, false, new Range<Integer>(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
-
+        PATTERNS.put(Pattern.compile("java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;"),
+        		new ParameterInfo<Integer>(0, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE));
+        //TODO: how to handle the same method with two parms to check? (ResultSet.CONCUR_READ_ONLY or ResultSet.CONCUR_UPDATABLE)
+        PATTERNS.put(Pattern.compile("java/sql/Connection#createStatement\\(III?\\)Ljava/sql/Statement;"),
+        		new ParameterInfo<Integer>(0, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE));
+        PATTERNS.put(Pattern.compile("java/sql/Connection#prepare[^\\(]+\\(Ljava/lang/String;III?\\)Ljava/sql/PreparedStatement;"),
+        		new ParameterInfo<Integer>(1, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE));
+       
     }
     
     private BugReporter bugReporter;
