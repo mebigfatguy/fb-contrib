@@ -24,6 +24,7 @@ import java.sql.ResultSet;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -52,30 +53,35 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class InvalidConstantArgument extends BytecodeScanningDetector {
 
-    private static final Map<Pattern, ParameterInfo<?>> PATTERNS = new HashMap<Pattern, ParameterInfo<?>>();
+    private static final Map<Pattern, List<ParameterInfo<?>>> PATTERNS = new HashMap<Pattern, List<ParameterInfo<?>>>();
     static {
-        PATTERNS.put(Pattern.compile("javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V"), 
+        addPattern("javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V", 
                 new ParameterInfo<Integer>(0, false, JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE));
-        PATTERNS.put(Pattern.compile("javax/swing/BorderFactory#createBevelBorder\\(I.*\\)Ljavax/swing/border/Border;"), 
+        addPattern("javax/swing/BorderFactory#createBevelBorder\\(I.*\\)Ljavax/swing/border/Border;", 
                 new ParameterInfo<Integer>(0, true, BevelBorder.LOWERED, BevelBorder.RAISED));
-        PATTERNS.put(Pattern.compile("javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;"), 
+        addPattern("javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;", 
                 new ParameterInfo<Integer>(0, true, EtchedBorder.LOWERED, EtchedBorder.RAISED));
-        PATTERNS.put(Pattern.compile("javax/swing/JScrollBar#\\<init\\>\\(I.*\\)V"), 
+        addPattern("javax/swing/JScrollBar#\\<init\\>\\(I.*\\)V", 
                 new ParameterInfo<Integer>(0, true, Adjustable.HORIZONTAL, Adjustable.VERTICAL));
-        PATTERNS.put(Pattern.compile("java/lang/Thread#setPriority\\(I\\)V"), 
+        addPattern("java/lang/Thread#setPriority\\(I\\)V", 
                 new ParameterInfo<Integer>(0, true, new Range<Integer>(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY)));
-        PATTERNS.put(Pattern.compile("java/math/BigDecimal#divide\\(Ljava/math/BigDecimal;.*I\\)Ljava/math/BigDecimal;"), 
+        addPattern("java/math/BigDecimal#divide\\(Ljava/math/BigDecimal;.*I\\)Ljava/math/BigDecimal;", 
         		new ParameterInfo<Integer>(0, false, new Range<Integer>(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
-        PATTERNS.put(Pattern.compile("java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;"), 
+        addPattern("java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;", 
         		new ParameterInfo<Integer>(0, false, new Range<Integer>(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
-        PATTERNS.put(Pattern.compile("java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;"),
+        addPattern("java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;",
         		new ParameterInfo<Integer>(0, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE));
-        //TODO: how to handle the same method with two parms to check? (ResultSet.CONCUR_READ_ONLY or ResultSet.CONCUR_UPDATABLE)
-        PATTERNS.put(Pattern.compile("java/sql/Connection#createStatement\\(III?\\)Ljava/sql/Statement;"),
-        		new ParameterInfo<Integer>(0, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE));
-        PATTERNS.put(Pattern.compile("java/sql/Connection#prepare[^\\(]+\\(Ljava/lang/String;III?\\)Ljava/sql/PreparedStatement;"),
-        		new ParameterInfo<Integer>(1, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE));
-       
+        addPattern("java/sql/Connection#createStatement\\(III?\\)Ljava/sql/Statement;",
+        		new ParameterInfo<Integer>(0, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE),
+        		new ParameterInfo<Integer>(1, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE));
+
+        addPattern("java/sql/Connection#prepare[^\\(]+\\(Ljava/lang/String;III?\\)Ljava/sql/PreparedStatement;",
+        		new ParameterInfo<Integer>(1, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE),
+				new ParameterInfo<Integer>(2, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE));
+    }
+    
+    private static void addPattern(String pattern, ParameterInfo<?>... info) {
+    	PATTERNS.put(Pattern.compile(pattern), Arrays.asList(info));
     }
     
     private BugReporter bugReporter;
@@ -115,25 +121,27 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
             case INVOKEVIRTUAL:
                 String sig = getSigConstantOperand();
                 String mInfo = getClassConstantOperand() + "#" + getNameConstantOperand() + sig;
-                for (Map.Entry<Pattern, ParameterInfo<?>> entry : PATTERNS.entrySet()) {
+                for (Map.Entry<Pattern, List<ParameterInfo<?>>> entry : PATTERNS.entrySet()) {
                    Matcher m = entry.getKey().matcher(mInfo);
                    if (m.matches()) {
-                       ParameterInfo<?> info = entry.getValue();
-                       int parmOffset = info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1: info.parameterOffset;
-                       if (stack.getStackDepth() > parmOffset) {
-                           OpcodeStack.Item item = stack.getStackItem(parmOffset);
-                           
-                           Comparable<?> cons = (Comparable<?>) item.getConstant();
-                           if (!info.isValid(cons)) {
-                               int badParm = 1 + (info.fromStart ? info.parameterOffset: Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
-                               bugReporter.reportBug(new BugInstance(this, BugType.ICA_INVALID_CONSTANT_ARGUMENT.name(), NORMAL_PRIORITY)
-                                                           .addClass(this)
-                                                           .addMethod(this)
-                                                           .addSourceLine(this)
-                                                           .addString("Parameter " + badParm));
-                               break;
-                           }
-                       }
+                	   for (ParameterInfo<?> info : entry.getValue()) {
+	                       int parmOffset = info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1: info.parameterOffset;
+	                       if (stack.getStackDepth() > parmOffset) {
+	                           OpcodeStack.Item item = stack.getStackItem(parmOffset);
+	                           
+	                           Comparable<?> cons = (Comparable<?>) item.getConstant();
+	                           if (!info.isValid(cons)) {
+	                               int badParm = 1 + (info.fromStart ? info.parameterOffset: Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
+	                               bugReporter.reportBug(new BugInstance(this, BugType.ICA_INVALID_CONSTANT_ARGUMENT.name(), NORMAL_PRIORITY)
+	                                                           .addClass(this)
+	                                                           .addMethod(this)
+	                                                           .addSourceLine(this)
+	                                                           .addString("Parameter " + badParm));
+	                               break;
+	                           }
+	                       }
+                	   }
+                       break;
                    }
                 }
                 break;

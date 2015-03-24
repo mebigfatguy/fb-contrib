@@ -50,7 +50,7 @@ public class ICA_Sample {
     	try (Statement s = c.createStatement(ResultSet.CONCUR_READ_ONLY, ResultSet.TYPE_FORWARD_ONLY)) { 
     	}
     	
-    	try (PreparedStatement s = c.prepareStatement("SELECT BOO FROM HOO", ResultSet.CONCUR_UPDATABLE, ResultSet.TYPE_SCROLL_INSENSITIVE)) {
+    	try (PreparedStatement s = c.prepareStatement("SELECT BOO FROM HOO", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_INSENSITIVE)) {
     	}
     }
 
