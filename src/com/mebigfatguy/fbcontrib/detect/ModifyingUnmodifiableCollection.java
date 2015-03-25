@@ -130,8 +130,8 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
                     if (seen == INVOKEINTERFACE) {
                         Integer collectionOffset = MODIFYING_METHODS.get(methodName + signature);
                         if ((collectionOffset != null) && CollectionUtils.isListSetMap(className)) {
-                            if (stack.getStackDepth() > collectionOffset) {
-                                OpcodeStack.Item item = stack.getStackItem(collectionOffset);
+                            if (stack.getStackDepth() > collectionOffset.intValue()) {
+                                OpcodeStack.Item item = stack.getStackItem(collectionOffset.intValue());
                                 ImmutabilityType type = (ImmutabilityType) item.getUserValue();
                                 
                                 if ((type == ImmutabilityType.IMMUTABLE) || ((type == ImmutabilityType.POSSIBLY_IMMUTABLE) && (reportedType != ImmutabilityType.POSSIBLY_IMMUTABLE))) {
