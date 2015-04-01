@@ -167,7 +167,11 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 			                registerConstants.put(register, null);
 			            }
 			        } else {
-			            registerConstants.put(register, constant);
+			        	if (item.getSignature().contains("[")) {
+			        		registerConstants.put(register,  null);
+			        	} else {
+			        		registerConstants.put(register, constant);
+			        	}
 			        }
 			    } else {
 			        registerConstants.put(register, null);
