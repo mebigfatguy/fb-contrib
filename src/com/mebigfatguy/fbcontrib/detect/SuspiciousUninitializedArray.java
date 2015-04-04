@@ -20,7 +20,10 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -44,6 +47,17 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class SuspiciousUninitializedArray extends BytecodeScanningDetector
 {
 	private static final String UNINIT_ARRAY = "Unitialized Array";
+	private static JavaClass THREAD_LOCAL_CLASS;
+	private static final String INITIAL_VALUE = "initialValue";
+	
+	static {
+		try {
+			THREAD_LOCAL_CLASS = Repository.lookupClass(ThreadLocal.class);
+		} catch (ClassNotFoundException e) {
+			THREAD_LOCAL_CLASS = null;
+		}
+	}
+	
 	private final BugReporter bugReporter;
 	private OpcodeStack stack;
 	private String returnArraySig;
@@ -85,6 +99,17 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector
 		String sig = getMethod().getSignature();
 		int sigPos = sig.indexOf(")[");
 		if (sigPos >= 0) {
+			Method m = getMethod();
+			if (m.getName().equals(INITIAL_VALUE)) {
+				try {
+					if ((THREAD_LOCAL_CLASS == null) || getClassContext().getJavaClass().instanceOf(THREAD_LOCAL_CLASS)) {
+						return;
+					}
+				} catch (ClassNotFoundException e) {
+					return;
+				}
+			}
+			
 			stack.resetForMethodEntry(this);
 			returnArraySig = sig.substring(sigPos + 1);
 			uninitializedRegs.clear();
