@@ -40,6 +40,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * looks for constructors, private methods or static methods that declare that they
  * throw specific checked exceptions, but that do not. This just causes callers of
  * these methods to do extra work to handle an exception that will never be thrown.
+ * also looks for throws clauses where two exceptions declared to be thrown are related
+ * through inheritance.
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 	private static JavaClass runtimeExceptionClass;
@@ -102,9 +104,9 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 		declaredCheckedExceptions.clear();
 		stack.resetForMethodEntry(this);
 		Method method = getMethod();
-		if (classIsFinal || method.isStatic() || method.isPrivate() || method.isFinal() || ((Values.CONSTRUCTOR.equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
-			ExceptionTable et = method.getExceptionTable();
-			if (et != null) {
+		ExceptionTable et = method.getExceptionTable();
+		if (et != null) {
+			if (classIsFinal || method.isStatic() || method.isPrivate() || method.isFinal() || ((Values.CONSTRUCTOR.equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
 				String[] exNames = et.getExceptionNames();
 				for (String exName : exNames) {
 					try {
@@ -128,6 +130,34 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 						}
 						bugReporter.reportBug(bi);
 					}
+				}
+			}
+
+			String[] exNames = et.getExceptionNames();
+			for (int i = 0; i < exNames.length - 1; i++) {
+				try {
+					JavaClass exCls1 = Repository.lookupClass(exNames[i]);
+					for (int j = i + 1; j < exNames.length; j++) {
+						JavaClass exCls2 = Repository.lookupClass(exNames[j]);
+						JavaClass childEx;
+						JavaClass parentEx;
+						if (exCls1.instanceOf(exCls2)) {
+							childEx = exCls1;
+							parentEx = exCls2;
+						} else if (exCls2.instanceOf(exCls1)) {
+							childEx = exCls2;
+							parentEx = exCls1;
+						} else {
+							continue;
+						}
+						bugReporter.reportBug(new BugInstance(this, BugType.BED_HIERARCHICAL_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
+									.addClass(this)
+									.addMethod(this)
+									.addString(childEx.getClassName() + " derives from " + parentEx.getClassName()));
+						return;
+						
+					}
+				} catch (ClassNotFoundException cnfe) {
 				}
 			}
 		}

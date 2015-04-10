@@ -1,5 +1,6 @@
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
@@ -22,6 +23,14 @@ public class BED_Sample {
         Hashtable<String, String> env = new Hashtable<String, String>();
         env.put("name", name);
         DirContext context = new InitialDirContext(env);
+    }
+    
+    public void doesTheNasty() throws FileNotFoundException, IOException {
+    	
+    }
+    
+    public void doesTheNasty2() throws IOException, FileNotFoundException {
+    	
     }
 
     private void badThrow() throws SQLException {
