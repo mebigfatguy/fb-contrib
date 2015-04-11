@@ -141,6 +141,11 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector
 				return;
 			}
 			Method m = getMethod();
+			
+			if (m.isSynthetic()) {
+				return;
+			}
+			
 			if (m.getName().startsWith("access$")) {
 				return;
 			}
