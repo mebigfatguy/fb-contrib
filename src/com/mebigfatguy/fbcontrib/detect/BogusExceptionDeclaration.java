@@ -133,31 +133,34 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 				}
 			}
 
-			String[] exNames = et.getExceptionNames();
-			for (int i = 0; i < exNames.length - 1; i++) {
-				try {
-					JavaClass exCls1 = Repository.lookupClass(exNames[i]);
-					for (int j = i + 1; j < exNames.length; j++) {
-						JavaClass exCls2 = Repository.lookupClass(exNames[j]);
-						JavaClass childEx;
-						JavaClass parentEx;
-						if (exCls1.instanceOf(exCls2)) {
-							childEx = exCls1;
-							parentEx = exCls2;
-						} else if (exCls2.instanceOf(exCls1)) {
-							childEx = exCls2;
-							parentEx = exCls1;
-						} else {
-							continue;
+			if (!method.isSynthetic()) {
+				String[] exNames = et.getExceptionNames();
+				for (int i = 0; i < exNames.length - 1; i++) {
+					try {
+						JavaClass exCls1 = Repository.lookupClass(exNames[i]);
+						for (int j = i + 1; j < exNames.length; j++) {
+							JavaClass exCls2 = Repository.lookupClass(exNames[j]);
+							JavaClass childEx;
+							JavaClass parentEx;
+							if (exCls1.instanceOf(exCls2)) {
+								childEx = exCls1;
+								parentEx = exCls2;
+							} else if (exCls2.instanceOf(exCls1)) {
+								childEx = exCls2;
+								parentEx = exCls1;
+							} else {
+								continue;
+							}
+							bugReporter.reportBug(new BugInstance(this, BugType.BED_HIERARCHICAL_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
+										.addClass(this)
+										.addMethod(this)
+										.addString(childEx.getClassName() + " derives from " + parentEx.getClassName()));
+							return;
+							
 						}
-						bugReporter.reportBug(new BugInstance(this, BugType.BED_HIERARCHICAL_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this)
-									.addString(childEx.getClassName() + " derives from " + parentEx.getClassName()));
-						return;
-						
+					} catch (ClassNotFoundException cnfe) {
+						bugReporter.reportMissingClass(cnfe);
 					}
-				} catch (ClassNotFoundException cnfe) {
 				}
 			}
 		}
