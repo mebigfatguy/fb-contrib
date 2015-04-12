@@ -232,9 +232,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             } else if (seen == IINC) {
                 int reg = getRegisterOperand();
                 if (!ignoreRegs.get(reg)) {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, getPC());
+                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
                     if (sb != null) {
-                        sb.addLoad(reg, getPC());
+                        sb.addLoad(reg, pc);
                     } else {
                         ignoreRegs.set(reg);
                     }
@@ -263,22 +263,22 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                     || ((seen >= DLOAD_0) && (seen <= DLOAD_1))) {
                 int reg = RegisterUtils.getLoadReg(this, seen);
                 if (!ignoreRegs.get(reg)) {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, getPC());
+                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
                     if (sb != null) {
-                        sb.addLoad(reg, getPC());
+                        sb.addLoad(reg, pc);
                     } else {
                         ignoreRegs.set(reg);
                     }
                 }
             } else if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W)) {
                 int target = getBranchTarget();
-                if (target > getPC()) {
+                if (target > pc) {
                     if ((seen == GOTO) || (seen == GOTO_W)) {
                         int nextPC = getNextPC();
                         if (!switchTargets.get(nextPC)) {
-                            ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, getPC(), nextPC);
+                            ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, pc, nextPC);
                             if (sb == null) {
-                                sb = new ScopeBlock(getPC(), target);
+                                sb = new ScopeBlock(pc, target);
                                 sb.setLoop();
                                 sb.setGoto();
                                 rootScopeBlock.addChild(sb);
@@ -289,7 +289,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                             }
                         }
                     } else {
-                        ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, getPC(), target);
+                        ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, pc, target);
                         if ((sb != null) && (!sb.isLoop()) && !sb.isCase() && !sb.hasChildren()) {
                             if (sb.isGoto()) {
                                 ScopeBlock parent = sb.getParent();
@@ -297,20 +297,20 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                                 if (parent != null) {
                                     parent.removeChild(sb);
                                 }
-                                sb = new ScopeBlock(getPC(), target);
+                                sb = new ScopeBlock(pc, target);
                                 rootScopeBlock.addChild(sb);
                             } else {
                                 sb.pushUpLoadStores();
-                                sb.setStart(getPC());
+                                sb.setStart(pc);
                                 sb.setFinish(target);
                             }
                         } else {
-                            sb = new ScopeBlock(getPC(), target);
+                            sb = new ScopeBlock(pc, target);
                             rootScopeBlock.addChild(sb);
                         }
                     }
                 } else {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, getPC());
+                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
                     if (sb != null) {
                         ScopeBlock parentSB = sb.getParent();
                         while (parentSB != null) {
@@ -357,7 +357,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 uo.caller = getCallingObject();
 
                 if (uo.caller != null) {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, getPC());
+                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
                     if (sb != null) {
                         sb.removeByAssoc(uo.caller);
                     }
@@ -366,16 +366,16 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 uo = new UserObject();
                 uo.isRisky = isRiskyMethodCall();
             } else if (seen == MONITORENTER) {
-                monitorSyncPCs.add(Integer.valueOf(getPC()));
+                monitorSyncPCs.add(Integer.valueOf(pc));
 
-                ScopeBlock sb = new ScopeBlock(getPC(), Integer.MAX_VALUE);
+                ScopeBlock sb = new ScopeBlock(pc, Integer.MAX_VALUE);
                 sb.setSync();
                 rootScopeBlock.addChild(sb);
             } else if (seen == MONITOREXIT) {
                 if (monitorSyncPCs.size() > 0) {
                     ScopeBlock sb = findSynchronizedScopeBlock(rootScopeBlock, monitorSyncPCs.get(0));
                     if (sb != null)
-                        sb.setFinish(getPC());
+                        sb.setFinish(pc);
                     monitorSyncPCs.remove(monitorSyncPCs.size() - 1);
                 }
             }
