@@ -108,7 +108,7 @@ public class RegisterUtils {
 		||  (seen == Constants.FLOAD) 
 		||  (seen == Constants.DLOAD))
 			return dbc.getRegisterOperand();
-		if (seen <= Constants.ILOAD_3)
+		if ((seen >= Constants.ILOAD_0) && (seen <= Constants.ILOAD_3))
 			return seen - Constants.ILOAD_0;
 		else if (seen <= Constants.LLOAD_3)
 			return seen - Constants.LLOAD_0;
@@ -116,7 +116,7 @@ public class RegisterUtils {
 			return seen - Constants.FLOAD_0;
 		else if (seen <= Constants.DLOAD_3)
 			return seen - Constants.DLOAD_0;
-		else if ((seen >= Constants.ALOAD_0) && (seen <= Constants.ALOAD_3))
+		else if (seen <= Constants.ALOAD_3)
 			return seen - Constants.ALOAD_0;
 		return -1;
 	}
