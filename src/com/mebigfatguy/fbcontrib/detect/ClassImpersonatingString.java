@@ -28,7 +28,6 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
-import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -46,9 +45,9 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
 
 	private static Map<CollectionMethod, int[]> COLLECTION_PARMS = new HashMap<CollectionMethod, int[]>();
 	static {
-		int[] parm0 = new int[] { Values.ZERO };
-		int[] parm0N1 = new int[] { Values.NEGATIVE_ONE, Values.ZERO };
-		int[] parm01N1 = new int[] { Values.NEGATIVE_ONE, Values.ZERO, Values.ONE };
+		int[] parm0 = new int[] { 0 };
+		int[] parm0N1 = new int[] { -1, 0 };
+		int[] parm01N1 = new int[] { -1, 0, 1 };
 		
 		COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "contains", "(Ljava/lang/Object;)Z"), parm0);
 		COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "add", "(Ljava/lang/Object;)Z"), parm0);
