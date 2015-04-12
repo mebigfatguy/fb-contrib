@@ -60,6 +60,8 @@ public class UnusedParameter extends BytecodeScanningDetector {
         IGNORE_METHODS.add("readObjectNoData");
         IGNORE_METHODS.add("writeReplace");
         IGNORE_METHODS.add("readResolve");
+        IGNORE_METHODS.add("writeExternal");
+        IGNORE_METHODS.add("readExternal");
     }
     private BugReporter bugReporter;
     
