@@ -80,8 +80,8 @@ public class RegisterUtils {
 		||  (seen == Constants.LSTORE) 
 		||  (seen == Constants.FSTORE) 
 		||  (seen == Constants.DSTORE))
-			return dbc.getRegisterOperand();
-		if (seen <= Constants.ISTORE_3)
+			return dbc.getRegisterOperand(); 
+		if ((seen >= Constants.ISTORE_0) && (seen <= Constants.ISTORE_3))
 			return seen - Constants.ISTORE_0;
 		else if (seen <= Constants.LSTORE_3)
 			return seen - Constants.LSTORE_0;
@@ -89,7 +89,7 @@ public class RegisterUtils {
 			return seen - Constants.FSTORE_0;
 		else if (seen <= Constants.DSTORE_3)
 			return seen - Constants.DSTORE_0;
-		else if ((seen >= Constants.ASTORE_0) && (seen <= Constants.ASTORE_3))
+		else if (seen <= Constants.ASTORE_3)
 			return seen - Constants.ASTORE_0;
 		return -1;
 	}
