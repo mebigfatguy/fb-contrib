@@ -191,7 +191,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
             int pc = getPC();
             if (tryBlocks.get(pc)) {
-                ScopeBlock sb = new ScopeBlock(getPC(), findCatchHandlerFor(pc));
+                ScopeBlock sb = new ScopeBlock(pc, findCatchHandlerFor(pc));
                 sb.setTry();
                 rootScopeBlock.addChild(sb);
             }
