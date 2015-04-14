@@ -45,6 +45,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 	private static JavaClass runtimeExceptionClass;
+	private static JavaClass exceptionClass;
 	private static final Set<String> safeClasses = new HashSet<String>(8);
 	static {
 		try {
@@ -58,8 +59,10 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 			safeClasses.add("java/lang/Boolean");
 
 			runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
+			exceptionClass = Repository.lookupClass("java/lang/Exception");
 		} catch (ClassNotFoundException cnfe) {
 			runtimeExceptionClass = null;
+			exceptionClass = null;
 		}
 	}
 	private final BugReporter bugReporter;
@@ -81,7 +84,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			if (runtimeExceptionClass != null) {
+			if ((runtimeExceptionClass != null) && (exceptionClass != null)) {
 				stack = new OpcodeStack();
 				declaredCheckedExceptions = new HashSet<String>(6);
 				classIsFinal = classContext.getJavaClass().isFinal();
@@ -151,11 +154,14 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 							} else {
 								continue;
 							}
-							bugReporter.reportBug(new BugInstance(this, BugType.BED_HIERARCHICAL_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
-										.addClass(this)
-										.addMethod(this)
-										.addString(childEx.getClassName() + " derives from " + parentEx.getClassName()));
-							return;
+							
+							if (!parentEx.equals(exceptionClass)) {
+								bugReporter.reportBug(new BugInstance(this, BugType.BED_HIERARCHICAL_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
+											.addClass(this)
+											.addMethod(this)
+											.addString(childEx.getClassName() + " derives from " + parentEx.getClassName()));
+								return;
+							}
 							
 						}
 					} catch (ClassNotFoundException cnfe) {

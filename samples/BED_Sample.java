@@ -32,6 +32,10 @@ public class BED_Sample {
     public void doesTheNasty2() throws IOException, FileNotFoundException {
     	
     }
+    
+    public void fpJustAwful() throws IOException, Exception {
+    	
+    }
 
     private void badThrow() throws SQLException {
 
