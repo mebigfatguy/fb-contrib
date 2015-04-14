@@ -3649,17 +3649,16 @@
 		</Details>
 	</BugPattern>
 	
-		<BugPattern type="BED_HIERARCHICAL_EXCEPTION_DECLARATION">
+	<BugPattern type="BED_HIERARCHICAL_EXCEPTION_DECLARATION">
 		<ShortDescription>Method declares throwing an two or more exceptions related by inheritance</ShortDescription>
 		<LongDescription>Method {1} declares throwing an two or more exceptions related by inheritance</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method declares that it throws a an exception that is the child of another exception that it declares it throws.
+			<p>This method declares that it throws a an exception that is the child of another exception that is also declared to be thrown.
 			Given that the parent exception is declared, there is no need for the child exception to also be declared, and just adds confusion.</p>
 			]]>
 		</Details>
 	</BugPattern>
-	BED_BOGUS_HIERARCHICAL_EXCEPTION_DECLARATION
 
 	<BugPattern type="UNNC_UNNECESSARY_NEW_NULL_CHECK">
 		<ShortDescription>Method checks the result of a new allocation</ShortDescription>
