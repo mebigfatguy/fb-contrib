@@ -73,6 +73,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	private BitSet visitedBlocks;
 	private Map<String, Set<String>> methodFieldModifiers;
 	private String clsName;
+	private String clsSig;
 
     /**
      * constructs a FCBL detector given the reporter to report bugs on.
@@ -96,6 +97,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	        visitedBlocks = new BitSet();
 			clsContext = classContext;
 			clsName = clsContext.getJavaClass().getClassName();
+			clsSig = "L" + clsName.replace('.',  '/') + ";";
 			JavaClass cls = classContext.getJavaClass();
 			Field[] fields = cls.getFields();
 			ConstantPool cp = classContext.getConstantPoolGen().getConstantPool();
@@ -238,24 +240,27 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 				Instruction ins = ih.getInstruction();
 				if (ins instanceof FieldInstruction) {
 					FieldInstruction fi = (FieldInstruction) ins;
-					String fieldName = fi.getFieldName(cpg);
-					FieldInfo finfo = localizableFields.get(fieldName);
-					
-					if ((finfo != null) && localizableFields.get(fieldName).hasAnnotation()) {
-					    localizableFields.remove(fieldName);
-					} else {
-    					boolean justRemoved = bState.removeUncheckedField(fieldName);
-    
-    					if (ins instanceof GETFIELD) {
-    						if (justRemoved) {
-    							localizableFields.remove(fieldName);
-    							if (localizableFields.isEmpty())
-    								return;
-    						}
-    					} else {
-    						if (finfo != null)
-    							finfo.setSrcLineAnnotation(SourceLineAnnotation.fromVisitedInstruction(clsContext, this, ih.getPosition()));
-    					}
+					if (fi.getReferenceType(cpg).getSignature().equals(clsSig)) {
+						String fieldName = fi.getFieldName(cpg);
+						FieldInfo finfo = localizableFields.get(fieldName);
+						
+						
+						if ((finfo != null) && localizableFields.get(fieldName).hasAnnotation()) {
+						    localizableFields.remove(fieldName);
+						} else {
+	    					boolean justRemoved = bState.removeUncheckedField(fieldName);
+	    
+	    					if (ins instanceof GETFIELD) {
+	    						if (justRemoved) {
+	    							localizableFields.remove(fieldName);
+	    							if (localizableFields.isEmpty())
+	    								return;
+	    						}
+	    					} else {
+	    						if (finfo != null)
+	    							finfo.setSrcLineAnnotation(SourceLineAnnotation.fromVisitedInstruction(clsContext, this, ih.getPosition()));
+	    					}
+						}
 					}
 				} else if (ins instanceof INVOKESPECIAL) {
 				    INVOKESPECIAL is = (INVOKESPECIAL) ins;

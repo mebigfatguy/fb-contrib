@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.io.OutputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -132,5 +134,18 @@ public final class FCBL_Sample {
     @Target(ElementType.FIELD)
     @interface FooAnnotation {
 
+    }
+    
+    static class FieldNameCollisionFP {
+    	OutputStream out;
+    	
+    	public FieldNameCollisionFP(OutputStream out) {
+    		this.out = out;
+    	}
+    	
+    	public void collide() throws IOException {
+    		System.out.println("See out!");
+    		out.close();
+    	}
     }
 }
