@@ -170,7 +170,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector
 	 * looks for methods that contain a GETFIELD or PUTFIELD opcodes
 	 *
 	 * @param method the context object of the current method
-	 * @return if the class uses synchronization
+	 * @return if the class uses GETFIELD or PUTFIELD
 	 */
 	private boolean prescreen(Method method) {
 		BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
