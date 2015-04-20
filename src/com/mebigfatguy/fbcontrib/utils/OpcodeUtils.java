@@ -30,11 +30,37 @@ import static org.apache.bcel.Constants.INVOKESPECIAL;
 import static org.apache.bcel.Constants.INVOKESTATIC;
 import static org.apache.bcel.Constants.INVOKEVIRTUAL;
 
+import java.util.BitSet;
+
+import org.apache.bcel.Constants;
+
 /**
  * a collection of static methods for categorizing opcodes into groups 
  */
 public class OpcodeUtils {
 
+	private static final BitSet BRANCH_OPS = new BitSet();
+	static {
+		BRANCH_OPS.set(Constants.GOTO);
+		BRANCH_OPS.set(Constants.GOTO_W);
+		BRANCH_OPS.set(Constants.IF_ACMPEQ);		
+		BRANCH_OPS.set(Constants.IF_ACMPNE);		
+		BRANCH_OPS.set(Constants.IF_ICMPEQ);		
+		BRANCH_OPS.set(Constants.IF_ICMPGE);		
+		BRANCH_OPS.set(Constants.IF_ICMPGT);		
+		BRANCH_OPS.set(Constants.IF_ICMPLE);
+		BRANCH_OPS.set(Constants.IF_ICMPLT);
+		BRANCH_OPS.set(Constants.IF_ICMPNE);
+		BRANCH_OPS.set(Constants.IFEQ);
+		BRANCH_OPS.set(Constants.IFGE);
+		BRANCH_OPS.set(Constants.IFGT);
+		BRANCH_OPS.set(Constants.IFLE);
+		BRANCH_OPS.set(Constants.IFLT);
+		BRANCH_OPS.set(Constants.IFNE);
+		BRANCH_OPS.set(Constants.IFNONNULL);
+		BRANCH_OPS.set(Constants.IFNULL);	
+	}
+	
 	private OpcodeUtils(){}
 	
 	public static boolean isALoad(int seen) {
@@ -47,6 +73,10 @@ public class OpcodeUtils {
 
 	public static boolean isInvokeInterfaceSpecialStaticOrVirtual(int seen) {
 		return (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)	|| (seen == INVOKESTATIC);
+	}
+	
+	public static boolean isBranch(int seen) {
+		return BRANCH_OPS.get(seen);
 	}
 	
 }
