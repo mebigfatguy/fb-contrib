@@ -19,17 +19,6 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
-import static org.apache.bcel.Constants.ALOAD;
-import static org.apache.bcel.Constants.ALOAD_0;
-import static org.apache.bcel.Constants.ALOAD_3;
-import static org.apache.bcel.Constants.ASTORE;
-import static org.apache.bcel.Constants.ASTORE_0;
-import static org.apache.bcel.Constants.ASTORE_3;
-import static org.apache.bcel.Constants.INVOKEINTERFACE;
-import static org.apache.bcel.Constants.INVOKESPECIAL;
-import static org.apache.bcel.Constants.INVOKESTATIC;
-import static org.apache.bcel.Constants.INVOKEVIRTUAL;
-
 import java.util.BitSet;
 
 import org.apache.bcel.Constants;
@@ -37,28 +26,28 @@ import org.apache.bcel.Constants;
 /**
  * a collection of static methods for categorizing opcodes into groups 
  */
-public class OpcodeUtils {
+public class OpcodeUtils implements Constants {
 
 	private static final BitSet BRANCH_OPS = new BitSet();
 	static {
-		BRANCH_OPS.set(Constants.GOTO);
-		BRANCH_OPS.set(Constants.GOTO_W);
-		BRANCH_OPS.set(Constants.IF_ACMPEQ);		
-		BRANCH_OPS.set(Constants.IF_ACMPNE);		
-		BRANCH_OPS.set(Constants.IF_ICMPEQ);		
-		BRANCH_OPS.set(Constants.IF_ICMPGE);		
-		BRANCH_OPS.set(Constants.IF_ICMPGT);		
-		BRANCH_OPS.set(Constants.IF_ICMPLE);
-		BRANCH_OPS.set(Constants.IF_ICMPLT);
-		BRANCH_OPS.set(Constants.IF_ICMPNE);
-		BRANCH_OPS.set(Constants.IFEQ);
-		BRANCH_OPS.set(Constants.IFGE);
-		BRANCH_OPS.set(Constants.IFGT);
-		BRANCH_OPS.set(Constants.IFLE);
-		BRANCH_OPS.set(Constants.IFLT);
-		BRANCH_OPS.set(Constants.IFNE);
-		BRANCH_OPS.set(Constants.IFNONNULL);
-		BRANCH_OPS.set(Constants.IFNULL);	
+		BRANCH_OPS.set(GOTO);
+		BRANCH_OPS.set(GOTO_W);
+		BRANCH_OPS.set(IF_ACMPEQ);		
+		BRANCH_OPS.set(IF_ACMPNE);		
+		BRANCH_OPS.set(IF_ICMPEQ);		
+		BRANCH_OPS.set(IF_ICMPGE);		
+		BRANCH_OPS.set(IF_ICMPGT);		
+		BRANCH_OPS.set(IF_ICMPLE);
+		BRANCH_OPS.set(IF_ICMPLT);
+		BRANCH_OPS.set(IF_ICMPNE);
+		BRANCH_OPS.set(IFEQ);
+		BRANCH_OPS.set(IFGE);
+		BRANCH_OPS.set(IFGT);
+		BRANCH_OPS.set(IFLE);
+		BRANCH_OPS.set(IFLT);
+		BRANCH_OPS.set(IFNE);
+		BRANCH_OPS.set(IFNONNULL);
+		BRANCH_OPS.set(IFNULL);	
 	}
 	
 	private OpcodeUtils(){}
@@ -77,6 +66,10 @@ public class OpcodeUtils {
 	
 	public static boolean isBranch(int seen) {
 		return BRANCH_OPS.get(seen);
+	}
+	
+	public static boolean isReturn(int seen) {
+		return ((seen == ARETURN) || (seen == IRETURN) || (seen == LRETURN) || (seen == FRETURN) || (seen == DRETURN));
 	}
 	
 }
