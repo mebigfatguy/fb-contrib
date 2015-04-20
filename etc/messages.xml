@@ -1520,6 +1520,17 @@
             ]]>
         </Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousLoopSearch">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for methods that assign a value to a variable in an if equals conditional in a loop, but does not break after doing so.
+    		Since equality would seem to be a one time event, continuing with the loop seems pointless, and a break statement in the if statement
+    		seems like it should be added.</p>
+    		<p>It is a fast detector</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -4735,6 +4746,18 @@
             ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="SLS_SUSPICIOUS_LOOP_SEARCH">
+    	<ShortDescription>This method continues a loop after finding an equality condition</ShortDescription>
+    	<LongDescription>This method {1} continues a loop after finding an equality condition</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method continues with a loop, and does not break out of it, after finding an setting a variable in an if
+    		condition based on equality. Since continuing on in the loop would seem to be unlikely to find the item again, breaking
+    		at this point would seem to be the proper action.</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -4863,4 +4886,5 @@
 	<BugCode abbrev="CBC">Contains Based Conditional</BugCode>
 	<BugCode abbrev="OPM">Overly Permissive Method</BugCode>
 	<BugCode abbrev="CIS">Class Impersonating String</BugCode>
+	<BugCode abbrev="SLS">Suspicious Loop Search</BugCode>
 </MessageCollection>
