@@ -17,13 +17,26 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package com.mebigfatguy.fbcontrib.detect;
+import java.util.BitSet;
+import java.util.HashMap;
+
+import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Method;
+
+import com.mebigfatguy.fbcontrib.detect.SuspiciousNullGuard.NullGuard;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.ClassContext;
 
 
 public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 	
 	private BugReporter bugReporter;
+	private OpcodeStack stack;
+
 	
     /**
      * constructs an SLS detector given the reporter to report bugs on
@@ -32,4 +45,60 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     public SuspiciousLoopSearch(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
+    
+	/**
+	 * overrides the visitor to initialize and tear down the opcode stack
+	 *
+	 * @param classContext the context object of the currently parsed class
+	 */
+	@Override
+	public void visitClassContext(ClassContext classContext) {
+		try {
+			stack = new OpcodeStack();
+			super.visitClassContext(classContext);
+		} finally {
+			stack = null;
+		}
+	}
+	
+	/**
+	 * overrides the visitor to reset the stack
+	 *
+	 * @param obj the context object of the currently parsed code block
+	 */
+	@Override
+	public void visitCode(Code obj) {
+		if (prescreen(getMethod())) {
+			stack.resetForMethodEntry(this);
+			super.visitCode(obj);
+		}
+	}
+	
+	/**
+	 * implements the visitor to find continuations after finding a 
+	 * search result in a loop.
+	 * 
+	 * @param seen the currently visitor opcode
+	 */
+	@Override
+	public void sawOpcode(int seen) {
+		try {
+			
+		} finally {
+			stack.sawOpcode(this, seen);
+		}
+		
+	}
+	
+    /**
+	 * looks for methods that contain a GOTO opcodes
+	 * 
+	 * @param method the context object of the current method
+	 * @return if the class uses synchronization
+	 */
+	private boolean prescreen(Method method) {
+		BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
+		return (bytecodeSet != null) && bytecodeSet.get(Constants.GOTO);
+	}
+    
 }
