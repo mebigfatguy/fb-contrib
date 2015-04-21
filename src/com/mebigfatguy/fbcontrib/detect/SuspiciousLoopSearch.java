@@ -19,13 +19,17 @@
 package com.mebigfatguy.fbcontrib.detect;
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
-import com.mebigfatguy.fbcontrib.detect.SuspiciousNullGuard.NullGuard;
+import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -34,8 +38,16 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 	
+	enum State {SAW_NOTHING, SAW_EQUALS, SAW_IFEQ, SAW_ASSIGNMENT };
+	
+
+	
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
+	private Map<Integer, Integer> storeRegs;
+	private State state;
+	private int equalsPos;
+	private int ifeqBranchTarget;
 
 	
     /**
@@ -54,9 +66,11 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
+			storeRegs = new HashMap<Integer, Integer>();
 			stack = new OpcodeStack();
 			super.visitClassContext(classContext);
 		} finally {
+			storeRegs = null;
 			stack = null;
 		}
 	}
@@ -69,7 +83,9 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 	@Override
 	public void visitCode(Code obj) {
 		if (prescreen(getMethod())) {
+			storeRegs.clear();
 			stack.resetForMethodEntry(this);
+			state = State.SAW_NOTHING;
 			super.visitCode(obj);
 		}
 	}
@@ -83,7 +99,52 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			
+			switch (state) {
+				case SAW_NOTHING:
+					if (seen == INVOKEVIRTUAL) {
+						String methodName = getNameConstantOperand();
+						String sig = getSigConstantOperand();
+						
+						if ("equals".equals(methodName) && ("(Ljava/lang/Object;)Z".equals(sig))) {
+							state = State.SAW_EQUALS;
+							equalsPos = getPC();
+						}
+					}
+					break;
+					
+				case SAW_EQUALS:
+					if (seen == IFEQ) {
+						state = State.SAW_IFEQ;
+						ifeqBranchTarget = getBranchTarget();
+					} else {
+						state = State.SAW_NOTHING;
+					}
+					break;
+					
+				case SAW_IFEQ:
+				case SAW_ASSIGNMENT:
+					if (getPC() >= ifeqBranchTarget) {
+						if ((seen == GOTO) && (!storeRegs.isEmpty())) {
+							if (getBranchTarget() < equalsPos) {
+								bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY)
+											.addClass(this)
+											.addMethod(this)
+											.addSourceLine(this, storeRegs.values().iterator().next()));
+							}
+						}
+						state = State.SAW_NOTHING;
+					} else if (OpcodeUtils.isBranch(seen) || OpcodeUtils.isReturn(seen)) {
+						state = State.SAW_NOTHING;
+					} else {
+						if (OpcodeUtils.isStore(seen)) {
+							storeRegs.put(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)), Integer.valueOf(getPC()));
+						} else if (OpcodeUtils.isLoad(seen)) {
+							storeRegs.remove(Integer.valueOf(RegisterUtils.getALoadReg(this, seen)));
+						}
+						state = State.SAW_ASSIGNMENT;
+					}
+					break;
+			}
 		} finally {
 			stack.sawOpcode(this, seen);
 		}
