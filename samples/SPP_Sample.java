@@ -121,6 +121,10 @@ public class SPP_Sample implements Serializable {
         sb.append("hello").append("there");     
         sb.append("Hello").append(s).append("there");
     }
+    
+    public String testFormatLiteral() {
+    	return String.format("This string is not parameterized");
+    }
 
     public String testFPDoubleAppendListeralStatic() {
         StringBuilder sb = new StringBuilder();

@@ -3202,6 +3202,19 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="SPP_STATIC_FORMAT_STRING">
+		<ShortDescription>Method calls String.format on a static (non parameterized) format string</ShortDescription>
+		<LongDescription>Method {1} calls String.format on a static (non parameterized) format string</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method calls String.format passing a static string as the format string that has no replacement markers
+			(starting with %). Thus no replacement will happen, and the format method is superfluous. If parameters were intended,
+			add the appropriate format markers as needed, otherwise, just remove the call to String.format and use the static
+			string as is.</p>
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
 		<ShortDescription>Method assigns a variable in a larger scope then is needed</ShortDescription>
