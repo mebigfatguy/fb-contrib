@@ -5,24 +5,24 @@ public class SLS_Sample {
 	private String name;
 	private int age;
 
-	boolean hasIt(List<SLS_Sample> l, String n) {
+	SLS_Sample hasIt(List<SLS_Sample> l, String n) {
 
-		boolean found = false;
+		SLS_Sample found = null;
 		for (SLS_Sample s : l) {
 			if (s.name.equals(n)) {
-				found = true;
+				found = s;
 			}
 		}
 
 		return found;
 	}
 
-	boolean hasAge(List<SLS_Sample> l, int age) {
+	SLS_Sample hasAge(List<SLS_Sample> l, int age) {
 
-		boolean found = false;
+		SLS_Sample found = null;
 		for (SLS_Sample s : l) {
 			if (s.age == age) {
-				found = true;
+				found = s;
 			}
 		}
 

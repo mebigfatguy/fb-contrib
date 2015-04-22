@@ -23,6 +23,8 @@ import java.util.Map;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -45,6 +47,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
 	private Map<Integer, Integer> storeRegs;
+	private BitSet loadRegs;
 	private State state;
 	private int equalsPos;
 	private int ifeqBranchTarget;
@@ -67,9 +70,11 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			storeRegs = new HashMap<Integer, Integer>();
+			loadRegs = new BitSet();
 			stack = new OpcodeStack();
 			super.visitClassContext(classContext);
 		} finally {
+			loadRegs = null;
 			storeRegs = null;
 			stack = null;
 		}
@@ -84,6 +89,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 	public void visitCode(Code obj) {
 		if (prescreen(getMethod())) {
 			storeRegs.clear();
+			loadRegs.clear();
 			stack.resetForMethodEntry(this);
 			state = State.SAW_NOTHING;
 			super.visitCode(obj);
@@ -132,14 +138,32 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 											.addSourceLine(this, storeRegs.values().iterator().next()));
 							}
 						}
+						storeRegs.clear();
+						loadRegs.clear();
 						state = State.SAW_NOTHING;
 					} else if (OpcodeUtils.isBranch(seen) || OpcodeUtils.isReturn(seen)) {
 						state = State.SAW_NOTHING;
 					} else {
 						if (OpcodeUtils.isStore(seen)) {
-							storeRegs.put(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)), Integer.valueOf(getPC()));
+							int reg = RegisterUtils.getStoreReg(this, seen);
+							if (!loadRegs.get(reg)) {
+								LocalVariableTable lvt = getMethod().getLocalVariableTable();
+								String sig = "";
+								if (lvt != null) {
+									LocalVariable lv = lvt.getLocalVariable(reg,  getPC());
+									if (lv != null) {
+										sig = lv.getSignature();
+									}
+								}
+								// ignore boolean flag stores, as this is a relatively normal occurrence
+								if (!"Z".equals(sig)) {
+									storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
+								}
+							}
 						} else if (OpcodeUtils.isLoad(seen)) {
-							storeRegs.remove(Integer.valueOf(RegisterUtils.getALoadReg(this, seen)));
+							int reg = RegisterUtils.getLoadReg(this, seen); 
+							storeRegs.remove(Integer.valueOf(reg));
+							loadRegs.set(reg);
 						}
 						state = State.SAW_ASSIGNMENT;
 					}
