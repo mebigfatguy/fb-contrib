@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantString;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -212,16 +213,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 	}
 	
 	private static boolean isLoad(int seen) {
-		if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3)))
-			return true;
-		
-		if ((seen == ILOAD) || ((seen >= ILOAD_0) && (seen <= ILOAD_3)))
-			return true;
-		
-		if ((seen == LLOAD) || ((seen >= LLOAD_0) && (seen <= LLOAD_3)))
-			return true;
-		
-		return false;
+		return OpcodeUtils.isALoad(seen) || OpcodeUtils.isILoad(seen) || OpcodeUtils.isLLoad(seen);
 	}
 	
 	private static int priority(int conditionCount) {

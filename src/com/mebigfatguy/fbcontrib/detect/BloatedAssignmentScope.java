@@ -35,6 +35,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -258,9 +259,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                         ignoreRegs.set(reg);
                     }
                 }
-            } else if ((seen == ALOAD) || (seen == ILOAD) || (seen == LLOAD) || (seen == FLOAD) || (seen == DLOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))
-                    || ((seen >= ILOAD_0) && (seen <= ILOAD_3)) || ((seen >= LLOAD_0) && (seen <= LLOAD_3)) || ((seen >= FLOAD_0) && (seen <= FLOAD_1))
-                    || ((seen >= DLOAD_0) && (seen <= DLOAD_1))) {
+            } else if (OpcodeUtils.isLoad(seen)) {
                 int reg = RegisterUtils.getLoadReg(this, seen);
                 if (!ignoreRegs.get(reg)) {
                     ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);

@@ -23,6 +23,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -83,14 +84,14 @@ public class DateComparison extends BytecodeScanningDetector
 	public void sawOpcode(int seen) {
         switch (state) {
         	case SAW_NOTHING:
-        		if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+        		if (OpcodeUtils.isALoad(seen)) {
         			register1_1 = RegisterUtils.getALoadReg(this, seen);
         			state = State.SAW_LOAD1_1;
                 }
         	break;
         	
         	case SAW_LOAD1_1:
-        		if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3)))
+        		if (OpcodeUtils.isALoad(seen))
         			register1_2 = RegisterUtils.getALoadReg(this, seen);
         			
         		if (register1_2 > -1)
@@ -123,7 +124,7 @@ public class DateComparison extends BytecodeScanningDetector
         	break;
 
 			case SAW_IFNE:
-				if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3)))
+				if (OpcodeUtils.isALoad(seen))
 	    			register2_1 = RegisterUtils.getALoadReg(this, seen);
 	    			
 	    		if (register2_1 > -1)
@@ -133,7 +134,7 @@ public class DateComparison extends BytecodeScanningDetector
 	    	break;
 
 			case SAW_LOAD2_1:
-				if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3)))
+				if (OpcodeUtils.isALoad(seen))
 	    			register2_2 = RegisterUtils.getALoadReg(this, seen);
 	    			
 	    		if ((register2_2 > -1) 

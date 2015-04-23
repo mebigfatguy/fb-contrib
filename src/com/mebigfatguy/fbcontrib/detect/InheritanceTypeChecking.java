@@ -24,6 +24,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -96,8 +97,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector
 		}
 		
 		if (!processed) {
-			if ((seen == ALOAD)
-			||  ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+			if (OpcodeUtils.isALoad(seen)) {
 				IfStatement is = new IfStatement(this, seen);
 				ifStatements.add(is);
 			}
@@ -145,8 +145,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector
 				
 				case SEEN_IFEQ:
 					if (bsd.getPC() == branchTarget) {
-						if ((seen == ALOAD)
-						||  ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+						if (OpcodeUtils.isALoad(seen)) {
 							if (reg == RegisterUtils.getALoadReg(bsd, seen)) {
 								state = State.SEEN_ALOAD;
 								return IfStatement.Action.PROCESSED_ACTION;

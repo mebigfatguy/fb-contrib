@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -182,8 +183,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
 						toStringRegisters.remove(reg);
 					}
 				}
-			} else if ((seen == ALOAD)
-					||  ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+			} else if (OpcodeUtils.isALoad(seen)) {
 				Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
 				methodPackage = toStringRegisters.get(reg);
 			}

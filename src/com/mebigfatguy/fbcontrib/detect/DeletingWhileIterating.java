@@ -37,6 +37,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -298,7 +299,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 					    }
 					}
 				}
-			} else if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+			} else if (OpcodeUtils.isALoad(seen)) {
 				int reg = RegisterUtils.getALoadReg(this, seen);
 				OpcodeStack.Item itm = new OpcodeStack.Item(new OpcodeStack.Item(), reg);
 				groupId = findCollectionGroup(itm, false);

@@ -29,6 +29,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -144,10 +146,8 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
             sawOpcode(seen);
             return;
         }
-        else if (seen == ALOAD)
-            loadedReg = getRegisterOperand();
-        else if ((seen >= ALOAD_0) && (seen <= ALOAD_3))
-            loadedReg = seen - ALOAD_0;
+        else if (OpcodeUtils.isALoad(seen))
+        	loadedReg = RegisterUtils.getALoadReg(this,  seen);
         else
             loadedReg = -1;
 
