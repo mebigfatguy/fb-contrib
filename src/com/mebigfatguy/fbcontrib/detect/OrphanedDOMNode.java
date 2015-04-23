@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -150,7 +151,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector
 			} else if (seen == PUTFIELD) {
 				//Stores to member variables are assumed ok
 				findDOMNodeCreationPoint(0);
-			} else if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+			} else if (OpcodeUtils.isALoad(seen)) {
 				int reg = RegisterUtils.getALoadReg(this, seen);
 				itemPC = nodeStores.get(Integer.valueOf(reg));
 				if (itemPC != null)

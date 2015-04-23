@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -112,7 +113,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector
     	if (downwardBranchTarget == -1) {
 	        switch (state) {
 	            case SAW_NOTHING:
-	                if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+	                if (OpcodeUtils.isALoad(seen)) {
 	                    loadedReg = RegisterUtils.getALoadReg(this, seen);
 	                    parmSig = parmSigs.get(Integer.valueOf(loadedReg));
 	                    if (parmSig != null) {

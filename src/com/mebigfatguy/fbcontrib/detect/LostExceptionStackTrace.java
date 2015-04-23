@@ -38,6 +38,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -288,7 +289,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 									it.remove();
 								}
 							}
-						} else if (seen == ALOAD || seen >= ALOAD_0 && seen <= ALOAD_3) {
+						} else if (OpcodeUtils.isALoad(seen)) {
 							Boolean valid = exReg.get(Integer.valueOf(RegisterUtils.getALoadReg(this, seen)));
 							if (valid != null)
                             {
