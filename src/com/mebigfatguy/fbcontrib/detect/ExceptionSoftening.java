@@ -272,7 +272,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 	 * @param exceptions the exceptions from the class file
 	 * @return the filtered exceptions keyed by catch end pc
 	 */
-	private static LinkedHashMap<Integer, CodeException> collectExceptions(CodeException[] exceptions) {
+	private static LinkedHashMap<Integer, CodeException> collectExceptions(CodeException... exceptions) {
 		List<CodeException> filteredEx = new ArrayList<CodeException>();
 		for (CodeException ce : exceptions) {
 			if ((ce.getCatchType() != 0) && (ce.getStartPC() < ce.getEndPC()) && (ce.getEndPC() <= ce.getHandlerPC())) {

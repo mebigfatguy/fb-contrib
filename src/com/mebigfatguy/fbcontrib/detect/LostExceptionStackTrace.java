@@ -156,7 +156,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector
 	 * @param exs the exceptions from the class file
 	 * @return the filtered exceptions
 	 */
-	public CodeException[] collectExceptions(CodeException[] exs) {
+	public CodeException[] collectExceptions(CodeException... exs) {
 		List<CodeException> filteredEx = new ArrayList<CodeException>();
 		for (CodeException ce : exs) {
 			if (ce.getCatchType() != 0 && ce.getStartPC() < ce.getEndPC() && ce.getEndPC() <= ce.getHandlerPC()) {
