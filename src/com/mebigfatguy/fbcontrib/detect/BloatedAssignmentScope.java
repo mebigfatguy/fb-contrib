@@ -197,9 +197,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 rootScopeBlock.addChild(sb);
             }
 
-            if ((seen == ASTORE) || (seen == ISTORE) || (seen == LSTORE) || (seen == FSTORE) || (seen == DSTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))
-                    || ((seen >= ISTORE_0) && (seen <= ISTORE_3)) || ((seen >= LSTORE_0) && (seen <= LSTORE_3)) || ((seen >= FSTORE_0) && (seen <= FSTORE_1))
-                    || ((seen >= DSTORE_0) && (seen <= DSTORE_1))) {
+            if (OpcodeUtils.isStore(seen)) {
                 int reg = RegisterUtils.getStoreReg(this, seen);
 
                 if (catchHandlers.get(pc)) {

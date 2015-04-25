@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -121,7 +122,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 		try {
 	        stack.precomputation(this);
 			
-			if (unsafeCallOccurred && ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)))) {
+			if (unsafeCallOccurred && OpcodeUtils.isAStore(seen)) {
 				int storeReg = RegisterUtils.getAStoreReg(this, seen);
 				if (storeReg >= 0)
 					unsafeAliases.set(storeReg);

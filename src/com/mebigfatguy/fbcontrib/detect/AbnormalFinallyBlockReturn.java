@@ -118,10 +118,9 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
 			return;
 
         if (getPC() == fbi.startPC) {
-            if (seen == ASTORE)
-                fbi.exReg = getRegisterOperand();
-            else if ((seen >= ASTORE_0) && (seen <= ASTORE_3))
-                fbi.exReg = seen - ASTORE_0;
+        	if (OpcodeUtils.isAStore(seen)) {
+        		fbi.exReg = RegisterUtils.getAStoreReg(this, seen);
+        	}
             else {
                 fbInfo.remove(0);
                 sawOpcode(seen);

@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
@@ -164,7 +165,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector
 					if (pu != null)
 						pu.setAlteredPC(getPC());
 				}
-			} else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+			} else if (OpcodeUtils.isAStore(seen)) {
 				int reg = RegisterUtils.getAStoreReg(this, seen);
 				possibleParmRegs.remove(Integer.valueOf(reg));
 			} else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {

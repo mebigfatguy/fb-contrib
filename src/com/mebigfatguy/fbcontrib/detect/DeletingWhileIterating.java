@@ -255,7 +255,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 		                groupId = findCollectionGroup(itm, true);
 					}
 				}
-			 } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+			 } else if (OpcodeUtils.isAStore(seen)) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item itm = stack.getStackItem(0);
 					Integer id = (Integer)itm.getUserValue();
