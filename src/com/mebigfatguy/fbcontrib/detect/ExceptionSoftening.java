@@ -43,6 +43,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -312,7 +313,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector
 		if (lvt != null) {
 			for (CatchInfo ci : infos) {
 				if (ci.getStart() == pc) {
-					if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+					if (OpcodeUtils.isAStore(seen)) {
 						int exReg = RegisterUtils.getAStoreReg(this, seen);
 						LocalVariable lv = lvt.getLocalVariable(exReg, pc + 1);
 						if (lv != null) {
