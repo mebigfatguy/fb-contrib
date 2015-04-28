@@ -41,6 +41,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
+import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -869,10 +870,18 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 			if (toStringClass != null) {
 				String toStringClassName = toStringClass.getClassName();
 				if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !"java.lang.Object".equals(toStringClassName) && !"java.lang.String".equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
-					bugReporter.reportBug(new BugInstance(this, BugType.SPP_NON_USEFUL_TOSTRING.name(), toStringClass.isFinal() ? NORMAL_PRIORITY : LOW_PRIORITY)
-					.addClass(this)
-					.addMethod(this)
-					.addSourceLine(this));
+					try {
+						JavaClass cls = Repository.lookupClass(toStringClassName);
+						
+						if (!hasToString(cls)) {
+							bugReporter.reportBug(new BugInstance(this, BugType.SPP_NON_USEFUL_TOSTRING.name(), toStringClass.isFinal() ? NORMAL_PRIORITY : LOW_PRIORITY)
+							.addClass(this)
+							.addMethod(this)
+							.addSourceLine(this));
+						}
+					} catch (ClassNotFoundException cnfe) {
+						bugReporter.reportMissingClass(cnfe);
+					}
 				}
 			}
 		}
@@ -1016,5 +1025,18 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		}
 
 		return staticConstants.contains(constant);
+	}
+	
+	private boolean hasToString(JavaClass cls) throws ClassNotFoundException {
+		do
+		{
+			for (Method m : cls.getMethods()) {
+				if (m.getName().equals("toString") && m.getSignature().equals("()Ljava/lang/String;")) {
+					return true;
+				}
+			}
+			cls = cls.getSuperClass();
+		} while (!cls.getClassName().equals("java.lang.Object"));
+		return false;
 	}
 }
