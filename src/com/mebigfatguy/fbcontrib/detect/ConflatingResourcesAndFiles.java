@@ -20,15 +20,20 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for methods that conflate the use of resources and files. Converting URLs 
  * retrieved from potentially non file resources, into files objects.
  */
+@CustomUserValue
 public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 
 	private BugReporter bugReporter;
@@ -73,11 +78,54 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 	 */
 	@Override
 	public void sawOpcode(int seen) {
+		boolean sawResource = false;
 		try {
 			stack.precomputation(this);
 			
+			if (seen == INVOKEVIRTUAL) {
+				String clsName = getClassConstantOperand();
+				
+				if ("java/lang/Class".equals(clsName)) {
+					String methodName = getNameConstantOperand();
+					if ("getResource".equals(methodName)) {
+						sawResource = true;
+					}
+				} else if ("java/net/URL".equals(clsName)) {
+					String methodName = getNameConstantOperand();
+					if ("toURI".equals(methodName)) {
+						if (stack.getStackDepth() > 0) {
+							if (stack.getStackItem(0).getUserValue() != null) {
+								sawResource = true;
+							}
+						}
+					}
+				}
+			} else if (seen == INVOKESPECIAL) {
+				String clsName = getClassConstantOperand();
+				
+				if ("java/io/File".equals(clsName)) {
+					String methodName = getNameConstantOperand();
+					String sig = getSigConstantOperand();
+					if ("<init>".equals(methodName) && "(Ljava/net/URI;)V".equals(sig)) {
+						if (stack.getStackDepth() > 0) {
+							OpcodeStack.Item item = stack.getStackItem(0);
+							if (item.getUserValue() != null) {
+								bugReporter.reportBug(new BugInstance(this, BugType.CRF_CONFLATING_RESOURCES_AND_FILES.name(), NORMAL_PRIORITY)
+											.addClass(this)
+											.addMethod(this)
+											.addSourceLine(this));
+							}
+						}
+					}
+				}
+			}
+			
 		} finally {
 			stack.sawOpcode(this, seen);
+			if (stack.getStackDepth() > 0) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				item.setUserValue(Boolean.TRUE);
+			}
 		}
 	}
 }
