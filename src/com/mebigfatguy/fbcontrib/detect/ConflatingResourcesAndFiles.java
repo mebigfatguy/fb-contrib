@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
+import org.objectweb.asm.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 
@@ -92,7 +93,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 					}
 				} else if ("java/net/URL".equals(clsName)) {
 					String methodName = getNameConstantOperand();
-					if ("toURI".equals(methodName)) {
+					if ("toURI".equals(methodName) || ("getFile".equals(methodName))) {
 						if (stack.getStackDepth() > 0) {
 							if (stack.getStackItem(0).getUserValue() != null) {
 								sawResource = true;
@@ -106,7 +107,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 				if ("java/io/File".equals(clsName)) {
 					String methodName = getNameConstantOperand();
 					String sig = getSigConstantOperand();
-					if ("<init>".equals(methodName) && "(Ljava/net/URI;)V".equals(sig)) {
+					if ("<init>".equals(methodName) && Type.getArgumentTypes(sig).length == 1) {
 						if (stack.getStackDepth() > 0) {
 							OpcodeStack.Item item = stack.getStackItem(0);
 							if (item.getUserValue() != null) {
@@ -122,9 +123,11 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 			
 		} finally {
 			stack.sawOpcode(this, seen);
-			if (stack.getStackDepth() > 0) {
-				OpcodeStack.Item item = stack.getStackItem(0);
-				item.setUserValue(Boolean.TRUE);
+			if (sawResource) {
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item item = stack.getStackItem(0);
+					item.setUserValue(Boolean.TRUE);
+				}
 			}
 		}
 	}
