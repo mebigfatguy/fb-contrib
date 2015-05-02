@@ -11,4 +11,10 @@ public class CRF_Sample {
 		File f = new File(u.toURI());
 		return f.length();
 	}
+	
+	public long testFileFromCPURL2() {
+		URL u = CRF_Sample.class.getResource("/CRF_Sample.class");
+		File f = new File(u.getFile());
+		return f.length();
+	}
 }
