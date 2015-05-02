@@ -1531,6 +1531,17 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for methods that use the File api on resources retrieved from URLs where the URL in question isn't from a file protocol.
+    		In the case of classpath resources, this will work if the code is executed from directories, but fail using jars.
+    		If using resources, then use URL.openStream() method instead of File apis.</p>
+    		<p>It is a fast detector</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -4771,6 +4782,19 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="CRF_CONFLATING_RESOURCES_AND_FILES">
+    	<ShortDescription>This method accesses URL resources using the File api</ShortDescription>
+    	<LongDescription>This method {1} accesses URL resources using the File api]</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method fetches a resource from a URL, and uses the File api to manipulate it. If this resource is a 
+    		classpath resource, it will work if the resource is a file in a directory. If however the file is inside a jar file
+    		this will fail. Use the URL.openStream api instead to access the data of the classpath resource.
+    		</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -4900,4 +4924,5 @@
 	<BugCode abbrev="OPM">Overly Permissive Method</BugCode>
 	<BugCode abbrev="CIS">Class Impersonating String</BugCode>
 	<BugCode abbrev="SLS">Suspicious Loop Search</BugCode>
+	<BugCode abbrev="CRF">Conflating Resources And Files</BugCode>
 </MessageCollection>
