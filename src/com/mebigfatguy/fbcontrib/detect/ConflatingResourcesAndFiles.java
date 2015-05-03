@@ -118,6 +118,18 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 							}
 						}
 					}
+				} else if ("java/net/URI".equals(clsName) || "java/net/URL".equals(clsName)) {
+					String methodName = getNameConstantOperand();
+					String sig = getSigConstantOperand();
+					if ("<init>".equals(methodName) && "(Ljava/lang/String;)V".equals(sig)) {
+						if (stack.getStackDepth() > 0) {
+							OpcodeStack.Item item = stack.getStackItem(0);
+							String cons = (String) item.getConstant();
+							if ((cons != null) && !cons.startsWith("file:/")) {
+								sawResource = true;
+							}
+						}	
+					}
 				}
 			}
 			
