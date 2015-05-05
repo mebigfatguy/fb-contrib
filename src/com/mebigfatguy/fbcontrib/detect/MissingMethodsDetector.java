@@ -156,6 +156,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 				sawInvokeInterfaceVirtual();
 				break;
 			case INVOKESTATIC:
+			case INVOKEDYNAMIC:
 				processMethodParms();
 				break;
 			case ARETURN:
