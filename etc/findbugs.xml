@@ -20,7 +20,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -34,7 +34,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-<!-- COMMENT OUT FOR RELEASE -->
+    COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -277,7 +277,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConflictingTimeUnits" speed="fast" reports="CTU_CONFLICTING_TIME_UNITS" />
     
-    <!--  COMMENT OUT FOR POINT RELEASE -->
+    <!--  COMMENT OUT FOR POINT RELEASE 
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.CharsetIssues" speed="fast" reports="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET,CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING,CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" />
 
@@ -291,7 +291,7 @@
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" speed="fast" reports="CRF_CONFLATING_RESOURCES_AND_FILES" />
 	
-    <!--  COMMENT OUT FOR POINT RELEASE -->
+      COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
