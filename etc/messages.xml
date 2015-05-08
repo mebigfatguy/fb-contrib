@@ -40,6 +40,10 @@
 				sb.append(a + b);
 				return sb.toString();
 			</pre>
+			You should use the .append method to append values
+			<pre>
+				sb.append(a).append(b);
+			</pre>
 			<p>It is a fast detector.</p>
 			]]>
 		</Details>
