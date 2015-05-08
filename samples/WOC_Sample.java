@@ -1,5 +1,6 @@
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -141,6 +142,13 @@ public class WOC_Sample {
         }
         l.add("Hello there");
     }
+    
+    public void fpClone(List<Data> l) {
+    	HashSet<String> s = new HashSet<>();
+    	for (Data d : l) {
+    		d.ss = (Set<String>) s.clone();
+    	}
+    }
 
     public static class FpContains {
         private List<String> fpSetList;
@@ -160,5 +168,9 @@ public class WOC_Sample {
                 }
             }
         }
+    }
+    
+    private class Data {
+    	Set<String> ss;
     }
 }
