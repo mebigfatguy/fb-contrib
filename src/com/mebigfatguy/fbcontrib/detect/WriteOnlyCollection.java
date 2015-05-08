@@ -109,7 +109,6 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 		nonInformationalMethods.add("addFirst");
 		nonInformationalMethods.add("addLast");
 		nonInformationalMethods.add("clear");
-		nonInformationalMethods.add("clone");
 		nonInformationalMethods.add("ensureCapacity");
 		nonInformationalMethods.add("insertElementAt");
 		nonInformationalMethods.add("push");
