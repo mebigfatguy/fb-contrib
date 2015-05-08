@@ -2863,8 +2863,8 @@
 	</BugPattern>
 
 	<BugPattern type="SPP_STRINGBUFFER_WITH_EMPTY_STRING">
-		<ShortDescription>Method passes empty string to StringBuffer of StringBuilder constructor</ShortDescription>
-		<LongDescription>Method {1} passes empty string to StringBuffer of StringBuilder constructor</LongDescription>
+		<ShortDescription>Method passes an empty string to StringBuffer of StringBuilder constructor</ShortDescription>
+		<LongDescription>Method {1} passes an empty string to StringBuffer of StringBuilder constructor</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method calls the StringBuffer or StringBuilder constructor passing in a constant empty string ("").
