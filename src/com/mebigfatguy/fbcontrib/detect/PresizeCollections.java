@@ -113,7 +113,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 bugReporter.reportBug(new BugInstance(this, BugType.PSC_PRESIZE_COLLECTIONS.name(), NORMAL_PRIORITY)
                 .addClass(this)
                 .addMethod(this)
-                .addSourceLine(this, pcs.get(0)));
+                .addSourceLine(this, pcs.get(0).intValue()));
             }
         }
     }
@@ -161,7 +161,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                                     lines = new ArrayList<Integer>();
                                     allocToAddPCs.put(allocNum, lines);
                                 }
-                                lines.add(getPC());
+                                lines.add(Integer.valueOf(getPC()));
                             }
                         }
                     }
@@ -180,7 +180,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                                     lines = new ArrayList<Integer>();
                                     allocToAddPCs.put(allocNum, lines);
                                 }
-                                lines.add(getPC());
+                                lines.add(Integer.valueOf(getPC()));
                             }
                         }
                     }
@@ -219,7 +219,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         Integer allocLoc = allocLocation.get(entry.getKey());
                         if ((allocLoc != null) && (allocLoc.intValue() < target)) {
                             List<Integer> pcs = entry.getValue();
-                            for (Integer pc : pcs) {
+                            for (int pc : pcs) {
                                 if (pc > target) {
                                     int numDownBranches = countDownBranches(target, pc);
                                     if (numDownBranches == 1) {

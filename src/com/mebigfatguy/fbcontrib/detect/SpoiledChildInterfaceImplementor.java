@@ -105,6 +105,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 	 */
 	@Override
 	public void report() {
+		// Unused, requirement of the Detector interface
 	}
 
 	/**

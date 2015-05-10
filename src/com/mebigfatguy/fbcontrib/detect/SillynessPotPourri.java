@@ -697,7 +697,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 
 		Integer stackOffset = methodsThatAreSillyOnStringLiterals.get(methodName + signature);
 		if (stackOffset != null) {
-			if (stack.getStackDepth() > stackOffset) {
+			if (stack.getStackDepth() > stackOffset.intValue()) {
 			
 				OpcodeStack.Item itm = stack.getStackItem(stackOffset.intValue());
 				Object constant = itm.getConstant();

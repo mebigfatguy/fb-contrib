@@ -228,6 +228,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 				try {
 					is.close();
 				} catch (IOException ioe) {
+					// don't care
 				}
 			}
 		}
@@ -302,7 +303,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector
 		return null;
 	}
 
-	private static File getRTJarFromProperty(int requestedVersion) {
+	private static File getRTJarFromProperty(Integer requestedVersion) {
 		String jdkHome = System.getProperty(SJVU_JDKHOME + "." + HUMAN_VERSIONS.get(requestedVersion));
 		if (jdkHome == null)
 			return null;
