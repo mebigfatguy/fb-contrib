@@ -370,7 +370,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 rootScopeBlock.addChild(sb);
             } else if (seen == MONITOREXIT) {
                 if (monitorSyncPCs.size() > 0) {
-                    ScopeBlock sb = findSynchronizedScopeBlock(rootScopeBlock, monitorSyncPCs.get(0));
+                    ScopeBlock sb = findSynchronizedScopeBlock(rootScopeBlock, monitorSyncPCs.get(0).intValue());
                     if (sb != null)
                         sb.setFinish(pc);
                     monitorSyncPCs.remove(monitorSyncPCs.size() - 1);

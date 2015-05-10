@@ -135,7 +135,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 								bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY)
 											.addClass(this)
 											.addMethod(this)
-											.addSourceLine(this, storeRegs.values().iterator().next()));
+											.addSourceLine(this, storeRegs.values().iterator().next().intValue()));
 							}
 						}
 						storeRegs.clear();

@@ -996,7 +996,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 				Object constant = item.getConstant();
 				if (constant instanceof Double)
 				{
-					Double v = (Double) constant;
+					double v = ((Double) constant).doubleValue();
 					if ((v != 0.0) && (v != 1.0)) {
 						bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_BIGDECIMAL_STRING_CTOR.name(), NORMAL_PRIORITY)
 						.addClass(this)
