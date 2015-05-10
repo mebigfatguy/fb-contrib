@@ -66,14 +66,10 @@ public class PossibleIncompleteSerialization implements Detector
 						}
 					}
 				}
-				
 			}
 		} catch (ClassNotFoundException cnfe) {
-			
-		} finally {
-			
+			bugReporter.reportMissingClass(cnfe);
 		}
-		
 	}
 	
 	/**
@@ -132,5 +128,6 @@ public class PossibleIncompleteSerialization implements Detector
 	
 	@Override
 	public void report() {
+		// Unused, requirement of the Detector interface
 	}
 }

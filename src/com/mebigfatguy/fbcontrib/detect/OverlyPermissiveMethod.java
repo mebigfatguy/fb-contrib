@@ -254,7 +254,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 	}
 	
 	private static String getDeclaredAccessValue(int declaredAccess) {
-		return DECLARED_ACCESS.get(declaredAccess & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC));
+		return DECLARED_ACCESS.get(Integer.valueOf(declaredAccess & (Constants.ACC_PRIVATE|Constants.ACC_PROTECTED|Constants.ACC_PUBLIC)));
 	}
 	
 	private static Object getRequiredAccessValue(MethodInfo mi) {
