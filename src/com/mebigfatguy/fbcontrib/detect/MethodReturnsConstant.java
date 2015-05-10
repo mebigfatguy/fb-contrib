@@ -121,7 +121,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 
-					int register = item.getRegisterNumber();
+					Integer register = Integer.valueOf(item.getRegisterNumber());
 					if (registerConstants.containsKey(register) && (registerConstants.get(register) == null)) {
                         methodSuspect = false;
                         return;
