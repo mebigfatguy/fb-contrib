@@ -139,7 +139,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             
             case BIPUSH:
             case SIPUSH:
-                size = getIntConstant();
+                size = Integer.valueOf(getIntConstant());
                 sizeSet = true;
             break;
             
@@ -212,7 +212,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                         
                         int reg = arrayItem.getRegisterNumber();
                         if ((reg >= 0) && !initializedRegs.get(reg)) {
-                            nullStoreToLocation.put(Integer.valueOf(reg), getPC());
+                            nullStoreToLocation.put(Integer.valueOf(reg), Integer.valueOf(getPC()));
                         }
                     }
                 }
