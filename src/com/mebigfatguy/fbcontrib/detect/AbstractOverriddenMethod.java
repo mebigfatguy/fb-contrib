@@ -102,9 +102,10 @@ public class AbstractOverriddenMethod extends PreorderVisitor implements Detecto
 	}
 	
 	/**
-	 * implements the Detector with a nop
+	 * implements the Detector with a noop
 	 */
 	@Override
 	public void report() {
+		//not used, part of the Detector interface
 	}
 }
