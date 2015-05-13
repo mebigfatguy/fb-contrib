@@ -80,6 +80,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector
 			exceptionClasses.add(Repository.lookupClass("java/util/concurrent/CopyOnWriteArrayList"));
 			exceptionClasses.add(Repository.lookupClass("java/util/concurrent/CopyOnWriteArraySet"));
 		} catch (ClassNotFoundException cnfe) {
+			//don't have a bugReporter yet, so do nothing
 		}
 
 		collectionMethods = new HashSet<String>(3);
