@@ -59,7 +59,7 @@ public class ToString {
 		
 		StringBuilder sb = new StringBuilder(100);
 		Class<?> cls = o.getClass();
-		int identityHC = System.identityHashCode(o);
+		Integer identityHC = Integer.valueOf(System.identityHashCode(o));
 		sb.append(cls.getSimpleName()).append('[').append(identityHC).append("]{");
 		
 		if (!visitedObjects.contains(identityHC)) {	
@@ -87,6 +87,7 @@ public class ToString {
 					}
 				}
 			} catch (Exception e) {
+				// if we get an exception show as much as we can get
 			}
 		}
 		
