@@ -81,6 +81,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector
 	 */
 	@Override
 	public void report() {
+		// not used, required by the Detector interface
 	}
 
 	/**
