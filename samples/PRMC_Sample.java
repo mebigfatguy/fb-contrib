@@ -1,4 +1,5 @@
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
@@ -105,6 +106,11 @@ public class PRMC_Sample {
         SAMPLE1.setValue(5);
         SAMPLE2 = new PRMC_Sample();
         SAMPLE2.setValue(5);
+    }
+    
+    public void fpAsListLiterals() {
+    	System.out.println(Arrays.asList("foo"));
+    	System.out.println(Arrays.asList("bar"));
     }
 
     public void setValue(int i) {
