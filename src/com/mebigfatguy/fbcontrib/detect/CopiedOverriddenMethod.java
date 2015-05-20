@@ -249,5 +249,6 @@ public class CopiedOverriddenMethod extends DismantleBytecode implements Detecto
 	 */
 	@Override
 	public void report() {
+		// not used, supplied to support the Detector interface
 	}
 }
