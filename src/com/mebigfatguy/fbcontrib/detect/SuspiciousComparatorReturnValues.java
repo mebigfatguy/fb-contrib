@@ -47,6 +47,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector
 			compareClasses.put(Repository.lookupClass("java/lang/Comparable"), "compareTo:1:I");
 			compareClasses.put(Repository.lookupClass("java/util/Comparator"), "compare:2:I");
 		} catch (ClassNotFoundException cnfe) {
+			//don't have a bugReporter yet, so do nothing
 		}
 	}
 	
