@@ -20,6 +20,8 @@ public class LO_Sample {
 	private static Logger l4 = Logger.getLogger(ActionEvent.class.getName());
 	//no tag
 	private static Logger l5 = Logger.getLogger(LO_Sample.class.getName());
+	//no tag
+	private static Logger l6 = Logger.getLogger("my.nasty.logger.LOGGER");
 	
 	//no tag
 	private Logger someLocalLogger;
