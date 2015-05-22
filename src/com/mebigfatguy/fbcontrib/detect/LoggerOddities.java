@@ -370,6 +370,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		            if (loggingClassName != null) {
 		            	//first look at the constant passed in
 		                loggingClassName = loggingClassName.replace('.', '/');
+			            loggingPriority = LOW_PRIORITY;
 		            } else if (userValue instanceof String){
 		            	//try the user value, which may have been set by a call to Foo.class.getName()
 		            	loggingClassName = (String) userValue;
@@ -383,6 +384,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		            if (loggingClassName != null) {
 		                loggingClassName = loggingClassName.replace('.', '/');
 		            }
+		            loggingPriority = LOW_PRIORITY;
 		        }
 		    }
 		} else if ("org/apache/commons/logging/LogFactory".equals(callingClsName) && "getLog".equals(mthName)) {
@@ -400,6 +402,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 		            if (loggingClassName != null) {
 		                loggingClassName = loggingClassName.replace('.', '/');
 		            }
+		            loggingPriority = LOW_PRIORITY;
 		        }
 		    }
 		}
