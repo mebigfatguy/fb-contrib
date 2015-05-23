@@ -43,6 +43,7 @@ public class NeedlessCustomSerialization extends BytecodeScanningDetector
 		try {
 			serializableClass = Repository.lookupClass("java/io/Serializable");
 		} catch (ClassNotFoundException cnfe) {
+			// no bugReporter here, so do nothing
 		}
 	}
 	
