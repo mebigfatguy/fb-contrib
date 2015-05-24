@@ -50,10 +50,15 @@ import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
+
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 
 /**
@@ -124,6 +129,8 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 		nonInformationalMethods.add("setSize");
 		nonInformationalMethods.add("trimToSize");
 	}
+	
+	private int firstLocalRegister;
 
 	/**
      * constructs a WOC detector given the reporter to report bugs on
@@ -131,6 +138,34 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 	 */
 	public WriteOnlyCollection(BugReporter bugReporter) {
 		super(bugReporter);
+	}
+	
+	/**
+	 * overrides the visitor to see what how many register slots are taken by 
+	 * parameters.
+	 * 
+	 * @param obj the currently parsed method
+	 */
+	@Override
+	public void visitMethod(Method obj) {
+		Type[] parms = Type.getArgumentTypes(obj.getSignature());
+		firstLocalRegister = SignatureUtils.getFirstRegisterSlot(obj);
+		super.visitMethod(obj);
+	}
+	
+	@Override
+	public void sawOpcode(int seen) {
+		if (seen == PUTFIELD) {
+			OpcodeStack stack = getStack();
+			if (stack.getStackDepth() > 0) {
+				OpcodeStack.Item item = stack.getStackItem(0);
+				int reg = item.getRegisterNumber();
+				if ((reg >= 0) && (reg < firstLocalRegister)) {
+					clearSpecialField(getNameConstantOperand());
+				}
+			}
+		}
+		super.sawOpcode(seen);
 	}
 	
 	@Override

@@ -180,6 +180,24 @@ public class SignatureUtils {
 
 	    return parmSigs;
 	}
+	
+	/**
+	 * returns the first open register slot after parameters
+	 *
+	 * @param m the method for which you want the parameters
+	 * @return the first available register slot
+	 */
+	public static int getFirstRegisterSlot(Method m) {
+	    Type[] parms = m.getArgumentTypes();
+
+	    int first = m.isStatic() ? 0 : 1;
+	    for (Type t : parms) {
+	        String signature = t.getSignature();
+	        first += ("J".equals(signature) || "D".equals(signature)) ? 2 : 1;
+	    }
+
+	    return first;
+	}
 
 	public static boolean compareGenericSignature(String genericSignature, String regularSignature) {
 		Type[] regParms = Type.getArgumentTypes(regularSignature);

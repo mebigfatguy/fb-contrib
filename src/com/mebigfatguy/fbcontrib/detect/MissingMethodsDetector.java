@@ -360,6 +360,10 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 		item.setUserValue(null);
 	}
 
+	protected OpcodeStack getStack() {
+		return stack;
+	}
+	
 	/**
 	 * Checks to see if any of the locals or fields that we are tracking are passed into
 	 * another method.  If they are, we clear out our tracking of them, because we can't
@@ -377,6 +381,13 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 			}
 		}
 		
+	}
+	
+	/**
+	 * informs the missing method detector that a field should no longer be considered special
+	 */
+	protected void clearSpecialField(String name) {
+		fieldSpecialObjects.remove(name);
 	}
 
 	protected abstract BugInstance makeFieldBugInstance();
