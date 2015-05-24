@@ -19,6 +19,11 @@ public class WOC_Sample {
     private final List<String> fpList = new ArrayList<String>();
     private List<String> fp1 = new ArrayList<String>();
     private List<String> fp2 = new ArrayList<String>();
+    private List<String> fp3;
+    
+    public WOC_Sample(List<String> x) {
+    	fp3 = x;
+    }
 
     public void testWOCSimple() {
     	//tag WOC_WRITE_ONLY_COLLECTION_LOCAL 
@@ -168,6 +173,10 @@ public class WOC_Sample {
                 }
             }
         }
+    }
+    
+    public void fpAddToCtorParm(String x) {
+    	fp3.add(x);
     }
     
     private class Data {
