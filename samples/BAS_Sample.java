@@ -165,6 +165,21 @@ public class BAS_Sample {
 
         return null;
     }
+    
+    public void testNestedIfs(Map<String, String> x, int i, boolean b) {
+    	
+    	String s = x.get("hello");
+    	
+    	if (i == 0) {
+    		if (b) {
+    			System.out.println(s);
+    		}
+    	} else if (i == 1) {
+    		System.out.println(s);
+    	} else if (i == 2) {
+    		System.out.println(s);
+    	}
+    }
 
     static class Holder {
         int member;
