@@ -166,7 +166,7 @@ public class BAS_Sample {
         return null;
     }
     
-    public void testNestedIfs(Map<String, String> x, int i, boolean b) {
+    public void testFPNestedIfs(Map<String, String> x, int i, boolean b) {
     	
     	String s = x.get("hello");
     	
