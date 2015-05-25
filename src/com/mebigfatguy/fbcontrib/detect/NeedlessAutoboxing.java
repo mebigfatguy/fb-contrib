@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,15 +30,16 @@ import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 /**
  * Looks for methods that pass a primitive wrapper class object, to the
  * same classes Constructor.
  */
-public class NeedlessAutoboxing extends BytecodeScanningDetector
+public class NeedlessAutoboxing extends OpcodeStackDetector
 {
-	enum State {SEEN_NOTHING, SEEN_VALUE, SEEN_VALUEOFSTRING, SEEN_PARSE, SEEN_CTOR, SEEN_VALUEOFPRIMITIVE, SEEN_GOTO, SEEN_ICONST, SEEN_GETSTATIC}
+	enum State {SEEN_NOTHING, SEEN_VALUE, SEEN_VALUEOFSTRING, SEEN_PARSE, SEEN_CTOR, SEEN_VALUEOFPRIMITIVE, SEEN_ICONST, SEEN_GETSTATIC}
 	
 	private static final Map<String, String[]> boxClasses = new HashMap<String, String[]>();
 	static {
@@ -65,6 +67,7 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 	private BugReporter bugReporter;
 	private State state;
 	private String boxClass;
+	private BitSet ternaryPCs;
 	
 	/**
      * constructs a NAB detector given the reporter to report bugs on
@@ -73,18 +76,33 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 	public NeedlessAutoboxing(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 	}
-
+	
+	@Override
+	public void visitClassContext(ClassContext classContext) {
+		try {
+			ternaryPCs = new BitSet();
+			super.visitClassContext(classContext);
+		} finally {
+			ternaryPCs = null;
+		}
+	}
 	@Override
 	public void visitMethod(Method obj) {
 		state = State.SEEN_NOTHING;
+		ternaryPCs.clear();
 	}
 	
 	@Override
 	public void sawOpcode(int seen) {
 		
+		if (ternaryPCs.get(getPC())) {
+			ternaryPCs.clear(getPC());
+			state = State.SEEN_NOTHING;
+			return;
+		}
+		
 		switch (state) {
 			case SEEN_NOTHING:
-			case SEEN_GOTO:
 				if (seen == INVOKEVIRTUAL) {
 					boxClass = getClassConstantOperand();
 					String[] boxSigs = boxClasses.get(boxClass);
@@ -135,7 +153,10 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 							state = State.SEEN_GETSTATIC;
 					}
 				} else if ((seen == GOTO) || (seen == GOTO_W)) {
-					state = State.SEEN_GOTO;
+					if (stack.getStackDepth() > 0) {
+						ternaryPCs.set(getBranchTarget());
+					}
+					state = State.SEEN_NOTHING;
 				}
 			break;
 			
@@ -254,6 +275,6 @@ public class NeedlessAutoboxing extends BytecodeScanningDetector
 				state = State.SEEN_NOTHING;
 				sawOpcode(seen);
 			break;
-		}		
+		}
 	}
 }
