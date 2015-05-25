@@ -42,6 +42,11 @@ public class PRMC_Sample {
         Factory.getInstance().fo();
         Factory.getInstance().fum();
     }
+    
+    public void repeatedEmptyArrays() {
+    	System.out.println(Arrays.asList(new Integer[0]));
+    	System.out.println(Arrays.asList(new Integer[0]));
+    }
 
     static class Factory {
         private static Factory f = new Factory();
