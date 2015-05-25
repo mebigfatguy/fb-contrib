@@ -247,7 +247,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector
 			} else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
 				String signature = getSigConstantOperand();
 				int parmCount = Type.getArgumentTypes(signature).length;
-				int neededStackSize = parmCount - ((seen == INVOKESTATIC) ? 1 : 0);
+				int neededStackSize = parmCount - ((seen == INVOKESTATIC) ? 0 : 1);
 				if (stack.getStackDepth() > neededStackSize) {
 					Object[] parmConstants = new Object[parmCount];
 					for (int i = 0; i < parmCount; i++) {
