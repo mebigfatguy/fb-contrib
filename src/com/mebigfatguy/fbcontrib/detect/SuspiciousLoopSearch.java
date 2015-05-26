@@ -38,6 +38,12 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 
+/**
+ * looks for loops where an equality check is made and a variable is set because of it.
+ * It would seem once the item is found, the loop can be terminated, however the code 
+ * continues on, looking for more matches. It is possible the code is looking for the last
+ * match, but if this we case, a reverse iterator might be more effective.
+ */
 public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 	
 	enum State {SAW_NOTHING, SAW_EQUALS, SAW_IFEQ, SAW_ASSIGNMENT };
