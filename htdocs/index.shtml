@@ -68,9 +68,12 @@ function toggleBlock(divId, imgId)
 			</li>
 			</ul>
 		</p>
-		<p style="font-weight: bold;">The latest version of fb-contrib is 6.0.0 available for download 
-		<a href="http://sourceforge.net/projects/fb-contrib/files/Current/fb-contrib-6.0.0.jar/download">here</a>.</p>
-		<p style="font-weight: bold;">This version requires FindBugs 3.0 or better</p>
+		<p style="font-weight: bold;">The latest version of fb-contrib is 6.0.1 available for download 
+		<a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22fb-contrib%22">here</a>.</p>
+		<p style="font-weight: bold;">This version requires FindBugs 3.0.1 or better</p>
+		<p style="font-weight: bold;">Please note that active development for this project is now done on 
+				github. If this site seems behind, please <a href="http://github.com/mebigfatguy/fb-contrib">check there</a>.
+				I will try to keep this site up to date, but I'd appreciate a poke if you see something missing.</p>
 		</div>
 
 		<hr/>
@@ -97,6 +100,15 @@ function toggleBlock(divId, imgId)
     			<li><b>[CIS] Class Impersonating String</b><br/>
     			Looks for string fields that appear to be built with parsing or calling
                 toString() on another object, or from objects that are fields.
+                </li>
+    			<li><b>[SLS] Suspicious Loop Search</b><br/>
+    			Looks for loops where an equality check is made and a variable is set because of it.
+				It would seem once the item is found, the loop can be terminated, but is not.
+                </li>    			
+				<li><b>[CRF] Conflating Resources and Files</b><br/>
+    			Looks for code that uses the File api on URI/URLs where the reference is not a file based one.
+				In the case of classpath URIs, this may work if the classpath is resolving to a folder, but will
+				fall for jar files.
                 </li>
             </ul>
         </div>
