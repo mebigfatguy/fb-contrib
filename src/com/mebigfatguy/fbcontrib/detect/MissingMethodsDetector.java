@@ -385,6 +385,8 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 	
 	/**
 	 * informs the missing method detector that a field should no longer be considered special
+	 * 
+	 * @param name the name of the field
 	 */
 	protected void clearSpecialField(String name) {
 		fieldSpecialObjects.remove(name);
