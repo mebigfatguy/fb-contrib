@@ -22,3 +22,21 @@ class SubChild {
         cds.toString();
     }
 }
+
+class Mammooth {
+	private int x;
+	
+	static class Builder {
+		private int x;
+		
+		public void setX(int x) {
+			this.x = x;
+		}
+		
+		public Mammooth build() {
+			Mammooth m = new Mammooth();
+			m.x = x;
+			return m;
+		}
+	}
+}
