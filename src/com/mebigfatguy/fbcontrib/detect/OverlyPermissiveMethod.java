@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -84,8 +85,10 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
 	@Override
 	public void visitCode(Code obj) {
-		stack.resetForMethodEntry(this);
-		super.visitCode(obj);
+		if (!hasRuntimeAnnotations(getMethod())) {
+			stack.resetForMethodEntry(this);
+			super.visitCode(obj);
+		}
 	}
 
 	@Override
@@ -140,6 +143,19 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		}
 	}
 
+	private boolean hasRuntimeAnnotations(Method obj) {
+		AnnotationEntry[] annotations = obj.getAnnotationEntries();
+		if (annotations != null) {
+			for (AnnotationEntry entry : annotations) {
+				if (entry.isRuntimeVisible()) {
+					return true;
+				}
+			}
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * checks to see if an instance method is called on the 'this' object
 	 * @param sig the signature of the method called to find the called-on object

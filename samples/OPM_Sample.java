@@ -1,3 +1,5 @@
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -27,6 +29,11 @@ public class OPM_Sample extends OPMSuper implements Comparator<String> {
 	}
 	
 	public void fpUncalledDontReport() {
+		fpHasRTAnnotation();
+	}
+	
+	@RT
+	public  void fpHasRTAnnotation() {
 	}
 	
 	
@@ -34,4 +41,9 @@ public class OPM_Sample extends OPMSuper implements Comparator<String> {
 
 abstract class OPMSuper {
 	public abstract List<String> getFoo(List<String> l);
+}
+
+@Retention(RetentionPolicy.RUNTIME)
+@interface RT {
+	
 }
