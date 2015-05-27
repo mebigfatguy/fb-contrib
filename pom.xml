@@ -76,9 +76,9 @@
     </licenses>
 
     <scm>
-        <connection>scm:svn:https://fb-contrib.svn.sourceforge.net/svnroot/fb-contrib/trunk/</connection>
+        <connection>scm:git:https://github.com/mebigfatguy/fb-contrib/</connection>
         <developerConnection>scm:git:https://github.com/mebigfatguy/fb-contrib/</developerConnection>
-        <url>http://fb-contrib.svn.sourceforge.net/viewvc/fb-contrib/trunk/</url>
+        <url>https://github.com/mebigfatguy/fb-contrib/</url>
     </scm>
 
     <mailingLists>
@@ -100,8 +100,8 @@
     </mailingLists>
 
     <issueManagement>
-        <system>SourceForge.net Tracker</system>
-        <url>http://sourceforge.net/tracker/?group_id=147536</url>
+        <system>GitHub</system>
+        <url>https://github.com/mebigfatguy/fb-contrib/issues/</url>
     </issueManagement>
 
     <properties>
