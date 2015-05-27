@@ -1,6 +1,7 @@
-import org.junit.Assert;
-
 import junit.framework.TestCase;
+
+import org.junit.Assert;
+import org.junit.Test;
 
 public class JAO_Sample extends TestCase {
 
@@ -39,4 +40,19 @@ public class JAO_Sample extends TestCase {
         Assert.assertEquals(20, boo, 0);
 
     }
+}
+
+class New {
+	@Test
+	public void nada() {
+	}
+	
+	@Test 
+	public void aha() {
+		check("hello", "world");
+	}
+	
+	private void check(String a, String b) {
+		Assert.assertEquals(a, b);
+	}
 }
