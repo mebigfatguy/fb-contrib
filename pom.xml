@@ -132,6 +132,7 @@
             <resource>
                 <directory>${basedir}</directory>
                 <includes>
+                    <include>plugin.xml</include>
                     <include>license.txt</include>
                 </includes>
             </resource>
@@ -174,6 +175,26 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jar-plugin</artifactId>
                     <version>2.3</version>
+                    <configuration>
+                        <archive>
+                            <manifestEntries>
+                                <fb-contrib-version>${project.version}</fb-contrib-version>
+                                <Main-Class>com.mebigfatguy.fbcontrib.FBContrib</Main-Class>
+                                <!-- TODO <git-revision>${_branch_} ${_rev_} ${_date_}</git-revision>-->
+                                <Eclipse-RegisterBuddy>edu.umd.cs.findbugs.plugin.eclipse</Eclipse-RegisterBuddy>
+                                <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
+                                <Bundle-Name>fb-contrib plugin</Bundle-Name>
+                                <Bundle-SymbolicName>fb-contrib; singleton:=true</Bundle-SymbolicName>
+                                <Bundle-Version>${project.version}</Bundle-Version>
+                                <Bundle-ClassPath>.</Bundle-ClassPath>
+                                <Bundle-Vendor>FB-Contrib Project</Bundle-Vendor>
+                                <Require-Bundle>edu.umd.cs.findbugs.plugin.eclipse</Require-Bundle>
+                                <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
+                                <Export-Package>com.mebigfatguy.fbcontrib.collect, com.mebigfatguy.fbcontrib.detect, com.mebigfatguy.fbcontrib.debug</Export-Package>
+                                <Import-Package>edu.umd.cs.findbugs, edu.umd.cs.findbugs.ba, edu.umd.cs.findbugs.bcel, edu.umd.cs.findbugs.visitclass, org.apache.bcel, org.apache.bcel.classfile, org.apache.bcel.generic</Import-Package>
+                            </manifestEntries>
+                        </archive>
+                    </configuration>
                 </plugin>
 
                 <plugin>
