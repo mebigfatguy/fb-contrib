@@ -148,7 +148,6 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 	 */
 	@Override
 	public void visitMethod(Method obj) {
-		Type[] parms = Type.getArgumentTypes(obj.getSignature());
 		firstLocalRegister = SignatureUtils.getFirstRegisterSlot(obj);
 		super.visitMethod(obj);
 	}

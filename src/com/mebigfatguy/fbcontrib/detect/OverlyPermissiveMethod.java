@@ -195,7 +195,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 				try {
 					if (!isDerived(Repository.lookupClass(key.getClassName()), key)) {
 	
-						BugInstance bi = new BugInstance(this, BugType.OPM_OVERLY_PERMISSIVE_METHOD.name(), NORMAL_PRIORITY)
+						BugInstance bi = new BugInstance(this, BugType.OPM_OVERLY_PERMISSIVE_METHOD.name(), LOW_PRIORITY)
 										.addClass(key.getClassName())
 										.addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0);
 

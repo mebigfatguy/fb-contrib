@@ -78,6 +78,9 @@ public class CircularDependencies extends BytecodeScanningDetector {
 
             if (refClsName.startsWith(clsName) && (clsName.indexOf('$') >= 0))
                 return;
+            
+            if (isStaticChild(clsName, refClsName) || isStaticChild(refClsName, clsName))
+            	return;
 
             Set<String> dependencies = dependencyGraph.get(clsName);
             if (dependencies == null) {
@@ -117,6 +120,15 @@ public class CircularDependencies extends BytecodeScanningDetector {
         dependencyGraph.clear();
     }
 
+    private boolean isStaticChild(String child, String parent) {
+    	if (!child.startsWith(parent)) {
+    		return false;
+    	}
+    	
+    	String extra = child.substring(parent.length());
+    	return ((extra.charAt(0) == '.') && (extra.indexOf('.', 1) < 0));
+    }
+    
     private void removeDependencyLeaves() {
         boolean changed = true;
         while (changed) {

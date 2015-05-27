@@ -57,9 +57,11 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	private BugReporter bugReporter;
 	private JavaClass testCaseClass;
 	private JavaClass testAnnotationClass;
+	private JavaClass cls;
 	private OpcodeStack stack;
 	private boolean isTestCaseDerived;
 	private boolean isAnnotationCapable;
+	private boolean sawAssert;
 	private State state;
 
 	/**
@@ -89,7 +91,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			JavaClass cls = classContext.getJavaClass();
+			cls = classContext.getJavaClass();
 			isTestCaseDerived = ((testCaseClass != null) && cls.instanceOf(testCaseClass));
 			isAnnotationCapable = (cls.getMajor() >= 5) && (testAnnotationClass != null);
 			if (isTestCaseDerived || isAnnotationCapable) {
@@ -109,36 +111,12 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 		boolean isTestMethod = isTestCaseDerived && m.getName().startsWith("test");
 
 		if (!isTestMethod && isAnnotationCapable) {
-			Attribute[] atts = m.getAttributes();
-			for (Attribute att : atts) {
-				ConstantPool cp = att.getConstantPool();
-				Constant c = cp.getConstant(att.getNameIndex());
-				if (c instanceof ConstantUtf8) {
-					String name = ((ConstantUtf8) c).getBytes();
-					if (RUNTIME_VISIBLE_ANNOTATIONS.equals(name)) {
-						if (att instanceof Unknown) {
-							Unknown unAtt = (Unknown)att;
-							byte[] bytes = unAtt.getBytes();
-							int constantPoolIndex = bytes[3] & 0x000000FF;
-							c = cp.getConstant(constantPoolIndex);
-							if (c instanceof ConstantUtf8) {
-								name = ((ConstantUtf8) c).getBytes();
-								if (TEST_ANNOTATION_SIGNATURE.equals(name)) {
-									isTestMethod = true;
-									break;
-								}
-							}
-						} else if (att instanceof RuntimeVisibleAnnotations) {
-						    RuntimeVisibleAnnotations rva = (RuntimeVisibleAnnotations) att;
-						    
-						    AnnotationEntry[] entries = rva.getAnnotationEntries();
-						    for (AnnotationEntry entry : entries) {
-						        if (TEST_ANNOTATION_SIGNATURE.equals(entry.getAnnotationType())) {
-						            isTestMethod = true;
-						            break;
-						        }
-						    }
-						}
+			AnnotationEntry[] annotations = m.getAnnotationEntries();
+			if (annotations != null) {
+				for (AnnotationEntry annotation : annotations) {
+					if (annotation.isRuntimeVisible() && TEST_ANNOTATION_SIGNATURE.equals(annotation.getAnnotationType())) {
+						isTestMethod = true;
+						break;
 					}
 				}
 			}
@@ -147,7 +125,14 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 		if (isTestMethod) {
 			stack.resetForMethodEntry(this);
 			state = State.SAW_NOTHING;
+			sawAssert = false;
 			super.visitCode(obj);
+			
+			if (!sawAssert) {
+				bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT.name(), LOW_PRIORITY)
+							.addClass(this)
+							.addMethod(this));
+			}
 		}
 	}
 
@@ -161,6 +146,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 			if (seen == INVOKESTATIC) {
 				String clsName = getClassConstantOperand();
 				if (OLD_ASSERT_CLASS.equals(clsName) || NEW_ASSERT_CLASS.equals(clsName)) {
+					sawAssert = true;
 					String methodName = getNameConstantOperand();
 					if ("assertEquals".equals(methodName)) {
 						String signature = getSigConstantOperand();
@@ -276,6 +262,14 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 			    if ("equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(sig)) {
 			        state = State.SAW_EQUALS;
 			    }
+			}
+			
+			if ((seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
+				//assume that if you c?all a method in the unit test class
+				//it's possibly doing asserts for you
+				if (cls.getClassName().equals(getClassConstantOperand())) {
+					sawAssert = true;
+				}
 			}
 			
 			
