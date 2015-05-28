@@ -20,15 +20,9 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
-import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Constant;
-import org.apache.bcel.classfile.ConstantPool;
-import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.classfile.RuntimeVisibleAnnotations;
-import org.apache.bcel.classfile.Unknown;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -47,7 +41,6 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 {
     private enum State {SAW_NOTHING, SAW_IF_ICMPNE, SAW_ICONST_1, SAW_GOTO, SAW_ICONST_0, SAW_EQUALS};
     
-	private static final String RUNTIME_VISIBLE_ANNOTATIONS = "RuntimeVisibleAnnotations";
 	private static final String TESTCASE_CLASS = "junit.framework.TestCase";
 	private static final String TEST_CLASS = "org.junit.Test";
 	private static final String TEST_ANNOTATION_SIGNATURE = "Lorg/junit/Test;";
