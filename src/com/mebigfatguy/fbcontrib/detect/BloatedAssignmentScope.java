@@ -298,6 +298,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                                 rootScopeBlock.addChild(sb);
                             } else {
                                 sb.pushUpLoadStores();
+                                sb.setStart(pc);
                             }
                         } else {
                             sb = new ScopeBlock(pc, target);
