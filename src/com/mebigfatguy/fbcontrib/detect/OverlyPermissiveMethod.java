@@ -191,7 +191,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
 			StatisticsKey key = entry.getKey();
 
-			if (isOverlyPermissive(declaredAccess, mi)) {
+			if (isOverlyPermissive(declaredAccess)) {
 				try {
 					if (!isDerived(Repository.lookupClass(key.getClassName()), key)) {
 	
@@ -211,12 +211,11 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		}
 	}
 
-	private static boolean isOverlyPermissive(int declaredAccess, MethodInfo mi) {
+	private static boolean isOverlyPermissive(int declaredAccess) {
 		if ((declaredAccess & Constants.ACC_PUBLIC) != 0) {
 			return true;
 		}
 
-		//TODO: add more permission checks
 		return false;
 	}
 
