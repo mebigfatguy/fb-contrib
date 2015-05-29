@@ -3502,8 +3502,8 @@
 	</BugPattern>
 	
 	<BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT">
-		<ShortDescription>Junit test method appears to have no assertions</ShortDescription>
-		<LongDescription>Junit test method {1} appears to have no assertions</LongDescription>
+		<ShortDescription>Method appears to have no assertions</ShortDescription>
+		<LongDescription>Method {1} appears to have no assertions</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This JUnit test method has no assertions. While a unit test could still be valid if it relies on whether

@@ -250,19 +250,20 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 			        state = State.SAW_NOTHING;
 			    break;
 			}
-			
-			if (seen == INVOKEVIRTUAL) {
-			    String methodName = getNameConstantOperand();
-			    String sig = getSigConstantOperand();
-			    if ("equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(sig)) {
-			        state = State.SAW_EQUALS;
-			    }
-			}
-			
+						
 			if ((seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
-				//assume that if you c?all a method in the unit test class
-				//it's possibly doing asserts for you
-				if (clsName.equals(getClassConstantOperand())) {
+			    String lcName = getNameConstantOperand().toLowerCase();				
+				if (seen == INVOKEVIRTUAL) {
+				    String sig = getSigConstantOperand();
+				    if ("equals".equals(lcName) && "(Ljava/lang/Object;)Z".equals(sig)) {
+				        state = State.SAW_EQUALS;
+				    }
+				}
+				
+				//assume that if you call a method in the unit test class, or call a method with assert of verify in them
+				//it's possibly doing asserts for you. Yes this is a hack
+
+				if (clsName.equals(getClassConstantOperand()) || lcName.contains("assert") || lcName.contains("verify")) {
 					sawAssert = true;
 				}
 			}
