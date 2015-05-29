@@ -24,6 +24,7 @@ public class OPM_Sample extends OPMSuper implements Comparator<String> {
 		List<String> l = getFoo(new ArrayList<String>());
 	}
 	
+	@Override
 	public List<String> getFoo(List<String> l) {
 		return l;
 	}
