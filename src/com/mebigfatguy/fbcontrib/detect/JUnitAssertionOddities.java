@@ -54,6 +54,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	private OpcodeStack stack;
 	private boolean isTestCaseDerived;
 	private boolean isAnnotationCapable;
+	private String clsName;
 	private boolean sawAssert;
 	private State state;
 
@@ -85,6 +86,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	public void visitClassContext(ClassContext classContext) {
 		try {
 			cls = classContext.getJavaClass();
+			clsName = cls.getClassName().replace('.', '/');
 			isTestCaseDerived = ((testCaseClass != null) && cls.instanceOf(testCaseClass));
 			isAnnotationCapable = (cls.getMajor() >= 5) && (testAnnotationClass != null);
 			if (isTestCaseDerived || isAnnotationCapable) {
@@ -260,7 +262,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 			if ((seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
 				//assume that if you c?all a method in the unit test class
 				//it's possibly doing asserts for you
-				if (cls.getClassName().equals(getClassConstantOperand())) {
+				if (clsName.equals(getClassConstantOperand())) {
 					sawAssert = true;
 				}
 			}
