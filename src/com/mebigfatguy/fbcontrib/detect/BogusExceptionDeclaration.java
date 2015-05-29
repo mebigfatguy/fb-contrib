@@ -107,6 +107,11 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 		declaredCheckedExceptions.clear();
 		stack.resetForMethodEntry(this);
 		Method method = getMethod();
+		
+		if (method.isSynthetic()) {
+			return;
+		}
+		
 		ExceptionTable et = method.getExceptionTable();
 		if (et != null) {
 			if (classIsFinal || method.isStatic() || method.isPrivate() || method.isFinal() || ((Values.CONSTRUCTOR.equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
