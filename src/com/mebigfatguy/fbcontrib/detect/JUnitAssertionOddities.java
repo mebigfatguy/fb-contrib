@@ -212,6 +212,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
     			                                .addClass(this)
     			                                .addMethod(this)
     			                                .addSourceLine(this));
+    			        sawAssert = true;
     			    }
 			    }
 			}
