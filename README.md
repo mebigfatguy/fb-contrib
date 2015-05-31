@@ -10,7 +10,7 @@ Available on maven.org
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 6.0.1
+       Version: 6.2.0
 
 
 Developer
@@ -27,6 +27,7 @@ Contributors
 * Philipp Wiesemann
 * Kevin Lubick
 * Philippe Arteau
+* Thrawn
 
 
 The master branch is the main branch of development currently targeting the new FindBugs 3 platform.

@@ -20,7 +20,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -34,7 +34,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-<!-- COMMENT OUT FOR RELEASE -->
+     COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -277,21 +277,21 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConflictingTimeUnits" speed="fast" reports="CTU_CONFLICTING_TIME_UNITS" />
     
-    <!--  COMMENT OUT FOR POINT RELEASE -->
-    
     <Detector class="com.mebigfatguy.fbcontrib.detect.CharsetIssues" speed="fast" reports="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET,CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING,CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ContainsBasedConditional" speed="fast" reports="CBC_CONTAINS_BASED_CONDITIONAL" />
-	
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousLoopSearch" speed="fast" reports="SLS_SUSPICIOUS_LOOP_SEARCH" />
+
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" speed="fast" reports="CRF_CONFLATING_RESOURCES_AND_FILES" />
+
+    <!--  COMMENT OUT FOR POINT RELEASE 
+
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod" speed="fast" reports="OPM_OVERLY_PERMISSIVE_METHOD" />
 	
-	<Detector class="com.mebigfatguy.fbcontrib.detect.ClassImpersonatingString" speed="fast" reports="CIS_STRING_PARSING_A_FIELD,CIS_TOSTRING_STORED_IN_FIELD" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ClassImpersonatingString" speed="fast" reports="CIS_STRING_PARSING_A_FIELD,CIS_TOSTRING_STORED_IN_FIELD" />	
 	
-	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousLoopSearch" speed="fast" reports="SLS_SUSPICIOUS_LOOP_SEARCH" />
-	
-	<Detector class="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" speed="fast" reports="CRF_CONFLATING_RESOURCES_AND_FILES" />
-	
-    <!--  COMMENT OUT FOR POINT RELEASE -->
+          COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
@@ -399,8 +399,8 @@
     <BugPattern abbrev="SPP" type="SPP_NON_USEFUL_TOSTRING" category="STYLE" />
     <BugPattern abbrev="SPP" type="SPP_TOSTRING_ON_STRING" category="CORRECTNESS" />
     <BugPattern abbrev="SPP" type="SPP_EQUALS_ON_STRING_BUILDER" category="CORRECTNESS" />
-	<BugPattern abbrev="SPP" type="SPP_CONVERSION_OF_STRING_LITERAL" category="CORRECTNESS"  experimental="true" />
-	<BugPattern abbrev="SPP" type="SPP_STATIC_FORMAT_STRING" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="SPP" type="SPP_CONVERSION_OF_STRING_LITERAL" category="CORRECTNESS" />
+	<BugPattern abbrev="SPP" type="SPP_STATIC_FORMAT_STRING" category="CORRECTNESS" />
 	<BugPattern abbrev="BAS" type="BAS_BLOATED_ASSIGNMENT_SCOPE" category="PERFORMANCE" />
 	<BugPattern abbrev="SCII" type="SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR" category="STYLE" />
 	<BugPattern abbrev="DWI" type="DWI_DELETING_WHILE_ITERATING" category="CORRECTNESS" />
@@ -508,14 +508,14 @@
 	<BugPattern abbrev="HCP" type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL" category="CORRECTNESS"/>
 	<BugPattern abbrev="HCP" type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD" category="CORRECTNESS"/>
 	<BugPattern abbrev="CTU" type="CTU_CONFLICTING_TIME_UNITS" category="CORRECTNESS" />
-	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="CBC" type="CBC_CONTAINS_BASED_CONDITIONAL" category="STYLE" experimental="true"/>
+	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET" category="CORRECTNESS"/>
+	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" category="CORRECTNESS"/>
+	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING" category="CORRECTNESS"/>
+	<BugPattern abbrev="CBC" type="CBC_CONTAINS_BASED_CONDITIONAL" category="STYLE"/>
 	<BugPattern abbrev="OPM" type="OPM_OVERLY_PERMISSIVE_METHOD" category="STYLE" experimental="true" />
 	<BugPattern abbrev="CIS" type="CIS_STRING_PARSING_A_FIELD" category="STYLE" experimental="true" />
 	<BugPattern abbrev="CIS" type="CIS_TOSTRING_STORED_IN_FIELD" category="STYLE" experimental="true" />
-	<BugPattern abbrev="SLS" type="SLS_SUSPICIOUS_LOOP_SEARCH" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="CRF" type="CRF_CONFLATING_RESOURCES_AND_FILES" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="SLS" type="SLS_SUSPICIOUS_LOOP_SEARCH" category="CORRECTNESS" />
+	<BugPattern abbrev="CRF" type="CRF_CONFLATING_RESOURCES_AND_FILES" category="CORRECTNESS" />
 	
 </FindbugsPlugin>
