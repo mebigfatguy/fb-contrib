@@ -123,11 +123,11 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 			sawAssert = false;
 			super.visitCode(obj);
 			
-//			if (!sawAssert) {
-//				bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT.name(), LOW_PRIORITY)
-//							.addClass(this)
-//							.addMethod(this));
-//			}
+			if (!sawAssert) {
+				bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT.name(), LOW_PRIORITY)
+							.addClass(this)
+							.addMethod(this));
+			}
 		}
 	}
 
