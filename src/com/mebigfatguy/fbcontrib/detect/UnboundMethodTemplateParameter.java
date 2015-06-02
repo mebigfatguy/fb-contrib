@@ -94,6 +94,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
 
     @Override
     public void report() {
+    	// not used, part of the Detector interface
     }
 
     /**
