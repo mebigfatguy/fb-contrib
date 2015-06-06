@@ -132,6 +132,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 	 */
 	@Override
 	public void report() {
+		//not used, needed for the Detector interface
 	}
 
 }
