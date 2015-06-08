@@ -130,7 +130,8 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector
 			
 			if ((seen == INVOKEVIRTUAL)
 			||  (seen == INVOKESPECIAL)
-			||  (seen == INVOKEINTERFACE)) {
+			||  (seen == INVOKEINTERFACE)
+			||  (seen == INVOKEDYNAMIC)) {
 				String methodSig = getSigConstantOperand();
 				Type returnType = Type.getReturnType(methodSig);
 				if (!(returnType.equals(Type.VOID))) {
