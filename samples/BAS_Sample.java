@@ -6,6 +6,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ForkJoinPool;
+import java.util.concurrent.Future;
 
 @SuppressWarnings("all")
 public class BAS_Sample {
@@ -179,6 +182,18 @@ public class BAS_Sample {
     	} else if (i == 2) {
     		System.out.println(s);
     	}
+    }
+    
+    public boolean testFPFuture(boolean b) {
+    	ExecutorService s = new ForkJoinPool();
+    	Future f = s.submit(new Runnable() { public void run() {}});
+    	if (b) {
+    		if (f.isDone()) {
+    			return true;
+    		}
+    	}
+    	
+    	return false;
     }
 
     static class Holder {

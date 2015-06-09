@@ -31,6 +31,8 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
@@ -58,6 +60,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     private static final Set<String> dangerousAssignmentClassSources = new HashSet<String>(7);
     private static final Set<String> dangerousAssignmentMethodSources = new HashSet<String>(4);
     private static final Set<Pattern> dangerousAssignmentMethodPatterns = new HashSet<Pattern>(1);
+    private static final Set<String> dangerousStoreClassSigs = new HashSet<String>(4);
 
     static {
         dangerousAssignmentClassSources.add("java/io/BufferedInputStream");
@@ -78,6 +81,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         dangerousAssignmentMethodSources.add("java/util/regex/Matcher.start()I");
         
         dangerousAssignmentMethodPatterns.add(Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE));
+        
+        dangerousStoreClassSigs.add("Ljava/util/concurrent/Future;");
     }
 
     BugReporter bugReporter;
@@ -206,6 +211,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                     ignoreRegs.set(reg);
                 } else if (sawNull) {
                     ignoreRegs.set(reg);
+                } else if (isRiskyStoreClass(reg)) {
+                	ignoreRegs.set(reg);
                 }
 
                 if (!ignoreRegs.get(reg)) {
@@ -951,6 +958,20 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         
         
         return false;
+    }
+    
+    public boolean isRiskyStoreClass(int reg) {
+    	LocalVariableTable lvt = getMethod().getLocalVariableTable();
+    	if (lvt != null) {
+    		LocalVariable lv = lvt.getLocalVariable(reg, getNextPC());
+    		if (lv != null) {
+    			if (dangerousStoreClassSigs.contains(lv.getSignature())) {
+    				return true;
+    			}
+    		}
+    	}
+    	
+    	return false;
     }
 
     static class UserObject {
