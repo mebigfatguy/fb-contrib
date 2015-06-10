@@ -23,6 +23,12 @@ public class LSYC_Sample {
             System.out.println(st);
         }
     }
+    
+    public String testNotStoredSB() {
+    	final StringBuffer stringBuffer = new StringBuffer().append("agrego ").append("un ");
+        stringBuffer.append("string ");
+        return stringBuffer.toString();
+    }
 
     public void test3(List<String> ls) {
         // don't report
