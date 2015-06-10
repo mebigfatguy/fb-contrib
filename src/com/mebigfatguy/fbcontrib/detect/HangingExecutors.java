@@ -19,6 +19,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -345,6 +346,11 @@ class LocalHangingExecutor extends LocalTypeDetector {
 	@Override
 	protected Map<String, Set<String>> getWatchedClassMethods() {
 		return watchedClassMethods;
+	}
+
+	@Override
+	protected Set<String> getSelfReturningMethods() {
+		return Collections.emptySet();
 	}
 
 	@Override

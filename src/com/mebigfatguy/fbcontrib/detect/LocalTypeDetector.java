@@ -68,6 +68,13 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 	 * @return map of factory methods
 	 */
 	protected abstract Map<String, Set<String>> getWatchedClassMethods();
+	
+	/**
+	 * returns a set of self returning methods, that is, methods that when called on a 
+	 * a synchronized collection return themselves.
+	 * @return a set of self referential methods
+	 */
+	protected abstract Set<String> getSelfReturningMethods();
 
 	/**
 	 * Given this RegisterInfo, report an appropriate bug.
@@ -143,6 +150,8 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 				tosIsSyncColReg = checkConstructors();
 			} else if (seen == INVOKESTATIC) {
 				tosIsSyncColReg = checkStaticCreations();
+			} else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+				tosIsSyncColReg = checkSelfReturningMethods();
 			} else if (isAStore(seen)) {
 				dealWithStoring(seen);
 			} else if (isALoad(seen)) {
@@ -234,6 +243,22 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 				if (entry.getValue().contains(getNameConstantOperand())) {
 					tosIsSyncColReg = Values.NEGATIVE_ONE;
 				}
+			}
+		return tosIsSyncColReg;
+	}
+	
+	protected Integer checkSelfReturningMethods() {
+		Integer tosIsSyncColReg = null;
+		Set<String> selfReturningMethods = getSelfReturningMethods();
+		String methodName = getClassConstantOperand() + "." + getNameConstantOperand();
+		for (String selfRefNames : selfReturningMethods)
+			if (methodName.equals(selfRefNames)) {
+				Type[] parmTypes = Type.getArgumentTypes(getSigConstantOperand());
+				if (stack.getStackDepth() > parmTypes.length) {
+					OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
+					tosIsSyncColReg = (Integer) item.getUserValue();
+				}
+				break;
 			}
 		return tosIsSyncColReg;
 	}

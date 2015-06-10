@@ -59,6 +59,12 @@ public class LocalSynchronizedCollection extends LocalTypeDetector
 
 		synchClassMethods.put("java/util/Collections", syncMethods);
 	}
+	
+	private static final Set<String> selfReturningMethods = new HashSet<String>();
+	
+	static {
+		selfReturningMethods.add("java/lang/StringBuffer.append");
+	}
 
 	private BugReporter bugReporter;
 	/**
@@ -82,6 +88,13 @@ public class LocalSynchronizedCollection extends LocalTypeDetector
 	protected Map<String, Set<String>> getWatchedClassMethods() {
 		return synchClassMethods;
 	}
+
+	@Override
+	protected Set<String> getSelfReturningMethods() {
+		return selfReturningMethods;
+	}
+
+
 
 	@Override
 	protected void reportBug(RegisterInfo cri) {
