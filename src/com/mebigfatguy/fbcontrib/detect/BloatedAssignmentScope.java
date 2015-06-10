@@ -64,6 +64,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
     static {
         dangerousAssignmentClassSources.add("java/io/BufferedInputStream");
+        dangerousAssignmentClassSources.add("java/io/DataInput");
         dangerousAssignmentClassSources.add("java/io/DataInputStream");
         dangerousAssignmentClassSources.add("java/io/InputStream");
         dangerousAssignmentClassSources.add("java/io/ObjectInputStream");
