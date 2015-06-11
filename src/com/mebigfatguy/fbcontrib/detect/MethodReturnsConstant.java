@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XField;
 
 /**
  * looks for private methods that can only return one constant value.
@@ -126,6 +127,15 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
                         methodSuspect = false;
                         return;
                     }
+					
+					String returnSig = item.getSignature();
+					if ((returnSig != null) && returnSig.startsWith("[")) {
+						XField f = item.getXField();
+						if ((item.getXField() == null) || (!item.getXField().isStatic())) {
+							methodSuspect = false;
+							return;
+						}
+					}
 
 					Object constant = item.getConstant();
 					if (constant == null) {
