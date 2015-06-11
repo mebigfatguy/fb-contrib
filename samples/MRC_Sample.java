@@ -105,4 +105,16 @@ public class MRC_Sample {
 		}
 		return index;
 	}
+	
+	private QueryParam[] fpNonConstantArray(Long pk, String value) {
+        return new QueryParam[]{
+            new QueryParam("pk", pk),
+            new QueryParam("value", value)
+        };
+	}
+	
+	class QueryParam {
+		QueryParam(String key, Object value) {
+		}
+	}
 }
