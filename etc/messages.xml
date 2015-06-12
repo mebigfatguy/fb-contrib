@@ -3332,8 +3332,8 @@
 	</BugPattern>
 
 	<BugPattern type="MRC_METHOD_RETURNS_CONSTANT">
-		<ShortDescription>Private method only returns one constant value</ShortDescription>
-		<LongDescription>Private method {1} only returns one constant value</LongDescription>
+		<ShortDescription>Private or static method only returns one constant value</ShortDescription>
+		<LongDescription>Private or static method {1} only returns one constant value</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This private or static method only returns one constant value. As this method is private or static,
