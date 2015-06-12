@@ -1,5 +1,7 @@
 package com.mebigfatguy.fbcontrib.debug;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
@@ -31,11 +33,9 @@ public class Debug {
 
 	static {
 		try {
-			out = new PrintStream(new FileOutputStream("/tmp/findbugsConsole.txt"),true, "UTF-8");
+			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "findbugsConsole.txt").getPath(), true)));
 			out.println("Hello findbugs");
 		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		} catch (UnsupportedEncodingException e) {
 			throw new RuntimeException(e);
 		}
 	}
