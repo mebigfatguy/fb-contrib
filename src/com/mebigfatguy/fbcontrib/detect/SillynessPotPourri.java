@@ -516,27 +516,30 @@ public class SillynessPotPourri extends BytecodeScanningDetector
 		if (lastLoadWasString && (lastPCs[0] != -1)) {
 			byte[] bytes = getCode().getCode();
 			int loadIns = CodeByteUtils.getbyte(bytes, lastPCs[2]);
-			int brOffset = (loadIns == ALOAD) ? 11 : 10;
+			
 
 			if ((((loadIns >= ALOAD_0) && (loadIns <= ALOAD_3)) || (loadIns == ALOAD))
 					&&  (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INVOKEVIRTUAL)
 					&&  (CodeByteUtils.getbyte(bytes, lastPCs[2]) == loadIns)
 					&&  (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL)
 					&&  (CodeByteUtils.getbyte(bytes, lastPCs[0]) == loadIns)
-					&&  ((loadIns != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[2]+1) == CodeByteUtils.getbyte(bytes, lastPCs[0]+1)))
-					&&  ((seen == IFNE) ? CodeByteUtils.getshort(bytes, lastPCs[1]+1) > brOffset : CodeByteUtils.getshort(bytes, lastPCs[1]+1) == brOffset)) {
-				int nextOp = CodeByteUtils.getbyte(bytes, getNextPC());
-				if ((nextOp != GOTO) && (nextOp != GOTO_W)) {
-					ConstantPool pool = getConstantPool();
-					int mpoolIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
-					ConstantMethodref cmr = (ConstantMethodref)pool.getConstant(mpoolIndex);
-					int nandtIndex = cmr.getNameAndTypeIndex();
-					ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
-					if ("length".equals(cnt.getName(pool))) {
-						bugReporter.reportBug(new BugInstance(this, BugType.SPP_SUSPECT_STRING_TEST.name(), NORMAL_PRIORITY)
-						.addClass(this)
-						.addMethod(this)
-						.addSourceLine(this));
+					&&  ((loadIns != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[2]+1) == CodeByteUtils.getbyte(bytes, lastPCs[0]+1)))) {
+				
+				int brOffset = (loadIns == ALOAD) ? 11 : 10;			
+				if ((seen == IFNE) ? CodeByteUtils.getshort(bytes, lastPCs[1]+1) > brOffset : CodeByteUtils.getshort(bytes, lastPCs[1]+1) == brOffset) {
+					int nextOp = CodeByteUtils.getbyte(bytes, getNextPC());
+					if ((nextOp != GOTO) && (nextOp != GOTO_W)) {
+						ConstantPool pool = getConstantPool();
+						int mpoolIndex = CodeByteUtils.getshort(bytes, lastPCs[3]+1);
+						ConstantMethodref cmr = (ConstantMethodref)pool.getConstant(mpoolIndex);
+						int nandtIndex = cmr.getNameAndTypeIndex();
+						ConstantNameAndType cnt = (ConstantNameAndType)pool.getConstant(nandtIndex);
+						if ("length".equals(cnt.getName(pool))) {
+							bugReporter.reportBug(new BugInstance(this, BugType.SPP_SUSPECT_STRING_TEST.name(), NORMAL_PRIORITY)
+							.addClass(this)
+							.addMethod(this)
+							.addSourceLine(this));
+						}
 					}
 				}
 			}
