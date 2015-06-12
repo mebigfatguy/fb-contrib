@@ -195,6 +195,17 @@ public class BAS_Sample {
     	
     	return false;
     }
+    
+    public int testFPTwoCatches(List<Integer> x) throws Exception {
+    	String msg = "This is a test";
+    	try {
+    		return x.size() * x.get(0);
+    	} catch (NullPointerException e) {
+    		throw new Exception(msg + "NPE", e);
+    	} catch (IndexOutOfBoundsException e) {
+    		throw new Exception(msg + "IIOBE", e);
+    	}
+    }
 
     static class Holder {
         int member;
