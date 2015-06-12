@@ -131,7 +131,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector
 					String returnSig = item.getSignature();
 					if ((returnSig != null) && returnSig.startsWith("[")) {
 						XField f = item.getXField();
-						if ((item.getXField() == null) || (!item.getXField().isStatic())) {
+						if ((f == null) || (!f.isStatic())) {
 							methodSuspect = false;
 							return;
 						}
