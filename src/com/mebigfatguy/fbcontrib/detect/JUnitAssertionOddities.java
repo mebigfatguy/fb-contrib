@@ -50,7 +50,6 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	private BugReporter bugReporter;
 	private JavaClass testCaseClass;
 	private JavaClass testAnnotationClass;
-	private JavaClass cls;
 	private OpcodeStack stack;
 	private boolean isTestCaseDerived;
 	private boolean isAnnotationCapable;
@@ -85,7 +84,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector
 	@Override
 	public void visitClassContext(ClassContext classContext) {
 		try {
-			cls = classContext.getJavaClass();
+			JavaClass cls = classContext.getJavaClass();
 			clsName = cls.getClassName().replace('.', '/');
 			isTestCaseDerived = ((testCaseClass != null) && cls.instanceOf(testCaseClass));
 			isAnnotationCapable = (cls.getMajor() >= 5) && (testAnnotationClass != null);
