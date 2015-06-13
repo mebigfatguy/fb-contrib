@@ -94,6 +94,13 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
         }
     }
     
+    /**
+     * looks for a name that mentions a collection type but the wrong type for the variable
+     * 
+     * @param name the variable name
+     * @param signature the variable signature
+     * @return whether the name doesn't match the type
+     */
     private boolean checkConfusedName(String name, String signature) {
         try {
             name = name.toLowerCase();
