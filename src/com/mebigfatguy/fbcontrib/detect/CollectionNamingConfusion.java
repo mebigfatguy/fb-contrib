@@ -126,5 +126,6 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
 
     @Override
     public void report() {
+    	// not used, implements the interface
     }
 }
