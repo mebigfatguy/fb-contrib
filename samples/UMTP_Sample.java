@@ -30,6 +30,9 @@ public class UMTP_Sample {
 
         return m;
     }
+    
+    public <X, Y> void fpEmbedded(Map<X, Map<String, Y>> x) {
+    }
 
     public Object getFoo() {
         return null;
