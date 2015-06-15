@@ -41,16 +41,19 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     private static JavaClass MAP_CLASS;
     private static JavaClass SET_CLASS;
     private static JavaClass LIST_CLASS;
+    private static JavaClass QUEUE_CLASS;
     
     static {
         try {
             MAP_CLASS = Repository.lookupClass("java/util/Map");
             SET_CLASS = Repository.lookupClass("java/util/Set");
             LIST_CLASS = Repository.lookupClass("java/util/List");
+            QUEUE_CLASS = Repository.lookupClass("java/util/Queue");
         } catch (ClassNotFoundException cnfe) {
             MAP_CLASS = null;
             SET_CLASS = null;
             LIST_CLASS = null;
+            QUEUE_CLASS = null;
         }
     }
     private BugReporter bugReporter;
@@ -104,7 +107,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     private boolean checkConfusedName(String name, String signature) {
         try {
             name = name.toLowerCase();
-            if (name.endsWith("map") || (name.endsWith("set") && !name.endsWith("toset")) || name.endsWith("list")) {
+            if (name.endsWith("map") || (name.endsWith("set") && !name.endsWith("toset")) || name.endsWith("list") || name.endsWith("queue")) {
                 if (signature.startsWith("Ljava/util/")) {
                     String clsName = signature.substring(1, signature.length() - 1);
                     JavaClass cls = Repository.lookupClass(clsName);
@@ -114,6 +117,8 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
                         return true;
                     } else if (cls.implementationOf(LIST_CLASS) && !name.endsWith("list")) {
                         return true;                        
+                    } else if (cls.implementationOf(QUEUE_CLASS) && !name.endsWith("queue")) {
+                    	return true;
                     }
                 }
             }
