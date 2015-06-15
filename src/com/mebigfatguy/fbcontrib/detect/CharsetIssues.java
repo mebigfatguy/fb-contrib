@@ -22,6 +22,7 @@ import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
@@ -165,16 +166,18 @@ public class CharsetIssues extends BytecodeScanningDetector {
 						if (stack.getStackDepth() > offset) {
 							OpcodeStack.Item item = stack.getStackItem(offset);
 							encoding = (String) item.getConstant();
-							
-							if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
-								// the counts put in the Pair are indexed from the beginning of
-								String changedMethodSig = replaceNthArgWithCharsetString(methodSig, offset);
-								bugReporter.reportBug(new BugInstance(this, BugType.CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET.name(), NORMAL_PRIORITY)
-											.addClass(this)
-											.addMethod(this)
-											.addSourceLine(this)
-											.addCalledMethod(this)
-											.addCalledMethod(className, methodName, changedMethodSig, seen == INVOKESTATIC));
+							if (encoding != null) {
+								encoding = encoding.toUpperCase(Locale.ENGLISH);
+								if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
+									// the counts put in the Pair are indexed from the beginning of
+									String changedMethodSig = replaceNthArgWithCharsetString(methodSig, offset);
+									bugReporter.reportBug(new BugInstance(this, BugType.CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET.name(), NORMAL_PRIORITY)
+												.addClass(this)
+												.addMethod(this)
+												.addSourceLine(this)
+												.addCalledMethod(this)
+												.addCalledMethod(className, methodName, changedMethodSig, seen == INVOKESTATIC));
+								}
 							}
 						}
 					} else {
@@ -184,12 +187,15 @@ public class CharsetIssues extends BytecodeScanningDetector {
 							if (stack.getStackDepth() > offset) {
 								OpcodeStack.Item item = stack.getStackItem(offset);
 								encoding = (String) item.getConstant();
-								if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
-									bugReporter.reportBug(new BugInstance(this, BugType.CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME.name(), NORMAL_PRIORITY)
-												.addClass(this)
-												.addMethod(this)
-												.addSourceLine(this)
-												.addCalledMethod(this));
+								if (encoding != null) {
+									encoding = encoding.toUpperCase(Locale.ENGLISH);
+									if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
+										bugReporter.reportBug(new BugInstance(this, BugType.CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME.name(), NORMAL_PRIORITY)
+													.addClass(this)
+													.addMethod(this)
+													.addSourceLine(this)
+													.addCalledMethod(this));
+									}
 								}
 							}
 						}

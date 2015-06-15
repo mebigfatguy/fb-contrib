@@ -46,6 +46,14 @@ public class CSI_Sample {
 		return URLEncoder.encode(url, "FOO");
 	}
 	
+	public void testLowerCaseEncoding(String fileName) throws UnsupportedEncodingException {
+		try (Reader r = new InputStreamReader(new FileInputStream(fileName), "utf-8")) {
+			char[] c = new char[1000];
+			r.read(c);
+		} catch (IOException e) {
+		}
+	}
+	
 	@SuppressWarnings("resource")
 	public void testUseConstants(File f) throws UnsupportedEncodingException, FileNotFoundException {
 		//tag CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME 
