@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
-import java.io.UnsupportedEncodingException;
 
 /*
  * fb-contrib - Auxiliary detectors for Java programs

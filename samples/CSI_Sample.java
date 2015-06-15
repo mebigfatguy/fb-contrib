@@ -83,7 +83,4 @@ public class CSI_Sample {
 		//tag CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME 
 		Channels.newWriter(null, "UTF-8");
 	}
-	
-	
-
 }
