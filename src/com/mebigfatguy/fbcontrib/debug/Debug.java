@@ -1,11 +1,3 @@
-package com.mebigfatguy.fbcontrib.debug;
-
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.PrintStream;
-
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Kevin Lubick
@@ -25,6 +17,15 @@ import java.io.PrintStream;
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
+package com.mebigfatguy.fbcontrib.debug;
+
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.PrintStream;
+
+
 public class Debug {
 
 	
@@ -32,8 +33,8 @@ public class Debug {
 
 	static {
 		try {
-			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "findbugsConsole.txt").getPath(), true)));
-			out.println("Hello findbugs");
+			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "fb-contrib.txt").getPath(), true)));
+			out.println("===== fb-contrib console =====");
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
