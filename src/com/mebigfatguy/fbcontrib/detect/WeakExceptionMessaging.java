@@ -110,7 +110,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
 	@Override
 	public void visitCode(Code obj) {
 		Method method = getMethod();
-		if (!method.getSignature().startsWith("()")) {
+		if (!method.isSynthetic()) {
 			if (prescreen(method)) {
 				stack.resetForMethodEntry(this);
 				super.visitCode(obj);
