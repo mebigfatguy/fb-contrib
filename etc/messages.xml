@@ -3538,6 +3538,20 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="WEM_OBSCURING_EXCEPTION">
+		<ShortDescription>Method throws an java.lang.Exception that wraps a more useful exception</ShortDescription>
+		<LongDescription>Method {1} throws an java.lang.Exception that wraps a more useful exception</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method catches an exception and generates a new exception of type java.lang.Exception, passing the
+			original exception as the new Exception's cause.  If the original Exception was actually an java.lang.Error, this
+			is dubious as you should not be handling errors. If the original exception is a more specific exception, there is no
+			reason to wrap it in an exception of the java.lang.Exception class, and just obfuscates the type of error that is occuring.
+			</p>
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT">
 		<ShortDescription>Method modifies http session attribute without calling setAttribute</ShortDescription>

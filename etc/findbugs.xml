@@ -176,7 +176,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousCloneAlgorithm" speed="fast" reports="SCA_SUSPICIOUS_CLONE_ALGORITHM" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.WeakExceptionMessaging" speed="fast" reports="WEM_WEAK_EXCEPTION_MESSAGING" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.WeakExceptionMessaging" speed="fast" reports="WEM_WEAK_EXCEPTION_MESSAGING,WEM_OBSCURING_EXCEPTION" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousClusteredSessionSupport" speed="fast" reports="SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT" />
 
@@ -425,6 +425,7 @@
     <BugPattern abbrev="JAO" type="JAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT" category="CORRECTNESS" />
 	<BugPattern abbrev="SCA" type="SCA_SUSPICIOUS_CLONE_ALGORITHM" category="CORRECTNESS" />
 	<BugPattern abbrev="WEM" type="WEM_WEAK_EXCEPTION_MESSAGING" category="STYLE" />
+	<BugPattern abbrev="WEB" type="WEM_OBSCURING_EXCEPTION" category="STYLE" />
 	<BugPattern abbrev="SCSS" type="SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT" category="CORRECTNESS" />
     <BugPattern abbrev="LO" type="LO_LOGGER_LOST_EXCEPTION_STACK_TRACE" category="CORRECTNESS" />
 	<BugPattern abbrev="LO" type="LO_SUSPECT_LOG_CLASS" category="CORRECTNESS" />
