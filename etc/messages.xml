@@ -3540,8 +3540,8 @@
 	</BugPattern>
 	
 	<BugPattern type="WEM_OBSCURING_EXCEPTION">
-		<ShortDescription>Method throws an java.lang.Exception that wraps a more useful exception</ShortDescription>
-		<LongDescription>Method {1} throws an java.lang.Exception that wraps a more useful exception</LongDescription>
+		<ShortDescription>Method throws a java.lang.Exception that wraps a more useful exception</ShortDescription>
+		<LongDescription>Method {1} throws a java.lang.Exception that wraps a more useful exception</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method catches an exception and generates a new exception of type java.lang.Exception, passing the
