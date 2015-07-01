@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 
 import org.apache.log4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +100,15 @@ public class LO_Sample {
 		l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello", "hello", new RuntimeException("yikes"));
 		//no tag
 		l3.error("This is a problem {} and this {}", "hello", new RuntimeException("yikes"));
+	}
+	
+	public void testFPRealStringBuilderUser(List<String> l) {
+		StringBuilder sb = new StringBuilder();
+		for (String s : l) {
+			sb.append(s).append(":");
+		}
+		
+		l3.warn(sb.toString());
 	}
 
 	public class Inner {
