@@ -187,7 +187,13 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 } else if ("toString".equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
                     if (("java/lang/StringBuilder".equals(callingClsName) || "java/lang/StringBuffer".equals(callingClsName))) {
-                        seenMethodName = mthName;
+                    	if (stack.getStackDepth() > 0) {
+                    		OpcodeStack.Item item = stack.getStackItem(0);
+                    		//if the stringbuilder was previously stored, don't report it
+                    		if (item.getRegisterNumber() < 0) {
+                    			seenMethodName = mthName;
+                    		}
+                    	}   
                     }
                 }
             } else if (seen == INVOKESPECIAL) {
