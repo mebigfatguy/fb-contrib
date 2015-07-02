@@ -137,6 +137,7 @@
 
     <build>
         <sourceDirectory>${basedir}/src</sourceDirectory>
+        <outputDirectory>${basedir}/target/classes/main</outputDirectory>
         <resources>
             <resource>
                 <directory>${basedir}</directory>
