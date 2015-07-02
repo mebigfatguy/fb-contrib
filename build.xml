@@ -7,11 +7,13 @@
     <property file="version.properties" />
 
 	<property name="src.dir" value="${basedir}/src" />
-	<property name="classes.dir" value="${basedir}/classes" />
 	<property name="lib.dir" value="${basedir}/lib" />
 	<property name="etc.dir" value="${basedir}/etc" />
+	<property name="target.dir" value="${basedir}/target" />
 	<property name="samples.dir" value="${basedir}/samples" />
-	<property name="javadoc.dir" value="${basedir}/javadoc" />
+	<property name="main.classes.dir" value="${target.dir}/classes/main" />
+	<property name="samples.classes.dir" value="${target.dir}/classes/samples" />
+	<property name="javadoc.dir" value="${target.dir}/javadoc" />
 	<property name="htdocs.dir" value="${basedir}/htdocs" />
 	<property name="javac.source" value="1.6" />
 	<property name="javac.target" value="1.6" />
@@ -23,17 +25,8 @@
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
 	
 	<target name="clean" description="removes all generated collateral">
-		<delete dir="${classes.dir}" />
-		<delete dir="${javadoc.dir}" />
+		<delete dir="${target.dir}" />
 		<delete file="${htdocs.dir}/bugdescriptions.html" />
-		<delete file="${basedir}/fb-contrib-${fb-contrib.version}.jar" />
-		<delete file="${basedir}/fb-contrib-src-${fb-contrib.version}.zip" />
-		<delete>
-			<fileset dir="${samples.dir}">
-				<include name="**/*.class" />
-			</fileset>
-		</delete>
-		<delete dir="${basedir}/plugin" />
 	</target>
 	
 	<target name="infra_jars" description="pull jars needed to build fb-contrib to ${user.dir}/.ant/lib">
@@ -76,7 +69,8 @@
 
 	<target name="-init" depends="yank">
 		<mkdir dir="${lib.dir}" />
-		<mkdir dir="${classes.dir}" />
+		<mkdir dir="${main.classes.dir}" />
+		<mkdir dir="${samples.classes.dir}" />
 		<mkdir dir="${javadoc.dir}" />
 		<path id="fb-contrib.classpath">
 			<pathelement location="${lib.dir}/findbugs-${findbugs.version}.jar" />
@@ -111,19 +105,19 @@
 	</target>
 
 	<target name="compile" depends="-init" description="compiles java files">
-		<javac srcdir="${src.dir}" destdir="${classes.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
+		<javac srcdir="${src.dir}" destdir="${main.classes.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
 			<classpath refid="fb-contrib.classpath" />
 		</javac>
 	</target>
 
 	<target name="compile_samples" depends="-init" description="compiles sample problem files">
-		<javac srcdir="${samples.dir}" destdir="${samples.dir}" source="1.7" target="1.7" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
+		<javac srcdir="${samples.dir}" destdir="${samples.classes.dir}" source="1.7" target="1.7" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
         	<compilerarg value="-XDignore.symbol.file"/>
         	<classpath refid="fb-contrib.classpath" />
 			<classpath refid="fb-contrib.samples.classpath" />
 		</javac>
 		<delete file="${samples.dir}/SJVU_Sample.class" />
-		<javac srcdir="${samples.dir}" destdir="${samples.dir}" source="1.4" target="1.4" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
+		<javac srcdir="${samples.dir}" destdir="${samples.classes.dir}" source="1.4" target="1.4" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
 			<include name="SJVU_Sample.java" />
 			<classpath refid="fb-contrib.classpath" />
 			<classpath refid="fb-contrib.samples.classpath" />
@@ -132,14 +126,14 @@
 
 	<target name="jar" depends="compile" xmlns:vcs="antlib:com.mebigfatguy.vcsversion" description="produces the fb-contrib jar file">
 		<vcs:vcsversion vcs="git" revisionProperty="_rev_" dateProperty="_date_" branchProperty="_branch_"/>
-		<jar destfile="${basedir}/fb-contrib-${fb-contrib.version}.jar">
+		<jar destfile="${target.dir}/fb-contrib-${fb-contrib.version}.jar">
 			<fileset dir="etc">
 				<include name="findbugs.xml" />
 				<include name="messages*.xml" />
 				<include name="bugrank.txt" />
 				<include name="*.license" />
 			</fileset>
-			<fileset dir="${classes.dir}">
+			<fileset dir="${main.classes.dir}">
 				<include name="**/*.class" />
 			</fileset>
 			<fileset dir="${basedir}">
@@ -170,7 +164,7 @@
 	</target>
 
 	<target name="srczip" description="builds the source distribution zip file">
-		<zip destfile="${basedir}/fb-contrib-src-${fb-contrib.version}.zip">
+		<zip destfile="${target.dir}/fb-contrib-src-${fb-contrib.version}.zip">
 			<fileset dir="${basedir}">
 				<include name="**/*.java" />
 				<include name="**/*.xml" />
@@ -206,9 +200,9 @@
 
     <target name="sonatype" depends="release" description="prepare an artifact bundle for sonatype">
         <mkdir dir="${sonatype.dir}"/>
-        <copy todir="${sonatype.dir}" file="${basedir}/fb-contrib-${fb-contrib.version}.jar"/>
-        <copy tofile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-sources.jar" file="${basedir}/fb-contrib-src-${fb-contrib.version}.zip"/>
-        <jar destfile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" basedir="${basedir}" includes="javadoc/**"/>
+        <copy todir="${sonatype.dir}" file="${target.dir}/fb-contrib-${fb-contrib.version}.jar"/>
+        <copy tofile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-sources.jar" file="${target.dir}/fb-contrib-src-${fb-contrib.version}.zip"/>
+        <jar destfile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
         <copy tofile="${sonatype.dir}/fb-contrib-${fb-contrib.version}.pom" file="${basedir}/pom.xml"/>
         
         <exec executable="gpg">
