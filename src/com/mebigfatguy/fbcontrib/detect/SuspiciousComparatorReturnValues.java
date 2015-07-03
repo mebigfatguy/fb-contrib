@@ -90,6 +90,10 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector
 	
 	@Override
 	public void visitCode(Code obj) {
+		if (getMethod().isSynthetic()) {
+			return;
+		}
+		
 		String methodName = getMethodName();
 		String methodSig = getMethodSig();
 		if (methodName.equals(methodInfo[0])
@@ -101,7 +105,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector
 			seenPositive = false;
 			seenZero = false;
 			super.visitCode(obj);
-			if (!indeterminate) {
+			if (!indeterminate && (!seenZero || (obj.getCode().length > 2))) {
 				boolean seenAll = seenNegative & seenPositive & seenZero;
 				if (!seenAll) {
 					bugReporter.reportBug(new BugInstance(this, BugType.SC_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), NORMAL_PRIORITY)
