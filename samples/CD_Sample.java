@@ -40,3 +40,24 @@ class Mammooth {
 		}
 	}
 }
+
+class SuspectBuilderUse {
+	private int data;
+	
+	public static class Builder {
+	
+		int data;
+		
+		public void setData(int data) {
+			this.data = data;
+		}
+	}
+	
+	public SuspectBuilderUse(Builder b) {
+		this.data = b.data;
+	}
+	
+	public int getData() {
+		return data;
+	}
+}
