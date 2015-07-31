@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -36,16 +36,16 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for methods that declare Runtime exceptions in their throws clause. While doing
- * so is not illegal, it may represent a misunderstanding as to the exception in question.
- * If a RuntimeException is declared, it implies that this exception type is expected to happen,
- * which if true, should be handled in code, and not propogated.
+ * looks for methods that declare Runtime exceptions in their throws clause.
+ * While doing so is not illegal, it may represent a misunderstanding as to the
+ * exception in question. If a RuntimeException is declared, it implies that
+ * this exception type is expected to happen, which if true, should be handled
+ * in code, and not propogated.
  */
-public class DeclaredRuntimeException extends PreorderVisitor implements Detector
-{
+public class DeclaredRuntimeException extends PreorderVisitor implements Detector {
 	private final BugReporter bugReporter;
 	private static JavaClass runtimeExceptionClass;
-	
+
 	static {
 		try {
 			runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
@@ -53,37 +53,44 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 			runtimeExceptionClass = null;
 		}
 	}
-	
+
 	private final Set<String> runtimeExceptions = new HashSet<String>();
 
-	
 	/**
-     * constructs a DRE detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
+	 * constructs a DRE detector given the reporter to report bugs on
+	 *
+	 * @param bugReporter
+	 *            the sync of bug reports
 	 */
 	public DeclaredRuntimeException(final BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 		runtimeExceptions.add("java.lang.RuntimeException");
 	}
-	
+
 	/**
 	 * overrides the visitor and accepts if the Exception class was loaded
-	 * 
-	 * @param classContext the context object for the currently parsed class
+	 *
+	 * @param classContext
+	 *            the context object for the currently parsed class
 	 */
 	@Override
 	public void visitClassContext(final ClassContext classContext) {
-		if (runtimeExceptionClass != null)
+		if (runtimeExceptionClass != null) {
 			classContext.getJavaClass().accept(this);
+		}
 	}
-	
+
 	/**
 	 * overrides the visitor to find declared runtime exceptions
-	 * 
-	 * @param obj the method object of the currently parsed method
+	 *
+	 * @param obj
+	 *            the method object of the currently parsed method
 	 */
 	@Override
 	public void visitMethod(final Method obj) {
+		if ((obj.getAccessFlags() & ACC_SYNTHETIC) != 0) {
+			return;
+		}
 		ExceptionTable et = obj.getExceptionTable();
 		if (et != null) {
 			String[] exNames = et.getExceptionNames();
@@ -92,19 +99,20 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 			boolean foundRuntime = false;
 			for (String ex : exNames) {
 				boolean isRuntime = false;
-				if (runtimeExceptions.contains(ex))
-					isRuntime = true;	
-				else {
+				if (runtimeExceptions.contains(ex)) {
+					isRuntime = true;
+				} else {
 					try {
 						JavaClass exClass = Repository.lookupClass(ex);
 						if (exClass.instanceOf(runtimeExceptionClass)) {
 							runtimeExceptions.add(ex);
-							if (ex.startsWith("java.lang."))
+							if (ex.startsWith("java.lang.")) {
 								priority = NORMAL_PRIORITY;
+							}
 							isRuntime = true;
 						}
 					} catch (ClassNotFoundException cnfe) {
-							bugReporter.reportMissingClass(cnfe);
+						bugReporter.reportMissingClass(cnfe);
 					}
 				}
 				if (isRuntime) {
@@ -112,16 +120,14 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 					methodRTExceptions.add(ex);
 				}
 			}
-		
-			if (foundRuntime) {	
-				BugInstance bug = new BugInstance(this, BugType.DRE_DECLARED_RUNTIME_EXCEPTION.name(), priority)
-									.addClass(this)
-									.addMethod(this);
-				
+
+			if (foundRuntime) {
+				BugInstance bug = new BugInstance(this, BugType.DRE_DECLARED_RUNTIME_EXCEPTION.name(), priority).addClass(this).addMethod(this);
+
 				for (String ex : methodRTExceptions) {
 					bug.add(new StringAnnotation(ex));
 				}
-							
+
 				bugReporter.reportBug(bug);
 			}
 		}
@@ -132,7 +138,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
 	 */
 	@Override
 	public void report() {
-		//not used, needed for the Detector interface
+		// not used, needed for the Detector interface
 	}
 
 }
