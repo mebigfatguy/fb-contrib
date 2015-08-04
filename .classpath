@@ -26,5 +26,6 @@
 	<classpathentry kind="lib" path="lib/findbugs-3.0.1.jar" sourcepath="lib/sources/findbugs-3.0.1-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="lib" path="lib/junit-4.12.jar"/>
+	<classpathentry kind="lib" path="lib/testng-6.9.6.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>

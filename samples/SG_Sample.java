@@ -5,10 +5,10 @@ import java.awt.event.WindowListener;
 import java.io.ByteArrayInputStream;
 import java.io.FileReader;
 
-import org.w3c.dom.Document;
-
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.w3c.dom.Document;
 
 @SuppressWarnings("all")
 public class SG_Sample implements ActionListener, WindowListener {
