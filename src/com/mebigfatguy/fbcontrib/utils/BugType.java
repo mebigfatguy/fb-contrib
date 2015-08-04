@@ -22,7 +22,7 @@ package com.mebigfatguy.fbcontrib.utils;
  * an enumeration of all the bug instance types that fb-contrib produces
  */
 public enum BugType {
-	
+	// @formatter:off
 	ABC_ARRAY_BASED_COLLECTIONS,
 	ACEM_ABSTRACT_CLASS_EMPTY_METHODS,
 	AFBR_ABNORMAL_FINALLY_BLOCK_RETURN,
@@ -107,6 +107,7 @@ public enum BugType {
 	JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE,
     JAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS,
     JAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT,
+    JAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT,
     
 	JVR_JDBC_VENDOR_RELIANCE,
 	
@@ -265,4 +266,5 @@ public enum BugType {
 	WEM_WEAK_EXCEPTION_MESSAGING,
 	WOC_WRITE_ONLY_COLLECTION_FIELD,
 	WOC_WRITE_ONLY_COLLECTION_LOCAL;
+	// @formatter:on
 }

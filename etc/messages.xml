@@ -854,10 +854,10 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.JUnitAssertionOddities">
 		<Details>
 			<![CDATA[
-			<p>Looks for junit test case methods that use assertions with odd parameters.
+			<p>Looks for junit or testng test case methods that use assertions with odd parameters.
 			Including in this is:
 			<ul>
-				<li>Passing a constant as the second (actual) parameter</li>
+				<li>Passing a constant as the second (actual) parameter in a junit test</li>
 				<li>not using the three parameter version of asserts for doubles</li>
 				<li>Passing true or false as the first parameter instead of using assertTrue, or assertFalse</li>
 				<li>Using the assert keyword</li>
@@ -3513,6 +3513,19 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT">
+		<ShortDescription>Method appears to have no assertions</ShortDescription>
+		<LongDescription>Method {1} appears to have no assertions</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This TestNG test method has no assertions. While a unit test could still be valid if it relies on whether
+			or not an exception is thrown, it is usually a sign of a weak test if there are no assertions. It is also
+			possible that assertions occur in a called method that is not seen by this detector, but this makes the logic of 
+			this test more difficult to reason about.</p>
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="SCA_SUSPICIOUS_CLONE_ALGORITHM">
 		<ShortDescription>Clone method stores a new value to member field of source object</ShortDescription>
@@ -4897,7 +4910,7 @@
 	<BugCode abbrev="MOM">Misleading Overload Model</BugCode>
 	<BugCode abbrev="EXS">Exception Softening</BugCode>
 	<BugCode abbrev="CFS">Confusing Function Semantics</BugCode>
-	<BugCode abbrev="JAO">JUnit Assertion Oddities</BugCode>
+	<BugCode abbrev="JAO">Unit Test Assertion Oddities</BugCode>
 	<BugCode abbrev="SCA">Suspicious Clone Algorithm</BugCode>
 	<BugCode abbrev="WEM">Weak Exception Messaging</BugCode>
 	<BugCode abbrev="SCSS">Suspicious Clustered Session Support</BugCode>
