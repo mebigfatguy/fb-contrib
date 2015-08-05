@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
-/** looks for odd uses of the Assert class of the JUnit framework */
+/** looks for odd uses of the Assert class of the JUnit and TestNG framework */
 @CustomUserValue
 public class JUnitAssertionOddities extends BytecodeScanningDetector {
 	private enum State {
