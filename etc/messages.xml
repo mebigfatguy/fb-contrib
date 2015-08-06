@@ -3514,6 +3514,76 @@
 		</Details>
 	</BugPattern>
 	
+	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
+		<ShortDescription>Method passes constant to first (actual) assertion parameter</ShortDescription>
+		<LongDescription>Method {1} passes constant to forst (actual) assertion parameter</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method calls assert passing a constant value as the first of the two values. The assert
+			method assumes that the expected value is the second parameter, and so it appears that the order
+			of values has been swapped here.</p>
+			]]>
+		</Details>
+	</BugPattern>
+
+	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE">
+		<ShortDescription>Method asserts that two doubles are exactly equal</ShortDescription>
+		<LongDescription>Method {1} asserts that two doubles are exactly equal</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method calls assert with two doubles or Doubles. Due to the imprecision of doubles, you
+			should be using the assert method that takes a range parameter that gives a range of error.</p>
+			]]>
+		</Details>
+	</BugPattern>
+
+	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT">
+		<ShortDescription>Method asserts that a value is true or false</ShortDescription>
+		<LongDescription>Method {1} asserts that a value is true or false</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method asserts that a value is equal to true or false. It is simpler to just
+			use assertTrue, or assertFalse, instead.</p>
+			]]>
+		</Details>
+	</BugPattern>
+
+	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_IMPOSSIBLE_NULL">
+		<ShortDescription>Method asserts that an auto-boxed value is not null</ShortDescription>
+		<LongDescription>Method {1} asserts that an auto-boxed value is not null</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method asserts that a primitive value that was autoboxed into a boxed primitive was not
+			null. This will never happen, as primitives are never null, and thus the autoboxed value isn't
+			either.</p>
+			]]>
+		</Details>
+	</BugPattern>
+
+	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_ASSERT_USED">
+	        <ShortDescription>Method uses Java asserts rather than a testng assertion</ShortDescription>
+	        <LongDescription>Method {1} uses Java asserts rather than a testng assertion</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method uses a Java assert to assure that a certain state is in effect. As this is
+			a testng test it makes more sense to either check this condition with a testng assert, or allow
+			a following exception to occur.</p>
+			]]>
+		</Details>
+	</BugPattern>
+
+	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
+		<ShortDescription>Method passes boolean expression to Assert.assertTrue</ShortDescription>
+		<LongDescription>Method {1} passes boolean expression to Assert.assertTrue</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method evaluates a boolean expression and passes that to Assert.assertTrue. It is better
+			to pass the two values that are being equated to the Assert.assertEquals method so that the
+			TestNG failure method is more meaningful of the intended test.</p>
+			]]>
+		</Details>
+	</BugPattern>
+	
 	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT">
 		<ShortDescription>Method appears to have no assertions</ShortDescription>
 		<LongDescription>Method {1} appears to have no assertions</LongDescription>
