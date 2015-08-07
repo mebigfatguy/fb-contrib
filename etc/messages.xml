@@ -3432,8 +3432,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
-		<ShortDescription>Method passes constant to second (actual) assertion parameter</ShortDescription>
-		<LongDescription>Method {1} passes constant to second (actual) assertion parameter</LongDescription>
+		<ShortDescription>Junit test method passes constant to second (actual) assertion parameter</ShortDescription>
+		<LongDescription>Junit test method {1} passes constant to second (actual) assertion parameter</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method calls assert passing a constant value as the second of the two values. The assert
@@ -3444,8 +3444,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE">
-		<ShortDescription>Method asserts that two doubles are exactly equal</ShortDescription>
-		<LongDescription>Method {1} asserts that two doubles are exactly equal</LongDescription>
+		<ShortDescription>Junit test method asserts that two doubles are exactly equal</ShortDescription>
+		<LongDescription>Junit test method {1} asserts that two doubles are exactly equal</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method calls assert with two doubles or Doubles. Due to the imprecision of doubles, you
@@ -3455,8 +3455,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT">
-		<ShortDescription>Method asserts that a value is true or false</ShortDescription>
-		<LongDescription>Method {1} asserts that a value is true or false</LongDescription>
+		<ShortDescription>Junit test method asserts that a value is true or false</ShortDescription>
+		<LongDescription>Junit test method {1} asserts that a value is true or false</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method asserts that a value is equal to true or false. It is simpler to just
@@ -3466,8 +3466,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL">
-		<ShortDescription>Method asserts that an auto-boxed value is not null</ShortDescription>
-		<LongDescription>Method {1} asserts that an auto-boxed value is not null</LongDescription>
+		<ShortDescription>Junit test method asserts that an auto-boxed value is not null</ShortDescription>
+		<LongDescription>Junit test method {1} asserts that an auto-boxed value is not null</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method asserts that a primitive value that was autoboxed into a boxed primitive was not
@@ -3478,8 +3478,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED">
-	        <ShortDescription>Method uses Java asserts rather than a junit assertion</ShortDescription>
-	        <LongDescription>Method {1} uses Java asserts rather than a junit assertion</LongDescription>
+	        <ShortDescription>Junit test method uses Java asserts rather than a junit assertion</ShortDescription>
+	        <LongDescription>Junit test method {1} uses Java asserts rather than a junit assertion</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method uses a Java assert to assure that a certain state is in effect. As this is
@@ -3490,8 +3490,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
-		<ShortDescription>Method passes boolean expression to Assert.assertTrue</ShortDescription>
-		<LongDescription>Method {1} passes boolean expression to Assert.assertTrue</LongDescription>
+		<ShortDescription>Junit test method passes boolean expression to Assert.assertTrue</ShortDescription>
+		<LongDescription>Junit test method {1} passes boolean expression to Assert.assertTrue</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method evaluates a boolean expression and passes that to Assert.assertTrue. It is better
@@ -3502,8 +3502,8 @@
 	</BugPattern>
 	
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT">
-		<ShortDescription>Method appears to have no assertions</ShortDescription>
-		<LongDescription>Method {1} appears to have no assertions</LongDescription>
+		<ShortDescription>Junit test method appears to have no assertions</ShortDescription>
+		<LongDescription>Junit test method {1} appears to have no assertions</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This JUnit test method has no assertions. While a unit test could still be valid if it relies on whether
@@ -3515,8 +3515,8 @@
 	</BugPattern>
 	
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
-		<ShortDescription>Method passes constant to first (actual) assertion parameter</ShortDescription>
-		<LongDescription>Method {1} passes constant to forst (actual) assertion parameter</LongDescription>
+		<ShortDescription>TestNG test method passes constant to first (actual) assertion parameter</ShortDescription>
+		<LongDescription>TestNG test method {1} passes constant to forst (actual) assertion parameter</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method calls assert passing a constant value as the first of the two values. The assert
@@ -3527,8 +3527,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE">
-		<ShortDescription>Method asserts that two doubles are exactly equal</ShortDescription>
-		<LongDescription>Method {1} asserts that two doubles are exactly equal</LongDescription>
+		<ShortDescription>TestNG test method asserts that two doubles are exactly equal</ShortDescription>
+		<LongDescription>TestNG test method {1} asserts that two doubles are exactly equal</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method calls assert with two doubles or Doubles. Due to the imprecision of doubles, you
@@ -3538,8 +3538,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT">
-		<ShortDescription>Method asserts that a value is true or false</ShortDescription>
-		<LongDescription>Method {1} asserts that a value is true or false</LongDescription>
+		<ShortDescription>TestNG test method asserts that a value is true or false</ShortDescription>
+		<LongDescription>TestNG test method {1} asserts that a value is true or false</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method asserts that a value is equal to true or false. It is simpler to just
@@ -3549,8 +3549,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_IMPOSSIBLE_NULL">
-		<ShortDescription>Method asserts that an auto-boxed value is not null</ShortDescription>
-		<LongDescription>Method {1} asserts that an auto-boxed value is not null</LongDescription>
+		<ShortDescription>TestNG test method asserts that an auto-boxed value is not null</ShortDescription>
+		<LongDescription>TestNG test method {1} asserts that an auto-boxed value is not null</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method asserts that a primitive value that was autoboxed into a boxed primitive was not
@@ -3561,8 +3561,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ASSERT_USED">
-	        <ShortDescription>Method uses Java asserts rather than a testng assertion</ShortDescription>
-	        <LongDescription>Method {1} uses Java asserts rather than a testng assertion</LongDescription>
+	        <ShortDescription>TestNG test method uses Java asserts rather than a testng assertion</ShortDescription>
+	        <LongDescription>TestNG test method {1} uses Java asserts rather than a testng assertion</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method uses a Java assert to assure that a certain state is in effect. As this is
@@ -3573,8 +3573,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
-		<ShortDescription>Method passes boolean expression to Assert.assertTrue</ShortDescription>
-		<LongDescription>Method {1} passes boolean expression to Assert.assertTrue</LongDescription>
+		<ShortDescription>TestNG test method passes boolean expression to Assert.assertTrue</ShortDescription>
+		<LongDescription>TestNG test method {1} passes boolean expression to Assert.assertTrue</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method evaluates a boolean expression and passes that to Assert.assertTrue. It is better
@@ -3585,8 +3585,8 @@
 	</BugPattern>
 	
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT">
-		<ShortDescription>Method appears to have no assertions</ShortDescription>
-		<LongDescription>Method {1} appears to have no assertions</LongDescription>
+		<ShortDescription>TestNG test method appears to have no assertions</ShortDescription>
+		<LongDescription>TestNG test method {1} appears to have no assertions</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This TestNG test method has no assertions. While a unit test could still be valid if it relies on whether
