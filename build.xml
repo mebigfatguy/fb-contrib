@@ -191,7 +191,7 @@
 	<target name="install" depends="build" description="installs the plugin into FindBugs">
 		<echo message="Findbugs: ${findbugs.dir}/plugin"/>		
 		<copy todir="${findbugs.dir}/plugin">
-			<fileset dir="${basedir}">
+			<fileset dir="${target.dir}">
 				<include name="fb-contrib-${fb-contrib.version}.jar" />
 			</fileset>
 		</copy>
