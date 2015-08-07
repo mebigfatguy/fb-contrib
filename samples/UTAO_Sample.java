@@ -3,7 +3,7 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 
-public class JAO_Sample extends TestCase {
+public class UTAO_Sample extends TestCase {
 
 	public void testExactDoubles(double d1, double d2) {
 		Assert.assertEquals(d1, d2);

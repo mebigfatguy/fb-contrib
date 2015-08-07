@@ -851,7 +851,7 @@
 		</Details>
 	</Detector>
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.JUnitAssertionOddities">
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UnitTestAssertionOddities">
 		<Details>
 			<![CDATA[
 			<p>Looks for junit or testng test case methods that use assertions with odd parameters.
@@ -3431,7 +3431,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
 		<ShortDescription>Method passes constant to second (actual) assertion parameter</ShortDescription>
 		<LongDescription>Method {1} passes constant to second (actual) assertion parameter</LongDescription>
 		<Details>
@@ -3443,7 +3443,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE">
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE">
 		<ShortDescription>Method asserts that two doubles are exactly equal</ShortDescription>
 		<LongDescription>Method {1} asserts that two doubles are exactly equal</LongDescription>
 		<Details>
@@ -3454,7 +3454,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT">
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT">
 		<ShortDescription>Method asserts that a value is true or false</ShortDescription>
 		<LongDescription>Method {1} asserts that a value is true or false</LongDescription>
 		<Details>
@@ -3465,7 +3465,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL">
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL">
 		<ShortDescription>Method asserts that an auto-boxed value is not null</ShortDescription>
 		<LongDescription>Method {1} asserts that an auto-boxed value is not null</LongDescription>
 		<Details>
@@ -3477,7 +3477,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED">
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED">
 	        <ShortDescription>Method uses Java asserts rather than a junit assertion</ShortDescription>
 	        <LongDescription>Method {1} uses Java asserts rather than a junit assertion</LongDescription>
 		<Details>
@@ -3489,7 +3489,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
 		<ShortDescription>Method passes boolean expression to Assert.assertTrue</ShortDescription>
 		<LongDescription>Method {1} passes boolean expression to Assert.assertTrue</LongDescription>
 		<Details>
@@ -3501,7 +3501,7 @@
 		</Details>
 	</BugPattern>
 	
-	<BugPattern type="JAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT">
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT">
 		<ShortDescription>Method appears to have no assertions</ShortDescription>
 		<LongDescription>Method {1} appears to have no assertions</LongDescription>
 		<Details>
@@ -3514,7 +3514,7 @@
 		</Details>
 	</BugPattern>
 	
-	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
+	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
 		<ShortDescription>Method passes constant to first (actual) assertion parameter</ShortDescription>
 		<LongDescription>Method {1} passes constant to forst (actual) assertion parameter</LongDescription>
 		<Details>
@@ -3526,7 +3526,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE">
+	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE">
 		<ShortDescription>Method asserts that two doubles are exactly equal</ShortDescription>
 		<LongDescription>Method {1} asserts that two doubles are exactly equal</LongDescription>
 		<Details>
@@ -3537,7 +3537,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT">
+	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT">
 		<ShortDescription>Method asserts that a value is true or false</ShortDescription>
 		<LongDescription>Method {1} asserts that a value is true or false</LongDescription>
 		<Details>
@@ -3548,7 +3548,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_IMPOSSIBLE_NULL">
+	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_IMPOSSIBLE_NULL">
 		<ShortDescription>Method asserts that an auto-boxed value is not null</ShortDescription>
 		<LongDescription>Method {1} asserts that an auto-boxed value is not null</LongDescription>
 		<Details>
@@ -3560,7 +3560,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_ASSERT_USED">
+	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ASSERT_USED">
 	        <ShortDescription>Method uses Java asserts rather than a testng assertion</ShortDescription>
 	        <LongDescription>Method {1} uses Java asserts rather than a testng assertion</LongDescription>
 		<Details>
@@ -3572,7 +3572,7 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
+	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
 		<ShortDescription>Method passes boolean expression to Assert.assertTrue</ShortDescription>
 		<LongDescription>Method {1} passes boolean expression to Assert.assertTrue</LongDescription>
 		<Details>
@@ -3584,7 +3584,7 @@
 		</Details>
 	</BugPattern>
 	
-	<BugPattern type="JAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT">
+	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT">
 		<ShortDescription>Method appears to have no assertions</ShortDescription>
 		<LongDescription>Method {1} appears to have no assertions</LongDescription>
 		<Details>
@@ -4980,7 +4980,7 @@
 	<BugCode abbrev="MOM">Misleading Overload Model</BugCode>
 	<BugCode abbrev="EXS">Exception Softening</BugCode>
 	<BugCode abbrev="CFS">Confusing Function Semantics</BugCode>
-	<BugCode abbrev="JAO">Unit Test Assertion Oddities</BugCode>
+	<BugCode abbrev="UTAO">Unit Test Assertion Oddities</BugCode>
 	<BugCode abbrev="SCA">Suspicious Clone Algorithm</BugCode>
 	<BugCode abbrev="WEM">Weak Exception Messaging</BugCode>
 	<BugCode abbrev="SCSS">Suspicious Clustered Session Support</BugCode>

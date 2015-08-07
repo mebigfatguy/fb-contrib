@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 /** looks for odd uses of the Assert class of the JUnit and TestNG framework */
 @CustomUserValue
-public class JUnitAssertionOddities extends BytecodeScanningDetector {
+public class UnitTestAssertionOddities extends BytecodeScanningDetector {
 	private enum State {
 		SAW_NOTHING, SAW_IF_ICMPNE, SAW_ICONST_1, SAW_GOTO, SAW_ICONST_0, SAW_EQUALS
 	};
@@ -74,7 +74,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector {
 	 * @param bugReporter
 	 *            the sync of bug reports
 	 */
-	public JUnitAssertionOddities(BugReporter bugReporter) {
+	public UnitTestAssertionOddities(BugReporter bugReporter) {
 		this.bugReporter = bugReporter;
 
 		try {
@@ -149,8 +149,8 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector {
 			super.visitCode(obj);
 
 			if (!sawAssert) {
-				bugReporter.reportBug(new BugInstance(this, frameworkType == TestFrameworkType.JUNIT ? BugType.JAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT.name()
-						: BugType.JAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT.name(), LOW_PRIORITY).addClass(this).addMethod(this));
+				bugReporter.reportBug(new BugInstance(this, frameworkType == TestFrameworkType.JUNIT ? BugType.UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT.name()
+						: BugType.UTAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT.name(), LOW_PRIORITY).addClass(this).addMethod(this));
 			}
 		}
 	}
@@ -176,20 +176,20 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector {
 								OpcodeStack.Item item1 = stack.getStackItem(1);
 								Object cons1 = item1.getConstant();
 								if (cons1 != null && argTypes[argTypes.length - 1].equals(Type.BOOLEAN) && argTypes[argTypes.length - 2].equals(Type.BOOLEAN)) {
-									bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
 											.addClass(this).addMethod(this).addSourceLine(this));
 									return;
 								}
 								OpcodeStack.Item item0 = stack.getStackItem(0);
 								if (item0.getConstant() != null && item1.getConstant() == null
 										&& (argTypes.length == 2 || !isFloatingPtPrimitive(item0.getSignature()))) {
-									bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT.name(), NORMAL_PRIORITY)
+									bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT.name(), NORMAL_PRIORITY)
 											.addClass(this).addMethod(this).addSourceLine(this));
 									return;
 								}
 								if (argTypes[argTypes.length - 1].equals(Type.OBJECT) && argTypes[argTypes.length - 2].equals(Type.OBJECT)) {
 									if ("Ljava/lang/Double;".equals(item0.getSignature()) && "Ljava/lang/Double;".equals(item1.getSignature())) {
-										bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
+										bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
 												.addClass(this).addMethod(this).addSourceLine(this));
 										return;
 									}
@@ -199,13 +199,13 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector {
 					} else if ("assertNotNull".equals(methodName)) {
 						if (stack.getStackDepth() > 0) {
 							if ("valueOf".equals(stack.getStackItem(0).getUserValue())) {
-								bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL.name(), NORMAL_PRIORITY)
+								bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL.name(), NORMAL_PRIORITY)
 										.addClass(this).addMethod(this).addSourceLine(this));
 							}
 						}
 					} else if ("assertTrue".equals(methodName)) {
 						if (state == State.SAW_ICONST_0 || state == State.SAW_EQUALS) {
-							bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS.name(), NORMAL_PRIORITY)
+							bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS.name(), NORMAL_PRIORITY)
 									.addClass(this).addMethod(this).addSourceLine(this));
 						}
 					}
@@ -223,7 +223,7 @@ public class JUnitAssertionOddities extends BytecodeScanningDetector {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					String throwClass = item.getSignature();
 					if ("Ljava/lang/AssertionError;".equals(throwClass)) {
-						bugReporter.reportBug(new BugInstance(this, BugType.JAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED.name(), NORMAL_PRIORITY).addClass(this)
+						bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED.name(), NORMAL_PRIORITY).addClass(this)
 								.addMethod(this).addSourceLine(this));
 						sawAssert = true;
 					}

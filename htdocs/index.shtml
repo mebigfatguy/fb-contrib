@@ -429,7 +429,7 @@ function toggleBlock(divId, imgId)
 				Looks for implementation of clone where an assignment is made to a field of the
 				source object. It is likely that that store should have occurred on the cloned object, as
 				the clone operation is almost always considered read only.</li>
-				<li><b>[JAO] Unit Test Assertion Oddities</b><br/>
+				<li><b>[UTAO] Unit Test Assertion Oddities</b><br/>
 				Looks for junit or testng test case methods that use assertions with odd parameters. Things such as,
 				passing a constant as the second (actual) parameter, not using the three parameter version of 
 				asserts for doubles, or passing true or false as the first parameter instead of using assertTrue, 
