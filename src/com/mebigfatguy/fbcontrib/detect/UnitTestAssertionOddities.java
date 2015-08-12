@@ -55,6 +55,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private static final String TESTNG_CLASS = "org.testng.annotations.Test";
     private static final String TESTNG_ANNOTATION_SIGNATURE = "Lorg/testng/annotations/Test;";
     private static final String NG_ASSERT_CLASS = "org/testng/Assert";
+    private static final String NG_JUNIT_ASSERT_CLASS = "org/testng/AssertJUnit";
 
     private BugReporter bugReporter;
     private JavaClass testCaseClass;
@@ -164,7 +165,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
 
             if (seen == INVOKESTATIC) {
                 String clsName = getClassConstantOperand();
-                if (OLD_ASSERT_CLASS.equals(clsName) || NEW_ASSERT_CLASS.equals(clsName)) {
+                if (OLD_ASSERT_CLASS.equals(clsName) || NEW_ASSERT_CLASS.equals(clsName) || NG_JUNIT_ASSERT_CLASS.equals(clsName)) {
                     sawAssert = true;
                     String methodName = getNameConstantOperand();
                     if ("assertEquals".equals(methodName)) {
