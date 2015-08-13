@@ -95,7 +95,8 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for methods that contain a ATHROW opcodes
+     * looks for methods that contain a ATHROW opcodes, ignoring static
+     * initializers
      *
      * @param method
      *            the context object of the current method
