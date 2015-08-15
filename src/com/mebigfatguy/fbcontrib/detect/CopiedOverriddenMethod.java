@@ -95,7 +95,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
                 for (Method m : methods) {
                     String methodName = m.getName();
                     if ((m.isPublic() || m.isProtected()) && (!m.isAbstract() && !m.isSynthetic()
-                            && (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName))) {
+                            && (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName)))) {
                         String methodInfo = methodName + ":" + m.getSignature();
                         superclassCode.put(methodInfo, m.getCode());
                     }
@@ -137,7 +137,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
             return;
         }
 
-        Code superCode = superclassCode.get(curMethodInfo);
+        Code superCode = superclassCode.remove(curMethodInfo);
         if (superCode != null) {
             if (codeEquals(obj, superCode)) {
                 bugReporter.reportBug(new BugInstance(this, BugType.COM_COPIED_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
