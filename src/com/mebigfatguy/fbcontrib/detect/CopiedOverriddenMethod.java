@@ -48,7 +48,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * Looks for methods that are direct copies of the implementation in the super
- * class
+ * class. This detector doesn't handle multi-level inheritance, ie child to
+ * grandparent. Could be done.
  */
 public class CopiedOverriddenMethod extends BytecodeScanningDetector implements Detector {
     private final BugReporter bugReporter;
