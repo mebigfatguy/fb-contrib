@@ -43,102 +43,102 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * in code, and not propogated.
  */
 public class DeclaredRuntimeException extends PreorderVisitor implements Detector {
-	private final BugReporter bugReporter;
-	private static JavaClass runtimeExceptionClass;
+    private final BugReporter bugReporter;
+    private static JavaClass runtimeExceptionClass;
 
-	static {
-		try {
-			runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
-		} catch (ClassNotFoundException cnfe) {
-			runtimeExceptionClass = null;
-		}
-	}
+    static {
+        try {
+            runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
+        } catch (ClassNotFoundException cnfe) {
+            runtimeExceptionClass = null;
+        }
+    }
 
-	private final Set<String> runtimeExceptions = new HashSet<String>();
+    private final Set<String> runtimeExceptions = new HashSet<String>();
 
-	/**
-	 * constructs a DRE detector given the reporter to report bugs on
-	 *
-	 * @param bugReporter
-	 *            the sync of bug reports
-	 */
-	public DeclaredRuntimeException(final BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		runtimeExceptions.add("java.lang.RuntimeException");
-	}
+    /**
+     * constructs a DRE detector given the reporter to report bugs on
+     *
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public DeclaredRuntimeException(final BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+        runtimeExceptions.add("java.lang.RuntimeException");
+    }
 
-	/**
-	 * overrides the visitor and accepts if the Exception class was loaded
-	 *
-	 * @param classContext
-	 *            the context object for the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(final ClassContext classContext) {
-		if (runtimeExceptionClass != null) {
-			classContext.getJavaClass().accept(this);
-		}
-	}
+    /**
+     * overrides the visitor and accepts if the Exception class was loaded
+     *
+     * @param classContext
+     *            the context object for the currently parsed class
+     */
+    @Override
+    public void visitClassContext(final ClassContext classContext) {
+        if (runtimeExceptionClass != null) {
+            classContext.getJavaClass().accept(this);
+        }
+    }
 
-	/**
-	 * overrides the visitor to find declared runtime exceptions
-	 *
-	 * @param obj
-	 *            the method object of the currently parsed method
-	 */
-	@Override
-	public void visitMethod(final Method obj) {
-		if ((obj.getAccessFlags() & ACC_SYNTHETIC) != 0) {
-			return;
-		}
-		ExceptionTable et = obj.getExceptionTable();
-		if (et != null) {
-			String[] exNames = et.getExceptionNames();
-			Set<String> methodRTExceptions = new HashSet<String>(6);
-			int priority = LOW_PRIORITY;
-			boolean foundRuntime = false;
-			for (String ex : exNames) {
-				boolean isRuntime = false;
-				if (runtimeExceptions.contains(ex)) {
-					isRuntime = true;
-				} else {
-					try {
-						JavaClass exClass = Repository.lookupClass(ex);
-						if (exClass.instanceOf(runtimeExceptionClass)) {
-							runtimeExceptions.add(ex);
-							if (ex.startsWith("java.lang.")) {
-								priority = NORMAL_PRIORITY;
-							}
-							isRuntime = true;
-						}
-					} catch (ClassNotFoundException cnfe) {
-						bugReporter.reportMissingClass(cnfe);
-					}
-				}
-				if (isRuntime) {
-					foundRuntime = true;
-					methodRTExceptions.add(ex);
-				}
-			}
+    /**
+     * overrides the visitor to find declared runtime exceptions
+     *
+     * @param obj
+     *            the method object of the currently parsed method
+     */
+    @Override
+    public void visitMethod(final Method obj) {
+        if ((obj.getAccessFlags() & ACC_SYNTHETIC) != 0) {
+            return;
+        }
+        ExceptionTable et = obj.getExceptionTable();
+        if (et != null) {
+            String[] exNames = et.getExceptionNames();
+            Set<String> methodRTExceptions = new HashSet<String>(6);
+            int priority = LOW_PRIORITY;
+            boolean foundRuntime = false;
+            for (String ex : exNames) {
+                boolean isRuntime = false;
+                if (runtimeExceptions.contains(ex)) {
+                    isRuntime = true;
+                } else {
+                    try {
+                        JavaClass exClass = Repository.lookupClass(ex);
+                        if (exClass.instanceOf(runtimeExceptionClass)) {
+                            runtimeExceptions.add(ex);
+                            if (ex.startsWith("java.lang.")) {
+                                priority = NORMAL_PRIORITY;
+                            }
+                            isRuntime = true;
+                        }
+                    } catch (ClassNotFoundException cnfe) {
+                        bugReporter.reportMissingClass(cnfe);
+                    }
+                }
+                if (isRuntime) {
+                    foundRuntime = true;
+                    methodRTExceptions.add(ex);
+                }
+            }
 
-			if (foundRuntime) {
-				BugInstance bug = new BugInstance(this, BugType.DRE_DECLARED_RUNTIME_EXCEPTION.name(), priority).addClass(this).addMethod(this);
+            if (foundRuntime) {
+                BugInstance bug = new BugInstance(this, BugType.DRE_DECLARED_RUNTIME_EXCEPTION.name(), priority).addClass(this).addMethod(this);
 
-				for (String ex : methodRTExceptions) {
-					bug.add(new StringAnnotation(ex));
-				}
+                for (String ex : methodRTExceptions) {
+                    bug.add(new StringAnnotation(ex));
+                }
 
-				bugReporter.reportBug(bug);
-			}
-		}
-	}
+                bugReporter.reportBug(bug);
+            }
+        }
+    }
 
-	/**
-	 * implementation of the detector, with null implementation
-	 */
-	@Override
-	public void report() {
-		// not used, needed for the Detector interface
-	}
+    /**
+     * implementation of the detector, with null implementation
+     */
+    @Override
+    public void report() {
+        // not used, needed for the Detector interface
+    }
 
 }

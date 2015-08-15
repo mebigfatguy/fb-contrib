@@ -36,9 +36,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * finds classes that implement clone() that do not specialize the return value, and do
- * not swallow CloneNotFoundException. Not doing so makes the clone method not as simple
- * to use, and should be harmless to do.
+ * finds classes that implement clone() that do not specialize the return value,
+ * and do not swallow CloneNotFoundException. Not doing so makes the clone
+ * method not as simple to use, and should be harmless to do.
  */
 public class CloneUsability extends BytecodeScanningDetector {
 
@@ -60,7 +60,9 @@ public class CloneUsability extends BytecodeScanningDetector {
 
     /**
      * constructs a CU detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
      */
     public CloneUsability(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -69,10 +71,11 @@ public class CloneUsability extends BytecodeScanningDetector {
     /**
      * overrides the visitor to check for classes that implement Cloneable.
      *
-     * @param classContext the context object that holds the JavaClass being parsed
+     * @param classContext
+     *            the context object that holds the JavaClass being parsed
      */
     @Override
-	public void visitClassContext(ClassContext classContext) {
+    public void visitClassContext(ClassContext classContext) {
         try {
             cls = classContext.getJavaClass();
             if (cls.implementationOf(CLONE_CLASS)) {
@@ -91,7 +94,8 @@ public class CloneUsability extends BytecodeScanningDetector {
     /**
      * overrides the visitor to grab the method name and reset the state.
      *
-     * @param obj the method being parsed
+     * @param obj
+     *            the method being parsed
      */
     @Override
     public void visitCode(Code obj) {
@@ -101,18 +105,15 @@ public class CloneUsability extends BytecodeScanningDetector {
 
                 String returnClsName = m.getReturnType().getSignature();
                 returnClsName = returnClsName.substring(1, returnClsName.length() - 1).replaceAll("/", ".");
-                if (!clsName.equals(returnClsName))
-                {
+                if (!clsName.equals(returnClsName)) {
                     if ("java.lang.Object".equals(returnClsName)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY)
-                                    .addClass(this)
-                                    .addMethod(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                     } else {
                         JavaClass cloneClass = Repository.lookupClass(returnClsName);
                         if (!cls.instanceOf(cloneClass)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CU_CLONE_USABILITY_MISMATCHED_RETURN.name(), HIGH_PRIORITY)
-                            .addClass(this)
-                            .addMethod(this));
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.CU_CLONE_USABILITY_MISMATCHED_RETURN.name(), HIGH_PRIORITY).addClass(this).addMethod(this));
                         }
                     }
                 }
@@ -120,17 +121,15 @@ public class CloneUsability extends BytecodeScanningDetector {
                 ExceptionTable et = m.getExceptionTable();
 
                 if ((et != null) && (et.getLength() > 0)) {
-                    
+
                     throwsCNFE = false;
                     if (prescreen(m)) {
                         stack.resetForMethodEntry(this);
                         super.visitCode(obj);
                     }
-                        
+
                     if (!throwsCNFE) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CU_CLONE_USABILITY_THROWS.name(), NORMAL_PRIORITY)
-                        .addClass(this)
-                        .addMethod(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.CU_CLONE_USABILITY_THROWS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                     }
                 }
             }
@@ -138,28 +137,28 @@ public class CloneUsability extends BytecodeScanningDetector {
             bugReporter.reportMissingClass(cnfe);
         }
     }
-    
+
     @Override
-	public void sawOpcode(int seen) {
+    public void sawOpcode(int seen) {
         try {
             if (seen == ATHROW) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     if ("Ljava/lang/CloneNotSupportedException;".equals(item.getSignature())) {
-                        throwsCNFE = true;  
+                        throwsCNFE = true;
                     }
                 }
             }
-        }
-        finally {
+        } finally {
             stack.sawOpcode(this, seen);
         }
     }
-    
+
     /**
      * looks for methods that contain a THROW opcode
      * 
-     * @param method the context object of the current method
+     * @param method
+     *            the context object of the current method
      * @return if the class throws exceptions
      */
     private boolean prescreen(Method method) {

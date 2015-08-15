@@ -24,17 +24,17 @@ public class BED_Sample {
         env.put("name", name);
         DirContext context = new InitialDirContext(env);
     }
-    
+
     public void doesTheNasty() throws FileNotFoundException, IOException {
-    	
+
     }
-    
+
     public void doesTheNasty2() throws IOException, FileNotFoundException {
-    	
+
     }
-    
+
     public void fpJustAwful() throws IOException, Exception {
-    	
+
     }
 
     private void badThrow() throws SQLException {

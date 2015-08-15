@@ -41,14 +41,16 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * finds methods that create and populate collections, and while knowing
- * the end size of those collections, does not pre allocate the collection
- * to be big enough. This just causes unneeded reallocations putting strain
- * on the garbage collector. */
+ * finds methods that create and populate collections, and while knowing the end
+ * size of those collections, does not pre allocate the collection to be big
+ * enough. This just causes unneeded reallocations putting strain on the garbage
+ * collector.
+ */
 @CustomUserValue
 public class PresizeCollections extends BytecodeScanningDetector {
 
     private static final Set<String> PRESIZEABLE_COLLECTIONS = new HashSet<String>();
+
     static {
         PRESIZEABLE_COLLECTIONS.add("java/util/ArrayBlockingQueue");
         PRESIZEABLE_COLLECTIONS.add("java/util/ArrayDeque");
@@ -77,7 +79,8 @@ public class PresizeCollections extends BytecodeScanningDetector {
     /**
      * overrides the visitor to initialize the opcode stack
      *
-     * @param classContext the context object that holds the JavaClass being parsed
+     * @param classContext
+     *            the context object that holds the JavaClass being parsed
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -97,7 +100,9 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the opcode stack
-     * @param obj the context object of the currently parsed code block
+     * 
+     * @param obj
+     *            the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -110,26 +115,26 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
         for (List<Integer> pcs : allocToAddPCs.values()) {
             if (pcs.size() > 16) {
-                bugReporter.reportBug(new BugInstance(this, BugType.PSC_PRESIZE_COLLECTIONS.name(), NORMAL_PRIORITY)
-                .addClass(this)
-                .addMethod(this)
-                .addSourceLine(this, pcs.get(0).intValue()));
+                bugReporter.reportBug(new BugInstance(this, BugType.PSC_PRESIZE_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(this, pcs.get(0).intValue()));
             }
         }
     }
 
     /**
-     * implements the visitor to look for creation of collections
-     * that are then populated with a known number of elements usually
-     * based on another collection, but the new collection is not presized.
-     * @param seen the opcode of the currently parsed instruction
+     * implements the visitor to look for creation of collections that are then
+     * populated with a known number of elements usually based on another
+     * collection, but the new collection is not presized.
+     * 
+     * @param seen
+     *            the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
         boolean sawAlloc = false;
         try {
             stack.precomputation(this);
-            
+
             switch (seen) {
             case INVOKESPECIAL:
                 String clsName = getClassConstantOperand();
@@ -142,7 +147,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         }
                     }
                 }
-            break;
+                break;
 
             case INVOKEINTERFACE:
                 String methodName = getNameConstantOperand();
@@ -223,10 +228,8 @@ public class PresizeCollections extends BytecodeScanningDetector {
                                 if (pc > target) {
                                     int numDownBranches = countDownBranches(target, pc);
                                     if (numDownBranches == 1) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.PSC_PRESIZE_COLLECTIONS.name(), NORMAL_PRIORITY)
-                                                    .addClass(this)
-                                                    .addMethod(this)
-                                                    .addSourceLine(this, pc));
+                                        bugReporter.reportBug(new BugInstance(this, BugType.PSC_PRESIZE_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this, pc));
                                         it.remove();
                                     }
                                     break;
@@ -239,12 +242,12 @@ public class PresizeCollections extends BytecodeScanningDetector {
                     downBranches.add(db);
                 }
                 break;
-                
+
             case IFNULL:
             case IFNONNULL:
             case IFGE:
             case IFGT:
-                //null check and >, >= branches are hard to presize
+                // null check and >, >= branches are hard to presize
                 break;
             }
         } finally {
@@ -282,7 +285,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
         @Override
         public String toString() {
-        	return ToString.build(this);
+            return ToString.build(this);
         }
     }
 }

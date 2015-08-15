@@ -24,12 +24,12 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * used to denote a method is used by an external tool to access
- * bug information. The value is any description about how it is used,
- * but is not required.
+ * used to denote a method is used by an external tool to access bug
+ * information. The value is any description about how it is used, but is not
+ * required.
  */
 @Retention(RetentionPolicy.CLASS)
 @Target(ElementType.METHOD)
 public @interface PublicAPI {
-	String value();
+    String value();
 }

@@ -37,244 +37,246 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for constructors, private methods or static methods that declare that they
- * throw specific checked exceptions, but that do not. This just causes callers of
- * these methods to do extra work to handle an exception that will never be thrown.
- * also looks for throws clauses where two exceptions declared to be thrown are related
- * through inheritance.
+ * looks for constructors, private methods or static methods that declare that
+ * they throw specific checked exceptions, but that do not. This just causes
+ * callers of these methods to do extra work to handle an exception that will
+ * never be thrown. also looks for throws clauses where two exceptions declared
+ * to be thrown are related through inheritance.
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
-	private static JavaClass runtimeExceptionClass;
-	private static JavaClass exceptionClass;
-	private static final Set<String> safeClasses = new HashSet<String>(8);
-	static {
-		try {
-			safeClasses.add("java/lang/Object");
-			safeClasses.add("java/lang/String");
-			safeClasses.add("java/lang/Integer");
-			safeClasses.add("java/lang/Long");
-			safeClasses.add("java/lang/Float");
-			safeClasses.add("java/lang/Double");
-			safeClasses.add("java/lang/Short");
-			safeClasses.add("java/lang/Boolean");
+    private static JavaClass runtimeExceptionClass;
+    private static JavaClass exceptionClass;
+    private static final Set<String> safeClasses = new HashSet<String>(8);
 
-			runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
-			exceptionClass = Repository.lookupClass("java/lang/Exception");
-		} catch (ClassNotFoundException cnfe) {
-			runtimeExceptionClass = null;
-			exceptionClass = null;
-		}
-	}
-	private final BugReporter bugReporter;
-	private OpcodeStack stack;
-	private Set<String> declaredCheckedExceptions;
-	private boolean classIsFinal;
-	private boolean classIsAnonymous;
+    static {
+        try {
+            safeClasses.add("java/lang/Object");
+            safeClasses.add("java/lang/String");
+            safeClasses.add("java/lang/Integer");
+            safeClasses.add("java/lang/Long");
+            safeClasses.add("java/lang/Float");
+            safeClasses.add("java/lang/Double");
+            safeClasses.add("java/lang/Short");
+            safeClasses.add("java/lang/Boolean");
 
-	public BogusExceptionDeclaration(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+            runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
+            exceptionClass = Repository.lookupClass("java/lang/Exception");
+        } catch (ClassNotFoundException cnfe) {
+            runtimeExceptionClass = null;
+            exceptionClass = null;
+        }
+    }
 
+    private final BugReporter bugReporter;
+    private OpcodeStack stack;
+    private Set<String> declaredCheckedExceptions;
+    private boolean classIsFinal;
+    private boolean classIsAnonymous;
 
-	/**
+    public BogusExceptionDeclaration(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    /**
      * overrides the visitor to create the opcode stack
      * 
-     * @param classContext the context object of the currently parsed class
-     *            
+     * @param classContext
+     *            the context object of the currently parsed class
+     * 
      */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			if ((runtimeExceptionClass != null) && (exceptionClass != null)) {
-				stack = new OpcodeStack();
-				declaredCheckedExceptions = new HashSet<String>(6);
-				JavaClass cls = classContext.getJavaClass();
-				classIsFinal = cls.isFinal();
-				classIsAnonymous = cls.isAnonymous();
-				super.visitClassContext(classContext);
-			}
-		} finally {
-			declaredCheckedExceptions = null;
-			stack = null;
-		}
-	}
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            if ((runtimeExceptionClass != null) && (exceptionClass != null)) {
+                stack = new OpcodeStack();
+                declaredCheckedExceptions = new HashSet<String>(6);
+                JavaClass cls = classContext.getJavaClass();
+                classIsFinal = cls.isFinal();
+                classIsAnonymous = cls.isAnonymous();
+                super.visitClassContext(classContext);
+            }
+        } finally {
+            declaredCheckedExceptions = null;
+            stack = null;
+        }
+    }
 
-	/**
-	 * implements the visitor to see if the method declares that it throws any
-	 * checked exceptions.
-	 *
-	 * @param obj the context object of the currently parsed code block
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		declaredCheckedExceptions.clear();
-		stack.resetForMethodEntry(this);
-		Method method = getMethod();
-		
-		if (method.isSynthetic()) {
-			return;
-		}
-		
-		ExceptionTable et = method.getExceptionTable();
-		if (et != null) {
-			if (classIsFinal || classIsAnonymous || method.isStatic() || method.isPrivate() || method.isFinal() || ((Values.CONSTRUCTOR.equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
-				String[] exNames = et.getExceptionNames();
-				for (String exName : exNames) {
-					try {
-						JavaClass exCls = Repository.lookupClass(exName);
-						if (!exCls.instanceOf(runtimeExceptionClass)) {
-							declaredCheckedExceptions.add(exName);
-						}
-					} catch (ClassNotFoundException cnfe) {
-						bugReporter.reportMissingClass(cnfe);
-					}
-				}
-				if (!declaredCheckedExceptions.isEmpty()) {
-					super.visitCode(obj);
-					if (!declaredCheckedExceptions.isEmpty()) {
-						BugInstance bi = new BugInstance(this, BugType.BED_BOGUS_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this)
-									.addSourceLine(this, 0);
-						for (String ex : declaredCheckedExceptions) {
-							bi.addString(ex.replaceAll("/", "."));
-						}
-						bugReporter.reportBug(bi);
-					}
-				}
-			}
+    /**
+     * implements the visitor to see if the method declares that it throws any
+     * checked exceptions.
+     *
+     * @param obj
+     *            the context object of the currently parsed code block
+     */
+    @Override
+    public void visitCode(Code obj) {
+        declaredCheckedExceptions.clear();
+        stack.resetForMethodEntry(this);
+        Method method = getMethod();
 
-			if (!method.isSynthetic()) {
-				String[] exNames = et.getExceptionNames();
-				for (int i = 0; i < exNames.length - 1; i++) {
-					try {
-						JavaClass exCls1 = Repository.lookupClass(exNames[i]);
-						for (int j = i + 1; j < exNames.length; j++) {
-							JavaClass exCls2 = Repository.lookupClass(exNames[j]);
-							JavaClass childEx;
-							JavaClass parentEx;
-							if (exCls1.instanceOf(exCls2)) {
-								childEx = exCls1;
-								parentEx = exCls2;
-							} else if (exCls2.instanceOf(exCls1)) {
-								childEx = exCls2;
-								parentEx = exCls1;
-							} else {
-								continue;
-							}
-							
-							if (!parentEx.equals(exceptionClass)) {
-								bugReporter.reportBug(new BugInstance(this, BugType.BED_HIERARCHICAL_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
-											.addClass(this)
-											.addMethod(this)
-											.addString(childEx.getClassName() + " derives from " + parentEx.getClassName()));
-								return;
-							}
-							
-						}
-					} catch (ClassNotFoundException cnfe) {
-						bugReporter.reportMissingClass(cnfe);
-					}
-				}
-			}
-		}
-	}
+        if (method.isSynthetic()) {
+            return;
+        }
 
-	/**
-	 * checks to see if this method is constructor of an instance based inner class, as jdk1.5 compiler
-	 * has a bug where it attaches bogus exception declarations to this constructors in some cases.
-	 * @param m the method to check
-	 * @param cls the cls that owns the method
-	 * @return whether this method is a ctor of an instance based anonymous inner class
-	 */
-	private static boolean isAnonymousInnerCtor(Method m, JavaClass cls) {
-	    if (!Values.CONSTRUCTOR.equals(m.getName())) {
-			return false;
-		}
+        ExceptionTable et = method.getExceptionTable();
+        if (et != null) {
+            if (classIsFinal || classIsAnonymous || method.isStatic() || method.isPrivate() || method.isFinal()
+                    || ((Values.CONSTRUCTOR.equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
+                String[] exNames = et.getExceptionNames();
+                for (String exName : exNames) {
+                    try {
+                        JavaClass exCls = Repository.lookupClass(exName);
+                        if (!exCls.instanceOf(runtimeExceptionClass)) {
+                            declaredCheckedExceptions.add(exName);
+                        }
+                    } catch (ClassNotFoundException cnfe) {
+                        bugReporter.reportMissingClass(cnfe);
+                    }
+                }
+                if (!declaredCheckedExceptions.isEmpty()) {
+                    super.visitCode(obj);
+                    if (!declaredCheckedExceptions.isEmpty()) {
+                        BugInstance bi = new BugInstance(this, BugType.BED_BOGUS_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                .addSourceLine(this, 0);
+                        for (String ex : declaredCheckedExceptions) {
+                            bi.addString(ex.replaceAll("/", "."));
+                        }
+                        bugReporter.reportBug(bi);
+                    }
+                }
+            }
 
-	    String clsName = cls.getClassName();
-	    int dollarPos = clsName.lastIndexOf('$');
-	    if (dollarPos <0) {
-			return false;
-		}
+            if (!method.isSynthetic()) {
+                String[] exNames = et.getExceptionNames();
+                for (int i = 0; i < exNames.length - 1; i++) {
+                    try {
+                        JavaClass exCls1 = Repository.lookupClass(exNames[i]);
+                        for (int j = i + 1; j < exNames.length; j++) {
+                            JavaClass exCls2 = Repository.lookupClass(exNames[j]);
+                            JavaClass childEx;
+                            JavaClass parentEx;
+                            if (exCls1.instanceOf(exCls2)) {
+                                childEx = exCls1;
+                                parentEx = exCls2;
+                            } else if (exCls2.instanceOf(exCls1)) {
+                                childEx = exCls2;
+                                parentEx = exCls1;
+                            } else {
+                                continue;
+                            }
 
-	    String signature = m.getSignature();
-	    return ("(L" + clsName.substring(0, dollarPos).replace('.', '/') + ";)V").equals(signature);
-	}
+                            if (!parentEx.equals(exceptionClass)) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.BED_HIERARCHICAL_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addString(childEx.getClassName() + " derives from " + parentEx.getClassName()));
+                                return;
+                            }
 
-	/**
-	 * implements the visitor to look for method calls that could throw the exceptions
-	 * that are listed in the declaration.
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		if (declaredCheckedExceptions.isEmpty()) {
-			return;
-		}
+                        }
+                    } catch (ClassNotFoundException cnfe) {
+                        bugReporter.reportMissingClass(cnfe);
+                    }
+                }
+            }
+        }
+    }
 
-		try {
+    /**
+     * checks to see if this method is constructor of an instance based inner
+     * class, as jdk1.5 compiler has a bug where it attaches bogus exception
+     * declarations to this constructors in some cases.
+     * 
+     * @param m
+     *            the method to check
+     * @param cls
+     *            the cls that owns the method
+     * @return whether this method is a ctor of an instance based anonymous
+     *         inner class
+     */
+    private static boolean isAnonymousInnerCtor(Method m, JavaClass cls) {
+        if (!Values.CONSTRUCTOR.equals(m.getName())) {
+            return false;
+        }
 
-	        stack.precomputation(this);
-	        
-			if ((seen == INVOKEVIRTUAL)
-			||  (seen == INVOKEINTERFACE)
-			||  (seen == INVOKESPECIAL)
-			||  (seen == INVOKESTATIC)) {
-				String clsName = getClassConstantOperand();
-				if (!safeClasses.contains(clsName)) {
-					try {
-						JavaClass cls = Repository.lookupClass(clsName);
-						Method[] methods = cls.getMethods();
-						String methodName = getNameConstantOperand();
-						String signature = getSigConstantOperand();
-						boolean found = false;
-						for (Method m : methods) {
-							if (m.getName().equals(methodName) && m.getSignature().equals(signature)) {
-								ExceptionTable et = m.getExceptionTable();
-								if (et != null) {
-									String[] thrownExceptions = et.getExceptionNames();
-									for (String thrownException : thrownExceptions) {
-										declaredCheckedExceptions.remove(thrownException);
-										JavaClass exCls = Repository.lookupClass(thrownException);
-										JavaClass superCls = exCls.getSuperClass();
-										do {
-											exCls = superCls;
-											if (exCls != null) {
-	    										declaredCheckedExceptions.remove(exCls.getClassName());
-	    										superCls = exCls.getSuperClass();
-											} else {
-											    break;
-											}
-										} while (!declaredCheckedExceptions.isEmpty() && !"java.lang.Exception".equals(exCls.getClassName()) && !"java.lang.Error".equals(exCls.getClassName()));
+        String clsName = cls.getClassName();
+        int dollarPos = clsName.lastIndexOf('$');
+        if (dollarPos < 0) {
+            return false;
+        }
 
-									}
-								} else {
-									declaredCheckedExceptions.clear();
-								}
-								found = true;
-								break;
-							}
-						}
+        String signature = m.getSignature();
+        return ("(L" + clsName.substring(0, dollarPos).replace('.', '/') + ";)V").equals(signature);
+    }
 
-						if (!found) {
-							declaredCheckedExceptions.clear();
-						}
-					}
-					catch (ClassNotFoundException cnfe) {
-						bugReporter.reportMissingClass(cnfe);
-						declaredCheckedExceptions.clear();
-					}
-				}
-			} else if (seen == ATHROW) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					String exSig = item.getSignature();
-					String exClass = exSig.substring(1, exSig.length() - 1).replaceAll("/", ".");
-					declaredCheckedExceptions.remove(exClass);
-				}
-			}
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
-	}
+    /**
+     * implements the visitor to look for method calls that could throw the
+     * exceptions that are listed in the declaration.
+     */
+    @Override
+    public void sawOpcode(int seen) {
+        if (declaredCheckedExceptions.isEmpty()) {
+            return;
+        }
+
+        try {
+
+            stack.precomputation(this);
+
+            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC)) {
+                String clsName = getClassConstantOperand();
+                if (!safeClasses.contains(clsName)) {
+                    try {
+                        JavaClass cls = Repository.lookupClass(clsName);
+                        Method[] methods = cls.getMethods();
+                        String methodName = getNameConstantOperand();
+                        String signature = getSigConstantOperand();
+                        boolean found = false;
+                        for (Method m : methods) {
+                            if (m.getName().equals(methodName) && m.getSignature().equals(signature)) {
+                                ExceptionTable et = m.getExceptionTable();
+                                if (et != null) {
+                                    String[] thrownExceptions = et.getExceptionNames();
+                                    for (String thrownException : thrownExceptions) {
+                                        declaredCheckedExceptions.remove(thrownException);
+                                        JavaClass exCls = Repository.lookupClass(thrownException);
+                                        JavaClass superCls = exCls.getSuperClass();
+                                        do {
+                                            exCls = superCls;
+                                            if (exCls != null) {
+                                                declaredCheckedExceptions.remove(exCls.getClassName());
+                                                superCls = exCls.getSuperClass();
+                                            } else {
+                                                break;
+                                            }
+                                        } while (!declaredCheckedExceptions.isEmpty() && !"java.lang.Exception".equals(exCls.getClassName())
+                                                && !"java.lang.Error".equals(exCls.getClassName()));
+
+                                    }
+                                } else {
+                                    declaredCheckedExceptions.clear();
+                                }
+                                found = true;
+                                break;
+                            }
+                        }
+
+                        if (!found) {
+                            declaredCheckedExceptions.clear();
+                        }
+                    } catch (ClassNotFoundException cnfe) {
+                        bugReporter.reportMissingClass(cnfe);
+                        declaredCheckedExceptions.clear();
+                    }
+                }
+            } else if (seen == ATHROW) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    String exSig = item.getSignature();
+                    String exClass = exSig.substring(1, exSig.length() - 1).replaceAll("/", ".");
+                    declaredCheckedExceptions.remove(exClass);
+                }
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
+        }
+    }
 }

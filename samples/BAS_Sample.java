@@ -168,43 +168,46 @@ public class BAS_Sample {
 
         return null;
     }
-    
+
     public void testFPNestedIfs(Map<String, String> x, int i, boolean b) {
-    	
-    	String s = x.get("hello");
-    	
-    	if (i == 0) {
-    		if (b) {
-    			System.out.println(s);
-    		}
-    	} else if (i == 1) {
-    		System.out.println(s);
-    	} else if (i == 2) {
-    		System.out.println(s);
-    	}
+
+        String s = x.get("hello");
+
+        if (i == 0) {
+            if (b) {
+                System.out.println(s);
+            }
+        } else if (i == 1) {
+            System.out.println(s);
+        } else if (i == 2) {
+            System.out.println(s);
+        }
     }
-    
+
     public boolean testFPFuture(boolean b) {
-    	ExecutorService s = new ForkJoinPool();
-    	Future f = s.submit(new Runnable() { public void run() {}});
-    	if (b) {
-    		if (f.isDone()) {
-    			return true;
-    		}
-    	}
-    	
-    	return false;
+        ExecutorService s = new ForkJoinPool();
+        Future f = s.submit(new Runnable() {
+            public void run() {
+            }
+        });
+        if (b) {
+            if (f.isDone()) {
+                return true;
+            }
+        }
+
+        return false;
     }
-    
+
     public int testFPTwoCatches(List<Integer> x) throws Exception {
-    	String msg = "This is a test";
-    	try {
-    		return x.size() * x.get(0);
-    	} catch (NullPointerException e) {
-    		throw new Exception(msg + "NPE", e);
-    	} catch (IndexOutOfBoundsException e) {
-    		throw new Exception(msg + "IIOBE", e);
-    	}
+        String msg = "This is a test";
+        try {
+            return x.size() * x.get(0);
+        } catch (NullPointerException e) {
+            throw new Exception(msg + "NPE", e);
+        } catch (IndexOutOfBoundsException e) {
+            throw new Exception(msg + "IIOBE", e);
+        }
     }
 
     static class Holder {

@@ -59,17 +59,17 @@ public class ISB_Sample {
         return sb.toString();
     }
 
-    public String testTOStringAppending(Map<String,Set<Integer>> map) {
+    public String testTOStringAppending(Map<String, Set<Integer>> map) {
         StringBuilder sb = new StringBuilder();
-        //no tag ISB_TOSTRING_APPENDING, because this can never be null.  Some styles like this.toString()
+        // no tag ISB_TOSTRING_APPENDING, because this can never be null. Some
+        // styles like this.toString()
         sb.append(this.toString());
-        //tag ISB_TOSTRING_APPENDING
+        // tag ISB_TOSTRING_APPENDING
         sb.append(map.toString());
         return sb.toString();
     }
-    
-    public static final String WORLD = "CONSTWorld"; 
-    
+
+    public static final String WORLD = "CONSTWorld";
 
     @Override
     public String toString() {

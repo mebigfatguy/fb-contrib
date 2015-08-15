@@ -33,130 +33,127 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * looks for definitions of methods that have an array as the last parameter.
- * Since this class is compiled with java 1.5 or better, it would be more flexible for clients of this
- * method to define this parameter as a vararg parameter.
+ * Since this class is compiled with java 1.5 or better, it would be more
+ * flexible for clients of this method to define this parameter as a vararg
+ * parameter.
  */
-public class UseVarArgs extends PreorderVisitor implements Detector 
-{
-	private final BugReporter bugReporter;
-	private JavaClass javaClass;
-	
-	public UseVarArgs(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-	
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			javaClass = classContext.getJavaClass();
-			if (javaClass.getMajor() >= Constants.MAJOR_1_5) {
-				javaClass.accept(this);
-			}
-		} finally {
-			javaClass = null;
-		}
-	}
-	
-	@Override
-	public void visitMethod(Method obj) {
-		try {
-			if (obj.isSynthetic()) {
-				return;
-			}
-			
-			Type[] types = obj.getArgumentTypes();
-			if ((types.length == 0) || (types.length > 2)) {
-				return;
-			}
-			
-			if ((obj.getAccessFlags() & Constants.ACC_VARARGS) != 0) {
-				return;
-			}
-			
-			String lastParmSig = types[types.length-1].getSignature();
-			if (!lastParmSig.startsWith("[") || lastParmSig.startsWith("[[")) {
-				return;
-			}
-			
-			if (lastParmSig.equals("[B") || lastParmSig.equals("[C")) {
-			    return;
-			}
-			
-			if (hasSimilarParms(types)) {
-				return;
-			}
-			
-			if (obj.isStatic() && "main".equals(obj.getName()) && "([Ljava/lang/String;)V".equals(obj.getSignature())) {
-				return;
-			}
-	
-			if (!obj.isPrivate() && !obj.isStatic() && isInherited(obj)) {
-				return;
-			}
-			
-			super.visitMethod(obj);
-			bugReporter.reportBug(new BugInstance(this, BugType.UVA_USE_VAR_ARGS.name(), LOW_PRIORITY)
-						.addClass(this)
-						.addMethod(this));
-			
-			
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		}
-	}
-	
-	@Override
-	public void report() {
-	}
-	
-	private static boolean hasSimilarParms(Type[] argTypes) {
-		
-		for (int i = 0; i < argTypes.length - 1; i++) {
-			if (argTypes[i].getSignature().startsWith("[")) {
-				return true;
-			}
-		}
-		
-		String baseType = argTypes[argTypes.length-1].getSignature();
-		while (baseType.startsWith("[")) {
-			baseType = baseType.substring(1);
-		}
-		
-		for (int i = 0; i < argTypes.length - 1; i++) {
-			if (argTypes[i].getSignature().equals(baseType)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
-	
-	private boolean isInherited(Method m) throws ClassNotFoundException {
-		JavaClass[] infs = javaClass.getAllInterfaces();
-		for (JavaClass inf : infs) {
-			if (hasMethod(inf, m))
-				return true;
-		}
-		
-		JavaClass[] sups = javaClass.getSuperClasses();
-		for (JavaClass sup : sups) {
-			if (hasMethod(sup, m))
-				return true;
-		}
-		
-		return false;
-	}
-	
-	private static boolean hasMethod(JavaClass c, Method candidateMethod) {
-		String name = candidateMethod.getName();
-		String sig = candidateMethod.getSignature();
-		
-		for (Method method : c.getMethods()) {
-			if (!method.isStatic() && method.getName().equals(name) && method.getSignature().equals(sig)) {
-				return true;
-			}
-		}
-		
-		return false;
-	}
+public class UseVarArgs extends PreorderVisitor implements Detector {
+    private final BugReporter bugReporter;
+    private JavaClass javaClass;
+
+    public UseVarArgs(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            javaClass = classContext.getJavaClass();
+            if (javaClass.getMajor() >= Constants.MAJOR_1_5) {
+                javaClass.accept(this);
+            }
+        } finally {
+            javaClass = null;
+        }
+    }
+
+    @Override
+    public void visitMethod(Method obj) {
+        try {
+            if (obj.isSynthetic()) {
+                return;
+            }
+
+            Type[] types = obj.getArgumentTypes();
+            if ((types.length == 0) || (types.length > 2)) {
+                return;
+            }
+
+            if ((obj.getAccessFlags() & Constants.ACC_VARARGS) != 0) {
+                return;
+            }
+
+            String lastParmSig = types[types.length - 1].getSignature();
+            if (!lastParmSig.startsWith("[") || lastParmSig.startsWith("[[")) {
+                return;
+            }
+
+            if (lastParmSig.equals("[B") || lastParmSig.equals("[C")) {
+                return;
+            }
+
+            if (hasSimilarParms(types)) {
+                return;
+            }
+
+            if (obj.isStatic() && "main".equals(obj.getName()) && "([Ljava/lang/String;)V".equals(obj.getSignature())) {
+                return;
+            }
+
+            if (!obj.isPrivate() && !obj.isStatic() && isInherited(obj)) {
+                return;
+            }
+
+            super.visitMethod(obj);
+            bugReporter.reportBug(new BugInstance(this, BugType.UVA_USE_VAR_ARGS.name(), LOW_PRIORITY).addClass(this).addMethod(this));
+
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+    }
+
+    @Override
+    public void report() {
+    }
+
+    private static boolean hasSimilarParms(Type[] argTypes) {
+
+        for (int i = 0; i < argTypes.length - 1; i++) {
+            if (argTypes[i].getSignature().startsWith("[")) {
+                return true;
+            }
+        }
+
+        String baseType = argTypes[argTypes.length - 1].getSignature();
+        while (baseType.startsWith("[")) {
+            baseType = baseType.substring(1);
+        }
+
+        for (int i = 0; i < argTypes.length - 1; i++) {
+            if (argTypes[i].getSignature().equals(baseType)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isInherited(Method m) throws ClassNotFoundException {
+        JavaClass[] infs = javaClass.getAllInterfaces();
+        for (JavaClass inf : infs) {
+            if (hasMethod(inf, m))
+                return true;
+        }
+
+        JavaClass[] sups = javaClass.getSuperClasses();
+        for (JavaClass sup : sups) {
+            if (hasMethod(sup, m))
+                return true;
+        }
+
+        return false;
+    }
+
+    private static boolean hasMethod(JavaClass c, Method candidateMethod) {
+        String name = candidateMethod.getName();
+        String sig = candidateMethod.getSignature();
+
+        for (Method method : c.getMethods()) {
+            if (!method.isStatic() && method.getName().equals(name) && method.getSignature().equals(sig)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
 }

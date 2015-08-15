@@ -119,24 +119,24 @@ public class PCAIL_Sample {
             }
         }
     }
-    
+
     public String fpSwitch(List<String> ss, int i) {
-    	for (String s : ss) {
-    		switch (i) {
-	    		case 0:
-	    			List<String> n = new ArrayList<String>();
-	    			n.add(s);
-	    			if (n.isEmpty()) {
-	    				return "yup";
-	    			}
-	    		break;
-	    		
-	    		case 1:
-	    			return null;
-    		}
-    	}
-    	
-    	return null;
+        for (String s : ss) {
+            switch (i) {
+            case 0:
+                List<String> n = new ArrayList<String>();
+                n.add(s);
+                if (n.isEmpty()) {
+                    return "yup";
+                }
+                break;
+
+            case 1:
+                return null;
+            }
+        }
+
+        return null;
     }
 
     private PCAIL_Sample builder() {

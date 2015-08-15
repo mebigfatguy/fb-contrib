@@ -25,46 +25,44 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
 
-
 public class Debug {
 
-	
-	private static PrintStream out;
+    private static PrintStream out;
 
-	static {
-		try {
-			out = new PrintStream(new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "fb-contrib.txt").getPath(), true)));
-			out.println("===== fb-contrib console =====");
-		} catch (FileNotFoundException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
-	private Debug(){}
+    static {
+        try {
+            out = new PrintStream(
+                    new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "fb-contrib.txt").getPath(), true)));
+            out.println("===== fb-contrib console =====");
+        } catch (FileNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
-	public static void println() {
-		out.println();
-	}
-	
-	public static void println(Object x) {
-		out.println(x);
-	}
+    private Debug() {
+    }
 
-	/**
-	 * Like println, but will print PC, if it's passed in
-	 * 
-	 * e.g. Debug.println(getPC(), "Hello world");
-	 * will print
-	 * [PC:42] Hello world
-	 * 
-	 * @param pc the program counter
-	 * @param obj the object to output
-	 */
-	public static void println(int pc, Object obj) {
-		out.printf("[PC:%d] %s%n", pc,obj);
-	}
-	
-	
-	
-	
+    public static void println() {
+        out.println();
+    }
+
+    public static void println(Object x) {
+        out.println(x);
+    }
+
+    /**
+     * Like println, but will print PC, if it's passed in
+     * 
+     * e.g. Debug.println(getPC(), "Hello world"); will print [PC:42] Hello
+     * world
+     * 
+     * @param pc
+     *            the program counter
+     * @param obj
+     *            the object to output
+     */
+    public static void println(int pc, Object obj) {
+        out.printf("[PC:%d] %s%n", pc, obj);
+    }
+
 }

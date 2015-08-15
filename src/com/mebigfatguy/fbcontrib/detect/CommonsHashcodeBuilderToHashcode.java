@@ -37,55 +37,53 @@ import edu.umd.cs.findbugs.OpcodeStack;
  */
 public class CommonsHashcodeBuilderToHashcode extends BytecodeScanningDetector {
 
-	private static final String LANG_HASH_CODE_BUILDER = "Lorg/apache/commons/lang/builder/HashCodeBuilder;";
-	private static final String LANG3_HASH_CODE_BUILDER = "Lorg/apache/commons/lang3/builder/HashCodeBuilder;";
-	private final OpcodeStack stack;
-	private final BugReporter bugReporter;
+    private static final String LANG_HASH_CODE_BUILDER = "Lorg/apache/commons/lang/builder/HashCodeBuilder;";
+    private static final String LANG3_HASH_CODE_BUILDER = "Lorg/apache/commons/lang3/builder/HashCodeBuilder;";
+    private final OpcodeStack stack;
+    private final BugReporter bugReporter;
 
-	/**
-	 * constructs a CHTH detector given the reporter to report bugs on.
-	 *
-	 * @param bugReporter
-	 *            the sync of bug reports
-	 */
-	public CommonsHashcodeBuilderToHashcode(final BugReporter bugReporter) {
-		stack = new OpcodeStack();
-		this.bugReporter = bugReporter;
-	}
+    /**
+     * constructs a CHTH detector given the reporter to report bugs on.
+     *
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public CommonsHashcodeBuilderToHashcode(final BugReporter bugReporter) {
+        stack = new OpcodeStack();
+        this.bugReporter = bugReporter;
+    }
 
-	/**
-	 * implements the visitor to pass through constructors and static
-	 * initializers to the byte code scanning code. These methods are not
-	 * reported, but are used to build SourceLineAnnotations for fields, if
-	 * accessed.
-	 *
-	 * @param obj
-	 *            the context object of the currently parsed code attribute
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		stack.resetForMethodEntry(this);
-		LocalVariableTable lvt = getMethod().getLocalVariableTable();
-		if (lvt != null) {
-			super.visitCode(obj);
-		}
-	}
+    /**
+     * implements the visitor to pass through constructors and static
+     * initializers to the byte code scanning code. These methods are not
+     * reported, but are used to build SourceLineAnnotations for fields, if
+     * accessed.
+     *
+     * @param obj
+     *            the context object of the currently parsed code attribute
+     */
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        LocalVariableTable lvt = getMethod().getLocalVariableTable();
+        if (lvt != null) {
+            super.visitCode(obj);
+        }
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		if (seen == INVOKEVIRTUAL) {
-			String methodName = getNameConstantOperand();
-			if ("hashCode".equals(methodName) && "()I".equals(getSigConstantOperand()) && (stack.getStackDepth() > 0)) {
-				String calledClass = stack.getStackItem(0).getSignature();
-				if (LANG3_HASH_CODE_BUILDER.equals(calledClass) || LANG_HASH_CODE_BUILDER.equals(calledClass)) {
-					bugReporter.reportBug(new BugInstance(this,"CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE",HIGH_PRIORITY)
-					.addClass(this)
-					.addMethod(this)
-					.addSourceLine(this));
-				}
-			}
-		}
-		super.sawOpcode(seen);
-		stack.sawOpcode(this, seen);
-	}
+    @Override
+    public void sawOpcode(int seen) {
+        if (seen == INVOKEVIRTUAL) {
+            String methodName = getNameConstantOperand();
+            if ("hashCode".equals(methodName) && "()I".equals(getSigConstantOperand()) && (stack.getStackDepth() > 0)) {
+                String calledClass = stack.getStackItem(0).getSignature();
+                if (LANG3_HASH_CODE_BUILDER.equals(calledClass) || LANG_HASH_CODE_BUILDER.equals(calledClass)) {
+                    bugReporter.reportBug(new BugInstance(this, "CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE", HIGH_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this));
+                }
+            }
+        }
+        super.sawOpcode(seen);
+        stack.sawOpcode(this, seen);
+    }
 }

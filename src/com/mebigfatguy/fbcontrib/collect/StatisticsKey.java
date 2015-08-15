@@ -21,51 +21,51 @@ package com.mebigfatguy.fbcontrib.collect;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 /**
- * information about a method call for use in the Collect phase of statistics building,
- * used in the key of the statistics map.
+ * information about a method call for use in the Collect phase of statistics
+ * building, used in the key of the statistics map.
  */
 public class StatisticsKey {
-	
-	private String className;
-	private String methodName;
-	private String signature;
-	
-	public StatisticsKey(String clsName, String mName, String sig) {
-		className = clsName;
-		methodName = mName;
-		signature = sig;
-	}
 
-	public String getClassName() {
-		return className;
-	}
+    private String className;
+    private String methodName;
+    private String signature;
 
-	public String getMethodName() {
-		return methodName;
-	}
+    public StatisticsKey(String clsName, String mName, String sig) {
+        className = clsName;
+        methodName = mName;
+        signature = sig;
+    }
 
-	public String getSignature() {
-		return signature;
-	}
-	
-	@Override
-	public int hashCode() {
-		return className.hashCode() ^ methodName.hashCode() ^ signature.hashCode();
-	}
-	
-	@Override
-	public boolean equals(Object o) {
-		if (!(o instanceof StatisticsKey)) {
-			return false;
-		}
-		
-		StatisticsKey that = (StatisticsKey) o;
-		
-		return className.equals(that.className) && methodName.equals(that.methodName) && signature.equals(that.signature); 
-	}
-	
-	@Override
-	public String toString() {
-		return ToString.build(this);
-	}
+    public String getClassName() {
+        return className;
+    }
+
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
+    @Override
+    public int hashCode() {
+        return className.hashCode() ^ methodName.hashCode() ^ signature.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof StatisticsKey)) {
+            return false;
+        }
+
+        StatisticsKey that = (StatisticsKey) o;
+
+        return className.equals(that.className) && methodName.equals(that.methodName) && signature.equals(that.signature);
+    }
+
+    @Override
+    public String toString() {
+        return ToString.build(this);
+    }
 }

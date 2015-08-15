@@ -7,7 +7,7 @@ public class SCRV_Sample {
     int t = 0;
 
     class SampleComparator implements Comparator<SCRV_Sample> {
-    	@Override
+        @Override
         public int compare(SCRV_Sample arg0, SCRV_Sample arg1) {
             if (arg0.t == arg1.t)
                 return 0;
@@ -17,7 +17,7 @@ public class SCRV_Sample {
     }
 
     class SampleComparable implements Comparable<SCRV_Sample> {
-    	@Override
+        @Override
         public int compareTo(SCRV_Sample arg0) {
             if (t == arg0.t)
                 return 0;
@@ -36,16 +36,16 @@ public class SCRV_Sample {
     }
 
     class FPThrowsComparator implements Comparator<SCRV_Sample> {
-    	@Override
+        @Override
         public int compare(SCRV_Sample arg0, SCRV_Sample arg1) {
             throw new UnsupportedOperationException();
         }
     }
-    
+
     class FPDefaultComparator implements Comparator<String> {
-    	@Override
-    	public int compare(String s1, String s2) {
-    		return 0;
-    	}
+        @Override
+        public int compare(String s1, String s2) {
+            return 0;
+        }
     }
 }

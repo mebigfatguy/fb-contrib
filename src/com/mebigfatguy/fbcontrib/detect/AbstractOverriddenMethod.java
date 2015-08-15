@@ -31,81 +31,85 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * finds methods that are declared abstract but override concrete methods in a superclass.
+ * finds methods that are declared abstract but override concrete methods in a
+ * superclass.
  */
 public class AbstractOverriddenMethod extends PreorderVisitor implements Detector {
-	private BugReporter bugReporter;
-	private ClassContext clsContext;
-	private JavaClass[] superClasses;
-	
-	/**
+    private BugReporter bugReporter;
+    private ClassContext clsContext;
+    private JavaClass[] superClasses;
+
+    /**
      * constructs a AOM detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
-	 */
-	public AbstractOverriddenMethod(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-	
-	/**
-	 * implements the detector to collect the super classes
-	 * 
-	 * @param classContext the context object for the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			clsContext = classContext;
-			JavaClass cls = classContext.getJavaClass();
-			if (cls.isInterface())
-				return;
-			superClasses = cls.getSuperClasses();
-			cls.accept(this);
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		} finally {
-			clsContext = null;
-			superClasses = null;
-		}
-	}
-	
-	/**
-	 * overrides the visitor to find abstract methods that override concrete ones
-	 * 
-	 * @param obj the context object of the currently parsed method
-	 */
-	@Override
-	public void visitMethod(Method obj) {
-		if (!obj.isAbstract())
-			return;
-		
-		String methodName = obj.getName();
-		String methodSig = obj.getSignature();
-		outer: for (JavaClass cls : superClasses) {
-			Method[] methods = cls.getMethods();
-			for (Method m : methods) {
-				if (m.isPrivate() || m.isAbstract())
-					continue;
-				if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
-					BugInstance bug = new BugInstance(this, BugType.AOM_ABSTRACT_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this);
-					
-					Code code = obj.getCode();
-					if (code != null)
-						bug.addSourceLineRange(clsContext, this, 0, code.getLength()-1);
-					bugReporter.reportBug(bug);
-					
-					break outer;
-				}
-			}
-		}		
-	}
-	
-	/**
-	 * implements the Detector with a noop
-	 */
-	@Override
-	public void report() {
-		//not used, part of the Detector interface
-	}
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public AbstractOverriddenMethod(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    /**
+     * implements the detector to collect the super classes
+     * 
+     * @param classContext
+     *            the context object for the currently parsed class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            clsContext = classContext;
+            JavaClass cls = classContext.getJavaClass();
+            if (cls.isInterface())
+                return;
+            superClasses = cls.getSuperClasses();
+            cls.accept(this);
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            clsContext = null;
+            superClasses = null;
+        }
+    }
+
+    /**
+     * overrides the visitor to find abstract methods that override concrete
+     * ones
+     * 
+     * @param obj
+     *            the context object of the currently parsed method
+     */
+    @Override
+    public void visitMethod(Method obj) {
+        if (!obj.isAbstract())
+            return;
+
+        String methodName = obj.getName();
+        String methodSig = obj.getSignature();
+        outer: for (JavaClass cls : superClasses) {
+            Method[] methods = cls.getMethods();
+            for (Method m : methods) {
+                if (m.isPrivate() || m.isAbstract())
+                    continue;
+                if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
+                    BugInstance bug = new BugInstance(this, BugType.AOM_ABSTRACT_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this);
+
+                    Code code = obj.getCode();
+                    if (code != null)
+                        bug.addSourceLineRange(clsContext, this, 0, code.getLength() - 1);
+                    bugReporter.reportBug(bug);
+
+                    break outer;
+                }
+            }
+        }
+    }
+
+    /**
+     * implements the Detector with a noop
+     */
+    @Override
+    public void report() {
+        // not used, part of the Detector interface
+    }
 }

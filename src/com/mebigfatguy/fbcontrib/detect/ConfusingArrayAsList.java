@@ -34,13 +34,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 /**
  *
  * looks for calls to Arrays.asList where the parameter is a primitive array.
- * This does not produce a list that holds the primitive boxed value, but a list of
- * one item, the array itself.
+ * This does not produce a list that holds the primitive boxed value, but a list
+ * of one item, the array itself.
  *
  */
 public class ConfusingArrayAsList extends BytecodeScanningDetector {
 
     private static Set<String> PRIMITIVE_ARRAYS = new HashSet<String>(8);
+
     static {
         PRIMITIVE_ARRAYS.add("[[B");
         PRIMITIVE_ARRAYS.add("[[C");
@@ -51,12 +52,15 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
         PRIMITIVE_ARRAYS.add("[[D");
         PRIMITIVE_ARRAYS.add("[[Z");
     }
+
     private BugReporter bugReporter;
     private OpcodeStack stack;
 
     /**
      * constructs a CAAL detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
      */
     public ConfusingArrayAsList(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -65,7 +69,8 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and teardown the opcode stack
      *
-     * @param classContext the context object of the currently parsed class
+     * @param classContext
+     *            the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -80,7 +85,8 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
     /**
      * implements the visitor to clear the opcode stack
      *
-     * @param obj the currently code block
+     * @param obj
+     *            the currently code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -89,15 +95,17 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find calls to Arrays.asList with a primitive array
+     * implements the visitor to find calls to Arrays.asList with a primitive
+     * array
      *
-     * @param seen the currently visitor opcode
+     * @param seen
+     *            the currently visitor opcode
      */
     @Override
     public void sawOpcode(int seen) {
         try {
             stack.precomputation(this);
-            
+
             if (seen == INVOKESTATIC) {
                 String clsName = getClassConstantOperand();
                 if ("java/util/Arrays".equals(clsName)) {
@@ -107,10 +115,8 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             String sig = item.getSignature();
                             if (PRIMITIVE_ARRAYS.contains(sig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.CAAL_CONFUSING_ARRAY_AS_LIST.name(), NORMAL_PRIORITY)
-                                            .addClass(this)
-                                            .addMethod(this)
-                                            .addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.CAAL_CONFUSING_ARRAY_AS_LIST.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
                             }
                         }
                     }

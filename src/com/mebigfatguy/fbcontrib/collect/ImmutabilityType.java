@@ -19,5 +19,5 @@
 package com.mebigfatguy.fbcontrib.collect;
 
 public enum ImmutabilityType {
-    UNKNOWN, IMMUTABLE, POSSIBLY_IMMUTABLE, MUTABLE 
+    UNKNOWN, IMMUTABLE, POSSIBLY_IMMUTABLE, MUTABLE
 };

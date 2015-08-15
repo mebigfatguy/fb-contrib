@@ -7,7 +7,7 @@ public class SC_Sample {
     int t = 0;
 
     class SampleComparator implements Comparator<SC_Sample> {
-    	@Override
+        @Override
         public int compare(SC_Sample arg0, SC_Sample arg1) {
             if (arg0.t == arg1.t)
                 return 0;
@@ -17,7 +17,7 @@ public class SC_Sample {
     }
 
     class SampleComparable implements Comparable<SC_Sample> {
-    	@Override
+        @Override
         public int compareTo(SC_Sample arg0) {
             if (t == arg0.t)
                 return 0;

@@ -128,9 +128,9 @@ public class NAB_Sample {
     public Boolean testBooleanReturns() {
         return true;
     }
-    
+
     public Integer testfpTernary(Integer i, int[] data) {
-    	Integer j = (i == null) ? data.length : i;
-    	return j;
+        Integer j = (i == null) ? data.length : i;
+        return j;
     }
 }

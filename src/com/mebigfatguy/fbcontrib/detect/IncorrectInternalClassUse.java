@@ -17,6 +17,7 @@
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package com.mebigfatguy.fbcontrib.detect;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,14 +34,14 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for classes that use objects from com.sun.xxx packages. As these are internal
- * to sun and subject to change, this should not be done.
+ * looks for classes that use objects from com.sun.xxx packages. As these are
+ * internal to sun and subject to change, this should not be done.
  */
-public class IncorrectInternalClassUse implements Detector
-{
+public class IncorrectInternalClassUse implements Detector {
     private final BugReporter bugReporter;
     private static final Set<String> internalPackages = new HashSet<String>();
     private static final Set<String> externalPackages = new HashSet<String>();
+
     static {
         internalPackages.add("com/sun/");
         internalPackages.add("org/apache/xerces/");
@@ -54,17 +55,21 @@ public class IncorrectInternalClassUse implements Detector
 
     /**
      * constructs a IICU detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
      */
     public IncorrectInternalClassUse(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to look for classes that reference com.sun.xxx, or org.apache.xerces.xxx classes
-     * by looking for class constants in the constant pool
+     * implements the visitor to look for classes that reference com.sun.xxx, or
+     * org.apache.xerces.xxx classes by looking for class constants in the
+     * constant pool
      * 
-     * @param context the context object of the currently parsed class
+     * @param context
+     *            the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext context) {
@@ -77,9 +82,8 @@ public class IncorrectInternalClassUse implements Detector
                 if (c instanceof ConstantClass) {
                     String clsName = ((ConstantClass) c).getBytes(pool);
                     if (isInternal(clsName)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.IICU_INCORRECT_INTERNAL_CLASS_USE.name(), NORMAL_PRIORITY)
-                        .addClass(cls)
-                        .addString(clsName));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.IICU_INCORRECT_INTERNAL_CLASS_USE.name(), NORMAL_PRIORITY).addClass(cls).addString(clsName));
                     }
                 }
             }
@@ -94,9 +98,11 @@ public class IncorrectInternalClassUse implements Detector
     }
 
     /**
-     * determines if the class in question is an internal class by looking at package prefixes
+     * determines if the class in question is an internal class by looking at
+     * package prefixes
      * 
-     * @param clsName the name of the class to check
+     * @param clsName
+     *            the name of the class to check
      * @returns whether the class is internal
      */
     private static boolean isInternal(String clsName) {

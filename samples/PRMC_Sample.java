@@ -42,10 +42,10 @@ public class PRMC_Sample {
         Factory.getInstance().fo();
         Factory.getInstance().fum();
     }
-    
+
     public void repeatedEmptyArrays() {
-    	System.out.println(Arrays.asList(new Integer[0]));
-    	System.out.println(Arrays.asList(new Integer[0]));
+        System.out.println(Arrays.asList(new Integer[0]));
+        System.out.println(Arrays.asList(new Integer[0]));
     }
 
     static class Factory {
@@ -87,11 +87,11 @@ public class PRMC_Sample {
         s.add(FPEnum.fo.toString());
         s.add(FPEnum.fum.toString());
     }
-    
+
     public void emptyList() {
-    	List l = Collections.emptyList();
-    	List o = Collections.emptyList();
-    	List p = Collections.emptyList();
+        List l = Collections.emptyList();
+        List o = Collections.emptyList();
+        List p = Collections.emptyList();
     }
 
     enum FPEnum {
@@ -112,10 +112,10 @@ public class PRMC_Sample {
         SAMPLE2 = new PRMC_Sample();
         SAMPLE2.setValue(5);
     }
-    
+
     public void fpAsListLiterals() {
-    	System.out.println(Arrays.asList("foo"));
-    	System.out.println(Arrays.asList("bar"));
+        System.out.println(Arrays.asList("foo"));
+        System.out.println(Arrays.asList("bar"));
     }
 
     public void setValue(int i) {

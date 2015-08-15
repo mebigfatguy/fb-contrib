@@ -28,79 +28,80 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 
 /**
- * looks for problems surrounding use of HttpRequests from the Apache HttpComponents library which 
- * have have some little-known quirks about them. This is a set of detectors that helps guard 
- * against resource starvation.
+ * looks for problems surrounding use of HttpRequests from the Apache
+ * HttpComponents library which have have some little-known quirks about them.
+ * This is a set of detectors that helps guard against resource starvation.
  */
 public class HttpClientProblems extends MissingMethodsDetector {
 
-	private static Set<String> httpRequestClasses = new HashSet<String>();
-	static
-	{
+    private static Set<String> httpRequestClasses = new HashSet<String>();
+
+    static {
         httpRequestClasses.add("org.apache.http.client.methods.HttpGet");
         httpRequestClasses.add("org.apache.http.client.methods.HttpPut");
         httpRequestClasses.add("org.apache.http.client.methods.HttpDelete");
         httpRequestClasses.add("org.apache.http.client.methods.HttpPost");
         httpRequestClasses.add("org.apache.http.client.methods.HttpPatch");
-	}
+    }
 
-	private static Set<String> resetMethods = new HashSet<String>();
-	static
-	{
-		resetMethods.add("reset");
-		resetMethods.add("releaseConnection");
-	}
-	
-	
-	//Any methods that should not be treated as a "will call a reset method"
-	private static Set<String> whiteListMethods = new HashSet<String>();
-	static 
-	{
-		whiteListMethods.add("execute");
-		whiteListMethods.add("fatal");
-		whiteListMethods.add("error");
-		whiteListMethods.add("info");
-		whiteListMethods.add("debug");
-		whiteListMethods.add("trace");
-		whiteListMethods.add("println");
-		whiteListMethods.add("print");
-		whiteListMethods.add("format");
-		whiteListMethods.add("append");		//for when Java uses StringBuilders to append Strings
-	}
-	
-	
-	public HttpClientProblems(BugReporter bugReporter) {
-		super(bugReporter);
-	}
+    private static Set<String> resetMethods = new HashSet<String>();
 
-	@Override
-	protected BugInstance makeFieldBugInstance() {
-		return new BugInstance(this, BugType.HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD.name(), NORMAL_PRIORITY);
-	}
+    static {
+        resetMethods.add("reset");
+        resetMethods.add("releaseConnection");
+    }
 
-	@Override
-	protected BugInstance makeLocalBugInstance() {
-		return new BugInstance(this, BugType.HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL.name(), NORMAL_PRIORITY);
-	}
+    // Any methods that should not be treated as a "will call a reset method"
+    private static Set<String> whiteListMethods = new HashSet<String>();
 
-	@Override
-	protected boolean doesObjectNeedToBeWatched(String type) {
-		return httpRequestClasses.contains(type);
-	}
+    static {
+        whiteListMethods.add("execute");
+        whiteListMethods.add("fatal");
+        whiteListMethods.add("error");
+        whiteListMethods.add("info");
+        whiteListMethods.add("debug");
+        whiteListMethods.add("trace");
+        whiteListMethods.add("println");
+        whiteListMethods.add("print");
+        whiteListMethods.add("format");
+        whiteListMethods.add("append"); // for when Java uses StringBuilders to
+                                        // append Strings
+    }
 
-	@Override
-	protected boolean isMethodThatShouldBeCalled(String methodName) {
-		return resetMethods.contains(methodName);
-	}
-	
-	@Override
-	protected void processMethodParms() {
-		String nameConstantOperand = getNameConstantOperand();
-		//these requests are typically executed by being passed to an "execute()" method.  We know this doesn't
-		//close the resource, we don't want to remove objects just because they passed into this method
-		if (!whiteListMethods.contains(nameConstantOperand)) {
-			super.processMethodParms();
-		}
-	}
+    public HttpClientProblems(BugReporter bugReporter) {
+        super(bugReporter);
+    }
+
+    @Override
+    protected BugInstance makeFieldBugInstance() {
+        return new BugInstance(this, BugType.HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD.name(), NORMAL_PRIORITY);
+    }
+
+    @Override
+    protected BugInstance makeLocalBugInstance() {
+        return new BugInstance(this, BugType.HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL.name(), NORMAL_PRIORITY);
+    }
+
+    @Override
+    protected boolean doesObjectNeedToBeWatched(String type) {
+        return httpRequestClasses.contains(type);
+    }
+
+    @Override
+    protected boolean isMethodThatShouldBeCalled(String methodName) {
+        return resetMethods.contains(methodName);
+    }
+
+    @Override
+    protected void processMethodParms() {
+        String nameConstantOperand = getNameConstantOperand();
+        // these requests are typically executed by being passed to an
+        // "execute()" method. We know this doesn't
+        // close the resource, we don't want to remove objects just because they
+        // passed into this method
+        if (!whiteListMethods.contains(nameConstantOperand)) {
+            super.processMethodParms();
+        }
+    }
 
 }

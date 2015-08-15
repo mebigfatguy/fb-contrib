@@ -10,24 +10,25 @@ import javax.swing.SwingUtilities;
 
 @SuppressWarnings("all")
 public final class FCBL_Sample {
-    public int foo;				//no warning (scope)
-    private int moo;			//warning
-    private int boo;			//warning
-    int hoo;					//no warning (scope)
-    private int fp;				//no warning (read in method test2)	
-    private int multiMethodFP;	//no warning (used in a couple methods)
-    private String test;		//warning
-    private String testNestedIfs;//no warning (in one branch of the if, this is read first)
-    private int x = 1;			//warning
-    private int y = 2;			//no warning (read first in method1)
-    private boolean ret;		//warning (shielded in foo)
+    public int foo; // no warning (scope)
+    private int moo; // warning
+    private int boo; // warning
+    int hoo; // no warning (scope)
+    private int fp; // no warning (read in method test2)
+    private int multiMethodFP; // no warning (used in a couple methods)
+    private String test; // warning
+    private String testNestedIfs;// no warning (in one branch of the if, this is
+                                 // read first)
+    private int x = 1; // warning
+    private int y = 2; // no warning (read first in method1)
+    private boolean ret; // warning (shielded in foo)
     @FooAnnotation
-    private String notUsed;		//warning 
+    private String notUsed; // warning
     @FooAnnotation
-    private String used;		//no warning (annotation+stored)
+    private String used; // no warning (annotation+stored)
 
-    private String fooS = "Foo";	//warning
-    private String[] fooSS = { fooS };	//no warning (read in testInArray)
+    private String fooS = "Foo"; // warning
+    private String[] fooSS = { fooS }; // no warning (read in testInArray)
 
     public FCBL_Sample() {
         foo = 0;
@@ -37,8 +38,8 @@ public final class FCBL_Sample {
         fp = 4;
         used = "Hello";
         ret = false;
-        
-        //to mask standard URF_UNREAD_FIELD 
+
+        // to mask standard URF_UNREAD_FIELD
         System.out.println(foo + hoo + used + moo + boo + ret);
     }
 
@@ -76,28 +77,33 @@ public final class FCBL_Sample {
             }
         }
 
-        test = "WooWoo".toLowerCase(Locale.ENGLISH);		//hides the PME warning and the standard DM_CONVERT_CASE 
+        test = "WooWoo".toLowerCase(Locale.ENGLISH); // hides the PME warning
+                                                     // and the standard
+                                                     // DM_CONVERT_CASE
         if (in.length() > 1) {
-        	test = "woowoo";
-        	System.out.println(test);
+            test = "woowoo";
+            System.out.println(test);
         }
     }
-    
+
     public void testNestedIfs(String in) {
         boolean found = false;
         if ("boo".equals(in))
             testNestedIfs = "boo";
         else if ("hoo".equals(in))
-        	testNestedIfs = "hoo";
+            testNestedIfs = "hoo";
         else if ("moo".equals(in)) {
             if ("loo".equals(in) && !found) {
-                System.out.println(in+testNestedIfs);
+                System.out.println(in + testNestedIfs);
             }
         }
 
-        testNestedIfs = "WooWoo".toLowerCase(Locale.ENGLISH);		//hides the PME warning and the standard DM_CONVERT_CASE 
+        testNestedIfs = "WooWoo".toLowerCase(Locale.ENGLISH); // hides the PME
+                                                              // warning and the
+                                                              // standard
+                                                              // DM_CONVERT_CASE
         if (in.length() > 1) {
-        	testNestedIfs = "woowoo";
+            testNestedIfs = "woowoo";
         }
     }
 
@@ -135,17 +141,17 @@ public final class FCBL_Sample {
     @interface FooAnnotation {
 
     }
-    
+
     static class FieldNameCollisionFP {
-    	OutputStream out;
-    	
-    	public FieldNameCollisionFP(OutputStream out) {
-    		this.out = out;
-    	}
-    	
-    	public void collide() throws IOException {
-    		System.out.println("See out!");
-    		out.close();
-    	}
+        OutputStream out;
+
+        public FieldNameCollisionFP(OutputStream out) {
+            this.out = out;
+        }
+
+        public void collide() throws IOException {
+            System.out.println("See out!");
+            out.close();
+        }
     }
 }

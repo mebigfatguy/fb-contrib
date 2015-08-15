@@ -73,11 +73,11 @@ public class SUA_Sample {
         }
         return result;
     }
-    
+
     static class ThreadLocalFP extends ThreadLocal<byte[]> {
-		@Override
-		protected byte[] initialValue() {
-			return new byte[256];
-		}	
+        @Override
+        protected byte[] initialValue() {
+            return new byte[256];
+        }
     }
 }

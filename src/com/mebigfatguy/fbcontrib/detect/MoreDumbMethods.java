@@ -32,143 +32,140 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 /**
  * looks for method calls that are unsafe or might indicate bugs.
  */
-public class MoreDumbMethods extends BytecodeScanningDetector
-{
-	private static class ReportInfo {
-		private final String bugPattern;
-		private final int bugPriority;
-		
-		ReportInfo(String pattern, int priority) {
-			bugPattern = pattern;
-			bugPriority = priority;
-		}
-		
-		String getPattern() {
-			return bugPattern;
-		}
-		
-		int getPriority() {
-			return bugPriority;
-		}
-		
-		@Override
-		public String toString() {
-			return ToString.build(this);
-		}
-	}
-	
-	private final static Map<String,ReportInfo> dumbMethods = new HashMap<String,ReportInfo>();
-	static {
-		dumbMethods.put("java/lang/Runtime.exit(I)V",	new ReportInfo("MDM_RUNTIME_EXIT_OR_HALT", LOW_PRIORITY));
-		dumbMethods.put("java/lang/Runtime.halt(I)V",	new ReportInfo("MDM_RUNTIME_EXIT_OR_HALT", HIGH_PRIORITY));
-		
-		dumbMethods.put("java/lang/Runtime.runFinalization()V",	new ReportInfo("MDM_RUNFINALIZATION", NORMAL_PRIORITY));
-		dumbMethods.put("java/lang/System.runFinalization()V",	new ReportInfo("MDM_RUNFINALIZATION", NORMAL_PRIORITY));
-		
-		dumbMethods.put("java/math/BigDecimal.equals(Ljava/lang/Object;)Z", new ReportInfo("MDM_BIGDECIMAL_EQUALS", NORMAL_PRIORITY));
+public class MoreDumbMethods extends BytecodeScanningDetector {
+    private static class ReportInfo {
+        private final String bugPattern;
+        private final int bugPriority;
 
-		//
-		// Network checks
-		//
-		dumbMethods.put("java/net/InetAddress.getLocalHost()Ljava/net/InetAddress;", new ReportInfo("MDM_INETADDRESS_GETLOCALHOST", NORMAL_PRIORITY));
+        ReportInfo(String pattern, int priority) {
+            bugPattern = pattern;
+            bugPriority = priority;
+        }
 
-		dumbMethods.put("java/net/ServerSocket.<init>(I)V",	new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", NORMAL_PRIORITY));
-		dumbMethods.put("java/net/ServerSocket.<init>(II)V", new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", NORMAL_PRIORITY));
-		dumbMethods.put("javax/net/ServerSocketFactory.createServerSocket(I)Ljava/net/ServerSocket;", new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", LOW_PRIORITY));
-		dumbMethods.put("javax/net/ServerSocketFactory.createServerSocket(II)Ljava/net/ServerSocket;",	new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", LOW_PRIORITY));
+        String getPattern() {
+            return bugPattern;
+        }
 
-		//
-		// Random Number Generator checks
-		//
-		dumbMethods.put("java/util/Random.<init>()V",				new ReportInfo("MDM_RANDOM_SEED", LOW_PRIORITY));
+        int getPriority() {
+            return bugPriority;
+        }
 
-		//
-		// Thread checks
-		//
-		dumbMethods.put("java/lang/Thread.getPriority()I",    new ReportInfo("MDM_THREAD_PRIORITIES", LOW_PRIORITY));
-		dumbMethods.put("java/lang/Thread.setPriority(I)V",   new ReportInfo("MDM_THREAD_PRIORITIES", LOW_PRIORITY));
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    }
 
-		dumbMethods.put("java/lang/Thread.sleep(J)V",	new ReportInfo("MDM_THREAD_YIELD", LOW_PRIORITY));
-		dumbMethods.put("java/lang/Thread.sleep(JI)V",	new ReportInfo("MDM_THREAD_YIELD", LOW_PRIORITY));
-		dumbMethods.put("java/lang/Thread.yield()V",	new ReportInfo("MDM_THREAD_YIELD", NORMAL_PRIORITY));
+    private final static Map<String, ReportInfo> dumbMethods = new HashMap<String, ReportInfo>();
 
-		dumbMethods.put("java/lang/Thread.join()V", 						new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
-		dumbMethods.put("java/lang/Object.wait()V",							new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
-		dumbMethods.put("java/util/concurrent/locks/Condition.await()V",	new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
-		dumbMethods.put("java/util/concurrent/locks/Lock.lock()V",			new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
-		dumbMethods.put("java/util/concurrent/locks/Lock.lockInterruptibly()V",	new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
-		dumbMethods.put("java/util/concurrent/locks/ReentrantLock.lock()V",	new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
-		dumbMethods.put("java/util/concurrent/locks/ReentrantLock.lockInterruptibly()V",	new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
+    static {
+        dumbMethods.put("java/lang/Runtime.exit(I)V", new ReportInfo("MDM_RUNTIME_EXIT_OR_HALT", LOW_PRIORITY));
+        dumbMethods.put("java/lang/Runtime.halt(I)V", new ReportInfo("MDM_RUNTIME_EXIT_OR_HALT", HIGH_PRIORITY));
 
-		dumbMethods.put("java/util/concurrent/locks/Condition.signal()V",	new ReportInfo("MDM_SIGNAL_NOT_SIGNALALL", NORMAL_PRIORITY));
-		
-		dumbMethods.put("java/util/concurrent/locks/Lock.tryLock()Z",			new ReportInfo("MDM_THREAD_FAIRNESS", LOW_PRIORITY));
-		dumbMethods.put("java/util/concurrent/locks/ReentrantLock.tryLock()Z",	new ReportInfo("MDM_THREAD_FAIRNESS", LOW_PRIORITY));
+        dumbMethods.put("java/lang/Runtime.runFinalization()V", new ReportInfo("MDM_RUNFINALIZATION", NORMAL_PRIORITY));
+        dumbMethods.put("java/lang/System.runFinalization()V", new ReportInfo("MDM_RUNFINALIZATION", NORMAL_PRIORITY));
 
-		dumbMethods.put("java/util/concurrent/locks/ReentrantLock.isHeldByCurrentThread()Z",	new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
-		dumbMethods.put("java/util/concurrent/locks/ReentrantLock.isLocked()Z",	new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
+        dumbMethods.put("java/math/BigDecimal.equals(Ljava/lang/Object;)Z", new ReportInfo("MDM_BIGDECIMAL_EQUALS", NORMAL_PRIORITY));
 
-		//
-		// String checks
-		//
-		dumbMethods.put("java/lang/String.<init>([B)V",		new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
-		dumbMethods.put("java/lang/String.getBytes()[B",	new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
-		dumbMethods.put("java/util/Locale.setDefault(Ljava/util/Locale;)V", new ReportInfo("MDM_SETDEFAULTLOCALE", NORMAL_PRIORITY));
-	}
-	
-	private final BugReporter bugReporter;
-	
-	/**
-	 * constructs an MDM detector given the reporter to report bugs on
-	 * @param bugReporter the sync of bug reports
-	 */
-	public MoreDumbMethods(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-	
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-	    if (classContext.getJavaClass().getMajor() <= MAJOR_1_5) {
-	        dumbMethods.put("java/security/SecureRandom.<init>()V",     new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
-	        dumbMethods.put("java/security/SecureRandom.<init>([B)V",   new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
-	        dumbMethods.put("java/security/SecureRandom.getSeed(I)[B",  new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
-	    } else {
-	        dumbMethods.remove("java/security/SecureRandom.<init>()V");
-	        dumbMethods.remove("java/security/SecureRandom.<init>([B)V");
-	        dumbMethods.remove("java/security/SecureRandom.getSeed(I)[B");
-	    }
-	    
-	    // TODO Auto-generated method stub
-	    super.visitClassContext(classContext);
-	}
-	
-	@Override
-	public void sawOpcode(int seen) {
-		
-		if (seen == INVOKEVIRTUAL 
-			|| seen == INVOKEINTERFACE
-			|| seen == INVOKESPECIAL
-			|| seen == INVOKESTATIC) {	
-			final ReportInfo info = dumbMethods.get(getMethodSignature());
-			if (info != null) {
-				reportBug(info);
-			}
-		}
-	}
+        //
+        // Network checks
+        //
+        dumbMethods.put("java/net/InetAddress.getLocalHost()Ljava/net/InetAddress;", new ReportInfo("MDM_INETADDRESS_GETLOCALHOST", NORMAL_PRIORITY));
 
-	private String getMethodSignature() {
-		final String className  = getClassConstantOperand();
-		final String methodName = getNameConstantOperand();
-		final String methodSig  = getSigConstantOperand();
-		return String.format("%s.%s%s", className, methodName, methodSig);
-	}
+        dumbMethods.put("java/net/ServerSocket.<init>(I)V", new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", NORMAL_PRIORITY));
+        dumbMethods.put("java/net/ServerSocket.<init>(II)V", new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", NORMAL_PRIORITY));
+        dumbMethods.put("javax/net/ServerSocketFactory.createServerSocket(I)Ljava/net/ServerSocket;",
+                new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", LOW_PRIORITY));
+        dumbMethods.put("javax/net/ServerSocketFactory.createServerSocket(II)Ljava/net/ServerSocket;",
+                new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", LOW_PRIORITY));
 
+        //
+        // Random Number Generator checks
+        //
+        dumbMethods.put("java/util/Random.<init>()V", new ReportInfo("MDM_RANDOM_SEED", LOW_PRIORITY));
 
-	private void reportBug(ReportInfo info) {
-		bugReporter.reportBug(new BugInstance(this, info.getPattern(), info.getPriority())
-				.addClass(this)
-				.addMethod(this)
-				.addCalledMethod(this)
-				.addSourceLine(this));
-	}
+        //
+        // Thread checks
+        //
+        dumbMethods.put("java/lang/Thread.getPriority()I", new ReportInfo("MDM_THREAD_PRIORITIES", LOW_PRIORITY));
+        dumbMethods.put("java/lang/Thread.setPriority(I)V", new ReportInfo("MDM_THREAD_PRIORITIES", LOW_PRIORITY));
+
+        dumbMethods.put("java/lang/Thread.sleep(J)V", new ReportInfo("MDM_THREAD_YIELD", LOW_PRIORITY));
+        dumbMethods.put("java/lang/Thread.sleep(JI)V", new ReportInfo("MDM_THREAD_YIELD", LOW_PRIORITY));
+        dumbMethods.put("java/lang/Thread.yield()V", new ReportInfo("MDM_THREAD_YIELD", NORMAL_PRIORITY));
+
+        dumbMethods.put("java/lang/Thread.join()V", new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
+        dumbMethods.put("java/lang/Object.wait()V", new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
+        dumbMethods.put("java/util/concurrent/locks/Condition.await()V", new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
+        dumbMethods.put("java/util/concurrent/locks/Lock.lock()V", new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
+        dumbMethods.put("java/util/concurrent/locks/Lock.lockInterruptibly()V", new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
+        dumbMethods.put("java/util/concurrent/locks/ReentrantLock.lock()V", new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
+        dumbMethods.put("java/util/concurrent/locks/ReentrantLock.lockInterruptibly()V", new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
+
+        dumbMethods.put("java/util/concurrent/locks/Condition.signal()V", new ReportInfo("MDM_SIGNAL_NOT_SIGNALALL", NORMAL_PRIORITY));
+
+        dumbMethods.put("java/util/concurrent/locks/Lock.tryLock()Z", new ReportInfo("MDM_THREAD_FAIRNESS", LOW_PRIORITY));
+        dumbMethods.put("java/util/concurrent/locks/ReentrantLock.tryLock()Z", new ReportInfo("MDM_THREAD_FAIRNESS", LOW_PRIORITY));
+
+        dumbMethods.put("java/util/concurrent/locks/ReentrantLock.isHeldByCurrentThread()Z", new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
+        dumbMethods.put("java/util/concurrent/locks/ReentrantLock.isLocked()Z", new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
+
+        //
+        // String checks
+        //
+        dumbMethods.put("java/lang/String.<init>([B)V", new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
+        dumbMethods.put("java/lang/String.getBytes()[B", new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
+        dumbMethods.put("java/util/Locale.setDefault(Ljava/util/Locale;)V", new ReportInfo("MDM_SETDEFAULTLOCALE", NORMAL_PRIORITY));
+    }
+
+    private final BugReporter bugReporter;
+
+    /**
+     * constructs an MDM detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public MoreDumbMethods(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        if (classContext.getJavaClass().getMajor() <= MAJOR_1_5) {
+            dumbMethods.put("java/security/SecureRandom.<init>()V", new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
+            dumbMethods.put("java/security/SecureRandom.<init>([B)V", new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
+            dumbMethods.put("java/security/SecureRandom.getSeed(I)[B", new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
+        } else {
+            dumbMethods.remove("java/security/SecureRandom.<init>()V");
+            dumbMethods.remove("java/security/SecureRandom.<init>([B)V");
+            dumbMethods.remove("java/security/SecureRandom.getSeed(I)[B");
+        }
+
+        // TODO Auto-generated method stub
+        super.visitClassContext(classContext);
+    }
+
+    @Override
+    public void sawOpcode(int seen) {
+
+        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
+            final ReportInfo info = dumbMethods.get(getMethodSignature());
+            if (info != null) {
+                reportBug(info);
+            }
+        }
+    }
+
+    private String getMethodSignature() {
+        final String className = getClassConstantOperand();
+        final String methodName = getNameConstantOperand();
+        final String methodSig = getSigConstantOperand();
+        return String.format("%s.%s%s", className, methodName, methodSig);
+    }
+
+    private void reportBug(ReportInfo info) {
+        bugReporter.reportBug(
+                new BugInstance(this, info.getPattern(), info.getPriority()).addClass(this).addMethod(this).addCalledMethod(this).addSourceLine(this));
+    }
 }

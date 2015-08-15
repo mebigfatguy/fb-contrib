@@ -38,11 +38,10 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for calls to HttpRequest.getParameter with parameters of the same
- * name with different cases like 'id' and 'Id'.
+ * looks for calls to HttpRequest.getParameter with parameters of the same name
+ * with different cases like 'id' and 'Id'.
  */
-public class InconsistentKeyNameCasing extends BytecodeScanningDetector
-{	
+public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     private static final String HTTP_SESSION = "javax/servlet/http/HttpSession";
     private static final String HTTP_SERVLET_REQUEST = "javax/servlet/http/HttpServletRequest";
     private static final String GET_ATTRIBUTE = "getAttribute";
@@ -51,29 +50,30 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
     private static final String GET_ATTRIBUTE_SIG = "(Ljava/lang/String;)Ljava/lang/Object;";
     private static final String SET_ATTRIBUTE_SIG = "(Ljava/lang/String;Ljava/lang/Object;)V";
     private static final String GET_PARAMETER_SIG = "(Ljava/lang/String;)Ljava/lang/String;";
-	
-    enum KeyType { 
-    	ATTRIBUTE("IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING"), 
-    	PARAMETER("IKNC_INCONSISTENT_HTTP_PARAM_CASING");
-    	
-    	private String key;
-    	
-    	KeyType(String descriptionKey) {
-    		key = descriptionKey;
-    	}
-    	
-    	public String getDescription() {
-    		return key;
-    	}
+
+    enum KeyType {
+        ATTRIBUTE("IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING"), PARAMETER("IKNC_INCONSISTENT_HTTP_PARAM_CASING");
+
+        private String key;
+
+        KeyType(String descriptionKey) {
+            key = descriptionKey;
+        }
+
+        public String getDescription() {
+            return key;
+        }
     }
-    
+
     BugReporter bugReporter;
     OpcodeStack stack;
     Map<KeyType, Map<String, Map<String, List<SourceInfo>>>> parmInfo;
-    
+
     /**
      * constructs a IKNC detector given the reporter to report bugs on
-     * @param reporter the sync of bug reports
+     * 
+     * @param reporter
+     *            the sync of bug reports
      */
     public InconsistentKeyNameCasing(BugReporter reporter) {
         bugReporter = reporter;
@@ -81,10 +81,12 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
         parmInfo.put(KeyType.ATTRIBUTE, new HashMap<String, Map<String, List<SourceInfo>>>());
         parmInfo.put(KeyType.PARAMETER, new HashMap<String, Map<String, List<SourceInfo>>>());
     }
-    
+
     /**
      * implements the visitor to create the opcode stack
-     * @param classContext the context object of the currently parsed class
+     * 
+     * @param classContext
+     *            the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -95,36 +97,39 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
             stack = null;
         }
     }
-    
+
     /**
      * implements the visitor to reset the opcode stack for a new method
-     * @param obj the context object of the currently parsed code block
+     * 
+     * @param obj
+     *            the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         super.visitCode(obj);
     }
-    
+
     /**
-     * implements the visitor to look for calls to HttpServletRequest.getParameter
-     * and collect what the name of the key is.
-     * @param seen the opcode of the currently parsed instruction
+     * implements the visitor to look for calls to
+     * HttpServletRequest.getParameter and collect what the name of the key is.
+     * 
+     * @param seen
+     *            the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
         try {
             stack.precomputation(this);
-            
+
             if (seen == INVOKEINTERFACE) {
-            	KeyType type = isKeyAccessMethod(seen);
-            	if (type != null) {
-            		int numParms = Type.getArgumentTypes(getSigConstantOperand()).length;
+                KeyType type = isKeyAccessMethod(seen);
+                if (type != null) {
+                    int numParms = Type.getArgumentTypes(getSigConstantOperand()).length;
                     if (stack.getStackDepth() >= numParms) {
                         OpcodeStack.Item item = stack.getStackItem(numParms - 1);
-                        String parmName = (String)item.getConstant();
-                        if (parmName != null)
-                        {
+                        String parmName = (String) item.getConstant();
+                        if (parmName != null) {
                             String upperParmName = parmName.toUpperCase(Locale.getDefault());
                             Map<String, Map<String, List<SourceInfo>>> typeMap = parmInfo.get(KeyType.PARAMETER);
                             Map<String, List<SourceInfo>> parmCaseInfo = typeMap.get(upperParmName);
@@ -132,55 +137,56 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
                                 parmCaseInfo = new HashMap<String, List<SourceInfo>>();
                                 typeMap.put(upperParmName, parmCaseInfo);
                             }
-                            
+
                             List<SourceInfo> annotations = parmCaseInfo.get(parmName);
                             if (annotations == null) {
                                 annotations = new ArrayList<SourceInfo>();
                                 parmCaseInfo.put(parmName, annotations);
                             }
-                            
-                            annotations.add(new SourceInfo(getClassName(), getMethodName(), getMethodSig(), getMethod().isStatic(), SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, getPC())));
+
+                            annotations.add(new SourceInfo(getClassName(), getMethodName(), getMethodSig(), getMethod().isStatic(),
+                                    SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, getPC())));
                         }
                     }
-            	}
+                }
             }
         } finally {
             stack.sawOpcode(this, seen);
         }
     }
-    
+
     /**
-     * implements the visitor to look for the collected parm names, and look for duplicates that are 
-     * different in casing only.
+     * implements the visitor to look for the collected parm names, and look for
+     * duplicates that are different in casing only.
      */
     @Override
     public void report() {
-    	for (Map.Entry<KeyType, Map<String, Map<String, List<SourceInfo>>>> entry : parmInfo.entrySet()) {
-    		KeyType type = entry.getKey();
-    		Map<String, Map<String, List<SourceInfo>>> typeMap = entry.getValue();
+        for (Map.Entry<KeyType, Map<String, Map<String, List<SourceInfo>>>> entry : parmInfo.entrySet()) {
+            KeyType type = entry.getKey();
+            Map<String, Map<String, List<SourceInfo>>> typeMap = entry.getValue();
 
-	        for (Map<String, List<SourceInfo>> parmCaseInfo : typeMap.values()) {
-	            if (parmCaseInfo.size() > 1) {
-	               BugInstance bi = new BugInstance(this, type.getDescription(), NORMAL_PRIORITY);
-	                
-	               for (Map.Entry<String, List<SourceInfo>> sourceInfos :parmCaseInfo.entrySet()) {
-	                   for (SourceInfo sourceInfo : sourceInfos.getValue()) {
-	                       bi.addClass(sourceInfo.clsName);
-	                       bi.addMethod(sourceInfo.clsName, sourceInfo.methodName, sourceInfo.signature, sourceInfo.isStatic);
-	                       bi.addSourceLine(sourceInfo.srcLine);
-	                   	   bi.addString(sourceInfos.getKey());
-	                   }
-	               }
-	               
-	               bugReporter.reportBug(bi);
-	            }
-	        }
-    	}
+            for (Map<String, List<SourceInfo>> parmCaseInfo : typeMap.values()) {
+                if (parmCaseInfo.size() > 1) {
+                    BugInstance bi = new BugInstance(this, type.getDescription(), NORMAL_PRIORITY);
+
+                    for (Map.Entry<String, List<SourceInfo>> sourceInfos : parmCaseInfo.entrySet()) {
+                        for (SourceInfo sourceInfo : sourceInfos.getValue()) {
+                            bi.addClass(sourceInfo.clsName);
+                            bi.addMethod(sourceInfo.clsName, sourceInfo.methodName, sourceInfo.signature, sourceInfo.isStatic);
+                            bi.addSourceLine(sourceInfo.srcLine);
+                            bi.addString(sourceInfos.getKey());
+                        }
+                    }
+
+                    bugReporter.reportBug(bi);
+                }
+            }
+        }
         parmInfo.clear();
     }
-    
+
     private KeyType isKeyAccessMethod(int seen) {
-    	if (seen == INVOKEINTERFACE) {
+        if (seen == INVOKEINTERFACE) {
             String clsName = getClassConstantOperand();
             if (HTTP_SESSION.equals(clsName)) {
                 String methodName = getNameConstantOperand();
@@ -198,21 +204,21 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
                     return (GET_PARAMETER_SIG.equals(signature)) ? KeyType.PARAMETER : null;
                 }
             }
-    	}
-    	
-    	return null;
+        }
+
+        return null;
     }
+
     /**
      * a holder for location information of a getParameter call
      */
-    static class SourceInfo
-    {
+    static class SourceInfo {
         String clsName;
         String methodName;
         String signature;
         boolean isStatic;
         SourceLineAnnotation srcLine;
-        
+
         SourceInfo(String cls, String method, String sig, boolean mStatic, SourceLineAnnotation annotation) {
             clsName = cls;
             methodName = method;
@@ -220,10 +226,10 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector
             isStatic = mStatic;
             srcLine = annotation;
         }
-        
+
         @Override
         public String toString() {
-        	return ToString.build(this);
+            return ToString.build(this);
         }
     }
 }

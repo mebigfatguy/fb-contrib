@@ -46,118 +46,118 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
-	private static final Set<String> GRAPHICS_PRODUCERS = new HashSet<String>(2);
-	static {
-		GRAPHICS_PRODUCERS.add("java/awt/image/BufferedImage#getGraphics()Ljava/awt/Graphics;");
-		GRAPHICS_PRODUCERS.add("java/awt/Graphics#create()Ljava/awt/Graphics;");
-	}
+    private static final Set<String> GRAPHICS_PRODUCERS = new HashSet<String>(2);
 
-	private final BugReporter bugReporter;
-	private OpcodeStack stack;
-	private Map<Integer, Integer> graphicsRegs; // reg->pc
+    static {
+        GRAPHICS_PRODUCERS.add("java/awt/image/BufferedImage#getGraphics()Ljava/awt/Graphics;");
+        GRAPHICS_PRODUCERS.add("java/awt/Graphics#create()Ljava/awt/Graphics;");
+    }
 
-	public LingeringGraphicsObjects(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    private final BugReporter bugReporter;
+    private OpcodeStack stack;
+    private Map<Integer, Integer> graphicsRegs; // reg->pc
 
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			stack = new OpcodeStack();
-			graphicsRegs = new HashMap<Integer, Integer>(5);
-			super.visitClassContext(classContext);
-		} finally {
-			stack = null;
-			graphicsRegs = null;
-		}
-	}
+    public LingeringGraphicsObjects(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	@Override
-	public void visitCode(Code obj) {
-		stack.resetForMethodEntry(this);
-		graphicsRegs.clear();
-		super.visitCode(obj);
-		for (Integer pc : graphicsRegs.values()) {
-			bugReporter.reportBug(new BugInstance(this, BugType.LGO_LINGERING_GRAPHICS_OBJECT.name(), NORMAL_PRIORITY)
-					.addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
-		}
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            stack = new OpcodeStack();
+            graphicsRegs = new HashMap<Integer, Integer>(5);
+            super.visitClassContext(classContext);
+        } finally {
+            stack = null;
+            graphicsRegs = null;
+        }
+    }
 
-	}
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        graphicsRegs.clear();
+        super.visitCode(obj);
+        for (Integer pc : graphicsRegs.values()) {
+            bugReporter.reportBug(new BugInstance(this, BugType.LGO_LINGERING_GRAPHICS_OBJECT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                    .addSourceLine(this, pc.intValue()));
+        }
 
-	@Override
-	public void sawOpcode(int seen) {
-		Integer sawNewGraphicsAt = null;
-		try {
-	        stack.precomputation(this);
-	        
-			switch (seen) {
-				case ALOAD:
-				case ALOAD_0:
-				case ALOAD_1:
-				case ALOAD_2:
-				case ALOAD_3: {
-					int reg = RegisterUtils.getALoadReg(this, seen);
-					sawNewGraphicsAt = graphicsRegs.get(Integer.valueOf(reg));
-				}
-				break;
+    }
 
-				case ASTORE:
-				case ASTORE_0:
-				case ASTORE_1:
-				case ASTORE_2:
-				case ASTORE_3: {
-					if (stack.getStackDepth() > 0) {
-						OpcodeStack.Item item = stack.getStackItem(0);
-						sawNewGraphicsAt = (Integer) item.getUserValue();
+    @Override
+    public void sawOpcode(int seen) {
+        Integer sawNewGraphicsAt = null;
+        try {
+            stack.precomputation(this);
 
-						Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-						if (sawNewGraphicsAt != null) {
-							graphicsRegs.put(reg, sawNewGraphicsAt);
-						} else {
-							graphicsRegs.remove(reg);
-						}
-						sawNewGraphicsAt = null;
-					}
-				}
-				break;
+            switch (seen) {
+            case ALOAD:
+            case ALOAD_0:
+            case ALOAD_1:
+            case ALOAD_2:
+            case ALOAD_3: {
+                int reg = RegisterUtils.getALoadReg(this, seen);
+                sawNewGraphicsAt = graphicsRegs.get(Integer.valueOf(reg));
+            }
+                break;
 
-				case ARETURN:
-					if (stack.getStackDepth() > 0) {
-						OpcodeStack.Item item = stack.getStackItem(0);
-						graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
-					}
-				break;
+            case ASTORE:
+            case ASTORE_0:
+            case ASTORE_1:
+            case ASTORE_2:
+            case ASTORE_3: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    sawNewGraphicsAt = (Integer) item.getUserValue();
 
-				case INVOKEVIRTUAL:
-					String clsName = getClassConstantOperand();
-					String methodName = getNameConstantOperand();
-					String methodSig = getSigConstantOperand();
-					String methodInfo = clsName + "#" + methodName + methodSig;
-					if (GRAPHICS_PRODUCERS.contains(methodInfo)) {
-						sawNewGraphicsAt = Integer.valueOf(getPC());
-					} else {
-						if (("java/awt/Graphics#dispose()V".equals(methodInfo))
-								|| ("java/awt/Graphics2D#dispose()V".equals(methodInfo))) {
-							if (stack.getStackDepth() > 0) {
-								OpcodeStack.Item item = stack.getStackItem(0);
-								graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
-							}
-						}
-					}
-				break;
-				default:
-					break;
-			}
-		} finally {
-			TernaryPatcher.pre(stack, seen);
-			stack.sawOpcode(this, seen);
-			TernaryPatcher.post(stack, seen);
-			if (sawNewGraphicsAt != null) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					item.setUserValue(sawNewGraphicsAt);
-				}
-			}
-		}
-	}
+                    Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
+                    if (sawNewGraphicsAt != null) {
+                        graphicsRegs.put(reg, sawNewGraphicsAt);
+                    } else {
+                        graphicsRegs.remove(reg);
+                    }
+                    sawNewGraphicsAt = null;
+                }
+            }
+                break;
+
+            case ARETURN:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
+                }
+                break;
+
+            case INVOKEVIRTUAL:
+                String clsName = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
+                String methodSig = getSigConstantOperand();
+                String methodInfo = clsName + "#" + methodName + methodSig;
+                if (GRAPHICS_PRODUCERS.contains(methodInfo)) {
+                    sawNewGraphicsAt = Integer.valueOf(getPC());
+                } else {
+                    if (("java/awt/Graphics#dispose()V".equals(methodInfo)) || ("java/awt/Graphics2D#dispose()V".equals(methodInfo))) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
+                        }
+                    }
+                }
+                break;
+            default:
+                break;
+            }
+        } finally {
+            TernaryPatcher.pre(stack, seen);
+            stack.sawOpcode(this, seen);
+            TernaryPatcher.post(stack, seen);
+            if (sawNewGraphicsAt != null) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(sawNewGraphicsAt);
+                }
+            }
+        }
+    }
 }

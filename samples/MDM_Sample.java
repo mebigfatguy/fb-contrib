@@ -47,10 +47,10 @@ public class MDM_Sample implements Runnable {
 
         { // RNG tests
             Random r = new Random();// WARNING
-            touch(r); 
+            touch(r);
             byte[] seed = SecureRandom.getSeed(1); // WARNING (jdk 1.5 or older)
-            r = new SecureRandom(seed);  //WARNING (jdk 1.5 or older)
-            touch(r); 
+            r = new SecureRandom(seed); // WARNING (jdk 1.5 or older)
+            touch(r);
         }
 
         { // Thread tests

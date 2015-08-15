@@ -33,56 +33,61 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * looks for fields in serializable classes that are defined as both final and
- * transient. As a transient field is not initialized when streamed, and is not 
- * initialized in a constructor, it will remain null because it is defined final.
+ * transient. As a transient field is not initialized when streamed, and is not
+ * initialized in a constructor, it will remain null because it is defined
+ * final.
  */
 public class NonFunctionalField extends PreorderVisitor implements Detector {
-	
-	private static JavaClass serializableClass;
-	
-	static {
-		try {
-			serializableClass = Repository.lookupClass("java/io/Serializable");
-		} catch (ClassNotFoundException cnfe) {
-			serializableClass = null;
-		}
-	}
-	
-	private BugReporter bugReporter;
-	/**
-     * constructs a NFF detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
-	 */
-	public NonFunctionalField(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-	
-	/**
-	 * checks to see if the class is Serializable, then looks for fields
-	 * that are both final and transient
-	 * @param classContext the context object of the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			JavaClass cls = classContext.getJavaClass();
-			if ((serializableClass != null) && (cls.implementationOf(serializableClass))) {
-				Field[] fields = cls.getFields();
-				setupVisitorForClass(cls);
-				for (Field f : fields) {
-					if (!f.isStatic() && f.isFinal() && f.isTransient()) {
-						bugReporter.reportBug(new BugInstance(this, BugType.NFF_NON_FUNCTIONAL_FIELD.name(), Priorities.NORMAL_PRIORITY)
-						           .addClass(this)
-						           .addField(cls.getClassName(), f.getName(), f.getSignature(), f.getAccessFlags()));
-					}
-				}
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		}
-	}
 
-	@Override
-	public void report() {
-	}
+    private static JavaClass serializableClass;
+
+    static {
+        try {
+            serializableClass = Repository.lookupClass("java/io/Serializable");
+        } catch (ClassNotFoundException cnfe) {
+            serializableClass = null;
+        }
+    }
+
+    private BugReporter bugReporter;
+
+    /**
+     * constructs a NFF detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public NonFunctionalField(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    /**
+     * checks to see if the class is Serializable, then looks for fields that
+     * are both final and transient
+     * 
+     * @param classContext
+     *            the context object of the currently parsed class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            JavaClass cls = classContext.getJavaClass();
+            if ((serializableClass != null) && (cls.implementationOf(serializableClass))) {
+                Field[] fields = cls.getFields();
+                setupVisitorForClass(cls);
+                for (Field f : fields) {
+                    if (!f.isStatic() && f.isFinal() && f.isTransient()) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.NFF_NON_FUNCTIONAL_FIELD.name(), Priorities.NORMAL_PRIORITY).addClass(this)
+                                .addField(cls.getClassName(), f.getName(), f.getSignature(), f.getAccessFlags()));
+                    }
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+    }
+
+    @Override
+    public void report() {
+    }
 }

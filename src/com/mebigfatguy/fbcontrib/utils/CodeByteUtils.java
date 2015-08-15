@@ -19,36 +19,38 @@
 package com.mebigfatguy.fbcontrib.utils;
 
 /**
- * a collection of static methods for working with retrieving 
- * arbitrary code bytes in a code byte array
+ * a collection of static methods for working with retrieving arbitrary code
+ * bytes in a code byte array
  *
  */
 public class CodeByteUtils {
-	
-    private CodeByteUtils() {       
+
+    private CodeByteUtils() {
     }
-    
-	/**
-	 * returns the code byte at a specific offset as an int
-	 * 
-	 * @param bytes the code bytes
-	 * @param offset the offset into the code
-	 * @return the byte as an int
-	 */
-	public static int getbyte(byte[] bytes, int offset)
-	{
-		return (0x00FF & bytes[offset]);	
-	}
-	
-	/**
-	 * returns the code short at a specific offset as an int
-	 * 
-	 * @param bytes the code bytes
-	 * @param offset the offset into the code
-	 * @return the short as an int
-	 */
-	public static int getshort(byte[] bytes, int offset)
-	{
-		return (short)((0x0000FFFF & (bytes[offset] << 8)) | (0x00FF & bytes[offset+1]));
-	}
+
+    /**
+     * returns the code byte at a specific offset as an int
+     * 
+     * @param bytes
+     *            the code bytes
+     * @param offset
+     *            the offset into the code
+     * @return the byte as an int
+     */
+    public static int getbyte(byte[] bytes, int offset) {
+        return (0x00FF & bytes[offset]);
+    }
+
+    /**
+     * returns the code short at a specific offset as an int
+     * 
+     * @param bytes
+     *            the code bytes
+     * @param offset
+     *            the offset into the code
+     * @return the short as an int
+     */
+    public static int getshort(byte[] bytes, int offset) {
+        return (short) ((0x0000FFFF & (bytes[offset] << 8)) | (0x00FF & bytes[offset + 1]));
+    }
 }

@@ -34,24 +34,24 @@ public class ICA_Sample {
     public void testJScrollBar() {
         JScrollBar b = new JScrollBar(3);
     }
-    
+
     public BigDecimal testBigDecimalDivide() {
-    	BigDecimal n = new BigDecimal("4.5");
-    	BigDecimal d = new BigDecimal("2.0");
-    	
-    	BigDecimal r = n.divide(d, 12);
-    	r = r.divide(n, 1, 12);
-    	r.setScale(1, 12);
-    	return r;
+        BigDecimal n = new BigDecimal("4.5");
+        BigDecimal d = new BigDecimal("2.0");
+
+        BigDecimal r = n.divide(d, 12);
+        r = r.divide(n, 1, 12);
+        r.setScale(1, 12);
+        return r;
     }
-    
+
     public void testSQLStatement(Connection c) throws SQLException {
-    	
-    	try (Statement s = c.createStatement(ResultSet.CONCUR_READ_ONLY, ResultSet.TYPE_FORWARD_ONLY)) { 
-    	}
-    	
-    	try (PreparedStatement s = c.prepareStatement("SELECT BOO FROM HOO", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_INSENSITIVE)) {
-    	}
+
+        try (Statement s = c.createStatement(ResultSet.CONCUR_READ_ONLY, ResultSet.TYPE_FORWARD_ONLY)) {
+        }
+
+        try (PreparedStatement s = c.prepareStatement("SELECT BOO FROM HOO", ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_INSENSITIVE)) {
+        }
     }
 
     public void fpICA() {

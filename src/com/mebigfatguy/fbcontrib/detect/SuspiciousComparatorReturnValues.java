@@ -35,127 +35,125 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for class that implement Comparator or Comparable, and whose compare or compareTo
- * methods return constant values only, but that don't represent the three possible choice
- * (a negative number, 0, and a positive number).
+ * looks for class that implement Comparator or Comparable, and whose compare or
+ * compareTo methods return constant values only, but that don't represent the
+ * three possible choice (a negative number, 0, and a positive number).
  */
-public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector 
-{
-	private static Map<JavaClass, String> compareClasses = new HashMap<JavaClass, String>();
-	static {
-		try {
-			compareClasses.put(Repository.lookupClass("java/lang/Comparable"), "compareTo:1:I");
-			compareClasses.put(Repository.lookupClass("java/util/Comparator"), "compare:2:I");
-		} catch (ClassNotFoundException cnfe) {
-			//don't have a bugReporter yet, so do nothing
-		}
-	}
-	
-	private OpcodeStack stack;
-	private final BugReporter bugReporter;
-	private String[] methodInfo;
-	private boolean indeterminate;
-	private boolean seenNegative;
-	private boolean seenPositive;
-	private boolean seenZero;
-	
-	
-	/**
+public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
+    private static Map<JavaClass, String> compareClasses = new HashMap<JavaClass, String>();
+
+    static {
+        try {
+            compareClasses.put(Repository.lookupClass("java/lang/Comparable"), "compareTo:1:I");
+            compareClasses.put(Repository.lookupClass("java/util/Comparator"), "compare:2:I");
+        } catch (ClassNotFoundException cnfe) {
+            // don't have a bugReporter yet, so do nothing
+        }
+    }
+
+    private OpcodeStack stack;
+    private final BugReporter bugReporter;
+    private String[] methodInfo;
+    private boolean indeterminate;
+    private boolean seenNegative;
+    private boolean seenPositive;
+    private boolean seenZero;
+
+    /**
      * constructs a DRE detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
-	 */
-	public SuspiciousComparatorReturnValues(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-	
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			JavaClass cls = classContext.getJavaClass();
-			for (Map.Entry<JavaClass, String> entry : compareClasses.entrySet()) {
-				if (cls.implementationOf(entry.getKey())) {
-					methodInfo = entry.getValue().split(":");
-					stack = new OpcodeStack();
-					super.visitClassContext(classContext);
-					break;
-				}
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		} finally {
-			methodInfo = null;
-			stack = null;
-		}
-	}
-	
-	@Override
-	public void visitCode(Code obj) {
-		if (getMethod().isSynthetic()) {
-			return;
-		}
-		
-		String methodName = getMethodName();
-		String methodSig = getMethodSig();
-		if (methodName.equals(methodInfo[0])
-		&&  methodSig.endsWith(methodInfo[2])
-		&&  (Type.getArgumentTypes(methodSig).length == Integer.parseInt(methodInfo[1]))) {
-			stack.resetForMethodEntry(this);
-			indeterminate = false;
-			seenNegative = false;
-			seenPositive = false;
-			seenZero = false;
-			super.visitCode(obj);
-			if (!indeterminate && (!seenZero || (obj.getCode().length > 2))) {
-				boolean seenAll = seenNegative & seenPositive & seenZero;
-				if (!seenAll) {
-					bugReporter.reportBug(new BugInstance(this, BugType.SC_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), NORMAL_PRIORITY)
-								.addClass(this)
-								.addMethod(this)
-								.addSourceLine(this, 0));
-				}
-			}
-		}
-	}
-	
-	@Override
-	public void sawOpcode(int seen) {
-		try {
-			if (indeterminate)
-				return;
-			
-	        stack.precomputation(this);
-	        
-			if (seen == IRETURN) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					Integer returnValue = (Integer)item.getConstant();
-					if (returnValue == null)
-						indeterminate = true;
-					else {
-						int v = returnValue.intValue();
-						if (v < 0)
-							seenNegative = true;
-						else if (v > 0)
-							seenPositive = true;
-						else
-							seenZero = true;
-					}
-				} else
-					indeterminate = true;
-			} else if ((seen == GOTO) || (seen == GOTO_W)) {
-				if (stack.getStackDepth() > 0)
-					indeterminate = true;
-			} else if (seen == ATHROW) {
-			    if (stack.getStackDepth() > 0) {
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public SuspiciousComparatorReturnValues(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            JavaClass cls = classContext.getJavaClass();
+            for (Map.Entry<JavaClass, String> entry : compareClasses.entrySet()) {
+                if (cls.implementationOf(entry.getKey())) {
+                    methodInfo = entry.getValue().split(":");
+                    stack = new OpcodeStack();
+                    super.visitClassContext(classContext);
+                    break;
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            methodInfo = null;
+            stack = null;
+        }
+    }
+
+    @Override
+    public void visitCode(Code obj) {
+        if (getMethod().isSynthetic()) {
+            return;
+        }
+
+        String methodName = getMethodName();
+        String methodSig = getMethodSig();
+        if (methodName.equals(methodInfo[0]) && methodSig.endsWith(methodInfo[2])
+                && (Type.getArgumentTypes(methodSig).length == Integer.parseInt(methodInfo[1]))) {
+            stack.resetForMethodEntry(this);
+            indeterminate = false;
+            seenNegative = false;
+            seenPositive = false;
+            seenZero = false;
+            super.visitCode(obj);
+            if (!indeterminate && (!seenZero || (obj.getCode().length > 2))) {
+                boolean seenAll = seenNegative & seenPositive & seenZero;
+                if (!seenAll) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.SC_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this, 0));
+                }
+            }
+        }
+    }
+
+    @Override
+    public void sawOpcode(int seen) {
+        try {
+            if (indeterminate)
+                return;
+
+            stack.precomputation(this);
+
+            if (seen == IRETURN) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    Integer returnValue = (Integer) item.getConstant();
+                    if (returnValue == null)
+                        indeterminate = true;
+                    else {
+                        int v = returnValue.intValue();
+                        if (v < 0)
+                            seenNegative = true;
+                        else if (v > 0)
+                            seenPositive = true;
+                        else
+                            seenZero = true;
+                    }
+                } else
+                    indeterminate = true;
+            } else if ((seen == GOTO) || (seen == GOTO_W)) {
+                if (stack.getStackDepth() > 0)
+                    indeterminate = true;
+            } else if (seen == ATHROW) {
+                if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     String exSig = item.getSignature();
                     if ("Ljava/lang/UnsupportedOperationException;".equals(exSig)) {
                         indeterminate = true;
                     }
-			    }
-			}
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
-	}
+                }
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
+        }
+    }
 }

@@ -7,6 +7,7 @@ import java.util.Vector;
 
 public class NMCS_Sample {
     private static List<String> test1 = new Vector<String>();
+
     static {
         test1.add("one");
         test1.add("two");

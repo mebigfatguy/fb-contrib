@@ -44,7 +44,7 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
     public BackportReusePublicIdentifiers(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
-    
+
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
@@ -56,32 +56,31 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         stack.precomputation(this);
-        
+
         switch (seen) {
-            case INVOKESTATIC: {
-                String className = getClassConstantOperand();
-                if (className.startsWith("edu/emory/mathcs/backport/")) {
-                    reportBug();
-                }
+        case INVOKESTATIC: {
+            String className = getClassConstantOperand();
+            if (className.startsWith("edu/emory/mathcs/backport/")) {
+                reportBug();
             }
+        }
             break;
-            
-            case INVOKESPECIAL: {
-                String className = getClassConstantOperand();
-                String methodName = getNameConstantOperand();
-                if (className.startsWith("edu/emory/mathcs/backport/") && Values.CONSTRUCTOR.equals(methodName)) {
-                    reportBug();
-                }
+
+        case INVOKESPECIAL: {
+            String className = getClassConstantOperand();
+            String methodName = getNameConstantOperand();
+            if (className.startsWith("edu/emory/mathcs/backport/") && Values.CONSTRUCTOR.equals(methodName)) {
+                reportBug();
             }
+        }
             break;
-            default:
-            	break;
+        default:
+            break;
         }
     }
 
     private void reportBug() {
-        bugReporter.reportBug(new BugInstance(this,
-        		BugType.BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS.name(), NORMAL_PRIORITY)
-                .addClass(this).addMethod(this).addSourceLine(this));
+        bugReporter.reportBug(new BugInstance(this, BugType.BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                .addSourceLine(this));
     }
 }

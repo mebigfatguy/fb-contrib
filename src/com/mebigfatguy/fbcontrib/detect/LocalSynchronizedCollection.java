@@ -32,75 +32,71 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 
 /**
- * looks for allocations of synchronized collections that are stored in local variables, and 
- * never stored in fields or returned from methods. As local variables are by definition
- * thread safe, using synchronized collections in this context makes no sense.
+ * looks for allocations of synchronized collections that are stored in local
+ * variables, and never stored in fields or returned from methods. As local
+ * variables are by definition thread safe, using synchronized collections in
+ * this context makes no sense.
  */
 @CustomUserValue
-public class LocalSynchronizedCollection extends LocalTypeDetector
-{
-	private static final Map<String, Integer> syncCtors = new HashMap<String, Integer>();
-	static {
-		syncCtors.put("java/util/Vector", Integer.valueOf(Constants.MAJOR_1_1));
-		syncCtors.put("java/util/Hashtable", Integer.valueOf(Constants.MAJOR_1_1));
-		syncCtors.put("java/lang/StringBuffer", Integer.valueOf(Constants.MAJOR_1_5));		
-	}
+public class LocalSynchronizedCollection extends LocalTypeDetector {
+    private static final Map<String, Integer> syncCtors = new HashMap<String, Integer>();
 
-	private static final Map<String, Set<String>> synchClassMethods = new HashMap<String, Set<String>>();
+    static {
+        syncCtors.put("java/util/Vector", Integer.valueOf(Constants.MAJOR_1_1));
+        syncCtors.put("java/util/Hashtable", Integer.valueOf(Constants.MAJOR_1_1));
+        syncCtors.put("java/lang/StringBuffer", Integer.valueOf(Constants.MAJOR_1_5));
+    }
 
-	static {
-		Set<String> syncMethods = new HashSet<String>();
-		syncMethods.add("synchronizedCollection");
-		syncMethods.add("synchronizedList");
-		syncMethods.add("synchronizedMap");
-		syncMethods.add("synchronizedSet");
-		syncMethods.add("synchronizedSortedMap");
-		syncMethods.add("synchronizedSortedSet");
+    private static final Map<String, Set<String>> synchClassMethods = new HashMap<String, Set<String>>();
 
-		synchClassMethods.put("java/util/Collections", syncMethods);
-	}
-	
-	private static final Set<String> selfReturningMethods = new HashSet<String>();
-	
-	static {
-		selfReturningMethods.add("java/lang/StringBuffer.append");
-	}
+    static {
+        Set<String> syncMethods = new HashSet<String>();
+        syncMethods.add("synchronizedCollection");
+        syncMethods.add("synchronizedList");
+        syncMethods.add("synchronizedMap");
+        syncMethods.add("synchronizedSet");
+        syncMethods.add("synchronizedSortedMap");
+        syncMethods.add("synchronizedSortedSet");
 
-	private BugReporter bugReporter;
-	/**
-	 * constructs a LSYC detector given the reporter to report bugs on
-	 * @param bugReporter the sync of bug reports
-	 */
-	public LocalSynchronizedCollection(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+        synchClassMethods.put("java/util/Collections", syncMethods);
+    }
 
-	
+    private static final Set<String> selfReturningMethods = new HashSet<String>();
 
-	@Override
-	protected Map<String, Integer> getWatchedConstructors() {
-		return syncCtors;
-	}
+    static {
+        selfReturningMethods.add("java/lang/StringBuffer.append");
+    }
 
+    private BugReporter bugReporter;
 
+    /**
+     * constructs a LSYC detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public LocalSynchronizedCollection(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	@Override
-	protected Map<String, Set<String>> getWatchedClassMethods() {
-		return synchClassMethods;
-	}
+    @Override
+    protected Map<String, Integer> getWatchedConstructors() {
+        return syncCtors;
+    }
 
-	@Override
-	protected Set<String> getSelfReturningMethods() {
-		return selfReturningMethods;
-	}
+    @Override
+    protected Map<String, Set<String>> getWatchedClassMethods() {
+        return synchClassMethods;
+    }
 
+    @Override
+    protected Set<String> getSelfReturningMethods() {
+        return selfReturningMethods;
+    }
 
-
-	@Override
-	protected void reportBug(RegisterInfo cri) {
-		bugReporter.reportBug(new BugInstance(this, BugType.LSYC_LOCAL_SYNCHRONIZED_COLLECTION.name(), cri.getPriority())
-		.addClass(this)
-		.addMethod(this)
-		.addSourceLine(cri.getSourceLineAnnotation()));
-	}
+    @Override
+    protected void reportBug(RegisterInfo cri) {
+        bugReporter.reportBug(new BugInstance(this, BugType.LSYC_LOCAL_SYNCHRONIZED_COLLECTION.name(), cri.getPriority()).addClass(this).addMethod(this)
+                .addSourceLine(cri.getSourceLineAnnotation()));
+    }
 }

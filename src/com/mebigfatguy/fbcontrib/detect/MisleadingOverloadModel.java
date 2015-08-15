@@ -33,60 +33,62 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
-/** looks for classes that define both static and instance methods with the same name.
- * This 'overloading' is confusing as one method is instance based the other class based,
- * and points to a confusion in implementation.
+/**
+ * looks for classes that define both static and instance methods with the same
+ * name. This 'overloading' is confusing as one method is instance based the
+ * other class based, and points to a confusion in implementation.
  */
-public class MisleadingOverloadModel  extends PreorderVisitor implements Detector
-{
-	enum MethodFoundType {Instance, Static, Both}
-	
-	private final BugReporter bugReporter;
-	
-	/**
-     * constructs a MOM detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
-	 */
-	public MisleadingOverloadModel(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-	
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		JavaClass cls = classContext.getJavaClass();
-		String clsName = cls.getClassName();
-		Method[] methods = cls.getMethods();
-        Map<String, MethodFoundType> declMethods = new HashMap<String, MethodFoundType>(methods.length);
-		for (Method m : methods) {
-			String methodName = m.getName();
-			boolean report;
-			MethodFoundType newType;
-			if (m.isStatic()) {
-				report = declMethods.get(methodName) == MethodFoundType.Instance;
-				if (report)
-					newType = MethodFoundType.Both;
-				else
-					newType = MethodFoundType.Static;
-			} else {
-				report = declMethods.get(m.getName()) == MethodFoundType.Static;
-				if (report)
-					newType = MethodFoundType.Both;
-				else
-					newType = MethodFoundType.Instance;
-			}
-			
-			declMethods.put(methodName, newType);
-			if (report) {
-				bugReporter.reportBug(new BugInstance(this, BugType.MOM_MISLEADING_OVERLOAD_MODEL.name(), NORMAL_PRIORITY)
-							.addClass(cls)
-							.addMethod(XFactory.createXMethod(clsName, m))
-							.addString(methodName));
-			}
-		}
-	}
+public class MisleadingOverloadModel extends PreorderVisitor implements Detector {
+    enum MethodFoundType {
+        Instance, Static, Both
+    }
 
-	/** implements the visitor to do nothing */
-	@Override
-	public void report() {
-	}
+    private final BugReporter bugReporter;
+
+    /**
+     * constructs a MOM detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public MisleadingOverloadModel(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        JavaClass cls = classContext.getJavaClass();
+        String clsName = cls.getClassName();
+        Method[] methods = cls.getMethods();
+        Map<String, MethodFoundType> declMethods = new HashMap<String, MethodFoundType>(methods.length);
+        for (Method m : methods) {
+            String methodName = m.getName();
+            boolean report;
+            MethodFoundType newType;
+            if (m.isStatic()) {
+                report = declMethods.get(methodName) == MethodFoundType.Instance;
+                if (report)
+                    newType = MethodFoundType.Both;
+                else
+                    newType = MethodFoundType.Static;
+            } else {
+                report = declMethods.get(m.getName()) == MethodFoundType.Static;
+                if (report)
+                    newType = MethodFoundType.Both;
+                else
+                    newType = MethodFoundType.Instance;
+            }
+
+            declMethods.put(methodName, newType);
+            if (report) {
+                bugReporter.reportBug(new BugInstance(this, BugType.MOM_MISLEADING_OVERLOAD_MODEL.name(), NORMAL_PRIORITY).addClass(cls)
+                        .addMethod(XFactory.createXMethod(clsName, m)).addString(methodName));
+            }
+        }
+    }
+
+    /** implements the visitor to do nothing */
+    @Override
+    public void report() {
+    }
 }

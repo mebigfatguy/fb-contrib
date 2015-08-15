@@ -40,122 +40,128 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class SpoiledChildInterfaceImplementor implements Detector {
 
-	private final BugReporter bugReporter;
+    private final BugReporter bugReporter;
 
-	/**
+    /**
      * constructs a SCII detector given the reporter to report bugs on
-
-     * @param bugReporter the sync of bug reports
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
      */
-	public SpoiledChildInterfaceImplementor(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public SpoiledChildInterfaceImplementor(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	/** looks for classes that implement interfaces but don't provide those methods
-	 *
-	 * @param classContext the context object of the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			JavaClass cls = classContext.getJavaClass();
+    /**
+     * looks for classes that implement interfaces but don't provide those
+     * methods
+     *
+     * @param classContext
+     *            the context object of the currently parsed class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            JavaClass cls = classContext.getJavaClass();
 
-			if (cls.isAbstract() || cls.isInterface())
-				return;
+            if (cls.isAbstract() || cls.isInterface())
+                return;
 
-			if ("java.lang.Object".equals(cls.getSuperclassName()))
-				return;
+            if ("java.lang.Object".equals(cls.getSuperclassName()))
+                return;
 
-			JavaClass[] infs = cls.getInterfaces();
-			if (infs.length > 0) {
-				Set<String> clsMethods = buildMethodSet(cls);
-				for (JavaClass inf : infs) {
-					Set<String> infMethods = buildMethodSet(inf);
-					if (infMethods.size() > 0) {
-						infMethods.removeAll(clsMethods);
-						if (infMethods.size() > 0) {
+            JavaClass[] infs = cls.getInterfaces();
+            if (infs.length > 0) {
+                Set<String> clsMethods = buildMethodSet(cls);
+                for (JavaClass inf : infs) {
+                    Set<String> infMethods = buildMethodSet(inf);
+                    if (infMethods.size() > 0) {
+                        infMethods.removeAll(clsMethods);
+                        if (infMethods.size() > 0) {
                             JavaClass superCls = cls.getSuperClass();
                             filterSuperInterfaceMethods(inf, infMethods, superCls);
                             if (infMethods.size() > 0) {
-								if (!superCls.implementationOf(inf)) {
-	                                int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
-									BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority)
-											   .addClass(cls)
-											   .addString("Implementing interface: " + inf.getClassName())
-											   .addString("Methods:");
-									for (String nameSig : infMethods)
-										bi.addString("\t" + nameSig);
+                                if (!superCls.implementationOf(inf)) {
+                                    int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
+                                    BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
+                                            .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
+                                    for (String nameSig : infMethods)
+                                        bi.addString("\t" + nameSig);
 
-									bugReporter.reportBug(bi);
-									return;
-								}
+                                    bugReporter.reportBug(bi);
+                                    return;
+                                }
                             }
-						}
-					}
-				}
-			}
+                        }
+                    }
+                }
+            }
 
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		}
-	}
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+    }
 
-	/**
-	 * required for implementing the interface
-	 */
-	@Override
-	public void report() {
-		// Unused, requirement of the Detector interface
-	}
+    /**
+     * required for implementing the interface
+     */
+    @Override
+    public void report() {
+        // Unused, requirement of the Detector interface
+    }
 
-	/**
-	 * builds a set of all non constructor or static initializer method/signatures
-	 *
-	 * @param cls the class to build the method set from
-	 * @return a set of method names/signatures
-	 */
-	private static Set<String> buildMethodSet(JavaClass cls) {
-		Set<String> methods = new HashSet<String>();
+    /**
+     * builds a set of all non constructor or static initializer
+     * method/signatures
+     *
+     * @param cls
+     *            the class to build the method set from
+     * @return a set of method names/signatures
+     */
+    private static Set<String> buildMethodSet(JavaClass cls) {
+        Set<String> methods = new HashSet<String>();
 
-		for (Method m : cls.getMethods()) {
-			String methodName = m.getName();
-			if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName) && (!"clone".equals(methodName))) {
-				methods.add(methodName + ":" + m.getSignature());
-			}
-		}
+        for (Method m : cls.getMethods()) {
+            String methodName = m.getName();
+            if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName) && (!"clone".equals(methodName))) {
+                methods.add(methodName + ":" + m.getSignature());
+            }
+        }
 
-		return methods;
-	}
+        return methods;
+    }
 
-	/**
-	 * removes methods found in an interface when a super interface having the same methods
-	 * is implemented in a parent. While this is somewhat hinky, we'll allow it.
-	 *
-	 * @param inf the interface to look for super interfaces for
-	 * @param infMethods the remaining methods that are needed to be found
-	 * @param cls the super class to look for these methods in
-	 */
-	private void filterSuperInterfaceMethods(JavaClass inf, Set<String> infMethods, JavaClass cls) {
-		try {
-			if (infMethods.isEmpty())
-				return;
+    /**
+     * removes methods found in an interface when a super interface having the
+     * same methods is implemented in a parent. While this is somewhat hinky,
+     * we'll allow it.
+     *
+     * @param inf
+     *            the interface to look for super interfaces for
+     * @param infMethods
+     *            the remaining methods that are needed to be found
+     * @param cls
+     *            the super class to look for these methods in
+     */
+    private void filterSuperInterfaceMethods(JavaClass inf, Set<String> infMethods, JavaClass cls) {
+        try {
+            if (infMethods.isEmpty())
+                return;
 
-			JavaClass[] superInfs = inf.getInterfaces();
-			for (JavaClass superInf : superInfs) {
-				if (cls.implementationOf(superInf)) {
-					Set<String> superInfMethods = buildMethodSet(superInf);
-					infMethods.removeAll(superInfMethods);
-					if (infMethods.isEmpty())
-						return;
-				}
-				filterSuperInterfaceMethods(superInf, infMethods, cls);
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-			infMethods.clear();
-		}
-	}
-
-
+            JavaClass[] superInfs = inf.getInterfaces();
+            for (JavaClass superInf : superInfs) {
+                if (cls.implementationOf(superInf)) {
+                    Set<String> superInfMethods = buildMethodSet(superInf);
+                    infMethods.removeAll(superInfMethods);
+                    if (infMethods.isEmpty())
+                        return;
+                }
+                filterSuperInterfaceMethods(superInf, infMethods, cls);
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+            infMethods.clear();
+        }
+    }
 
 }

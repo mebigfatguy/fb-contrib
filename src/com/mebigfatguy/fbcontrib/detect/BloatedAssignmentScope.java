@@ -73,16 +73,16 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         dangerousAssignmentClassSources.add("java/io/Reader");
         dangerousAssignmentClassSources.add("javax/nio/channels/Channel");
         dangerousAssignmentClassSources.add("io/netty/channel/Channel");
-        
+
         dangerousAssignmentMethodSources.add("java/lang/System.currentTimeMillis()J");
         dangerousAssignmentMethodSources.add("java/lang/System.nanoTime()J");
         dangerousAssignmentMethodSources.add("java/util/Calendar.get(I)I");
         dangerousAssignmentMethodSources.add("java/util/GregorianCalendar.get(I)I");
         dangerousAssignmentMethodSources.add("java/util/Iterator.next()Ljava/lang/Object;");
         dangerousAssignmentMethodSources.add("java/util/regex/Matcher.start()I");
-        
+
         dangerousAssignmentMethodPatterns.add(Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE));
-        
+
         dangerousStoreClassSigs.add("Ljava/util/concurrent/Future;");
     }
 
@@ -213,7 +213,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 } else if (sawNull) {
                     ignoreRegs.set(reg);
                 } else if (isRiskyStoreClass(reg)) {
-                	ignoreRegs.set(reg);
+                    ignoreRegs.set(reg);
                 }
 
                 if (!ignoreRegs.get(reg)) {
@@ -582,7 +582,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
          */
         @Override
         public String toString() {
-        	return ToString.build(this);
+            return ToString.build(this);
         }
 
         /**
@@ -949,30 +949,29 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         if (dangerousAssignmentMethodSources.contains(key)) {
             return true;
         }
-        
+
         for (Pattern p : dangerousAssignmentMethodPatterns) {
             Matcher m = p.matcher(key);
             if (m.matches()) {
                 return true;
             }
         }
-        
-        
+
         return false;
     }
-    
+
     public boolean isRiskyStoreClass(int reg) {
-    	LocalVariableTable lvt = getMethod().getLocalVariableTable();
-    	if (lvt != null) {
-    		LocalVariable lv = lvt.getLocalVariable(reg, getNextPC());
-    		if (lv != null) {
-    			if (dangerousStoreClassSigs.contains(lv.getSignature())) {
-    				return true;
-    			}
-    		}
-    	}
-    	
-    	return false;
+        LocalVariableTable lvt = getMethod().getLocalVariableTable();
+        if (lvt != null) {
+            LocalVariable lv = lvt.getLocalVariable(reg, getNextPC());
+            if (lv != null) {
+                if (dangerousStoreClassSigs.contains(lv.getSignature())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     static class UserObject {
@@ -981,7 +980,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         @Override
         public String toString() {
-        	return ToString.build(this);
+            return ToString.build(this);
         }
     }
 }

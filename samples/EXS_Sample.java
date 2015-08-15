@@ -53,34 +53,34 @@ public class EXS_Sample extends Super {
             // EXS
         }
     }
-    
+
     public boolean returnFalseOnEx() {
-    	try {
-    		Class.forName("java.lang.Integer");
-    		return true;
-    	} catch (ClassNotFoundException cnfe) {
-    		return false;
-    	}
+        try {
+            Class.forName("java.lang.Integer");
+            return true;
+        } catch (ClassNotFoundException cnfe) {
+            return false;
+        }
     }
-    
+
     public boolean fpReturnFalseOnEx(int i) {
-    	try {
-    		if (i == 0) {
-    			return false;
-    		}
-    		Class<?> cls = Class.forName("java.lang.Integer");
-    		return true;
-    	} catch (ClassNotFoundException cnfe) {
-    		return false;
-    	}
+        try {
+            if (i == 0) {
+                return false;
+            }
+            Class<?> cls = Class.forName("java.lang.Integer");
+            return true;
+        } catch (ClassNotFoundException cnfe) {
+            return false;
+        }
     }
-    
+
     public boolean fpReturnFalseInFinally() {
-    	try {
-    		return true;
-    	} finally {
-    		return false;
-    	}
+        try {
+            return true;
+        } finally {
+            return false;
+        }
     }
 }
 

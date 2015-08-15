@@ -22,8 +22,8 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 /**
- * a collection of static methods for determining if a class belongs to one or more
- * collection types.
+ * a collection of static methods for determining if a class belongs to one or
+ * more collection types.
  */
 public class CollectionUtils {
 
@@ -39,20 +39,22 @@ public class CollectionUtils {
         } catch (ClassNotFoundException cnfe) {
         }
     }
-    
+
     /**
      * private to reinforce the helper status of the class
      */
-    private CollectionUtils() {       
+    private CollectionUtils() {
     }
 
     /**
      * determines if the current class name is derived from List, Set or Map
      * 
-     * @param clsName the class to determine it's parentage
+     * @param clsName
+     *            the class to determine it's parentage
      * @return if the class is a List, Set or Map
      * 
-     * @throws ClassNotFoundException if the cls parameter can't be found
+     * @throws ClassNotFoundException
+     *             if the cls parameter can't be found
      */
     public static boolean isListSetMap(String clsName) throws ClassNotFoundException {
         JavaClass cls = Repository.lookupClass(clsName);

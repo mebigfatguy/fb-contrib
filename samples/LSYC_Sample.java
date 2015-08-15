@@ -23,9 +23,9 @@ public class LSYC_Sample {
             System.out.println(st);
         }
     }
-    
+
     public String testNotStoredSB() {
-    	final StringBuffer stringBuffer = new StringBuffer().append("agrego ").append("un ");
+        final StringBuffer stringBuffer = new StringBuffer().append("agrego ").append("un ");
         stringBuffer.append("string ");
         return stringBuffer.toString();
     }
@@ -34,14 +34,14 @@ public class LSYC_Sample {
         // don't report
         List<String> a = Collections.synchronizedList(ls);
         syncfield = a;
-        
+
         System.out.println(syncfield);
     }
-    
+
     public List<String> getList() {
         // don't report
-       return Collections.synchronizedList(new ArrayList<String>());
-       
+        return Collections.synchronizedList(new ArrayList<String>());
+
     }
 
     public Map<String, Map<String, String>> test4() {
@@ -62,10 +62,10 @@ public class LSYC_Sample {
             buffer.append("Findbugs ");
         return buffer.toString();
     }
-    
+
     public String printString2() {
-    	//no tag, but probably should. 
-    	return new StringBuffer().append("Hello").append("World").toString();
+        // no tag, but probably should.
+        return new StringBuffer().append("Hello").append("World").toString();
     }
 
 }

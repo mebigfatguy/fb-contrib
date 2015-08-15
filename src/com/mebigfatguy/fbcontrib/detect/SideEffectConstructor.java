@@ -39,111 +39,115 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class SideEffectConstructor extends BytecodeScanningDetector {
 
-	private enum State {SAW_NOTHING, SAW_CTOR};
-	private final BugReporter bugReporter;
-	private OpcodeStack stack;
-	private State state;
-	
-	/**
+    private enum State {
+        SAW_NOTHING, SAW_CTOR
+    };
+
+    private final BugReporter bugReporter;
+    private OpcodeStack stack;
+    private State state;
+
+    /**
      * constructs a SEC detector given the reporter to report bugs on
      * 
-     * @param bugReporter the sync of bug reports
-	 */
-	public SideEffectConstructor(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-	
-	/**
-	 * overrides the visitor to set up and tear down the opcode stack
-	 * 
-	 * @param classContext the context object of the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			stack = new OpcodeStack();
-			super.visitClassContext(classContext);
-		} finally {
-			stack = null;
-		}
-	}
-	/**
-	 * overrides the visitor to reset the state and reset the opcode stack
-	 * 
-	 * @param obj the context object of the currently parsed code
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		state = State.SAW_NOTHING;
-		stack.resetForMethodEntry(this);
-		super.visitCode(obj);
-	}
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public SideEffectConstructor(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	/**
-	 * overrides the visitor to look for constructors who's value is 
-	 * popped off the stack, and not assigned before the pop of the value, or if a
-	 * return is issued with that object still on the stack.
-	 * 
-	 * @param seen the opcode of the currently parse opcode
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		int pc = 0;
-		try {
-	        stack.precomputation(this);
-	        
-			switch (state) {
-				case SAW_NOTHING:
-					if (seen == INVOKESPECIAL) {
-						String name = getNameConstantOperand();
-						if (Values.CONSTRUCTOR.equals(name)) {
-							String sig = getSigConstantOperand();
-							int numArgs = Type.getArgumentTypes(sig).length;
-							if (stack.getStackDepth() > numArgs) {
-								OpcodeStack.Item caller = stack.getStackItem(numArgs);
-								if (caller.getRegisterNumber() != 0) {
-									state = State.SAW_CTOR;
-									pc = getPC();
-								}
-							}
-						}
-					} else if (seen == RETURN) {
-						int depth = stack.getStackDepth();
-						for (int i = 0; i < depth; i++) {
-							OpcodeStack.Item item = stack.getStackItem(i);
-							Integer secPC = (Integer)item.getUserValue();
-							if (secPC != null) {
-								bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY)
-								.addClass(this)
-								.addMethod(this)
-								.addSourceLine(this, secPC.intValue()));
-								break;
-							}
-							
-						}
-					}
-				break;
-				
-				case SAW_CTOR:
-					if (seen == POP || seen == RETURN) {
-						bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY)
-															.addClass(this)
-															.addMethod(this)
-															.addSourceLine(this));
-					}
-					state = State.SAW_NOTHING;
-				break;
-			}
-		} finally {
-			TernaryPatcher.pre(stack, seen);
-			stack.sawOpcode(this, seen);
-			TernaryPatcher.post(stack, seen);
-			if (pc != 0) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					item.setUserValue(Integer.valueOf(pc));
-				}
-			}
-		}
-	}
+    /**
+     * overrides the visitor to set up and tear down the opcode stack
+     * 
+     * @param classContext
+     *            the context object of the currently parsed class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            stack = new OpcodeStack();
+            super.visitClassContext(classContext);
+        } finally {
+            stack = null;
+        }
+    }
+
+    /**
+     * overrides the visitor to reset the state and reset the opcode stack
+     * 
+     * @param obj
+     *            the context object of the currently parsed code
+     */
+    @Override
+    public void visitCode(Code obj) {
+        state = State.SAW_NOTHING;
+        stack.resetForMethodEntry(this);
+        super.visitCode(obj);
+    }
+
+    /**
+     * overrides the visitor to look for constructors who's value is popped off
+     * the stack, and not assigned before the pop of the value, or if a return
+     * is issued with that object still on the stack.
+     * 
+     * @param seen
+     *            the opcode of the currently parse opcode
+     */
+    @Override
+    public void sawOpcode(int seen) {
+        int pc = 0;
+        try {
+            stack.precomputation(this);
+
+            switch (state) {
+            case SAW_NOTHING:
+                if (seen == INVOKESPECIAL) {
+                    String name = getNameConstantOperand();
+                    if (Values.CONSTRUCTOR.equals(name)) {
+                        String sig = getSigConstantOperand();
+                        int numArgs = Type.getArgumentTypes(sig).length;
+                        if (stack.getStackDepth() > numArgs) {
+                            OpcodeStack.Item caller = stack.getStackItem(numArgs);
+                            if (caller.getRegisterNumber() != 0) {
+                                state = State.SAW_CTOR;
+                                pc = getPC();
+                            }
+                        }
+                    }
+                } else if (seen == RETURN) {
+                    int depth = stack.getStackDepth();
+                    for (int i = 0; i < depth; i++) {
+                        OpcodeStack.Item item = stack.getStackItem(i);
+                        Integer secPC = (Integer) item.getUserValue();
+                        if (secPC != null) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this, secPC.intValue()));
+                            break;
+                        }
+
+                    }
+                }
+                break;
+
+            case SAW_CTOR:
+                if (seen == POP || seen == RETURN) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this));
+                }
+                state = State.SAW_NOTHING;
+                break;
+            }
+        } finally {
+            TernaryPatcher.pre(stack, seen);
+            stack.sawOpcode(this, seen);
+            TernaryPatcher.post(stack, seen);
+            if (pc != 0) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(Integer.valueOf(pc));
+                }
+            }
+        }
+    }
 }

@@ -28,48 +28,50 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
- * looks for method calls to collection classes where the method is not defined by the Collections
- * interface, and an equivalent method exists in the interface.
+ * looks for method calls to collection classes where the method is not defined
+ * by the Collections interface, and an equivalent method exists in the
+ * interface.
  */
-public class NonCollectionMethodUse extends BytecodeScanningDetector
-{
-	private static Set<String> oldMethods = new HashSet<String>();
-	static {
-		oldMethods.add("java/util/Hashtable.contains(java/lang/Object)Z");
-		oldMethods.add("java/util/Hashtable.elements()Ljava/util/Enumeration;");
-		oldMethods.add("java/util/Hashtable.keys()Ljava/util/Enumeration;");
-		oldMethods.add("java/util/Vector.addElement(Ljava/lang/Object;)V");
-		oldMethods.add("java/util/Vector.elementAt(I)Ljava/lang/Object;");
-		oldMethods.add("java/util/Vector.insertElementAt(Ljava/lang/Object;I)V");
-		oldMethods.add("java/util/Vector.removeAllElements()V");
-		oldMethods.add("java/util/Vector.removeElement(Ljava/lang/Object;)Z");
-		oldMethods.add("java/util/Vector.removeElementAt(I)V");
-		oldMethods.add("java/util/Vector.setElementAt(Ljava/lang/Object;I)V");
-	}
-	private BugReporter bugReporter;
-	
-	/**
+public class NonCollectionMethodUse extends BytecodeScanningDetector {
+    private static Set<String> oldMethods = new HashSet<String>();
+
+    static {
+        oldMethods.add("java/util/Hashtable.contains(java/lang/Object)Z");
+        oldMethods.add("java/util/Hashtable.elements()Ljava/util/Enumeration;");
+        oldMethods.add("java/util/Hashtable.keys()Ljava/util/Enumeration;");
+        oldMethods.add("java/util/Vector.addElement(Ljava/lang/Object;)V");
+        oldMethods.add("java/util/Vector.elementAt(I)Ljava/lang/Object;");
+        oldMethods.add("java/util/Vector.insertElementAt(Ljava/lang/Object;I)V");
+        oldMethods.add("java/util/Vector.removeAllElements()V");
+        oldMethods.add("java/util/Vector.removeElement(Ljava/lang/Object;)Z");
+        oldMethods.add("java/util/Vector.removeElementAt(I)V");
+        oldMethods.add("java/util/Vector.setElementAt(Ljava/lang/Object;I)V");
+    }
+
+    private BugReporter bugReporter;
+
+    /**
      * constructs a NCMU detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
-	 */
-	public NonCollectionMethodUse(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-	
-	@Override
-	public void sawOpcode(int seen) {
-		if (seen == INVOKEVIRTUAL) {
-			String className = getClassConstantOperand();
-			String methodName = getNameConstantOperand();
-			String methodSig = getSigConstantOperand();
-			
-			String methodInfo = className + "." + methodName + methodSig;
-			if (oldMethods.contains(methodInfo)) {
-				bugReporter.reportBug(new BugInstance(this, BugType.NCMU_NON_COLLECTION_METHOD_USE.name(), NORMAL_PRIORITY)
-						.addClass(this)
-						.addMethod(this)
-						.addSourceLine(this));
-			}
-		}
-	}
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public NonCollectionMethodUse(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    @Override
+    public void sawOpcode(int seen) {
+        if (seen == INVOKEVIRTUAL) {
+            String className = getClassConstantOperand();
+            String methodName = getNameConstantOperand();
+            String methodSig = getSigConstantOperand();
+
+            String methodInfo = className + "." + methodName + methodSig;
+            if (oldMethods.contains(methodInfo)) {
+                bugReporter.reportBug(new BugInstance(this, BugType.NCMU_NON_COLLECTION_METHOD_USE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(this));
+            }
+        }
+    }
 }

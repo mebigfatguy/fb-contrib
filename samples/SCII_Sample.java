@@ -2,7 +2,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 
 public class SCII_Sample extends OverEndulgentParent implements MouseListener {
-	@Override
+    @Override
     public void mouseClicked(MouseEvent arg0) {
     }
 }
@@ -29,25 +29,25 @@ class OverEndulgentParent {
     }
 
     interface B extends A {
-    	@Override
+        @Override
         public void b();
     }
 
     interface C extends B {
-    	@Override
+        @Override
         public void c();
     }
 
     class AA implements A {
-    	@Override
+        @Override
         public void a() {
         }
 
-    	@Override
+        @Override
         public void b() {
         }
 
-    	@Override
+        @Override
         public void c() {
         }
     }

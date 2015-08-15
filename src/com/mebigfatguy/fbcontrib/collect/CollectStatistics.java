@@ -32,80 +32,82 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
-public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector
-{
-	private static Set<String> COMMON_METHOD_SIGS = new HashSet<String>();
-	static {
-		COMMON_METHOD_SIGS.add("\\<init\\>\\(\\)V");
-		COMMON_METHOD_SIGS.add("toString\\(\\)Ljava/lang/String;");
-		COMMON_METHOD_SIGS.add("hashCode\\(\\)I");
-		COMMON_METHOD_SIGS.add("clone\\(\\).*");
-		COMMON_METHOD_SIGS.add("values\\(\\).*");
-		COMMON_METHOD_SIGS.add("main\\(\\[Ljava/lang/String;\\)V");
-	}
-	private int numMethodCalls;
-	private boolean classHasAnnotation;
+public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
+    private static Set<String> COMMON_METHOD_SIGS = new HashSet<String>();
 
-	public CollectStatistics(@SuppressWarnings("unused") BugReporter bugReporter) {
-		Statistics.getStatistics().clear();
-	}
+    static {
+        COMMON_METHOD_SIGS.add("\\<init\\>\\(\\)V");
+        COMMON_METHOD_SIGS.add("toString\\(\\)Ljava/lang/String;");
+        COMMON_METHOD_SIGS.add("hashCode\\(\\)I");
+        COMMON_METHOD_SIGS.add("clone\\(\\).*");
+        COMMON_METHOD_SIGS.add("values\\(\\).*");
+        COMMON_METHOD_SIGS.add("main\\(\\[Ljava/lang/String;\\)V");
+    }
+
+    private int numMethodCalls;
+    private boolean classHasAnnotation;
+
+    public CollectStatistics(@SuppressWarnings("unused") BugReporter bugReporter) {
+        Statistics.getStatistics().clear();
+    }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-    	JavaClass cls = classContext.getJavaClass();
-    	AnnotationEntry[] annotations = cls.getAnnotationEntries();
-    	classHasAnnotation = (annotations != null) && (annotations.length > 0);
-    	super.visitClassContext(classContext);
-	}
+        JavaClass cls = classContext.getJavaClass();
+        AnnotationEntry[] annotations = cls.getAnnotationEntries();
+        classHasAnnotation = (annotations != null) && (annotations.length > 0);
+        super.visitClassContext(classContext);
+    }
 
-	@Override
-	public void visitCode(Code obj) {
+    @Override
+    public void visitCode(Code obj) {
 
-		numMethodCalls = 0;
+        numMethodCalls = 0;
 
-		byte[] code = obj.getCode();
-		if (code != null) {
-			super.visitCode(obj);
-			String clsName = getClassName();
-			int accessFlags = getMethod().getAccessFlags();
-			MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(), numMethodCalls);
-			if (clsName.contains("$") || ((accessFlags & (ACC_ABSTRACT|ACC_INTERFACE|ACC_ANNOTATION)) != 0)) {
-				mi.addCallingAccess(Constants.ACC_PUBLIC);
-			} else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
-				if (isAssociationedWithAnnotations(getMethod())) {
-					mi.addCallingAccess(Constants.ACC_PUBLIC);
-				} else {
-					String methodSig = getMethodName() + getMethodSig();
-					for (String sig : COMMON_METHOD_SIGS) {
-						if (methodSig.matches(sig)) {
-							mi.addCallingAccess(Constants.ACC_PUBLIC);
-						}
-					}
-				}
-			}
-		}
-	}
+        byte[] code = obj.getCode();
+        if (code != null) {
+            super.visitCode(obj);
+            String clsName = getClassName();
+            int accessFlags = getMethod().getAccessFlags();
+            MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(),
+                    numMethodCalls);
+            if (clsName.contains("$") || ((accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0)) {
+                mi.addCallingAccess(Constants.ACC_PUBLIC);
+            } else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
+                if (isAssociationedWithAnnotations(getMethod())) {
+                    mi.addCallingAccess(Constants.ACC_PUBLIC);
+                } else {
+                    String methodSig = getMethodName() + getMethodSig();
+                    for (String sig : COMMON_METHOD_SIGS) {
+                        if (methodSig.matches(sig)) {
+                            mi.addCallingAccess(Constants.ACC_PUBLIC);
+                        }
+                    }
+                }
+            }
+        }
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		switch (seen) {
-			case INVOKEVIRTUAL:
-			case INVOKEINTERFACE:
-			case INVOKESPECIAL:
-			case INVOKESTATIC:
-				numMethodCalls++;
-			break;
-			default:
-				break;
-		}
-	}
+    @Override
+    public void sawOpcode(int seen) {
+        switch (seen) {
+        case INVOKEVIRTUAL:
+        case INVOKEINTERFACE:
+        case INVOKESPECIAL:
+        case INVOKESTATIC:
+            numMethodCalls++;
+            break;
+        default:
+            break;
+        }
+    }
 
-	private boolean isAssociationedWithAnnotations(Method m) {
-		if (classHasAnnotation) {
-			return true;
-		}
+    private boolean isAssociationedWithAnnotations(Method m) {
+        if (classHasAnnotation) {
+            return true;
+        }
 
-		AnnotationEntry[] annotations = m.getAnnotationEntries();
-    	return (annotations != null) && (annotations.length > 0);
-	}
+        AnnotationEntry[] annotations = m.getAnnotationEntries();
+        return (annotations != null) && (annotations.length > 0);
+    }
 }

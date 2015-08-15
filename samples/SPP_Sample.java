@@ -55,22 +55,22 @@ public class SPP_Sample implements Serializable {
             System.out.println("It's a nan");
         }
     }
-    
+
     public void testNAN2(Double d) {
         if (d == Double.NaN) {
             System.out.println("It's a nan");
         }
-        
+
         if (d.isNaN()) {
             System.out.println("It's properly a nan");
         }
     }
-    
+
     public void testNotNAN(double d) {
         if (d != Double.NaN) {
             System.out.println("It's not a nan");
         }
-        
+
         if (!Double.isNaN(d)) {
             System.out.println("It's properly not a nan");
         }
@@ -118,12 +118,12 @@ public class SPP_Sample implements Serializable {
     }
 
     public void testDoubleAppendLiteral(StringBuilder sb, String s) {
-        sb.append("hello").append("there");     
+        sb.append("hello").append("there");
         sb.append("Hello").append(s).append("there");
     }
-    
+
     public String testFormatLiteral() {
-    	return String.format("This string is not parameterized");
+        return String.format("This string is not parameterized");
     }
 
     public String testFPDoubleAppendListeralStatic() {
@@ -336,31 +336,32 @@ public class SPP_Sample implements Serializable {
         }
         return false;
     }
-    
+
     public String testStringToString(String x) {
-    	//tag SPP_TOSTRING_ON_STRING (fb-contrib) and DM_STRING_TOSTRING (FindBugs)
+        // tag SPP_TOSTRING_ON_STRING (fb-contrib) and DM_STRING_TOSTRING
+        // (FindBugs)
         System.out.println(x.toString());
-        
-        //tag DM_CONVERT_CASE (FindBugs) and SPP_CONVERSION_OF_STRING_LITERAL
+
+        // tag DM_CONVERT_CASE (FindBugs) and SPP_CONVERSION_OF_STRING_LITERAL
         System.out.println("SomeUpperCase".toLowerCase());
-        //tag SPP_CONVERSION_OF_STRING_LITERAL
+        // tag SPP_CONVERSION_OF_STRING_LITERAL
         System.out.println("SomeUpperCase".toLowerCase(Locale.US));
-        //tag SPP_CONVERSION_OF_STRING_LITERAL
+        // tag SPP_CONVERSION_OF_STRING_LITERAL
         System.out.println("SomeUpperCase".toUpperCase());
-        //tag SPP_CONVERSION_OF_STRING_LITERAL
+        // tag SPP_CONVERSION_OF_STRING_LITERAL
         System.out.println("SomeUpperCase".toUpperCase(Locale.CANADA));
-        //tag SPP_CONVERSION_OF_STRING_LITERAL
+        // tag SPP_CONVERSION_OF_STRING_LITERAL
         System.out.println("  SomeUpperCase ".trim());
-        
-        //no tag
+
+        // no tag
         System.out.println(x.toLowerCase());
-        //no tag
+        // no tag
         System.out.println(x.toLowerCase(Locale.US));
-        //no tag
+        // no tag
         System.out.println(x.toUpperCase());
-        //no tag
+        // no tag
         System.out.println(x.toUpperCase(Locale.CANADA));
-        //no tag
+        // no tag
         System.out.println(x.trim());
         return x;
     }
@@ -380,11 +381,11 @@ public class SPP_Sample implements Serializable {
         System.out.println(s.toString());
         /* only report it once */
         System.out.println(s.toString());
-        
+
     }
 
     public void testFPToString(Object o) {
         System.out.println(o);
     }
-    
+
 }

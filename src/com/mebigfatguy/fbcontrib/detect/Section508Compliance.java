@@ -46,285 +46,286 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for interfaces that ignore 508 compliance, including not using JLabel.setLabelFor,
- * Using null layouts,
+ * looks for interfaces that ignore 508 compliance, including not using
+ * JLabel.setLabelFor, Using null layouts,
  */
 @CustomUserValue
-public class Section508Compliance extends BytecodeScanningDetector
-{
+public class Section508Compliance extends BytecodeScanningDetector {
     private static final String SAW_TEXT_LABEL = "SAW_TEXT_LABEL";
     private static final String FROM_UIMANAGER = "FROM_UIMANAGER";
     private static final String APPENDED_STRING = "APPENDED_STRING";
 
-	private static JavaClass windowClass;
-	private static JavaClass componentClass;
-	private static JavaClass jcomponentClass;
-	private static JavaClass accessibleClass;
-	private static ClassNotFoundException clsNFException;
-	static {
-		try {
-			windowClass = Repository.lookupClass("java/awt/Window");
-		} catch (ClassNotFoundException cnfe) {
-			windowClass = null;
-			clsNFException = cnfe;
-		}
-		try {
-			componentClass = Repository.lookupClass("java/awt/Component");
-		} catch (ClassNotFoundException cnfe) {
-			componentClass = null;
-			clsNFException = cnfe;
-		}
-		try {
-			jcomponentClass = Repository.lookupClass("javax/swing/JComponent");
-		} catch (ClassNotFoundException cnfe) {
-			jcomponentClass = null;
-			clsNFException = cnfe;
-		}
-		try {
-			accessibleClass = Repository.lookupClass("javax/accessibility/Accessible");
-		} catch (ClassNotFoundException cnfe) {
-			accessibleClass = null;
-			clsNFException = cnfe;
-		}
-	}
+    private static JavaClass windowClass;
+    private static JavaClass componentClass;
+    private static JavaClass jcomponentClass;
+    private static JavaClass accessibleClass;
+    private static ClassNotFoundException clsNFException;
 
-	private static final Map<String, Integer> displayTextMethods = new HashMap<String, Integer>();
-	static {
-		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;)", Values.ZERO);
-		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;Ljavax/swing/Icon;I)", Values.ONE);
-		displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;I)", Values.TWO);
-		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;)", Values.ZERO);
-		displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Values.ONE);
-		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;)", Values.ZERO);
-		displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)", Values.ONE);
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;)", Values.ZERO);
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;Z)", Values.ONE);
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", Values.TWO);
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;)", Values.ZERO);
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;Z)", Values.ONE);
-		displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", Values.TWO);
-		displayTextMethods.put("java/awt/Dialog#setTitle(Ljava/lang/String;)", Values.ZERO);
-		displayTextMethods.put("java/awt/Frame#setTitle(Ljava/lang/String;)", Values.ZERO);
-		displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;)", Values.ZERO);
-		displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;Z)", Values.ONE);
-		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;)", Values.ZERO);
-		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Values.ONE);
-		displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;I)", Values.ONE);
-	}
+    static {
+        try {
+            windowClass = Repository.lookupClass("java/awt/Window");
+        } catch (ClassNotFoundException cnfe) {
+            windowClass = null;
+            clsNFException = cnfe;
+        }
+        try {
+            componentClass = Repository.lookupClass("java/awt/Component");
+        } catch (ClassNotFoundException cnfe) {
+            componentClass = null;
+            clsNFException = cnfe;
+        }
+        try {
+            jcomponentClass = Repository.lookupClass("javax/swing/JComponent");
+        } catch (ClassNotFoundException cnfe) {
+            jcomponentClass = null;
+            clsNFException = cnfe;
+        }
+        try {
+            accessibleClass = Repository.lookupClass("javax/accessibility/Accessible");
+        } catch (ClassNotFoundException cnfe) {
+            accessibleClass = null;
+            clsNFException = cnfe;
+        }
+    }
 
-	private final BugReporter bugReporter;
-	private OpcodeStack stack;
-	private Set<XField> fieldLabels;
-	private Map<Integer, SourceLineAnnotation> localLabels;
+    private static final Map<String, Integer> displayTextMethods = new HashMap<String, Integer>();
 
-	/**
-	 * constructs a S508C detector given the reporter to report bugs on
-	 * @param bugReporter the sync of bug reports
-	 */
-	public Section508Compliance(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		if (clsNFException != null)
-			bugReporter.reportMissingClass(clsNFException);
-	}
+    static {
+        displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;)", Values.ZERO);
+        displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;Ljavax/swing/Icon;I)", Values.ONE);
+        displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;I)", Values.TWO);
+        displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;)", Values.ZERO);
+        displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Values.ONE);
+        displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;)", Values.ZERO);
+        displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)", Values.ONE);
+        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;)", Values.ZERO);
+        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;Z)", Values.ONE);
+        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", Values.TWO);
+        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;)", Values.ZERO);
+        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;Z)", Values.ONE);
+        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", Values.TWO);
+        displayTextMethods.put("java/awt/Dialog#setTitle(Ljava/lang/String;)", Values.ZERO);
+        displayTextMethods.put("java/awt/Frame#setTitle(Ljava/lang/String;)", Values.ZERO);
+        displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;)", Values.ZERO);
+        displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;Z)", Values.ONE);
+        displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;)", Values.ZERO);
+        displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Values.ONE);
+        displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;I)", Values.ONE);
+    }
 
-	/**
-	 * implements the visitor to create and clear the stack
-	 *
-	 * @param classContext the context object of the currently visited class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			if ((jcomponentClass != null) && (accessibleClass != null)) {
-				JavaClass cls = classContext.getJavaClass();
-				if (cls.instanceOf(jcomponentClass)) {
-					if (!cls.implementationOf(accessibleClass)) {
-						bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_ACCESSIBLE_JCOMPONENT.name(), NORMAL_PRIORITY)
-						.addClass(cls));
-					}
-				}
-			}
+    private final BugReporter bugReporter;
+    private OpcodeStack stack;
+    private Set<XField> fieldLabels;
+    private Map<Integer, SourceLineAnnotation> localLabels;
 
-			stack = new OpcodeStack();
-			fieldLabels = new HashSet<XField>();
-			localLabels = new HashMap<Integer, SourceLineAnnotation>();
-			super.visitClassContext(classContext);
-			for (XField fa : fieldLabels) {
-				bugReporter.reportBug(new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY)
-				.addClass(this)
-				.addField(fa));
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		} finally {
-			stack = null;
-			fieldLabels = null;
-			localLabels = null;
-		}
-	}
+    /**
+     * constructs a S508C detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public Section508Compliance(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+        if (clsNFException != null)
+            bugReporter.reportMissingClass(clsNFException);
+    }
 
-	/**
-	 * looks for fields that are JLabels and stores them in a set
-	 *
-	 * @param obj the field object of the current field
-	 */
-	@Override
-	public void visitField(Field obj) {
-		String fieldSig = obj.getSignature();
-		if ("Ljavax/swing/JLabel;".equals(fieldSig)) {
-			FieldAnnotation fa = FieldAnnotation.fromVisitedField(this);
+    /**
+     * implements the visitor to create and clear the stack
+     *
+     * @param classContext
+     *            the context object of the currently visited class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            if ((jcomponentClass != null) && (accessibleClass != null)) {
+                JavaClass cls = classContext.getJavaClass();
+                if (cls.instanceOf(jcomponentClass)) {
+                    if (!cls.implementationOf(accessibleClass)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_ACCESSIBLE_JCOMPONENT.name(), NORMAL_PRIORITY).addClass(cls));
+                    }
+                }
+            }
 
-			fieldLabels.add(XFactory.createXField(fa));
-		}
-	}
+            stack = new OpcodeStack();
+            fieldLabels = new HashSet<XField>();
+            localLabels = new HashMap<Integer, SourceLineAnnotation>();
+            super.visitClassContext(classContext);
+            for (XField fa : fieldLabels) {
+                bugReporter.reportBug(new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY).addClass(this).addField(fa));
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            stack = null;
+            fieldLabels = null;
+            localLabels = null;
+        }
+    }
 
-	/**
-	 * implements the visitor to reset the stack
-	 *
-	 * @param obj the context object for the currently visited code block
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		stack.resetForMethodEntry(this);
-		localLabels.clear();
-		super.visitCode(obj);
-		for (SourceLineAnnotation sla : localLabels.values()) {
-			BugInstance bug = new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY)
-			.addClass(this)
-			.addMethod(this);
+    /**
+     * looks for fields that are JLabels and stores them in a set
+     *
+     * @param obj
+     *            the field object of the current field
+     */
+    @Override
+    public void visitField(Field obj) {
+        String fieldSig = obj.getSignature();
+        if ("Ljavax/swing/JLabel;".equals(fieldSig)) {
+            FieldAnnotation fa = FieldAnnotation.fromVisitedField(this);
 
-			if (sla != null) {
-				bug.addSourceLine(sla);
-			}
+            fieldLabels.add(XFactory.createXField(fa));
+        }
+    }
 
-			bugReporter.reportBug(bug);
-		}
-	}
+    /**
+     * implements the visitor to reset the stack
+     *
+     * @param obj
+     *            the context object for the currently visited code block
+     */
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        localLabels.clear();
+        super.visitCode(obj);
+        for (SourceLineAnnotation sla : localLabels.values()) {
+            BugInstance bug = new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this);
 
-	/**
-	 * implements the visitor to find 508 compliance concerns
-	 *
-	 * @param seen the opcode of the currently parsed instruction
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		boolean sawTextLabel = false;
-		boolean sawUIManager = false;
-		boolean sawAppend = false;
-		try {
-	        stack.precomputation(this);
-	        
-			if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					if ("Ljavax/swing/JLabel;".equals(item.getSignature())
-							&&  (SAW_TEXT_LABEL.equals(item.getUserValue()))) {
-						int reg = RegisterUtils.getAStoreReg(this, seen);
-						localLabels.put(Integer.valueOf(reg), SourceLineAnnotation.fromVisitedInstruction(this));
-					}
-				}
-			} else if (seen == PUTFIELD) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					if (!SAW_TEXT_LABEL.equals(item.getUserValue())) {
-						FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), getNameConstantOperand(), getSigConstantOperand(), false);
-						fieldLabels.remove(XFactory.createXField(fa));
-					}
-				}
-			} else if (seen == INVOKESPECIAL) {
-				String className = getClassConstantOperand();
-				String methodName = getNameConstantOperand();
-				if ("javax/swing/JLabel".equals(className)
-						&&  Values.CONSTRUCTOR.equals(methodName)) {
-					String signature = getSigConstantOperand();
-					if (signature.indexOf("Ljava/lang/String;") >= 0) {
-						sawTextLabel = true;
-					}
-				}
-			} else if (seen == INVOKEVIRTUAL) {
-				String className = getClassConstantOperand();
-				String methodName = getNameConstantOperand();
+            if (sla != null) {
+                bug.addSourceLine(sla);
+            }
 
-				if ("javax/swing/JLabel".equals(className)) {
-					if ("setLabelFor".equals(methodName)) {
-						if (stack.getStackDepth() > 1) {
-							OpcodeStack.Item item = stack.getStackItem(1);
-							XField field = item.getXField();
-							if (field != null) {
-								fieldLabels.remove(field);
-							} else {
-								int reg = item.getRegisterNumber();
-								if (reg >= 0) {
-									localLabels.remove(Integer.valueOf(reg));
-								}
-							}
-						}
-					}
-				} else if ("java/lang/StringBuffer".equals(className) || "java/lang/StringBuilder".equals(className)) {
-				    if ("append".equals(methodName)) {
-				        if (stack.getStackDepth() > 0) {
-				            OpcodeStack.Item item = stack.getStackItem(0);
-				            Object con = item.getConstant();
-				            if (con instanceof String) {
-				                String literal = (String)con;
-				                sawAppend = !literal.startsWith("<");
-				            } else {
-				                sawAppend = true;
-				            }
-				        }
-				    } else if ("toString".equals(methodName)) {
-				        if (stack.getStackDepth() > 0) {
-				            OpcodeStack.Item item = stack.getStackItem(0);
-				            if (APPENDED_STRING.equals(item.getUserValue())) {
-				                sawAppend = true;
-				            }
-				        }
-				    }
-				}
+            bugReporter.reportBug(bug);
+        }
+    }
 
-				processSetSizeOps(methodName);
+    /**
+     * implements the visitor to find 508 compliance concerns
+     *
+     * @param seen
+     *            the opcode of the currently parsed instruction
+     */
+    @Override
+    public void sawOpcode(int seen) {
+        boolean sawTextLabel = false;
+        boolean sawUIManager = false;
+        boolean sawAppend = false;
+        try {
+            stack.precomputation(this);
+
+            if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if ("Ljavax/swing/JLabel;".equals(item.getSignature()) && (SAW_TEXT_LABEL.equals(item.getUserValue()))) {
+                        int reg = RegisterUtils.getAStoreReg(this, seen);
+                        localLabels.put(Integer.valueOf(reg), SourceLineAnnotation.fromVisitedInstruction(this));
+                    }
+                }
+            } else if (seen == PUTFIELD) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if (!SAW_TEXT_LABEL.equals(item.getUserValue())) {
+                        FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), getNameConstantOperand(), getSigConstantOperand(), false);
+                        fieldLabels.remove(XFactory.createXField(fa));
+                    }
+                }
+            } else if (seen == INVOKESPECIAL) {
+                String className = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
+                if ("javax/swing/JLabel".equals(className) && Values.CONSTRUCTOR.equals(methodName)) {
+                    String signature = getSigConstantOperand();
+                    if (signature.indexOf("Ljava/lang/String;") >= 0) {
+                        sawTextLabel = true;
+                    }
+                }
+            } else if (seen == INVOKEVIRTUAL) {
+                String className = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
+
+                if ("javax/swing/JLabel".equals(className)) {
+                    if ("setLabelFor".equals(methodName)) {
+                        if (stack.getStackDepth() > 1) {
+                            OpcodeStack.Item item = stack.getStackItem(1);
+                            XField field = item.getXField();
+                            if (field != null) {
+                                fieldLabels.remove(field);
+                            } else {
+                                int reg = item.getRegisterNumber();
+                                if (reg >= 0) {
+                                    localLabels.remove(Integer.valueOf(reg));
+                                }
+                            }
+                        }
+                    }
+                } else if ("java/lang/StringBuffer".equals(className) || "java/lang/StringBuilder".equals(className)) {
+                    if ("append".equals(methodName)) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            Object con = item.getConstant();
+                            if (con instanceof String) {
+                                String literal = (String) con;
+                                sawAppend = !literal.startsWith("<");
+                            } else {
+                                sawAppend = true;
+                            }
+                        }
+                    } else if ("toString".equals(methodName)) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            if (APPENDED_STRING.equals(item.getUserValue())) {
+                                sawAppend = true;
+                            }
+                        }
+                    }
+                }
+
+                processSetSizeOps(methodName);
                 processNullLayouts(className, methodName);
-				processSetColorOps(methodName);
-			} else if (seen == INVOKESTATIC) {
-			    if ("javax/swing/UIManager".equals(getClassConstantOperand())) {
-			        sawUIManager = true;
-			    }
-			}
+                processSetColorOps(methodName);
+            } else if (seen == INVOKESTATIC) {
+                if ("javax/swing/UIManager".equals(getClassConstantOperand())) {
+                    sawUIManager = true;
+                }
+            }
 
-			if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE)) {
-			    processFaultyGuiStrings();
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		} finally {
-			TernaryPatcher.pre(stack, seen);
-			stack.sawOpcode(this, seen);
-			TernaryPatcher.post(stack, seen);
-			if (sawTextLabel) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					item.setUserValue(SAW_TEXT_LABEL);
-				}
-			} else if (sawUIManager) {
+            if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE)) {
+                processFaultyGuiStrings();
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            TernaryPatcher.pre(stack, seen);
+            stack.sawOpcode(this, seen);
+            TernaryPatcher.post(stack, seen);
+            if (sawTextLabel) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(SAW_TEXT_LABEL);
+                }
+            } else if (sawUIManager) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     item.setUserValue(FROM_UIMANAGER);
                 }
-			} else if (sawAppend) {
+            } else if (sawAppend) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     item.setUserValue(APPENDED_STRING);
                 }
-			}
-		}
-	}
+            }
+        }
+    }
 
-	/**
-	 * looks for calls to set a readable string that is generated from a static constant, as these strings
-	 * are not translatable. also looks for setting readable strings that are appended together. This is
-	 * likely not to be internationalizable.
-	 */
-	private void processFaultyGuiStrings() {
+    /**
+     * looks for calls to set a readable string that is generated from a static
+     * constant, as these strings are not translatable. also looks for setting
+     * readable strings that are appended together. This is likely not to be
+     * internationalizable.
+     */
+    private void processFaultyGuiStrings() {
         StringBuilder methodInfo = new StringBuilder();
         methodInfo.append(getClassConstantOperand());
         methodInfo.append("#");
@@ -337,91 +338,87 @@ public class Section508Compliance extends BytecodeScanningDetector
             if (stack.getStackDepth() > parmIndex.intValue()) {
                 OpcodeStack.Item item = stack.getStackItem(parmIndex.intValue());
                 if (item.getConstant() != null) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_TRANSLATABLE_STRING.name(), NORMAL_PRIORITY)
-                                .addClass(this)
-                                .addMethod(this)
-                                .addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_TRANSLATABLE_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this));
                 } else if (APPENDED_STRING.equals(item.getUserValue())) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.S508C_APPENDED_STRING.name(), NORMAL_PRIORITY)
-                    .addClass(this)
-                    .addMethod(this)
-                    .addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.S508C_APPENDED_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
 
                 }
             }
         }
-	}
+    }
 
-	/**
-	 * looks for containers where a null layout is installed
-	 *
-	 * @param className class that a method call is made on
-	 * @param methodName name of the method that is called
-	 */
-	private void processNullLayouts(String className, String methodName) {
+    /**
+     * looks for containers where a null layout is installed
+     *
+     * @param className
+     *            class that a method call is made on
+     * @param methodName
+     *            name of the method that is called
+     */
+    private void processNullLayouts(String className, String methodName) {
         if ("java/awt/Container".equals(className)) {
             if ("setLayout".equals(methodName)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     if (item.isNull()) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.S508C_NULL_LAYOUT.name(), NORMAL_PRIORITY)
-                        .addClass(this)
-                        .addMethod(this)
-                        .addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.S508C_NULL_LAYOUT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
             }
         }
-	}
+    }
 
-	/**
-	 * looks for calls to set the color of components where the color isn't from UIManager
-	 *
-	 * @param methodName the method that is called
-	 *
-	 * @throws ClassNotFoundException if the gui component class can't be found
-	 */
-	private void processSetColorOps(String methodName) throws ClassNotFoundException {
-        if ("setBackground".equals(methodName)
-                ||  "setForeground".equals(methodName)) {
+    /**
+     * looks for calls to set the color of components where the color isn't from
+     * UIManager
+     *
+     * @param methodName
+     *            the method that is called
+     *
+     * @throws ClassNotFoundException
+     *             if the gui component class can't be found
+     */
+    private void processSetColorOps(String methodName) throws ClassNotFoundException {
+        if ("setBackground".equals(methodName) || "setForeground".equals(methodName)) {
             int argCount = Type.getArgumentTypes(getSigConstantOperand()).length;
             if (stack.getStackDepth() > argCount) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (!FROM_UIMANAGER.equals(item.getUserValue())) {
                     item = stack.getStackItem(argCount);
                     JavaClass cls = item.getJavaClass();
-                    if (((jcomponentClass != null) && cls.instanceOf(jcomponentClass))
-                            ||  ((componentClass != null) && cls.instanceOf(componentClass))) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.S508C_SET_COMP_COLOR.name(), NORMAL_PRIORITY)
-                        .addClass(this)
-                        .addMethod(this)
-                        .addSourceLine(this));
+                    if (((jcomponentClass != null) && cls.instanceOf(jcomponentClass)) || ((componentClass != null) && cls.instanceOf(componentClass))) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.S508C_SET_COMP_COLOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
             }
         }
-	}
+    }
 
-	/**
-	 * looks for calls to setSize on components, rather than letting the layout manager set them
-	 *
-	 * @param methodName the method that was called on a component
-	 *
-	 * @throws ClassNotFoundException if the gui class wasn't found
-	 */
-	private void processSetSizeOps(String methodName) throws ClassNotFoundException {
-	    if ("setSize".equals(methodName)) {
+    /**
+     * looks for calls to setSize on components, rather than letting the layout
+     * manager set them
+     *
+     * @param methodName
+     *            the method that was called on a component
+     *
+     * @throws ClassNotFoundException
+     *             if the gui class wasn't found
+     */
+    private void processSetSizeOps(String methodName) throws ClassNotFoundException {
+        if ("setSize".equals(methodName)) {
             int argCount = Type.getArgumentTypes(getSigConstantOperand()).length;
             if ((windowClass != null) && (stack.getStackDepth() > argCount)) {
                 OpcodeStack.Item item = stack.getStackItem(argCount);
                 JavaClass cls = item.getJavaClass();
                 if ((cls != null) && cls.instanceOf(windowClass)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.S508C_NO_SETSIZE.name(), NORMAL_PRIORITY)
-                    .addClass(this)
-                    .addMethod(this)
-                    .addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.S508C_NO_SETSIZE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
         }
-	}
+    }
 }

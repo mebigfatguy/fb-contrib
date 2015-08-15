@@ -42,164 +42,169 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for methods that rely on the format of the string fetched from another object's toString
- * method, when that method appears not to be owned by the author of the calling method.
- * As the implementation of toString() is often considered a private implementation detail of a class, 
- * and not something that should be relied on, depending on it's format is dangerous.
+ * looks for methods that rely on the format of the string fetched from another
+ * object's toString method, when that method appears not to be owned by the
+ * author of the calling method. As the implementation of toString() is often
+ * considered a private implementation detail of a class, and not something that
+ * should be relied on, depending on it's format is dangerous.
  */
 @CustomUserValue
 public class InappropriateToStringUse extends BytecodeScanningDetector {
 
-	private static final Set<String> validToStringClasses = new HashSet<String>();
-	static {
-		validToStringClasses.add("java/lang/Object"); // too many fps
-		validToStringClasses.add("java/lang/Byte");
-		validToStringClasses.add("java/lang/Character");
-		validToStringClasses.add("java/lang/Short");
-		validToStringClasses.add("java/lang/Integer");
-		validToStringClasses.add("java/lang/Boolean");
-		validToStringClasses.add("java/lang/Float");
-		validToStringClasses.add("java/lang/Double");
-		validToStringClasses.add("java/lang/Long");
-		validToStringClasses.add("java/lang/String");
-		validToStringClasses.add("java/lang/Number");
-		validToStringClasses.add("java/lang/StringBuffer");
-		validToStringClasses.add("java/lang/StringBuilder");
-		validToStringClasses.add("java/io/StringWriter");
-	}
-	private static final Set<String> stringAlgoMethods = new HashSet<String>();
-	static {
-		stringAlgoMethods.add("indexOf");
-		stringAlgoMethods.add("contains");
-		stringAlgoMethods.add("startsWith");
-		stringAlgoMethods.add("endsWith");
-		stringAlgoMethods.add("substring");
-	}
+    private static final Set<String> validToStringClasses = new HashSet<String>();
 
-	private final BugReporter bugReporter;
-	private OpcodeStack stack;
-	private Map<Integer, String> toStringRegisters;
-	private String packageName;
+    static {
+        validToStringClasses.add("java/lang/Object"); // too many fps
+        validToStringClasses.add("java/lang/Byte");
+        validToStringClasses.add("java/lang/Character");
+        validToStringClasses.add("java/lang/Short");
+        validToStringClasses.add("java/lang/Integer");
+        validToStringClasses.add("java/lang/Boolean");
+        validToStringClasses.add("java/lang/Float");
+        validToStringClasses.add("java/lang/Double");
+        validToStringClasses.add("java/lang/Long");
+        validToStringClasses.add("java/lang/String");
+        validToStringClasses.add("java/lang/Number");
+        validToStringClasses.add("java/lang/StringBuffer");
+        validToStringClasses.add("java/lang/StringBuilder");
+        validToStringClasses.add("java/io/StringWriter");
+    }
 
-	/**
-	 * constructs a ITU detector given the reporter to report bugs on
-	 * @param bugReporter the sync of bug reports
-	 */
-	public InappropriateToStringUse(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    private static final Set<String> stringAlgoMethods = new HashSet<String>();
 
-	/**
-	 * overrides the visitor to reset the stack
-	 * 
-	 * @param classContext the context object of the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			stack = new OpcodeStack();
-			toStringRegisters = new HashMap<Integer, String>();
-			packageName = classContext.getJavaClass().getPackageName();
-			super.visitClassContext(classContext);
-		} finally {
-			stack = null;
-			toStringRegisters = null;
-		}
-	}
+    static {
+        stringAlgoMethods.add("indexOf");
+        stringAlgoMethods.add("contains");
+        stringAlgoMethods.add("startsWith");
+        stringAlgoMethods.add("endsWith");
+        stringAlgoMethods.add("substring");
+    }
 
-	/**
-	 * overrides the visitor to resets the stack for this method.
-	 * 
-	 * @param obj the context object for the currently parsed code block
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		stack.resetForMethodEntry(this);
-		toStringRegisters.clear();
-		super.visitCode(obj);
-	}
+    private final BugReporter bugReporter;
+    private OpcodeStack stack;
+    private Map<Integer, String> toStringRegisters;
+    private String packageName;
 
-	/**
-	 * overrides the visitor to look for suspicious operations on toString
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		String methodPackage = null;
-		try {
-	        stack.precomputation(this);
-	        
-			if (seen == INVOKEVIRTUAL) {
-				String methodName = getNameConstantOperand();
-				if ("toString".equals(methodName)) {
-					String signature = getSigConstantOperand();
-					if ("()Ljava/lang/String;".equals(signature)) {
-						String className = getClassConstantOperand();
-						if (!validToStringClasses.contains(className)) {
-							if (stack.getStackDepth() > 0) {
-								OpcodeStack.Item item = stack.getStackItem(0);
-								JavaClass cls = item.getJavaClass();
-								if (cls != null) {
-									methodPackage = cls.getPackageName();
-								}
-							}
-						}
-					}
-				} else if (stringAlgoMethods.contains(methodName)) {
-					String className = getClassConstantOperand();
-					if ("java/lang/String".equals(className)) {
-						String signature = getSigConstantOperand();
-						int numParms = Type.getArgumentTypes(signature).length;
-						if (stack.getStackDepth() > numParms) {
-							OpcodeStack.Item item = stack.getStackItem(numParms);
-							if (item.getUserValue() != null) {
-								XMethod xm = item.getReturnValueOf();
-								String tsPackage = null;
-								if (xm != null) {
-									tsPackage = xm.getPackageName();
-								}
-								if ((tsPackage == null) || !SignatureUtils.similarPackages(tsPackage, packageName, 2)) {
-									bugReporter.reportBug(new BugInstance(this, BugType.ITU_INAPPROPRIATE_TOSTRING_USE.name(), NORMAL_PRIORITY)
-									.addClass(this)
-									.addMethod(this)
-									.addSourceLine(this));
-								}
-							}
-						}
-					}
-				}
-			} else if ((seen == ASTORE)
-					||  ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-					if (item.getUserValue() != null) {
-						XMethod xm = item.getReturnValueOf();
-						if (xm != null) {
-							toStringRegisters.put(reg, xm.getPackageName());
-						} else {
-							toStringRegisters.remove(reg);
-						}
-					} else {
-						toStringRegisters.remove(reg);
-					}
-				}
-			} else if (OpcodeUtils.isALoad(seen)) {
-				Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-				methodPackage = toStringRegisters.get(reg);
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		} finally {
-			TernaryPatcher.pre(stack, seen);
-			stack.sawOpcode(this, seen);
-			TernaryPatcher.post(stack, seen);
-			if (methodPackage != null) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					item.setUserValue(methodPackage);
-				}
-			}
-		}
-	}
+    /**
+     * constructs a ITU detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public InappropriateToStringUse(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    /**
+     * overrides the visitor to reset the stack
+     * 
+     * @param classContext
+     *            the context object of the currently parsed class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            stack = new OpcodeStack();
+            toStringRegisters = new HashMap<Integer, String>();
+            packageName = classContext.getJavaClass().getPackageName();
+            super.visitClassContext(classContext);
+        } finally {
+            stack = null;
+            toStringRegisters = null;
+        }
+    }
+
+    /**
+     * overrides the visitor to resets the stack for this method.
+     * 
+     * @param obj
+     *            the context object for the currently parsed code block
+     */
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        toStringRegisters.clear();
+        super.visitCode(obj);
+    }
+
+    /**
+     * overrides the visitor to look for suspicious operations on toString
+     */
+    @Override
+    public void sawOpcode(int seen) {
+        String methodPackage = null;
+        try {
+            stack.precomputation(this);
+
+            if (seen == INVOKEVIRTUAL) {
+                String methodName = getNameConstantOperand();
+                if ("toString".equals(methodName)) {
+                    String signature = getSigConstantOperand();
+                    if ("()Ljava/lang/String;".equals(signature)) {
+                        String className = getClassConstantOperand();
+                        if (!validToStringClasses.contains(className)) {
+                            if (stack.getStackDepth() > 0) {
+                                OpcodeStack.Item item = stack.getStackItem(0);
+                                JavaClass cls = item.getJavaClass();
+                                if (cls != null) {
+                                    methodPackage = cls.getPackageName();
+                                }
+                            }
+                        }
+                    }
+                } else if (stringAlgoMethods.contains(methodName)) {
+                    String className = getClassConstantOperand();
+                    if ("java/lang/String".equals(className)) {
+                        String signature = getSigConstantOperand();
+                        int numParms = Type.getArgumentTypes(signature).length;
+                        if (stack.getStackDepth() > numParms) {
+                            OpcodeStack.Item item = stack.getStackItem(numParms);
+                            if (item.getUserValue() != null) {
+                                XMethod xm = item.getReturnValueOf();
+                                String tsPackage = null;
+                                if (xm != null) {
+                                    tsPackage = xm.getPackageName();
+                                }
+                                if ((tsPackage == null) || !SignatureUtils.similarPackages(tsPackage, packageName, 2)) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.ITU_INAPPROPRIATE_TOSTRING_USE.name(), NORMAL_PRIORITY).addClass(this)
+                                            .addMethod(this).addSourceLine(this));
+                                }
+                            }
+                        }
+                    }
+                }
+            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
+                    if (item.getUserValue() != null) {
+                        XMethod xm = item.getReturnValueOf();
+                        if (xm != null) {
+                            toStringRegisters.put(reg, xm.getPackageName());
+                        } else {
+                            toStringRegisters.remove(reg);
+                        }
+                    } else {
+                        toStringRegisters.remove(reg);
+                    }
+                }
+            } else if (OpcodeUtils.isALoad(seen)) {
+                Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
+                methodPackage = toStringRegisters.get(reg);
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            TernaryPatcher.pre(stack, seen);
+            stack.sawOpcode(this, seen);
+            TernaryPatcher.post(stack, seen);
+            if (methodPackage != null) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(methodPackage);
+                }
+            }
+        }
+    }
 
 }

@@ -12,20 +12,20 @@ import java.util.Set;
 import java.util.Vector;
 
 public class WOC_Sample {
-	//tag WOC_WRITE_ONLY_COLLECTION_FIELD 
+    // tag WOC_WRITE_ONLY_COLLECTION_FIELD
     private final Set<String> memberSet = new HashSet<String>();
     private Set<String> fpSet;
     private final List<String> fpList = new ArrayList<String>();
     private List<String> fp1 = new ArrayList<String>();
     private List<String> fp2 = new ArrayList<String>();
     private List<String> fp3;
-    
+
     public WOC_Sample(List<String> x) {
-    	fp3 = x;
+        fp3 = x;
     }
 
     public void testWOCSimple() {
-    	//tag WOC_WRITE_ONLY_COLLECTION_LOCAL 
+        // tag WOC_WRITE_ONLY_COLLECTION_LOCAL
         Set<String> s = new HashSet<String>();
         s.add("Foo");
         memberSet.add("fee");
@@ -35,7 +35,7 @@ public class WOC_Sample {
     }
 
     public Map<String, String> testFPWOCReturn() {
-    	//no tag, value is returned
+        // no tag, value is returned
         Map<String, String> m = new HashMap<String, String>();
         m.put("Foo", "Bar");
         memberSet.add("fi");
@@ -44,7 +44,7 @@ public class WOC_Sample {
     }
 
     public void testFPWOCAsParm() {
-    	//no tag, passed to helper function
+        // no tag, passed to helper function
         Map<String, String> m = new HashMap<String, String>();
         m.put("Foo", "Bar");
         memberSet.add("fo");
@@ -53,23 +53,23 @@ public class WOC_Sample {
     }
 
     public void testFPWOCCopy() {
-    	//no tag, reference is copied
+        // no tag, reference is copied
         Set<String> s = new LinkedHashSet<String>();
         s.add("foo");
         @SuppressWarnings("unused")
-		Set<String> c = s;
+        Set<String> c = s;
         memberSet.add("fum");
     }
 
     public void testFPWOCInArray() {
-    	//no tag, object is added to array
+        // no tag, object is added to array
         Vector<Integer> v = new Vector<Integer>();
         v.add(Integer.valueOf(0));
         Object[] o = new Object[] { v };
     }
 
     public void testFPWOCUseReturnVal() {
-    	//no tag, return value was looked at
+        // no tag, return value was looked at
         LinkedList<String> l = new LinkedList<String>();
         l.add("Foo");
         l.add("Bar");
@@ -88,28 +88,27 @@ public class WOC_Sample {
     }
 
     private void helper(int i, Map<String, String> x) {
-    	System.out.println(x.get(i));
+        System.out.println(x.get(i));
     }
 
-    //no tag, put in anonymous class
+    // no tag, put in anonymous class
     public void testFPInnerClass(final Set<String> data) {
-    	
+
         ActionListener al = new ActionListener() {
             @Override
-			public void actionPerformed(ActionEvent ae) {
+            public void actionPerformed(ActionEvent ae) {
                 data.add("Woot");
             }
         };
         System.out.println(al);
     }
 
-    
     public List<String> fpOtherInstance(WOC_Sample ws) {
         return ws.fpList;
     }
 
     public String fpCheckReference(boolean b) {
-    	//no tag, null check done
+        // no tag, null check done
         List<String> s = null;
 
         if (b) {
@@ -133,25 +132,25 @@ public class WOC_Sample {
             return b ? fp1 : fp2;
         }
 
-        //no tag, either could be returned in the ternary operator
+        // no tag, either could be returned in the ternary operator
         List<String> used1 = new ArrayList<String>();
         List<String> used2 = new ArrayList<String>();
 
         return b ? used1 : used2;
     }
-    
+
     public void fpWOCAllowToMap(Map<String, List<String>> m, List<String> l) {
         if (l == null) {
-            m.put("FP",  l = new ArrayList<String>());
+            m.put("FP", l = new ArrayList<String>());
         }
         l.add("Hello there");
     }
-    
+
     public void fpClone(List<Data> l) {
-    	HashSet<String> s = new HashSet<>();
-    	for (Data d : l) {
-    		d.ss = (Set<String>) s.clone();
-    	}
+        HashSet<String> s = new HashSet<>();
+        for (Data d : l) {
+            d.ss = (Set<String>) s.clone();
+        }
     }
 
     public static class FpContains {
@@ -173,12 +172,12 @@ public class WOC_Sample {
             }
         }
     }
-    
+
     public void fpAddToCtorParm(String x) {
-    	fp3.add(x);
+        fp3.add(x);
     }
-    
+
     private class Data {
-    	Set<String> ss;
+        Set<String> ss;
     }
 }

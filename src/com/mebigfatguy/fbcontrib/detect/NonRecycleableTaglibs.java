@@ -39,183 +39,185 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for tag libraries that are not recycleable because backing members of taglib attributes are
- * set in areas besides the setter method for the attribute.
+ * looks for tag libraries that are not recycleable because backing members of
+ * taglib attributes are set in areas besides the setter method for the
+ * attribute.
  */
-public class NonRecycleableTaglibs extends BytecodeScanningDetector
-{
-	private static final int MAX_ATTRIBUTE_CODE_LENGTH = 60;
+public class NonRecycleableTaglibs extends BytecodeScanningDetector {
+    private static final int MAX_ATTRIBUTE_CODE_LENGTH = 60;
 
-	private static final Set<String> tagClasses = new HashSet<String>();
-	static {
-		tagClasses.add("javax.servlet.jsp.tagext.TagSupport");
-		tagClasses.add("javax.servlet.jsp.tagext.BodyTagSupport");
-	}
+    private static final Set<String> tagClasses = new HashSet<String>();
 
-	private static final Set<String> validAttrTypes = new HashSet<String>();
-	static {
-		validAttrTypes.add("B");
-		validAttrTypes.add("C");
-		validAttrTypes.add("D");
-		validAttrTypes.add("F");
-		validAttrTypes.add("I");
-		validAttrTypes.add("J");
-		validAttrTypes.add("S");
-		validAttrTypes.add("Z");
-		validAttrTypes.add("Ljava/lang/String;");
-		validAttrTypes.add("Ljava/util/Date;");
-	}
+    static {
+        tagClasses.add("javax.servlet.jsp.tagext.TagSupport");
+        tagClasses.add("javax.servlet.jsp.tagext.BodyTagSupport");
+    }
 
-	private final BugReporter bugReporter;
-	/**
-	 * methodname:methodsig -> type of setter methods
-	 */
-	private Map<String, String> attributes;
-	/**
-	 * methodname:methodsig -> (fieldname:fieldtype)s
-	 */
-	private Map<String, Map<String, SourceLineAnnotation>> methodWrites;
-	private Map<String, FieldAnnotation> fieldAnnotations;
+    private static final Set<String> validAttrTypes = new HashSet<String>();
 
-	/**
-	 * constructs a NRTL detector given the reporter to report bugs on.
+    static {
+        validAttrTypes.add("B");
+        validAttrTypes.add("C");
+        validAttrTypes.add("D");
+        validAttrTypes.add("F");
+        validAttrTypes.add("I");
+        validAttrTypes.add("J");
+        validAttrTypes.add("S");
+        validAttrTypes.add("Z");
+        validAttrTypes.add("Ljava/lang/String;");
+        validAttrTypes.add("Ljava/util/Date;");
+    }
 
-	 * @param bugReporter the sync of bug reports
-	 */
-	public NonRecycleableTaglibs(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    private final BugReporter bugReporter;
+    /**
+     * methodname:methodsig -> type of setter methods
+     */
+    private Map<String, String> attributes;
+    /**
+     * methodname:methodsig -> (fieldname:fieldtype)s
+     */
+    private Map<String, Map<String, SourceLineAnnotation>> methodWrites;
+    private Map<String, FieldAnnotation> fieldAnnotations;
 
-	/**
-	 * implements the visitor to look for classes that extend the TagSupport or BodyTagSupport class
-	 * 
-	 * @param classContext the context object for the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			JavaClass cls = classContext.getJavaClass();
-			JavaClass[] superClasses = cls.getSuperClasses();
-			for (JavaClass superCls : superClasses) {
-				if (tagClasses.contains(superCls.getClassName())) {
-					attributes = getAttributes(cls);
+    /**
+     * constructs a NRTL detector given the reporter to report bugs on.
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public NonRecycleableTaglibs(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-					if (attributes.size() > 0) {
-						methodWrites = new HashMap<String, Map<String, SourceLineAnnotation>>();
-						fieldAnnotations = new HashMap<String, FieldAnnotation>();
-						super.visitClassContext(classContext);
-						reportBugs();
-					}
-					break;
-				}
-			}
+    /**
+     * implements the visitor to look for classes that extend the TagSupport or
+     * BodyTagSupport class
+     * 
+     * @param classContext
+     *            the context object for the currently parsed class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            JavaClass cls = classContext.getJavaClass();
+            JavaClass[] superClasses = cls.getSuperClasses();
+            for (JavaClass superCls : superClasses) {
+                if (tagClasses.contains(superCls.getClassName())) {
+                    attributes = getAttributes(cls);
 
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		}
-		finally {
-			attributes = null;
-			methodWrites = null;
-			fieldAnnotations = null;
-		}
-	}
+                    if (attributes.size() > 0) {
+                        methodWrites = new HashMap<String, Map<String, SourceLineAnnotation>>();
+                        fieldAnnotations = new HashMap<String, FieldAnnotation>();
+                        super.visitClassContext(classContext);
+                        reportBugs();
+                    }
+                    break;
+                }
+            }
 
-	/**
-	 * collect all possible attributes given the name of methods available.
-	 * 
-	 * @return the map of possible attributes/types
-	 */
-	private static Map<String, String> getAttributes(JavaClass cls) {
-		Map<String, String> atts = new HashMap<String, String>();
-		Method[] methods = cls.getMethods();
-		for (Method m : methods) {
-			String name = m.getName();
-			if (name.startsWith("set") && m.isPublic() && !m.isStatic()) {
-				String sig = m.getSignature();
-				Type ret = Type.getReturnType(sig);
-				Type[] args = Type.getArgumentTypes(sig);
-				if (ret.equals(Type.VOID) && (args.length == 1)) {
-					String parmSig = args[0].getSignature();
-					if (validAttrTypes.contains(parmSig)) {
-						Code code = m.getCode();
-						if ((code != null) && (code.getCode().length < MAX_ATTRIBUTE_CODE_LENGTH)) {
-							atts.put(name + ":" + sig, parmSig);
-						}
-					}
-				}
-			}
-		}
-		return atts;
-	}
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            attributes = null;
+            methodWrites = null;
+            fieldAnnotations = null;
+        }
+    }
 
-	/**
-	 * implements the visitor to
-	 * 
-	 * @param obj the context object for the currently parsed code object
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		Method m = getMethod();
-		if (!Values.CONSTRUCTOR.equals(m.getName())) {
-			super.visitCode(obj);
-		}
-	}
+    /**
+     * collect all possible attributes given the name of methods available.
+     * 
+     * @return the map of possible attributes/types
+     */
+    private static Map<String, String> getAttributes(JavaClass cls) {
+        Map<String, String> atts = new HashMap<String, String>();
+        Method[] methods = cls.getMethods();
+        for (Method m : methods) {
+            String name = m.getName();
+            if (name.startsWith("set") && m.isPublic() && !m.isStatic()) {
+                String sig = m.getSignature();
+                Type ret = Type.getReturnType(sig);
+                Type[] args = Type.getArgumentTypes(sig);
+                if (ret.equals(Type.VOID) && (args.length == 1)) {
+                    String parmSig = args[0].getSignature();
+                    if (validAttrTypes.contains(parmSig)) {
+                        Code code = m.getCode();
+                        if ((code != null) && (code.getCode().length < MAX_ATTRIBUTE_CODE_LENGTH)) {
+                            atts.put(name + ":" + sig, parmSig);
+                        }
+                    }
+                }
+            }
+        }
+        return atts;
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		if (seen == PUTFIELD) {
-			String methodInfo = getMethodName() + ":" + getMethodSig();
-			Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
-			if (fields == null) {
-				fields = new HashMap<String, SourceLineAnnotation>();
-				methodWrites.put(methodInfo, fields);
-			}
-			String fieldName = getNameConstantOperand();
-			String fieldSig = getSigConstantOperand();
+    /**
+     * implements the visitor to
+     * 
+     * @param obj
+     *            the context object for the currently parsed code object
+     */
+    @Override
+    public void visitCode(Code obj) {
+        Method m = getMethod();
+        if (!Values.CONSTRUCTOR.equals(m.getName())) {
+            super.visitCode(obj);
+        }
+    }
 
-			FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), fieldName, fieldSig, false);
-			fieldAnnotations.put(fieldName, fa);
-			fields.put(fieldName + ":" + fieldSig, SourceLineAnnotation.fromVisitedInstruction(this));
-		}
-	}
+    @Override
+    public void sawOpcode(int seen) {
+        if (seen == PUTFIELD) {
+            String methodInfo = getMethodName() + ":" + getMethodSig();
+            Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
+            if (fields == null) {
+                fields = new HashMap<String, SourceLineAnnotation>();
+                methodWrites.put(methodInfo, fields);
+            }
+            String fieldName = getNameConstantOperand();
+            String fieldSig = getSigConstantOperand();
 
-	/**
-	 * generates all the bug reports for attributes that are not recycleable
-	 */
-	private void reportBugs() {
-		for (Map.Entry<String, String> attEntry : attributes.entrySet()) {
-			String methodInfo = attEntry.getKey();
-			String attType = attEntry.getValue();
+            FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), fieldName, fieldSig, false);
+            fieldAnnotations.put(fieldName, fa);
+            fields.put(fieldName + ":" + fieldSig, SourceLineAnnotation.fromVisitedInstruction(this));
+        }
+    }
 
-			Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
-			if ((fields == null) || (fields.size() != 1)) {
-				continue;
-			}
+    /**
+     * generates all the bug reports for attributes that are not recycleable
+     */
+    private void reportBugs() {
+        for (Map.Entry<String, String> attEntry : attributes.entrySet()) {
+            String methodInfo = attEntry.getKey();
+            String attType = attEntry.getValue();
 
+            Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
+            if ((fields == null) || (fields.size() != 1)) {
+                continue;
+            }
 
-			String fieldInfo = fields.keySet().iterator().next();
-			int colonPos = fieldInfo.indexOf(':');
-			String fieldName = fieldInfo.substring(0, colonPos);
-			String fieldType = fieldInfo.substring(colonPos+1);
+            String fieldInfo = fields.keySet().iterator().next();
+            int colonPos = fieldInfo.indexOf(':');
+            String fieldName = fieldInfo.substring(0, colonPos);
+            String fieldType = fieldInfo.substring(colonPos + 1);
 
-			if (!attType.equals(fieldType)) {
-				continue;
-			}
+            if (!attType.equals(fieldType)) {
+                continue;
+            }
 
-			for (Map.Entry<String, Map<String, SourceLineAnnotation>> fwEntry : methodWrites.entrySet()) {
-				if (fwEntry.getKey().equals(methodInfo)) {
-					continue;
-				}
+            for (Map.Entry<String, Map<String, SourceLineAnnotation>> fwEntry : methodWrites.entrySet()) {
+                if (fwEntry.getKey().equals(methodInfo)) {
+                    continue;
+                }
 
-				SourceLineAnnotation sla = fwEntry.getValue().get(fieldInfo);
-				if (sla != null) {
-					bugReporter.reportBug(new BugInstance(this, BugType.NRTL_NON_RECYCLEABLE_TAG_LIB.name(), NORMAL_PRIORITY)
-					.addClass(this)
-					.addField(fieldAnnotations.get(fieldName))
-					.addSourceLine(sla));
-					break;
-				}
-			}
-		}
-	}
+                SourceLineAnnotation sla = fwEntry.getValue().get(fieldInfo);
+                if (sla != null) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.NRTL_NON_RECYCLEABLE_TAG_LIB.name(), NORMAL_PRIORITY).addClass(this)
+                            .addField(fieldAnnotations.get(fieldName)).addSourceLine(sla));
+                    break;
+                }
+            }
+        }
+    }
 }

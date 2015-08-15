@@ -1,7 +1,7 @@
 
 public class CD_Sample {
     Child c = new Child();;
-    
+
     public void cdTest() {
         c.childTest();
     }
@@ -9,7 +9,7 @@ public class CD_Sample {
 
 class Child {
     SubChild sc = new SubChild();
-    
+
     public void childTest() {
         sc.subChildTest();
     }
@@ -17,47 +17,47 @@ class Child {
 
 class SubChild {
     CD_Sample cds = new CD_Sample();
-    
+
     public void subChildTest() {
         cds.toString();
     }
 }
 
 class Mammooth {
-	private int x;
-	
-	static class Builder {
-		private int x;
-		
-		public void setX(int x) {
-			this.x = x;
-		}
-		
-		public Mammooth build() {
-			Mammooth m = new Mammooth();
-			m.x = x;
-			return m;
-		}
-	}
+    private int x;
+
+    static class Builder {
+        private int x;
+
+        public void setX(int x) {
+            this.x = x;
+        }
+
+        public Mammooth build() {
+            Mammooth m = new Mammooth();
+            m.x = x;
+            return m;
+        }
+    }
 }
 
 class SuspectBuilderUse {
-	private int data;
-	
-	public static class Builder {
-	
-		int data;
-		
-		public void setData(int data) {
-			this.data = data;
-		}
-	}
-	
-	public SuspectBuilderUse(Builder b) {
-		this.data = b.data;
-	}
-	
-	public int getData() {
-		return data;
-	}
+    private int data;
+
+    public static class Builder {
+
+        int data;
+
+        public void setData(int data) {
+            this.data = data;
+        }
+    }
+
+    public SuspectBuilderUse(Builder b) {
+        this.data = b.data;
+    }
+
+    public int getData() {
+        return data;
+    }
 }

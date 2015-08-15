@@ -36,8 +36,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
  * looks for classes that have dependencies on each other in a circular way.
- * Class initialization can be compromised in this scenario, and usually points to
- * a bad data model. Consider using interfaces to break this hard circular dependency.
+ * Class initialization can be compromised in this scenario, and usually points
+ * to a bad data model. Consider using interfaces to break this hard circular
+ * dependency.
  */
 public class CircularDependencies extends BytecodeScanningDetector {
     private Map<String, Set<String>> dependencyGraph = null;
@@ -78,9 +79,9 @@ public class CircularDependencies extends BytecodeScanningDetector {
 
             if (refClsName.startsWith(clsName) && (clsName.indexOf('$') >= 0))
                 return;
-            
+
             if (isStaticChild(clsName, refClsName) || isStaticChild(refClsName, clsName))
-            	return;
+                return;
 
             Set<String> dependencies = dependencyGraph.get(clsName);
             if (dependencies == null) {
@@ -121,14 +122,14 @@ public class CircularDependencies extends BytecodeScanningDetector {
     }
 
     private boolean isStaticChild(String child, String parent) {
-    	if (!child.startsWith(parent)) {
-    		return false;
-    	}
-    	
-    	String extra = child.substring(parent.length());
-    	return ((extra.charAt(0) == '.') && (extra.indexOf('.', 1) < 0));
+        if (!child.startsWith(parent)) {
+            return false;
+        }
+
+        String extra = child.substring(parent.length());
+        return ((extra.charAt(0) == '.') && (extra.indexOf('.', 1) < 0));
     }
-    
+
     private void removeDependencyLeaves() {
         boolean changed = true;
         while (changed) {
@@ -178,7 +179,7 @@ public class CircularDependencies extends BytecodeScanningDetector {
     }
 
     static class LoopFinder {
-    	
+
         private Map<String, Set<String>> dGraph = null;
         private String startClass = null;
         private Set<String> visited = null;
@@ -197,7 +198,7 @@ public class CircularDependencies extends BytecodeScanningDetector {
         private boolean findLoop(String curClass) {
             if (curClass.contains("$"))
                 return false;
-            
+
             Set<String> dependencies = dGraph.get(curClass);
             if (dependencies == null)
                 return false;
@@ -217,10 +218,10 @@ public class CircularDependencies extends BytecodeScanningDetector {
             loop.remove(curClass);
             return false;
         }
-        
+
         @Override
         public String toString() {
-        	return ToString.build(this);
+            return ToString.build(this);
         }
     }
 }

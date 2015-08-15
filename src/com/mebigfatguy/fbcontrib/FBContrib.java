@@ -21,17 +21,20 @@ package com.mebigfatguy.fbcontrib;
 import javax.swing.JOptionPane;
 
 /**
- * a simple main app that gives information. This is the jar double-click class. Not used under normal situations.
+ * a simple main app that gives information. This is the jar double-click class.
+ * Not used under normal situations.
  */
-public class FBContrib
-{
+public class FBContrib {
     /**
      * shows the simple help
      *
-     * @param args standard command line args
+     * @param args
+     *            standard command line args
      */
     public static void main(final String[] args) {
-		JOptionPane.showMessageDialog( null, "To use fb-contrib, copy this jar file into your local FindBugs plugin directory, and use FindBugs as usual.\n\nfb-contrib is a trademark of MeBigFatGuy.com\nFindBugs is a trademark of the University of Maryland", "fb-contrib: copyright 2005-2015", JOptionPane.INFORMATION_MESSAGE);
-		System.exit(0);
-	}
+        JOptionPane.showMessageDialog(null,
+                "To use fb-contrib, copy this jar file into your local FindBugs plugin directory, and use FindBugs as usual.\n\nfb-contrib is a trademark of MeBigFatGuy.com\nFindBugs is a trademark of the University of Maryland",
+                "fb-contrib: copyright 2005-2015", JOptionPane.INFORMATION_MESSAGE);
+        System.exit(0);
+    }
 }

@@ -42,160 +42,161 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * looks for methods that return Object, and who's code body returns two or more
  * different types of objects that are unrelated (other than by Object).
  */
-public class UnrelatedReturnValues extends BytecodeScanningDetector
-{
-	private final BugReporter bugReporter;
-	private OpcodeStack stack;
-	private JavaClass currentClass;
-	private Map<JavaClass, Integer> returnTypes;
+public class UnrelatedReturnValues extends BytecodeScanningDetector {
+    private final BugReporter bugReporter;
+    private OpcodeStack stack;
+    private JavaClass currentClass;
+    private Map<JavaClass, Integer> returnTypes;
 
-	/**
+    /**
      * constructs a URV detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
-	 */
-	public UnrelatedReturnValues(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public UnrelatedReturnValues(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	/**
-	 * implements the visitor to create and destroy the stack and return types
-	 *
-	 * @param classContext the context object of the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			currentClass = classContext.getJavaClass();
-			stack = new OpcodeStack();
-			returnTypes = new HashMap<JavaClass, Integer>();
-			super.visitClassContext(classContext);
-		}
-		finally {
-			currentClass = null;
-			stack = null;
-			returnTypes = null;
-		}
-	}
-	/**
-	 * implements the visitor to see if the method returns Object, and if the method
-	 * is defined in a superclass, or interface.
-	 *
-	 * @param obj the context object of the currently parsed code block
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		try {
-			Method m = getMethod();
-			String signature = m.getSignature();
-			if (signature.endsWith(")Ljava/lang/Object;")) {
-				stack.resetForMethodEntry(this);
-				returnTypes.clear();
-				super.visitCode(obj);
-				if (returnTypes.size() > 1) {
-		            String methodName = m.getName();
-	                boolean isInherited = SignatureUtils.isInheritedMethod(currentClass, methodName, signature);
+    /**
+     * implements the visitor to create and destroy the stack and return types
+     *
+     * @param classContext
+     *            the context object of the currently parsed class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            currentClass = classContext.getJavaClass();
+            stack = new OpcodeStack();
+            returnTypes = new HashMap<JavaClass, Integer>();
+            super.visitClassContext(classContext);
+        } finally {
+            currentClass = null;
+            stack = null;
+            returnTypes = null;
+        }
+    }
 
-					int priority = NORMAL_PRIORITY;
-					for (JavaClass cls : returnTypes.keySet()) {
-						if ((cls != null) && "java.lang.Object".equals(cls.getClassName())) {
-							priority = LOW_PRIORITY;
-							break;
-						}
-					}
+    /**
+     * implements the visitor to see if the method returns Object, and if the
+     * method is defined in a superclass, or interface.
+     *
+     * @param obj
+     *            the context object of the currently parsed code block
+     */
+    @Override
+    public void visitCode(Code obj) {
+        try {
+            Method m = getMethod();
+            String signature = m.getSignature();
+            if (signature.endsWith(")Ljava/lang/Object;")) {
+                stack.resetForMethodEntry(this);
+                returnTypes.clear();
+                super.visitCode(obj);
+                if (returnTypes.size() > 1) {
+                    String methodName = m.getName();
+                    boolean isInherited = SignatureUtils.isInheritedMethod(currentClass, methodName, signature);
 
-					JavaClass cls = findCommonType(returnTypes.keySet());
-					BugInstance bug;
-					if ((cls != null) && !isInherited) {
-						bug = new BugInstance(this, BugType.URV_CHANGE_RETURN_TYPE.name(), priority)
-								.addClass(this)
-								.addMethod(this);
-						bug.addString(cls.getClassName());
-					} else if (!isInherited) {
-						bug = new BugInstance(this, BugType.URV_UNRELATED_RETURN_VALUES.name(), priority)
-								.addClass(this)
-								.addMethod(this);
-					} else {
-						bug = new BugInstance(this, BugType.URV_INHERITED_METHOD_WITH_RELATED_TYPES.name(), priority)
-						.addClass(this)
-						.addMethod(this);
-						if (cls != null)
-							bug.addString(cls.getClassName());
-					}
-					for (Integer pc : returnTypes.values()) {
-						bug.addSourceLine(this, pc.intValue());
-					}
-					bugReporter.reportBug(bug);
-				}
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		}
-	}
+                    int priority = NORMAL_PRIORITY;
+                    for (JavaClass cls : returnTypes.keySet()) {
+                        if ((cls != null) && "java.lang.Object".equals(cls.getClassName())) {
+                            priority = LOW_PRIORITY;
+                            break;
+                        }
+                    }
 
-	/**
-	 * implements the visitor to find return values where the types of objects returned from the
-	 * method are related only by object.
-	 *
-	 * @param seen the opcode of the currently parsed instruction
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		try {
-	        stack.precomputation(this);
-	        
-			if (seen == ARETURN) {
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item itm = stack.getStackItem(0);
-					if (!itm.isNull())
-						returnTypes.put(itm.getJavaClass(), Integer.valueOf(getPC()));
-				}
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
-	}
+                    JavaClass cls = findCommonType(returnTypes.keySet());
+                    BugInstance bug;
+                    if ((cls != null) && !isInherited) {
+                        bug = new BugInstance(this, BugType.URV_CHANGE_RETURN_TYPE.name(), priority).addClass(this).addMethod(this);
+                        bug.addString(cls.getClassName());
+                    } else if (!isInherited) {
+                        bug = new BugInstance(this, BugType.URV_UNRELATED_RETURN_VALUES.name(), priority).addClass(this).addMethod(this);
+                    } else {
+                        bug = new BugInstance(this, BugType.URV_INHERITED_METHOD_WITH_RELATED_TYPES.name(), priority).addClass(this).addMethod(this);
+                        if (cls != null)
+                            bug.addString(cls.getClassName());
+                    }
+                    for (Integer pc : returnTypes.values()) {
+                        bug.addSourceLine(this, pc.intValue());
+                    }
+                    bugReporter.reportBug(bug);
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+    }
 
-	/**
-	 * looks for a common superclass or interface for all the passed in types
-	 *
-	 * @param classes the set of classes to look for a common super class or interface
-	 * @return the type that is the common interface or superclass (not Object, tho).
-	 */
-	private static JavaClass findCommonType(Set<JavaClass> classes) throws ClassNotFoundException {
-		Set<JavaClass> possibleCommonTypes = new HashSet<JavaClass>();
+    /**
+     * implements the visitor to find return values where the types of objects
+     * returned from the method are related only by object.
+     *
+     * @param seen
+     *            the opcode of the currently parsed instruction
+     */
+    @Override
+    public void sawOpcode(int seen) {
+        try {
+            stack.precomputation(this);
 
-		boolean populate = true;
-		for (JavaClass cls : classes) {
-			if (cls == null) //array
-				return null;
+            if (seen == ARETURN) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (!itm.isNull())
+                        returnTypes.put(itm.getJavaClass(), Integer.valueOf(getPC()));
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            stack.sawOpcode(this, seen);
+        }
+    }
 
-			if ("java/lang/Object".equals(cls.getClassName()))
-				continue;
+    /**
+     * looks for a common superclass or interface for all the passed in types
+     *
+     * @param classes
+     *            the set of classes to look for a common super class or
+     *            interface
+     * @return the type that is the common interface or superclass (not Object,
+     *         tho).
+     */
+    private static JavaClass findCommonType(Set<JavaClass> classes) throws ClassNotFoundException {
+        Set<JavaClass> possibleCommonTypes = new HashSet<JavaClass>();
 
-			JavaClass[] infs = cls.getAllInterfaces();
-			JavaClass[] supers = cls.getSuperClasses();
-			if (populate) {
-				possibleCommonTypes.addAll(Arrays.asList(infs));
-				possibleCommonTypes.addAll(Arrays.asList(supers));
-				possibleCommonTypes.remove(Repository.lookupClass("java/lang/Object"));
-				populate = false;
-			} else {
-				Set<JavaClass> retain = new HashSet<JavaClass>();
-				retain.addAll(Arrays.asList(infs));
-				retain.addAll(Arrays.asList(supers));
-				possibleCommonTypes.retainAll(retain);
-			}
-		}
+        boolean populate = true;
+        for (JavaClass cls : classes) {
+            if (cls == null) // array
+                return null;
 
-		if (possibleCommonTypes.isEmpty())
-			return null;
+            if ("java/lang/Object".equals(cls.getClassName()))
+                continue;
 
-		for (JavaClass cls : possibleCommonTypes) {
-			if (cls.isInterface())
-				return cls;
-		}
-		return possibleCommonTypes.iterator().next();
-	}
+            JavaClass[] infs = cls.getAllInterfaces();
+            JavaClass[] supers = cls.getSuperClasses();
+            if (populate) {
+                possibleCommonTypes.addAll(Arrays.asList(infs));
+                possibleCommonTypes.addAll(Arrays.asList(supers));
+                possibleCommonTypes.remove(Repository.lookupClass("java/lang/Object"));
+                populate = false;
+            } else {
+                Set<JavaClass> retain = new HashSet<JavaClass>();
+                retain.addAll(Arrays.asList(infs));
+                retain.addAll(Arrays.asList(supers));
+                possibleCommonTypes.retainAll(retain);
+            }
+        }
+
+        if (possibleCommonTypes.isEmpty())
+            return null;
+
+        for (JavaClass cls : possibleCommonTypes) {
+            if (cls.isInterface())
+                return cls;
+        }
+        return possibleCommonTypes.iterator().next();
+    }
 }

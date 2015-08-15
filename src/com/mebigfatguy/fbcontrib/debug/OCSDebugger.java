@@ -34,26 +34,26 @@ public class OCSDebugger extends BytecodeScanningDetector {
 
     private static final String OCS_OUTPUT_FILE = "fb-contrib.ocs.output";
     private static final String OCS_METHOD_DESC = "fb-contrib.ocs.method";
-    
+
     private static final String OUTPUT_FILE_NAME = System.getProperty(OCS_OUTPUT_FILE);
     private static final String METHOD_DESC = System.getProperty(OCS_METHOD_DESC);
-    
+
     private OpcodeStack stack = new OpcodeStack();
     private PrintWriter pw = null;
-    
+
     public OCSDebugger(@SuppressWarnings("unused") BugReporter bugReporter) {
     }
-    
+
     @Override
     public void visitClassContext(ClassContext classContext) {
         if ((OUTPUT_FILE_NAME != null) && (METHOD_DESC != null))
             super.visitClassContext(classContext);
     }
-    
+
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        
+
         String curMethodDesc = getClassContext().getJavaClass().getClassName() + "." + m.getName() + m.getSignature();
         if (curMethodDesc.equals(METHOD_DESC)) {
             try {
@@ -65,10 +65,10 @@ public class OCSDebugger extends BytecodeScanningDetector {
             } finally {
                 pw.close();
                 pw = null;
-            }              
+            }
         }
     }
-    
+
     @Override
     public void sawOpcode(int seen) {
         stack.precomputation(this);

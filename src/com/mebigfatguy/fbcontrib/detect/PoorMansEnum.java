@@ -39,8 +39,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 
 /**
- * looks for simple fields that only store one of several constant values. This usually is an 
- * indication that this field should really be an enum type.
+ * looks for simple fields that only store one of several constant values. This
+ * usually is an indication that this field should really be an enum type.
  */
 public class PoorMansEnum extends BytecodeScanningDetector {
 
@@ -49,11 +49,11 @@ public class PoorMansEnum extends BytecodeScanningDetector {
     private Map<String, Field> nameToField;
     private Map<String, SourceLineAnnotation> firstFieldUse;
     private OpcodeStack stack;
-    
+
     public PoorMansEnum(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
-    
+
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -71,16 +71,14 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                     stack = new OpcodeStack();
                     firstFieldUse = new HashMap<String, SourceLineAnnotation>();
                     super.visitClassContext(classContext);
-                    
+
                     for (Map.Entry<String, Set<Object>> fieldInfo : fieldValues.entrySet()) {
                         Set<Object> values = fieldInfo.getValue();
                         if (values != null) {
                             if (values.size() >= 3) {
                                 String fieldName = fieldInfo.getKey();
-                                bugReporter.reportBug(new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY)
-                                            .addClass(this)
-                                            .addField(XFactory.createXField(cls, nameToField.get(fieldName)))
-                                            .addSourceLine(firstFieldUse.get(fieldName)));
+                                bugReporter.reportBug(new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addField(XFactory.createXField(cls, nameToField.get(fieldName))).addSourceLine(firstFieldUse.get(fieldName)));
                             }
                         }
                     }
@@ -93,7 +91,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
             stack = null;
         }
     }
-    
+
     @Override
     public void visitCode(Code obj) {
         if (!fieldValues.isEmpty()) {
@@ -101,7 +99,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
             super.visitCode(obj);
         }
     }
-    
+
     @Override
     public void sawOpcode(int seen) {
         try {
@@ -109,7 +107,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
             if (fieldValues.isEmpty()) {
                 return;
             }
-            
+
             if (seen == PUTFIELD) {
                 String fieldName = getNameConstantOperand();
                 if (fieldValues.containsKey(fieldName)) {
@@ -129,7 +127,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                                     firstFieldUse.put(fieldName, SourceLineAnnotation.fromVisitedInstruction(this));
                             }
                             values.add(cons);
-                        } 
+                        }
                     }
                 }
             }

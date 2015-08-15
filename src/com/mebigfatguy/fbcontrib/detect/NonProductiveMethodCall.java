@@ -35,9 +35,9 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for common methods that are believed to be non mutating, where the value
- * is discarded. Since the method makes no changes to the object, calling this method
- * is useless. The method call can be removed.
+ * looks for common methods that are believed to be non mutating, where the
+ * value is discarded. Since the method makes no changes to the object, calling
+ * this method is useless. The method call can be removed.
  */
 @CustomUserValue
 public class NonProductiveMethodCall extends BytecodeScanningDetector {
@@ -58,7 +58,9 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
 
     /**
      * constructs a NPMC detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
      */
     public NonProductiveMethodCall(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -80,7 +82,8 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack
      *
-     * @param obj the context object of the currently parsed code block
+     * @param obj
+     *            the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -89,17 +92,18 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for return values of common immutable method
-     * calls, that are thrown away.
+     * implements the visitor to look for return values of common immutable
+     * method calls, that are thrown away.
      *
-     * @param seen the opcode of the currently parsed instruction
+     * @param seen
+     *            the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
         String methodInfo = null;
         try {
             stack.precomputation(this);
-            
+
             switch (seen) {
             case INVOKEVIRTUAL:
             case INVOKEINTERFACE:
@@ -118,13 +122,10 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
                     if (mInfo != null) {
                         for (Pattern p : IMMUTABLE_METHODS) {
                             Matcher m = p.matcher(mInfo);
-                            
+
                             if (m.matches()) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.NPMC_NON_PRODUCTIVE_METHOD_CALL.name(), NORMAL_PRIORITY)
-                                            .addClass(this)
-                                            .addMethod(this)
-                                            .addSourceLine(this)
-                                            .addString(mInfo));
+                                bugReporter.reportBug(new BugInstance(this, BugType.NPMC_NON_PRODUCTIVE_METHOD_CALL.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this).addString(mInfo));
                                 break;
                             }
                         }
@@ -132,7 +133,6 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
                 }
                 break;
             }
-
 
         } finally {
             stack.sawOpcode(this, seen);

@@ -52,12 +52,13 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 public class CommonsStringBuilderToString extends OpcodeStackDetector {
 
     private static final Set<String> TOSTRINGBUILDER_CTOR_SIGS = new HashSet<String>();
+
     static {
         TOSTRINGBUILDER_CTOR_SIGS.add("(Ljava/lang/Object;)V");
         TOSTRINGBUILDER_CTOR_SIGS.add("(Ljava/lang/Object;Lorg/apache/commons/lang/builder/ToStringStyle;)V");
         TOSTRINGBUILDER_CTOR_SIGS.add("(Ljava/lang/Object;Lorg/apache/commons/lang3/builder/ToStringStyle;)V");
     }
-    
+
     private final BugReporter bugReporter;
     private final Stack<Pair> stackTracker = new Stack<Pair>();
     private final Map<Integer, Boolean> registerTracker = new HashMap<Integer, Boolean>(10);
@@ -93,17 +94,14 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
         case ALOAD_1:
         case ALOAD_2:
         case ALOAD_3:
-            LocalVariable lv = getMethod().getLocalVariableTable()
-                    .getLocalVariable(RegisterUtils.getALoadReg(this, seen),
-                            getNextPC());
+            LocalVariable lv = getMethod().getLocalVariableTable().getLocalVariable(RegisterUtils.getALoadReg(this, seen), getNextPC());
             if (lv != null) {
                 String signature = lv.getSignature();
                 if (isToStringBuilder(signature)) {
                     Integer loadReg = Integer.valueOf(getRegisterOperand());
                     Boolean appendInvoked = registerTracker.get(loadReg);
                     if (appendInvoked != null) {
-                        stackTracker.add(new Pair(loadReg.intValue(),
-                                appendInvoked.booleanValue()));
+                        stackTracker.add(new Pair(loadReg.intValue(), appendInvoked.booleanValue()));
                     }
                 }
             }
@@ -118,10 +116,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
             if (isToStringBuilder(signature)) {
                 int storeReg = getRegisterOperand();
                 Pair p = stackTracker.pop();
-                registerTracker.put(
-                        Integer.valueOf(storeReg),
-                        p.register == -1 ? Boolean.FALSE : registerTracker
-                                .get(Integer.valueOf(p.register)));
+                registerTracker.put(Integer.valueOf(storeReg), p.register == -1 ? Boolean.FALSE : registerTracker.get(Integer.valueOf(p.register)));
             }
             break;
         case POP:
@@ -130,8 +125,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
             if (isToStringBuilder(signature)) {
                 if (!stackTracker.isEmpty()) {
                     Pair p = stackTracker.pop();
-                    registerTracker.put(Integer.valueOf(p.register),
-                            Boolean.valueOf(p.appendInvoked));
+                    registerTracker.put(Integer.valueOf(p.register), Boolean.valueOf(p.appendInvoked));
                 }
             }
             break;
@@ -140,40 +134,31 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
             String loadClassName = getClassConstantOperand();
             String calledMethodName = getNameConstantOperand();
 
-            if ("org/apache/commons/lang3/builder/ToStringBuilder"
-                    .equals(loadClassName)
-                    || "org/apache/commons/lang/builder/ToStringBuilder"
-                            .equals(loadClassName)) {
+            if ("org/apache/commons/lang3/builder/ToStringBuilder".equals(loadClassName)
+                    || "org/apache/commons/lang/builder/ToStringBuilder".equals(loadClassName)) {
                 String calledMethodSig = getSigConstantOperand();
-                if (Values.CONSTRUCTOR.equals(calledMethodName)
-                        && TOSTRINGBUILDER_CTOR_SIGS.contains(calledMethodSig)) {
+                if (Values.CONSTRUCTOR.equals(calledMethodName) && TOSTRINGBUILDER_CTOR_SIGS.contains(calledMethodSig)) {
                     stackTracker.add(new Pair(-1, false));
                 } else if ("append".equals(calledMethodName)) {
                     Pair p = stackTracker.pop();
                     stackTracker.add(new Pair(p.register, true));
-                } else if ("toString".equals(calledMethodName)
-                        && "()Ljava/lang/String;".equals(calledMethodSig)) {
+                } else if ("toString".equals(calledMethodName) && "()Ljava/lang/String;".equals(calledMethodSig)) {
                     Pair p = stackTracker.pop();
                     if (p.appendInvoked == false) {
-                        bugReporter.reportBug(new BugInstance(this,
-                                "CSBTS_COMMONS_STRING_BUILDER_TOSTRING",
-                                HIGH_PRIORITY).addClass(this).addMethod(this)
+                        bugReporter.reportBug(new BugInstance(this, "CSBTS_COMMONS_STRING_BUILDER_TOSTRING", HIGH_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
                     }
                 }
             }
             break;
-            
+
         default:
-          	break;
+            break;
         }
     }
 
     private static boolean isToStringBuilder(String signature) {
-        return "Lorg/apache/commons/lang3/builder/ToStringBuilder;"
-                .equals(signature)
-                || "Lorg/apache/commons/lang/builder/ToStringBuilder;"
-                        .equals(signature);
+        return "Lorg/apache/commons/lang3/builder/ToStringBuilder;".equals(signature) || "Lorg/apache/commons/lang/builder/ToStringBuilder;".equals(signature);
     }
 
     static final class Pair {
@@ -184,10 +169,10 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
             this.register = register;
             this.appendInvoked = appendInvoked;
         }
-        
+
         @Override
         public String toString() {
-        	return ToString.build(this);
+            return ToString.build(this);
         }
     }
 }

@@ -38,153 +38,156 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for implementation of clone() where a store is made to a member
- * of the source object.
+ * looks for implementation of clone() where a store is made to a member of the
+ * source object.
  */
 @CustomUserValue
 public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
-	
-	private static JavaClass cloneableClass;
-	private static Map<String, Integer> changingMethods;
-	static {
-		try {
-			cloneableClass = Repository.lookupClass("java/lang/Cloneable");
-			Integer normal = Integer.valueOf(NORMAL_PRIORITY);
-			Integer low = Integer.valueOf(LOW_PRIORITY);
-			changingMethods = new HashMap<String, Integer>();
-			changingMethods.put("add", normal);
-			changingMethods.put("addAll", normal);
-			changingMethods.put("put", normal);
-			changingMethods.put("putAll", normal);
-			changingMethods.put("insert", low);
-			changingMethods.put("set", low);
-			
-		} catch (ClassNotFoundException cnfe) {
-			cloneableClass = null;
-		}
-	}
-	
-	private BugReporter bugReporter;
-	private OpcodeStack stack;
-	
-	/**
+
+    private static JavaClass cloneableClass;
+    private static Map<String, Integer> changingMethods;
+
+    static {
+        try {
+            cloneableClass = Repository.lookupClass("java/lang/Cloneable");
+            Integer normal = Integer.valueOf(NORMAL_PRIORITY);
+            Integer low = Integer.valueOf(LOW_PRIORITY);
+            changingMethods = new HashMap<String, Integer>();
+            changingMethods.put("add", normal);
+            changingMethods.put("addAll", normal);
+            changingMethods.put("put", normal);
+            changingMethods.put("putAll", normal);
+            changingMethods.put("insert", low);
+            changingMethods.put("set", low);
+
+        } catch (ClassNotFoundException cnfe) {
+            cloneableClass = null;
+        }
+    }
+
+    private BugReporter bugReporter;
+    private OpcodeStack stack;
+
+    /**
      * constructs a SCA detector given the reporter to report bugs on
-     * @param bugReporter the sync of bug reports
-	 */
-	public SuspiciousCloneAlgorithm(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
-	
-	/**
-	 * override the visitor to look for classes that implement Cloneable
-	 * 
-	 * @param classContext the context object of the class to be checked
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		if (cloneableClass == null)
-			return;
-		
-		try {
-			JavaClass cls = classContext.getJavaClass();
-			if (cls.implementationOf(cloneableClass)) {
-				stack = new OpcodeStack();
-				super.visitClassContext(classContext);
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		} finally {
-			stack = null;
-		}
-	}
-	
-	/**
-	 * override the visitor to only continue for the clone method
-	 * 
-	 * @param obj the context object of the currently parsed method
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		Method m = getMethod();
-		if (!m.isStatic() && "clone".equals(m.getName()) && "()Ljava/lang/Object;".equals(m.getSignature()))
-			super.visitCode(obj);
-	}
-	
-	/**
-	 * override the visitor to look for stores to member fields of the source object on a clone
-	 * 
-	 * @param seen the opcode of the currently parsed instruction
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		boolean srcField = false;
-		try {
-	        stack.precomputation(this);
-	        
-			switch (seen) {
-				case ALOAD_0:
-					srcField = true;
-				break;
-				
-				case DUP:
-					if (stack.getStackDepth() > 0) {
-						OpcodeStack.Item item = stack.getStackItem(0);
-						if (item.getUserValue() != null)
-							srcField = true;
-					}
-				break;
-				
-				case GETFIELD:
-					if (stack.getStackDepth() > 0) {
-						OpcodeStack.Item item = stack.getStackItem(0);
-						if (item.getRegisterNumber() == 0) {
-							srcField = true;
-						}
-					}
-				break;
-				
-				case PUTFIELD:
-					if (stack.getStackDepth() >= 2) {
-						OpcodeStack.Item item = stack.getStackItem(1);
-						if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
-							bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), NORMAL_PRIORITY)
-									   .addClass(this)
-									   .addMethod(this)
-									   .addSourceLine(this));
-						}
-					}
-					
-				break;
-				
-				case INVOKEINTERFACE:
-				case INVOKEVIRTUAL:
-					String sig = getSigConstantOperand();
-					int numArgs = Type.getArgumentTypes(sig).length;
-					if (stack.getStackDepth() > numArgs) {
-						OpcodeStack.Item item = stack.getStackItem(numArgs);
-						if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
-							String name = getNameConstantOperand();
-							Integer priority = changingMethods.get(name);
-							if (priority != null)
-								bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), priority.intValue())
-								   .addClass(this)
-								   .addMethod(this)
-								   .addSourceLine(this));
-						}
-					}
-				break;
-				
-				default:
-					break;
-			}
-		} finally {
-			TernaryPatcher.pre(stack, seen);
-			stack.sawOpcode(this, seen);
-			TernaryPatcher.post(stack, seen);
-			if (srcField && stack.getStackDepth() > 0) {
-				OpcodeStack.Item item = stack.getStackItem(0);
-				item.setUserValue(Boolean.TRUE);
-			}
-		}
-	}
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public SuspiciousCloneAlgorithm(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
+
+    /**
+     * override the visitor to look for classes that implement Cloneable
+     * 
+     * @param classContext
+     *            the context object of the class to be checked
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        if (cloneableClass == null)
+            return;
+
+        try {
+            JavaClass cls = classContext.getJavaClass();
+            if (cls.implementationOf(cloneableClass)) {
+                stack = new OpcodeStack();
+                super.visitClassContext(classContext);
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            stack = null;
+        }
+    }
+
+    /**
+     * override the visitor to only continue for the clone method
+     * 
+     * @param obj
+     *            the context object of the currently parsed method
+     */
+    @Override
+    public void visitCode(Code obj) {
+        Method m = getMethod();
+        if (!m.isStatic() && "clone".equals(m.getName()) && "()Ljava/lang/Object;".equals(m.getSignature()))
+            super.visitCode(obj);
+    }
+
+    /**
+     * override the visitor to look for stores to member fields of the source
+     * object on a clone
+     * 
+     * @param seen
+     *            the opcode of the currently parsed instruction
+     */
+    @Override
+    public void sawOpcode(int seen) {
+        boolean srcField = false;
+        try {
+            stack.precomputation(this);
+
+            switch (seen) {
+            case ALOAD_0:
+                srcField = true;
+                break;
+
+            case DUP:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if (item.getUserValue() != null)
+                        srcField = true;
+                }
+                break;
+
+            case GETFIELD:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if (item.getRegisterNumber() == 0) {
+                        srcField = true;
+                    }
+                }
+                break;
+
+            case PUTFIELD:
+                if (stack.getStackDepth() >= 2) {
+                    OpcodeStack.Item item = stack.getStackItem(1);
+                    if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
+                    }
+                }
+
+                break;
+
+            case INVOKEINTERFACE:
+            case INVOKEVIRTUAL:
+                String sig = getSigConstantOperand();
+                int numArgs = Type.getArgumentTypes(sig).length;
+                if (stack.getStackDepth() > numArgs) {
+                    OpcodeStack.Item item = stack.getStackItem(numArgs);
+                    if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
+                        String name = getNameConstantOperand();
+                        Integer priority = changingMethods.get(name);
+                        if (priority != null)
+                            bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), priority.intValue()).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                    }
+                }
+                break;
+
+            default:
+                break;
+            }
+        } finally {
+            TernaryPatcher.pre(stack, seen);
+            stack.sawOpcode(this, seen);
+            TernaryPatcher.post(stack, seen);
+            if (srcField && stack.getStackDepth() > 0) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(Boolean.TRUE);
+            }
+        }
+    }
 }

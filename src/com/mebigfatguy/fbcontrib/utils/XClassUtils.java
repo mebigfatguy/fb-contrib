@@ -30,78 +30,77 @@ import edu.umd.cs.findbugs.classfile.Global;
  */
 public class XClassUtils {
 
-	/**
-	 * Returns an <code>XClass</code> object for the given
-	 * <code>ClassDescriptor</code> object.
-	 * 
-	 * @param classDesc
-	 *            the class descriptor for which to find the XClass object
-	 * @return the class
-	 * @throws AssertionError if the analysis of the class failed
-	 */
-	public XClass getXClass(final ClassDescriptor classDesc) throws AssertionError {
-		try {
-			return Global.getAnalysisCache().getClassAnalysis(XClass.class,
-					classDesc);
-		} catch (CheckedAnalysisException e) {
-			AssertionError ae = new AssertionError("Can't find ClassInfo for " + classDesc);
-			ae.initCause(e);
-			throw(ae);
-		}
-	}
+    /**
+     * Returns an <code>XClass</code> object for the given
+     * <code>ClassDescriptor</code> object.
+     * 
+     * @param classDesc
+     *            the class descriptor for which to find the XClass object
+     * @return the class
+     * @throws AssertionError
+     *             if the analysis of the class failed
+     */
+    public XClass getXClass(final ClassDescriptor classDesc) throws AssertionError {
+        try {
+            return Global.getAnalysisCache().getClassAnalysis(XClass.class, classDesc);
+        } catch (CheckedAnalysisException e) {
+            AssertionError ae = new AssertionError("Can't find ClassInfo for " + classDesc);
+            ae.initCause(e);
+            throw (ae);
+        }
+    }
 
-	/**
-	 * Returns an <code>XClass</code> object for the given slashed class name.
-	 * 
-	 * @param slashedClassName
-	 *            the class name for which to find the XClass object
-	 * @return the class
-	 * @throws AssertionError if the analysis of the class failed
-	 */
-	public XClass getXClass(String slashedClassName) {
-		return getXClass(DescriptorFactory
-				.createClassDescriptor(slashedClassName));
-	}
+    /**
+     * Returns an <code>XClass</code> object for the given slashed class name.
+     * 
+     * @param slashedClassName
+     *            the class name for which to find the XClass object
+     * @return the class
+     * @throws AssertionError
+     *             if the analysis of the class failed
+     */
+    public XClass getXClass(String slashedClassName) {
+        return getXClass(DescriptorFactory.createClassDescriptor(slashedClassName));
+    }
 
-	/**
-	 * Looks for the method up the class hierarchy.
-	 * 
-	 * @param xClass
-	 *            the class where to look for the method
-	 * @param methodName
-	 *            the name of the method to look for
-	 * @param methodSig
-	 *            the signature of the method to look for
-	 * @return the method
-	 */
-	public XMethod getXMethod(final XClass xClass, final String methodName, final String methodSig) {
-		if (xClass == null) {
-			return null;
-		}
-		
-		XMethod xMethod = xClass.findMethod(methodName, methodSig, false);
-		if (xMethod == null) {
-			final XClass superClass = getXClass(xClass
-					.getSuperclassDescriptor());
-			xMethod = getXMethod(superClass, methodName, methodSig);
-		}
-		return xMethod;
-	}
+    /**
+     * Looks for the method up the class hierarchy.
+     * 
+     * @param xClass
+     *            the class where to look for the method
+     * @param methodName
+     *            the name of the method to look for
+     * @param methodSig
+     *            the signature of the method to look for
+     * @return the method
+     */
+    public XMethod getXMethod(final XClass xClass, final String methodName, final String methodSig) {
+        if (xClass == null) {
+            return null;
+        }
 
-	/**
-	 * Looks for the method up the class hierarchy.
-	 * 
-	 * @param slashedClassName
-	 *            the class slashed name where to look for the method
-	 * @param methodName
-	 *            the name of the method to look for
-	 * @param methodSig
-	 *            the signature of the method to look for
-	 * @return the method
-	 */
-	public XMethod getXMethod(String slashedClassName, String methodName, String methodSig) {
-		final XClass xClass = getXClass(slashedClassName);
-		return getXMethod(xClass, methodName, methodSig);
-	}
+        XMethod xMethod = xClass.findMethod(methodName, methodSig, false);
+        if (xMethod == null) {
+            final XClass superClass = getXClass(xClass.getSuperclassDescriptor());
+            xMethod = getXMethod(superClass, methodName, methodSig);
+        }
+        return xMethod;
+    }
+
+    /**
+     * Looks for the method up the class hierarchy.
+     * 
+     * @param slashedClassName
+     *            the class slashed name where to look for the method
+     * @param methodName
+     *            the name of the method to look for
+     * @param methodSig
+     *            the signature of the method to look for
+     * @return the method
+     */
+    public XMethod getXMethod(String slashedClassName, String methodName, String methodSig) {
+        final XClass xClass = getXClass(slashedClassName);
+        return getXMethod(xClass, methodName, methodSig);
+    }
 
 }

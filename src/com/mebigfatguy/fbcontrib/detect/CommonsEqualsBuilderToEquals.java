@@ -39,55 +39,53 @@ import edu.umd.cs.findbugs.OpcodeStack;
  */
 public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 
-	private static final String LANG_EQUALS_BUILDER = "Lorg/apache/commons/lang/builder/EqualsBuilder;";
-	private static final String LANG3_EQUALS_BUILDER = "Lorg/apache/commons/lang3/builder/EqualsBuilder;";
-	private final OpcodeStack stack;
-	private final BugReporter bugReporter;
+    private static final String LANG_EQUALS_BUILDER = "Lorg/apache/commons/lang/builder/EqualsBuilder;";
+    private static final String LANG3_EQUALS_BUILDER = "Lorg/apache/commons/lang3/builder/EqualsBuilder;";
+    private final OpcodeStack stack;
+    private final BugReporter bugReporter;
 
-	/**
-	 * constructs a CEBE detector given the reporter to report bugs on.
-	 *
-	 * @param bugReporter
-	 *            the sync of bug reports
-	 */
-	public CommonsEqualsBuilderToEquals(final BugReporter bugReporter) {
-		stack = new OpcodeStack();
-		this.bugReporter = bugReporter;
-	}
+    /**
+     * constructs a CEBE detector given the reporter to report bugs on.
+     *
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public CommonsEqualsBuilderToEquals(final BugReporter bugReporter) {
+        stack = new OpcodeStack();
+        this.bugReporter = bugReporter;
+    }
 
-	/**
-	 * implements the visitor to pass through constructors and static
-	 * initializers to the byte code scanning code. These methods are not
-	 * reported, but are used to build SourceLineAnnotations for fields, if
-	 * accessed.
-	 *
-	 * @param obj
-	 *            the context object of the currently parsed code attribute
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		stack.resetForMethodEntry(this);
-		LocalVariableTable lvt = getMethod().getLocalVariableTable();
-		if (lvt != null) {
-			super.visitCode(obj);
-		}
-	}
+    /**
+     * implements the visitor to pass through constructors and static
+     * initializers to the byte code scanning code. These methods are not
+     * reported, but are used to build SourceLineAnnotations for fields, if
+     * accessed.
+     *
+     * @param obj
+     *            the context object of the currently parsed code attribute
+     */
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        LocalVariableTable lvt = getMethod().getLocalVariableTable();
+        if (lvt != null) {
+            super.visitCode(obj);
+        }
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		if (seen == INVOKEVIRTUAL) {
-			String methodName = getNameConstantOperand();
-			if ("equals".equals(methodName)	&& "(Ljava/lang/Object;)Z".equals(getSigConstantOperand()) && (stack.getStackDepth() > 1)) {
-				String calledClass = stack.getStackItem(1).getSignature();
-				if (LANG3_EQUALS_BUILDER.equals(calledClass) || LANG_EQUALS_BUILDER.equals(calledClass)) {
-					bugReporter.reportBug(new BugInstance(this, BugType.CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS.name(), HIGH_PRIORITY)
-					.addClass(this)
-					.addMethod(this)
-					.addSourceLine(this));
-				}
-			}
-		}
-		super.sawOpcode(seen);
-		stack.sawOpcode(this, seen);
-	}
+    @Override
+    public void sawOpcode(int seen) {
+        if (seen == INVOKEVIRTUAL) {
+            String methodName = getNameConstantOperand();
+            if ("equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand()) && (stack.getStackDepth() > 1)) {
+                String calledClass = stack.getStackItem(1).getSignature();
+                if (LANG3_EQUALS_BUILDER.equals(calledClass) || LANG_EQUALS_BUILDER.equals(calledClass)) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS.name(), HIGH_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
+                }
+            }
+        }
+        super.sawOpcode(seen);
+        stack.sawOpcode(this, seen);
+    }
 }

@@ -10,11 +10,11 @@ public class AIOB_Sample {
         a[4] = 2;
         fa[4] = 2;
     }
-    
+
     public void testOutOfBoundsGuard() {
         int[] a = new int[4];
 
-        if (a.length > 4){
+        if (a.length > 4) {
             a[4] = 2;
         }
     }
