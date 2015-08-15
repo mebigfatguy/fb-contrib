@@ -22,6 +22,9 @@ public class COM_Sample {
         return z;
     }
 
+    protected void fpEnhanceAccess() {
+    }
+
     public static class Derived extends COM_Sample {
         @Override
         public void test1() {
@@ -44,6 +47,10 @@ public class COM_Sample {
         @Override
         public boolean test4(int w, double x, String y, boolean z) {
             return super.test4(w, x, y, z);
+        }
+
+        @Override
+        public void fpEnhanceAccess() {
         }
     }
 }

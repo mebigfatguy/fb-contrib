@@ -38,6 +38,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -53,7 +54,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class CopiedOverriddenMethod extends BytecodeScanningDetector implements Detector {
     private final BugReporter bugReporter;
-    private Map<String, Code> superclassCode;
+    private Map<String, CodeInfo> superclassCode;
     private ClassContext classContext;
     private String curMethodInfo;
     private ConstantPoolGen childPoolGen, parentPoolGen;
@@ -88,7 +89,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
             String superName = cls.getSuperclassName();
             if (!"java.lang.Object".equals(superName)) {
                 this.classContext = clsContext;
-                superclassCode = new HashMap<String, Code>();
+                superclassCode = new HashMap<String, CodeInfo>();
                 JavaClass superCls = cls.getSuperClass();
                 childPoolGen = new ConstantPoolGen(cls.getConstantPool());
                 parentPoolGen = new ConstantPoolGen(superCls.getConstantPool());
@@ -98,7 +99,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
                     if ((m.isPublic() || m.isProtected()) && (!m.isAbstract() && !m.isSynthetic()
                             && (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName)))) {
                         String methodInfo = methodName + ":" + m.getSignature();
-                        superclassCode.put(methodInfo, m.getCode());
+                        superclassCode.put(methodInfo, new CodeInfo(m.getCode(), m.getAccessFlags()));
                     }
                 }
                 cls.accept(this);
@@ -138,9 +139,9 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
             return;
         }
 
-        Code superCode = superclassCode.remove(curMethodInfo);
+        CodeInfo superCode = superclassCode.remove(curMethodInfo);
         if (superCode != null) {
-            if (codeEquals(obj, superCode)) {
+            if (sameAccess(getMethod().getAccessFlags(), superCode.getAccess()) && codeEquals(obj, superCode.getCode())) {
                 bugReporter.reportBug(new BugInstance(this, BugType.COM_COPIED_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(classContext, this, getPC()));
                 return;
@@ -248,6 +249,17 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
     }
 
     /**
+     * determines if two access flags contain the same access modifiers
+     *
+     * @param parentAccess
+     * @param childAccess
+     * @return
+     */
+    private static boolean sameAccess(int parentAccess, int childAccess) {
+        return ((parentAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)) == (childAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)));
+    }
+
+    /**
      * compares two code blocks to see if they are equal with regard to
      * instructions and field accesses
      *
@@ -260,6 +272,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
      */
     @SuppressWarnings("deprecation")
     private boolean codeEquals(Code child, Code parent) {
+
         byte[] childBytes = child.getCode();
         byte[] parentBytes = parent.getCode();
 
@@ -351,5 +364,28 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
         }
 
         return true;
+    }
+
+    class CodeInfo {
+        private Code code;
+        private int access;
+
+        public CodeInfo(Code c, int acc) {
+            code = c;
+            access = acc;
+        }
+
+        public Code getCode() {
+            return code;
+        }
+
+        public int getAccess() {
+            return access;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
     }
 }
