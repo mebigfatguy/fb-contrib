@@ -83,7 +83,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryStoreBeforeReturn" speed="fast" reports="USBR_UNNECESSARY_STORE_BEFORE_RETURN" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.CopiedOverriddenMethod" speed="fast" reports="COM_COPIED_OVERRIDDEN_METHOD" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.CopiedOverriddenMethod" speed="fast" reports="COM_COPIED_OVERRIDDEN_METHOD,COM_PARENT_DELEGATED_CALL" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ArrayBasedCollections" speed="fast" reports="ABC_ARRAY_BASED_COLLECTIONS" />
 
@@ -328,6 +328,7 @@
 	<BugPattern abbrev="NAB" type="NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" category="PERFORMANCE" />
 	<BugPattern abbrev="USBR" type="USBR_UNNECESSARY_STORE_BEFORE_RETURN" category="STYLE" />
 	<BugPattern abbrev="COM" type="COM_COPIED_OVERRIDDEN_METHOD" category="STYLE" />
+	<BugPattern abbrev="COM" type="COM_PARENT_DELEGATED_CALL" category="STYLE" />
 	<BugPattern abbrev="ABC" type="ABC_ARRAY_BASED_COLLECTIONS" category="CORRECTNESS" />
 	<BugPattern abbrev="ODN" type="ODN_ORPHANED_DOM_NODE" category="CORRECTNESS" />
 	<BugPattern abbrev="AOM" type="AOM_ABSTRACT_OVERRIDDEN_METHOD" category="CORRECTNESS" />

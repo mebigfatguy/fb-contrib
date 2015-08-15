@@ -2189,6 +2189,17 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="COM_PARENT_DELEGATED_CALL">
+		<ShortDescription>Method merely delegates to it's superclass's version</ShortDescription>
+		<LongDescription>Method {1} merely delegates to it's superclass's version</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method is implemented to just delegate it's implementation by calling
+			the superclass method with the same signature. This method can just be removed.</p>
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="ABC_ARRAY_BASED_COLLECTIONS">
 		<ShortDescription>Method uses array as basis of collection</ShortDescription>

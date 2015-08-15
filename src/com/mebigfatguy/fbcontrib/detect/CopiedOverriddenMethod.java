@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.JavaClass;
@@ -36,219 +37,318 @@ import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
- * Looks for methods that are direct copies of the implementation in the super class
+ * Looks for methods that are direct copies of the implementation in the super
+ * class
  */
-public class CopiedOverriddenMethod extends DismantleBytecode implements Detector
-{
-	private final BugReporter bugReporter;
-	private Map<String, Code> superclassCode;
-	private ClassContext classContext;
-	private String curMethodInfo;
-	private ConstantPoolGen childPoolGen, parentPoolGen;
+public class CopiedOverriddenMethod extends BytecodeScanningDetector implements Detector {
+    private final BugReporter bugReporter;
+    private Map<String, Code> superclassCode;
+    private ClassContext classContext;
+    private String curMethodInfo;
+    private ConstantPoolGen childPoolGen, parentPoolGen;
+    private Type[] parmTypes;
+    private int nextParmIndex;
+    private int nextParmOffset;
+    private boolean sawAload0;
+    private boolean sawParentCall;
+    private boolean ignore;
 
-	/**
-	 * constructs a COM detector given the reporter to report bugs on
+    /**
+     * constructs a COM detector given the reporter to report bugs on
+     *
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public CopiedOverriddenMethod(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	 * @param bugReporter the sync of bug reports
-	 */
-	public CopiedOverriddenMethod(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    /**
+     * overrides the visitor to accept classes derived from non java.lang.Object
+     * classes.
+     *
+     * @param clsContext
+     *            the context object of the currently parsed class
+     */
+    @Override
+    public void visitClassContext(ClassContext clsContext) {
+        try {
+            JavaClass cls = clsContext.getJavaClass();
+            String superName = cls.getSuperclassName();
+            if (!"java.lang.Object".equals(superName)) {
+                this.classContext = clsContext;
+                superclassCode = new HashMap<String, Code>();
+                JavaClass superCls = cls.getSuperClass();
+                childPoolGen = new ConstantPoolGen(cls.getConstantPool());
+                parentPoolGen = new ConstantPoolGen(superCls.getConstantPool());
+                Method[] methods = superCls.getMethods();
+                for (Method m : methods) {
+                    String methodName = m.getName();
+                    if ((m.isPublic() || m.isProtected()) && (!m.isAbstract())
+                            && (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName))) {
+                        String methodInfo = methodName + ":" + m.getSignature();
+                        superclassCode.put(methodInfo, m.getCode());
+                    }
+                }
+                cls.accept(this);
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            superclassCode = null;
+            this.classContext = null;
+            childPoolGen = null;
+            parentPoolGen = null;
+        }
+    }
 
-	/**
-	 * overrides the visitor to accept classes derived from non java.lang.Object classes.
-	 * 
-	 * @param clsContext the context object of the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(ClassContext clsContext) {
-		try {
-			JavaClass cls = clsContext.getJavaClass();
-			String superName = cls.getSuperclassName();
-			if (!"java.lang.Object".equals(superName)) {
-				this.classContext = clsContext;
-				superclassCode = new HashMap<String, Code>();
-				JavaClass superCls = cls.getSuperClass();
-				childPoolGen = new ConstantPoolGen(cls.getConstantPool());
-				parentPoolGen = new ConstantPoolGen(superCls.getConstantPool());
-				Method[] methods = superCls.getMethods();
-				for (Method m : methods) {
-					String methodName = m.getName();
-					if ((m.isPublic() ||  m.isProtected())
-							&&  (!m.isAbstract())
-							&&  (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName))) {
-						String methodInfo = methodName + ":" + m.getSignature();
-						superclassCode.put(methodInfo, m.getCode());
-					}
-				}
-				cls.accept(this);
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		} finally {
-			superclassCode = null;
-			this.classContext = null;
-			childPoolGen = null;
-			parentPoolGen = null;
-		}
-	}
+    /**
+     * overrides the visitor to get the methodInfo
+     *
+     * @param obj
+     *            the method object for the currently parsed method
+     */
+    @Override
+    public void visitMethod(Method obj) {
+        curMethodInfo = obj.getName() + ":" + obj.getSignature();
+    }
 
-	/**
-	 * overrides the visitor to get the methodInfo
-	 * 
-	 * @param obj the method object for the currently parsed method
-	 */
-	@Override
-	public void visitMethod(Method obj) {
-		curMethodInfo = obj.getName() + ":" + obj.getSignature();
-	}
+    /**
+     * overrides the visitor to find code blocks of methods that are the same as
+     * its parents
+     *
+     * @param obj
+     *            the code object of the currently parsed method
+     */
+    @Override
+    public void visitCode(Code obj) {
+        Method m = getMethod();
+        if ((!m.isPublic() && !m.isProtected() && !m.isAbstract()) || m.isSynthetic()) {
+            return;
+        }
 
-	/**
-	 * overrides the visitor to find code blocks of methods that are the same as its parents
-	 * 
-	 * @param obj the code object of the currently parsed method
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		Method m = getMethod();
-		if (!m.isPublic() && !m.isProtected() && !m.isAbstract())
-		{
-			return;
-		}
+        Code superCode = superclassCode.get(curMethodInfo);
+        if (superCode != null) {
+            if (codeEquals(obj, superCode)) {
+                bugReporter.reportBug(new BugInstance(this, BugType.COM_COPIED_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(classContext, this, getPC()));
+                return;
+            }
 
-		Code superCode = superclassCode.get(curMethodInfo);
-		if (superCode != null) {
-			if (codeEquals(obj, superCode)) {
-				bugReporter.reportBug(new BugInstance(this, BugType.COM_COPIED_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY)
-				.addClass(this)
-				.addMethod(this)
-				.addSourceLine(classContext, this, getPC()));
-			}
-		}
-	}
+            parmTypes = getMethod().getArgumentTypes();
+            ignore = false;
+            nextParmIndex = 0;
+            nextParmOffset = (getMethod().getAccessFlags() & Constants.ACC_STATIC) != 0 ? 0 : 1;
+            sawAload0 = nextParmOffset == 0;
+            sawParentCall = false;
+            super.visitCode(obj);
+        }
 
-	/**
-	 * compares two code blocks to see if they are equal with regard to instructions and field accesses
-	 * 
-	 * @param child the first code block
-	 * @param parent the second code block
-	 * 
-	 * @return whether the code blocks are the same
-	 */
-	@SuppressWarnings("deprecation")
-	private boolean codeEquals(Code child, Code parent) {
-		byte[] childBytes = child.getCode();
-		byte[] parentBytes = parent.getCode();
+    }
 
-		if ((childBytes == null) || (parentBytes == null))
-		{
-			return false;
-		}
+    /**
+     * overrides the visitor to look for an exact call to the parent class's
+     * method using this methods parm.
+     *
+     * @param seen
+     *            the currently parsed instruction
+     *
+     */
+    @Override
+    public void sawOpcode(int seen) {
+        if (ignore) {
+            return;
+        }
 
-		if (childBytes.length != parentBytes.length)
-		{
-			return false;
-		}
+        if (!sawAload0) {
+            if (seen == ALOAD_0) {
+                sawAload0 = true;
+            } else {
+                ignore = true;
+            }
+        } else if (nextParmIndex < parmTypes.length) {
+            if (isExpectedParmInstruction(seen, nextParmOffset, parmTypes[nextParmIndex])) {
+                nextParmOffset += SignatureUtils.getSignatureSize(parmTypes[nextParmIndex].getSignature());
+                nextParmIndex++;
+            } else {
+                ignore = true;
+            }
 
-		InstructionHandle[] childihs = new InstructionList(childBytes).getInstructionHandles();
-		InstructionHandle[] parentihs = new InstructionList(parentBytes).getInstructionHandles();
+        } else if (!sawParentCall) {
 
-		if (childihs.length != parentihs.length)
-		{
-			return false;
-		}
+            if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals(getMethod().getName())
+                    && getSigConstantOperand().equals(getMethod().getSignature())) {
+                sawParentCall = true;
+            } else {
+                ignore = true;
+            }
+        } else {
+            int expectedInstruction = getExpectedReturnInstruction(getMethod().getReturnType());
+            if (seen == expectedInstruction) {
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.COM_PARENT_DELEGATED_CALL.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+            }
+        }
+    }
 
-		for (int i = 0; i < childihs.length; i++) {
-			InstructionHandle childih = childihs[i];
-			InstructionHandle parentih = parentihs[i];
-			Instruction childin = childih.getInstruction();
-			Instruction parentin = parentih.getInstruction();
+    private boolean isExpectedParmInstruction(int seen, int parmOffset, Type type) {
 
-			if (!childin.getName().equals(parentin.getName())) {
-				return false;
-			}
+        if ((type == Type.OBJECT) || (type == Type.STRING) || (type == Type.STRINGBUFFER) || (type == Type.THROWABLE)) {
+            if (parmOffset <= 3) {
+                return (Constants.ALOAD_0 + parmOffset) == seen;
+            }
+            return (Constants.ALOAD == seen) && (parmOffset == getRegisterOperand());
+        } else if (type == Type.DOUBLE) {
+            if (parmOffset <= 3) {
+                return (Constants.DLOAD_0 + parmOffset) == seen;
+            }
+            return (Constants.DLOAD == seen) && (parmOffset == getRegisterOperand());
+        } else if (type == Type.FLOAT) {
+            if (parmOffset <= 3) {
+                return (Constants.FLOAD_0 + parmOffset) == seen;
+            }
+            return (Constants.FLOAD == seen) && (parmOffset == getRegisterOperand());
+        } else if (type == Type.LONG) {
+            if (parmOffset <= 3) {
+                return (Constants.LLOAD_0 + parmOffset) == seen;
+            }
+            return (Constants.LLOAD == seen) && (parmOffset == getRegisterOperand());
+        }
 
-			if (childin instanceof FieldInstruction) {
-				String childFName = ((FieldInstruction) childin).getFieldName(childPoolGen);
-				String parentFName = ((FieldInstruction) parentin).getFieldName(parentPoolGen);
-				if (!childFName.equals(parentFName)) {
-					return false;
-				}
-				String childFSig = ((FieldInstruction) childin).getSignature(childPoolGen);
-				String parentFSig = ((FieldInstruction) parentin).getSignature(parentPoolGen);
-				if (!childFSig.equals(parentFSig)) {
-					return false;
-				}
+        if (parmOffset <= 3) {
+            return (Constants.ILOAD_0 + parmOffset) == seen;
+        }
+        return (Constants.ILOAD == seen) && (parmOffset == getRegisterOperand());
+    }
 
-				if (childFSig.charAt(0) == 'L') {
-					ReferenceType childRefType = ((FieldInstruction) childin).getReferenceType(childPoolGen);
-					ReferenceType parentRefType = ((FieldInstruction) parentin).getReferenceType(parentPoolGen);
-					if (!childRefType.getSignature().equals(parentRefType.getSignature())) {
-						return false;
-					}
-				}
-			} else if (childin instanceof InvokeInstruction) {
-				String childClassName = ((InvokeInstruction) childin).getClassName(childPoolGen);
-				String parentClassName = ((InvokeInstruction) parentin).getClassName(parentPoolGen);
-				if (!childClassName.equals(parentClassName)) {
-					return false;
-				}
-				String childMethodName = ((InvokeInstruction) childin).getMethodName(childPoolGen);
-				String parentMethodName = ((InvokeInstruction) parentin).getMethodName(parentPoolGen);
-				if (!childMethodName.equals(parentMethodName))
-				{
-					return false;
-				}
-				String childSignature = ((InvokeInstruction) childin).getSignature(childPoolGen);
-				String parentSignature = ((InvokeInstruction) parentin).getSignature(parentPoolGen);
-				if (!childSignature.equals(parentSignature))
-				{
-					return false;
-				}
-			} else if (childin instanceof LDC) {
-				Type childType = ((LDC) childin).getType(childPoolGen);
-				Type parentType = ((LDC) parentin).getType(parentPoolGen);
-				if (!childType.equals(parentType)) {
-					return false;
-				}
+    private static int getExpectedReturnInstruction(Type type) {
 
-				Object childValue = ((LDC) childin).getValue(childPoolGen);
-				Object parentValue = ((LDC) parentin).getValue(parentPoolGen);
+        if ((type == Type.OBJECT) || (type == Type.STRING) || (type == Type.STRINGBUFFER) || (type == Type.THROWABLE)) {
+            return Constants.ARETURN;
+        } else if (type == Type.DOUBLE) {
+            return Constants.DRETURN;
+        } else if (type == Type.FLOAT) {
+            return Constants.FRETURN;
+        } else if (type == Type.LONG) {
+            return Constants.LRETURN;
+        }
 
-				if (childValue instanceof ConstantClass) {
-					ConstantClass childClass = (ConstantClass)childValue;
-					ConstantClass parentClass = (ConstantClass)parentValue;
-					if (!childClass.getBytes(childPoolGen.getConstantPool()).equals(parentClass.getBytes(parentPoolGen.getConstantPool()))) {
-						return false;
-					}
-				} else if (!childValue.equals(parentValue)) {
-					return false;
-				}
-				//TODO: Other Constant types
-			} else {
-				if (!childin.equals(parentin)) {
-					return false;
-				}
-			}
-		}
+        return Constants.IRETURN;
+    }
 
-		return true;
-	}
+    /**
+     * compares two code blocks to see if they are equal with regard to
+     * instructions and field accesses
+     *
+     * @param child
+     *            the first code block
+     * @param parent
+     *            the second code block
+     *
+     * @return whether the code blocks are the same
+     */
+    @SuppressWarnings("deprecation")
+    private boolean codeEquals(Code child, Code parent) {
+        byte[] childBytes = child.getCode();
+        byte[] parentBytes = parent.getCode();
 
-	/**
-	 * implements the detector with an empty implementation
-	 */
-	@Override
-	public void report() {
-		// not used, supplied to support the Detector interface
-	}
+        if ((childBytes == null) || (parentBytes == null)) {
+            return false;
+        }
+
+        if (childBytes.length != parentBytes.length) {
+            return false;
+        }
+
+        InstructionHandle[] childihs = new InstructionList(childBytes).getInstructionHandles();
+        InstructionHandle[] parentihs = new InstructionList(parentBytes).getInstructionHandles();
+
+        if (childihs.length != parentihs.length) {
+            return false;
+        }
+
+        for (int i = 0; i < childihs.length; i++) {
+            InstructionHandle childih = childihs[i];
+            InstructionHandle parentih = parentihs[i];
+            Instruction childin = childih.getInstruction();
+            Instruction parentin = parentih.getInstruction();
+
+            if (!childin.getName().equals(parentin.getName())) {
+                return false;
+            }
+
+            if (childin instanceof FieldInstruction) {
+                String childFName = ((FieldInstruction) childin).getFieldName(childPoolGen);
+                String parentFName = ((FieldInstruction) parentin).getFieldName(parentPoolGen);
+                if (!childFName.equals(parentFName)) {
+                    return false;
+                }
+                String childFSig = ((FieldInstruction) childin).getSignature(childPoolGen);
+                String parentFSig = ((FieldInstruction) parentin).getSignature(parentPoolGen);
+                if (!childFSig.equals(parentFSig)) {
+                    return false;
+                }
+
+                if (childFSig.charAt(0) == 'L') {
+                    ReferenceType childRefType = ((FieldInstruction) childin).getReferenceType(childPoolGen);
+                    ReferenceType parentRefType = ((FieldInstruction) parentin).getReferenceType(parentPoolGen);
+                    if (!childRefType.getSignature().equals(parentRefType.getSignature())) {
+                        return false;
+                    }
+                }
+            } else if (childin instanceof InvokeInstruction) {
+                String childClassName = ((InvokeInstruction) childin).getClassName(childPoolGen);
+                String parentClassName = ((InvokeInstruction) parentin).getClassName(parentPoolGen);
+                if (!childClassName.equals(parentClassName)) {
+                    return false;
+                }
+                String childMethodName = ((InvokeInstruction) childin).getMethodName(childPoolGen);
+                String parentMethodName = ((InvokeInstruction) parentin).getMethodName(parentPoolGen);
+                if (!childMethodName.equals(parentMethodName)) {
+                    return false;
+                }
+                String childSignature = ((InvokeInstruction) childin).getSignature(childPoolGen);
+                String parentSignature = ((InvokeInstruction) parentin).getSignature(parentPoolGen);
+                if (!childSignature.equals(parentSignature)) {
+                    return false;
+                }
+            } else if (childin instanceof LDC) {
+                Type childType = ((LDC) childin).getType(childPoolGen);
+                Type parentType = ((LDC) parentin).getType(parentPoolGen);
+                if (!childType.equals(parentType)) {
+                    return false;
+                }
+
+                Object childValue = ((LDC) childin).getValue(childPoolGen);
+                Object parentValue = ((LDC) parentin).getValue(parentPoolGen);
+
+                if (childValue instanceof ConstantClass) {
+                    ConstantClass childClass = (ConstantClass) childValue;
+                    ConstantClass parentClass = (ConstantClass) parentValue;
+                    if (!childClass.getBytes(childPoolGen.getConstantPool()).equals(parentClass.getBytes(parentPoolGen.getConstantPool()))) {
+                        return false;
+                    }
+                } else if (!childValue.equals(parentValue)) {
+                    return false;
+                }
+                // TODO: Other Constant types
+            } else {
+                if (!childin.equals(parentin)) {
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 }

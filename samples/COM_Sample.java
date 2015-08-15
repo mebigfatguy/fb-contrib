@@ -18,6 +18,10 @@ public class COM_Sample {
         return ss;
     }
 
+    public boolean test4(int w, double x, String y, boolean z) {
+        return z;
+    }
+
     public static class Derived extends COM_Sample {
         @Override
         public void test1() {
@@ -36,6 +40,11 @@ public class COM_Sample {
         public String test2(int i) {
             return String.valueOf(i);
         }
+
+        @Override
+        public boolean test4(int w, double x, String y, boolean z) {
+            return super.test4(w, x, y, z);
+        }
     }
 }
 
@@ -46,13 +55,13 @@ interface Inf {
 }
 
 abstract class c1 implements Inf {
-	@Override
+    @Override
     public void m1() {
     }
 }
 
 abstract class c2 extends c1 {
-	@Override
+    @Override
     public void m2() {
     }
 }
