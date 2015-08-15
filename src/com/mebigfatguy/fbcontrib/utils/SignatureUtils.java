@@ -30,7 +30,8 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 
 /**
- * a collection of static methods for parsing signatures to find information out about them
+ * a collection of static methods for parsing signatures to find information out
+ * about them
  */
 public class SignatureUtils {
 
@@ -40,203 +41,214 @@ public class SignatureUtils {
     private SignatureUtils() {
     }
 
-	public static boolean isInheritedMethod(JavaClass cls, String methodName, String signature) throws ClassNotFoundException {
-		JavaClass[] infs = cls.getAllInterfaces();
-		if (findInheritedMethod(infs, methodName, signature) != null) {
-			return true;
-		}
+    public static boolean isInheritedMethod(JavaClass cls, String methodName, String signature) throws ClassNotFoundException {
+        JavaClass[] infs = cls.getAllInterfaces();
+        if (findInheritedMethod(infs, methodName, signature) != null) {
+            return true;
+        }
 
-		JavaClass[] supers = cls.getSuperClasses();
-		for (int i = 0; i < supers.length; i++) {
-			if ("java.lang.Object".equals(supers[i].getClassName())) {
-				supers[i] = null;
-			}
-		}
-		return findInheritedMethod(supers, methodName, signature) != null;
-	}
+        JavaClass[] supers = cls.getSuperClasses();
+        for (int i = 0; i < supers.length; i++) {
+            if ("java.lang.Object".equals(supers[i].getClassName())) {
+                supers[i] = null;
+            }
+        }
+        return findInheritedMethod(supers, methodName, signature) != null;
+    }
 
-	/**
-	 * parses the package name from a fully qualified class name
-	 *
-	 * @param className the class in question
-	 *
-	 * @return the package of the class
-	 */
-	public static String getPackageName(final String className) {
-		int dotPos = className.lastIndexOf('.');
-		if (dotPos < 0) {
-			return "";
-		}
-		return className.substring(0, dotPos);
-	}
-
-	/**
-	 * returns whether or not the two packages have the same first 'depth' parts, if they exist
-	 *
-	 * @param packName1 the first package to check
-	 * @param packName2 the second package to check
-	 * @param depth the number of package parts to check
-	 *
-	 * @return if they are similar
-	 */
-	public static boolean similarPackages(String packName1, String packName2, int depth) {
-		if (depth == 0) {
-			return true;
-		}
-
-		packName1 = packName1.replace('/', '.');
-		packName2 = packName2.replace('/', '.');
-
-		int dot1 = packName1.indexOf('.');
-		int dot2 = packName2.indexOf('.');
-		if (dot1 < 0) {
-			return (dot2 < 0);
-		} else if (dot2 < 0) {
-			return false;
-		}
-
-		String s1 = packName1.substring(0, dot1);
-		String s2 = packName2.substring(0, dot2);
-
-		if (!s1.equals(s2)) {
-			return false;
-		}
-
-		return similarPackages(packName1.substring(dot1+1), packName2.substring(dot2+1), depth-1);
-	}
-
-	/**
-	 * converts a primitive type code to a signature
-	 * 
-	 * @param typeCode the raw JVM type value
-	 * @return the signature of the type
+    /**
+     * parses the package name from a fully qualified class name
+     *
+     * @param className
+     *            the class in question
+     *
+     * @return the package of the class
      */
-	public static String getTypeCodeSignature(int typeCode) {
-		switch (typeCode) {
-			case Constants.T_BOOLEAN:
-				return "Z";
+    public static String getPackageName(final String className) {
+        int dotPos = className.lastIndexOf('.');
+        if (dotPos < 0) {
+            return "";
+        }
+        return className.substring(0, dotPos);
+    }
 
-			case Constants.T_CHAR:
-				return "C";
+    /**
+     * returns whether or not the two packages have the same first 'depth'
+     * parts, if they exist
+     *
+     * @param packName1
+     *            the first package to check
+     * @param packName2
+     *            the second package to check
+     * @param depth
+     *            the number of package parts to check
+     *
+     * @return if they are similar
+     */
+    public static boolean similarPackages(String packName1, String packName2, int depth) {
+        if (depth == 0) {
+            return true;
+        }
 
-			case Constants.T_FLOAT:
-				return "F";
+        packName1 = packName1.replace('/', '.');
+        packName2 = packName2.replace('/', '.');
 
-			case Constants.T_DOUBLE:
-				return "D";
+        int dot1 = packName1.indexOf('.');
+        int dot2 = packName2.indexOf('.');
+        if (dot1 < 0) {
+            return (dot2 < 0);
+        } else if (dot2 < 0) {
+            return false;
+        }
 
-			case Constants.T_BYTE:
-				return "B";
+        String s1 = packName1.substring(0, dot1);
+        String s2 = packName2.substring(0, dot2);
 
-			case Constants.T_SHORT:
-				return "S";
+        if (!s1.equals(s2)) {
+            return false;
+        }
 
-			case Constants.T_INT:
-				return "I";
+        return similarPackages(packName1.substring(dot1 + 1), packName2.substring(dot2 + 1), depth - 1);
+    }
 
-			case Constants.T_LONG:
-				return "L";
-		}
+    /**
+     * converts a primitive type code to a signature
+     *
+     * @param typeCode
+     *            the raw JVM type value
+     * @return the signature of the type
+     */
+    public static String getTypeCodeSignature(int typeCode) {
+        switch (typeCode) {
+        case Constants.T_BOOLEAN:
+            return "Z";
 
-		return "Ljava/lang/Object;";
-	}
+        case Constants.T_CHAR:
+            return "C";
 
+        case Constants.T_FLOAT:
+            return "F";
 
-	private static JavaClass findInheritedMethod(JavaClass[] classes, String methodName, String signature) {
-		for (JavaClass cls : classes) {
-			if (cls != null) {
-				Method[] methods = cls.getMethods();
-				for (Method m : methods) {
-					if (!m.isPrivate()) {
-						if (m.getName().equals(methodName)) {
-							if (m.getSignature().equals(signature)) {
-								return cls;
-							}
-						}
-					}
-				}
-			}
-		}
-		return null;
-	}
+        case Constants.T_DOUBLE:
+            return "D";
 
-	/**
-	 * returns a Map that represents the type of the parameter in slot x
-	 *
-	 * @param m the method for which you want the parameters
-	 * @return a map of parameter types (expect empty slots when doubles/longs are used
-	 */
-	public static Map<Integer, String> getParameterSignatures(Method m) {
-	    Type[] parms = m.getArgumentTypes();
+        case Constants.T_BYTE:
+            return "B";
 
-	    Map<Integer, String> parmSigs = new LinkedHashMap<Integer, String>(parms.length);
+        case Constants.T_SHORT:
+            return "S";
 
-	    int slot = m.isStatic() ? 0 : 1;
-	    for (Type t : parms) {
-	        String signature = t.getSignature();
-	        parmSigs.put(Integer.valueOf(slot), signature);
-	        slot += ("J".equals(signature) || "D".equals(signature)) ? 2 : 1;
-	    }
+        case Constants.T_INT:
+            return "I";
 
-	    return parmSigs;
-	}
-	
-	/**
-	 * returns the first open register slot after parameters
-	 *
-	 * @param m the method for which you want the parameters
-	 * @return the first available register slot
-	 */
-	public static int getFirstRegisterSlot(Method m) {
-	    Type[] parms = m.getArgumentTypes();
+        case Constants.T_LONG:
+            return "L";
+        }
 
-	    int first = m.isStatic() ? 0 : 1;
-	    for (Type t : parms) {
-	        String signature = t.getSignature();
-	        first += ("J".equals(signature) || "D".equals(signature)) ? 2 : 1;
-	    }
+        return "Ljava/lang/Object;";
+    }
 
-	    return first;
-	}
+    private static JavaClass findInheritedMethod(JavaClass[] classes, String methodName, String signature) {
+        for (JavaClass cls : classes) {
+            if (cls != null) {
+                Method[] methods = cls.getMethods();
+                for (Method m : methods) {
+                    if (!m.isPrivate()) {
+                        if (m.getName().equals(methodName)) {
+                            if (m.getSignature().equals(signature)) {
+                                return cls;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
 
-	public static boolean compareGenericSignature(String genericSignature, String regularSignature) {
-		Type[] regParms = Type.getArgumentTypes(regularSignature);
+    /**
+     * returns a Map that represents the type of the parameter in slot x
+     *
+     * @param m
+     *            the method for which you want the parameters
+     * @return a map of parameter types (expect empty slots when doubles/longs
+     *         are used
+     */
+    public static Map<Integer, String> getParameterSignatures(Method m) {
+        Type[] parms = m.getArgumentTypes();
 
-		GenericSignatureParser genParser = new GenericSignatureParser(genericSignature);
-		Iterator<String> genIt = genParser.parameterSignatureIterator();
+        Map<Integer, String> parmSigs = new LinkedHashMap<Integer, String>(parms.length);
 
-		for (Type regParm : regParms) {
-			if (!genIt.hasNext()) {
-				return false;
-			}
+        int slot = m.isStatic() ? 0 : 1;
+        for (Type t : parms) {
+            String signature = t.getSignature();
+            parmSigs.put(Integer.valueOf(slot), signature);
+            slot += getSignatureSize(signature);
+        }
 
-			String genSig = genIt.next();
-			int bracketPos = genSig.indexOf('<');
-			if (bracketPos >= 0) {
-				genSig = genSig.substring(0, bracketPos) + ';';
-			}
+        return parmSigs;
+    }
 
-			if (!regParm.getSignature().equals(genSig) && !genSig.startsWith("T")) {
-				return false;
-			}
-		}
+    /**
+     * returns the first open register slot after parameters
+     *
+     * @param m
+     *            the method for which you want the parameters
+     * @return the first available register slot
+     */
+    public static int getFirstRegisterSlot(Method m) {
+        Type[] parms = m.getArgumentTypes();
 
-		if (genIt.hasNext()) {
-			return false;
-		}
+        int first = m.isStatic() ? 0 : 1;
+        for (Type t : parms) {
+            first += getSignatureSize(t.getSignature());
+        }
 
-		Type regReturnParms = Type.getReturnType(regularSignature);
-		String genReturnSig = genParser.getReturnTypeSignature();
-		int bracketPos = genReturnSig.indexOf('<');
-		if (bracketPos >= 0) {
-			genReturnSig = genReturnSig.substring(0, bracketPos) + ';';
-		}
-		
-		if (!regReturnParms.getSignature().equals(genReturnSig) && !genReturnSig.startsWith("T")) {
-			return false;
-		}
+        return first;
+    }
 
-		return true;
-	}
+    public static boolean compareGenericSignature(String genericSignature, String regularSignature) {
+        Type[] regParms = Type.getArgumentTypes(regularSignature);
+
+        GenericSignatureParser genParser = new GenericSignatureParser(genericSignature);
+        Iterator<String> genIt = genParser.parameterSignatureIterator();
+
+        for (Type regParm : regParms) {
+            if (!genIt.hasNext()) {
+                return false;
+            }
+
+            String genSig = genIt.next();
+            int bracketPos = genSig.indexOf('<');
+            if (bracketPos >= 0) {
+                genSig = genSig.substring(0, bracketPos) + ';';
+            }
+
+            if (!regParm.getSignature().equals(genSig) && !genSig.startsWith("T")) {
+                return false;
+            }
+        }
+
+        if (genIt.hasNext()) {
+            return false;
+        }
+
+        Type regReturnParms = Type.getReturnType(regularSignature);
+        String genReturnSig = genParser.getReturnTypeSignature();
+        int bracketPos = genReturnSig.indexOf('<');
+        if (bracketPos >= 0) {
+            genReturnSig = genReturnSig.substring(0, bracketPos) + ';';
+        }
+
+        if (!regReturnParms.getSignature().equals(genReturnSig) && !genReturnSig.startsWith("T")) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public static int getSignatureSize(String signature) {
+        return (signature.equals("J") || signature.equals("D")) ? 2 : 1;
+    }
 
 }

@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -32,6 +32,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -41,11 +42,11 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for usage of arrays with statically known indices where it can be determined
- * that the index is out of bounds based on how the array was allocated. This 
- * delector is obviously limited to a small subset of out of bounds exceptions that
- * can be statically determined, and not the large family of problems that can 
- * occur at runtime.
+ * looks for usage of arrays with statically known indices where it can be
+ * determined that the index is out of bounds based on how the array was
+ * allocated. This delector is obviously limited to a small subset of out of
+ * bounds exceptions that can be statically determined, and not the large family
+ * of problems that can occur at runtime.
  */
 @CustomUserValue
 public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
@@ -55,16 +56,17 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
     private BitSet initializedRegs;
     private BitSet modifyRegs;
     private Map<Integer, Integer> nullStoreToLocation;
-    
+
     /**
      * constructs an AIOB detector given the reporter to report bugs on
-
-     * @param bugReporter the sync of bug reports
-     */ 
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
     public ArrayIndexOutOfBounds(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
-    
+
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -80,7 +82,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             nullStoreToLocation = null;
         }
     }
-    
+
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
@@ -92,26 +94,24 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         for (Type argType : argTypes) {
             String argSig = argType.getSignature();
             initializedRegs.set(arg);
-            arg += ("J".equals(argSig) || "D".equals(argSig)) ? 2 : 1;
+            arg += SignatureUtils.getSignatureSize(argSig);
         }
         nullStoreToLocation.clear();
         super.visitCode(obj);
-        
+
         for (Integer pc : nullStoreToLocation.values()) {
-            bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_STORE_TO_NULL_REFERENCE.name(), HIGH_PRIORITY)
-            .addClass(this)
-            .addMethod(this)
-            .addSourceLine(this, pc.intValue()));
+            bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_STORE_TO_NULL_REFERENCE.name(), HIGH_PRIORITY).addClass(this).addMethod(this)
+                    .addSourceLine(this, pc.intValue()));
         }
     }
-    
+
     @Override
     public void sawOpcode(int seen) {
         Integer size = null;
         boolean sizeSet = false;
         try {
             stack.precomputation(this);
-            
+
             switch (seen) {
             case ICONST_0:
             case ICONST_1:
@@ -121,32 +121,31 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             case ICONST_5:
                 size = Integer.valueOf(seen - ICONST_0);
                 sizeSet = true;
-            break;
-            
+                break;
+
             case ILOAD:
             case ILOAD_0:
             case ILOAD_1:
             case ILOAD_2:
             case ILOAD_3: {
-                int reg = RegisterUtils.getLoadReg(this,  seen);
+                int reg = RegisterUtils.getLoadReg(this, seen);
                 if (modifyRegs.get(reg)) {
                     modifyRegs.clear(reg);
                     sizeSet = true;
                 }
             }
-            break;
-                
-            
+                break;
+
             case BIPUSH:
             case SIPUSH:
                 size = Integer.valueOf(getIntConstant());
                 sizeSet = true;
-            break;
-            
+                break;
+
             case IINC:
                 modifyRegs.set(getRegisterOperand());
-            break;
-            
+                break;
+
             case IADD:
             case ISUB:
             case IMUL:
@@ -155,8 +154,8 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             case D2I:
             case L2I:
                 sizeSet = true;
-            break;
-            
+                break;
+
             case ISTORE:
             case ISTORE_0:
             case ISTORE_1:
@@ -168,16 +167,16 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                         modifyRegs.set(getRegisterOperand());
                     }
                 }
-            break;
-                
+                break;
+
             case LDC:
                 Constant c = getConstantRefOperand();
                 if (c instanceof ConstantInteger) {
                     size = Integer.valueOf(((ConstantInteger) c).getBytes());
                     sizeSet = true;
                 }
-            break;
-            
+                break;
+
             case NEWARRAY:
             case ANEWARRAY:
                 if (stack.getStackDepth() >= 1) {
@@ -186,7 +185,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                     sizeSet = true;
                 }
                 break;
-            
+
             case IASTORE:
             case LASTORE:
             case FASTORE:
@@ -203,13 +202,11 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                         Integer sz = (Integer) arrayItem.getUserValue();
                         if (sz != null) {
                             if (index.intValue() >= sz.intValue()) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY)
-                                            .addClass(this)
-                                            .addMethod(this)
-                                            .addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
                             }
                         }
-                        
+
                         int reg = arrayItem.getRegisterNumber();
                         if ((reg >= 0) && !initializedRegs.get(reg)) {
                             nullStoreToLocation.put(Integer.valueOf(reg), Integer.valueOf(getPC()));
@@ -217,7 +214,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                     }
                 }
                 break;
-                
+
             case IALOAD:
             case LALOAD:
             case FALOAD:
@@ -234,16 +231,14 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                         Integer sz = (Integer) arrayItem.getUserValue();
                         if (sz != null) {
                             if (index.intValue() >= sz.intValue()) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY)
-                                            .addClass(this)
-                                            .addMethod(this)
-                                            .addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
                             }
                         }
                     }
                 }
                 break;
-                
+
             case ASTORE_0:
             case ASTORE_1:
             case ASTORE_2:
@@ -251,13 +246,14 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             case ASTORE:
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item value = stack.getStackItem(0);
-                    if (!value.isNull())
+                    if (!value.isNull()) {
                         initializedRegs.set(getRegisterOperand());
+                    }
                 } else {
                     initializedRegs.set(getRegisterOperand());
-                } 
+                }
                 break;
-            
+
             case IFEQ:
             case IFNE:
             case IFLT:
@@ -279,11 +275,12 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                 while (it.hasNext()) {
                     Map.Entry<Integer, Integer> entry = it.next();
                     int pc = entry.getValue().intValue();
-                    if ((branchTarget < pc) && (initializedRegs.get(entry.getKey().intValue())))
+                    if ((branchTarget < pc) && (initializedRegs.get(entry.getKey().intValue()))) {
                         it.remove();
+                    }
                 }
             }
-  
+
         } finally {
             stack.sawOpcode(this, seen);
             if (sizeSet) {
