@@ -28,6 +28,7 @@ Contributors
 * Kevin Lubick
 * Philippe Arteau
 * Thrawn
+* Juan Martín Sotuyo Dodero
 
 
 The master branch is the main branch of development currently targeting the new FindBugs 3 platform.
