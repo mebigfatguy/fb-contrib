@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -60,7 +61,7 @@ public class CloneUsability extends BytecodeScanningDetector {
 
     /**
      * constructs a CU detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -106,7 +107,7 @@ public class CloneUsability extends BytecodeScanningDetector {
                 String returnClsName = m.getReturnType().getSignature();
                 returnClsName = returnClsName.substring(1, returnClsName.length() - 1).replaceAll("/", ".");
                 if (!clsName.equals(returnClsName)) {
-                    if ("java.lang.Object".equals(returnClsName)) {
+                    if (Values.JAVA_LANG_OBJECT.equals(returnClsName)) {
                         bugReporter.reportBug(
                                 new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                     } else {
@@ -156,7 +157,7 @@ public class CloneUsability extends BytecodeScanningDetector {
 
     /**
      * looks for methods that contain a THROW opcode
-     * 
+     *
      * @param method
      *            the context object of the current method
      * @return if the class throws exceptions

@@ -77,7 +77,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
 
     /**
      * constructs a CE detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -341,7 +341,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
             JavaClass[] sups = cls.getSuperClasses();
             for (JavaClass sup : sups) {
                 String supName = sup.getClassName();
-                if ("java.lang.Object".equals(supName) || "java.lang.Exception".equals(supName) || "java.lang.RuntimeException".equals(supName)
+                if (Values.JAVA_LANG_OBJECT.equals(supName) || "java.lang.Exception".equals(supName) || "java.lang.RuntimeException".equals(supName)
                         || "java.lang.Throwable".equals(supName)) {
                     continue;
                 }

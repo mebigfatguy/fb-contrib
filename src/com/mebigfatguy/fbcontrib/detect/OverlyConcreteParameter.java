@@ -67,7 +67,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
 
     /**
      * constructs a OCP detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -341,7 +341,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     /**
      * builds a map of method information for each method of each interface that
      * each parameter implements of this method
-     * 
+     *
      * @return a map by parameter id of all the method signatures that
      *         interfaces of that parameter implements
      *
@@ -383,7 +383,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     /**
      * returns a map of method information for each public method for each
      * interface this class implements
-     * 
+     *
      * @param cls
      *            the class whose interfaces to record
      *
@@ -513,7 +513,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     private void removeUselessDefiners(String parmSig, final int reg) {
         if (parmSig.startsWith("L")) {
             parmSig = parmSig.substring(1, parmSig.length() - 1).replace('/', '.');
-            if ("java.lang.Object".equals(parmSig)) {
+            if (Values.JAVA_LANG_OBJECT.equals(parmSig)) {
                 parameterDefiners.remove(Integer.valueOf(reg));
                 return;
             }

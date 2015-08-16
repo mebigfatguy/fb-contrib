@@ -34,6 +34,7 @@ import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.collect.StatisticsKey;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -65,7 +66,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
     /**
      * constructs a OPM detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -162,7 +163,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
     /**
      * checks to see if an instance method is called on the 'this' object
-     * 
+     *
      * @param sig
      *            the signature of the method called to find the called-on
      *            object
@@ -229,7 +230,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     /**
      * looks to see if this method described by key is derived from a superclass
      * or interface
-     * 
+     *
      * @param cls
      *            the class that the method is defined in
      * @param key
@@ -253,7 +254,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             }
 
             JavaClass superClass = cls.getSuperClass();
-            if ((superClass == null) || "java.lang.Object".equals(superClass.getClassName())) {
+            if ((superClass == null) || Values.JAVA_LANG_OBJECT.equals(superClass.getClassName())) {
                 return false;
             }
 
@@ -281,10 +282,12 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     }
 
     private static Object getRequiredAccessValue(MethodInfo mi) {
-        if (mi.wasCalledProtectedly())
+        if (mi.wasCalledProtectedly()) {
             return "protected";
-        if (mi.wasCalledPackagely())
+        }
+        if (mi.wasCalledPackagely()) {
             return "package private";
+        }
         return "private";
     }
 }

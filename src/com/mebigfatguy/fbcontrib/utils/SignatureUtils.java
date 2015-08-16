@@ -58,7 +58,7 @@ public class SignatureUtils {
 
         JavaClass[] supers = cls.getSuperClasses();
         for (int i = 0; i < supers.length; i++) {
-            if ("java.lang.Object".equals(supers[i].getClassName())) {
+            if (Values.JAVA_LANG_OBJECT.equals(supers[i].getClassName())) {
                 supers[i] = null;
             }
         }

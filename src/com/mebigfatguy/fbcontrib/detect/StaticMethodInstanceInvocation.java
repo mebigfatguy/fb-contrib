@@ -32,6 +32,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -51,7 +52,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
 
     /**
      * constructs a SMII detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -144,7 +145,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
             }
 
             if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == ATHROW) || (seen == GOTO) || (seen == GOTO_W)
-                    || (seen >= IFEQ) && (seen <= IF_ACMPNE)) {
+                    || ((seen >= IFEQ) && (seen <= IF_ACMPNE))) {
                 popStack.clear();
             } else if ((seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC)) {
                 Type result = Type.getReturnType(getSigConstantOperand());
@@ -176,7 +177,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
 
     boolean classDefinesStaticMethod(String popSignature) throws ClassNotFoundException {
         popSignature = popSignature.replace('/', '.');
-        if ("java.lang.Object".equals(popSignature) || "java.lang.Class".equals(popSignature)) {
+        if (Values.JAVA_LANG_OBJECT.equals(popSignature) || "java.lang.Class".equals(popSignature)) {
             return false;
         }
 

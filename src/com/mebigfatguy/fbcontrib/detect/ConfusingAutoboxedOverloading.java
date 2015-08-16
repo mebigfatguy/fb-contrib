@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -39,17 +40,17 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * looks for methods that have the same signature, except where one uses a
  * Character parameter, and the other uses an int, long, float, double
  * parameter. Since autoboxing is available in 1.5 one might assume that
- * 
+ *
  * <pre>
  * test('a')
  * </pre>
- * 
+ *
  * would map to
- * 
+ *
  * <pre>
  * public void test(Character c)
  * </pre>
- * 
+ *
  * but instead maps to one that takes an int long, float or double.
  */
 public class ConfusingAutoboxedOverloading extends PreorderVisitor implements Detector {
@@ -68,7 +69,7 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
 
     /**
      * constructs a CAO detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -78,7 +79,7 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
 
     /**
      * overrides the visitor to look for confusing signatures
-     * 
+     *
      * @param classContext
      *            the context object that holds the JavaClass currently being
      *            parsed
@@ -112,23 +113,25 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
 
     /**
      * returns if one signature is a Character and the other is a primitive
-     * 
+     *
      * @param sig1
      *            the first method signature
      * @param sig2
      *            the second method signature
-     * 
+     *
      * @return if one signature is a Character and the other a primitive
      */
     private static boolean confusingSignatures(String sig1, String sig2) {
-        if (sig1.equals(sig2))
+        if (sig1.equals(sig2)) {
             return false;
+        }
 
         Type[] type1 = Type.getArgumentTypes(sig1);
         Type[] type2 = Type.getArgumentTypes(sig2);
 
-        if (type1.length != type2.length)
+        if (type1.length != type2.length) {
             return false;
+        }
 
         boolean foundParmDiff = false;
         for (int i = 0; i < type1.length; i++) {
@@ -137,13 +140,16 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
 
             if (!typeOneSig.equals(typeTwoSig)) {
                 if ("Ljava/lang/Character;".equals(typeOneSig)) {
-                    if (!primitiveSigs.contains(typeTwoSig))
+                    if (!primitiveSigs.contains(typeTwoSig)) {
                         return false;
+                    }
                 } else if ("Ljava/lang/Character;".equals(typeTwoSig)) {
-                    if (!primitiveSigs.contains(typeOneSig))
+                    if (!primitiveSigs.contains(typeOneSig)) {
                         return false;
-                } else
+                    }
+                } else {
                     return false;
+                }
                 foundParmDiff = true;
             }
         }
@@ -154,7 +160,7 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
     /**
      * fills out a set of method details for possibly confusing method
      * signatures
-     * 
+     *
      * @param cls
      *            the current class being parsed
      * @param methodInfo
@@ -162,14 +168,16 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
      */
     private void populateMethodInfo(JavaClass cls, Map<String, Set<String>> methodInfo) {
         try {
-            if ("java.lang.Object".equals(cls.getClassName()))
+            if (Values.JAVA_LANG_OBJECT.equals(cls.getClassName())) {
                 return;
+            }
 
             Method[] methods = cls.getMethods();
             for (Method m : methods) {
                 String sig = m.getSignature();
-                if (!isPossiblyConfusingSignature(sig))
+                if (!isPossiblyConfusingSignature(sig)) {
                     continue;
+                }
 
                 String name = m.getName();
                 Set<String> sigs = methodInfo.get(name);
@@ -188,18 +196,19 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
 
     /**
      * returns whether a method signature has either a Character or primitive
-     * 
+     *
      * @param sig
      *            the method signature
-     * 
+     *
      * @return whether a method signature has either a Character or primitive
      */
     private static boolean isPossiblyConfusingSignature(String sig) {
         Type[] types = Type.getArgumentTypes(sig);
         for (Type t : types) {
             sig = t.getSignature();
-            if (primitiveSigs.contains(sig) || "Ljava/lang/Character;".equals(sig))
+            if (primitiveSigs.contains(sig) || "Ljava/lang/Character;".equals(sig)) {
                 return true;
+            }
         }
         return false;
     }

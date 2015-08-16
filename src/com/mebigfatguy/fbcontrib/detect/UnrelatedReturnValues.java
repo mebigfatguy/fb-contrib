@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -50,7 +51,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
 
     /**
      * constructs a URV detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -100,7 +101,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
 
                     int priority = NORMAL_PRIORITY;
                     for (JavaClass cls : returnTypes.keySet()) {
-                        if ((cls != null) && "java.lang.Object".equals(cls.getClassName())) {
+                        if ((cls != null) && Values.JAVA_LANG_OBJECT.equals(cls.getClassName())) {
                             priority = LOW_PRIORITY;
                             break;
                         }
@@ -115,8 +116,9 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
                         bug = new BugInstance(this, BugType.URV_UNRELATED_RETURN_VALUES.name(), priority).addClass(this).addMethod(this);
                     } else {
                         bug = new BugInstance(this, BugType.URV_INHERITED_METHOD_WITH_RELATED_TYPES.name(), priority).addClass(this).addMethod(this);
-                        if (cls != null)
+                        if (cls != null) {
                             bug.addString(cls.getClassName());
+                        }
                     }
                     for (Integer pc : returnTypes.values()) {
                         bug.addSourceLine(this, pc.intValue());
@@ -144,8 +146,9 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
             if (seen == ARETURN) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
-                    if (!itm.isNull())
+                    if (!itm.isNull()) {
                         returnTypes.put(itm.getJavaClass(), Integer.valueOf(getPC()));
+                    }
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -169,11 +172,13 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
 
         boolean populate = true;
         for (JavaClass cls : classes) {
-            if (cls == null) // array
+            if (cls == null) {
                 return null;
+            }
 
-            if ("java/lang/Object".equals(cls.getClassName()))
+            if ("java/lang/Object".equals(cls.getClassName())) {
                 continue;
+            }
 
             JavaClass[] infs = cls.getAllInterfaces();
             JavaClass[] supers = cls.getSuperClasses();
@@ -190,12 +195,14 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
             }
         }
 
-        if (possibleCommonTypes.isEmpty())
+        if (possibleCommonTypes.isEmpty()) {
             return null;
+        }
 
         for (JavaClass cls : possibleCommonTypes) {
-            if (cls.isInterface())
+            if (cls.isInterface()) {
                 return cls;
+            }
         }
         return possibleCommonTypes.iterator().next();
     }

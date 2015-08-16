@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -68,7 +69,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
 
     /**
      * constructs a UCC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -79,7 +80,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and destroy the stack and member
      * collections
-     * 
+     *
      * @param classContext
      *            the context object for the currently parsed class
      */
@@ -172,9 +173,9 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
             }
             pcs.add(SourceLineAnnotation.fromVisitedInstruction(this, getPC()));
             Set<String> commonSupers = localCollections.get(Integer.valueOf(reg));
-            if (commonSupers != null)
+            if (commonSupers != null) {
                 mergeItem(commonSupers, pcs, addItm);
-            else {
+            } else {
                 commonSupers = new HashSet<String>();
                 localCollections.put(Integer.valueOf(reg), commonSupers);
                 addNewItem(commonSupers, addItm);
@@ -188,8 +189,9 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
             }
         } else {
             XField field = colItm.getXField();
-            if (field == null)
+            if (field == null) {
                 return;
+            }
 
             Set<SourceLineAnnotation> sla = memberSourceLineAnnotations.get(field.getName());
             if (sla == null) {
@@ -198,9 +200,9 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
             }
             sla.add(SourceLineAnnotation.fromVisitedInstruction(this));
             Set<String> commonSupers = memberCollections.get(field.getName());
-            if (commonSupers != null)
+            if (commonSupers != null) {
                 mergeItem(commonSupers, sla, addItm);
-            else {
+            } else {
                 commonSupers = new HashSet<String>();
                 memberCollections.put(field.getName(), commonSupers);
                 addNewItem(commonSupers, addItm);
@@ -210,22 +212,25 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
 
     private void mergeItem(final Set<String> supers, final Set<SourceLineAnnotation> sla, final OpcodeStack.Item addItm) throws ClassNotFoundException {
 
-        if (supers.isEmpty())
+        if (supers.isEmpty()) {
             return;
+        }
 
         Set<String> s = new HashSet<String>();
         addNewItem(s, addItm);
 
-        if (s.isEmpty())
+        if (s.isEmpty()) {
             return;
+        }
 
         intersection(supers, s);
 
         if (supers.isEmpty()) {
             BugInstance bug = new BugInstance(this, BugType.UCC_UNRELATED_COLLECTION_CONTENTS.name(), NORMAL_PRIORITY).addClass(this);
 
-            if (addItm.getRegisterNumber() != -1)
+            if (addItm.getRegisterNumber() != -1) {
                 bug.addMethod(this);
+            }
 
             for (SourceLineAnnotation a : sla) {
                 bug.addSourceLine(a);
@@ -238,8 +243,9 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
     private static void addNewItem(final Set<String> supers, final OpcodeStack.Item addItm) throws ClassNotFoundException {
 
         String itemSignature = addItm.getSignature();
-        if (itemSignature.length() == 0)
+        if (itemSignature.length() == 0) {
             return;
+        }
 
         if (itemSignature.charAt(0) == '[') {
             supers.add(itemSignature);
@@ -247,31 +253,35 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         }
 
         JavaClass cls = addItm.getJavaClass();
-        if ((cls == null) || "java.lang.Object".equals(cls.getClassName()))
+        if ((cls == null) || Values.JAVA_LANG_OBJECT.equals(cls.getClassName())) {
             return;
+        }
 
         supers.add(cls.getClassName());
 
         JavaClass[] infs = cls.getAllInterfaces();
         for (JavaClass inf : infs) {
             String infName = inf.getClassName();
-            if (!"java.io.Serializable".equals(infName) && !"java.lang.Cloneable".equals(infName))
+            if (!"java.io.Serializable".equals(infName) && !"java.lang.Cloneable".equals(infName)) {
                 supers.add(inf.getClassName());
+            }
         }
 
         JavaClass[] sups = cls.getSuperClasses();
         for (JavaClass sup : sups) {
             String name = sup.getClassName();
-            if (!"java.lang.Object".equals(name))
+            if (!Values.JAVA_LANG_OBJECT.equals(name)) {
                 supers.add(name);
+            }
         }
     }
 
     private static void intersection(final Set<String> orig, final Set<String> add) {
         Iterator<String> it = orig.iterator();
         while (it.hasNext()) {
-            if (!add.contains(it.next()))
+            if (!add.contains(it.next())) {
                 it.remove();
+            }
         }
     }
 }

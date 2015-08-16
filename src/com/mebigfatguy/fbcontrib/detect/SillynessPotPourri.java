@@ -120,7 +120,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     /**
      * constructs a SPP detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -246,7 +246,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (userValue != null) {
                     item.setUserValue(userValue);
-                } else if ("iterator".equals(item.getUserValue()) && (seen == GETFIELD) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+                } else if (("iterator".equals(item.getUserValue()) && (seen == GETFIELD)) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
                     item.setUserValue(null);
                 }
             }
@@ -291,7 +291,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     }
 
     private void checkStutterdAssignment(int seen, int reg) {
-        if (seen == lastOpcode && reg == lastReg) {
+        if ((seen == lastOpcode) && (reg == lastReg)) {
             bugReporter.reportBug(
                     new BugInstance(this, BugType.SPP_STUTTERED_ASSIGNMENT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
@@ -798,7 +798,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             JavaClass toStringClass = item.getJavaClass();
             if (toStringClass != null) {
                 String toStringClassName = toStringClass.getClassName();
-                if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !"java.lang.Object".equals(toStringClassName)
+                if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !Values.JAVA_LANG_OBJECT.equals(toStringClassName)
                         && !"java.lang.String".equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
                     try {
                         JavaClass cls = Repository.lookupClass(toStringClassName);
@@ -947,7 +947,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 }
             }
             cls = cls.getSuperClass();
-        } while (!"java.lang.Object".equals(cls.getClassName()));
+        } while (!Values.JAVA_LANG_OBJECT.equals(cls.getClassName()));
         return false;
     }
 }

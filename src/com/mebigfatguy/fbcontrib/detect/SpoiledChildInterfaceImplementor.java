@@ -44,7 +44,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 
     /**
      * constructs a SCII detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -64,11 +64,13 @@ public class SpoiledChildInterfaceImplementor implements Detector {
         try {
             JavaClass cls = classContext.getJavaClass();
 
-            if (cls.isAbstract() || cls.isInterface())
+            if (cls.isAbstract() || cls.isInterface()) {
                 return;
+            }
 
-            if ("java.lang.Object".equals(cls.getSuperclassName()))
+            if (Values.JAVA_LANG_OBJECT.equals(cls.getSuperclassName())) {
                 return;
+            }
 
             JavaClass[] infs = cls.getInterfaces();
             if (infs.length > 0) {
@@ -85,8 +87,9 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                                     int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
                                     BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
                                             .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
-                                    for (String nameSig : infMethods)
+                                    for (String nameSig : infMethods) {
                                         bi.addString("\t" + nameSig);
+                                    }
 
                                     bugReporter.reportBug(bi);
                                     return;
@@ -145,16 +148,18 @@ public class SpoiledChildInterfaceImplementor implements Detector {
      */
     private void filterSuperInterfaceMethods(JavaClass inf, Set<String> infMethods, JavaClass cls) {
         try {
-            if (infMethods.isEmpty())
+            if (infMethods.isEmpty()) {
                 return;
+            }
 
             JavaClass[] superInfs = inf.getInterfaces();
             for (JavaClass superInf : superInfs) {
                 if (cls.implementationOf(superInf)) {
                     Set<String> superInfMethods = buildMethodSet(superInf);
                     infMethods.removeAll(superInfMethods);
-                    if (infMethods.isEmpty())
+                    if (infMethods.isEmpty()) {
                         return;
+                    }
                 }
                 filterSuperInterfaceMethods(superInf, infMethods, cls);
             }

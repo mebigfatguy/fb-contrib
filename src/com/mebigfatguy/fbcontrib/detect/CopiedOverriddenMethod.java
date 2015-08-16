@@ -87,7 +87,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
         try {
             JavaClass cls = clsContext.getJavaClass();
             String superName = cls.getSuperclassName();
-            if (!"java.lang.Object".equals(superName)) {
+            if (!Values.JAVA_LANG_OBJECT.equals(superName)) {
                 this.classContext = clsContext;
                 superclassCode = new HashMap<String, CodeInfo>();
                 JavaClass superCls = cls.getSuperClass();
