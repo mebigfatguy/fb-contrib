@@ -18,9 +18,11 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
@@ -34,6 +36,13 @@ import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
  * about them
  */
 public class SignatureUtils {
+
+    private static Set<String> TWO_SLOT_TYPES = new HashSet<String>();
+
+    static {
+        TWO_SLOT_TYPES.add("J");
+        TWO_SLOT_TYPES.add("D");
+    }
 
     /**
      * private to reinforce the helper status of the class
@@ -248,7 +257,7 @@ public class SignatureUtils {
     }
 
     public static int getSignatureSize(String signature) {
-        return (signature.equals("J") || signature.equals("D")) ? 2 : 1;
+        return (TWO_SLOT_TYPES.contains(signature)) ? 2 : 1;
     }
 
 }
