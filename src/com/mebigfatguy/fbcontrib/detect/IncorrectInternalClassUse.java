@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -47,6 +47,7 @@ public class IncorrectInternalClassUse implements Detector {
         internalPackages.add("org/apache/xerces/");
         internalPackages.add("org/apache/xalan/");
         externalPackages.add("com/sun/jersey");
+        externalPackages.add("com/sun/mail");
         externalPackages.add("com/sun/xml/xsom");
         externalPackages.add("org/apache/xerces/xni/");
         externalPackages.add("org/apache/xerces/xs/");
@@ -55,7 +56,7 @@ public class IncorrectInternalClassUse implements Detector {
 
     /**
      * constructs a IICU detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -67,7 +68,7 @@ public class IncorrectInternalClassUse implements Detector {
      * implements the visitor to look for classes that reference com.sun.xxx, or
      * org.apache.xerces.xxx classes by looking for class constants in the
      * constant pool
-     * 
+     *
      * @param context
      *            the context object of the currently parsed class
      */
@@ -100,7 +101,7 @@ public class IncorrectInternalClassUse implements Detector {
     /**
      * determines if the class in question is an internal class by looking at
      * package prefixes
-     * 
+     *
      * @param clsName
      *            the name of the class to check
      * @returns whether the class is internal
