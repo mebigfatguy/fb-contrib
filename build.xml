@@ -126,7 +126,7 @@
 	</target>
 
 	<target name="jar" depends="compile" xmlns:vcs="antlib:com.mebigfatguy.vcsversion" description="produces the fb-contrib jar file">
-		<vcs:vcsversion vcs="git" revisionProperty="_rev_" dateProperty="_date_" branchProperty="_branch_"/>
+		<vcs:vcsversion vcs="git" revisionProperty="_rev_" dateProperty="_date_" branchProperty="_branch_" urlProperty="_url_"/>
 		<jar destfile="${target.dir}/fb-contrib-${fb-contrib.version}.jar">
 			<fileset dir="etc">
 				<include name="findbugs.xml" />
@@ -144,7 +144,10 @@
 			<manifest>
 				<attribute name="fb-contrib-version" value="${fb-contrib.version}" />
 				<attribute name="Main-Class" value="com.mebigfatguy.fbcontrib.FBContrib" />
-				<attribute name="git-revision" value="${_branch_} ${_rev_} ${_date_}" />
+				<attribute name="git-url" value="${_url_}" />
+				<attribute name="git-branch" value="${_branch_}" />
+				<attribute name="git-revision" value="${_rev_}" />
+				<attribute name="git-date" value="${_date_}" />
 				<attribute name="Eclipse-RegisterBuddy" value="edu.umd.cs.findbugs.plugin.eclipse" />
 				<attribute name="Bundle-ManifestVersion" value="2" />
 				<attribute name="Bundle-Name" value="fb-contrib plugin" />
