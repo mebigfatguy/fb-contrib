@@ -400,7 +400,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     if (cmr instanceof ConstantMethodref) {
                         ConstantMethodref toStringMR = (ConstantMethodref) cmr;
                         String toStringCls = toStringMR.getClass(pool);
-                        if (toStringCls.startsWith("java.lang.&&StringBu")) {
+                        if (toStringCls.startsWith("java.lang.StringBu")) {
                             int consIndex = CodeByteUtils.getbyte(bytes, lastPCs[2] + 1);
                             Constant c = pool.getConstant(consIndex);
                             if (c instanceof ConstantString) {
