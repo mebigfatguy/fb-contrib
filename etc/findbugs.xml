@@ -20,7 +20,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE 
+<!-- COMMENT OUT FOR RELEASE -->
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -34,7 +34,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-     COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -285,13 +285,13 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" speed="fast" reports="CRF_CONFLATING_RESOURCES_AND_FILES" />
 
-    <!--  COMMENT OUT FOR POINT RELEASE 
+    <!--  COMMENT OUT FOR POINT RELEASE -->
     
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod" speed="fast" reports="OPM_OVERLY_PERMISSIVE_METHOD" />
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ClassImpersonatingString" speed="fast" reports="CIS_STRING_PARSING_A_FIELD,CIS_TOSTRING_STORED_IN_FIELD" />	
 	
-          COMMENT OUT FOR POINT RELEASE -->
+    <!--  COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
