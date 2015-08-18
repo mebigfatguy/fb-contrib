@@ -68,7 +68,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
 
     /**
      * constructs a CBX detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -138,7 +138,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ";").equals(methodSig)) {
+                    if (Values.CONSTRUCTOR.equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             strCon = (String) itm.getConstant();
@@ -150,7 +150,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if ("append".equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ";").equals(methodSig)) {
+                    if ("append".equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             strCon = (String) itm.getConstant();
@@ -161,17 +161,20 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
 
             if (strCon != null) {
                 strCon = strCon.trim();
-                if (strCon.length() == 0)
+                if (strCon.length() == 0) {
                     return;
+                }
 
                 for (Map.Entry<Pattern, Boolean> entry : xmlPatterns.entrySet()) {
                     Matcher m = entry.getKey().matcher(strCon);
                     if (m.matches()) {
                         xmlItemCount++;
-                        if (entry.getValue().booleanValue())
+                        if (entry.getValue().booleanValue()) {
                             xmlConfidentCount++;
-                        if ((firstPC < 0) && (xmlConfidentCount > 0))
+                        }
+                        if ((firstPC < 0) && (xmlConfidentCount > 0)) {
                             firstPC = getPC();
+                        }
                         break;
                     }
                 }

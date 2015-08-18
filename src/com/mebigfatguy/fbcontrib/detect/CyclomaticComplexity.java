@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -51,20 +51,21 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
 
     /**
      * constructs a CC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
     public CyclomaticComplexity(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         Integer limit = Integer.getInteger(LIMIT_PROPERTY);
-        if (limit != null)
+        if (limit != null) {
             reportLimit = limit.intValue();
+        }
     }
 
     /**
      * overrides the visitor to store the class context
-     * 
+     *
      * @param context
      *            the context object for the currently parsed class
      */
@@ -88,7 +89,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
 
     /**
      * overrides the visitor to navigate the basic block list to count branches
-     * 
+     *
      * @param obj
      *            the method of the currently parsed method
      */
@@ -96,19 +97,22 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
     public void visitMethod(final Method obj) {
         try {
 
-            if ((obj.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0)
+            if ((obj.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
                 return;
+            }
 
             Code code = obj.getCode();
-            if (code == null)
+            if (code == null) {
                 return;
+            }
 
             // There really is no valid relationship between reportLimit and
             // code
             // length, but it is good enough. If the method is small, don't
             // bother
-            if (code.getCode().length < (2 * reportLimit))
+            if (code.getCode().length < (2 * reportLimit)) {
                 return;
+            }
 
             BitSet exceptionNodeTargets = new BitSet();
 
@@ -144,7 +148,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
                 bugReporter.reportBug(bug);
             }
         } catch (CFGBuilderException cbe) {
-            bugReporter.logError("Failure examining basic blocks for method " + classContext.getJavaClass().getClassName() + "." + obj.getName()
+            bugReporter.logError("Failure examining basic blocks for method " + classContext.getJavaClass().getClassName() + '.' + obj.getName()
                     + " in Cyclomatic Complexity detector", cbe);
         }
     }

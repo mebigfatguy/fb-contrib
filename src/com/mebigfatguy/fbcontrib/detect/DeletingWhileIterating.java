@@ -111,7 +111,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
 
     /**
      * constructs a DWI detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -128,8 +128,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if ((collectionClass == null) || (iteratorClass == null))
+        if ((collectionClass == null) || (iteratorClass == null)) {
             return;
+        }
 
         try {
             stack = new OpcodeStack();
@@ -247,8 +248,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         Integer id = (Integer) itm.getUserValue();
-                        if (id != null)
+                        if (id != null) {
                             groupId = id.intValue();
+                        }
                     }
                 }
             } else if ((seen == PUTFIELD) || (seen == PUTSTATIC)) {
@@ -277,8 +279,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                                 Integer regIt = Integer.valueOf(reg);
                                 Iterator<Integer> curIt = groupToIterator.values().iterator();
                                 while (curIt.hasNext()) {
-                                    if (curIt.next().equals(regIt))
+                                    if (curIt.next().equals(regIt)) {
                                         curIt.remove();
+                                    }
                                 }
                                 groupToIterator.put(id, regIt);
                             }
@@ -320,12 +323,14 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                         int target = getBranchTarget();
                         int gotoAddr = target - 3;
                         int ins = getCode().getCode()[gotoAddr];
-                        if (ins < 0)
+                        if (ins < 0) {
                             ins = 256 + ins;
+                        }
                         if ((ins == GOTO) || (ins == GOTO_W)) {
                             Integer reg = groupToIterator.get(id);
-                            if (reg != null)
+                            if (reg != null) {
                                 loops.put(reg, new Loop(getPC(), gotoAddr));
+                            }
                         }
                     }
                 }
@@ -358,8 +363,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         int gotoOp = CodeByteUtils.getbyte(code, nextPC);
         if ((gotoOp == Constants.GOTO) || (gotoOp == Constants.GOTO_W)) {
             int target = nextPC + CodeByteUtils.getshort(code, nextPC + 1);
-            if (target > loop.getLoopFinish())
+            if (target > loop.getLoopFinish()) {
                 return true;
+            }
         }
 
         return false;
@@ -379,14 +385,15 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         Comparable<?> groupElement = null;
 
         int reg = itm.getRegisterNumber();
-        if (reg >= 0)
+        if (reg >= 0) {
             groupElement = Integer.valueOf(reg);
-        else {
+        } else {
             XField field = itm.getXField();
             if (field != null) {
                 int regLoad = itm.getFieldLoadedFromRegister();
-                if (regLoad >= 0)
-                    groupElement = field.getName() + ":{" + regLoad + "}";
+                if (regLoad >= 0) {
+                    groupElement = field.getName() + ":{" + regLoad + '}';
+                }
             }
         }
 
@@ -396,8 +403,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
     private int findCollectionGroup(OpcodeStack.Item itm, boolean addIfNotFound) {
 
         Integer id = (Integer) itm.getUserValue();
-        if (id != null)
+        if (id != null) {
             return id.intValue();
+        }
 
         Comparable<?> groupElement = getGroupElement(itm);
         if (groupElement != null) {

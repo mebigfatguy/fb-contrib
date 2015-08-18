@@ -100,7 +100,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
     /**
      * constructs a BAS detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -111,7 +111,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and the clear the register to location
      * map
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -137,7 +137,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the register to location map
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -186,7 +186,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for variables assigned below the scope in
      * which they are used.
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -378,8 +378,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             } else if (seen == MONITOREXIT) {
                 if (monitorSyncPCs.size() > 0) {
                     ScopeBlock sb = findSynchronizedScopeBlock(rootScopeBlock, monitorSyncPCs.get(0).intValue());
-                    if (sb != null)
+                    if (sb != null) {
                         sb.setFinish(pc);
+                    }
                     monitorSyncPCs.remove(monitorSyncPCs.size() - 1);
                 }
             }
@@ -402,7 +403,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     /**
      * returns either a register number of a field reference of the object that
      * a method is being called on, or null, if it can't be determined.
-     * 
+     *
      * @return either an Integer for a register, or a String for the field name,
      *         or null
      */
@@ -437,7 +438,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     /**
      * returns the scope block in which this register was assigned, by
      * traversing the scope block tree
-     * 
+     *
      * @param sb
      *            the scope block to start searching in
      * @param pc
@@ -463,12 +464,12 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     /**
      * returns an existing scope block that has the same target as the one
      * looked for
-     * 
+     *
      * @param sb
      *            the scope block to start with
      * @param target
      *            the target to look for
-     * 
+     *
      * @return the scope block found or null
      */
     private ScopeBlock findScopeBlockWithTarget(ScopeBlock sb, int start, int target) {
@@ -493,7 +494,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
     /**
      * finds the scope block that is the active synchronized block
-     * 
+     *
      * @return the scope block
      */
     private ScopeBlock findSynchronizedScopeBlock(ScopeBlock sb, int monitorEnterPC) {
@@ -516,19 +517,20 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
     /**
      * returns the catch handler for a given try block
-     * 
+     *
      * @param pc
      *            the current instruction
      * @return the pc of the handler for this pc if it's the start of a try
      *         block, or -1
-     * 
+     *
      */
     private int findCatchHandlerFor(int pc) {
         CodeException[] exceptions = getMethod().getCode().getExceptionTable();
         if (exceptions != null) {
             for (CodeException ex : exceptions) {
-                if (ex.getStartPC() == pc)
+                if (ex.getStartPC() == pc) {
                     return ex.getHandlerPC();
+                }
             }
         }
 
@@ -554,7 +556,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * construts a new scope block
-         * 
+         *
          * @param start
          *            the beginning of the block
          * @param finish
@@ -577,7 +579,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns a string representation of the scope block
-         * 
+         *
          * @returns a string representation
          */
         @Override
@@ -587,7 +589,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns the scope blocks parent
-         * 
+         *
          * @return the parent of this scope block
          */
         public ScopeBlock getParent() {
@@ -596,7 +598,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns the children of this scope block
-         * 
+         *
          * @return the scope blocks children
          */
         public List<ScopeBlock> getChildren() {
@@ -605,7 +607,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns the start of the block
-         * 
+         *
          * @return the start of the block
          */
         public int getStart() {
@@ -614,7 +616,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns the end of the block
-         * 
+         *
          * @return the end of the block
          */
         public int getFinish() {
@@ -623,7 +625,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * sets the start pc of the block
-         * 
+         *
          * @param start
          *            the start pc
          */
@@ -633,7 +635,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * sets the finish pc of the block
-         * 
+         *
          * @param finish
          *            the finish pc
          */
@@ -654,7 +656,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns whether this scope block is a loop
-         * 
+         *
          * @returns whether this block is a loop
          */
         public boolean isLoop() {
@@ -670,7 +672,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns whether this block was caused from a goto
-         * 
+         *
          * @returns whether this block was caused by a goto
          */
         public boolean isGoto() {
@@ -686,7 +688,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns whether this block was caused from a synchronized block
-         * 
+         *
          * @returns whether this block was caused by a synchronized block
          */
         public boolean isSync() {
@@ -702,7 +704,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns whether this block was caused from a try block
-         * 
+         *
          * @returns whether this block was caused by a try block
          */
         public boolean isTry() {
@@ -718,7 +720,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * returns whether this block was caused from a case block
-         * 
+         *
          * @returns whether this block was caused by a case block
          */
         public boolean isCase() {
@@ -727,7 +729,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * adds the register as a store in this scope block
-         * 
+         *
          * @param reg
          *            the register that was stored
          * @param pc
@@ -748,7 +750,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         /**
          * removes stores to registers that where retrieved from method calls on
          * assocObject
-         * 
+         *
          * @param assocObject
          *            the object that a method call was just performed on
          */
@@ -768,7 +770,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * adds the register as a load in this scope block
-         * 
+         *
          * @param reg
          *            the register that was loaded
          * @param pc
@@ -785,7 +787,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         /**
          * adds a scope block to this subtree by finding the correct place in
          * the hierarchy to store it
-         * 
+         *
          * @param newChild
          *            the scope block to add to the tree
          */
@@ -795,8 +797,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             if (children != null) {
                 for (ScopeBlock child : children) {
                     if ((newChild.startLocation > child.startLocation) && (newChild.startLocation < child.finishLocation)) {
-                        if (newChild.finishLocation > child.finishLocation)
+                        if (newChild.finishLocation > child.finishLocation) {
                             newChild.finishLocation = child.finishLocation;
+                        }
                         child.addChild(newChild);
                         return;
                     }
@@ -818,7 +821,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * removes a child from this node
-         * 
+         *
          * @param child
          *            the child to remove
          */
@@ -887,10 +890,10 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         /**
          * returns whether this block either loads or stores into the register
          * in question
-         * 
+         *
          * @param reg
          *            the register to look for loads or stores
-         * 
+         *
          * @return whether the block uses the register
          */
         public boolean usesReg(Integer reg) {
@@ -945,7 +948,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             return true;
         }
 
-        String key = clsName + "." + getNameConstantOperand() + getSigConstantOperand();
+        String key = clsName + '.' + getNameConstantOperand() + getSigConstantOperand();
         if (dangerousAssignmentMethodSources.contains(key)) {
             return true;
         }
