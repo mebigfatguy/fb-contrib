@@ -208,9 +208,11 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                                     if (loop != null) {
                                         int pc = getPC();
                                         if (loop.hasPC(pc)) {
-                                            boolean breakFollows = breakFollows(loop, !"V".equals(Type.getReturnType(signature).getSignature()));
+                                            boolean needPop = !"V".equals(Type.getReturnType(signature).getSignature());
+                                            boolean breakFollows = breakFollows(loop, needPop);
+                                            boolean returnFollows = breakFollows ? false : returnFollows(loop);
 
-                                            if (!breakFollows) {
+                                            if (!breakFollows && !returnFollows) {
                                                 bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
                                                         .addClass(this).addMethod(this).addSourceLine(this));
                                             }
@@ -366,6 +368,31 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
             if (target > loop.getLoopFinish()) {
                 return true;
             }
+        }
+
+        return false;
+    }
+
+    private boolean returnFollows(Loop loop) {
+
+        byte[] code = getCode().getCode();
+        int nextPC = getNextPC();
+
+        int nextOp = CodeByteUtils.getbyte(code, nextPC++);
+
+        if ((nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN)) {
+            return true;
+        }
+
+        /*
+         * This is a cheat, we allow a POP, or an ALOAD/ILOAD etc before the
+         * return. this is sloppy tho as it might be a multibyte instruction. It
+         * also might be a complex piece of code to load the return, or the
+         * method may not allow returns. But hopefully it's better than it was.
+         */
+        nextOp = CodeByteUtils.getbyte(code, nextPC++);
+        if ((nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN)) {
+            return true;
         }
 
         return false;
