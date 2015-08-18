@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -106,9 +106,9 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
     public void report() {
     }
 
-    private static boolean hasSimilarParms(Type[] argTypes) {
+    private static boolean hasSimilarParms(Type... argTypes) {
 
-        for (int i = 0; i < argTypes.length - 1; i++) {
+        for (int i = 0; i < (argTypes.length - 1); i++) {
             if (argTypes[i].getSignature().startsWith("[")) {
                 return true;
             }
@@ -119,7 +119,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
             baseType = baseType.substring(1);
         }
 
-        for (int i = 0; i < argTypes.length - 1; i++) {
+        for (int i = 0; i < (argTypes.length - 1); i++) {
             if (argTypes[i].getSignature().equals(baseType)) {
                 return true;
             }
@@ -131,14 +131,16 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
     private boolean isInherited(Method m) throws ClassNotFoundException {
         JavaClass[] infs = javaClass.getAllInterfaces();
         for (JavaClass inf : infs) {
-            if (hasMethod(inf, m))
+            if (hasMethod(inf, m)) {
                 return true;
+            }
         }
 
         JavaClass[] sups = javaClass.getSuperClasses();
         for (JavaClass sup : sups) {
-            if (hasMethod(sup, m))
+            if (hasMethod(sup, m)) {
                 return true;
+            }
         }
 
         return false;
