@@ -13,15 +13,17 @@ public class DWI_Sample {
         Iterator<Integer> it = bagOInts.iterator();
         while (it.hasNext()) {
             Integer i = it.next();
-            if ((i.intValue() & 0x01) == 1)
+            if ((i.intValue() & 0x01) == 1) {
                 bagOInts.remove(i);
+            }
         }
     }
 
     public void addIf(Set<String> s, Collection<String> c) {
         for (String ss : s) {
-            if (ss.equals("addem"))
+            if (ss.equals("addem")) {
                 s.addAll(c);
+            }
         }
     }
 
@@ -50,6 +52,26 @@ public class DWI_Sample {
                 break;
             }
         }
+    }
+
+    public void fpRemoveWithReturn(Set<String> ss) {
+        for (String s : ss) {
+            if (s.equals("foo")) {
+                ss.remove("foo");
+                return;
+            }
+        }
+    }
+
+    public boolean fpRemoveWithReturn2(Set<String> ss) {
+        for (String s : ss) {
+            if (s.equals("foo")) {
+                ss.remove("foo");
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public void fpNonCMECollection() {
