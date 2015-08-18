@@ -46,6 +46,8 @@ public class IncorrectInternalClassUse implements Detector {
         internalPackages.add("com/sun/");
         internalPackages.add("org/apache/xerces/");
         internalPackages.add("org/apache/xalan/");
+        internalPackages.add("com/sun/org/apache/xerces/");
+        internalPackages.add("com/sun/org/apache/xalan/");
         internalPackages.add("com/sun/xml/internal/");
         externalPackages.add("com/sun/jersey/");
         externalPackages.add("com/sun/mail/");
