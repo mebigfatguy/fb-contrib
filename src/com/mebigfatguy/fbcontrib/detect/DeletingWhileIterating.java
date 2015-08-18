@@ -210,7 +210,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                                         if (loop.hasPC(pc)) {
                                             boolean needPop = !"V".equals(Type.getReturnType(signature).getSignature());
                                             boolean breakFollows = breakFollows(loop, needPop);
-                                            boolean returnFollows = breakFollows ? false : returnFollows(loop);
+                                            boolean returnFollows = breakFollows ? false : returnFollows(loop, needPop);
 
                                             if (!breakFollows && !returnFollows) {
                                                 bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
@@ -373,7 +373,15 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         return false;
     }
 
-    private boolean returnFollows(Loop loop) {
+    /*
+     * This attempts to see if there is some form of a return statement
+     * following the collection modifying statement in the loop. It is a bad
+     * cheat, because, we may allow a POP, or an ALOAD/ILOAD etc before the
+     * return. this is sloppy tho as it might be a multibyte instruction. It
+     * also might be a complex piece of code to load the return, or the method
+     * may not allow returns. But hopefully it's better than it was.
+     */
+    private boolean returnFollows(Loop loop, boolean couldSeePop) {
 
         byte[] code = getCode().getCode();
         int nextPC = getNextPC();
@@ -382,14 +390,13 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
 
         if ((nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN)) {
             return true;
+        } else if ((couldSeePop) && (nextOp == Constants.POP)) {
+            nextOp = CodeByteUtils.getbyte(code, nextPC++);
+            if ((nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN)) {
+                return true;
+            }
         }
 
-        /*
-         * This is a cheat, we allow a POP, or an ALOAD/ILOAD etc before the
-         * return. this is sloppy tho as it might be a multibyte instruction. It
-         * also might be a complex piece of code to load the return, or the
-         * method may not allow returns. But hopefully it's better than it was.
-         */
         nextOp = CodeByteUtils.getbyte(code, nextPC++);
         if ((nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN)) {
             return true;
