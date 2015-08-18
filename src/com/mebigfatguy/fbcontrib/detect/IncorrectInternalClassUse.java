@@ -44,9 +44,13 @@ public class IncorrectInternalClassUse implements Detector {
 
     static {
         internalPackages.add("com/sun/");
+        internalPackages.add("org/apache/commons/digester/annotations/internal");
         internalPackages.add("org/apache/xerces/");
         internalPackages.add("org/apache/xalan/");
         internalPackages.add("org/mockito/internal/");
+        internalPackages.add("org/springframework/asm/");
+        internalPackages.add("org/springframework/cglib/");
+        internalPackages.add("org/springframework/objenesis/");
         internalPackages.add("com/sun/org/apache/xerces/");
         internalPackages.add("com/sun/org/apache/xalan/");
         internalPackages.add("com/sun/xml/internal/");
