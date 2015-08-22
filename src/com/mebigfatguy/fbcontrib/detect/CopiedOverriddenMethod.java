@@ -199,6 +199,8 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector implements 
             if ((seen == expectedInstruction) && (getNextPC() == getCode().getCode().length)) {
                 bugReporter.reportBug(
                         new BugInstance(this, BugType.COM_PARENT_DELEGATED_CALL.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+            } else {
+                ignore = true;
             }
         }
     }
