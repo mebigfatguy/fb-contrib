@@ -6,6 +6,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
+
 import edu.emory.mathcs.backport.java.util.Collections;
 
 @SuppressWarnings("all")
@@ -30,8 +32,9 @@ public class PRMC_Sample {
     @Override
     public boolean equals(Object o) {
         PRMC_Sample rmc = (PRMC_Sample) o;
-        if (data.equals("INF") || rmc.data.equals("INF"))
+        if (data.equals("INF") || rmc.data.equals("INF")) {
             return false;
+        }
 
         return data.equals(rmc.data);
     }
@@ -113,6 +116,11 @@ public class PRMC_Sample {
         SAMPLE2.setValue(5);
     }
 
+    public void fpWithGuava() {
+        List<String> l = Lists.newArrayList();
+        List<String> ll = Lists.newArrayList();
+    }
+
     public void fpAsListLiterals() {
         System.out.println(Arrays.asList("foo"));
         System.out.println(Arrays.asList("bar"));
@@ -124,6 +132,7 @@ public class PRMC_Sample {
     class Chain {
         public Chain chainedField;
 
+        @Override
         public String toString() {
             StringBuilder sb = new StringBuilder();
             sb.append("--");
