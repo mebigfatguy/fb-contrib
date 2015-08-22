@@ -11,7 +11,7 @@
 	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.3.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.7.jar"/>
-	<classpathentry kind="lib" path="lib/guava-17.0.jar"/>
+	<classpathentry kind="lib" path="lib/guava-17.0.jar" sourcepath="lib/sources/guava-17.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.3.4.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.3.4.jar"/>

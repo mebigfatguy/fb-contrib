@@ -125,6 +125,11 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         riskyClassNames.add("java/io/DataInputStream");
         riskyClassNames.add("java/io/ObjectInputStream");
         riskyClassNames.add("java/util/Calendar");
+        riskyClassNames.add("com/google/common/collect/Lists");
+        riskyClassNames.add("com/google/common/collect/Sets");
+        riskyClassNames.add("com/google/common/collect/Maps");
+        riskyClassNames.add("com/google/common/collect/Queues");
+
         String userNameProp = System.getProperty(PRMC_RISKY_CLASS_USER_KEY);
         if (userNameProp != null) {
             String[] userNames = userNameProp.split("\\s*,\\s*");
@@ -143,7 +148,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
     /**
      * constructs a PRMC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -234,8 +239,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     fieldSource = (String) item.getUserValue();
-                    if (fieldSource == null)
+                    if (fieldSource == null) {
                         fieldSource = "";
+                    }
                 }
                 fieldMethodCalls.remove(fieldSource + ":" + getNameConstantOperand());
             } else if (seen == GETFIELD) {
@@ -288,8 +294,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                             mc = localMethodCalls.get(Integer.valueOf(reg));
                         } else if (field != null) {
                             String fieldSource = (String) obj.getUserValue();
-                            if (fieldSource == null)
+                            if (fieldSource == null) {
                                 fieldSource = "";
+                            }
                             mc = fieldMethodCalls.get(fieldSource + ":" + field.getName());
                         } else {
                             return;
@@ -326,8 +333,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                                 if (stack.getStackDepth() > 0) {
                                     OpcodeStack.Item item = stack.getStackItem(0);
                                     fieldSource = (String) item.getUserValue();
-                                    if (fieldSource == null)
+                                    if (fieldSource == null) {
                                         fieldSource = "";
+                                    }
                                 }
 
                                 fieldMethodCalls.remove(fieldSource + ":" + field.getName());
@@ -343,8 +351,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                             } else if (field != null) {
                                 OpcodeStack.Item obj = stack.getStackItem(parmCount);
                                 String fieldSource = (String) obj.getUserValue();
-                                if (fieldSource == null)
+                                if (fieldSource == null) {
                                     fieldSource = "";
+                                }
                                 fieldMethodCalls.put(fieldSource + ":" + field.getName(), new MethodCall(methodName, signature, parmConstants, pc, ln));
                             }
                         }
@@ -364,7 +373,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
     /**
      * returns the bug priority based on metrics about the method
-     * 
+     *
      * @param methodName
      *            TODO
      * @param mi
@@ -372,17 +381,21 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
      * @return the bug priority
      */
     private static int getBugPriority(String methodName, MethodInfo mi) {
-        if ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit))
+        if ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit)) {
             return HIGH_PRIORITY;
+        }
 
-        if (Values.STATIC_INITIALIZER.equals(methodName))
+        if (Values.STATIC_INITIALIZER.equals(methodName)) {
             return LOW_PRIORITY;
+        }
 
-        if ((mi.getNumBytes() >= normalByteCountLimit) || (mi.getNumMethodCalls() >= normalMethodCallLimit))
+        if ((mi.getNumBytes() >= normalByteCountLimit) || (mi.getNumMethodCalls() >= normalMethodCallLimit)) {
             return NORMAL_PRIORITY;
+        }
 
-        if ((mi.getNumBytes() == 0) || (mi.getNumMethodCalls() == 0))
+        if ((mi.getNumBytes() == 0) || (mi.getNumMethodCalls() == 0)) {
             return LOW_PRIORITY;
+        }
 
         return EXP_PRIORITY;
     }
@@ -414,22 +427,25 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     /**
      * returns the source line number for the pc, or just the pc if the line
      * number table doesn't exist
-     * 
+     *
      * @param pc
      *            current pc
      * @return the line number
      */
     private int getLineNumber(int pc) {
         LineNumberTable lnt = getMethod().getLineNumberTable();
-        if (lnt == null)
+        if (lnt == null) {
             return pc;
+        }
 
         LineNumber[] lns = lnt.getLineNumberTable();
-        if (lns == null)
+        if (lns == null) {
             return pc;
+        }
 
-        if (pc > lns[lns.length - 1].getStartPC())
+        if (pc > lns[lns.length - 1].getStartPC()) {
             return lns[lns.length - 1].getLineNumber();
+        }
 
         int lo = 0;
         int hi = lns.length - 2;
