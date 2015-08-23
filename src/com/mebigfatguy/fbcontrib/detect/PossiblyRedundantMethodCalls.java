@@ -46,8 +46,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for calls of the same method on the same object when that object hasn't
- * changed. This often is redundant, and the second call can be removed, or
+ * looks for calls of the same method on the same object when that object hasn't changed. This often is redundant, and the second call can be removed, or
  * combined.
  */
 @CustomUserValue
@@ -157,8 +156,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to create and clear the stack, method call maps,
-     * and branch targets
+     * implements the visitor to create and clear the stack, method call maps, and branch targets
      *
      * @param classContext
      *            the context object of the currently visited class
@@ -182,8 +180,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the stack, and method call maps for new
-     * method
+     * implements the visitor to reset the stack, and method call maps for new method
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -203,9 +200,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for repetitive calls to the same method on
-     * the same object using the same constant parameters. These methods must
-     * return a value.
+     * implements the visitor to look for repetitive calls to the same method on the same object using the same constant parameters. These methods must return a
+     * value.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -285,7 +281,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
                     if (seen == INVOKESTATIC) {
                         mc = staticMethodCalls.get(className);
-                    } else {
+                    } else if (stack.getStackDepth() > parmCount) {
                         OpcodeStack.Item obj = stack.getStackItem(parmCount);
                         reg = obj.getRegisterNumber();
                         field = obj.getXField();
@@ -301,6 +297,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         } else {
                             return;
                         }
+                    } else {
+                        return;
                     }
 
                     String methodName = getNameConstantOperand();
@@ -401,8 +399,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     }
 
     /**
-     * returns true if the class or method name contains a pattern that is
-     * considered likely to be this modifying
+     * returns true if the class or method name contains a pattern that is considered likely to be this modifying
      *
      * @param className
      *            the class name to check
@@ -425,8 +422,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     }
 
     /**
-     * returns the source line number for the pc, or just the pc if the line
-     * number table doesn't exist
+     * returns the source line number for the pc, or just the pc if the line number table doesn't exist
      *
      * @param pc
      *            current pc
