@@ -59,7 +59,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
 
     /**
      * constructs an AIOB detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -83,6 +83,12 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * overrides the visitor to collect parameter registers
+     *
+     * @param obj
+     *            the code block of the currently parsed method
+     */
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
@@ -105,6 +111,13 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * overrides the visitor to look for stores to arrays that can be statically
+     * determined to be outside the bounds of the initialized array
+     *
+     * @param seen
+     *            the currently parsed opcode
+     */
     @Override
     public void sawOpcode(int seen) {
         Integer size = null;
