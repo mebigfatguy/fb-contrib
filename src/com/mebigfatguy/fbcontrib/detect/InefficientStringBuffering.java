@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -35,8 +35,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for appending strings inside of calls to StringBuffer or StringBuilder
- * append.
+ * looks for appending strings inside of calls to StringBuffer or StringBuilder append.
  */
 @CustomUserValue
 public class InefficientStringBuffering extends BytecodeScanningDetector {
@@ -50,7 +49,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
 
     /**
      * constructs a ISB detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -60,7 +59,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to create an clear the stack
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -76,7 +75,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to create and clear the stack
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -113,8 +112,9 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                 Constant c = getConstantRefOperand();
                 if (c instanceof ConstantString) {
                     String s = ((ConstantString) c).getBytes(getConstantPool());
-                    if (s.length() == 0)
+                    if (s.length() == 0) {
                         sawLDCEmpty = true;
+                    }
                 }
             } else if (OpcodeUtils.isALoad(seen)) {
                 apType = AppendType.CLEAR;
@@ -168,8 +168,9 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         } else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())) {
             // calls to this.toString() are okay, some people like to be
             // explicit
-            if (stack.getStackItem(0).getRegisterNumber() != 0)
+            if ((stack.getStackDepth() > 0) && (stack.getStackItem(0).getRegisterNumber() != 0)) {
                 apType = AppendType.TOSTRING;
+            }
         }
         return apType;
     }

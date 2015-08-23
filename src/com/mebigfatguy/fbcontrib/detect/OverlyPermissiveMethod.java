@@ -44,8 +44,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * looks for methods that are declared more permissively than the code is using.
- * For instance, declaring a method public, when it could just be declared
+ * looks for methods that are declared more permissively than the code is using. For instance, declaring a method public, when it could just be declared
  * private.
  */
 public class OverlyPermissiveMethod extends BytecodeScanningDetector {
@@ -165,13 +164,12 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
      * checks to see if an instance method is called on the 'this' object
      *
      * @param sig
-     *            the signature of the method called to find the called-on
-     *            object
+     *            the signature of the method called to find the called-on object
      * @return when it is called on this or not
      */
     private boolean isCallingOnThis(String sig) {
         Type[] argTypes = Type.getArgumentTypes(sig);
-        if (stack.getStackDepth() < argTypes.length) {
+        if (stack.getStackDepth() <= argTypes.length) {
             return false;
         }
 
@@ -180,8 +178,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * after collecting all method calls, build a report of all methods that
-     * have been called, but in a way that is less permissive then is defined.
+     * after collecting all method calls, build a report of all methods that have been called, but in a way that is less permissive then is defined.
      */
     @Override
     public void report() {
@@ -228,8 +225,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * looks to see if this method described by key is derived from a superclass
-     * or interface
+     * looks to see if this method described by key is derived from a superclass or interface
      *
      * @param cls
      *            the class that the method is defined in
