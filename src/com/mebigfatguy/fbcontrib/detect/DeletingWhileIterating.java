@@ -210,7 +210,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                                         if (loop.hasPC(pc)) {
                                             boolean needPop = !"V".equals(Type.getReturnType(signature).getSignature());
                                             boolean breakFollows = breakFollows(loop, needPop);
-                                            boolean returnFollows = breakFollows ? false : returnFollows(loop, needPop);
+                                            boolean returnFollows = breakFollows ? false : returnFollows(needPop);
 
                                             if (!breakFollows && !returnFollows) {
                                                 bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
@@ -373,15 +373,19 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         return false;
     }
 
-    /*
+    /**
      * This attempts to see if there is some form of a return statement
      * following the collection modifying statement in the loop. It is a bad
      * cheat, because, we may allow a POP, or an ALOAD/ILOAD etc before the
      * return. this is sloppy tho as it might be a multibyte instruction. It
      * also might be a complex piece of code to load the return, or the method
      * may not allow returns. But hopefully it's better than it was.
+     *
+     * @param couldSeePop
+     *            if the preceding instruction returns a value, and thus might
+     *            need to be popped
      */
-    private boolean returnFollows(Loop loop, boolean couldSeePop) {
+    private boolean returnFollows(boolean couldSeePop) {
 
         byte[] code = getCode().getCode();
         int nextPC = getNextPC();
