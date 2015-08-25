@@ -234,8 +234,11 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                                         if (loop != null) {
                                             int pc = getPC();
                                             if (loop.hasPC(pc)) {
-                                                boolean breakFollows = breakFollows(loop, !"V".equals(Type.getReturnType(signature).getSignature()));
-                                                if (!breakFollows) {
+                                                boolean needPop = !"V".equals(Type.getReturnType(signature).getSignature());
+                                                boolean breakFollows = breakFollows(loop, needPop);
+                                                boolean returnFollows = breakFollows ? false : returnFollows(needPop);
+
+                                                if (!breakFollows && !returnFollows) {
                                                     bugReporter.reportBug(new BugInstance(this, BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
                                                             .addClass(this).addMethod(this).addSourceLine(this));
                                                 }
