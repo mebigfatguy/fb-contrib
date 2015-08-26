@@ -22,6 +22,7 @@ import org.apache.bcel.classfile.Code;
 import org.objectweb.asm.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -111,7 +112,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
                 if ("java/io/File".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     String sig = getSigConstantOperand();
-                    if ("<init>".equals(methodName) && Type.getArgumentTypes(sig).length == 1) {
+                    if (Values.CONSTRUCTOR.equals(methodName) && Type.getArgumentTypes(sig).length == 1) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             if (item.getUserValue() != null) {
@@ -123,7 +124,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
                 } else if ("java/net/URI".equals(clsName) || "java/net/URL".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     String sig = getSigConstantOperand();
-                    if ("<init>".equals(methodName) && "(Ljava/lang/String;)V".equals(sig)) {
+                    if (Values.CONSTRUCTOR.equals(methodName) && "(Ljava/lang/String;)V".equals(sig)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             String cons = (String) item.getConstant();
