@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -149,7 +150,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             sawAssert = false;
             super.visitCode(obj);
 
-            if (!sawAssert) {
+            if (!sawAssert && !hasExpects()) {
                 bugReporter.reportBug(new BugInstance(this, frameworkType == TestFrameworkType.JUNIT ? BugType.UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT.name()
                         : BugType.UTAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT.name(), LOW_PRIORITY).addClass(this).addMethod(this));
             }
@@ -353,7 +354,29 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         }
     }
 
-    public boolean isFloatingPtPrimitive(String signature) {
+    private boolean isFloatingPtPrimitive(String signature) {
         return "D".equals(signature) || "F".equals(signature);
+    }
+    
+    private boolean hasExpects() {
+        AnnotationEntry[] annotations = getMethod().getAnnotationEntries();
+        if (annotations != null) {
+            for (AnnotationEntry annotation : annotations) {
+                String type = annotation.getAnnotationType();
+                if ("Lorg/junit/Test;".equals(type) || "Lorg/testng/annotations/Test;".equals(type)) {
+                    ElementValuePair[] evPairs = annotation.getElementValuePairs();
+                    if (evPairs != null) {
+                        for (ElementValuePair evPair : evPairs) {
+                            String evName = evPair.getNameString();
+                            if ("expected".equals(evName) || "expectedExceptions".equals(evName)) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        return false;
     }
 }

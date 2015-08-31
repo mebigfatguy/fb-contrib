@@ -55,6 +55,11 @@ class New {
     private void check(String a, String b) {
         Assert.assertEquals(a, b);
     }
+    
+    @Test(expected=RuntimeException.class)
+    public void fpNoAssertsWithJUnitExpects() {
+        throw new RuntimeException();
+    }
 }
 
 class TestNG {
@@ -98,5 +103,10 @@ class TestNG {
     public void test3ArgNP(float foo, int boo) {
         Assert.assertEquals(foo, 1.0f, 0.1);
         Assert.assertEquals(boo, 20, 0);
+    }
+    
+    @org.testng.annotations.Test(expectedExceptions=RuntimeException.class)
+    public void fpNoAssertsWithNGExpects() {
+        throw new RuntimeException();
     }
 }
