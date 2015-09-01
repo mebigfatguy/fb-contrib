@@ -45,6 +45,11 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * overrides the visitor to make sure that the class was compiled by java 1.5 or later.
+     * 
+     * @param classContext the context object of the currently parsed class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -128,6 +133,14 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
         return false;
     }
 
+    /** looks to see if this method is derived from a super class. If it is
+     * we don't want to report on it, as that would entail changing a whole hierarchy
+     * 
+     * @param m the current method
+     * @return if the method is inherited
+     * 
+     * @throws ClassNotFoundException if the super class(s) aren't found
+     */
     private boolean isInherited(Method m) throws ClassNotFoundException {
         JavaClass[] infs = javaClass.getAllInterfaces();
         for (JavaClass inf : infs) {
