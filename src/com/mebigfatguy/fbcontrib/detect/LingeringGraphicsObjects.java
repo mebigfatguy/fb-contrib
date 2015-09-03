@@ -61,6 +61,11 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * overrides the visitor to set up the opcode stack
+     * 
+     * @param classContext the context object of the currently parsed class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -73,6 +78,11 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * overrides the visitor to check for registers that have been assigned Graphics objects that haven't been disposed
+     * 
+     * @param obj the code block of the currently parsed method
+     */
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
