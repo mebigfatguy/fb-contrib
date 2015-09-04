@@ -1,3 +1,5 @@
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LSC_Sample {
     public static final String CONSTANT_VAL_STRING = "GoodBye";
@@ -166,6 +168,19 @@ public class LSC_Sample {
         System.out.println(s2);
         return 4;
 
+    }
+    
+    public String fpStringBufferForMatcher(String input) {
+        Pattern p = Pattern.compile("12.*myshoe");
+        Matcher matcher = p.matcher(input);
+        StringBuffer stringBuffer = new StringBuffer();
+        while (matcher.find()) {
+            String prefix = matcher.group(1);
+            matcher.appendReplacement(stringBuffer, "shobeydobee" + prefix);
+        }
+        matcher.appendTail(stringBuffer); 
+        
+        return stringBuffer.toString();
     }
 
 }
