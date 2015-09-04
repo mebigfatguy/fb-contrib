@@ -139,6 +139,11 @@ public class CloneUsability extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * overrides the visitor to look for a CloneNotSupported being thrown
+     * 
+     * @param seen the currently parsed opcode
+     */
     @Override
     public void sawOpcode(int seen) {
         try {
