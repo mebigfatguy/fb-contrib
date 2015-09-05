@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -184,8 +185,13 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
                         for (int i = 0; i < argCount; i++) {
                             OpcodeStack.Item item = stack.getStackItem(i);
                             RegisterInfo cri = suspectLocals.get(item.getUserValue());
-                            if (cri != null)
-                                cri.setPriority(LOW_PRIORITY);
+                            if (cri != null) {
+                                if (SignatureUtils.similarPackages(SignatureUtils.getPackageName(SignatureUtils.stripSignature(getClassConstantOperand())), SignatureUtils.getPackageName(SignatureUtils.stripSignature(this.getClassName())), 2))
+                                    cri.setPriority(LOW_PRIORITY);
+                                else {
+                                    cri.setIgnore();
+                                }
+                            }
                         }
                     }
                 } else if (seen == MONITORENTER) {
