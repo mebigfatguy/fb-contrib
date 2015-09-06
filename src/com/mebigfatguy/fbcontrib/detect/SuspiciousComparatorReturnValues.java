@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -39,6 +40,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * compareTo methods return constant values only, but that don't represent the
  * three possible choice (a negative number, 0, and a positive number).
  */
+@CustomUserValue
 public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     private static Map<JavaClass, String> compareClasses = new HashMap<JavaClass, String>();
 
@@ -58,9 +60,12 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     private boolean seenNegative;
     private boolean seenPositive;
     private boolean seenZero;
+    private boolean seenUnconditionalNonZero;
+    private int furthestBranchTarget;
+    private Integer sawConstant;
 
     /**
-     * constructs a DRE detector given the reporter to report bugs on
+     * constructs a SCRV detector given the reporter to report bugs on
      * 
      * @param bugReporter
      *            the sync of bug reports
@@ -104,11 +109,14 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
             seenNegative = false;
             seenPositive = false;
             seenZero = false;
+            seenUnconditionalNonZero = false;
+            furthestBranchTarget = -1;
+            sawConstant = null;
             super.visitCode(obj);
-            if (!indeterminate && (!seenZero || (obj.getCode().length > 2))) {
+            if (!indeterminate && (!seenZero || seenUnconditionalNonZero || (obj.getCode().length > 2))) {
                 boolean seenAll = seenNegative & seenPositive & seenZero;
-                if (!seenAll) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SC_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), NORMAL_PRIORITY).addClass(this)
+                if (!seenAll || seenUnconditionalNonZero) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), (!seenAll) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this, 0));
                 }
             }
@@ -123,34 +131,114 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
 
             stack.precomputation(this);
 
-            if (seen == IRETURN) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    Integer returnValue = (Integer) item.getConstant();
-                    if (returnValue == null)
+            switch (seen) {
+                case IRETURN: {
+                    if ((sawConstant != null) || (stack.getStackDepth() > 0)) {
+                        Integer returnValue = null;
+                        if (sawConstant != null) {
+                            returnValue = sawConstant; 
+                        } else {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            returnValue = (Integer) item.getConstant();
+                        }
+                        
+                        if (returnValue == null) {
+                            indeterminate = true;
+                        } else {
+                            int v = returnValue.intValue();
+                            if (v < 0) {
+                                seenNegative = true;
+                                if (getPC() > furthestBranchTarget) {
+                                    seenUnconditionalNonZero = true;
+                                }
+                            } else if (v > 0) {
+                                seenPositive = true;
+                                if (getPC() > furthestBranchTarget) {
+                                    seenUnconditionalNonZero = true;
+                                }
+                            } else {
+                                seenZero = true;
+                            }
+                        }
+                    } else
                         indeterminate = true;
-                    else {
-                        int v = returnValue.intValue();
-                        if (v < 0)
-                            seenNegative = true;
-                        else if (v > 0)
-                            seenPositive = true;
-                        else
-                            seenZero = true;
-                    }
-                } else
-                    indeterminate = true;
-            } else if ((seen == GOTO) || (seen == GOTO_W)) {
-                if (stack.getStackDepth() > 0)
-                    indeterminate = true;
-            } else if (seen == ATHROW) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    String exSig = item.getSignature();
-                    if ("Ljava/lang/UnsupportedOperationException;".equals(exSig)) {
+                    
+                    sawConstant = null;
+                }
+                break;
+                
+                case GOTO:
+                case GOTO_W: {
+                    if (stack.getStackDepth() > 0)
                         indeterminate = true;
+                    if (furthestBranchTarget < getBranchTarget()) {
+                        furthestBranchTarget = getBranchTarget();
                     }
                 }
+                break;
+                
+                case IFEQ:
+                case IFNE:
+                case IFLT:
+                case IFGE:
+                case IFGT:
+                case IFLE:
+                case IF_ICMPEQ:
+                case IF_ICMPNE:
+                case IF_ICMPLT:
+                case IF_ICMPGE:
+                case IF_ICMPGT:
+                case IF_ICMPLE:
+                case IF_ACMPEQ:
+                case IF_ACMPNE: 
+                case IFNULL:
+                case IFNONNULL: {
+                    if (furthestBranchTarget < getBranchTarget()) {
+                        furthestBranchTarget = getBranchTarget();
+                    }
+                }
+                break;
+                
+                case LOOKUPSWITCH:
+                case TABLESWITCH: {
+                    int defTarget = getDefaultSwitchOffset() + getPC();
+                    if (furthestBranchTarget > defTarget) {
+                        furthestBranchTarget = defTarget;
+                    }
+                }
+                break;
+                
+                case ATHROW: {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        String exSig = item.getSignature();
+                        if ("Ljava/lang/UnsupportedOperationException;".equals(exSig)) {
+                            indeterminate = true;
+                        }
+                    }
+                }
+                break;
+                
+                /* these three opcodes are here because findbugs proper is broken, 
+                 * it sometimes doesn't push this constant on the stack, because of bad branch handling */
+                case ICONST_0:
+                    if (getNextOpcode() == IRETURN) {   
+                        sawConstant = Integer.valueOf(0);
+                    }
+                break;
+                
+                case ICONST_M1:
+                    if (getNextOpcode() == IRETURN) {   
+                        sawConstant = Integer.valueOf(-1);
+                    }
+                break;
+                
+                case ICONST_1:
+                    if (getNextOpcode() == IRETURN) {   
+                        sawConstant = Integer.valueOf(1);
+                    }
+                break;
+                    
             }
         } finally {
             stack.sawOpcode(this, seen);

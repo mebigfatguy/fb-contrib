@@ -2795,14 +2795,14 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="SC_SUSPICIOUS_COMPARATOR_RETURN_VALUES">
+	<BugPattern type="SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES">
 		<ShortDescription>Comparator method doesn't seem to return all ordering values</ShortDescription>
 		<LongDescription>Comparator method {1} doesn't seem to return all ordering values</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This compareTo or compare method returns constant values for to represent less than,
-			equals and greater than. However it does not return each type. Given that comparators
-			are transitive, this seems incorrect.</p>
+			equals and greater than. However it does not return each type, or it unconditionally returns a non zero value. 
+			Given that comparators are transitive, this seems incorrect.</p>
 			]]>
 		</Details>
 	</BugPattern>
