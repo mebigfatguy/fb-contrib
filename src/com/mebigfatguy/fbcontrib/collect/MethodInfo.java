@@ -34,6 +34,7 @@ public class MethodInfo {
     private byte immutabilityOrdinal;
     private byte declaredAccess;
     private byte isCalledType;
+    private boolean hasToString;
 
     public int getNumBytes() {
         return 0x0000FFFF & numMethodBytes;
@@ -100,6 +101,15 @@ public class MethodInfo {
 
     public void setImmutabilityType(ImmutabilityType imType) {
         immutabilityOrdinal = (byte) imType.ordinal();
+    }
+
+    
+    public boolean hasToString() {
+        return hasToString;
+    }
+
+    public void setHasToString() {
+        hasToString = true;
     }
 
     @Override

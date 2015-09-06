@@ -1546,6 +1546,18 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ImmatureClass">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for classes that are not fully complete from a usability point of view. Making them more difficult to use
+    		than should be. Things such as
+    		<UL>
+    		<LI>Missing toString() method</LI>
+    		</UL>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -4920,6 +4932,18 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="IMC_IMMATURE_CLASS_NO_TOSTRING">
+    	<ShortDescription>Class does not implement a toString method</ShortDescription>
+    	<LongDescription>Class {0} does not implement a toString method</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This class which has instance fields has no toString() method, which will make debugging with this
+    		class more difficult than it could be. Consider adding a method. Using libraries like commons-lang3 
+    		ToStringBuilder makes this process easy.
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5050,4 +5074,5 @@
 	<BugCode abbrev="CIS">Class Impersonating String</BugCode>
 	<BugCode abbrev="SLS">Suspicious Loop Search</BugCode>
 	<BugCode abbrev="CRF">Conflating Resources And Files</BugCode>
+	<BugCode abbrev="IMC">Immature Class</BugCode>
 </MessageCollection>

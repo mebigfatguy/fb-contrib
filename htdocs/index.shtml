@@ -94,6 +94,10 @@ function toggleBlock(divId, imgId)
     			Looks for string fields that appear to be built with parsing or calling
                 toString() on another object, or from objects that are fields.
                 </li>
+                <li><b>[IMC] Immature Class</b><br/>
+    			Looks for classes that are not fully implemented to be a well rounded class. While
+    			the class will likely work fine, it is more difficult to use or understand than necessary.
+                </li>
             </ul>
         </div>   
         <hr/>
