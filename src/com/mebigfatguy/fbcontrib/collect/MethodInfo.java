@@ -34,6 +34,8 @@ public class MethodInfo {
     private byte immutabilityOrdinal;
     private byte declaredAccess;
     private byte isCalledType;
+    private boolean hasEquals;
+    private boolean hasHashCode;
     private boolean hasToString;
 
     public int getNumBytes() {
@@ -104,6 +106,22 @@ public class MethodInfo {
     }
 
     
+    public boolean hasEquals() {
+        return hasEquals;
+    }
+
+    public void setHasEquals() {
+        hasEquals = true;
+    }
+
+    public boolean hasHashCode() {
+        return hasHashCode;
+    }
+
+    public void setHasHashCode() {
+        hasHashCode = true;
+    }
+
     public boolean hasToString() {
         return hasToString;
     }

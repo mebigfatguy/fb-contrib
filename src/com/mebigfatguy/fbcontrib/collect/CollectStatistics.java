@@ -87,6 +87,12 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                 }
             }
             
+            if ("equals".equals(getMethodName()) && "(Ljava/lang/Object;)Z".equals(getMethodSig())) {
+                mi.setHasEquals();
+            }
+            if ("hashCode".equals(getMethodName()) && "()I".equals(getMethodSig())) {
+                mi.setHasHashCode();
+            }
             if ("toString".equals(getMethodName()) && "()Ljava/lang/String;".equals(getMethodSig())) {
                 mi.setHasToString();
             }

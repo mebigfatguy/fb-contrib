@@ -40,9 +40,15 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                 for (Field f : cls.getFields()) {
                     if (!f.isStatic() && !f.isSynthetic()) {
                         
-                        if (!hasToStringInHierarchy(cls)) {
+                        if (!hasMethodInHierarchy(cls, "toString", "()Ljava/lang/String;")) {
                             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_TOSTRING.name(), LOW_PRIORITY)
                                                 .addClass(cls));
+                        } else if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z;")) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY)
+                                    .addClass(cls));
+                        } else if (!hasMethodInHierarchy(cls, "hashCode", "()I")) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_HASHCODE.name(), LOW_PRIORITY)
+                                    .addClass(cls));
                         }
                         break;
                     }
@@ -60,14 +66,17 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
     
     /**
      * looks to see if this class (or some class in its hierarchy (besides Object) has implemented
-     * the toString() method.
+     * the specified method.
      * 
      * @param cls the class to look in
+     * @param methodName the method name to look for
+     * @param methodSig the method signature to look for
+     * 
      * @return when toString is found
      * 
      * @throws ClassNotFoundException if a super class can't be found
      */
-    private boolean hasToStringInHierarchy(JavaClass cls) throws ClassNotFoundException {
+    private boolean hasMethodInHierarchy(JavaClass cls, String methodName, String methodSig) throws ClassNotFoundException {
         MethodInfo mi = null;
         
         do {
@@ -76,7 +85,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                 return false;
             }
             
-            mi = Statistics.getStatistics().getMethodStatistics(clsName, "toString", "()Ljava/lang/String;");
+            mi = Statistics.getStatistics().getMethodStatistics(clsName, methodName, methodSig);
             cls = cls.getSuperClass();
         } while ((mi != null) && !mi.hasToString());
         
