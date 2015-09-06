@@ -239,13 +239,18 @@ public class DubiousListCollection extends BytecodeScanningDetector {
         return null; // shouldn't happen
     }
 
+    /**
+     * holds information about fields and keeps counts of set methods called on them
+     */
     class FieldInfo {
         private int setCnt = 0;
         private SourceLineAnnotation slAnnotation = null;
 
-        public FieldInfo() {
-        }
-
+        /**
+         * increments the number of times this field has a set method called on it
+         *
+         * @param pc the current instruction offset
+         */
         public void addUse(final int pc) {
             setCnt++;
             if (slAnnotation == null)
