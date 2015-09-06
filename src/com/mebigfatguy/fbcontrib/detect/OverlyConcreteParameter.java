@@ -39,6 +39,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -360,7 +361,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         for (int i = 0; i < parms.length; i++) {
             String parm = parms[i].getSignature();
             if (parm.startsWith("L")) {
-                String clsName = parm.substring(1, parm.length() - 1).replace('/', '.');
+                String clsName = SignatureUtils.stripSignature(parm);
                 if (clsName.startsWith("java.lang.")) {
                     continue;
                 }
@@ -512,7 +513,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
 
     private void removeUselessDefiners(String parmSig, final int reg) {
         if (parmSig.startsWith("L")) {
-            parmSig = parmSig.substring(1, parmSig.length() - 1).replace('/', '.');
+            parmSig = SignatureUtils.stripSignature(parmSig);
             if (Values.JAVA_LANG_OBJECT.equals(parmSig)) {
                 parameterDefiners.remove(Integer.valueOf(reg));
                 return;

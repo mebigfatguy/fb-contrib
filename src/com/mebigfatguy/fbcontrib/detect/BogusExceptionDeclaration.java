@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -271,7 +272,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     String exSig = item.getSignature();
-                    String exClass = exSig.substring(1, exSig.length() - 1).replaceAll("/", ".");
+                    String exClass = SignatureUtils.stripSignature(exSig);
                     declaredCheckedExceptions.remove(exClass);
                 }
             }

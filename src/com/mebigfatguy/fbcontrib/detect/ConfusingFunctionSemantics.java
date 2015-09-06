@@ -32,6 +32,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -123,7 +124,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
                             parmRegs = RegisterUtils.getParameterRegisters(m);
                         }
 
-                        JavaClass parmClass = Repository.lookupClass(parmSignature.substring(1, parmSignature.length() - 1));
+                        JavaClass parmClass = Repository.lookupClass(SignatureUtils.stripSignature(parmSignature));
                         if ((parmRegs != null) && parmClass.instanceOf(returnClass)) {
                             possibleParmRegs.put(Integer.valueOf(parmRegs[p]), new ParmUsage());
                         }

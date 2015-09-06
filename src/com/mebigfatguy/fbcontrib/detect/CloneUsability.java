@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -105,7 +106,7 @@ public class CloneUsability extends BytecodeScanningDetector {
             if (m.isPublic() && !m.isSynthetic() && "clone".equals(m.getName()) && (m.getArgumentTypes().length == 0)) {
 
                 String returnClsName = m.getReturnType().getSignature();
-                returnClsName = returnClsName.substring(1, returnClsName.length() - 1).replaceAll("/", ".");
+                returnClsName = SignatureUtils.stripSignature(returnClsName);
                 if (!clsName.equals(returnClsName)) {
                     if (Values.JAVA_LANG_OBJECT.equals(returnClsName)) {
                         bugReporter.reportBug(

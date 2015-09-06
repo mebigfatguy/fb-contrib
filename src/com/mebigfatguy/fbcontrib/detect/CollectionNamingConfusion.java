@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -110,7 +111,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
             name = name.toLowerCase();
             if (name.endsWith("map") || (name.endsWith("set") && !name.endsWith("toset")) || name.endsWith("list") || name.endsWith("queue")) {
                 if (signature.startsWith("Ljava/util/")) {
-                    String clsName = signature.substring(1, signature.length() - 1);
+                    String clsName = SignatureUtils.stripSignature(signature);
                     JavaClass cls = Repository.lookupClass(clsName);
                     if (cls.implementationOf(MAP_CLASS) && !name.endsWith("map")) {
                         return true;

@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -483,7 +484,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(i);
                 String sig = item.getSignature();
                 if (sig.startsWith("L")) {
-                    String name = sig.substring(1, sig.length() - 1);
+                    String name = SignatureUtils.stripSignature(sig);
                     JavaClass cls = Repository.lookupClass(name);
                     if (cls.instanceOf(THROWABLE_CLASS))
                         return true;

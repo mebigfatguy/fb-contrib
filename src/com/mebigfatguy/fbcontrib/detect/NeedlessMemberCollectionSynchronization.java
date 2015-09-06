@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -167,7 +168,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
             String signature = obj.getSignature();
             if (signature.charAt(0) == 'L') {
                 try {
-                    JavaClass cls = Repository.lookupClass(signature.substring(1, signature.length() - 1));
+                    JavaClass cls = Repository.lookupClass(SignatureUtils.stripSignature(signature));
                     if (cls.implementationOf(collectionClass) || cls.implementationOf(mapClass)) {
                         FieldAnnotation fa = FieldAnnotation.fromVisitedField(this);
                         collectionFields.put(fa.getFieldName(), new FieldInfo(fa));

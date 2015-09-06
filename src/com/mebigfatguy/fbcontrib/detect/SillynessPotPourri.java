@@ -48,6 +48,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -779,7 +780,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             // (BUG)
             if (!"Ljava/lang/Object;".equals(itemSig) && !"Ljava/util/Calendar;".equals(itemSig) && !"Ljava/util/GregorianCalendar;".equals(itemSig)) {
                 try {
-                    JavaClass cls = Repository.lookupClass(itemSig.substring(1, itemSig.length() - 1));
+                    JavaClass cls = Repository.lookupClass(SignatureUtils.stripSignature(itemSig));
                     if (!cls.instanceOf(calendarClass)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.SPP_INVALID_CALENDAR_COMPARE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
