@@ -5,6 +5,7 @@ public class SCRV_Sample {
     public static final int T2 = 1;
 
     int t = 0;
+    int u = 0;
 
     class SampleComparator implements Comparator<SCRV_Sample> {
         @Override
@@ -21,6 +22,18 @@ public class SCRV_Sample {
         public int compareTo(SCRV_Sample arg0) {
             if (t == arg0.t)
                 return 0;
+
+            return 1;
+        }
+    }
+    
+    class UnconditionalNonZeroReturnComparable implements Comparable<SCRV_Sample> {
+        @Override
+        public int compareTo(SCRV_Sample arg0) {
+            if (t == arg0.t)
+                return 0;
+            else if (u < arg0.u)
+                return -1;
 
             return 1;
         }
