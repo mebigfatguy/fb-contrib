@@ -34,7 +34,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
-        if (!cls.getClassName().contains("$")) {
+        if ((!cls.isAbstract()) && !cls.getClassName().contains("$")) {
         
             try {
                 for (Field f : cls.getFields()) {
