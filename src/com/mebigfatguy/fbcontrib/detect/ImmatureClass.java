@@ -40,6 +40,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                 for (Field f : cls.getFields()) {
                     if (!f.isStatic() && !f.isSynthetic()) {
                         
+                        /* only report one of these, so as not to flood the report */
                         if (!hasMethodInHierarchy(cls, "toString", "()Ljava/lang/String;")) {
                             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_TOSTRING.name(), LOW_PRIORITY)
                                                 .addClass(cls));
