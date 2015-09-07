@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 
 /**
@@ -37,11 +38,13 @@ import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
  */
 public class SignatureUtils {
 
-    private static Set<String> TWO_SLOT_TYPES = new HashSet<String>();
+    private static final Set<String> TWO_SLOT_TYPES;
 
     static {
-        TWO_SLOT_TYPES.add("J");
-        TWO_SLOT_TYPES.add("D");
+        Set<String> tst = new HashSet<String>();
+        tst.add("J");
+        tst.add("D");
+        TWO_SLOT_TYPES = Collections.<String>unmodifiableSet(tst);
     }
 
     /**
