@@ -28,6 +28,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
@@ -42,25 +43,28 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class CollectMethodsReturningImmutableCollections extends BytecodeScanningDetector implements NonReportingDetector {
 
-    private static Set<String> IMMUTABLE_PRODUCING_METHODS = new HashSet<String>();
+    private static final Set<String> IMMUTABLE_PRODUCING_METHODS;
 
     static {
-        IMMUTABLE_PRODUCING_METHODS.add("com/google/common/Collect/Maps.immutableEnumMap");
-        IMMUTABLE_PRODUCING_METHODS.add("com/google/common/Collect/Maps.unmodifiableMap");
-        IMMUTABLE_PRODUCING_METHODS.add("com/google/common/Collect/Sets.immutableEnumSet");
-        IMMUTABLE_PRODUCING_METHODS.add("com/google/common/Collect/Sets.immutableCopy");
-        IMMUTABLE_PRODUCING_METHODS.add("java/util/Arrays.asList");
-        IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableCollection");
-        IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableSet");
-        IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableSortedSet");
-        IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableMap");
-        IMMUTABLE_PRODUCING_METHODS.add("java/util/Collections.unmodifiableList");
-        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Arrays.asList");
-        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableCollection");
-        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableSet");
-        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableSortedSet");
-        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableMap");
-        IMMUTABLE_PRODUCING_METHODS.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableList");
+        Set<String> ipm = new HashSet<String>();
+        ipm.add("com/google/common/Collect/Maps.immutableEnumMap");
+        ipm.add("com/google/common/Collect/Maps.unmodifiableMap");
+        ipm.add("com/google/common/Collect/Sets.immutableEnumSet");
+        ipm.add("com/google/common/Collect/Sets.immutableCopy");
+        ipm.add("java/util/Arrays.asList");
+        ipm.add("java/util/Collections.unmodifiableCollection");
+        ipm.add("java/util/Collections.unmodifiableSet");
+        ipm.add("java/util/Collections.unmodifiableSortedSet");
+        ipm.add("java/util/Collections.unmodifiableMap");
+        ipm.add("java/util/Collections.unmodifiableList");
+        ipm.add("edu/emory/mathcs/backport/java/util/Arrays.asList");
+        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableCollection");
+        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableSet");
+        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableSortedSet");
+        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableMap");
+        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableList");
+        
+        IMMUTABLE_PRODUCING_METHODS = Collections.<String>unmodifiableSet(ipm);
     }
 
     private BugReporter bugReporter;
