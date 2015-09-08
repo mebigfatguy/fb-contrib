@@ -33,6 +33,7 @@ import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
@@ -51,12 +52,14 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  */
 public class CommonsStringBuilderToString extends OpcodeStackDetector {
 
-    private static final Set<String> TOSTRINGBUILDER_CTOR_SIGS = new HashSet<String>();
+    private static final Set<String> TOSTRINGBUILDER_CTOR_SIGS;
 
     static {
-        TOSTRINGBUILDER_CTOR_SIGS.add("(Ljava/lang/Object;)V");
-        TOSTRINGBUILDER_CTOR_SIGS.add("(Ljava/lang/Object;Lorg/apache/commons/lang/builder/ToStringStyle;)V");
-        TOSTRINGBUILDER_CTOR_SIGS.add("(Ljava/lang/Object;Lorg/apache/commons/lang3/builder/ToStringStyle;)V");
+        Set<String> tsbcs = new HashSet<String>();
+        tsbcs.add("(Ljava/lang/Object;)V");
+        tsbcs.add("(Ljava/lang/Object;Lorg/apache/commons/lang/builder/ToStringStyle;)V");
+        tsbcs.add("(Ljava/lang/Object;Lorg/apache/commons/lang3/builder/ToStringStyle;)V");
+        TOSTRINGBUILDER_CTOR_SIGS = Collections.<String>unmodifiableSet(tsbcs);
     }
 
     private final BugReporter bugReporter;
