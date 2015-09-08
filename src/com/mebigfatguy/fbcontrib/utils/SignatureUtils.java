@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -29,7 +30,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
-import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 
 /**
