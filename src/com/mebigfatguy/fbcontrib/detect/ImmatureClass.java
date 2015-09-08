@@ -1,5 +1,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -37,21 +38,30 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         if ((!cls.isAbstract()) && !cls.getClassName().contains("$")) {
         
             try {
+                boolean clsHasRuntimeAnnotation = classHasRuntimeVisibleAnnotation(cls);
+
                 for (Field f : cls.getFields()) {
                     if (!f.isStatic() && !f.isSynthetic()) {
                         
-                        /* only report one of these, so as not to flood the report */
-                        if (!hasMethodInHierarchy(cls, "toString", "()Ljava/lang/String;")) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_TOSTRING.name(), LOW_PRIORITY)
-                                                .addClass(cls));
-                        } else if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z;")) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY)
-                                    .addClass(cls));
-                        } else if (!hasMethodInHierarchy(cls, "hashCode", "()I")) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_HASHCODE.name(), LOW_PRIORITY)
-                                    .addClass(cls));
+                        boolean fieldHasRuntimeAnnotation = fieldHasRuntimeVisibleAnnotation(f);
+                        if (!fieldHasRuntimeAnnotation) {
+                            /* only report one of these, so as not to flood the report */
+                            if (!hasMethodInHierarchy(cls, "toString", "()Ljava/lang/String;")) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_TOSTRING.name(), LOW_PRIORITY)
+                                                    .addClass(cls));
+                                return;    
+                            } else if (!clsHasRuntimeAnnotation) {
+                                if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z;")) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY)
+                                        .addClass(cls));
+                                    return;
+                                } else if (!hasMethodInHierarchy(cls, "hashCode", "()I")) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_HASHCODE.name(), LOW_PRIORITY)
+                                            .addClass(cls));
+                                    return;
+                                }
+                            }
                         }
-                        break;
                     }
                 }
             } catch (ClassNotFoundException cnfe) {
@@ -77,7 +87,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
      * 
      * @throws ClassNotFoundException if a super class can't be found
      */
-    private boolean hasMethodInHierarchy(JavaClass cls, String methodName, String methodSig) throws ClassNotFoundException {
+    private static boolean hasMethodInHierarchy(JavaClass cls, String methodName, String methodSig) throws ClassNotFoundException {
         MethodInfo mi = null;
         
         do {
@@ -91,6 +101,47 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         } while ((mi != null) && !mi.hasToString());
         
         return true;
+    }
+    
+    /**
+     * determins if class has a runtime annotation. If it does it is likely to be a singleton, or
+     * handled specially where hashCode/equals isn't of importance.
+     * 
+     * @param cls the class to check
+     * 
+     * @return if runtime annotations are found
+     */
+    private static boolean classHasRuntimeVisibleAnnotation(JavaClass cls) {
+        AnnotationEntry[] annotations = cls.getAnnotationEntries();
+        if (annotations != null) {
+            for (AnnotationEntry annotation : annotations) {
+                if (annotation.isRuntimeVisible()) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    /**
+     * looks to see the field has a runtime visible annotation, if it does it might be autowired
+     * or someother mechanism attached that makes them less interesting for a tostring call.
+     * 
+     * @param f the field to check
+     * @return if the field has a runtime visible annotation
+     */
+    private static boolean fieldHasRuntimeVisibleAnnotation(Field f) {
+        AnnotationEntry[] annotations = f.getAnnotationEntries();
+        if (annotations != null) {
+            for (AnnotationEntry annotation : annotations) {
+                if (annotation.isRuntimeVisible()) {
+                    return true;
+                }
+            }
+        }
+        
+        return false;
     }
     
     
