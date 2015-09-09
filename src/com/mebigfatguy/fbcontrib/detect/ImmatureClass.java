@@ -35,7 +35,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
-        if ((!cls.isAbstract()) && !cls.getClassName().contains("$")) {
+        if ((!cls.isAbstract()) && (!cls.isEnum()) && !cls.getClassName().contains("$")) {
         
             try {
                 boolean clsHasRuntimeAnnotation = classHasRuntimeVisibleAnnotation(cls);
