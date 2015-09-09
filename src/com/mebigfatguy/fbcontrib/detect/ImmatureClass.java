@@ -7,6 +7,7 @@ import org.apache.bcel.classfile.JavaClass;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -21,7 +22,6 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class ImmatureClass extends PreorderVisitor implements Detector {
 
     private BugReporter bugReporter;
-    private boolean hasToString;
     
     public ImmatureClass(BugReporter reporter) {
         bugReporter = reporter;
@@ -92,11 +92,11 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         
         do {
             String clsName = cls.getClassName();
-            if ("java.lang.Object".equals(clsName)) {
+            if (Values.JAVA_LANG_OBJECT.equals(clsName)) {
                 return false;
             }
             
-            mi = Statistics.getStatistics().getMethodStatistics(clsName, methodName, methodSig);
+            mi = Statistics.getStatistics().getMethodStatistics(clsName.replace('.', '/'), methodName, methodSig);
             cls = cls.getSuperClass();
         } while (mi.getNumBytes() == 0);
         
