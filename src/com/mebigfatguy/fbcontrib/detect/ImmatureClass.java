@@ -98,13 +98,13 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
             
             mi = Statistics.getStatistics().getMethodStatistics(clsName, methodName, methodSig);
             cls = cls.getSuperClass();
-        } while ((mi != null) && !mi.hasToString());
+        } while (mi.getNumBytes() == 0);
         
         return true;
     }
     
     /**
-     * determins if class has a runtime annotation. If it does it is likely to be a singleton, or
+     * determines if class has a runtime annotation. If it does it is likely to be a singleton, or
      * handled specially where hashCode/equals isn't of importance.
      * 
      * @param cls the class to check
