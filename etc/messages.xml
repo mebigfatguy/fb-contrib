@@ -4934,8 +4934,8 @@
     </BugPattern>
 
     <BugPattern type="IMC_IMMATURE_CLASS_NO_EQUALS">
-    	<ShortDescription>Class does not implement a equals method</ShortDescription>
-    	<LongDescription>Class {0} does not implement a equals method</LongDescription>
+    	<ShortDescription>Class does not implement an equals method</ShortDescription>
+    	<LongDescription>Class {0} does not implement an equals method</LongDescription>
     	<Details>
     		<![CDATA[
     		<p>This class which has instance fields has no equals(Object o) method, It is possible that this
