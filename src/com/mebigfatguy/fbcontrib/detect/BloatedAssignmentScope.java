@@ -57,33 +57,41 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 @CustomUserValue
 public class BloatedAssignmentScope extends BytecodeScanningDetector {
-    private static final Set<String> dangerousAssignmentClassSources = new HashSet<String>(7);
-    private static final Set<String> dangerousAssignmentMethodSources = new HashSet<String>(4);
-    private static final Set<Pattern> dangerousAssignmentMethodPatterns = new HashSet<Pattern>(1);
-    private static final Set<String> dangerousStoreClassSigs = new HashSet<String>(4);
+    private static final Set<String> dangerousAssignmentClassSources;
+    private static final Set<String> dangerousAssignmentMethodSources;
+    private static final Set<Pattern> dangerousAssignmentMethodPatterns;
+    private static final Set<String> dangerousStoreClassSigs;
 
     static {
-        dangerousAssignmentClassSources.add("java/io/BufferedInputStream");
-        dangerousAssignmentClassSources.add("java/io/DataInput");
-        dangerousAssignmentClassSources.add("java/io/DataInputStream");
-        dangerousAssignmentClassSources.add("java/io/InputStream");
-        dangerousAssignmentClassSources.add("java/io/ObjectInputStream");
-        dangerousAssignmentClassSources.add("java/io/BufferedReader");
-        dangerousAssignmentClassSources.add("java/io/FileReader");
-        dangerousAssignmentClassSources.add("java/io/Reader");
-        dangerousAssignmentClassSources.add("javax/nio/channels/Channel");
-        dangerousAssignmentClassSources.add("io/netty/channel/Channel");
+        Set<String> dacs = new HashSet<String>();
+        dacs.add("java/io/BufferedInputStream");
+        dacs.add("java/io/DataInput");
+        dacs.add("java/io/DataInputStream");
+        dacs.add("java/io/InputStream");
+        dacs.add("java/io/ObjectInputStream");
+        dacs.add("java/io/BufferedReader");
+        dacs.add("java/io/FileReader");
+        dacs.add("java/io/Reader");
+        dacs.add("javax/nio/channels/Channel");
+        dacs.add("io/netty/channel/Channel");
+        dangerousAssignmentClassSources = Collections.<String>unmodifiableSet(dacs);
 
-        dangerousAssignmentMethodSources.add("java/lang/System.currentTimeMillis()J");
-        dangerousAssignmentMethodSources.add("java/lang/System.nanoTime()J");
-        dangerousAssignmentMethodSources.add("java/util/Calendar.get(I)I");
-        dangerousAssignmentMethodSources.add("java/util/GregorianCalendar.get(I)I");
-        dangerousAssignmentMethodSources.add("java/util/Iterator.next()Ljava/lang/Object;");
-        dangerousAssignmentMethodSources.add("java/util/regex/Matcher.start()I");
+        Set<String> dams = new HashSet<String>();
+        dams.add("java/lang/System.currentTimeMillis()J");
+        dams.add("java/lang/System.nanoTime()J");
+        dams.add("java/util/Calendar.get(I)I");
+        dams.add("java/util/GregorianCalendar.get(I)I");
+        dams.add("java/util/Iterator.next()Ljava/lang/Object;");
+        dams.add("java/util/regex/Matcher.start()I");
+        dangerousAssignmentMethodSources = Collections.<String>unmodifiableSet(dams);
 
-        dangerousAssignmentMethodPatterns.add(Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE));
+        Set<Pattern> damp = new HashSet<Pattern>();
+        damp.add(Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE));
+        dangerousAssignmentMethodPatterns = Collections.<Pattern>unmodifiableSet(damp);
 
-        dangerousStoreClassSigs.add("Ljava/util/concurrent/Future;");
+        Set<String> dscs = new HashSet<String>();
+        dscs.add("Ljava/util/concurrent/Future;");
+        dangerousStoreClassSigs = Collections.<String>unmodifiableSet(dscs);
     }
 
     BugReporter bugReporter;
