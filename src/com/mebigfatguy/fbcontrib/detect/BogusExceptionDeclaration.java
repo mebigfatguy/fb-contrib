@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -47,21 +48,24 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     private static JavaClass runtimeExceptionClass;
     private static JavaClass exceptionClass;
-    private static final Set<String> safeClasses = new HashSet<String>(8);
+    private static final Set<String> safeClasses;
 
     static {
-        try {
-            safeClasses.add("java/lang/Object");
-            safeClasses.add("java/lang/String");
-            safeClasses.add("java/lang/Integer");
-            safeClasses.add("java/lang/Long");
-            safeClasses.add("java/lang/Float");
-            safeClasses.add("java/lang/Double");
-            safeClasses.add("java/lang/Short");
-            safeClasses.add("java/lang/Boolean");
+        Set<String> sc = new HashSet<String>();
+        sc.add("java/lang/Object");
+        sc.add("java/lang/String");
+        sc.add("java/lang/Integer");
+        sc.add("java/lang/Long");
+        sc.add("java/lang/Float");
+        sc.add("java/lang/Double");
+        sc.add("java/lang/Short");
+        sc.add("java/lang/Boolean");
+        safeClasses = Collections.<String>unmodifiableSet(sc);
 
+        try {
             runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
             exceptionClass = Repository.lookupClass("java/lang/Exception");
+
         } catch (ClassNotFoundException cnfe) {
             runtimeExceptionClass = null;
             exceptionClass = null;
