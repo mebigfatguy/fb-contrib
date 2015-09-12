@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -49,12 +50,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class ClassEnvy extends BytecodeScanningDetector {
     private static final String ENVY_PERCENT_PROPERTY = "fb-contrib.ce.percent";
-    private static final Set<String> ignorableInterfaces = new HashSet<String>(3);
+    private static final Set<String> ignorableInterfaces;
 
     static {
-        ignorableInterfaces.add("java.io.Serializable");
-        ignorableInterfaces.add("java.lang.Cloneable");
-        ignorableInterfaces.add("java.lang.Comparable");
+        Set<String> ii = new HashSet<String>();
+        ii.add("java.io.Serializable");
+        ii.add("java.lang.Cloneable");
+        ii.add("java.lang.Comparable");
+        ignorableInterfaces = Collections.<String>unmodifiableSet(ii);
     }
 
     private static final Comparator<Map.Entry<String, Set<Integer>>> ACCESS_COUNT_COMPARATOR = new Comparator<Map.Entry<String, Set<Integer>>>() {
