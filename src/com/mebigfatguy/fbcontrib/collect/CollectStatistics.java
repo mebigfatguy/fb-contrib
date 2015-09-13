@@ -27,21 +27,24 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
-    private static Set<String> COMMON_METHOD_SIGS = new HashSet<String>();
+    private static final Set<String> COMMON_METHOD_SIGS;
 
     static {
-        COMMON_METHOD_SIGS.add("\\<init\\>\\(\\)V");
-        COMMON_METHOD_SIGS.add("toString\\(\\)Ljava/lang/String;");
-        COMMON_METHOD_SIGS.add("hashCode\\(\\)I");
-        COMMON_METHOD_SIGS.add("clone\\(\\).*");
-        COMMON_METHOD_SIGS.add("values\\(\\).*");
-        COMMON_METHOD_SIGS.add("main\\(\\[Ljava/lang/String;\\)V");
+        Set<String> cms = new HashSet<String>();
+        cms.add("\\<init\\>\\(\\)V");
+        cms.add("toString\\(\\)Ljava/lang/String;");
+        cms.add("hashCode\\(\\)I");
+        cms.add("clone\\(\\).*");
+        cms.add("values\\(\\).*");
+        cms.add("main\\(\\[Ljava/lang/String;\\)V");
+        COMMON_METHOD_SIGS = Collections.<String>unmodifiableSet(cms);
     }
 
     private int numMethodCalls;
