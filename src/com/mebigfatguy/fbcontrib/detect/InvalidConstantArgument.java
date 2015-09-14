@@ -100,6 +100,11 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * overrides the visitor to initialize the opcode stack
+     * 
+     * @param classContext the context of the currently parsed class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -110,6 +115,11 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * overrides the visitor to reset the opcode stack
+     * 
+     * @param obj the currently parsed method
+     */
     @Override
     public void visitMethod(Method obj) {
         stack.resetForMethodEntry(this);
@@ -153,6 +163,12 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * holds information about parameters that expect constant values that 
+     * should have been enums but were created pre enums.  It specifies the
+     * legal values, and what offset from the start or end of the method the parm
+     * is
+     */
     static class ParameterInfo<T extends Comparable<?>> {
         private int parameterOffset;
         private boolean fromStart;
