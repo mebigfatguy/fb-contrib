@@ -56,8 +56,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class LoggerOddities extends BytecodeScanningDetector {
     private static JavaClass THROWABLE_CLASS;
     private static Set<String> LOGGER_METHODS;
-    private static Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
-    private static Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
+    private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
+    private static final Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
 
     static {
         try {
