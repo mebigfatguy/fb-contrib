@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -40,17 +41,19 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class ConfusingArrayAsList extends BytecodeScanningDetector {
 
-    private static Set<String> PRIMITIVE_ARRAYS = new HashSet<String>(8);
+    private static final Set<String> PRIMITIVE_ARRAYS;
 
     static {
-        PRIMITIVE_ARRAYS.add("[[B");
-        PRIMITIVE_ARRAYS.add("[[C");
-        PRIMITIVE_ARRAYS.add("[[S");
-        PRIMITIVE_ARRAYS.add("[[I");
-        PRIMITIVE_ARRAYS.add("[[J");
-        PRIMITIVE_ARRAYS.add("[[F");
-        PRIMITIVE_ARRAYS.add("[[D");
-        PRIMITIVE_ARRAYS.add("[[Z");
+        Set<String> pa = new HashSet<String>();
+        pa.add("[[B");
+        pa.add("[[C");
+        pa.add("[[S");
+        pa.add("[[I");
+        pa.add("[[J");
+        pa.add("[[F");
+        pa.add("[[D");
+        pa.add("[[Z");
+        PRIMITIVE_ARRAYS = Collections.<String> unmodifiableSet(pa);
     }
 
     private BugReporter bugReporter;
