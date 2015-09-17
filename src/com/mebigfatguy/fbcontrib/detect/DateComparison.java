@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -39,12 +40,14 @@ public class DateComparison extends BytecodeScanningDetector {
         SAW_NOTHING, SAW_LOAD1_1, SAW_LOAD1_2, SAW_CMP1, SAW_IFNE, SAW_LOAD2_1, SAW_LOAD2_2, SAW_CMP2
     }
 
-    private static final Set<String> dateClasses = new HashSet<String>(3);
+    private static final Set<String> dateClasses;
 
     static {
-        dateClasses.add("java.util.Date");
-        dateClasses.add("java.sql.Date");
-        dateClasses.add("java.sql.Timestamp");
+        Set<String> dc = new HashSet<String>();
+        dc.add("java.util.Date");
+        dc.add("java.sql.Date");
+        dc.add("java.sql.Timestamp");
+        dateClasses = Collections.unmodifiableSet(dc);
     }
 
     private final BugReporter bugReporter;
