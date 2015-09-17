@@ -205,18 +205,20 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
             case INVOKEINTERFACE:
             case INVOKESPECIAL:
             case INVOKESTATIC: {
-                String sig = getSigConstantOperand();
-                Type[] args = Type.getArgumentTypes(sig);
-                if (stack.getStackDepth() >= args.length) {
-                    for (int i = 0; i < args.length; i++) {
-                        Type t = args[i];
-                        String argSig = t.getSignature();
-                        if ((argSig.length() > 0) && (argSig.charAt(0) == '[')) {
-                            OpcodeStack.Item itm = stack.getStackItem(args.length - i - 1);
-                            int arrayReg = itm.getRegisterNumber();
-                            WrapperInfo wi = wrappers.get(Integer.valueOf(arrayReg));
-                            if (wi != null)
-                                wi.wasArg = true;
+                if (!("invoke".equals(getNameConstantOperand()) && "java/lang/reflect/Method".equals(getClassConstantOperand()))) {
+                    String sig = getSigConstantOperand();
+                    Type[] args = Type.getArgumentTypes(sig);
+                    if (stack.getStackDepth() >= args.length) {
+                        for (int i = 0; i < args.length; i++) {
+                            Type t = args[i];
+                            String argSig = t.getSignature();
+                            if ((argSig.length() > 0) && (argSig.charAt(0) == '[')) {
+                                OpcodeStack.Item itm = stack.getStackItem(args.length - i - 1);
+                                int arrayReg = itm.getRegisterNumber();
+                                WrapperInfo wi = wrappers.get(Integer.valueOf(arrayReg));
+                                if (wi != null)
+                                    wi.wasArg = true;
+                            }
                         }
                     }
                 }
