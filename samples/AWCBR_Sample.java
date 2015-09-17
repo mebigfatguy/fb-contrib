@@ -1,3 +1,7 @@
+import java.lang.reflect.Method;
+import java.util.HashSet;
+import java.util.Set;
+
 public class AWCBR_Sample {
     public void m(int[] v) {
         v[0]++;
@@ -23,5 +27,16 @@ public class AWCBR_Sample {
         int[] data = new int[] { i };
         i = data[0];
         return i;
+    }
+    
+    public boolean testFPInvoke(Method m) throws Exception {
+        
+        Set<String> s = new HashSet<String>();
+        Object[] args = new Object[] { s };
+        m.invoke(this, args);
+        
+        s = (Set<String>) args[0];
+        
+        return s.isEmpty();
     }
 }
