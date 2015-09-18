@@ -182,15 +182,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.FinalParameters">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that correctly do not write to a parameter. To help document this, and to perhaps
-			help the JVM optimize the invocation of this method, you should consider defining these parameters
-			as final.</p>
-			
-			<p>Performance gains are debatable as "the final keyword does not appear in the class file for 
-			local variables and parameters, thus it cannot impact the runtime performance. It's only use 
-			is to clarify the coders intent that the variable not be changed (which many consider dubious 
-			reason for its usage), and dealing with anonymous inner classes." - http://stackoverflow.com/a/266981/1447621</p>
-			
+			<p>Looks for methods that correctly do not write to a parameter. To help document this you should consider 
+			defining these parameters as final.</p>
 			<p>It is a slow detector.</p>
 			]]>
 		</Details>
