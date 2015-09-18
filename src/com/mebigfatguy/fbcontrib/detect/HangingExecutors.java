@@ -55,21 +55,25 @@ import edu.umd.cs.findbugs.ba.XMethod;
  */
 public class HangingExecutors extends BytecodeScanningDetector {
 
-    private static final Set<String> hangableSig = new HashSet<String>();
+    private static final Set<String> hangableSig;
 
     static {
-        hangableSig.add("Ljava/util/concurrent/ExecutorService;");
-        hangableSig.add("Ljava/util/concurrent/AbstractExecutorService;");
-        hangableSig.add("Ljava/util/concurrent/ForkJoinPool;");
-        hangableSig.add("Ljava/util/concurrent/ScheduledThreadPoolExecutor;");
-        hangableSig.add("Ljava/util/concurrent/ThreadPoolExecutor;");
+        Set<String> hs = new HashSet<String>();
+        hs.add("Ljava/util/concurrent/ExecutorService;");
+        hs.add("Ljava/util/concurrent/AbstractExecutorService;");
+        hs.add("Ljava/util/concurrent/ForkJoinPool;");
+        hs.add("Ljava/util/concurrent/ScheduledThreadPoolExecutor;");
+        hs.add("Ljava/util/concurrent/ThreadPoolExecutor;");
+        hangableSig = Collections.unmodifiableSet(hs);
     }
 
-    private static final Set<String> shutdownMethods = new HashSet<String>();
+    private static final Set<String> shutdownMethods;
 
     static {
-        shutdownMethods.add("shutdown");
-        shutdownMethods.add("shutdownNow");
+        Set<String> sm = new HashSet<String>();
+        sm.add("shutdown");
+        sm.add("shutdownNow");
+        shutdownMethods = Collections.unmodifiableSet(sm);
     }
 
     private final BugReporter bugReporter;
