@@ -2,7 +2,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CIS_Sample {
+public class STT_Sample {
 
     enum Sample {
         Hi, Lo

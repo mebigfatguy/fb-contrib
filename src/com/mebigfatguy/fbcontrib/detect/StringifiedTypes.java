@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * toString() on another object, or from objects that are fields.
  */
 @CustomUserValue
-public class ClassImpersonatingString extends BytecodeScanningDetector {
+public class StringifiedTypes extends BytecodeScanningDetector {
 
     private static Map<CollectionMethod, int[]> COLLECTION_PARMS = new HashMap<CollectionMethod, int[]>();
 
@@ -88,7 +88,7 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private BitSet toStringStringBuilders;
 
-    public ClassImpersonatingString(BugReporter reporter) {
+    public StringifiedTypes(BugReporter reporter) {
         bugReporter = reporter;
     }
 
@@ -168,7 +168,7 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
                         if (stack.getStackDepth() > parmTypes.length) {
                             OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
                             if ((item.getXField() != null) || FROM_FIELD.equals(item.getUserValue())) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.CIS_STRING_PARSING_A_FIELD.name(), priority.intValue()).addClass(this)
+                                bugReporter.reportBug(new BugInstance(this, BugType.STT_STRING_PARSING_A_FIELD.name(), priority.intValue()).addClass(this)
                                         .addMethod(this).addSourceLine(this));
                             }
                         }
@@ -193,7 +193,7 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
                                 if (parm >= 0) {
                                     item = stack.getStackItem(parm);
                                     if (TO_STRING.equals(item.getUserValue())) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.CIS_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this)
+                                        bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this)
                                                 .addMethod(this).addSourceLine(this));
                                         break;
                                     }
@@ -211,7 +211,7 @@ public class ClassImpersonatingString extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     if ("toString".equals(item.getUserValue())) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CIS_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
                     }
                 }

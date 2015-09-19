@@ -90,7 +90,7 @@ function toggleBlock(divId, imgId)
     		    Looks for methods that are declared more permissively than the code is using. For instance, declaring
     			a method public, when it could just be declared private.
     			</li>
-    			<li><b>[CIS] Class Impersonating String</b><br/>
+    			<li><b>[STT] Stringified Types</b><br/>
     			Looks for string fields that appear to be built with parsing or calling
                 toString() on another object, or from objects that are fields.
                 </li>
