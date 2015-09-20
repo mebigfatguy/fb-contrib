@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -51,18 +52,20 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * public void test(Character c)
  * </pre>
  *
- * but instead maps to one that takes an int long, float or double.
+ * but instead maps to one that takes an int, long, float or double.
  */
 public class ConfusingAutoboxedOverloading extends PreorderVisitor implements Detector {
     private static final int JDK15_MAJOR = 49;
 
-    private static final Set<String> primitiveSigs = new HashSet<String>(4);
+    private static final Set<String> primitiveSigs;
 
     static {
-        primitiveSigs.add("I");
-        primitiveSigs.add("J");
-        primitiveSigs.add("D");
-        primitiveSigs.add("F");
+        Set<String> ps = new HashSet<String>();
+        ps.add("I");
+        ps.add("J");
+        ps.add("D");
+        ps.add("F");
+        primitiveSigs = Collections.unmodifiableSet(ps);
     }
 
     private final BugReporter bugReporter;
