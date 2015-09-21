@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,19 +50,21 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * to have the method be a void method, to avoid confusion.
  */
 public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
-    private static final Set<String> knownImmutables = new HashSet<String>(10);
+    private static final Set<String> knownImmutables;
 
     static {
-        knownImmutables.add("Ljava/lang/String;");
-        knownImmutables.add("Ljava/lang/Byte;");
-        knownImmutables.add("Ljava/lang/Character;");
-        knownImmutables.add("Ljava/lang/Short;");
-        knownImmutables.add("Ljava/lang/Integer;");
-        knownImmutables.add("Ljava/lang/Long;");
-        knownImmutables.add("Ljava/lang/Float;");
-        knownImmutables.add("Ljava/lang/Double;");
-        knownImmutables.add("Ljava/lang/Boolean;");
-        knownImmutables.add("Ljava/lang/Class;");
+        Set<String> ki = new HashSet<String>();
+        ki.add("Ljava/lang/String;");
+        ki.add("Ljava/lang/Byte;");
+        ki.add("Ljava/lang/Character;");
+        ki.add("Ljava/lang/Short;");
+        ki.add("Ljava/lang/Integer;");
+        ki.add("Ljava/lang/Long;");
+        ki.add("Ljava/lang/Float;");
+        ki.add("Ljava/lang/Double;");
+        ki.add("Ljava/lang/Boolean;");
+        ki.add("Ljava/lang/Class;");
+        knownImmutables = Collections.unmodifiableSet(ki);
     }
 
     private final BugReporter bugReporter;
