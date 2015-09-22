@@ -54,6 +54,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
 
     static {
         ubiquitousMethods.add("java.lang.String.split(Ljava/lang/String;)[Ljava/lang/String;");
+        ubiquitousMethods.add("java.lang.String.split(Ljava/lang/String;I)[Ljava/lang/String;");
 
         try {
             INVOCATIONHANDLER_CLASS = Repository.lookupClass("java/lang/reflect/InvocationHandler");
