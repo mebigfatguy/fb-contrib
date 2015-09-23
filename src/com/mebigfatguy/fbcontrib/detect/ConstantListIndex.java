@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -49,12 +50,14 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     }
 
     private static final String MAX_ICONST0_LOOP_DISTANCE_PROPERTY = "fb-contrib.cli.maxloopdistance";
-    private static final Set<String> ubiquitousMethods = new HashSet<String>(2);
+    private static final Set<String> ubiquitousMethods;
     private static JavaClass INVOCATIONHANDLER_CLASS;
 
     static {
-        ubiquitousMethods.add("java.lang.String.split(Ljava/lang/String;)[Ljava/lang/String;");
-        ubiquitousMethods.add("java.lang.String.split(Ljava/lang/String;I)[Ljava/lang/String;");
+        Set<String> um = new HashSet<String>();
+        um.add("java.lang.String.split(Ljava/lang/String;)[Ljava/lang/String;");
+        um.add("java.lang.String.split(Ljava/lang/String;I)[Ljava/lang/String;");
+        ubiquitousMethods = Collections.unmodifiableSet(um);
 
         try {
             INVOCATIONHANDLER_CLASS = Repository.lookupClass("java/lang/reflect/InvocationHandler");
