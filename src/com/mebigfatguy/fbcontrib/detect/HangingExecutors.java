@@ -318,8 +318,8 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
 class LocalHangingExecutor extends LocalTypeDetector {
 
-    private static final Map<String, Set<String>> watchedClassMethods = new HashMap<String, Set<String>>();
-    private static final Map<String, Integer> syncCtors = new HashMap<String, Integer>();
+    private static final Map<String, Set<String>> watchedClassMethods;
+    private static final Map<String, Integer> syncCtors;
 
     static {
         Set<String> forExecutors = new HashSet<String>();
@@ -328,10 +328,14 @@ class LocalHangingExecutor extends LocalTypeDetector {
         forExecutors.add("newScheduledThreadPool");
         forExecutors.add("newSingleThreadExecutor");
 
-        watchedClassMethods.put("java/util/concurrent/Executors", forExecutors);
+        Map<String, Set<String>> wcm = new HashMap<String, Set<String>>();
+        wcm.put("java/util/concurrent/Executors", forExecutors);
+        watchedClassMethods = Collections.unmodifiableMap(wcm);
 
-        syncCtors.put("java/util/concurrent/ThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
-        syncCtors.put("java/util/concurrent/ScheduledThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
+        Map<String, Integer> sc = new HashMap<String, Integer>();
+        sc.put("java/util/concurrent/ThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
+        sc.put("java/util/concurrent/ScheduledThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
+        syncCtors = Collections.unmodifiableMap(sc);
     }
 
     private final BugReporter bugReporter;
