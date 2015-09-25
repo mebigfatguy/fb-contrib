@@ -60,6 +60,11 @@ class New {
     public void fpNoAssertsWithJUnitExpects() {
         throw new RuntimeException();
     }
+    
+    @Test
+    public void usingOldClasses(int x) {
+        junit.framework.Assert.assertEquals(0,  x);
+    }
 }
 
 class TestNG {

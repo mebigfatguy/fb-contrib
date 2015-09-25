@@ -69,6 +69,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private boolean sawAssert;
     private State state;
     private TestFrameworkType frameworkType;
+    private boolean hasAnnotation;
 
     /**
      * constructs a JOA detector given the reporter to report bugs on
@@ -125,7 +126,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         Method m = getMethod();
         frameworkType = isTestCaseDerived && m.getName().startsWith("test") ? TestFrameworkType.JUNIT : TestFrameworkType.UNKNOWN;
-
+        hasAnnotation = false;
+        
         if ((frameworkType == TestFrameworkType.UNKNOWN) && isAnnotationCapable) {
             AnnotationEntry[] annotations = m.getAnnotationEntries();
             if (annotations != null) {
@@ -134,9 +136,11 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                     if (annotation.isRuntimeVisible()) {
                         if (TEST_ANNOTATION_SIGNATURE.equals(annotationType)) {
                             frameworkType = TestFrameworkType.JUNIT;
+                            hasAnnotation = true;
                             break;
                         } else if (TESTNG_ANNOTATION_SIGNATURE.equals(annotationType)) {
                             frameworkType = TestFrameworkType.TESTNG;
+                            hasAnnotation = true;
                             break;
                         }
                     }
@@ -167,7 +171,14 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             if (seen == INVOKESTATIC) {
                 String clsName = getClassConstantOperand();
                 if (OLD_ASSERT_CLASS.equals(clsName) || NEW_ASSERT_CLASS.equals(clsName) || NG_JUNIT_ASSERT_CLASS.equals(clsName)) {
+                    
                     sawAssert = true;
+                    
+                    if ((hasAnnotation && OLD_ASSERT_CLASS.equals(clsName) && frameworkType == TestFrameworkType.JUNIT)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USING_DEPRECATED.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
+                    }
+                    
                     String methodName = getNameConstantOperand();
                     if ("assertEquals".equals(methodName)) {
                         String signature = getSigConstantOperand();

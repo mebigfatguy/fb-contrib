@@ -3530,6 +3530,17 @@
 		</Details>
 	</BugPattern>
 	
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USING_DEPRECATED">
+		<ShortDescription>JUnit 4 test using deprecated junit.framework.* classes</ShortDescription>
+		<LongDescription>JUnit 4 test {1} using deprecated junit.framework.* classes</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This JUnit 4 test is still using classes from the junit.framework.* package. You should switch them
+			over to the corresponding org.junit.* set of classes, instead</p>
+			]]>
+		</Details>
+	</BugPattern>
+	
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
 		<ShortDescription>TestNG test method passes constant to first (actual) assertion parameter</ShortDescription>
 		<LongDescription>TestNG test method {1} passes constant to forst (actual) assertion parameter</LongDescription>
