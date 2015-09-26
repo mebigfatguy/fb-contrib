@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -49,24 +50,28 @@ import edu.umd.cs.findbugs.ba.XField;
  * the case that order is important, consider using LinkedHashSet.
  */
 public class DubiousListCollection extends BytecodeScanningDetector {
-    private static Set<String> setMethods = new HashSet<String>(6);
-    private static Set<String> listMethods = new HashSet<String>(8);
+    private static final Set<String> setMethods;
+    private static final Set<String> listMethods;
 
     static {
-        setMethods.add("contains(Ljava/lang/Object;)Z");
-        setMethods.add("containsAll(Ljava/util/Collection;)Z");
-        setMethods.add("remove(Ljava/lang/Object;)Ljava/lang/Object;");
-        setMethods.add("removeAll(Ljava/util/Collection;)Z");
-        setMethods.add("retainAll(Ljava/util/Collection;)Z");
+        Set<String> sm = new HashSet<String>();
+        sm.add("contains(Ljava/lang/Object;)Z");
+        sm.add("containsAll(Ljava/util/Collection;)Z");
+        sm.add("remove(Ljava/lang/Object;)Ljava/lang/Object;");
+        sm.add("removeAll(Ljava/util/Collection;)Z");
+        sm.add("retainAll(Ljava/util/Collection;)Z");
+        setMethods = Collections.<String>unmodifiableSet(sm);
 
-        listMethods.add("add(ILjava/lang/Object;)V");
-        listMethods.add("addAll(ILjava/util/Collection;)Z");
-        listMethods.add("lastIndexOf(Ljava/lang/Object;)I");
-        listMethods.add("remove(I)Ljava/lang/Object;");
-        listMethods.add("set(ILjava/lang/Object;)Ljava/lang/Object;");
-        listMethods.add("subList(II)Ljava/util/List;");
-        listMethods.add("listIterator()Ljava/util/ListIterator;");
-        listMethods.add("listIterator(I)Ljava/util/ListIterator;");
+        Set<String> lm = new HashSet<String>();
+        lm.add("add(ILjava/lang/Object;)V");
+        lm.add("addAll(ILjava/util/Collection;)Z");
+        lm.add("lastIndexOf(Ljava/lang/Object;)I");
+        lm.add("remove(I)Ljava/lang/Object;");
+        lm.add("set(ILjava/lang/Object;)Ljava/lang/Object;");
+        lm.add("subList(II)Ljava/util/List;");
+        lm.add("listIterator()Ljava/util/ListIterator;");
+        lm.add("listIterator(I)Ljava/util/ListIterator;");
+        listMethods = Collections.<String>unmodifiableSet(lm);
 
         // Theoretically get(i) and indexOf(Object) are list Methods but are so
         // abused, as to be meaningless
