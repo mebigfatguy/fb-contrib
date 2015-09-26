@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -46,11 +47,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
-    private static final Set<String> GRAPHICS_PRODUCERS = new HashSet<String>(2);
+    private static final Set<String> GRAPHICS_PRODUCERS;
 
     static {
-        GRAPHICS_PRODUCERS.add("java/awt/image/BufferedImage#getGraphics()Ljava/awt/Graphics;");
-        GRAPHICS_PRODUCERS.add("java/awt/Graphics#create()Ljava/awt/Graphics;");
+        Set<String> gp = new HashSet<String>();
+        gp.add("java/awt/image/BufferedImage#getGraphics()Ljava/awt/Graphics;");
+        gp.add("java/awt/Graphics#create()Ljava/awt/Graphics;");
+        GRAPHICS_PRODUCERS = Collections.<String>unmodifiableSet(gp);
     }
 
     private final BugReporter bugReporter;
