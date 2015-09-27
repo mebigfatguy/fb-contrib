@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -45,45 +46,49 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         NANOS, MICROS, MILLIS, SECONDS, MINUTES, HOURS, DAYS, CALLER
     };
 
-    private static Map<String, Units> TIME_UNIT_GENERATING_METHODS = new HashMap<String, Units>();
+    private static final Map<String, Units> TIME_UNIT_GENERATING_METHODS;
 
     static {
-        TIME_UNIT_GENERATING_METHODS.put("java/lang/System.currentTimeMillis()J", Units.MILLIS);
-        TIME_UNIT_GENERATING_METHODS.put("java/lang/System.nanoTime()J", Units.NANOS);
-        TIME_UNIT_GENERATING_METHODS.put("java/sql/Timestamp.getTime()J", Units.MILLIS);
-        TIME_UNIT_GENERATING_METHODS.put("java/sql/Timestamp.getNanos()I", Units.NANOS);
-        TIME_UNIT_GENERATING_METHODS.put("java/util/Date.getTime()J", Units.MILLIS);
-        TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toNanos(J)J", Units.NANOS);
-        TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toMicros(J)J", Units.MICROS);
-        TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toSeconds(J)J", Units.SECONDS);
-        TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toMinutes(J)J", Units.MINUTES);
-        TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
-        TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
-        TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
-        TIME_UNIT_GENERATING_METHODS.put("java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)J", Units.CALLER);
-        TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toNanos(J)J", Units.NANOS);
-        TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toMicros(J)J", Units.MICROS);
-        TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toSeconds(J)J", Units.SECONDS);
-        TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toMinutes(J)J", Units.MINUTES);
-        TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
-        TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
-        TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
-        TIME_UNIT_GENERATING_METHODS.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)J", Units.CALLER);
-        TIME_UNIT_GENERATING_METHODS.put("org/joda/time/base/BaseDuration.getMillis()J", Units.MILLIS);
-        TIME_UNIT_GENERATING_METHODS.put("org/joda/time/base/BaseInterval.getEndMillis()J", Units.MILLIS);
-        TIME_UNIT_GENERATING_METHODS.put("org/joda/time/base/BaseInterval.getStartMillis()J", Units.MILLIS);
+        Map<String, Units> tugm = new HashMap<String, Units>();
+        tugm.put("java/lang/System.currentTimeMillis()J", Units.MILLIS);
+        tugm.put("java/lang/System.nanoTime()J", Units.NANOS);
+        tugm.put("java/sql/Timestamp.getTime()J", Units.MILLIS);
+        tugm.put("java/sql/Timestamp.getNanos()I", Units.NANOS);
+        tugm.put("java/util/Date.getTime()J", Units.MILLIS);
+        tugm.put("java/util/concurrent/TimeUnit.toNanos(J)J", Units.NANOS);
+        tugm.put("java/util/concurrent/TimeUnit.toMicros(J)J", Units.MICROS);
+        tugm.put("java/util/concurrent/TimeUnit.toSeconds(J)J", Units.SECONDS);
+        tugm.put("java/util/concurrent/TimeUnit.toMinutes(J)J", Units.MINUTES);
+        tugm.put("java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
+        tugm.put("java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
+        tugm.put("java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
+        tugm.put("java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)J", Units.CALLER);
+        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toNanos(J)J", Units.NANOS);
+        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toMicros(J)J", Units.MICROS);
+        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toSeconds(J)J", Units.SECONDS);
+        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toMinutes(J)J", Units.MINUTES);
+        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
+        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
+        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
+        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)J", Units.CALLER);
+        tugm.put("org/joda/time/base/BaseDuration.getMillis()J", Units.MILLIS);
+        tugm.put("org/joda/time/base/BaseInterval.getEndMillis()J", Units.MILLIS);
+        tugm.put("org/joda/time/base/BaseInterval.getStartMillis()J", Units.MILLIS);
+        TIME_UNIT_GENERATING_METHODS = Collections.<String, Units> unmodifiableMap(tugm);
     }
 
-    private static Map<String, Units> TIMEUNIT_TO_UNITS = new HashMap<String, Units>();
+    private static final Map<String, Units> TIMEUNIT_TO_UNITS;
 
     static {
-        TIMEUNIT_TO_UNITS.put("NANOSECONDS", Units.NANOS);
-        TIMEUNIT_TO_UNITS.put("MICROSECONDS", Units.MICROS);
-        TIMEUNIT_TO_UNITS.put("MILLISECONDS", Units.MILLIS);
-        TIMEUNIT_TO_UNITS.put("SECONDS", Units.SECONDS);
-        TIMEUNIT_TO_UNITS.put("MINUTES", Units.MINUTES);
-        TIMEUNIT_TO_UNITS.put("HOURS", Units.HOURS);
-        TIMEUNIT_TO_UNITS.put("DAYS", Units.DAYS);
+        Map<String, Units> tutu = HashMap<String, Units>();
+        tutu.put("NANOSECONDS", Units.NANOS);
+        tutu.put("MICROSECONDS", Units.MICROS);
+        tutu.put("MILLISECONDS", Units.MILLIS);
+        tutu.put("SECONDS", Units.SECONDS);
+        tutu.put("MINUTES", Units.MINUTES);
+        tutu.put("HOURS", Units.HOURS);
+        tutu.put("DAYS", Units.DAYS);
+        TIMEUNIT_TO_UNITS = Collections.<String, Units>unmodifiableMap(tutu);
     }
 
     private BugReporter bugReporter;
