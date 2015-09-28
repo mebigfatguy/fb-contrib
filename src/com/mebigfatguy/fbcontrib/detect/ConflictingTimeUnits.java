@@ -80,7 +80,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
     private static final Map<String, Units> TIMEUNIT_TO_UNITS;
 
     static {
-        Map<String, Units> tutu = HashMap<String, Units>();
+        Map<String, Units> tutu = new HashMap<String, Units>();
         tutu.put("NANOSECONDS", Units.NANOS);
         tutu.put("MICROSECONDS", Units.MICROS);
         tutu.put("MILLISECONDS", Units.MILLIS);
