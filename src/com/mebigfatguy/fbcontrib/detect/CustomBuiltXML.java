@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -41,19 +42,22 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * Transformer.setParameter.
  */
 public class CustomBuiltXML extends BytecodeScanningDetector {
-    private static final Map<Pattern, Boolean> xmlPatterns = new HashMap<Pattern, Boolean>(10);
+    private static final Map<Pattern, Boolean> xmlPatterns;
 
     static {
-        xmlPatterns.put(Pattern.compile(".*<[a-zA-Z_](\\w)*>[^=]?.*"), Boolean.TRUE);
-        xmlPatterns.put(Pattern.compile(".*</[a-zA-Z_](\\w)*>[^=]?.*"), Boolean.TRUE);
-        xmlPatterns.put(Pattern.compile(".*<[a-zA-Z_](\\w)*/>[^=]?.*"), Boolean.TRUE);
-        xmlPatterns.put(Pattern.compile(".*<[^=]?(/)?$"), Boolean.TRUE);
-        xmlPatterns.put(Pattern.compile("^(/)?>.*"), Boolean.TRUE);
-        xmlPatterns.put(Pattern.compile(".*=(\\s)*[\"'].*"), Boolean.FALSE);
-        xmlPatterns.put(Pattern.compile("^[\"']>.*"), Boolean.TRUE);
-        xmlPatterns.put(Pattern.compile(".*<!\\[CDATA\\[.*", Pattern.CASE_INSENSITIVE), Boolean.TRUE);
-        xmlPatterns.put(Pattern.compile(".*\\]\\]>.*"), Boolean.TRUE);
-        xmlPatterns.put(Pattern.compile(".*xmlns:.*"), Boolean.TRUE);
+        Map<Pattern, Boolean> xp = new HashMap<Pattern, Boolean>();
+        xp.put(Pattern.compile(".*<[a-zA-Z_](\\w)*>[^=]?.*"), Boolean.TRUE);
+        xp.put(Pattern.compile(".*</[a-zA-Z_](\\w)*>[^=]?.*"), Boolean.TRUE);
+        xp.put(Pattern.compile(".*<[a-zA-Z_](\\w)*/>[^=]?.*"), Boolean.TRUE);
+        xp.put(Pattern.compile(".*<[^=]?(/)?$"), Boolean.TRUE);
+        xp.put(Pattern.compile("^(/)?>.*"), Boolean.TRUE);
+        xp.put(Pattern.compile(".*=(\\s)*[\"'].*"), Boolean.FALSE);
+        xp.put(Pattern.compile("^[\"']>.*"), Boolean.TRUE);
+        xp.put(Pattern.compile(".*<!\\[CDATA\\[.*", Pattern.CASE_INSENSITIVE), Boolean.TRUE);
+        xp.put(Pattern.compile(".*\\]\\]>.*"), Boolean.TRUE);
+        xp.put(Pattern.compile(".*xmlns:.*"), Boolean.TRUE);
+        
+        xmlPatterns = Collections.<Pattern, Boolean> unmodifiableMap(xp);
     }
 
     private static final String CBX_MIN_REPORTABLE_ITEMS = "fb-contrib.cbx.minxmlitems";
