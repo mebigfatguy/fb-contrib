@@ -43,6 +43,7 @@ import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
+import edu.emory.mathcs.backport.java.util.Collections;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -90,16 +91,18 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         collectionMethods.add("values()Ljava/lang/Collection;");
     }
 
-    private static final Map<String, Integer> modifyingMethods = new HashMap<String, Integer>(8);
+    private static final Map<String, Integer> modifyingMethods;
 
     static {
-        modifyingMethods.put("add(Ljava/lang/Object;)Z", Values.ONE);
-        modifyingMethods.put("addAll(Ljava/util/Collection;)Z", Values.ONE);
-        modifyingMethods.put("addAll(ILjava/util/Collection;)Z", Values.TWO);
-        modifyingMethods.put("clear()V", Values.ZERO);
-        modifyingMethods.put("remove(I)Ljava/lang/Object;", Values.ONE);
-        modifyingMethods.put("removeAll(Ljava/util/Collection;)Z", Values.ONE);
-        modifyingMethods.put("retainAll(Ljava/util/Collection;)Z", Values.ONE);
+        Map<String, Integer> mm = new HashMap<String, Integer>();
+        mm.put("add(Ljava/lang/Object;)Z", Values.ONE);
+        mm.put("addAll(Ljava/util/Collection;)Z", Values.ONE);
+        mm.put("addAll(ILjava/util/Collection;)Z", Values.TWO);
+        mm.put("clear()V", Values.ZERO);
+        mm.put("remove(I)Ljava/lang/Object;", Values.ONE);
+        mm.put("removeAll(Ljava/util/Collection;)Z", Values.ONE);
+        mm.put("retainAll(Ljava/util/Collection;)Z", Values.ONE);
+        modifyingMethods = Collections.<String, Integer>unmodifiableMap(mm);
     }
 
     private final BugReporter bugReporter;
