@@ -4963,6 +4963,20 @@
     	</Details>
     </BugPattern>
     
+    <BugPattern type="IMC_IMMATURE_CLASS_NO_PACKAGE">
+    	<ShortDescription>Class is defined in the default package</ShortDescription>
+    	<LongDescription>Class {0} id defined in the default package</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This class has been created in the default package. Classes should be defined in a 
+    		proper package structure, typically defined by the reverse of the domain name of the 
+    		owner of the code base. Putting code in the default (no) package limits it usefulness, and
+    		leaves it open to name collisions.
+    		</p>
+    		]]>
+    	</Details>
+    </BugPattern>
+    
     <BugPattern type="IMC_IMMATURE_CLASS_NO_TOSTRING">
     	<ShortDescription>Class does not implement a toString method</ShortDescription>
     	<LongDescription>Class {0} does not implement a toString method</LongDescription>

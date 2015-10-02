@@ -291,7 +291,7 @@
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.StringifiedTypes" speed="fast" reports="STT_STRING_PARSING_A_FIELD,STT_TOSTRING_STORED_IN_FIELD" />
 	
-	<Detector class="com.mebigfatguy.fbcontrib.detect.ImmatureClass" speed="fast" reports="IMC_IMMATURE_CLASS_NO_EQUALS,IMC_IMMATURE_CLASS_NO_HASHCODE,IMC_IMMATURE_CLASS_NO_TOSTRING" />	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ImmatureClass" speed="fast" reports="IMC_IMMATURE_CLASS_NO_EQUALS,IMC_IMMATURE_CLASS_NO_HASHCODE,IMC_IMMATURE_CLASS_NO_PACKAGE,IMC_IMMATURE_CLASS_NO_TOSTRING" />	
 	
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
@@ -531,6 +531,7 @@
 	<BugPattern abbrev="CRF" type="CRF_CONFLATING_RESOURCES_AND_FILES" category="CORRECTNESS" />
 	<BugPattern abbrev="IMC" type="IMC_IMMATURE_CLASS_NO_EQUALS" category="STYLE" />
 	<BugPattern abbrev="IMC" type="IMC_IMMATURE_CLASS_NO_HASHCODE" category="STYLE" />
+	<BugPattern abbrev="IMC" type="IMC_IMMATURE_CLASS_NO_PACKAGE" category="STYLE" />
 	<BugPattern abbrev="IMC" type="IMC_IMMATURE_CLASS_NO_TOSTRING" category="STYLE" />
 	
 </FindbugsPlugin>

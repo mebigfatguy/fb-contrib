@@ -35,6 +35,12 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
+        
+        if (cls.getPackageName().isEmpty()) {
+            bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_PACKAGE.name(), LOW_PRIORITY)
+                    .addClass(cls));
+        }
+        
         if ((!cls.isAbstract()) && (!cls.isEnum()) && !cls.getClassName().contains("$")) {
         
             try {
