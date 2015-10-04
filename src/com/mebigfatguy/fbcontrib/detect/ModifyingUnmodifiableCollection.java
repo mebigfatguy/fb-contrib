@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,18 +45,19 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
 
-    private static Map<String, Integer> MODIFYING_METHODS = null;
+    private static final Map<String, Integer> MODIFYING_METHODS;
 
     static {
-        MODIFYING_METHODS = new HashMap<String, Integer>();
-        MODIFYING_METHODS.put("add(Ljava/lang/Object;)Z", Values.ONE);
-        MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Z", Values.ONE);
-        MODIFYING_METHODS.put("addAll(Ljava/util/Collection;)Z", Values.ONE);
-        MODIFYING_METHODS.put("retainAll(Ljava/util/Collection;)Z", Values.ONE);
-        MODIFYING_METHODS.put("removeAll(Ljava/util/Collection;)Z", Values.ONE);
-        MODIFYING_METHODS.put("put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", Values.TWO);
-        MODIFYING_METHODS.put("remove(Ljava/lang/Object;)Ljava/lang/Object;", Values.ONE);
-        MODIFYING_METHODS.put("putAll(Ljava/util/Map;)V;", Values.ONE);
+        Map<String, Integer> mm = new HashMap<String, Integer>();
+        mm.put("add(Ljava/lang/Object;)Z", Values.ONE);
+        mm.put("remove(Ljava/lang/Object;)Z", Values.ONE);
+        mm.put("addAll(Ljava/util/Collection;)Z", Values.ONE);
+        mm.put("retainAll(Ljava/util/Collection;)Z", Values.ONE);
+        mm.put("removeAll(Ljava/util/Collection;)Z", Values.ONE);
+        mm.put("put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;", Values.TWO);
+        mm.put("remove(Ljava/lang/Object;)Ljava/lang/Object;", Values.ONE);
+        mm.put("putAll(Ljava/util/Map;)V;", Values.ONE);
+        MODIFYING_METHODS = Collections.<String, Integer>unmodifiableMap(mm);
     }
 
     private final BugReporter bugReporter;
