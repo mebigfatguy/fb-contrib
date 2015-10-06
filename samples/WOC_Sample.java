@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import com.google.common.collect.Sets;
+
 public class WOC_Sample {
     // tag WOC_WRITE_ONLY_COLLECTION_FIELD
     private final Set<String> memberSet = new HashSet<String>();
@@ -27,6 +29,16 @@ public class WOC_Sample {
     public void testWOCSimple() {
         // tag WOC_WRITE_ONLY_COLLECTION_LOCAL
         Set<String> s = new HashSet<String>();
+        s.add("Foo");
+        memberSet.add("fee");
+        if (fpSet.retainAll(new HashSet<String>())) {
+            System.out.println("woops");
+        }
+    }
+    
+    public void testGuavaWOCSimple() {
+        // tag WOC_WRITE_ONLY_COLLECTION_LOCAL
+        Set<String> s = Sets.newHashSet();
         s.add("Foo");
         memberSet.add("fee");
         if (fpSet.retainAll(new HashSet<String>())) {

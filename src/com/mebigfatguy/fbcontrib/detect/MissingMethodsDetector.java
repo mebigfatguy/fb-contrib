@@ -154,6 +154,8 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 sawInvokeInterfaceVirtual();
                 break;
             case INVOKESTATIC:
+                userObject = sawInvokeStatic(userObject);
+                //$FALL-THROUGH$
             case INVOKEDYNAMIC:
                 processMethodParms();
                 break;
@@ -331,6 +333,13 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         processMethodParms();
         return userObject;
     }
+    
+    private Object sawInvokeStatic(Object userObject) {
+        if (doesStaticFactoryReturnNeedToBeWatched(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand())) {
+            userObject = Boolean.TRUE;
+        }
+        return userObject;
+    }
 
     private void sawAStore(int seen) {
         int depth = stack.getStackDepth();
@@ -409,6 +418,8 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     protected abstract BugInstance makeLocalBugInstance();
 
     protected abstract boolean doesObjectNeedToBeWatched(String type);
+    
+    protected abstract boolean doesStaticFactoryReturnNeedToBeWatched(String clsName, String methodName, String signature);
 
     protected abstract boolean isMethodThatShouldBeCalled(String methodName);
 

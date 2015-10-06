@@ -88,6 +88,11 @@ public class HttpClientProblems extends MissingMethodsDetector {
     }
 
     @Override
+    protected boolean doesStaticFactoryReturnNeedToBeWatched(String clsName, String methodName, String signature) {
+        return false;
+    }
+
+    @Override
     protected boolean isMethodThatShouldBeCalled(String methodName) {
         return resetMethods.contains(methodName);
     }
