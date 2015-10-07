@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
  * required.
  */
 @Retention(RetentionPolicy.CLASS)
-@Target(ElementType.METHOD)
+@Target({ElementType.METHOD, ElementType.TYPE})
 public @interface PublicAPI {
     String value();
 }

@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+@PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
 public final class FQMethod {
     private String className;
     private String methodName;

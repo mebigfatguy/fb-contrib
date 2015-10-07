@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.PublicAPI;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -48,8 +49,8 @@ public class CharsetIssues extends BytecodeScanningDetector {
 
     private static final String CHARSET_SIG = "Ljava/nio/charset/Charset;";
 
-    private static final Map<String, Integer> REPLACEABLE_ENCODING_METHODS;
-    private static final Map<String, Integer> UNREPLACEABLE_ENCODING_METHODS;
+    private static final Map<FQMethod, Integer> REPLACEABLE_ENCODING_METHODS;
+    private static final Map<FQMethod, Integer> UNREPLACEABLE_ENCODING_METHODS;
     public static final Set<String> STANDARD_JDK7_ENCODINGS;
 
     /*
@@ -62,48 +63,48 @@ public class CharsetIssues extends BytecodeScanningDetector {
      * arguments) - offset]th one
      */
     static {
-        Map<String, Integer> replaceable = new HashMap<String, Integer>(8);
-        replaceable.put("java/io/InputStreamReader.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
-        replaceable.put("java/io/OutputStreamWriter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
-        replaceable.put("java/lang/String.<init>([BLjava/lang/String;)V", Values.ZERO);
-        replaceable.put("java/lang/String.<init>([BIILjava/lang/String;)V", Values.ZERO);
-        replaceable.put("java/lang/String.getBytes(Ljava/lang/String;)[B", Values.ZERO);
-        replaceable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
+        Map<FQMethod, Integer> replaceable = new HashMap<FQMethod, Integer>(8);
+        replaceable.put(new FQMethod("java/io/InputStreamReader", "<init>", "(Ljava/io/InputStream;Ljava/lang/String;)V"), Values.ZERO);
+        replaceable.put(new FQMethod("java/io/OutputStreamWriter", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;)V"), Values.ZERO);
+        replaceable.put(new FQMethod("java/lang/String", "<init>", "([BLjava/lang/String;)V"), Values.ZERO);
+        replaceable.put(new FQMethod("java/lang/String", "<init>", "([BIILjava/lang/String;)V"), Values.ZERO);
+        replaceable.put(new FQMethod("java/lang/String", "getBytes", "(Ljava/lang/String;)[B"), Values.ZERO);
+        replaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V"), Values.ONE);
 
         REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replaceable);
 
-        Map<String, Integer> unreplaceable = new HashMap<String, Integer>(32);
-        unreplaceable.put("java/net/URLEncoder.encode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
-        unreplaceable.put("java/net/URLDecoder.decode(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;", Values.ZERO);
-        unreplaceable.put("java/io/ByteArrayOutputStream.toString(Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/io/PrintStream.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/io/PrintStream.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/io/PrintStream.<init>(Ljava/io/OutputStream;BLjava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/io/PrintStream.toCharset(Ljava/lang/String;)Ljava/nio/charset/Charset;", Values.ZERO);
-        unreplaceable.put("java/io/PrintWriter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/io/PrintWriter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/io/PrintWriter.toCharset(Ljava/lang/String;)Ljava/nio/charset/Charset;", Values.ZERO);
-        unreplaceable.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
-        unreplaceable.put("java/lang/StringCoding.encode(Ljava/lang/String;[CII)[B", Values.THREE);
-        unreplaceable.put("java/util/Formatter.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/Formatter.<init>(Ljava/io/OutputStream;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
-        unreplaceable.put("java/util/Formatter.<init>(Ljava/io/OutputStream;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/Formatter.<init>(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V", Values.ONE);
-        unreplaceable.put("java/util/Formatter.<init>(Ljava/lang/String;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/Formatter.toCharset(Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/logging/Handler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/logging/MemoryHandler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/logging/StreamHandler.setEncoding(Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/Scanner.<init>(Ljava/io/File;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/Scanner.<init>(Ljava/io/InputStream;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/Scanner.<init>(Ljava/nio/file/Path;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/util/Scanner.<init>(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/lang/StringCoding.decode(Ljava/lang/String;[BII)[C", Values.THREE);
-        unreplaceable.put("java/lang/StringCoding.encode(Ljava/lang/String;[CII)[B", Values.THREE);
-        unreplaceable.put("javax/servlet/ServletResponse.setCharacterEncoding(Ljava/lang/String;)V", Values.ZERO);
-        unreplaceable.put("java/beans/XMLEncoder.<init>(Ljava/io/OutputStream;Ljava/lang/String;ZI)V", Values.TWO);
-        unreplaceable.put("java/nio/channels/Channels.newReader(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)Ljava/io/Reader;", Values.ZERO);
-        unreplaceable.put("java/nio/channels/Channels.newWriter(Ljava/nio/channels/WritableByteChannel;Ljava/lang/String;)Ljava/io/Writer;", Values.ZERO);
+        Map<FQMethod, Integer> unreplaceable = new HashMap<FQMethod, Integer>(32);
+        unreplaceable.put(new FQMethod("java/net/URLEncoder", "encode", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/net/URLDecoder", "decode", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/ByteArrayOutputStream", "toString", "(Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintStream", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintStream", "<init>", "(Ljava/io/File;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintStream", "<init>", "(Ljava/io/OutputStream;BLjava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintStream", "toCharset", "(Ljava/lang/String;)Ljava/nio/charset/Charset;"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintWriter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintWriter", "<init>", "(Ljava/io/File;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintWriter", "toCharset", "(Ljava/lang/String;)Ljava/nio/charset/Charset;"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/lang/StringCoding", "decode", "(Ljava/lang/String;[BII)[C"), Values.THREE);
+        unreplaceable.put(new FQMethod("java/lang/StringCoding", "encode", "(Ljava/lang/String;[CII)[B"), Values.THREE);
+        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/io/File;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;Ljava/util/Locale;)V"), Values.ONE);
+        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"), Values.ONE);
+        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Formatter", "toCharset", "(Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/logging/Handler", "setEncoding", "(Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/logging/MemoryHandler", "setEncoding", "(Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/logging/StreamHandler", "setEncoding", "(Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Scanner", "<init>", "(Ljava/io/File;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Scanner", "<init>", "(Ljava/io/InputStream;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Scanner", "<init>", "(Ljava/nio/file/Path;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Scanner", "<init>", "(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/lang/StringCoding", "decode", "(Ljava/lang/String;[BII)[C"), Values.THREE);
+        unreplaceable.put(new FQMethod("java/lang/StringCoding", "encode", "(Ljava/lang/String;[CII)[B"), Values.THREE);
+        unreplaceable.put(new FQMethod("javax/servlet/ServletResponse", "setCharacterEncoding", "(Ljava/lang/String;)V"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/beans/XMLEncoder", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;ZI)V"), Values.TWO);
+        unreplaceable.put(new FQMethod("java/nio/channels/Channels", "newReader", "(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)Ljava/io/Reader;"), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/nio/channels/Channels", "newWriter", "(Ljava/nio/channels/WritableByteChannel;Ljava/lang/String;)Ljava/io/Writer;"), Values.ZERO);
 
         UNREPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(unreplaceable);
 
@@ -164,7 +165,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String methodSig = getSigConstantOperand();
-                String methodInfo = className + '.' + methodName + methodSig;
+                FQMethod methodInfo = new FQMethod(className, methodName, methodSig);
                 Integer stackOffset = REPLACEABLE_ENCODING_METHODS.get(methodInfo);
                 if (stackOffset != null) {
                     int offset = stackOffset.intValue();
@@ -240,12 +241,12 @@ public class CharsetIssues extends BytecodeScanningDetector {
     }
 
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
-    public static Map<String, Integer> getUnreplaceableCharsetEncodings() {
+    public static Map<FQMethod, Integer> getUnreplaceableCharsetEncodings() {
         return UNREPLACEABLE_ENCODING_METHODS;
     }
 
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
-    public static Map<String, Integer> getReplaceableCharsetEncodings() {
+    public static Map<FQMethod, Integer> getReplaceableCharsetEncodings() {
         return REPLACEABLE_ENCODING_METHODS;
     }
 
