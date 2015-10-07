@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -46,35 +47,35 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         NANOS, MICROS, MILLIS, SECONDS, MINUTES, HOURS, DAYS, CALLER
     };
 
-    private static final Map<String, Units> TIME_UNIT_GENERATING_METHODS;
+    private static final Map<FQMethod, Units> TIME_UNIT_GENERATING_METHODS;
 
     static {
-        Map<String, Units> tugm = new HashMap<String, Units>();
-        tugm.put("java/lang/System.currentTimeMillis()J", Units.MILLIS);
-        tugm.put("java/lang/System.nanoTime()J", Units.NANOS);
-        tugm.put("java/sql/Timestamp.getTime()J", Units.MILLIS);
-        tugm.put("java/sql/Timestamp.getNanos()I", Units.NANOS);
-        tugm.put("java/util/Date.getTime()J", Units.MILLIS);
-        tugm.put("java/util/concurrent/TimeUnit.toNanos(J)J", Units.NANOS);
-        tugm.put("java/util/concurrent/TimeUnit.toMicros(J)J", Units.MICROS);
-        tugm.put("java/util/concurrent/TimeUnit.toSeconds(J)J", Units.SECONDS);
-        tugm.put("java/util/concurrent/TimeUnit.toMinutes(J)J", Units.MINUTES);
-        tugm.put("java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
-        tugm.put("java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
-        tugm.put("java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
-        tugm.put("java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)J", Units.CALLER);
-        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toNanos(J)J", Units.NANOS);
-        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toMicros(J)J", Units.MICROS);
-        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toSeconds(J)J", Units.SECONDS);
-        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toMinutes(J)J", Units.MINUTES);
-        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toHours(J)J", Units.HOURS);
-        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.toDays(J)J", Units.DAYS);
-        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.excessNanos(JJ)I", Units.NANOS);
-        tugm.put("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit.convert(JLjava/util/concurrent/TimeUnit;)J", Units.CALLER);
-        tugm.put("org/joda/time/base/BaseDuration.getMillis()J", Units.MILLIS);
-        tugm.put("org/joda/time/base/BaseInterval.getEndMillis()J", Units.MILLIS);
-        tugm.put("org/joda/time/base/BaseInterval.getStartMillis()J", Units.MILLIS);
-        TIME_UNIT_GENERATING_METHODS = Collections.<String, Units> unmodifiableMap(tugm);
+        Map<FQMethod, Units> tugm = new HashMap<FQMethod, Units>();
+        tugm.put(new FQMethod("java/lang/System", "currentTimeMillis", "()J"), Units.MILLIS);
+        tugm.put(new FQMethod("java/lang/System", "nanoTime", "()J"), Units.NANOS);
+        tugm.put(new FQMethod("java/sql/Timestamp", "getTime", "()J"), Units.MILLIS);
+        tugm.put(new FQMethod("java/sql/Timestamp", "getNanos", "()I"), Units.NANOS);
+        tugm.put(new FQMethod("java/util/Date", "getTime", "()J"), Units.MILLIS);
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toNanos", "(J)J"), Units.NANOS);
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toMicros", "(J)J"), Units.MICROS);
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toSeconds", "(J)J"), Units.SECONDS);
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toMinutes", "(J)J"), Units.MINUTES);
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toHours", "(J)J"), Units.HOURS);
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toDays", "(J)J"), Units.DAYS);
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "excessNanos", "(JJ)I"), Units.NANOS);
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "convert", "(JLjava/util/concurrent/TimeUnit;)J"), Units.CALLER);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toNanos", "(J)J"), Units.NANOS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toMicros", "(J)J"), Units.MICROS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toSeconds", "(J)J"), Units.SECONDS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toMinutes", "(J)J"), Units.MINUTES);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toHours", "(J)J"), Units.HOURS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toDays", "(J)J"), Units.DAYS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "excessNanos", "(JJ)I"), Units.NANOS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "convert", "(JLjava/util/concurrent/TimeUnit;)J"), Units.CALLER);
+        tugm.put(new FQMethod("org/joda/time/base/BaseDuration", "getMillis", "()J"), Units.MILLIS);
+        tugm.put(new FQMethod("org/joda/time/base/BaseInterval", "getEndMillis", "()J"), Units.MILLIS);
+        tugm.put(new FQMethod("org/joda/time/base/BaseInterval", "getStartMillis", "()J"), Units.MILLIS);
+        TIME_UNIT_GENERATING_METHODS = Collections.<FQMethod, Units> unmodifiableMap(tugm);
     }
 
     private static final Map<String, Units> TIMEUNIT_TO_UNITS;
@@ -146,7 +147,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
             case INVOKEVIRTUAL:
             case INVOKEINTERFACE:
             case INVOKESTATIC:
-                String methodCall = getClassConstantOperand() + '.' + getNameConstantOperand() + getSigConstantOperand();
+                FQMethod methodCall = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 unit = TIME_UNIT_GENERATING_METHODS.get(methodCall);
                 if (unit == Units.CALLER) {
                     int offset = Type.getArgumentTypes(getSigConstantOperand()).length;
