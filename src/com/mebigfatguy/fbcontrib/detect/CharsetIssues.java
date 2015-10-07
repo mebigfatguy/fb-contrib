@@ -241,13 +241,21 @@ public class CharsetIssues extends BytecodeScanningDetector {
     }
 
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
-    public static Map<FQMethod, Integer> getUnreplaceableCharsetEncodings() {
-        return UNREPLACEABLE_ENCODING_METHODS;
+    public static Map<String, Integer> getUnreplaceableCharsetEncodings() {
+        Map<String, Integer> encodings = new HashMap<String, Integer>();
+        for (Map.Entry<FQMethod, Integer> entry : UNREPLACEABLE_ENCODING_METHODS.entrySet()) {
+            encodings.put(entry.getKey().toString(),  entry.getValue());
+        }
+        return encodings;
     }
 
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
-    public static Map<FQMethod, Integer> getReplaceableCharsetEncodings() {
-        return REPLACEABLE_ENCODING_METHODS;
+    public static Map<String, Integer> getReplaceableCharsetEncodings() {
+        Map<String, Integer> encodings = new HashMap<String, Integer>();
+        for (Map.Entry<FQMethod, Integer> entry : REPLACEABLE_ENCODING_METHODS.entrySet()) {
+            encodings.put(entry.getKey().toString(),  entry.getValue());
+        }
+        return encodings;
     }
 
 }
