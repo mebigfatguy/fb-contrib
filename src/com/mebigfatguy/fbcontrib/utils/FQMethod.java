@@ -46,9 +46,10 @@ public final class FQMethod {
         return className.equals(that.className) && methodName.equals(that.methodName) && signature.equals(that.signature);
     }
     
+    @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
     @Override
     public String toString() {
-        return ToString.build(this);
+        return className + "." + methodName + signature;
     }
     
     
