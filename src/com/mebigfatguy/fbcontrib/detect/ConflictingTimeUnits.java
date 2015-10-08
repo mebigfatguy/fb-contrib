@@ -75,7 +75,31 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         tugm.put(new FQMethod("org/joda/time/base/BaseDuration", "getMillis", "()J"), Units.MILLIS);
         tugm.put(new FQMethod("org/joda/time/base/BaseInterval", "getEndMillis", "()J"), Units.MILLIS);
         tugm.put(new FQMethod("org/joda/time/base/BaseInterval", "getStartMillis", "()J"), Units.MILLIS);
-        TIME_UNIT_GENERATING_METHODS = Collections.<FQMethod, Units> unmodifiableMap(tugm);
+        tugm.put(new FQMethod("java/time/Clock", "millis", "()J"), Units.MILLIS);
+        tugm.put(new FQMethod("java/time/Duration", "getNano", "()I"), Units.NANOS);
+        tugm.put(new FQMethod("java/time/Duration", "getSeconds", "()J"), Units.SECONDS);
+        tugm.put(new FQMethod("java/time/Duration", "toDays", "()J"), Units.DAYS);
+        tugm.put(new FQMethod("java/time/Duration", "toHours", "()J"), Units.HOURS);
+        tugm.put(new FQMethod("java/time/Duration", "toMillis", "()J"), Units.MILLIS);
+        tugm.put(new FQMethod("java/time/Duration", "toSeconds", "()J"), Units.SECONDS);
+        tugm.put(new FQMethod("java/time/Duration", "toNanos", "()J"), Units.NANOS);
+        tugm.put(new FQMethod("java/time/Instant", "getNano", "()I"), Units.NANOS);
+        tugm.put(new FQMethod("java/time/Instant", "toEpochMmilli", "()J"), Units.MILLIS);
+        tugm.put(new FQMethod("java/time/LocalDate", "getDayOfMonth", "()I"), Units.DAYS);
+        tugm.put(new FQMethod("java/time/LocalDate", "getDayOfYear", "()I"), Units.DAYS);
+        tugm.put(new FQMethod("java/time/LocalDate", "getEpochDay", "()J"), Units.DAYS);
+        tugm.put(new FQMethod("java/time/LocalDateTime", "getDayOfMonth", "()J"), Units.DAYS);
+        tugm.put(new FQMethod("java/time/LocalDateTime", "getDayOfYear", "()I"), Units.DAYS);
+        tugm.put(new FQMethod("java/time/LocalDateTime", "getHour", "()I"), Units.HOURS);
+        tugm.put(new FQMethod("java/time/LocalDateTime", "getNano", "()I"), Units.NANOS);
+        tugm.put(new FQMethod("java/time/LocalDateTime", "getSecond", "()I"), Units.SECONDS);
+        tugm.put(new FQMethod("java/time/LocalTime", "getHour", "()I"), Units.HOURS);
+        tugm.put(new FQMethod("java/time/LocalTime", "getMinute", "()I"), Units.MINUTES);
+        tugm.put(new FQMethod("java/time/LocalTime", "getNano", "()I"), Units.NANOS);
+        tugm.put(new FQMethod("java/time/LocalTime", "getSecond", "()I"), Units.SECONDS);
+        tugm.put(new FQMethod("java/time/LocalTime", "toNanoOfDay", "()J"), Units.NANOS);
+        tugm.put(new FQMethod("java/time/LocalTime", "toSecondOfDay", "()I"), Units.SECONDS);
+       TIME_UNIT_GENERATING_METHODS = Collections.<FQMethod, Units> unmodifiableMap(tugm);
     }
 
     private static final Map<String, Units> TIMEUNIT_TO_UNITS;
