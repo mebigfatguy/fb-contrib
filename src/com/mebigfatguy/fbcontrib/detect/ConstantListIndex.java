@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -50,13 +51,13 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     }
 
     private static final String MAX_ICONST0_LOOP_DISTANCE_PROPERTY = "fb-contrib.cli.maxloopdistance";
-    private static final Set<String> ubiquitousMethods;
+    private static final Set<FQMethod> ubiquitousMethods;
     private static JavaClass INVOCATIONHANDLER_CLASS;
 
     static {
-        Set<String> um = new HashSet<String>();
-        um.add("java.lang.String.split(Ljava/lang/String;)[Ljava/lang/String;");
-        um.add("java.lang.String.split(Ljava/lang/String;I)[Ljava/lang/String;");
+        Set<FQMethod> um = new HashSet<FQMethod>();
+        um.add(new FQMethod("java.lang.String", "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod("java.lang.String", "split", "(Ljava/lang/String;I)[Ljava/lang/String;"));
         ubiquitousMethods = Collections.unmodifiableSet(um);
 
         try {
@@ -223,7 +224,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
         if (method == null)
             return false;
 
-        String methodDesc = method.getClassName() + '.' + method.getName() + method.getSignature();
+        FQMethod methodDesc = new FQMethod(method.getClassName(), method.getName(), method.getSignature());
         return ubiquitousMethods.contains(methodDesc);
     }
 }
