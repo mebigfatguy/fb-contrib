@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import com.mebigfatguy.fbcontrib.utils.ToString;
+
 /**
  * holds statistics about classes collected in the first pass. To cut down on
  * the size of the database, class, method, signature is not stored as a key
@@ -81,5 +83,10 @@ public class Statistics implements Iterable<Map.Entry<StatisticsKey, MethodInfo>
         }
 
         mi.setImmutabilityType(imType);
+    }
+    
+    @Override
+    public String toString() {
+        return ToString.build(this);
     }
 }

@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -169,4 +170,8 @@ public class SpoiledChildInterfaceImplementor implements Detector {
         }
     }
 
+    @Override
+    public String toString() {
+        return ToString.build(this);
+    }
 }

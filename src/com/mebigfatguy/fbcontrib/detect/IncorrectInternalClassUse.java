@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -133,5 +134,10 @@ public class IncorrectInternalClassUse implements Detector {
         }
 
         return internal;
+    }
+    
+    @Override
+    public String toString() {
+        return ToString.build(this);
     }
 }
