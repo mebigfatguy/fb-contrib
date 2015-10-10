@@ -49,12 +49,18 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
     private static final Set<FQMethod> GRAPHICS_PRODUCERS;
+    private static final Set<FQMethod> GRAPHICS_DISPOSERS;
 
     static {
         Set<FQMethod> gp = new HashSet<FQMethod>();
         gp.add(new FQMethod("java/awt/image/BufferedImage", "getGraphics", "()Ljava/awt/Graphics;"));
         gp.add(new FQMethod("java/awt/Graphics", "create", "()Ljava/awt/Graphics;"));
         GRAPHICS_PRODUCERS = Collections.<FQMethod>unmodifiableSet(gp);
+        
+        Set<FQMethod> gd = new HashSet<FQMethod>();
+        gd.add(new FQMethod("java/awt/Graphics", "dispose", "()V"));
+        gd.add(new FQMethod("java/awt/Graphics2D", "dispose", "()V"));
+        GRAPHICS_DISPOSERS = Collections.<FQMethod>unmodifiableSet(gd);
     }
 
     private final BugReporter bugReporter;
@@ -150,12 +156,10 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
                 FQMethod methodInfo = new FQMethod(clsName, methodName, methodSig);
                 if (GRAPHICS_PRODUCERS.contains(methodInfo)) {
                     sawNewGraphicsAt = Integer.valueOf(getPC());
-                } else {
-                    if (("java/awt/Graphics#dispose()V".equals(methodInfo)) || ("java/awt/Graphics2D#dispose()V".equals(methodInfo))) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
-                        }
+                } else if (GRAPHICS_DISPOSERS.contains(methodInfo)) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
                     }
                 }
                 break;
