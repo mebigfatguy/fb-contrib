@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * class. This detector doesn't handle multi-level inheritance, ie child to
  * grandparent. Could be done.
  */
-public class CopiedOverriddenMethod extends BytecodeScanningDetector implements Detector {
+public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private Map<String, CodeInfo> superclassCode;
     private ClassContext classContext;
