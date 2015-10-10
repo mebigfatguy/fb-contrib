@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -47,13 +48,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
-    private static final Set<String> GRAPHICS_PRODUCERS;
+    private static final Set<FQMethod> GRAPHICS_PRODUCERS;
 
     static {
-        Set<String> gp = new HashSet<String>();
-        gp.add("java/awt/image/BufferedImage#getGraphics()Ljava/awt/Graphics;");
-        gp.add("java/awt/Graphics#create()Ljava/awt/Graphics;");
-        GRAPHICS_PRODUCERS = Collections.<String>unmodifiableSet(gp);
+        Set<FQMethod> gp = new HashSet<FQMethod>();
+        gp.add(new FQMethod("java/awt/image/BufferedImage", "getGraphics", "()Ljava/awt/Graphics;"));
+        gp.add(new FQMethod("java/awt/Graphics", "create", "()Ljava/awt/Graphics;"));
+        GRAPHICS_PRODUCERS = Collections.<FQMethod>unmodifiableSet(gp);
     }
 
     private final BugReporter bugReporter;
@@ -146,7 +147,7 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String methodSig = getSigConstantOperand();
-                String methodInfo = clsName + "#" + methodName + methodSig;
+                FQMethod methodInfo = new FQMethod(clsName, methodName, methodSig);
                 if (GRAPHICS_PRODUCERS.contains(methodInfo)) {
                     sawNewGraphicsAt = Integer.valueOf(getPC());
                 } else {
