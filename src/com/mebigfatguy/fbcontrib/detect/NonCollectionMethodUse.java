@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -33,19 +34,19 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
  * interface.
  */
 public class NonCollectionMethodUse extends BytecodeScanningDetector {
-    private static Set<String> oldMethods = new HashSet<String>();
+    private static Set<FQMethod> oldMethods = new HashSet<FQMethod>();
 
     static {
-        oldMethods.add("java/util/Hashtable.contains(java/lang/Object)Z");
-        oldMethods.add("java/util/Hashtable.elements()Ljava/util/Enumeration;");
-        oldMethods.add("java/util/Hashtable.keys()Ljava/util/Enumeration;");
-        oldMethods.add("java/util/Vector.addElement(Ljava/lang/Object;)V");
-        oldMethods.add("java/util/Vector.elementAt(I)Ljava/lang/Object;");
-        oldMethods.add("java/util/Vector.insertElementAt(Ljava/lang/Object;I)V");
-        oldMethods.add("java/util/Vector.removeAllElements()V");
-        oldMethods.add("java/util/Vector.removeElement(Ljava/lang/Object;)Z");
-        oldMethods.add("java/util/Vector.removeElementAt(I)V");
-        oldMethods.add("java/util/Vector.setElementAt(Ljava/lang/Object;I)V");
+        oldMethods.add(new FQMethod("java/util/Hashtable", "contains", "(java/lang/Object)Z"));
+        oldMethods.add(new FQMethod("java/util/Hashtable", "elements", "()Ljava/util/Enumeration;"));
+        oldMethods.add(new FQMethod("java/util/Hashtable", "keys", "()Ljava/util/Enumeration;"));
+        oldMethods.add(new FQMethod("java/util/Vector", "addElement", "(Ljava/lang/Object;)V"));
+        oldMethods.add(new FQMethod("java/util/Vector", "elementAt", "(I)Ljava/lang/Object;"));
+        oldMethods.add(new FQMethod("java/util/Vector", "insertElementAt", "(Ljava/lang/Object;I)V"));
+        oldMethods.add(new FQMethod("java/util/Vector", "removeAllElements", "()V"));
+        oldMethods.add(new FQMethod("java/util/Vector", "removeElement", "(Ljava/lang/Object;)Z"));
+        oldMethods.add(new FQMethod("java/util/Vector", "removeElementAt", "(I)V"));
+        oldMethods.add(new FQMethod("java/util/Vector", "setElementAt", "(Ljava/lang/Object;I)V"));
     }
 
     private BugReporter bugReporter;
@@ -67,7 +68,7 @@ public class NonCollectionMethodUse extends BytecodeScanningDetector {
             String methodName = getNameConstantOperand();
             String methodSig = getSigConstantOperand();
 
-            String methodInfo = className + "." + methodName + methodSig;
+            FQMethod methodInfo = new FQMethod(className, methodName, methodSig);
             if (oldMethods.contains(methodInfo)) {
                 bugReporter.reportBug(new BugInstance(this, BugType.NCMU_NON_COLLECTION_METHOD_USE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this));
