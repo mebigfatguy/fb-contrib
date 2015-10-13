@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -44,26 +45,26 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * character than a String.
  */
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
-    private final static Map<String, Object> characterMethods;
+    private final static Map<FQMethod, Object> characterMethods;
 
     static {
-        Map<String, Object> methodsMap = new HashMap<String, Object>();
+        Map<FQMethod, Object> methodsMap = new HashMap<FQMethod, Object>();
         // The values are where the parameter will be on the stack - For
         // example, a value of 0 means the String literal to check
         // was the last parameter, and a stack offset of 2 means it was the 3rd
         // to last.
-        methodsMap.put("java/lang/String:indexOf:(Ljava/lang/String;)I", Values.ZERO);
-        methodsMap.put("java/lang/String:indexOf:(Ljava/lang/String;I)I", Values.ONE);
-        methodsMap.put("java/lang/String:lastIndexOf:(Ljava/lang/String;)I", Values.ZERO);
-        methodsMap.put("java/lang/String:lastIndexOf:(Ljava/lang/String;I)I", Values.ONE);
-        methodsMap.put("java/io/PrintStream:print:(Ljava/lang/String;)V", Values.ZERO);
-        methodsMap.put("java/io/PrintStream:println:(Ljava/lang/String;)V", Values.ZERO);
-        methodsMap.put("java/io/StringWriter:write:(Ljava/lang/String;)V", Values.ZERO);
-        methodsMap.put("java/lang/StringBuffer:append:(Ljava/lang/String;)Ljava/lang/StringBuffer;", Values.ZERO);
-        methodsMap.put("java/lang/StringBuilder:append:(Ljava/lang/String;)Ljava/lang/StringBuilder;", Values.ZERO);
+        methodsMap.put(new FQMethod("java/lang/String", "indexOf", "(Ljava/lang/String;)I"), Values.ZERO);
+        methodsMap.put(new FQMethod("java/lang/String", "indexOf", "(Ljava/lang/String;I)I"), Values.ONE);
+        methodsMap.put(new FQMethod("java/lang/String", "lastIndexOf", "(Ljava/lang/String;)I"), Values.ZERO);
+        methodsMap.put(new FQMethod("java/lang/String", "lastIndexOf", "(Ljava/lang/String;I)I"), Values.ONE);
+        methodsMap.put(new FQMethod("java/io/PrintStream", "print", "(Ljava/lang/String;)V"), Values.ZERO);
+        methodsMap.put(new FQMethod("java/io/PrintStream", "println", "(Ljava/lang/String;)V"), Values.ZERO);
+        methodsMap.put(new FQMethod("java/io/StringWriter", "write", "(Ljava/lang/String;)V"), Values.ZERO);
+        methodsMap.put(new FQMethod("java/lang/StringBuffer", "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;"), Values.ZERO);
+        methodsMap.put(new FQMethod("java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;"), Values.ZERO);
 
         // same thing as above, except now with two params
-        methodsMap.put("java/lang/String:replace:(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;", new IntPair(0, 1));
+        methodsMap.put(new FQMethod("java/lang/String", "replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;"), new IntPair(0, 1));
 
         characterMethods = Collections.unmodifiableMap(methodsMap);
     }
@@ -149,7 +150,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
-                String key = getClassConstantOperand() + ':' + getNameConstantOperand() + ':' + getSigConstantOperand();
+                FQMethod key = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
 
                 Object posObject = characterMethods.get(key);
                 if (posObject instanceof Integer) {
