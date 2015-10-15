@@ -223,6 +223,11 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                             bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS.name(), NORMAL_PRIORITY)
                                     .addClass(this).addMethod(this).addSourceLine(this));
                         }
+                    } else if ("assertFalse".equals(methodName)) {
+                        if ((state == State.SAW_ICONST_0) || (state == State.SAW_EQUALS)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
+                        }
                     }
                 } else if (NG_ASSERT_CLASS.equals(clsName)) {
                     sawAssert = true;
@@ -273,6 +278,11 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                     } else if ("assertTrue".equals(methodName)) {
                         if ((state == State.SAW_ICONST_0) || (state == State.SAW_EQUALS)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
+                        }
+                    } else if ("assertFalse".equals(methodName)) {
+                        if ((state == State.SAW_ICONST_0) || (state == State.SAW_EQUALS)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS.name(), NORMAL_PRIORITY)
                                     .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
