@@ -44,7 +44,7 @@ public class IncorrectInternalClassUse implements Detector {
     private static final Set<String> externalPackages = new HashSet<String>();
 
     static {
-        internalPackages.add("com/sun/");
+        internalPackages.add("sun/");
         internalPackages.add("org/apache/commons/digester/annotations/internal");
         internalPackages.add("org/apache/xerces/");
         internalPackages.add("org/apache/xalan/");
@@ -52,12 +52,6 @@ public class IncorrectInternalClassUse implements Detector {
         internalPackages.add("org/springframework/asm/");
         internalPackages.add("org/springframework/cglib/");
         internalPackages.add("org/springframework/objenesis/");
-        internalPackages.add("com/sun/org/apache/xerces/");
-        internalPackages.add("com/sun/org/apache/xalan/");
-        internalPackages.add("com/sun/xml/internal/");
-        externalPackages.add("com/sun/jersey/");
-        externalPackages.add("com/sun/mail/");
-        externalPackages.add("com/sun/xml/");
         externalPackages.add("org/apache/xerces/xni/");
         externalPackages.add("org/apache/xerces/xs/");
         externalPackages.add("org/apache/xalan/extensions");
