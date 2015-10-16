@@ -3506,24 +3506,24 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
-		<ShortDescription>Junit test method passes boolean expression to Assert.assertTrue</ShortDescription>
-		<LongDescription>Junit test method {1} passes boolean expression to Assert.assertTrue</LongDescription>
+		<ShortDescription>Junit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortDescription>
+		<LongDescription>Junit test method {1} passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method evaluates a boolean expression and passes that to Assert.assertTrue. It is better
-			to pass the two values that are being equated to the Assert.assertEquals method so that the
+			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse / Assert.assertTrue.
+			It is better to pass the two values that are being equated to the Assert.assertEquals method so that the
 			junit failure method is more meaningful of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
 	
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS">
-		<ShortDescription>Junit test method passes boolean expression to Assert.assertFalse</ShortDescription>
-		<LongDescription>Junit test method {1} passes boolean expression to Assert.assertFalse</LongDescription>
+		<ShortDescription>Junit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortDescription>
+		<LongDescription>Junit test method {1} passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse. It is better
-			to pass the two values that are being equated to the Assert.assertNotEquals method so that the
+			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse / Assert.assertTrue.
+			It is better to pass the two values that are being equated to the Assert.assertNotEquals method so that the
 			junit failure method is more meaningful of the intended test.</p>
 			]]>
 		</Details>
@@ -3612,24 +3612,24 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
-		<ShortDescription>TestNG test method passes boolean expression to Assert.assertTrue</ShortDescription>
-		<LongDescription>TestNG test method {1} passes boolean expression to Assert.assertTrue</LongDescription>
+		<ShortDescription>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortDescription>
+		<LongDescription>TestNG test method {1} passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method evaluates a boolean expression and passes that to Assert.assertTrue. It is better
-			to pass the two values that are being equated to the Assert.assertEquals method so that the
+			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse / Assert.assertTrue.
+			It is better to pass the two values that are being equated to the Assert.assertEquals method so that the
 			TestNG failure method is more meaningful of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
 	
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS">
-		<ShortDescription>TestNG test method passes boolean expression to Assert.assertFalse</ShortDescription>
-		<LongDescription>TestNG test method {1} passes boolean expression to Assert.assertFalse</LongDescription>
+		<ShortDescription>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortDescription>
+		<LongDescription>TestNG test method {1} passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse. It is better
-			to pass the two values that are being equated to the Assert.assertNotEquals method so that the
+			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse / Assert.assertTrue.
+			It is better to pass the two values that are being equated to the Assert.assertNotEquals method so that the
 			TestNG failure method is more meaningful of the intended test.</p>
 			]]>
 		</Details>

@@ -41,6 +41,20 @@ public class UTAO_Sample extends TestCase {
         Assert.assertFalse("this is bad", s.equals(s2));
         Assert.assertFalse("this is reallly bad", s.length() == s.length());
     }
+    
+    public void testUseAssertNotEqualsCrossed(String s, String s2) {
+    	Assert.assertTrue(!s.equals(s2));
+        Assert.assertTrue(s.length() != s.length());
+        Assert.assertTrue("this is bad", !s.equals(s2));
+        Assert.assertTrue("this is reallly bad", s.length() != s.length());
+    }
+    
+    public void testUseAssertEqualsCrossed(String s, String s2) {
+    	Assert.assertFalse(!s.equals(s2));
+        Assert.assertFalse(s.length() != s.length());
+        Assert.assertFalse("this is bad", !s.equals(s2));
+        Assert.assertFalse("this is reallly bad", s.length() != s.length());
+    }
 
     public void test3ArgNP(float foo, int boo) {
         Assert.assertEquals(1.0f, foo, 0.1);
@@ -115,6 +129,18 @@ class TestNG {
     public void testUseAssertNotEquals(String s, String s2) {
     	org.testng.Assert.assertFalse(s.equals(s2));
     	org.testng.Assert.assertFalse(s.length() == s.length());
+    }
+    
+    @org.testng.annotations.Test
+    public void testUseAssertNotEqualsCrossed(String s, String s2) {
+    	org.testng.Assert.assertTrue(!s.equals(s2));
+    	org.testng.Assert.assertTrue(s.length() != s.length());
+    }
+    
+    @org.testng.annotations.Test
+    public void testUseAssertEqualsCrossed(String s, String s2) {
+    	org.testng.Assert.assertFalse(!s.equals(s2));
+    	org.testng.Assert.assertFalse(s.length() != s.length());
     }
 
     @org.testng.annotations.Test

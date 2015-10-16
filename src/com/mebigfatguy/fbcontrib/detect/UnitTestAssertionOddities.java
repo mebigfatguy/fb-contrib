@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private enum State {
-        SAW_NOTHING, SAW_IF_ICMPNE, SAW_ICONST_1, SAW_GOTO, SAW_ICONST_0, SAW_EQUALS
+        SAW_NOTHING, SAW_IF_ICMPNE, SAW_IF_NE, SAW_IF_ICMPEQ, SAW_ICONST_1, SAW_GOTO, SAW_ICONST_0, SAW_EQUALS
     };
 
     private enum TestFrameworkType {
@@ -68,6 +68,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private String clsName;
     private boolean sawAssert;
     private State state;
+    private boolean checkIsNegated;
     private TestFrameworkType frameworkType;
     private boolean hasAnnotation;
 
@@ -218,12 +219,12 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
-                    } else if ("assertTrue".equals(methodName)) {
+                    } else if ((!checkIsNegated && "assertTrue".equals(methodName)) || (checkIsNegated && "assertFalse".equals(methodName))) {
                         if ((state == State.SAW_ICONST_0) || (state == State.SAW_EQUALS)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS.name(), NORMAL_PRIORITY)
                                     .addClass(this).addMethod(this).addSourceLine(this));
                         }
-                    } else if ("assertFalse".equals(methodName)) {
+                    } else if ((!checkIsNegated && "assertFalse".equals(methodName)) || (checkIsNegated && "assertTrue".equals(methodName))) {
                         if ((state == State.SAW_ICONST_0) || (state == State.SAW_EQUALS)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS.name(), NORMAL_PRIORITY)
                                     .addClass(this).addMethod(this).addSourceLine(this));
@@ -275,12 +276,12 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
-                    } else if ("assertTrue".equals(methodName)) {
+                    } else if ((!checkIsNegated && "assertTrue".equals(methodName)) || (checkIsNegated && "assertFalse".equals(methodName))) {
                         if ((state == State.SAW_ICONST_0) || (state == State.SAW_EQUALS)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS.name(), NORMAL_PRIORITY)
                                     .addClass(this).addMethod(this).addSourceLine(this));
                         }
-                    } else if ("assertFalse".equals(methodName)) {
+                    } else if ((!checkIsNegated && "assertFalse".equals(methodName)) || (checkIsNegated && "assertTrue".equals(methodName))) {
                         if ((state == State.SAW_ICONST_0) || (state == State.SAW_EQUALS)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS.name(), NORMAL_PRIORITY)
                                     .addClass(this).addMethod(this).addSourceLine(this));
@@ -310,13 +311,23 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             switch (state) {
             case SAW_NOTHING:
             case SAW_EQUALS:
+            	// starting the chain, reset to false
+            	checkIsNegated = false;
                 if (seen == IF_ICMPNE) {
                     state = State.SAW_IF_ICMPNE;
+                } else if (seen == IFNE) {
+                    state = State.SAW_IF_NE;
+                    checkIsNegated = true;
+                } else if (seen == IF_ICMPEQ) {
+                    state = State.SAW_IF_ICMPEQ;
+                    checkIsNegated = true;
                 } else {
                     state = State.SAW_NOTHING;
                 }
                 break;
 
+            case SAW_IF_ICMPEQ:
+            case SAW_IF_NE:
             case SAW_IF_ICMPNE:
                 if (seen == ICONST_1) {
                     state = State.SAW_ICONST_1;
