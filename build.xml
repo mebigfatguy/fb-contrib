@@ -15,8 +15,8 @@
 	<property name="samples.classes.dir" value="${target.dir}/classes/samples" />
 	<property name="javadoc.dir" value="${target.dir}/javadoc" />
 	<property name="htdocs.dir" value="${basedir}/htdocs" />
-	<property name="javac.source" value="1.6" />
-	<property name="javac.target" value="1.6" />
+	<property name="javac.source" value="1.7" />
+	<property name="javac.target" value="1.7" />
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
