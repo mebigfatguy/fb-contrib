@@ -16,6 +16,14 @@ public class UTAO_Sample extends TestCase {
     public void testFalse(boolean b) {
         Assert.assertEquals("Wow this is bad", false, b);
     }
+    
+    public void testNull(String s) {
+        Assert.assertEquals(null, s);
+    }
+    
+    public void testNotNull(String s) {
+        Assert.assertNotEquals(null, s);
+    }
 
     public void testWrongOrder(int i) {
         Assert.assertEquals(i, 10);
@@ -36,7 +44,7 @@ public class UTAO_Sample extends TestCase {
     }
     
     public void testUseAssertNotEquals(String s, String s2) {
-    	Assert.assertFalse(s.equals(s2));
+        Assert.assertFalse(s.equals(s2));
         Assert.assertFalse(s.length() == s.length());
         Assert.assertFalse("this is bad", s.equals(s2));
         Assert.assertFalse("this is reallly bad", s.length() == s.length());
@@ -101,6 +109,16 @@ class TestNG {
     @org.testng.annotations.Test
     public void testFalse(boolean b) {
         org.testng.Assert.assertEquals(b, false, "Wow this is bad");
+    }
+    
+    @org.testng.annotations.Test
+    public void testNull(String s) {
+    	org.testng.Assert.assertEquals(s, null);
+    }
+    
+    @org.testng.annotations.Test
+    public void testNotNull(String s) {
+    	org.testng.Assert.assertNotEquals(s, null);
     }
 
     @org.testng.annotations.Test
