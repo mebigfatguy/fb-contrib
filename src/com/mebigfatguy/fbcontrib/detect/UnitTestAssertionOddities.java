@@ -195,9 +195,14 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                     return;
                                 }
                                 OpcodeStack.Item item0 = stack.getStackItem(0);
-                                if ((item0.getConstant() != null) && (expectedItem.getConstant() == null)
+                                if ((item0.getConstant() != null) && (cons1 == null)
                                         && ((argTypes.length == 2) || !isFloatingPtPrimitive(item0.getSignature()))) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
+                                    return;
+                                }
+                                if (expectedItem.isNull()) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NULL.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                     return;
                                 }
@@ -210,6 +215,17 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                     }
                                 }
                             }
+                        }
+                    } else if ("assertNotEquals".equals(methodName)) {
+                    	String signature = getSigConstantOperand();
+                        Type[] argTypes = Type.getArgumentTypes(signature);
+                        if ((argTypes.length == 2 || argTypes.length == 3) && stack.getStackDepth() >= 2) {
+                            OpcodeStack.Item expectedItem = stack.getStackItem(1);
+                    	    if (expectedItem.isNull()) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                                return;
+                    	    }
                         }
                     } else if ("assertNotNull".equals(methodName)) {
                         if (stack.getStackDepth() > 0) {
@@ -260,6 +276,11 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
+                            if (expectedItem.isNull()) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NULL.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                                return;
+                            }
                             if (argTypes[argTypes.length - 1].equals(Type.OBJECT) && argTypes[argTypes.length - 2].equals(Type.OBJECT)) {
                                 if ("Ljava/lang/Double;".equals(actualItem.getSignature()) && "Ljava/lang/Double;".equals(expectedItem.getSignature())) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
@@ -268,6 +289,23 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                 }
                             }
                         }
+                    } else if ("assertNotEquals".equals(methodName)) {
+                    	String signature = getSigConstantOperand();
+                        Type[] argTypes = Type.getArgumentTypes(signature);
+                    	OpcodeStack.Item expectedItem;
+                    	if ((argTypes.length == 2) && (stack.getStackDepth() >= 2)) {
+                            expectedItem = stack.getStackItem(0);
+                        } else if ((argTypes.length == 3) && (stack.getStackDepth() >= 3)) {
+                            expectedItem = stack.getStackItem(1);
+                        } else {
+                            return;
+                        }
+                    	
+                	    if (expectedItem.isNull()) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
+                            return;
+                	    }
                     } else if ("assertNotNull".equals(methodName)) {
                         if (stack.getStackDepth() > 0) {
                             if ("valueOf".equals(stack.getStackItem(0).getUserValue())) {

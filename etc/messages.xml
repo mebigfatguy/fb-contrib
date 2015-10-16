@@ -3505,6 +3505,28 @@
 		</Details>
 	</BugPattern>
 
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NULL">
+		<ShortDescription>Junit test method passes null Assert.assertEquals</ShortDescription>
+		<LongDescription>Junit test method {1} passes null to Assert.assertEquals</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method compares an object's equality to null. It is better to use the Assert.assertNull
+			method so that the junit failure method is more meaningful of the intended test.</p>
+			]]>
+		</Details>
+	</BugPattern>
+	
+	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL">
+		<ShortDescription>Junit test method passes null Assert.assertNotEquals</ShortDescription>
+		<LongDescription>Junit test method {1} passes null to Assert.assertNotEquals</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method compares an object's inequality to null. It is better to use the Assert.assertNotNull
+			method so that the junit failure method is more meaningful of the intended test.</p>
+			]]>
+		</Details>
+	</BugPattern>
+	
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
 		<ShortDescription>Junit test method passes boolean expression to Assert.assertTrue</ShortDescription>
 		<LongDescription>Junit test method {1} passes boolean expression to Assert.assertTrue</LongDescription>
@@ -3611,6 +3633,28 @@
 		</Details>
 	</BugPattern>
 
+	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NULL">
+		<ShortDescription>TestNG test method passes null Assert.assertEquals</ShortDescription>
+		<LongDescription>TestNG test method {1} passes null to Assert.assertEquals</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method compares an object's equality to null. It is better to use the Assert.assertNull
+			method so that the TestNG failure method is more meaningful of the intended test.</p>
+			]]>
+		</Details>
+	</BugPattern>
+	
+	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL">
+		<ShortDescription>TestNG test method passes null Assert.assertNotEquals</ShortDescription>
+		<LongDescription>TestNG test method {1} passes null to Assert.assertNotEquals</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method compares an object's inequality to null. It is better to use the Assert.assertNotNull
+			method so that the TestNG failure method is more meaningful of the intended test.</p>
+			]]>
+		</Details>
+	</BugPattern>
+	
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
 		<ShortDescription>TestNG test method passes boolean expression to Assert.assertTrue</ShortDescription>
 		<LongDescription>TestNG test method {1} passes boolean expression to Assert.assertTrue</LongDescription>
