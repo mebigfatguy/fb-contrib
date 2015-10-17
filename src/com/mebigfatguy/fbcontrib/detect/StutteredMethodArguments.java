@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
@@ -43,10 +44,10 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 @CustomUserValue
 public class StutteredMethodArguments extends BytecodeScanningDetector {
-    private static Set<String> ignorableSignatures = new HashSet<String>();
+    private static Set<FQMethod> ignorableSignatures = new HashSet<FQMethod>();
 
     static {
-        ignorableSignatures.add("java/util/Map:put(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;");
+        ignorableSignatures.add(new FQMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"));
     }
 
     private final BugReporter bugReporter;
@@ -131,7 +132,7 @@ public class StutteredMethodArguments extends BytecodeScanningDetector {
                 if (SignatureUtils.similarPackages(processedPackageName, packageName, 2)) {
                     String methodName = getNameConstantOperand();
                     String signature = getSigConstantOperand();
-                    String methodInfo = clsName + ":" + methodName + signature;
+                    FQMethod methodInfo = new FQMethod(clsName , methodName, signature);
                     if ((!processedMethodName.equals(methodName)) && !ignorableSignatures.contains(methodInfo)) {
                         Type[] parms = Type.getArgumentTypes(signature);
                         if (parms.length > 1) {
