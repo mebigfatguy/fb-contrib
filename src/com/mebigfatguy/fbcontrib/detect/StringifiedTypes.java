@@ -26,8 +26,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
-import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -43,31 +43,31 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class StringifiedTypes extends BytecodeScanningDetector {
 
-    private static Map<CollectionMethod, int[]> COLLECTION_PARMS = new HashMap<CollectionMethod, int[]>();
+    private static Map<FQMethod, int[]> COLLECTION_PARMS = new HashMap<FQMethod, int[]>();
 
     static {
         int[] parm0 = new int[] { 0 };
         int[] parm0N1 = new int[] { -1, 0 };
         int[] parm01N1 = new int[] { -1, 0, 1 };
 
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "contains", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "add", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "remove", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "set", "(ILjava/lang/Object;)Ljava/lang/Object;"), parm0N1);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "add", "(ILjava/lang/Object;)V"), parm0);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "indexOf", "(Ljava/lang/Object;)I"), parm0);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/List", "lastIndexOf", "(Ljava/lang/Object;)I"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/List", "contains", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/List", "add", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/List", "remove", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/List", "set", "(ILjava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+        COLLECTION_PARMS.put(new FQMethod("java/util/List", "add", "(ILjava/lang/Object;)V"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/List", "indexOf", "(Ljava/lang/Object;)I"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/List", "lastIndexOf", "(Ljava/lang/Object;)I"), parm0);
 
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/Set", "contains", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/Set", "add", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/Set", "remove", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/Set", "contains", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/Set", "add", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/Set", "remove", "(Ljava/lang/Object;)Z"), parm0);
 
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "containsKey", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "containsValue", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
-        COLLECTION_PARMS.put(new CollectionMethod("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "containsKey", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "containsValue", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
+        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
+        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
     }
 
     private static final Map<String, Integer> STRING_PARSE_METHODS = new HashMap<String, Integer>();
@@ -184,7 +184,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
 
                 Type[] parmTypes = Type.getArgumentTypes(sig);
                 if (stack.getStackDepth() > parmTypes.length) {
-                    CollectionMethod cm = new CollectionMethod(clsName, methodName, sig);
+                    FQMethod cm = new FQMethod(clsName, methodName, sig);
                     checkParms = COLLECTION_PARMS.get(cm);
                     if (checkParms != null) {
                         OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
@@ -254,38 +254,6 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                     item.setUserValue(FROM_FIELD);
                 }
             }
-        }
-    }
-
-    static class CollectionMethod {
-        private String clsName;
-        private String methodName;
-        private String signature;
-
-        public CollectionMethod(String clsN, String methodN, String sig) {
-            clsName = clsN;
-            methodName = methodN;
-            signature = sig;
-        }
-
-        @Override
-        public int hashCode() {
-            return clsName.hashCode() ^ methodName.hashCode() ^ signature.hashCode();
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof CollectionMethod)) {
-                return false;
-            }
-
-            CollectionMethod that = (CollectionMethod) o;
-            return clsName.equals(that.clsName) && methodName.equals(that.methodName) && signature.equals(that.signature);
-        }
-
-        @Override
-        public String toString() {
-            return ToString.build(this);
         }
     }
 }
