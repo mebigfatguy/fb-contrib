@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -88,29 +89,29 @@ public class Section508Compliance extends BytecodeScanningDetector {
         }
     }
 
-    private static final Map<String, Integer> displayTextMethods = new HashMap<String, Integer>();
+    private static final Map<FQMethod, Integer> displayTextMethods = new HashMap<FQMethod, Integer>();
 
     static {
-        displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;)", Values.ZERO);
-        displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;Ljavax/swing/Icon;I)", Values.ONE);
-        displayTextMethods.put("javax/swing/JLabel#<init>(Ljava/lang/String;I)", Values.TWO);
-        displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;)", Values.ZERO);
-        displayTextMethods.put("javax/swing/JButton#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Values.ONE);
-        displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;)", Values.ZERO);
-        displayTextMethods.put("javax/swing/JFrame#<init>(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)", Values.ONE);
-        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;)", Values.ZERO);
-        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;Z)", Values.ONE);
-        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", Values.TWO);
-        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;)", Values.ZERO);
-        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;Z)", Values.ONE);
-        displayTextMethods.put("javax/swing/JDialog#<init>(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)", Values.TWO);
-        displayTextMethods.put("java/awt/Dialog#setTitle(Ljava/lang/String;)", Values.ZERO);
-        displayTextMethods.put("java/awt/Frame#setTitle(Ljava/lang/String;)", Values.ZERO);
-        displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;)", Values.ZERO);
-        displayTextMethods.put("javax/swing/JMenu#<init>(Ljava/lang/String;Z)", Values.ONE);
-        displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;)", Values.ZERO);
-        displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;Ljavax/swing/Icon;)", Values.ONE);
-        displayTextMethods.put("javax/swing/JMenuItem#<init>(Ljava/lang/String;I)", Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;Ljavax/swing/Icon;I)"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;I)"), Values.TWO);
+        displayTextMethods.put(new FQMethod("javax/swing/JButton", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JButton", "<init>", "(Ljava/lang/String;Ljavax/swing/Icon;)"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JFrame", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JFrame", "<init>", "(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;)"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;Z)"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)"), Values.TWO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;)"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;Z)"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)"), Values.TWO);
+        displayTextMethods.put(new FQMethod("java/awt/Dialog", "setTitle", "(Ljava/lang/String;)"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("java/awt/Frame", "setTitle", "(Ljava/lang/String;)"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenu", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenu", "<init>", "(Ljava/lang/String;Z)"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", "<init>", "(Ljava/lang/String;Ljavax/swing/Icon;)"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", "<init>", "(Ljava/lang/String;I)"), Values.ONE);
     }
 
     private final BugReporter bugReporter;
@@ -326,13 +327,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
      * internationalizable.
      */
     private void processFaultyGuiStrings() {
-        StringBuilder methodInfo = new StringBuilder();
-        methodInfo.append(getClassConstantOperand());
-        methodInfo.append("#");
-        methodInfo.append(getNameConstantOperand());
-        String signature = getSigConstantOperand();
-        signature = signature.substring(0, signature.indexOf(')') + 1);
-        methodInfo.append(signature);
+        FQMethod methodInfo = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
         Integer parmIndex = displayTextMethods.get(methodInfo.toString());
         if (parmIndex != null) {
             if (stack.getStackDepth() > parmIndex.intValue()) {
