@@ -7,6 +7,9 @@ public class UTAO_Sample extends TestCase {
 
     public void testExactDoubles(double d1, double d2) {
         Assert.assertEquals(d1, d2);
+        Assert.assertEquals("Still bad", d1, d2);
+        Assert.assertEquals(0.1, d1, d2);	// Actually good
+        Assert.assertEquals("This one is ok", 0.1, d1, d2);	// Still good
     }
 
     public void testTrue(boolean b) {
@@ -67,7 +70,6 @@ public class UTAO_Sample extends TestCase {
     public void test3ArgNP(float foo, int boo) {
         Assert.assertEquals(1.0f, foo, 0.1);
         Assert.assertEquals(20, boo, 0);
-
     }
 }
 
@@ -109,6 +111,11 @@ class TestNG {
     @org.testng.annotations.Test
     public void testFalse(boolean b) {
         org.testng.Assert.assertEquals(b, false, "Wow this is bad");
+    }
+    
+    @org.testng.annotations.Test
+    public void testExactDoubles(double d1, double d2) {
+    	org.testng.Assert.assertEquals(d1, d2, "Don't ever do this!");
     }
     
     @org.testng.annotations.Test
@@ -163,8 +170,8 @@ class TestNG {
 
     @org.testng.annotations.Test
     public void test3ArgNP(float foo, int boo) {
-        Assert.assertEquals(foo, 1.0f, 0.1);
-        Assert.assertEquals(boo, 20, 0);
+    	org.testng.Assert.assertEquals(foo, 1.0f, 0.1);
+    	org.testng.Assert.assertEquals(boo, 20, 0);
     }
     
     @org.testng.annotations.Test(expectedExceptions=RuntimeException.class)
