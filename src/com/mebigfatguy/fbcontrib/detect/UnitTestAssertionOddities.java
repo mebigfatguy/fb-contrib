@@ -49,6 +49,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     }
 
     private static final String BOOLEAN_TYPE_SIGNATURE = "Ljava/lang/Boolean;";
+    private static final String LJAVA_LANG_DOUBLE = "Ljava/lang/Double;";
     
     private static final String TESTCASE_CLASS = "junit.framework.TestCase";
     private static final String TEST_CLASS = "org.junit.Test";
@@ -210,13 +211,13 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                     return;
                                 }
-                                if (argTypes[argTypes.length - 1].equals(Type.OBJECT) && argTypes[argTypes.length - 2].equals(Type.OBJECT)) {
-                                    if ("Ljava/lang/Double;".equals(item0.getSignature()) && "Ljava/lang/Double;".equals(expectedItem.getSignature())) {
-                                        bugReporter
-                                                .reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
-                                                        .addClass(this).addMethod(this).addSourceLine(this));
-                                        return;
-                                    }
+                                if (argTypes[argTypes.length - 1].equals(Type.DOUBLE) && argTypes[argTypes.length - 2].equals(Type.DOUBLE)) {
+                                	if (argTypes.length < 3 || !argTypes[argTypes.length - 3].equals(Type.DOUBLE)) {
+	                                    bugReporter
+	                                            .reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
+	                                                    .addClass(this).addMethod(this).addSourceLine(this));
+	                                    return;
+                                	}
                                 }
                             }
                         }
@@ -285,8 +286,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
-                            if (argTypes[argTypes.length - 1].equals(Type.OBJECT) && argTypes[argTypes.length - 2].equals(Type.OBJECT)) {
-                                if ("Ljava/lang/Double;".equals(actualItem.getSignature()) && "Ljava/lang/Double;".equals(expectedItem.getSignature())) {
+                            if (argTypes[0].equals(Type.OBJECT) && argTypes[1].equals(Type.OBJECT)) {
+                                if (LJAVA_LANG_DOUBLE.equals(actualItem.getSignature()) && LJAVA_LANG_DOUBLE.equals(expectedItem.getSignature())) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                     return;
