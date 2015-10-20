@@ -42,12 +42,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private enum State {
         SAW_NOTHING, SAW_IF_ICMPNE, SAW_IF_NE, SAW_IF_ICMPEQ, SAW_ICONST_1, SAW_GOTO, SAW_ICONST_0, SAW_EQUALS
-    };
+    }
 
     private enum TestFrameworkType {
         UNKNOWN, JUNIT, TESTNG;
     }
 
+    private static final String BOOLEAN_TYPE_SIGNATURE = "Ljava/lang/Boolean;";
+    
     private static final String TESTCASE_CLASS = "junit.framework.TestCase";
     private static final String TEST_CLASS = "org.junit.Test";
     private static final String TEST_ANNOTATION_SIGNATURE = "Lorg/junit/Test;";
@@ -188,15 +190,15 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                         if ((argTypes.length == 2) || (argTypes.length == 3)) {
 
                             if (stack.getStackDepth() >= 2) {
+                            	OpcodeStack.Item item0 = stack.getStackItem(0);
                                 OpcodeStack.Item expectedItem = stack.getStackItem(1);
                                 Object cons1 = expectedItem.getConstant();
-                                if ((cons1 != null) && argTypes[argTypes.length - 1].equals(Type.BOOLEAN)
-                                        && argTypes[argTypes.length - 2].equals(Type.BOOLEAN)) {
+                                if (cons1 != null && expectedItem.getSignature().equals(BOOLEAN_TYPE_SIGNATURE)
+                                        && item0.getSignature().equals(BOOLEAN_TYPE_SIGNATURE)) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                     return;
                                 }
-                                OpcodeStack.Item item0 = stack.getStackItem(0);
                                 if ((item0.getConstant() != null) && (cons1 == null)
                                         && ((argTypes.length == 2) || !isFloatingPtPrimitive(item0.getSignature()))) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT.name(), NORMAL_PRIORITY)
@@ -267,7 +269,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                             }
 
                             Object cons1 = expectedItem.getConstant();
-                            if ((cons1 != null) && argTypes[argTypes.length - 1].equals(Type.BOOLEAN) && argTypes[argTypes.length - 2].equals(Type.BOOLEAN)) {
+                            if ((cons1 != null) && argTypes[0].equals(Type.BOOLEAN) && argTypes[1].equals(Type.BOOLEAN)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
