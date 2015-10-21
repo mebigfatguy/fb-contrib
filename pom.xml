@@ -8,7 +8,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mebigfatguy.fb-contrib</groupId>
     <artifactId>fb-contrib</artifactId>
-    <version>6.3.0</version>
+    <version>6.3.0-SNAPSHOT</version>
 
     <prerequisites>
         <maven>2.2.1</maven>
@@ -161,43 +161,12 @@
 
         <pluginManagement>
             <plugins>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>2.5</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>buildnumber-maven-plugin</artifactId>
-                    <version>1.3</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>3.1</version>
-                    <configuration>
-                        <compilerArgument>-Xlint</compilerArgument>
-                    </configuration>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-deploy-plugin</artifactId>
-                    <version>2.8.1</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-install-plugin</artifactId>
-                    <version>2.5.1</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-jar-plugin</artifactId>
-                    <version>2.5</version>
+                <plugin><artifactId>maven-clean-plugin</artifactId><version>2.5</version></plugin>
+                <plugin><groupId>org.codehaus.mojo</groupId><artifactId>buildnumber-maven-plugin</artifactId><version>1.3</version></plugin>
+                <plugin><artifactId>maven-compiler-plugin</artifactId><version>3.1</version></plugin>
+                <plugin><artifactId>maven-deploy-plugin</artifactId><version>2.8.1</version></plugin>
+                <plugin><artifactId>maven-install-plugin</artifactId><version>2.5.1</version></plugin>
+                <plugin><artifactId>maven-jar-plugin</artifactId><version>2.5</version>
                     <configuration>
                         <archive>
                             <manifestEntries>
@@ -219,43 +188,17 @@
                         </archive>
                     </configuration>
                 </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-project-info-reports-plugin</artifactId>
-                    <version>2.7</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>2.6</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-site-plugin</artifactId>
-                    <version>3.3</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-source-plugin</artifactId>
-                    <version>2.2.1</version>
-                </plugin>
-
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>2.17</version>
-                </plugin>
+                <plugin><artifactId>maven-project-info-reports-plugin</artifactId><version>2.7</version></plugin>
+                <plugin><artifactId>maven-resources-plugin</artifactId><version>2.6</version></plugin>
+                <plugin><artifactId>maven-site-plugin</artifactId><version>3.3</version></plugin>
+                <plugin><artifactId>maven-source-plugin</artifactId><version>2.2.1</version></plugin>
+                <plugin><artifactId>maven-surefire-plugin</artifactId><version>2.17</version></plugin>
             </plugins>
         </pluginManagement>
 
         <plugins>
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>buildnumber-maven-plugin</artifactId>
+                <groupId>org.codehaus.mojo</groupId><artifactId>buildnumber-maven-plugin</artifactId>
                 <executions>
                     <execution>
                         <phase>validate</phase>
@@ -267,9 +210,9 @@
             </plugin>
 
             <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
+                    <compilerArgument>-Xlint</compilerArgument>
                     <source>1.7</source>
                     <target>1.7</target>
                 </configuration>
