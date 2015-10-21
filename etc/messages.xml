@@ -3577,7 +3577,7 @@
 	
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
 		<ShortDescription>TestNG test method passes constant to first (actual) assertion parameter</ShortDescription>
-		<LongDescription>TestNG test method {1} passes constant to forst (actual) assertion parameter</LongDescription>
+		<LongDescription>TestNG test method {1} passes constant to first (actual) assertion parameter</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method calls assert passing a constant value as the first of the two values. The assert
