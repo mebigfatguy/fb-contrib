@@ -105,6 +105,10 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
         }
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+        value = "SF_SWITCH_FALLTHROUGH",
+        justification = "This fall-through is deliberate and documented"
+    )
     @Override
     public void sawOpcode(int seen) {
         boolean sawAllocation = false;

@@ -129,6 +129,10 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
      * @param seen
      *            the opcode of the currently visited instruction
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+        value = "SF_SWITCH_FALLTHROUGH",
+        justification = "This fall-through is deliberate and documented"
+    )
     @Override
     public void sawOpcode(int seen) {
         Object userObject = null;
