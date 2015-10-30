@@ -87,7 +87,7 @@ public class ToString {
                         }
                     }
                 }
-            } catch (Exception e) {
+            } catch (IllegalAccessException | RuntimeException e) {
                 // if we get an exception show as much as we can get
             }
         }

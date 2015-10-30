@@ -111,6 +111,10 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         super.visitCode(obj);
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+        value = "SF_SWITCH_NO_DEFAULT",
+        justification = "We don't need or want to handle every opcode"
+    )
     @Override
     public void sawOpcode(int seen) {
         String userValue = null;

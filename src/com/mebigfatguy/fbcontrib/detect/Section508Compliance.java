@@ -328,7 +328,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
      */
     private void processFaultyGuiStrings() {
         FQMethod methodInfo = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-        Integer parmIndex = displayTextMethods.get(methodInfo.toString());
+        Integer parmIndex = displayTextMethods.get(methodInfo);
         if (parmIndex != null) {
             if (stack.getStackDepth() > parmIndex.intValue()) {
                 OpcodeStack.Item item = stack.getStackItem(parmIndex.intValue());
