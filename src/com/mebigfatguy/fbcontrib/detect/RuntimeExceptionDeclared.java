@@ -40,9 +40,9 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * While doing so is not illegal, it may represent a misunderstanding as to the
  * exception in question. If a RuntimeException is declared, it implies that
  * this exception type is expected to happen, which if true, should be handled
- * in code, and not propogated.
+ * in code, and not propagated.
  */
-public class DeclaredRuntimeException extends PreorderVisitor implements Detector {
+public class RuntimeExceptionDeclared extends PreorderVisitor implements Detector {
     private final BugReporter bugReporter;
     private static JavaClass runtimeExceptionClass;
 
@@ -62,7 +62,7 @@ public class DeclaredRuntimeException extends PreorderVisitor implements Detecto
      * @param bugReporter
      *            the sync of bug reports
      */
-    public DeclaredRuntimeException(final BugReporter bugReporter) {
+    public RuntimeExceptionDeclared(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         runtimeExceptions.add("java.lang.RuntimeException");
     }
