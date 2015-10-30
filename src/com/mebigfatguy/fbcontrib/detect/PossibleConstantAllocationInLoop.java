@@ -277,7 +277,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                 if (offsets.length > 0) {
                     int top = getPC();
                     int bottom = top + offsets[offsets.length - 1];
-                    SwitchInfo switchInfo = new SwitchInfo(top, bottom);
+                    SwitchInfo switchInfo = new SwitchInfo(bottom);
                     switchInfos.add(switchInfo);
                 }
                 break;
@@ -344,11 +344,9 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
     }
 
     static class SwitchInfo {
-        int switchTop;
         int switchBottom;
 
-        public SwitchInfo(int top, int bottom) {
-            switchTop = top;
+        public SwitchInfo(int bottom) {
             switchBottom = bottom;
         }
     }
