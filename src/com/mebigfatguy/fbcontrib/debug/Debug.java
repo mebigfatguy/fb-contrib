@@ -21,9 +21,10 @@ package com.mebigfatguy.fbcontrib.debug;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.FileOutputStream;
 import java.io.PrintStream;
+import java.nio.charset.StandardCharsets;
 
 public class Debug {
 
@@ -32,9 +33,9 @@ public class Debug {
     static {
         try {
             out = new PrintStream(
-                    new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "fb-contrib.txt").getPath(), true)));
+                    new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "fb-contrib.txt").getPath(), true)), false, StandardCharsets.UTF_8.name());
             out.println("===== fb-contrib console =====");
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
