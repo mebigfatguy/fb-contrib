@@ -208,6 +208,8 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                     state = State.SAW_NOTHING;
                 }
                 break;
+            default: // this indicates incompatible code change
+                throw new AssertionError("Unhandled state: " + state);
             }
         } finally {
             stack.sawOpcode(this, seen);
