@@ -51,11 +51,11 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         
         for (AnnotationEntry entry : obj.getAnnotationEntries()) {
             switch (entry.getAnnotationType()) {
-            case "javax.ws.rs.GET":
+            case "Ljavax/ws/rs/GET;":
                 hasGet = true;
                 break;
                 
-            case "javax.ws.rs.Consumes":
+            case "Ljavax/ws/rs/Consumes;":
                 hasConsumes = true;
                 break;
             }
