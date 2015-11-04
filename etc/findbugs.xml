@@ -50,7 +50,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents" speed="fast" reports="UCC_UNRELATED_COLLECTION_CONTENTS" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.DeclaredRuntimeException" speed="fast" reports="DRE_DECLARED_RUNTIME_EXCEPTION" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.RuntimeExceptionDeclared" speed="fast" reports="DRE_DECLARED_RUNTIME_EXCEPTION" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LiteralStringComparison" speed="fast" reports="LSC_LITERAL_STRING_COMPARISON" />
 

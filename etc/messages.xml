@@ -107,7 +107,7 @@
 		</Details>
 	</Detector>
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.DeclaredRuntimeException">
+	<Detector class="com.mebigfatguy.fbcontrib.detect.RuntimeExceptionDeclared">
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that declare RuntimeExceptions in their throws clause. While doing
