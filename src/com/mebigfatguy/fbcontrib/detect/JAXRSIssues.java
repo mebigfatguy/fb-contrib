@@ -34,7 +34,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
 
     private BugReporter bugReporter;
     
-    private JAXRSIssues(BugReporter bugReporter) {
+    public JAXRSIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
     
