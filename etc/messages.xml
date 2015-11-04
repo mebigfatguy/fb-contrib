@@ -1551,6 +1551,14 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.JAXRSIssues">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for problems with the use of the JAX-RS specification.</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5057,6 +5065,19 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="JXI_GET_ENDPOINT_CONSUMES_CONTENT">
+    	<ShortDescription>Method implements a GET request but consumes input</ShortDescription>
+    	<LongDescription>Method {1} implements a GET request but consumes input</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method is annotated to be used as @GET requests, but also documents that it
+    		consumes JSON or XML data. Since a get request pulls parameters from the url, and not 
+    		the body of request, this pattern is problematic. If you wish to consume JSON or XML data,
+    		this request should be annotated with @POST.
+    		]]>
+       	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5188,4 +5209,5 @@
 	<BugCode abbrev="SLS">Suspicious Loop Search</BugCode>
 	<BugCode abbrev="CRF">Conflating Resources And Files</BugCode>
 	<BugCode abbrev="IMC">Immature Class</BugCode>
+	<BugCode abbrev="JXI">JAX-RS Issues</BugCode>
 </MessageCollection>
