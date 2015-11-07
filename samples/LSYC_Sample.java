@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class LSYC_Sample {
     List<String> syncfield;
@@ -53,7 +55,6 @@ public class LSYC_Sample {
         main.put("First", m);
 
         return main;
-
     }
 
     public String printString() {
@@ -66,6 +67,15 @@ public class LSYC_Sample {
     public String printString2() {
         // no tag, but probably should.
         return new StringBuffer().append("Hello").append("World").toString();
+    }
+    
+    public void testSBReallyRequred(Pattern p, String s, String repl) {
+        Matcher matcher = p.matcher(s);
+        StringBuffer stringBuffer = new StringBuffer();
+        while (matcher.find()) {
+            matcher.appendReplacement(stringBuffer, repl);
+        }
+        matcher.appendTail(stringBuffer); 
     }
 
 }
