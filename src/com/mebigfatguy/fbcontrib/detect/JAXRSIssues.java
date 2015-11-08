@@ -129,7 +129,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                     
                     if (!foundParamAnnotation) {
                         
-                        if ((!sawBareParm) && (hasConsumes || Values.JAVA_LANG_STRING.equals(parmTypes[parmIndex]))) {
+                        if ((!sawBareParm) && (hasConsumes || "Ljava/lang/String;".equals(parmTypes[parmIndex].getSignature()))) {
                             sawBareParm = true;
                         } else {
                             bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
