@@ -94,7 +94,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                 break;
                 
             default:
-                // it is find that GET is not captured here
+                // it is fine that GET is not captured here
                 if (METHOD_ANNOTATIONS.contains(annotationType)) {
                     isJAXRS = true;
                 }
