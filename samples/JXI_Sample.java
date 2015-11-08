@@ -19,10 +19,29 @@ public class JXI_Sample {
     
     @POST
     @Path("/stuffit/{blub}")
-    public Response stufStuff(@PathParam("blob") String blub, Stuff s) {
+    public Response stufStuff(@PathParam("blub") String blub, Stuff s) {
         return Response.ok().build();
     }
     
+    @GET
+    @Path("/stuffy")
+    @Produces(MediaType.APPLICATION_JSON) 
+    public Response fpFine(Stuff s) {
+        return Response.ok().build();
+    }
+    
+    @POST
+    @Path("/stuffok/{blub}")
+    public Response fpStuff(@PathParam("blub") String blub, String body) {
+        return Response.ok().build();
+    }
+    
+    @POST
+    @Path("/stuffyup/{blub}")
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response fpStuff2(@PathParam("blub") String blub, Stuff body) {
+        return Response.ok().build();
+    }
     
     static class Stuff {
     }
