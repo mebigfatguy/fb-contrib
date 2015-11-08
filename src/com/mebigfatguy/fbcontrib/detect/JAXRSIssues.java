@@ -90,8 +90,8 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         vct.add("Ljavax/ws/rs/ext/Providers;");
         vct.add("Ljavax/servlet/ServletConfig;");
         vct.add("Ljavax/servlet/ServletContext;");
-        vct.add("Ljavax/servlet/HttpServletRequest;");
-        vct.add("Ljavax/servlet/HttpServletResponse;");
+        vct.add("Ljavax/servlet/http/HttpServletRequest;");
+        vct.add("Ljavax/servlet/http/HttpServletResponse;");
         
         VALID_CONTEXT_TYPES = Collections.<String>unmodifiableSet(vct);
     }
