@@ -85,6 +85,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             switch (annotationType) {
             case "Ljavax/ws/rs/GET;":
                 hasGet = true;
+                isJAXRS = true;
                 break;
                 
             case "Ljavax/ws/rs/Consumes;":
