@@ -30,6 +30,12 @@ public class JXI_Sample {
         return Response.ok().build();
     }
     
+    @GET
+    @Path("/stuffNotRight/{good}")
+    public Response mismatchParm(@PathParam("bad") String bad) {
+        return Response.ok().build();
+    }
+    
     @POST
     @Path("/stuffok/{blub}")
     public Response fpStuff(@PathParam("blub") String blub, String body) {
