@@ -65,6 +65,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     }
     
     private BugReporter bugReporter;
+    private boolean hasClassConsumes;
     
     public JAXRSIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -73,6 +74,14 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
+        
+        hasClassConsumes = false;
+        for (AnnotationEntry entry : cls.getAnnotationEntries()) {
+            if ("Ljavax/ws/rs/Consumes;".equals(entry.getAnnotationType())) {
+                hasClassConsumes = true;
+            }
+        }
+        
         cls.accept(this);
     }
     
@@ -117,7 +126,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         }
         
         if (isJAXRS) {
-            processJAXRSMethod(obj, path, hasConsumes);
+            processJAXRSMethod(obj, path, hasConsumes || hasClassConsumes);
         }
     }
     
