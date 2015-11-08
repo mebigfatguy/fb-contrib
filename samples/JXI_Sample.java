@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 public class JXI_Sample {
 
@@ -57,6 +58,12 @@ public class JXI_Sample {
     @Path("/stuffyup/{blub}")
     @Consumes(MediaType.APPLICATION_JSON)
     public Response fpStuff2(@PathParam("blub") String blub, Stuff body) {
+        return Response.ok().build();
+    }
+    
+    @PUT
+    @Path("/stuffGoodContext")
+    public Response fpStuffGoodContext(@Context UriInfo info) {
         return Response.ok().build();
     }
     
