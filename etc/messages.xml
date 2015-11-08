@@ -5080,13 +5080,13 @@
     </BugPattern>
     
     <BugPattern type="JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT">
-    	<ShortDescription>JAX-RS Method defines a parameter that has no @*Param annotation, or @Consumes method annotation</ShortDescription>
-    	<LongDescription>JAX-RS Method {1} defines a parameter that has no @*Param annotation, or @Consumes method annotation</LongDescription>
+    	<ShortDescription>JAX-RS Method defines a parameter that has no @*Param or @Context annotation, or @Consumes method annotation</ShortDescription>
+    	<LongDescription>JAX-RS Method {1} defines a parameter that has no @*Param or @Context annotation, or @Consumes method annotation</LongDescription>
     	<Details>
     		<![CDATA[
     		<p>This JAX-RS endpoint declares parameters without specifying where the value of this parameter comes from.
-    		You can specify this by using one of several 'Param' annotations (@PathParam, @CookieParam, @FormParam @HeaderParam @MatrixParam @QueryParam)
-    		or you can declare that the method @Consumes an xml or json stream.
+    		You can specify this by using one of several 'Param' annotations (@PathParam, @CookieParam, @FormParam @HeaderParam @MatrixParam @QueryParam),
+    		by adding a @Context parameter annotation, or you can declare that the method @Consumes an xml or json stream.
     		]]>
        	</Details>
     </BugPattern>
