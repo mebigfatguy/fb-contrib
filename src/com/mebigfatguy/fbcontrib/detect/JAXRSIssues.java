@@ -58,6 +58,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         pa.add("Ljavax/ws/rs/HeaderParam;");
         pa.add("Ljavax/ws/rs/MatrixParam;");
         pa.add("Ljavax/ws/rs/QueryParam;");
+        pa.add("Ljavax/ws/rs/core/Context;");
         PARAM_ANNOTATIONS = Collections.<String>unmodifiableSet(pa);
     }
     
