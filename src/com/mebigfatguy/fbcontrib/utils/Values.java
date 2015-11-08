@@ -38,6 +38,7 @@ public class Values {
     public static final String STATIC_INITIALIZER = "<clinit>";
 
     public static final String JAVA_LANG_OBJECT = "java.lang.Object";
+    public static final String JAVA_LANG_STRING = "java.lang.String";
 
     private Values() {
     }

@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -128,7 +129,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                     
                     if (!foundParamAnnotation) {
                         
-                        if ((!sawBareParm) && (hasConsumes || "Ljava/lang/String;".equals(parmTypes[parmIndex]))) {
+                        if ((!sawBareParm) && (hasConsumes || Values.JAVA_LANG_STRING.equals(parmTypes[parmIndex]))) {
                             sawBareParm = true;
                         } else {
                             bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)

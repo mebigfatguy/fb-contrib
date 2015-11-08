@@ -800,7 +800,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             if (toStringClass != null) {
                 String toStringClassName = toStringClass.getClassName();
                 if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !Values.JAVA_LANG_OBJECT.equals(toStringClassName)
-                        && !"java.lang.String".equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
+                        && !Values.JAVA_LANG_STRING.equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
                     try {
                         JavaClass cls = Repository.lookupClass(toStringClassName);
 

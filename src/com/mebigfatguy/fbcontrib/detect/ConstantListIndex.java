@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -56,8 +57,8 @@ public class ConstantListIndex extends BytecodeScanningDetector {
 
     static {
         Set<FQMethod> um = new HashSet<FQMethod>();
-        um.add(new FQMethod("java.lang.String", "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
-        um.add(new FQMethod("java.lang.String", "split", "(Ljava/lang/String;I)[Ljava/lang/String;"));
+        um.add(new FQMethod(Values.JAVA_LANG_STRING, "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod(Values.JAVA_LANG_STRING, "split", "(Ljava/lang/String;I)[Ljava/lang/String;"));
         ubiquitousMethods = Collections.unmodifiableSet(um);
 
         try {
