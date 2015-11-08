@@ -5079,6 +5079,17 @@
        	</Details>
     </BugPattern>
     
+    <BugPattern type="JXI_PARM_PARAM_NOT_FOUND_IN_PATH">
+    	<ShortDescription>JAX-RS Method specifies non-resolveable @PathParam</ShortDescription>
+    	<LongDescription>JAX-RS Method {1} specifies non-resolveable @PathParam</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This JAX-RS endpoint has a @PathParam specified that is not found in the @Path annotation
+    		and thus can not determine from where to populate that parameter.</p>
+    		]]>
+       	</Details>
+    </BugPattern>
+    
     <BugPattern type="JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT">
     	<ShortDescription>JAX-RS Method defines a parameter that has no @*Param or @Context annotation, or @Consumes method annotation</ShortDescription>
     	<LongDescription>JAX-RS Method {1} defines a parameter that has no @*Param or @Context annotation, or @Consumes method annotation</LongDescription>

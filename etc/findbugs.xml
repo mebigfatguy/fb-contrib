@@ -293,7 +293,7 @@
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ImmatureClass" speed="fast" reports="IMC_IMMATURE_CLASS_NO_EQUALS,IMC_IMMATURE_CLASS_NO_HASHCODE,IMC_IMMATURE_CLASS_NO_PACKAGE,IMC_IMMATURE_CLASS_NO_TOSTRING" />	
 	
-	<Detector class="com.mebigfatguy.fbcontrib.detect.JAXRSIssues" speed="fast" reports="JXI_GET_ENDPOINT_CONSUMES_CONTENT,JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.JAXRSIssues" speed="fast" reports="JXI_GET_ENDPOINT_CONSUMES_CONTENT,JXI_PARM_PARAM_NOT_FOUND_IN_PATH,JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" />
 	
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
@@ -542,6 +542,7 @@
 	<BugPattern abbrev="IMC" type="IMC_IMMATURE_CLASS_NO_PACKAGE" category="STYLE" />
 	<BugPattern abbrev="IMC" type="IMC_IMMATURE_CLASS_NO_TOSTRING" category="STYLE" />
 	<BugPattern abbrev="JXI" type="JXI_GET_ENDPOINT_CONSUMES_CONTENT" category="CORRECTNESS" />
+	<BugPattern abbrev="JXI" type="JXI_PARM_PARAM_NOT_FOUND_IN_PATH" category="CORRECTNESS" />
 	<BugPattern abbrev="JXI" type="JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" category="CORRECTNESS" />
 	
 </FindbugsPlugin>

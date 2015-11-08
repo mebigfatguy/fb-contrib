@@ -23,13 +23,13 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
-import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -78,6 +78,8 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     
     @Override
     public void visitMethod(Method obj) {
+        
+        String path = null;
         boolean isJAXRS = false;
         boolean hasGet = false;
         boolean hasConsumes = false;
@@ -92,6 +94,10 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                 
             case "Ljavax/ws/rs/Consumes;":
                 hasConsumes = true;
+                break;
+                
+            case "Ljavax/ws/rs/Path;":
+                path = getDefaultAnnotationValue(entry);
                 break;
                 
             default:
@@ -111,41 +117,69 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         }
         
         if (isJAXRS) {
-            Type[] parmTypes = obj.getArgumentTypes();
-            int numParms = parmTypes.length;
-            if (numParms > 0) {
-                boolean sawBareParm = false;
-                
-                ParameterAnnotationEntry[] pes = obj.getParameterAnnotationEntries();
-                int parmIndex = 0;
-                for (ParameterAnnotationEntry pe : pes) {
-                    boolean foundParamAnnotation = false;
-                    for (AnnotationEntry a : pe.getAnnotationEntries()) {
-                        if (PARAM_ANNOTATIONS.contains(a.getAnnotationType())) {
-                            foundParamAnnotation = true;
-                            break;
-                        }
-                    }
-                    
-                    if (!foundParamAnnotation) {
+            processJAXRSMethod(obj, path, hasConsumes);
+        }
+    }
+    
+    private void processJAXRSMethod(Method m, String path, boolean hasConsumes) {
+        Type[] parmTypes = m.getArgumentTypes();
+        int numParms = parmTypes.length;
+        if (numParms > 0) {
+            boolean sawBareParm = false;
+            
+            ParameterAnnotationEntry[] pes = m.getParameterAnnotationEntries();
+            int parmIndex = 0;
+            for (ParameterAnnotationEntry pe : pes) {
+                boolean foundParamAnnotation = false;
+                for (AnnotationEntry a : pe.getAnnotationEntries()) {
+                    String annotationType = a.getAnnotationType();
+                    if (PARAM_ANNOTATIONS.contains(annotationType)) {
+                        foundParamAnnotation = true;
                         
-                        if ((!sawBareParm) && (hasConsumes || "Ljava/lang/String;".equals(parmTypes[parmIndex].getSignature()))) {
-                            sawBareParm = true;
-                        } else {
-                            bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
-                                    .addClass(this)
-                                    .addMethod(this)
-                                    .addString("Parameter " + parmIndex + 1));
-                            break;
+                        if ((path != null) && "Ljavax/ws/rs/PathParam;".equals(annotationType)) {
+                            String parmPath = getDefaultAnnotationValue(a);
+                            if ((parmPath != null) && (path.indexOf("{" + parmPath + "}" ) < 0)) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY)
+                                        .addClass(this)
+                                        .addMethod(this)
+                                        .addString(parmPath));
+                            }
                         }
-                       
                     }
-                    
-                    parmIndex++;
                 }
-                 
+                
+                if (!foundParamAnnotation) {
+                    
+                    if ((!sawBareParm) && (hasConsumes || "Ljava/lang/String;".equals(parmTypes[parmIndex].getSignature()))) {
+                        sawBareParm = true;
+                    } else {
+                        bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
+                                .addClass(this)
+                                .addMethod(this)
+                                .addString("Parameter " + parmIndex + 1));
+                        break;
+                    }
+                   
+                }
+                
+                parmIndex++;
+            }
+             
+        }
+    }
+    
+    private String getDefaultAnnotationValue(AnnotationEntry entry) {
+        int numPairs = entry.getNumElementValuePairs();
+        if (numPairs > 0) {
+            ElementValuePair[] pairs = entry.getElementValuePairs();
+            for (ElementValuePair pair : pairs) {
+                if ("value".equals(pair.getNameString())) {
+                    return pair.getValue().stringifyValue();
+                }
             }
         }
+        
+        return null;
     }
 
     @Override
