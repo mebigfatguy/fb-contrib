@@ -5079,6 +5079,30 @@
        	</Details>
     </BugPattern>
     
+    <BugPattern type="JXI_INVALID_CONTEXT_PARAMETER_TYPE">
+    	<ShortDescription>JAX-RS Method specifies an invalid @Context parameter type</ShortDescription>
+    	<LongDescription>JAX-RS {1} Method specifies an invalid @Context parameter type</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This JAX-RS endpoint annotates a parameter with a @Context annotation. This annotation can supply values
+    		for the following types:
+    		<ul>
+	    		<li>javax.ws.rs.core.UriInfo</li>
+		        <li>javax.ws.rs.core.HttpHeaders</li>
+		        <li>javax.ws.rs.core.Request</li>
+		        <li>javax.ws.rs.core.SecurityContext</li>
+		        <li>javax.ws.rs.ext.Providers</li>
+		        <li>javax.servlet.ServletConfig</li>
+		        <li>javax.servlet.ServletContext</li>
+		        <li>javax.servlet.HttpServletRequest</li>
+		        <li>javax.servlet.HttpServletResponse</li>
+		    </ul>
+		    It is possible that your container can supply additional types, but these types are not standard are may
+		    not be supported on other application servers.</p>
+    		]]>
+       	</Details>
+    </BugPattern>
+    
     <BugPattern type="JXI_PARM_PARAM_NOT_FOUND_IN_PATH">
     	<ShortDescription>JAX-RS Method specifies non-resolveable @PathParam</ShortDescription>
     	<LongDescription>JAX-RS Method {1} specifies non-resolveable @PathParam</LongDescription>

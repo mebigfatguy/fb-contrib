@@ -80,6 +80,22 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         NATIVE_JAXRS_TYPES = Collections.<String>unmodifiableSet(njt);
     }
     
+    private static final Set<String> VALID_CONTEXT_TYPES;
+    static {
+        Set<String> vct = new HashSet<String>();
+        vct.add("Ljavax/ws/rs/core/UriInfo;");
+        vct.add("Ljavax/ws/rs/core/HttpHeaders;");
+        vct.add("Ljavax/ws/rs/core/Request;");
+        vct.add("Ljavax/ws/rs/core/SecurityContext;");
+        vct.add("Ljavax/ws/rs/ext/Providers;");
+        vct.add("Ljavax/servlet/ServletConfig;");
+        vct.add("Ljavax/servlet/ServletContext;");
+        vct.add("Ljavax/servlet/HttpServletRequest;");
+        vct.add("Ljavax/servlet/HttpServletResponse;");
+        
+        VALID_CONTEXT_TYPES = Collections.<String>unmodifiableSet(vct);
+    }
+    
     private BugReporter bugReporter;
     private boolean hasClassConsumes;
     
@@ -168,6 +184,14 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                                         .addClass(this)
                                         .addMethod(this)
                                         .addString(parmPath));
+                            }
+                        } else if ("Ljavax/ws/rs/core/Context;".equals(annotationType)) {
+                            String parmSig = parmTypes[parmIndex].getSignature();
+                            if (!VALID_CONTEXT_TYPES.contains(parmSig)) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_INVALID_CONTEXT_PARAMETER_TYPE.name(), NORMAL_PRIORITY)
+                                        .addClass(this)
+                                        .addMethod(this)
+                                        .addString(parmSig));
                             }
                         }
                     }
