@@ -106,41 +106,43 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                                 .addClass(this)
                                 .addMethod(this));
                 break;
-            } else if (isJAXRS) {
-                Type[] parmTypes = obj.getArgumentTypes();
-                int numParms = parmTypes.length;
-                if (numParms > 0) {
-                    boolean sawBareParm = false;
-                    
-                    ParameterAnnotationEntry[] pes = obj.getParameterAnnotationEntries();
-                    int parmIndex = 0;
-                    for (ParameterAnnotationEntry pe : pes) {
-                        boolean foundParamAnnotation = false;
-                        for (AnnotationEntry a : pe.getAnnotationEntries()) {
-                            if (PARAM_ANNOTATIONS.contains(a.getAnnotationType())) {
-                                foundParamAnnotation = true;
-                                break;
-                            }
+            } 
+        }
+        
+        if (isJAXRS) {
+            Type[] parmTypes = obj.getArgumentTypes();
+            int numParms = parmTypes.length;
+            if (numParms > 0) {
+                boolean sawBareParm = false;
+                
+                ParameterAnnotationEntry[] pes = obj.getParameterAnnotationEntries();
+                int parmIndex = 0;
+                for (ParameterAnnotationEntry pe : pes) {
+                    boolean foundParamAnnotation = false;
+                    for (AnnotationEntry a : pe.getAnnotationEntries()) {
+                        if (PARAM_ANNOTATIONS.contains(a.getAnnotationType())) {
+                            foundParamAnnotation = true;
+                            break;
                         }
-                        
-                        if (!foundParamAnnotation) {
-                            
-                            if ((!sawBareParm) && (hasConsumes || "Ljava/lang/String;".equals(parmTypes[parmIndex]))) {
-                                sawBareParm = true;
-                            } else {
-                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
-                                        .addClass(this)
-                                        .addMethod(this)
-                                        .addString("Parameter " + parmIndex + 1));
-                                break;
-                            }
-                           
-                        }
-                        
-                        parmIndex++;
                     }
-                     
+                    
+                    if (!foundParamAnnotation) {
+                        
+                        if ((!sawBareParm) && (hasConsumes || "Ljava/lang/String;".equals(parmTypes[parmIndex]))) {
+                            sawBareParm = true;
+                        } else {
+                            bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(this)
+                                    .addString("Parameter " + parmIndex + 1));
+                            break;
+                        }
+                       
+                    }
+                    
+                    parmIndex++;
                 }
+                 
             }
         }
     }
