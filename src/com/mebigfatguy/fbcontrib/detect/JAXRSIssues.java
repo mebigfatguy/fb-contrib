@@ -138,7 +138,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                         
                         if ((path != null) && "Ljavax/ws/rs/PathParam;".equals(annotationType)) {
                             String parmPath = getDefaultAnnotationValue(a);
-                            if ((parmPath != null) && (path.indexOf("{" + parmPath + "}" ) < 0)) {
+                            if ((parmPath != null) && (path.indexOf("{" + parmPath ) < 0)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY)
                                         .addClass(this)
                                         .addMethod(this)
