@@ -64,6 +64,22 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         PARAM_ANNOTATIONS = Collections.<String>unmodifiableSet(pa);
     }
     
+    private static final Set<String> NATIVE_JAXRS_TYPES;
+    static {
+        Set<String> njt = new HashSet<String>();
+        njt.add("Ljava/lang/String;");
+        njt.add("[B");
+        njt.add("Ljava/io/InputStream;");
+        njt.add("Ljava/io/Reader;");
+        njt.add("Ljava/io/File;");
+        njt.add("Ljavax/activation/DataSource;");
+        njt.add("Ljavax/xml/transform/Source;");
+        njt.add("Ljavax/xml/bin/JAXBElement;");
+        njt.add("Ljavax/ws/rc/core/MultivaluedMap;");
+        
+        NATIVE_JAXRS_TYPES = Collections.<String>unmodifiableSet(njt);
+    }
+    
     private BugReporter bugReporter;
     private boolean hasClassConsumes;
     
@@ -159,7 +175,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                 
                 if (!foundParamAnnotation) {
                     
-                    if ((!sawBareParm) && (hasConsumes || "Ljava/lang/String;".equals(parmTypes[parmIndex].getSignature()))) {
+                    if ((!sawBareParm) && (hasConsumes || NATIVE_JAXRS_TYPES.contains(parmTypes[parmIndex].getSignature()))) {
                         sawBareParm = true;
                     } else {
                         bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
