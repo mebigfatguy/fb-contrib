@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.ParameterAnnotationEntry;
+import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 
@@ -106,8 +107,11 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                                 .addMethod(this));
                 break;
             } else if (isJAXRS) {
-                int numParms = obj.getArgumentTypes().length;
-                if ((numParms > 0) && !hasConsumes) {
+                Type[] parmTypes = obj.getArgumentTypes();
+                int numParms = parmTypes.length;
+                if (numParms > 0) {
+                    boolean sawBareParm = false;
+                    
                     ParameterAnnotationEntry[] pes = obj.getParameterAnnotationEntries();
                     int parmIndex = 0;
                     for (ParameterAnnotationEntry pe : pes) {
@@ -118,12 +122,19 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                                 break;
                             }
                         }
+                        
                         if (!foundParamAnnotation) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
-                                    .addClass(this)
-                                    .addMethod(this)
-                                    .addString("Parameter " + parmIndex));
-                            break;
+                            
+                            if ((!sawBareParm) && (hasConsumes || "Ljava/lang/String;".equals(parmTypes[parmIndex]))) {
+                                sawBareParm = true;
+                            } else {
+                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
+                                        .addClass(this)
+                                        .addMethod(this)
+                                        .addString("Parameter " + parmIndex + 1));
+                                break;
+                            }
+                           
                         }
                         
                         parmIndex++;
