@@ -18,9 +18,14 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.ParameterAnnotationEntry;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 
@@ -32,6 +37,30 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class JAXRSIssues extends PreorderVisitor implements Detector {
 
+    private static final Set<String> METHOD_ANNOTATIONS;
+    static {
+        Set<String> ma = new HashSet<String>();
+        ma.add("Ljavax/ws/rs/HEAD;");
+        ma.add("Ljavax/ws/rs/GET;");
+        ma.add("Ljavax/ws/rs/PUT;");
+        ma.add("Ljavax/ws/rs/POST;");
+        ma.add("Ljavax/ws/rs/DELETE;");
+        ma.add("Ljavax/ws/rs/POST;");
+        METHOD_ANNOTATIONS = Collections.<String>unmodifiableSet(ma);
+    }
+    
+    private static final Set<String> PARAM_ANNOTATIONS;
+    static {
+        Set<String> pa = new HashSet<String>();
+        pa.add("Ljavax/ws/rs/PathParam;");
+        pa.add("Ljavax/ws/rs/CookieParam;");
+        pa.add("Ljavax/ws/rs/FormParam;");
+        pa.add("Ljavax/ws/rs/HeaderParam;");
+        pa.add("Ljavax/ws/rs/MatrixParam;");
+        pa.add("Ljavax/ws/rs/QueryParam;");
+        PARAM_ANNOTATIONS = Collections.<String>unmodifiableSet(pa);
+    }
+    
     private BugReporter bugReporter;
     
     public JAXRSIssues(BugReporter bugReporter) {
@@ -46,17 +75,26 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     
     @Override
     public void visitMethod(Method obj) {
+        boolean isJAXRS = false;
         boolean hasGet = false;
         boolean hasConsumes = false;
         
         for (AnnotationEntry entry : obj.getAnnotationEntries()) {
-            switch (entry.getAnnotationType()) {
+            String annotationType = entry.getAnnotationType();
+            switch (annotationType) {
             case "Ljavax/ws/rs/GET;":
                 hasGet = true;
                 break;
                 
             case "Ljavax/ws/rs/Consumes;":
                 hasConsumes = true;
+                break;
+                
+            default:
+                // it is find that GET is not captured here
+                if (METHOD_ANNOTATIONS.contains(annotationType)) {
+                    isJAXRS = true;
+                }
                 break;
             }
             
@@ -65,6 +103,31 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                                 .addClass(this)
                                 .addMethod(this));
                 break;
+            } else if (isJAXRS) {
+                int numParms = obj.getArgumentTypes().length;
+                if ((numParms > 0) && !hasConsumes) {
+                    ParameterAnnotationEntry[] pes = obj.getParameterAnnotationEntries();
+                    int parmIndex = 0;
+                    for (ParameterAnnotationEntry pe : pes) {
+                        boolean foundParamAnnotation = false;
+                        for (AnnotationEntry a : pe.getAnnotationEntries()) {
+                            if (PARAM_ANNOTATIONS.contains(a.getAnnotationType())) {
+                                foundParamAnnotation = true;
+                                break;
+                            }
+                        }
+                        if (!foundParamAnnotation) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(this)
+                                    .addString("Parameter " + parmIndex));
+                            break;
+                        }
+                        
+                        parmIndex++;
+                    }
+                     
+                }
             }
         }
     }

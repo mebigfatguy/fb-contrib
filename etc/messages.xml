@@ -5067,14 +5067,26 @@
     </BugPattern>
     
     <BugPattern type="JXI_GET_ENDPOINT_CONSUMES_CONTENT">
-    	<ShortDescription>Method implements a GET request but consumes input</ShortDescription>
-    	<LongDescription>Method {1} implements a GET request but consumes input</LongDescription>
+    	<ShortDescription>JAX-RS Method implements a GET request but consumes input</ShortDescription>
+    	<LongDescription>JAX-RS Method {1} implements a GET request but consumes input</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method is annotated to be used as @GET requests, but also documents that it
+    		<p>This JAX-RS endpoint is annotated to be used as @GET requests, but also documents that it
     		consumes JSON or XML data. Since a get request pulls parameters from the url, and not 
     		the body of request, this pattern is problematic. If you wish to consume JSON or XML data,
     		this request should be annotated with @POST.
+    		]]>
+       	</Details>
+    </BugPattern>
+    
+    <BugPattern type="JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT">
+    	<ShortDescription>JAX-RS Method defines a parameter that has no @*Param annotation, or @Consumes method annotation</ShortDescription>
+    	<LongDescription>JAX-RS Method {1} defines a parameter that has no @*Param annotation, or @Consumes method annotation</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This JAX-RS endpoint declares parameters without specifying where the value of this parameter comes from.
+    		You can specify this by using one of several 'Param' annotations (@PathParam, @CookieParam, @FormParam @HeaderParam @MatrixParam @QueryParam)
+    		or you can declare that the method @Consumes an xml or json stream.
     		]]>
        	</Details>
     </BugPattern>
