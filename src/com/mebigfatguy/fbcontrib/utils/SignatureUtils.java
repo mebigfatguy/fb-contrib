@@ -18,8 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -38,14 +36,7 @@ import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
  */
 public class SignatureUtils {
 
-    private static final Set<String> TWO_SLOT_TYPES;
-
-    static {
-        Set<String> tst = new HashSet<String>();
-        tst.add("J");
-        tst.add("D");
-        TWO_SLOT_TYPES = Collections.<String>unmodifiableSet(tst);
-    }
+    private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create("J", "D");
 
     /**
      * private to reinforce the helper status of the class
