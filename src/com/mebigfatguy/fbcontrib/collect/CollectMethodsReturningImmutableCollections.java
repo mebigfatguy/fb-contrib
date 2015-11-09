@@ -18,8 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
@@ -28,6 +26,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -43,29 +42,26 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class CollectMethodsReturningImmutableCollections extends BytecodeScanningDetector implements NonReportingDetector {
 
-    private static final Set<String> IMMUTABLE_PRODUCING_METHODS;
-
-    static {
-        Set<String> ipm = new HashSet<String>();
-        ipm.add("com/google/common/Collect/Maps.immutableEnumMap");
-        ipm.add("com/google/common/Collect/Maps.unmodifiableMap");
-        ipm.add("com/google/common/Collect/Sets.immutableEnumSet");
-        ipm.add("com/google/common/Collect/Sets.immutableCopy");
-        ipm.add("java/util/Arrays.asList");
-        ipm.add("java/util/Collections.unmodifiableCollection");
-        ipm.add("java/util/Collections.unmodifiableSet");
-        ipm.add("java/util/Collections.unmodifiableSortedSet");
-        ipm.add("java/util/Collections.unmodifiableMap");
-        ipm.add("java/util/Collections.unmodifiableList");
-        ipm.add("edu/emory/mathcs/backport/java/util/Arrays.asList");
-        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableCollection");
-        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableSet");
-        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableSortedSet");
-        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableMap");
-        ipm.add("edu/emory/mathcs/backport/java/util/Collections.unmodifiableList");
-        
-        IMMUTABLE_PRODUCING_METHODS = Collections.<String>unmodifiableSet(ipm);
-    }
+    private static final Set<String> IMMUTABLE_PRODUCING_METHODS = UnmodifiableSet.create(
+            //@formatter:off
+            "com/google/common/Collect/Maps.immutableEnumMap",
+            "com/google/common/Collect/Maps.unmodifiableMap",
+            "com/google/common/Collect/Sets.immutableEnumSet",
+            "com/google/common/Collect/Sets.immutableCopy",
+            "java/util/Arrays.asList",
+            "java/util/Collections.unmodifiableCollection",
+            "java/util/Collections.unmodifiableSet",
+            "java/util/Collections.unmodifiableSortedSet",
+            "java/util/Collections.unmodifiableMap",
+            "java/util/Collections.unmodifiableList",
+            "edu/emory/mathcs/backport/java/util/Arrays.asList",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableCollection",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableSet",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableSortedSet",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableMap",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableList"
+            //@formatter:on
+    );
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
