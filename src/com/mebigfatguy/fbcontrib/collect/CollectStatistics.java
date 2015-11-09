@@ -18,8 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -28,24 +26,24 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
-    private static final Set<String> COMMON_METHOD_SIGS;
-
-    static {
-        Set<String> cms = new HashSet<String>();
-        cms.add("\\<init\\>\\(\\)V");
-        cms.add("toString\\(\\)Ljava/lang/String;");
-        cms.add("hashCode\\(\\)I");
-        cms.add("clone\\(\\).*");
-        cms.add("values\\(\\).*");
-        cms.add("main\\(\\[Ljava/lang/String;\\)V");
-        COMMON_METHOD_SIGS = Collections.<String>unmodifiableSet(cms);
-    }
+    private static final Set<String> COMMON_METHOD_SIGS = UnmodifiableSet.create(
+            //@formatter:off
+            "\\<init\\>\\(\\)V", 
+            "toString\\(\\)Ljava/lang/String;", 
+            "hashCode\\(\\)I", 
+            "clone\\(\\).*", 
+            "values\\(\\).*", 
+            "main\\(\\[Ljava/lang/String;\\)V"
+            //@formatter:on
+    );
 
     private int numMethodCalls;
     private boolean classHasAnnotation;
