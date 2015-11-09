@@ -134,12 +134,12 @@ public class FinalParameters extends BytecodeScanningDetector {
                 SourceFile sourceFile = sourceFinder.findSourceFile(srcLineAnnotation.getPackageName(), srcLineAnnotation.getSourceFile());
                 try (BufferedReader sourceReader = new BufferedReader(new InputStreamReader(sourceFile.getInputStream(), StandardCharsets.UTF_8))) {
 
-                List<String> lines = new ArrayList<String>(100);
-                String line;
-                while ((line = sourceReader.readLine()) != null) {
-                    lines.add(line);
-                }
-                sourceLines = lines.toArray(new String[lines.size()]);
+                    List<String> lines = new ArrayList<String>(100);
+                    String line;
+                    while ((line = sourceReader.readLine()) != null) {
+                        lines.add(line);
+                    }
+                    sourceLines = lines.toArray(new String[lines.size()]);
                 }
             }
         } catch (IOException ioe) {
