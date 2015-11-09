@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
@@ -122,8 +123,6 @@ public class FinalParameters extends BytecodeScanningDetector {
      */
     private String[] getSourceLines(Method obj) {
 
-        BufferedReader sourceReader = null;
-
         if (srcInited) {
             return sourceLines;
         }
@@ -133,7 +132,7 @@ public class FinalParameters extends BytecodeScanningDetector {
             if (srcLineAnnotation != null) {
                 SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
                 SourceFile sourceFile = sourceFinder.findSourceFile(srcLineAnnotation.getPackageName(), srcLineAnnotation.getSourceFile());
-                sourceReader = new BufferedReader(new InputStreamReader(sourceFile.getInputStream(), "UTF-8"));
+                try (BufferedReader sourceReader = new BufferedReader(new InputStreamReader(sourceFile.getInputStream(), StandardCharsets.UTF_8))) {
 
                 List<String> lines = new ArrayList<String>(100);
                 String line;
@@ -141,18 +140,12 @@ public class FinalParameters extends BytecodeScanningDetector {
                     lines.add(line);
                 }
                 sourceLines = lines.toArray(new String[lines.size()]);
+                }
             }
         } catch (IOException ioe) {
             // noop
-        } finally {
-            try {
-                if (sourceReader != null) {
-                    sourceReader.close();
-                }
-            } catch (IOException ioe2) {
-                // noop
-            }
         }
+        
         srcInited = true;
         return sourceLines;
     }
