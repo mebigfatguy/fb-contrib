@@ -98,6 +98,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     
     private BugReporter bugReporter;
     private boolean hasClassConsumes;
+    private String pathOnClass;
     
     public JAXRSIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -106,11 +107,13 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
-        
+        pathOnClass = "";
         hasClassConsumes = false;
         for (AnnotationEntry entry : cls.getAnnotationEntries()) {
             if ("Ljavax/ws/rs/Consumes;".equals(entry.getAnnotationType())) {
                 hasClassConsumes = true;
+            } else if ("Ljavax/ws/rs/Path;".equals(entry.getAnnotationType())) {
+                pathOnClass = getDefaultAnnotationValue(entry);
             }
         }
         
@@ -158,7 +161,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         }
         
         if (isJAXRS) {
-            processJAXRSMethod(obj, path, hasConsumes || hasClassConsumes);
+            processJAXRSMethod(obj, pathOnClass + path, hasConsumes || hasClassConsumes);
         }
     }
     
@@ -179,7 +182,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                         
                         if ((path != null) && "Ljavax/ws/rs/PathParam;".equals(annotationType)) {
                             String parmPath = getDefaultAnnotationValue(a);
-                            if ((parmPath != null) && (path.indexOf("{" + parmPath ) < 0)) {
+                            if ((parmPath != null) && (!path.matches(".*\\{" + parmPath + "\\b.*" ))) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY)
                                         .addClass(this)
                                         .addMethod(this)
