@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -46,21 +47,23 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * to be thrown are related through inheritance.
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
+    
     private static JavaClass runtimeExceptionClass;
     private static JavaClass exceptionClass;
-    private static final Set<String> safeClasses;
+    private static final Set<String> safeClasses = UnmodifiableSet.create(
+            //@formatter:off
+            "java/lang/Object",
+            "java/lang/String",
+            "java/lang/Integer",
+            "java/lang/Long",
+            "java/lang/Float",
+            "java/lang/Double",
+            "java/lang/Short",
+            "java/lang/Boolean"
+            //@formatter:on
+    );
 
     static {
-        Set<String> sc = new HashSet<String>();
-        sc.add("java/lang/Object");
-        sc.add("java/lang/String");
-        sc.add("java/lang/Integer");
-        sc.add("java/lang/Long");
-        sc.add("java/lang/Float");
-        sc.add("java/lang/Double");
-        sc.add("java/lang/Short");
-        sc.add("java/lang/Boolean");
-        safeClasses = Collections.<String>unmodifiableSet(sc);
 
         try {
             runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
