@@ -18,8 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -30,6 +28,7 @@ import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -39,66 +38,59 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class JAXRSIssues extends PreorderVisitor implements Detector {
 
-    private static final Set<String> METHOD_ANNOTATIONS;
-    static {
-        Set<String> ma = new HashSet<String>();
-        ma.add("Ljavax/ws/rs/HEAD;");
-        ma.add("Ljavax/ws/rs/GET;");
-        ma.add("Ljavax/ws/rs/PUT;");
-        ma.add("Ljavax/ws/rs/POST;");
-        ma.add("Ljavax/ws/rs/DELETE;");
-        ma.add("Ljavax/ws/rs/POST;");
-        METHOD_ANNOTATIONS = Collections.<String>unmodifiableSet(ma);
-    }
+    private static final Set<String> METHOD_ANNOTATIONS = UnmodifiableSet.create(
+            //@formatter:off
+            "Ljavax/ws/rs/HEAD;",
+            "Ljavax/ws/rs/GET;", 
+            "Ljavax/ws/rs/PUT;", 
+            "Ljavax/ws/rs/POST;", 
+            "Ljavax/ws/rs/DELETE;",
+            "Ljavax/ws/rs/POST;"
+            //@formatter:on
+    );
     
-    private static final Set<String> PARAM_ANNOTATIONS;
-    static {
-        Set<String> pa = new HashSet<String>();
-        pa.add("Ljavax/ws/rs/PathParam;");
-        pa.add("Ljavax/ws/rs/CookieParam;");
-        pa.add("Ljavax/ws/rs/FormParam;");
-        pa.add("Ljavax/ws/rs/HeaderParam;");
-        pa.add("Ljavax/ws/rs/MatrixParam;");
-        pa.add("Ljavax/ws/rs/QueryParam;");
-        pa.add("Ljavax/ws/rs/core/Context;");
-        
-        pa.add("Lcom/wordnik/swagger/annotations/ApiParam");
-        PARAM_ANNOTATIONS = Collections.<String>unmodifiableSet(pa);
-    }
+    private static final Set<String> PARAM_ANNOTATIONS = UnmodifiableSet.create(
+            //@formatter:off
+            "Ljavax/ws/rs/PathParam;",
+            "Ljavax/ws/rs/CookieParam;",
+            "Ljavax/ws/rs/FormParam;", 
+            "Ljavax/ws/rs/HeaderParam;", 
+            "Ljavax/ws/rs/MatrixParam;",
+            "Ljavax/ws/rs/QueryParam;",
+            "Ljavax/ws/rs/core/Context;",
+            "Lcom/wordnik/swagger/annotations/ApiParam"
+            //@formatter:on
+    );
     
-    private static final Set<String> NATIVE_JAXRS_TYPES;
-    static {
-        Set<String> njt = new HashSet<String>();
-        njt.add("Ljava/lang/String;");
-        njt.add("[B");
-        njt.add("Ljava/io/InputStream;");
-        njt.add("Ljava/io/Reader;");
-        njt.add("Ljava/io/File;");
-        njt.add("Ljavax/activation/DataSource;");
-        njt.add("Ljavax/xml/transform/Source;");
-        njt.add("Ljavax/xml/bin/JAXBElement;");
-        njt.add("Ljavax/ws/rc/core/MultivaluedMap;");
-        
-        NATIVE_JAXRS_TYPES = Collections.<String>unmodifiableSet(njt);
-    }
+    private static final Set<String> NATIVE_JAXRS_TYPES = UnmodifiableSet.create(
+            //@formatter:off
+            "Ljava/lang/String;",
+            "[B",
+            "Ljava/io/InputStream;",
+            "Ljava/io/Reader;",
+            "Ljava/io/File;",
+            "Ljavax/activation/DataSource;",
+            "Ljavax/xml/transform/Source;",
+            "Ljavax/xml/bin/JAXBElement;",
+            "Ljavax/ws/rc/core/MultivaluedMap;"
+            //@formatter:on
+    );
     
-    private static final Set<String> VALID_CONTEXT_TYPES;
-    static {
-        Set<String> vct = new HashSet<String>();
-        vct.add("Ljavax/ws/rs/core/Application;");
-        vct.add("Ljavax/ws/rs/core/UriInfo;");
-        vct.add("Ljavax/ws/rs/core/HttpHeaders;");
-        vct.add("Ljavax/ws/rs/core/Request;");
-        vct.add("Ljavax/ws/rs/core/SecurityContext;");
-        vct.add("Ljavax/ws/rs/ext/Providers;");
-        vct.add("Ljavax/servlet/ServletConfig;");
-        vct.add("Ljavax/servlet/ServletContext;");
-        vct.add("Ljavax/servlet/http/HttpServletRequest;");
-        vct.add("Ljavax/servlet/http/HttpServletResponse;");
-        
-        VALID_CONTEXT_TYPES = Collections.<String>unmodifiableSet(vct);
-    }
-    
+    private static final Set<String> VALID_CONTEXT_TYPES = UnmodifiableSet.create(
+            //@formatter:off
+            "Ljavax/ws/rs/core/Application;",
+            "Ljavax/ws/rs/core/UriInfo;",
+            "Ljavax/ws/rs/core/HttpHeaders;",
+            "Ljavax/ws/rs/core/Request;",
+            "Ljavax/ws/rs/core/SecurityContext;",
+            "Ljavax/ws/rs/ext/Providers;",
+            "Ljavax/servlet/ServletConfig;",
+            "Ljavax/servlet/ServletContext;",
+            "Ljavax/servlet/http/HttpServletRequest;",
+            "Ljavax/servlet/http/HttpServletResponse;"
+            //@formatter:on
+    );
+   
     private BugReporter bugReporter;
     private boolean hasClassConsumes;
     private String pathOnClass;
