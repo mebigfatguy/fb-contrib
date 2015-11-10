@@ -83,6 +83,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     private static final Set<String> VALID_CONTEXT_TYPES;
     static {
         Set<String> vct = new HashSet<String>();
+        vct.add("Ljavax/ws/rs/core/Application;");
         vct.add("Ljavax/ws/rs/core/UriInfo;");
         vct.add("Ljavax/ws/rs/core/HttpHeaders;");
         vct.add("Ljavax/ws/rs/core/Request;");
