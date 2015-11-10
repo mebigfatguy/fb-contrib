@@ -50,7 +50,7 @@ public class JXI_Sample {
 
     
     @GET
-    @Path("/stuffToClassAnnot/{good}")
+    @Path("/stuffToClassAnnot/{weasel}")
     public Response fpUseClassAnnot(@PathParam("bad") String bad) {
         return Response.ok().build();
     }
