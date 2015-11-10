@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
+@Path("/booya/{weasel}")
 public class JXI_Sample {
 
     @GET
@@ -47,6 +48,12 @@ public class JXI_Sample {
         return Response.ok().build();
     }
 
+    
+    @GET
+    @Path("/stuffToClassAnnot/{good}")
+    public Response fpUseClassAnnot(@PathParam("bad") String bad) {
+        return Response.ok().build();
+    }
     
     @POST
     @Path("/stuffok/{blub}")
