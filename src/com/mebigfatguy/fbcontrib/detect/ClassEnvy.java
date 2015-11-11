@@ -36,6 +36,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -50,15 +51,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class ClassEnvy extends BytecodeScanningDetector {
     private static final String ENVY_PERCENT_PROPERTY = "fb-contrib.ce.percent";
-    private static final Set<String> ignorableInterfaces;
-
-    static {
-        Set<String> ii = new HashSet<String>();
-        ii.add("java.io.Serializable");
-        ii.add("java.lang.Cloneable");
-        ii.add("java.lang.Comparable");
-        ignorableInterfaces = Collections.<String>unmodifiableSet(ii);
-    }
+    private static final Set<String> ignorableInterfaces = UnmodifiableSet.create(
+            //@formatter:off
+            "java.io.Serializable",
+            "java.lang.Cloneable",
+            "java.lang.Comparable"
+            //@formatter:on
+    );
 
     private static final Comparator<Map.Entry<String, Set<Integer>>> ACCESS_COUNT_COMPARATOR = new Comparator<Map.Entry<String, Set<Integer>>>() {
         @Override
