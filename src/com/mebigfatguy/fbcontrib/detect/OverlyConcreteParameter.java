@@ -24,9 +24,11 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ExceptionTable;
@@ -41,6 +43,7 @@ import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -56,6 +59,11 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * more difficult.
  */
 public class OverlyConcreteParameter extends BytecodeScanningDetector {
+    
+    private static Set<String> CONVERSION_ANNOTATIONS = UnmodifiableSet.create(
+            "Ljavax/persistence/Converter;"
+    );
+    
     private final BugReporter bugReporter;
     private JavaClass[] constrainingClasses;
     private Map<Integer, Map<JavaClass, List<MethodInfo>>> parameterDefiners;
@@ -85,15 +93,19 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            JavaClass[] infs = classContext.getJavaClass().getAllInterfaces();
-            JavaClass[] sups = classContext.getJavaClass().getSuperClasses();
-            constrainingClasses = new JavaClass[infs.length + sups.length];
-            System.arraycopy(infs, 0, constrainingClasses, 0, infs.length);
-            System.arraycopy(sups, 0, constrainingClasses, infs.length, sups.length);
-            parameterDefiners = new HashMap<Integer, Map<JavaClass, List<MethodInfo>>>();
-            usedParameters = new BitSet();
-            stack = new OpcodeStack();
-            super.visitClassContext(classContext);
+            JavaClass cls = classContext.getJavaClass();
+            
+            if (!isaConversionClass(cls)) {
+                JavaClass[] infs = cls.getAllInterfaces();
+                JavaClass[] sups = cls.getSuperClasses();
+                constrainingClasses = new JavaClass[infs.length + sups.length];
+                System.arraycopy(infs, 0, constrainingClasses, 0, infs.length);
+                System.arraycopy(sups, 0, constrainingClasses, infs.length, sups.length);
+                parameterDefiners = new HashMap<Integer, Map<JavaClass, List<MethodInfo>>>();
+                usedParameters = new BitSet();
+                stack = new OpcodeStack();
+                super.visitClassContext(classContext);
+            }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         } finally {
@@ -534,6 +546,16 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                 }
             }
         }
+    }
+    
+    private boolean isaConversionClass(JavaClass cls) {
+        for (AnnotationEntry entry : cls.getAnnotationEntries()) {
+            if (CONVERSION_ANNOTATIONS.contains(entry.getAnnotationType())) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     /**
