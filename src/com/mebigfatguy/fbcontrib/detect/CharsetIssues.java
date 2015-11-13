@@ -33,6 +33,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.PublicAPI;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -51,7 +52,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 
     private static final Map<FQMethod, Integer> REPLACEABLE_ENCODING_METHODS;
     private static final Map<FQMethod, Integer> UNREPLACEABLE_ENCODING_METHODS;
-    public static final Set<String> STANDARD_JDK7_ENCODINGS;
+    public static final Set<String> STANDARD_JDK7_ENCODINGS = UnmodifiableSet.create("US-ASCII", "ISO-8859-1", "UTF-8", "UTF-16BE", "UTF-16LE", "UTF-16");
 
     /*
      * The stack offset refers to the relative position of the
@@ -107,16 +108,6 @@ public class CharsetIssues extends BytecodeScanningDetector {
         unreplaceable.put(new FQMethod("java/nio/channels/Channels", "newWriter", "(Ljava/nio/channels/WritableByteChannel;Ljava/lang/String;)Ljava/io/Writer;"), Values.ZERO);
 
         UNREPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(unreplaceable);
-
-        Set<String> encodings = new HashSet<String>();
-        encodings.add("US-ASCII");
-        encodings.add("ISO-8859-1");
-        encodings.add("UTF-8");
-        encodings.add("UTF-16BE");
-        encodings.add("UTF-16LE");
-        encodings.add("UTF-16");
-
-        STANDARD_JDK7_ENCODINGS = Collections.unmodifiableSet(encodings);
     }
 
     private final BugReporter bugReporter;
