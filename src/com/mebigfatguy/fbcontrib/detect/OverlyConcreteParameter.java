@@ -138,6 +138,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                 for (AnnotationEntry entry : obj.getAnnotationEntries()) {
                     if (CONVERSION_ANNOTATIONS.contains(entry.getAnnotationType())) {
                         methodSignatureIsConstrained = true;
+                        break;
                     }
                 }
             }
