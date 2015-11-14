@@ -133,6 +133,14 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
             String methodSig = obj.getSignature();
 
             methodSignatureIsConstrained = methodIsSpecial(methodName, methodSig);
+            
+            if (!methodSignatureIsConstrained) {
+                for (AnnotationEntry entry : obj.getAnnotationEntries()) {
+                    if (CONVERSION_ANNOTATIONS.contains(entry.getAnnotationType())) {
+                        methodSignatureIsConstrained = true;
+                    }
+                }
+            }
             if (!methodSignatureIsConstrained) {
                 String parms = methodSig.split("\\(|\\)")[1];
                 if (parms.indexOf(';') >= 0) {
