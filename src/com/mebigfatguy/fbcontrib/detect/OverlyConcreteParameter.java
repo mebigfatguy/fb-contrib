@@ -62,7 +62,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class OverlyConcreteParameter extends BytecodeScanningDetector {
     
     private static final Set<String> CONVERSION_ANNOTATIONS = UnmodifiableSet.create(
-            "Ljavax/persistence/Converter;"
+            "Ljavax/persistence/Converter;",
+            "Ljavax/ws/rs/Consumes;"
     );
     
     private static final Set<String> CONVERSION_SUPER_CLASSES = UnmodifiableSet.create(
