@@ -60,8 +60,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class OverlyConcreteParameter extends BytecodeScanningDetector {
     
-    private static Set<String> CONVERSION_ANNOTATIONS = UnmodifiableSet.create(
+    private static final Set<String> CONVERSION_ANNOTATIONS = UnmodifiableSet.create(
             "Ljavax/persistence/Converter;"
+    );
+    
+    private static final Set<String> CONVERSION_SUPER_CLASSES = UnmodifiableSet.create(
+            "com.fasterxml.jackson.databind.JsonSerializer",
+            "com.fasterxml.jackson.databind.JsonDeserializer"
     );
     
     private final BugReporter bugReporter;
@@ -548,9 +553,21 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         }
     }
     
+    /**
+     * returns whether this class is used to convert types of some sort, such that
+     * you don't want to suggest reducing the class specified to be more generic
+     * 
+     * @param cls the class to check
+     * @return whether this class is used in conversions
+     */
     private boolean isaConversionClass(JavaClass cls) {
         for (AnnotationEntry entry : cls.getAnnotationEntries()) {
             if (CONVERSION_ANNOTATIONS.contains(entry.getAnnotationType())) {
+                return true;
+            }
+            
+            // this ignores the fact that this class might be a grand child, but meh
+            if (CONVERSION_SUPER_CLASSES.contains(cls.getSuperclassName())) {
                 return true;
             }
         }
