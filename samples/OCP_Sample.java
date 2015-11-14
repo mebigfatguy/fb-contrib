@@ -7,9 +7,14 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -142,7 +147,15 @@ public class OCP_Sample extends Z implements ActionListener, Serializable {
             e.printStackTrace();
         }
     }
+    
+    public Date fpParmAnnot(@NiftyParm GregorianCalendar g) {
+        return g.getTime();
+    }
+}
 
+@Retention(RetentionPolicy.CLASS)
+@Target(ElementType.PARAMETER)
+@interface NiftyParm {
 }
 
 class Z {

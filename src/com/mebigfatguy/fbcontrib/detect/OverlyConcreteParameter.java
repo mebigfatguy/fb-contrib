@@ -36,6 +36,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -127,6 +128,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         String methodName = obj.getName();
 
         if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName)) {
+            
             String methodSig = obj.getSignature();
 
             methodSignatureIsConstrained = methodIsSpecial(methodName, methodSig);
@@ -368,28 +370,34 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
      */
     private boolean buildParameterDefiners() throws ClassNotFoundException {
 
-        Type[] parms = getMethod().getArgumentTypes();
+        Method m = getMethod();
+        
+        Type[] parms = m.getArgumentTypes();
         if (parms.length == 0) {
             return false;
         }
 
+        ParameterAnnotationEntry[] annotations = m.getParameterAnnotationEntries();
+
         boolean hasPossiblyOverlyConcreteParm = false;
 
         for (int i = 0; i < parms.length; i++) {
-            String parm = parms[i].getSignature();
-            if (parm.startsWith("L")) {
-                String clsName = SignatureUtils.stripSignature(parm);
-                if (clsName.startsWith("java.lang.")) {
-                    continue;
-                }
-
-                JavaClass cls = Repository.lookupClass(clsName);
-                if (cls.isClass() && (!cls.isAbstract())) {
-                    Map<JavaClass, List<MethodInfo>> definers = getClassDefiners(cls);
-
-                    if (definers.size() > 0) {
-                        parameterDefiners.put(Integer.valueOf(i + (methodIsStatic ? 0 : 1)), definers);
-                        hasPossiblyOverlyConcreteParm = true;
+            if ((annotations.length <= i) || (annotations[i] == null) || (annotations[i].getNumAnnotations() == 0)) {
+                String parm = parms[i].getSignature();
+                if (parm.startsWith("L")) {
+                    String clsName = SignatureUtils.stripSignature(parm);
+                    if (clsName.startsWith("java.lang.")) {
+                        continue;
+                    }
+    
+                    JavaClass cls = Repository.lookupClass(clsName);
+                    if (cls.isClass() && (!cls.isAbstract())) {
+                        Map<JavaClass, List<MethodInfo>> definers = getClassDefiners(cls);
+    
+                        if (definers.size() > 0) {
+                            parameterDefiners.put(Integer.valueOf(i + (methodIsStatic ? 0 : 1)), definers);
+                            hasPossiblyOverlyConcreteParm = true;
+                        }
                     }
                 }
             }
