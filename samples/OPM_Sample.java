@@ -35,7 +35,13 @@ public class OPM_Sample extends OPMSuper implements Comparator<String> {
     @RT
     public void fpHasRTAnnotation() {
     }
-
+    
+    public void setFPFoo(int x) {
+    }
+    
+    public int getFPFoo() {
+        return 0;
+    }
 }
 
 abstract class OPMSuper {
