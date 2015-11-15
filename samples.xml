@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<BugCollection version="3.0.2-dev-20150525-a8ecbcc" sequence="0" timestamp="1447224126000" analysisTimestamp="1447224144578" release="">
+<BugCollection version="3.0.1" sequence="0" timestamp="1447617941000" analysisTimestamp="1447617963062" release="">
   <Project projectName="sample">
     <Jar>/home/dave/dev/fb-contrib/samples/./../target/classes/samples</Jar>
     <AuxClasspathEntry>/home/dave/dev/fb-contrib/samples/./../lib/backport-util-concurrent-3.1.jar</AuxClasspathEntry>
@@ -407,20 +407,6 @@
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.KILLED_BY_SUBSEQUENT_STORE" value="true"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="o"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
-  </BugInstance>
-  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" rank="17" abbrev="DLS" category="STYLE">
-    <Class classname="BAS_Sample">
-      <SourceLine classname="BAS_Sample" sourcefile="BAS_Sample.java" sourcepath="BAS_Sample.java"/>
-    </Class>
-    <Method classname="BAS_Sample" name="testFPSync" signature="(Ljava/util/Set;Ljava/util/Set;)V" isStatic="false">
-      <SourceLine classname="BAS_Sample" start="96" end="104" startBytecode="0" endBytecode="27" sourcefile="BAS_Sample.java" sourcepath="BAS_Sample.java"/>
-    </Method>
-    <LocalVariable name="d" register="4" pc="61" role="LOCAL_VARIABLE_NAMED"/>
-    <SourceLine classname="BAS_Sample" start="102" end="102" startBytecode="59" endBytecode="59" sourcefile="BAS_Sample.java" sourcepath="BAS_Sample.java"/>
-    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.BASE_VALUE" value="true"/>
-    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.COPY_VALUE" value="true"/>
-    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="d"/>
-    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.TWO_STORES_MULTIPLE_LOADS" value="true"/>
   </BugInstance>
   <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="3" rank="20" abbrev="DLS" category="STYLE">
     <Class classname="BAS_Sample">
@@ -2210,20 +2196,6 @@
     <Method classname="java.nio.channels.Channels" name="newWriter" signature="(Ljava/nio/channels/WritableByteChannel;Ljava/lang/String;)Ljava/io/Writer;" isStatic="true" role="METHOD_CALLED">
       <SourceLine classname="java.nio.channels.Channels" start="612" end="613" startBytecode="0" endBytecode="46" sourcefile="Channels.java" sourcepath="java/nio/channels/Channels.java"/>
     </Method>
-  </BugInstance>
-  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="1" rank="15" abbrev="DLS" category="STYLE">
-    <Class classname="CSI_Sample">
-      <SourceLine classname="CSI_Sample" sourcefile="CSI_Sample.java" sourcepath="CSI_Sample.java"/>
-    </Class>
-    <Method classname="CSI_Sample" name="testReaderCS" signature="(Ljava/lang/String;)V" isStatic="false">
-      <SourceLine classname="CSI_Sample" start="24" end="41" startBytecode="0" endBytecode="79" sourcefile="CSI_Sample.java" sourcepath="CSI_Sample.java"/>
-    </Method>
-    <LocalVariable name="oddlyConstructedString" register="3" pc="155" role="LOCAL_VARIABLE_NAMED"/>
-    <SourceLine classname="CSI_Sample" start="40" end="40" startBytecode="154" endBytecode="154" sourcefile="CSI_Sample.java" sourcepath="CSI_Sample.java"/>
-    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.BASE_VALUE" value="true"/>
-    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
-    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="oddlyConstructedString"/>
-    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
     <Class classname="CSI_Sample">
@@ -9722,14 +9694,19 @@
     </Method>
     <SourceLine classname="New" start="97" end="97" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
   </BugInstance>
+  <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
+    <Class classname="NiftyParm">
+      <SourceLine classname="NiftyParm" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    </Class>
+  </BugInstance>
   <BugInstance type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET" priority="2" rank="7" abbrev="CSI" category="CORRECTNESS">
     <Class classname="OCP_Sample">
       <SourceLine classname="OCP_Sample" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
     <Method classname="OCP_Sample" name="httpComponentWithTry" signature="(Lorg/apache/http/client/methods/HttpPut;Ljava/lang/String;)V" isStatic="true">
-      <SourceLine classname="OCP_Sample" start="135" end="144" startBytecode="0" endBytecode="146" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="140" end="149" startBytecode="0" endBytecode="146" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Method>
-    <SourceLine classname="OCP_Sample" start="140" end="140" startBytecode="26" endBytecode="26" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample" start="145" end="145" startBytecode="26" endBytecode="26" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     <Method classname="java.lang.String" name="getBytes" signature="(Ljava/lang/String;)[B" isStatic="false" role="METHOD_CALLED">
       <SourceLine classname="java.lang.String" start="905" end="906" startBytecode="0" endBytecode="63" sourcefile="String.java" sourcepath="java/lang/String.java"/>
     </Method>
@@ -9742,9 +9719,9 @@
       <SourceLine classname="OCP_Sample" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
     <Method classname="OCP_Sample" name="httpComponentWithTryFalseNegative" signature="(Lorg/apache/http/client/methods/HttpPut;Ljava/lang/String;)V" isStatic="true">
-      <SourceLine classname="OCP_Sample" start="122" end="131" startBytecode="0" endBytecode="168" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="127" end="136" startBytecode="0" endBytecode="168" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Method>
-    <SourceLine classname="OCP_Sample" start="127" end="127" startBytecode="26" endBytecode="26" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample" start="132" end="132" startBytecode="26" endBytecode="26" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     <Method classname="java.lang.String" name="getBytes" signature="(Ljava/lang/String;)[B" isStatic="false" role="METHOD_CALLED">
       <SourceLine classname="java.lang.String" start="905" end="906" startBytecode="0" endBytecode="63" sourcefile="String.java" sourcepath="java/lang/String.java"/>
     </Method>
@@ -9757,16 +9734,16 @@
       <SourceLine classname="OCP_Sample" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
     <Method classname="OCP_Sample" name="testFPaastore" signature="(Ljava/awt/Color;)V" isStatic="false">
-      <SourceLine classname="OCP_Sample" start="106" end="107" startBytecode="0" endBytecode="11" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="111" end="112" startBytecode="0" endBytecode="11" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Method>
     <LocalVariable name="cc" register="2" pc="13" role="LOCAL_VARIABLE_NAMED"/>
-    <SourceLine classname="OCP_Sample" start="106" end="106" startBytecode="12" endBytecode="12" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample" start="111" end="111" startBytecode="12" endBytecode="12" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="cc"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
     <Class classname="OCP_Sample">
-      <SourceLine classname="OCP_Sample" start="30" end="144" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="35" end="152" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
   </BugInstance>
   <BugInstance type="OCP_OVERLY_CONCRETE_PARAMETER" priority="2" rank="17" abbrev="OCP" category="STYLE">
@@ -9774,9 +9751,9 @@
       <SourceLine classname="OCP_Sample" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
     <Method classname="OCP_Sample" name="getDisplay" signature="(Ljava/util/HashSet;Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;" isStatic="false">
-      <SourceLine classname="OCP_Sample" start="36" end="47" startBytecode="0" endBytecode="257" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="41" end="52" startBytecode="0" endBytecode="257" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Method>
-    <SourceLine classname="OCP_Sample" start="36" end="36" startBytecode="0" endBytecode="0" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample" start="41" end="41" startBytecode="0" endBytecode="0" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     <String value="1st parameter &apos;s&apos; could be declared as java.util.Collection instead"/>
   </BugInstance>
   <BugInstance type="OCP_OVERLY_CONCRETE_PARAMETER" priority="2" rank="17" abbrev="OCP" category="STYLE">
@@ -9784,9 +9761,9 @@
       <SourceLine classname="OCP_Sample" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
     <Method classname="OCP_Sample" name="httpComponent" signature="(Lorg/apache/http/client/methods/HttpPut;Ljava/lang/String;)V" isStatic="true">
-      <SourceLine classname="OCP_Sample" start="116" end="118" startBytecode="0" endBytecode="96" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="121" end="123" startBytecode="0" endBytecode="96" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Method>
-    <SourceLine classname="OCP_Sample" start="116" end="116" startBytecode="0" endBytecode="0" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample" start="121" end="121" startBytecode="0" endBytecode="0" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     <String value="1st parameter &apos;request&apos; could be declared as org.apache.http.HttpMessage instead"/>
   </BugInstance>
   <BugInstance type="OCP_OVERLY_CONCRETE_PARAMETER" priority="2" rank="17" abbrev="OCP" category="STYLE">
@@ -9794,9 +9771,9 @@
       <SourceLine classname="OCP_Sample" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
     <Method classname="OCP_Sample" name="httpComponentWithTry" signature="(Lorg/apache/http/client/methods/HttpPut;Ljava/lang/String;)V" isStatic="true">
-      <SourceLine classname="OCP_Sample" start="135" end="144" startBytecode="0" endBytecode="146" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="140" end="149" startBytecode="0" endBytecode="146" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Method>
-    <SourceLine classname="OCP_Sample" start="135" end="135" startBytecode="0" endBytecode="0" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample" start="140" end="140" startBytecode="0" endBytecode="0" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     <String value="1st parameter &apos;request&apos; could be declared as org.apache.http.HttpMessage instead"/>
   </BugInstance>
   <BugInstance type="OCP_OVERLY_CONCRETE_PARAMETER" priority="2" rank="17" abbrev="OCP" category="STYLE">
@@ -9804,9 +9781,9 @@
       <SourceLine classname="OCP_Sample" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
     <Method classname="OCP_Sample" name="parse" signature="(Lorg/xml/sax/helpers/DefaultHandler;Ljava/io/File;)V" isStatic="false">
-      <SourceLine classname="OCP_Sample" start="52" end="58" startBytecode="0" endBytecode="159" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="57" end="63" startBytecode="0" endBytecode="159" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Method>
-    <SourceLine classname="OCP_Sample" start="52" end="52" startBytecode="0" endBytecode="0" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample" start="57" end="57" startBytecode="0" endBytecode="0" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     <String value="1st parameter &apos;dh&apos; could be declared as org.xml.sax.ContentHandler instead"/>
   </BugInstance>
   <BugInstance type="UC_USELESS_OBJECT" priority="2" rank="17" abbrev="UC" category="STYLE">
@@ -9814,20 +9791,20 @@
       <SourceLine classname="OCP_Sample" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
     <Method classname="OCP_Sample" name="testFPaastore" signature="(Ljava/awt/Color;)V" isStatic="false">
-      <SourceLine classname="OCP_Sample" start="106" end="107" startBytecode="0" endBytecode="79" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="111" end="112" startBytecode="0" endBytecode="79" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Method>
     <String value="cc"/>
     <Type descriptor="[Ljava/awt/Color;"/>
-    <SourceLine classname="OCP_Sample" start="106" end="106" startBytecode="1" endBytecode="1" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample" start="111" end="111" startBytecode="1" endBytecode="1" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
   </BugInstance>
   <BugInstance type="UC_USELESS_VOID_METHOD" priority="3" rank="20" abbrev="UC" category="STYLE">
     <Class classname="OCP_Sample">
       <SourceLine classname="OCP_Sample" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
     <Method classname="OCP_Sample" name="testFPaastore" signature="(Ljava/awt/Color;)V" isStatic="false">
-      <SourceLine classname="OCP_Sample" start="106" end="107" startBytecode="0" endBytecode="79" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample" start="111" end="112" startBytecode="0" endBytecode="79" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Method>
-    <SourceLine classname="OCP_Sample" start="107" end="107" startBytecode="13" endBytecode="13" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample" start="112" end="112" startBytecode="13" endBytecode="13" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
     <Class classname="OCP_Sample$A">
@@ -9836,7 +9813,7 @@
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
     <Class classname="OCP_Sample$B">
-      <SourceLine classname="OCP_Sample$B" start="77" end="86" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="OCP_Sample$B" start="82" end="91" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
   </BugInstance>
   <BugInstance type="URF_UNREAD_PUBLIC_OR_PROTECTED_FIELD" priority="2" rank="18" abbrev="UrF" category="STYLE">
@@ -9846,7 +9823,7 @@
     <Field classname="OCP_Sample$B" name="x" signature="I" isStatic="false">
       <SourceLine classname="OCP_Sample$B" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Field>
-    <SourceLine classname="OCP_Sample$B" start="78" end="78" startBytecode="6" endBytecode="6" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+    <SourceLine classname="OCP_Sample$B" start="83" end="83" startBytecode="6" endBytecode="6" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
   </BugInstance>
   <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" rank="17" abbrev="DLS" category="STYLE">
     <Class classname="OC_Sample">
@@ -12036,11 +12013,6 @@
       <SourceLine classname="S508C_Sample" sourcefile="S508C_Sample.java" sourcepath="S508C_Sample.java"/>
     </Field>
     <SourceLine classname="S508C_Sample" start="12" end="12" startBytecode="34" endBytecode="34" sourcefile="S508C_Sample.java" sourcepath="S508C_Sample.java"/>
-  </BugInstance>
-  <BugInstance type="IMC_IMMATURE_CLASS_NO_EQUALS" priority="3" rank="20" abbrev="IMC" category="STYLE">
-    <Class classname="S508C_Sample">
-      <SourceLine classname="S508C_Sample" start="11" end="43" sourcefile="S508C_Sample.java" sourcepath="S508C_Sample.java"/>
-    </Class>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
     <Class classname="S508C_Sample">
@@ -17441,7 +17413,7 @@
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
     <Class classname="Z">
-      <SourceLine classname="Z" start="148" end="151" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="Z" start="161" end="164" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
   </BugInstance>
   <BugInstance type="ACEM_ABSTRACT_CLASS_EMPTY_METHODS" priority="2" rank="19" abbrev="ACEM" category="STYLE">
@@ -17484,17 +17456,17 @@
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
     <Class classname="fpOverride">
-      <SourceLine classname="fpOverride" start="154" end="155" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="fpOverride" start="167" end="168" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
   </BugInstance>
   <BugInstance type="NM_CLASS_NAMING_CONVENTION" priority="3" rank="19" abbrev="Nm" category="BAD_PRACTICE">
     <Class classname="fpOverride">
-      <SourceLine classname="fpOverride" start="154" end="155" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="fpOverride" start="167" end="168" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
     <Class classname="fpOverride$1">
-      <SourceLine classname="fpOverride$1" start="155" end="159" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
+      <SourceLine classname="fpOverride$1" start="168" end="172" sourcefile="OCP_Sample.java" sourcepath="OCP_Sample.java"/>
     </Class>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE">
@@ -17518,8 +17490,8 @@
     </Class>
   </BugInstance>
   <Errors errors="0" missingClasses="0"></Errors>
-  <FindBugsSummary timestamp="Wed, 11 Nov 2015 01:42:06 -0500" total_classes="264" referenced_classes="855" total_bugs="1896" total_size="5425" num_packages="1" java_version="1.8.0_31" vm_version="25.31-b07" cpu_seconds="37.37" clock_seconds="71.29" peak_mbytes="150.10" alloc_mbytes="742.44" gc_seconds="3.28" priority_3="677" priority_2="1022" priority_1="197">
-    <PackageStats package="" total_bugs="1896" total_types="264" total_size="5425" priority_3="677" priority_2="1022" priority_1="197">
+  <FindBugsSummary timestamp="Sun, 15 Nov 2015 15:05:41 -0500" total_classes="265" referenced_classes="856" total_bugs="1896" total_size="5428" num_packages="1" java_version="1.8.0_31" vm_version="25.31-b07" cpu_seconds="42.39" clock_seconds="342.95" peak_mbytes="151.75" alloc_mbytes="989.88" gc_seconds="3.63" priority_3="679" priority_2="1021" priority_1="196">
+    <PackageStats package="" total_bugs="1896" total_types="265" total_size="5428" priority_3="679" priority_2="1021" priority_1="196">
       <ClassStats class="A" sourceFile="SCR_Sample.java" interface="false" size="3" bugs="1" priority_3="1"/>
       <ClassStats class="ABC_Sample" sourceFile="ABC_Sample.java" interface="false" size="14" bugs="6" priority_3="3" priority_2="3"/>
       <ClassStats class="ABC_Sample$UseComparator" sourceFile="ABC_Sample.java" interface="false" size="9" bugs="1" priority_3="1"/>
@@ -17531,7 +17503,7 @@
       <ClassStats class="AOM_Super" sourceFile="AOM_Sample.java" interface="false" size="10" bugs="1" priority_3="1"/>
       <ClassStats class="AWCBR_Sample" sourceFile="AWCBR_Sample.java" interface="false" size="27" bugs="8" priority_3="3" priority_2="5"/>
       <ClassStats class="B" sourceFile="SCR_Sample.java" interface="false" size="3" bugs="1" priority_3="1"/>
-      <ClassStats class="BAS_Sample" sourceFile="BAS_Sample.java" interface="false" size="123" bugs="24" priority_3="7" priority_2="9" priority_1="8"/>
+      <ClassStats class="BAS_Sample" sourceFile="BAS_Sample.java" interface="false" size="123" bugs="23" priority_3="7" priority_2="8" priority_1="8"/>
       <ClassStats class="BAS_Sample$1" sourceFile="BAS_Sample.java" interface="false" size="6" bugs="2" priority_3="2"/>
       <ClassStats class="BAS_Sample$Holder" sourceFile="BAS_Sample.java" interface="false" size="4" bugs="1" priority_3="1"/>
       <ClassStats class="BED_Sample" sourceFile="BED_Sample.java" interface="false" size="41" bugs="23" priority_3="5" priority_2="15" priority_1="3"/>
@@ -17559,7 +17531,7 @@
       <ClassStats class="CSBTS_StringToStringSample$GenderPerson" sourceFile="CSBTS_StringToStringSample.java" interface="false" size="9" bugs="1" priority_3="1"/>
       <ClassStats class="CSBTS_StringToStringSample$Person" sourceFile="CSBTS_StringToStringSample.java" interface="false" size="10" bugs="1" priority_3="1"/>
       <ClassStats class="CSBTS_StringToStringSample$SEX" sourceFile="CSBTS_StringToStringSample.java" interface="false" size="10" bugs="1" priority_3="1"/>
-      <ClassStats class="CSI_Sample" sourceFile="CSI_Sample.java" interface="false" size="41" bugs="21" priority_3="3" priority_2="16" priority_1="2"/>
+      <ClassStats class="CSI_Sample" sourceFile="CSI_Sample.java" interface="false" size="41" bugs="20" priority_3="3" priority_2="16" priority_1="1"/>
       <ClassStats class="CTU_Sample" sourceFile="CTU_Sample.java" interface="false" size="15" bugs="3" priority_3="1" priority_2="2"/>
       <ClassStats class="CU_Sample" sourceFile="CU_Sample.java" interface="false" size="6" bugs="3" priority_3="1" priority_2="2"/>
       <ClassStats class="CU_Sample$CU_FP" sourceFile="CU_Sample.java" interface="false" size="9" bugs="3" priority_3="1" priority_2="2"/>
@@ -17649,7 +17621,8 @@
       <ClassStats class="NSE_Sample$Parent" sourceFile="NSE_Sample.java" interface="false" size="11" bugs="8" priority_3="4" priority_2="2" priority_1="2"/>
       <ClassStats class="NSE_Sample$Two" sourceFile="NSE_Sample.java" interface="false" size="9" bugs="4" priority_3="2" priority_2="2"/>
       <ClassStats class="New" sourceFile="UTAO_Sample.java" interface="false" size="16" bugs="3" priority_3="2" priority_2="1"/>
-      <ClassStats class="OCP_Sample" sourceFile="OCP_Sample.java" interface="false" size="60" bugs="10" priority_3="2" priority_2="8"/>
+      <ClassStats class="NiftyParm" sourceFile="OCP_Sample.java" interface="true" size="1" bugs="1" priority_3="1"/>
+      <ClassStats class="OCP_Sample" sourceFile="OCP_Sample.java" interface="false" size="62" bugs="10" priority_3="2" priority_2="8"/>
       <ClassStats class="OCP_Sample$A" sourceFile="OCP_Sample.java" interface="true" size="3" bugs="1" priority_3="1"/>
       <ClassStats class="OCP_Sample$B" sourceFile="OCP_Sample.java" interface="false" size="9" bugs="2" priority_3="1" priority_2="1"/>
       <ClassStats class="OC_Sample" sourceFile="OC_Sample.java" interface="false" size="10" bugs="9" priority_3="3" priority_2="6"/>
@@ -17694,7 +17667,7 @@
       <ClassStats class="ReplacementExecutorGood" sourceFile="HES_Sample.java" interface="false" size="17" bugs="2" priority_3="2"/>
       <ClassStats class="ReplacementExecutorGood2" sourceFile="HES_Sample.java" interface="false" size="24" bugs="3" priority_3="2" priority_2="1"/>
       <ClassStats class="ReplacementExecutorProblem" sourceFile="HES_Sample.java" interface="false" size="23" bugs="3" priority_3="2" priority_2="1"/>
-      <ClassStats class="S508C_Sample" sourceFile="S508C_Sample.java" interface="false" size="31" bugs="19" priority_3="2" priority_2="13" priority_1="4"/>
+      <ClassStats class="S508C_Sample" sourceFile="S508C_Sample.java" interface="false" size="31" bugs="20" priority_3="3" priority_2="13" priority_1="4"/>
       <ClassStats class="SACM_Sample" sourceFile="SACM_Sample.java" interface="false" size="8" bugs="2" priority_3="1" priority_2="1"/>
       <ClassStats class="SCA_Sample" sourceFile="SCA_Sample.java" interface="false" size="11" bugs="7" priority_3="2" priority_2="5"/>
       <ClassStats class="SCII_Sample" sourceFile="SCII_Sample.java" interface="false" size="9" bugs="1" priority_3="1"/>
@@ -17786,58 +17759,13 @@
       <ClassStats class="s2" sourceFile="COM_Sample.java" interface="false" size="6" bugs="2" priority_3="2"/>
     </PackageStats>
     <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.FindBugs2" totalMilliseconds="6496" invocations="2" avgMicrosecondsPerInvocation="3248078" maxMicrosecondsPerInvocation="5352767" standardDeviationMircosecondsPerInvocation="2104688"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="3715" invocations="2780" avgMicrosecondsPerInvocation="1336" maxMicrosecondsPerInvocation="667169" standardDeviationMircosecondsPerInvocation="13872"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="2514" invocations="2806" avgMicrosecondsPerInvocation="896" maxMicrosecondsPerInvocation="886741" standardDeviationMircosecondsPerInvocation="17285"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="2204" invocations="855" avgMicrosecondsPerInvocation="2578" maxMicrosecondsPerInvocation="54549" standardDeviationMircosecondsPerInvocation="5931"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="2171" invocations="855" avgMicrosecondsPerInvocation="2539" maxMicrosecondsPerInvocation="88876" standardDeviationMircosecondsPerInvocation="6744"/>
-      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="1714" invocations="2510" avgMicrosecondsPerInvocation="683" maxMicrosecondsPerInvocation="85514" standardDeviationMircosecondsPerInvocation="2850"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="938" invocations="1148" avgMicrosecondsPerInvocation="817" maxMicrosecondsPerInvocation="24751" standardDeviationMircosecondsPerInvocation="1833"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="853" invocations="1171" avgMicrosecondsPerInvocation="729" maxMicrosecondsPerInvocation="41446" standardDeviationMircosecondsPerInvocation="1987"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectStatistics" totalMilliseconds="792" invocations="855" avgMicrosecondsPerInvocation="926" maxMicrosecondsPerInvocation="85646" standardDeviationMircosecondsPerInvocation="4105"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="728" invocations="1222" avgMicrosecondsPerInvocation="596" maxMicrosecondsPerInvocation="55596" standardDeviationMircosecondsPerInvocation="2119"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="723" invocations="1205" avgMicrosecondsPerInvocation="600" maxMicrosecondsPerInvocation="56639" standardDeviationMircosecondsPerInvocation="2001"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="703" invocations="1161" avgMicrosecondsPerInvocation="606" maxMicrosecondsPerInvocation="17222" standardDeviationMircosecondsPerInvocation="1421"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="691" invocations="855" avgMicrosecondsPerInvocation="808" maxMicrosecondsPerInvocation="20850" standardDeviationMircosecondsPerInvocation="2043"/>
-      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="600" invocations="2691" avgMicrosecondsPerInvocation="223" maxMicrosecondsPerInvocation="142421" standardDeviationMircosecondsPerInvocation="2919"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="596" invocations="1425" avgMicrosecondsPerInvocation="418" maxMicrosecondsPerInvocation="74342" standardDeviationMircosecondsPerInvocation="2587"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="592" invocations="1171" avgMicrosecondsPerInvocation="506" maxMicrosecondsPerInvocation="68010" standardDeviationMircosecondsPerInvocation="2232"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="533" invocations="855" avgMicrosecondsPerInvocation="623" maxMicrosecondsPerInvocation="52001" standardDeviationMircosecondsPerInvocation="2490"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="488" invocations="969" avgMicrosecondsPerInvocation="503" maxMicrosecondsPerInvocation="15143" standardDeviationMircosecondsPerInvocation="1201"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="460" invocations="855" avgMicrosecondsPerInvocation="538" maxMicrosecondsPerInvocation="17712" standardDeviationMircosecondsPerInvocation="1550"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="439" invocations="855" avgMicrosecondsPerInvocation="514" maxMicrosecondsPerInvocation="64363" standardDeviationMircosecondsPerInvocation="3496"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="390" invocations="855" avgMicrosecondsPerInvocation="456" maxMicrosecondsPerInvocation="25010" standardDeviationMircosecondsPerInvocation="1575"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="382" invocations="1185" avgMicrosecondsPerInvocation="322" maxMicrosecondsPerInvocation="219693" standardDeviationMircosecondsPerInvocation="6400"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="375" invocations="855" avgMicrosecondsPerInvocation="439" maxMicrosecondsPerInvocation="17513" standardDeviationMircosecondsPerInvocation="1337"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="347" invocations="855" avgMicrosecondsPerInvocation="406" maxMicrosecondsPerInvocation="16061" standardDeviationMircosecondsPerInvocation="1574"/>
-      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="335" invocations="66981" avgMicrosecondsPerInvocation="5" maxMicrosecondsPerInvocation="8041" standardDeviationMircosecondsPerInvocation="69"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" totalMilliseconds="321" invocations="855" avgMicrosecondsPerInvocation="376" maxMicrosecondsPerInvocation="23376" standardDeviationMircosecondsPerInvocation="1365"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="316" invocations="855" avgMicrosecondsPerInvocation="370" maxMicrosecondsPerInvocation="28281" standardDeviationMircosecondsPerInvocation="1444"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="235" invocations="1171" avgMicrosecondsPerInvocation="201" maxMicrosecondsPerInvocation="8095" standardDeviationMircosecondsPerInvocation="653"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="234" invocations="264" avgMicrosecondsPerInvocation="886" maxMicrosecondsPerInvocation="30647" standardDeviationMircosecondsPerInvocation="2608"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" totalMilliseconds="222" invocations="264" avgMicrosecondsPerInvocation="843" maxMicrosecondsPerInvocation="16559" standardDeviationMircosecondsPerInvocation="1972"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="204" invocations="264" avgMicrosecondsPerInvocation="776" maxMicrosecondsPerInvocation="38661" standardDeviationMircosecondsPerInvocation="3059"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="203" invocations="855" avgMicrosecondsPerInvocation="238" maxMicrosecondsPerInvocation="8526" standardDeviationMircosecondsPerInvocation="805"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="197" invocations="264" avgMicrosecondsPerInvocation="748" maxMicrosecondsPerInvocation="24914" standardDeviationMircosecondsPerInvocation="2156"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="192" invocations="264" avgMicrosecondsPerInvocation="730" maxMicrosecondsPerInvocation="14253" standardDeviationMircosecondsPerInvocation="1681"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="171" invocations="15953" avgMicrosecondsPerInvocation="10" maxMicrosecondsPerInvocation="6583" standardDeviationMircosecondsPerInvocation="140"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="167" invocations="264" avgMicrosecondsPerInvocation="633" maxMicrosecondsPerInvocation="35278" standardDeviationMircosecondsPerInvocation="2643"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" totalMilliseconds="161" invocations="264" avgMicrosecondsPerInvocation="612" maxMicrosecondsPerInvocation="17650" standardDeviationMircosecondsPerInvocation="1655"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" totalMilliseconds="155" invocations="264" avgMicrosecondsPerInvocation="590" maxMicrosecondsPerInvocation="10973" standardDeviationMircosecondsPerInvocation="1381"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="155" invocations="264" avgMicrosecondsPerInvocation="589" maxMicrosecondsPerInvocation="10999" standardDeviationMircosecondsPerInvocation="1266"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" totalMilliseconds="151" invocations="264" avgMicrosecondsPerInvocation="572" maxMicrosecondsPerInvocation="43596" standardDeviationMircosecondsPerInvocation="2764"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="148" invocations="264" avgMicrosecondsPerInvocation="561" maxMicrosecondsPerInvocation="17986" standardDeviationMircosecondsPerInvocation="1513"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.URLProblems" totalMilliseconds="146" invocations="264" avgMicrosecondsPerInvocation="556" maxMicrosecondsPerInvocation="85076" standardDeviationMircosecondsPerInvocation="5258"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="146" invocations="264" avgMicrosecondsPerInvocation="555" maxMicrosecondsPerInvocation="14092" standardDeviationMircosecondsPerInvocation="1163"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="144" invocations="1148" avgMicrosecondsPerInvocation="125" maxMicrosecondsPerInvocation="8374" standardDeviationMircosecondsPerInvocation="460"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HangingExecutors" totalMilliseconds="140" invocations="264" avgMicrosecondsPerInvocation="531" maxMicrosecondsPerInvocation="12122" standardDeviationMircosecondsPerInvocation="1131"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="139" invocations="264" avgMicrosecondsPerInvocation="528" maxMicrosecondsPerInvocation="11836" standardDeviationMircosecondsPerInvocation="1232"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="138" invocations="264" avgMicrosecondsPerInvocation="524" maxMicrosecondsPerInvocation="12487" standardDeviationMircosecondsPerInvocation="1315"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DubiousSetOfCollections" totalMilliseconds="136" invocations="264" avgMicrosecondsPerInvocation="516" maxMicrosecondsPerInvocation="16264" standardDeviationMircosecondsPerInvocation="1614"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" totalMilliseconds="133" invocations="264" avgMicrosecondsPerInvocation="506" maxMicrosecondsPerInvocation="17185" standardDeviationMircosecondsPerInvocation="1335"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.Section508Compliance" totalMilliseconds="130" invocations="264" avgMicrosecondsPerInvocation="494" maxMicrosecondsPerInvocation="9257" standardDeviationMircosecondsPerInvocation="1238"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" totalMilliseconds="130" invocations="264" avgMicrosecondsPerInvocation="494" maxMicrosecondsPerInvocation="30478" standardDeviationMircosecondsPerInvocation="2271"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="125" invocations="264" avgMicrosecondsPerInvocation="477" maxMicrosecondsPerInvocation="12174" standardDeviationMircosecondsPerInvocation="1230"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ImmatureClass" totalMilliseconds="148472" invocations="265" avgMicrosecondsPerInvocation="560274" maxMicrosecondsPerInvocation="128287434" standardDeviationMircosecondsPerInvocation="7956001"/>
+      <ClassProfile name="edu.umd.cs.findbugs.FindBugs2" totalMilliseconds="5738" invocations="2" avgMicrosecondsPerInvocation="2869282" maxMicrosecondsPerInvocation="4396629" standardDeviationMircosecondsPerInvocation="1527347"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="3388" invocations="2781" avgMicrosecondsPerInvocation="1218" maxMicrosecondsPerInvocation="412444" standardDeviationMircosecondsPerInvocation="10673"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="2589" invocations="1149" avgMicrosecondsPerInvocation="2253" maxMicrosecondsPerInvocation="222803" standardDeviationMircosecondsPerInvocation="7829"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="2129" invocations="1172" avgMicrosecondsPerInvocation="1816" maxMicrosecondsPerInvocation="54735" standardDeviationMircosecondsPerInvocation="4444"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="1963" invocations="856" avgMicrosecondsPerInvocation="2293" maxMicrosecondsPerInvocation="55400" standardDeviationMircosecondsPerInvocation="5002"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="1793" invocations="1206" avgMicrosecondsPerInvocation="1487" maxMicrosecondsPerInvocation="104741" standardDeviationMircosecondsPerInvocation="4614"/>
     </FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>
