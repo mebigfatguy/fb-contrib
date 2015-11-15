@@ -76,6 +76,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     private Map<Integer, Map<JavaClass, List<MethodInfo>>> parameterDefiners;
     private BitSet usedParameters;
     private JavaClass objectClass;
+    private JavaClass cls;
     private OpcodeStack stack;
     private int parmCount;
     private boolean methodSignatureIsConstrained;
@@ -100,7 +101,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            JavaClass cls = classContext.getJavaClass();
+            cls = classContext.getJavaClass();
             
             if (!isaConversionClass(cls)) {
                 JavaClass[] infs = cls.getAllInterfaces();
@@ -131,8 +132,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName)) {
             
             String methodSig = obj.getSignature();
-
-            methodSignatureIsConstrained = methodIsSpecial(methodName, methodSig);
+            
+            methodSignatureIsConstrained = methodIsSpecial(methodName, methodSig) || methodHasSyntheticTwin(methodName, methodSig);
             
             if (!methodSignatureIsConstrained) {
                 for (AnnotationEntry entry : obj.getAnnotationEntries()) {
@@ -319,6 +320,26 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
 
     private static boolean methodIsSpecial(String methodName, String methodSig) {
         return ("readObject".equals(methodName) && "(Ljava/io/ObjectInputStream;)V".equals(methodSig));
+    }
+    
+    
+    /**
+     * returns whether this method has an equivalent method that is synthetic, which implies this method is 
+     * constrained by some Generified interface. We could compare parameters but that is a bunch of work that probably doesn't make this
+     * test any more precise, so just return true if method name and synthetic is found.
+     * 
+     * @param methodName
+     * @param methodSig
+     * @return if a synthetic twin is found
+     */
+    private boolean methodHasSyntheticTwin(String methodName, String methodSig) {
+        for (Method m : cls.getMethods()) {
+            if (m.isSynthetic() && m.getName().equals(methodName) && !m.getSignature().equals(methodSig)) {
+                return true;
+            }
+        }
+        
+        return false;
     }
 
     private void reportBugs() {

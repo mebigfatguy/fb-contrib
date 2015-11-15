@@ -173,3 +173,15 @@ class fpOverride {
         }
     };
 }
+
+
+class fpGenericConstrainedInterface implements Comparator<GregorianCalendar> {
+    //this method is really suspect, but will ignore this case
+    public int compare(GregorianCalendar c1, GregorianCalendar c2) {
+        if (c2.getGregorianChange() == null) {
+            return (int) (c1.getTime().getTime() - c2.getTime().getTime());
+        } else {
+            return 0;
+        }
+    }
+}
