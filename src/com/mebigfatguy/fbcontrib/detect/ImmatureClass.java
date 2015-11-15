@@ -45,6 +45,8 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         
             try {
                 boolean clsHasRuntimeAnnotation = classHasRuntimeVisibleAnnotation(cls);
+                boolean hasAFieldAnnotation = false;
+                boolean hasField = false;
 
                 for (Field f : cls.getFields()) {
                     if (!f.isStatic() && !f.isSynthetic()) {
@@ -56,18 +58,21 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                                 bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_TOSTRING.name(), LOW_PRIORITY)
                                                     .addClass(cls));
                                 return;    
-                            } else if (!clsHasRuntimeAnnotation) {
-                                if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z;")) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY)
-                                        .addClass(cls));
-                                    return;
-                                } else if (!hasMethodInHierarchy(cls, "hashCode", "()I")) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_HASHCODE.name(), LOW_PRIORITY)
-                                            .addClass(cls));
-                                    return;
-                                }
                             }
+                            hasField = true;
+                        } else {
+                            hasAFieldAnnotation = true;
                         }
+                    }
+                }
+                
+                if (!clsHasRuntimeAnnotation && hasField && !hasAFieldAnnotation) {
+                    if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z;")) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY)
+                            .addClass(cls));
+                    } else if (!hasMethodInHierarchy(cls, "hashCode", "()I")) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_HASHCODE.name(), LOW_PRIORITY)
+                                .addClass(cls));
                     }
                 }
             } catch (ClassNotFoundException cnfe) {
