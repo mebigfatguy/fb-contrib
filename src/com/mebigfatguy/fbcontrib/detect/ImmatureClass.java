@@ -3,6 +3,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.Repository;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
@@ -45,7 +46,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         
             try {
                 boolean clsHasRuntimeAnnotation = classHasRuntimeVisibleAnnotation(cls);
-                boolean hasAFieldAnnotation = false;
+                boolean needsEqualsHashCode = true;
                 boolean hasField = false;
 
                 for (Field f : cls.getFields()) {
@@ -59,14 +60,26 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                                                     .addClass(cls));
                                 return;    
                             }
-                            hasField = true;
+                            if (needsEqualsHashCode) {
+                                String fieldSig = f.getSignature();
+                                if (fieldSig.startsWith("L") && (!fieldSig.startsWith("Ljava"))) {
+                                    JavaClass fieldClass = Repository.lookupClass(fieldSig.substring(1, fieldSig.length() - 1));
+                                    if (!hasMethodInHierarchy(fieldClass, "equals",  "(Ljava/lang/Object)Z")) {
+                                        needsEqualsHashCode = false;
+                                    }
+                                } else if (fieldSig.startsWith("L") && !fieldSig.startsWith("Ljava/lang/") && !fieldSig.startsWith("Ljava/util/")) {
+                                    needsEqualsHashCode = false;
+                                } else {
+                                    hasField = true;
+                                }
+                            }
                         } else {
-                            hasAFieldAnnotation = true;
+                            needsEqualsHashCode = false;
                         }
                     }
                 }
                 
-                if (!clsHasRuntimeAnnotation && hasField && !hasAFieldAnnotation) {
+                if (!clsHasRuntimeAnnotation && hasField && needsEqualsHashCode) {
                     if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z;")) {
                         bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY)
                             .addClass(cls));

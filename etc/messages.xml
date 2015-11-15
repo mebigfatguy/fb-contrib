@@ -1548,6 +1548,8 @@
     		<UL>
     		<LI>Missing toString() method</LI>
     		</UL>
+    		</p>
+    		<p>It is a moderately fast detector</p>
     		]]>
     	</Details>
     </Detector>
