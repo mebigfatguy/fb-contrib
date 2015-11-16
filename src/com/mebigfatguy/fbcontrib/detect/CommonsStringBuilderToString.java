@@ -19,9 +19,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
@@ -32,6 +30,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -52,15 +51,11 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  */
 public class CommonsStringBuilderToString extends OpcodeStackDetector {
 
-    private static final Set<String> TOSTRINGBUILDER_CTOR_SIGS;
-
-    static {
-        Set<String> tsbcs = new HashSet<String>();
-        tsbcs.add("(Ljava/lang/Object;)V");
-        tsbcs.add("(Ljava/lang/Object;Lorg/apache/commons/lang/builder/ToStringStyle;)V");
-        tsbcs.add("(Ljava/lang/Object;Lorg/apache/commons/lang3/builder/ToStringStyle;)V");
-        TOSTRINGBUILDER_CTOR_SIGS = Collections.<String>unmodifiableSet(tsbcs);
-    }
+    private static final Set<String> TOSTRINGBUILDER_CTOR_SIGS = UnmodifiableSet.create(
+        "(Ljava/lang/Object;)V",
+        "(Ljava/lang/Object;Lorg/apache/commons/lang/builder/ToStringStyle;)V",
+        "(Ljava/lang/Object;Lorg/apache/commons/lang3/builder/ToStringStyle;)V"
+    );
 
     private final BugReporter bugReporter;
     private final Stack<Pair> stackTracker = new Stack<Pair>();
