@@ -90,7 +90,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        if (!hasRuntimeAnnotations(m) && !isGetterSetter(m)) {
+        if (!hasRuntimeAnnotations(m) && !isGetterSetter(m.getName(), m.getSignature())) {
             stack.resetForMethodEntry(this);
             super.visitCode(obj);
         }
@@ -161,18 +161,16 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
         return false;
     }
     
-    private boolean isGetterSetter(Method obj) {
-        String name = obj.getName();
-        if (name.startsWith("get") || name.startsWith("set")) {
-            String sig = obj.getSignature();
-            Type[] parmTypes = Type.getArgumentTypes(sig);
-            boolean voidReturn = "V".equals(Type.getReturnType(sig).getSignature());
+    private boolean isGetterSetter(String methodName, String methodSignature) {
+        if (methodName.startsWith("get") || methodName.startsWith("set")) {
+            Type[] parmTypes = Type.getArgumentTypes(methodSignature);
+            boolean voidReturn = "V".equals(Type.getReturnType(methodSignature).getSignature());
             
-            if ((name.charAt(0) == 'g') && (parmTypes.length == 0) && !voidReturn) {
+            if ((methodName.charAt(0) == 'g') && (parmTypes.length == 0) && !voidReturn) {
                 return true;
             }
             
-            if ((name.charAt(0) == 's') && (parmTypes.length == 1) && voidReturn) {
+            if ((methodName.charAt(0) == 's') && (parmTypes.length == 1) && voidReturn) {
                 return true;
             }
         }
@@ -214,6 +212,10 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                 continue;
             }
 
+            if (isGetterSetter(entry.getKey().getMethodName(), entry.getKey().getSignature())) {
+                continue;
+            }
+            
             StatisticsKey key = entry.getKey();
 
             if (isOverlyPermissive(declaredAccess)) {
