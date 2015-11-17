@@ -61,3 +61,16 @@ enum FPEnumValueOf {
         FPEnumValueOf f = FPEnumValueOf.valueOf(String.valueOf("What"));
     }
 }
+
+class OPMParent {
+    public OPMParent(int i) {
+        
+}
+    
+class FPOPMChild extends OPMParent{
+    public FPOPMChild() {
+        super(1);
+    }
+}
+}
+
