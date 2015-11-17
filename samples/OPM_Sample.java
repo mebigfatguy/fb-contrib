@@ -62,15 +62,3 @@ enum FPEnumValueOf {
     }
 }
 
-class OPMParent {
-    public OPMParent(int i) {
-        
-}
-    
-class FPOPMChild extends OPMParent{
-    public FPOPMChild() {
-        super(1);
-    }
-}
-}
-
