@@ -18,11 +18,11 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -34,20 +34,18 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
  * interface.
  */
 public class NonCollectionMethodUse extends BytecodeScanningDetector {
-    private static Set<FQMethod> oldMethods = new HashSet<FQMethod>();
-
-    static {
-        oldMethods.add(new FQMethod("java/util/Hashtable", "contains", "(java/lang/Object)Z"));
-        oldMethods.add(new FQMethod("java/util/Hashtable", "elements", "()Ljava/util/Enumeration;"));
-        oldMethods.add(new FQMethod("java/util/Hashtable", "keys", "()Ljava/util/Enumeration;"));
-        oldMethods.add(new FQMethod("java/util/Vector", "addElement", "(Ljava/lang/Object;)V"));
-        oldMethods.add(new FQMethod("java/util/Vector", "elementAt", "(I)Ljava/lang/Object;"));
-        oldMethods.add(new FQMethod("java/util/Vector", "insertElementAt", "(Ljava/lang/Object;I)V"));
-        oldMethods.add(new FQMethod("java/util/Vector", "removeAllElements", "()V"));
-        oldMethods.add(new FQMethod("java/util/Vector", "removeElement", "(Ljava/lang/Object;)Z"));
-        oldMethods.add(new FQMethod("java/util/Vector", "removeElementAt", "(I)V"));
-        oldMethods.add(new FQMethod("java/util/Vector", "setElementAt", "(Ljava/lang/Object;I)V"));
-    }
+    private static final Set<FQMethod> oldMethods = UnmodifiableSet.create(
+        new FQMethod("java/util/Hashtable", "contains", "(java/lang/Object)Z"),
+        new FQMethod("java/util/Hashtable", "elements", "()Ljava/util/Enumeration;"),
+        new FQMethod("java/util/Hashtable", "keys", "()Ljava/util/Enumeration;"),
+        new FQMethod("java/util/Vector", "addElement", "(Ljava/lang/Object;)V"),
+        new FQMethod("java/util/Vector", "elementAt", "(I)Ljava/lang/Object;"),
+        new FQMethod("java/util/Vector", "insertElementAt", "(Ljava/lang/Object;I)V"),
+        new FQMethod("java/util/Vector", "removeAllElements", "()V"),
+        new FQMethod("java/util/Vector", "removeElement", "(Ljava/lang/Object;)Z"),
+        new FQMethod("java/util/Vector", "removeElementAt", "(I)V"),
+        new FQMethod("java/util/Vector", "setElementAt", "(Ljava/lang/Object;I)V")
+    );
 
     private BugReporter bugReporter;
 
