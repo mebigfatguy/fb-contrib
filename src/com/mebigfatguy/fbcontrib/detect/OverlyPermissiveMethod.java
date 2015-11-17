@@ -60,6 +60,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
+    private JavaClass cls;
     private String callingPackage;
     private String callingClass;
 
@@ -76,6 +77,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
+            cls = classContext.getJavaClass();
             ClassDescriptor cd = classContext.getClassDescriptor();
             callingClass = cd.getClassName();
             callingPackage = cd.getPackageName();
@@ -90,7 +92,13 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        if (!hasRuntimeAnnotations(m) && !isGetterSetter(m.getName(), m.getSignature())) {
+        String methodName = m.getName();
+        String sig = m.getSignature();
+        
+        if (isAssumedPublic(methodName)) {
+            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(cls.getClassName(), methodName, sig);
+            mi.addCallingAccess(Constants.ACC_PUBLIC);
+        } else if (!hasRuntimeAnnotations(m) && !isGetterSetter(methodName, sig)) {
             stack.resetForMethodEntry(this);
             super.visitCode(obj);
         }
@@ -161,6 +169,10 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
         return false;
     }
     
+    private boolean isAssumedPublic(String methodName) {
+        return (cls.isEnum() && "valueOf".equals(methodName));
+    }
+    
     private boolean isGetterSetter(String methodName, String methodSignature) {
         if (methodName.startsWith("get") || methodName.startsWith("set")) {
             Type[] parmTypes = Type.getArgumentTypes(methodSignature);
@@ -212,7 +224,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                 continue;
             }
 
-            if (isGetterSetter(entry.getKey().getMethodName(), entry.getKey().getSignature())) {
+            String methodName = entry.getKey().getMethodName();
+            if (isGetterSetter(methodName, entry.getKey().getSignature())) {
                 continue;
             }
             
