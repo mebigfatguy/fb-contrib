@@ -52,3 +52,12 @@ abstract class OPMSuper {
 @interface RT {
 
 }
+
+enum FPEnumValueOf {
+    
+    What, Where;
+    
+    public static void fpWithValueOf() {
+        FPEnumValueOf f = FPEnumValueOf.valueOf(String.valueOf("What"));
+    }
+}
