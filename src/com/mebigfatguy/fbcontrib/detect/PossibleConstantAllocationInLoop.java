@@ -20,7 +20,6 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +33,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -52,14 +52,12 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 
-    private static final Set<String> SYNTHETIC_ALLOCATION_CLASSES = new HashSet<String>();
-
-    static {
-        SYNTHETIC_ALLOCATION_CLASSES.add("java/lang/StringBuffer");
-        SYNTHETIC_ALLOCATION_CLASSES.add("java/lang/StringBuilder");
-        SYNTHETIC_ALLOCATION_CLASSES.add("java/lang/AssertionError");
-    }
-
+    private static final Set<String> SYNTHETIC_ALLOCATION_CLASSES = UnmodifiableSet.create(
+            "java/lang/StringBuffer",
+            "java/lang/StringBuilder",
+            "java/lang/AssertionError"
+    );
+    
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     /** allocation number, info where allocated */
