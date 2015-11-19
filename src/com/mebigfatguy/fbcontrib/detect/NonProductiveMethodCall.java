@@ -18,7 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -26,6 +25,7 @@ import java.util.regex.Pattern;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -42,16 +42,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class NonProductiveMethodCall extends BytecodeScanningDetector {
 
-    private static final Set<Pattern> IMMUTABLE_METHODS = new HashSet<Pattern>();
-
-    static {
-        IMMUTABLE_METHODS.add(Pattern.compile(".*@toString\\(\\)Ljava/lang/String;"));
-        IMMUTABLE_METHODS.add(Pattern.compile("java/lang/.+@.+Value\\(\\)[BCDFIJSZ]"));
-        IMMUTABLE_METHODS.add(Pattern.compile(".*@equals\\(Ljava/lang/Object;\\)Z"));
-        IMMUTABLE_METHODS.add(Pattern.compile(".*@hashCode\\(\\)I"));
-        IMMUTABLE_METHODS.add(Pattern.compile(".*@clone\\(\\).+"));
-        IMMUTABLE_METHODS.add(Pattern.compile("java/util/.+@toArray\\(\\)\\[.+"));
-    }
+    private static final Set<Pattern> IMMUTABLE_METHODS = UnmodifiableSet.create(
+                Pattern.compile(".*@toString\\(\\)Ljava/lang/String;"),
+                Pattern.compile("java/lang/.+@.+Value\\(\\)[BCDFIJSZ]"),
+                Pattern.compile(".*@equals\\(Ljava/lang/Object;\\)Z"),
+                Pattern.compile(".*@hashCode\\(\\)I"),
+                Pattern.compile(".*@clone\\(\\).+"),
+                Pattern.compile("java/util/.+@toArray\\(\\)\\[.+")
+    );
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
