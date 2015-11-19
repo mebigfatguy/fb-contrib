@@ -22,6 +22,10 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+/**
+ * a factory for creating unmodifiable HashSets by presenting values
+ * to a var-args creator method.
+ */
 public class UnmodifiableSet {
 
     private UnmodifiableSet() {
