@@ -83,6 +83,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                     for (String sig : COMMON_METHOD_SIGS) {
                         if (methodSig.matches(sig)) {
                             mi.addCallingAccess(Constants.ACC_PUBLIC);
+                            break;
                         }
                     }
                 }
