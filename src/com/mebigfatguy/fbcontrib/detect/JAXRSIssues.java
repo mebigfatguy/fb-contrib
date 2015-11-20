@@ -118,6 +118,10 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     @Override
     public void visitMethod(Method obj) {
         
+        if (obj.isSynthetic()) {
+            return;
+        }
+        
         String path = null;
         boolean isJAXRS = false;
         boolean hasGet = false;
