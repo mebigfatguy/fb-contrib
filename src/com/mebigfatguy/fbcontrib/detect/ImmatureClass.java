@@ -80,7 +80,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                 }
                 
                 if (!clsHasRuntimeAnnotation && hasField && needsEqualsHashCode) {
-                    if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z;")) {
+                    if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z")) {
                         bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY)
                             .addClass(cls));
                     } else if (!hasMethodInHierarchy(cls, "hashCode", "()I")) {
