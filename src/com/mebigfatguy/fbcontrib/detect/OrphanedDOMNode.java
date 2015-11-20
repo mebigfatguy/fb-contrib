@@ -29,6 +29,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -41,18 +42,16 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * Document.
  */
 public class OrphanedDOMNode extends BytecodeScanningDetector {
-    private static final Set<String> domCreationMethods = new HashSet<String>();
-
-    static {
-        domCreationMethods.add("createAttribute:(Ljava/lang/String;)Lorg/w3c/dom/Attr;");
-        domCreationMethods.add("createAttributeNS:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/Attr;");
-        domCreationMethods.add("createCDATASection:(Ljava/lang/String;)Lorg/w3c/dom/CDATASection;");
-        domCreationMethods.add("createComment:(Ljava/lang/String;)Lorg/w3c/dom/Comment;");
-        domCreationMethods.add("createElement:(Ljava/lang/String;)Lorg/w3c/dom/Element;");
-        domCreationMethods.add("createElementNS:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/Element;");
-        domCreationMethods.add("createProcessingInstruction:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/ProcessingInstruction;");
-        domCreationMethods.add("createTextNode:(Ljava/lang/String;)Lorg/w3c/dom/Text;");
-    }
+    private static final Set<String> domCreationMethods = UnmodifiableSet.create(
+            "createAttribute:(Ljava/lang/String;)Lorg/w3c/dom/Attr;",
+            "createAttributeNS:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/Attr;",
+            "createCDATASection:(Ljava/lang/String;)Lorg/w3c/dom/CDATASection;",
+            "createComment:(Ljava/lang/String;)Lorg/w3c/dom/Comment;",
+            "createElement:(Ljava/lang/String;)Lorg/w3c/dom/Element;",
+            "createElementNS:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/Element;",
+            "createProcessingInstruction:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/ProcessingInstruction;",
+            "createTextNode:(Ljava/lang/String;)Lorg/w3c/dom/Text;"
+    );
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
