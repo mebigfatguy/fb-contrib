@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -46,16 +47,14 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 @CustomUserValue
 public class UseEnumCollections extends BytecodeScanningDetector {
-    private static final Set<String> nonEnumCollections = new HashSet<String>();
-
-    static {
-        nonEnumCollections.add("Ljava/util/HashSet;");
-        nonEnumCollections.add("Ljava/util/HashMap;");
-        nonEnumCollections.add("Ljava/util/TreeMap;");
-        nonEnumCollections.add("Ljava/util/ConcurrentHashMap;");
-        nonEnumCollections.add("Ljava/util/IdentityHashMap;");
-        nonEnumCollections.add("Ljava/util/WeakHashMap;");
-    }
+    private static final Set<String> nonEnumCollections = UnmodifiableSet.create(
+            "Ljava/util/HashSet;",
+            "Ljava/util/HashMap;",
+            "Ljava/util/TreeMap;",
+            "Ljava/util/ConcurrentHashMap;",
+            "Ljava/util/IdentityHashMap;",
+            "Ljava/util/WeakHashMap;"
+    );
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
