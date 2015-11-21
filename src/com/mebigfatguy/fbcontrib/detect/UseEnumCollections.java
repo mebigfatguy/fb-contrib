@@ -52,7 +52,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
         nonEnumCollections.add("Ljava/util/HashSet;");
         nonEnumCollections.add("Ljava/util/HashMap;");
         nonEnumCollections.add("Ljava/util/TreeMap;");
-        nonEnumCollections.add("Ljava/util/ConcurrentHashMap");
+        nonEnumCollections.add("Ljava/util/ConcurrentHashMap;");
         nonEnumCollections.add("Ljava/util/IdentityHashMap;");
         nonEnumCollections.add("Ljava/util/WeakHashMap;");
     }
