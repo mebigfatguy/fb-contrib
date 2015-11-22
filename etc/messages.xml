@@ -971,17 +971,6 @@
 		</Details>
 	</Detector>
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.StutteredMethodArguments">
-		<Details> experimental="true"
-			<![CDATA[
-			<p>Looks for method calls that pass the same value for two separate parameters, where
-			those arguments are not constants. Often this is a cut/paste mistake, but if not, it is
-			confusing why you would pass the same value for two arguments.</p>
-			<p>It is a fast detector.</p>
-			]]>
-		</Details>
-	</Detector>
-
 	<Detector class="com.mebigfatguy.fbcontrib.detect.TristateBooleanPattern">
 		<Details>
 			<![CDATA[
@@ -3938,19 +3927,6 @@
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="SMA_STUTTERED_METHOD_ARGUMENTS">
-		<ShortDescription>Code calls a method passing the same value to two different arguments</ShortDescription>
-		<LongDescription>Code {1} calls a method passing the same value to two different arguments</LongDescription>
-		<Details>
-			<![CDATA[
-			<p>This method calls a method passing the same value for two or more of the parameters.
-			Often this is a cut/paste bug, but if not, it is confusing why you would pass the same value for two
-			different parameters. Perhaps an alternative method that just takes one parameter should be overridden
-			in this case.</p>
-			]]>
-		</Details>
-	</BugPattern>
-
 	<BugPattern type="TBP_TRISTATE_BOOLEAN_PATTERN">
 		<ShortDescription>Method returns null for Boolean type</ShortDescription>
 		<LongDescription>Method {1} returns null for Boolean type</LongDescription>
@@ -5208,7 +5184,6 @@
 	<BugCode abbrev="BED">Bogus Exception Declaration</BugCode>
 	<BugCode abbrev="UNNC">Unnecessary New Null Check</BugCode>
 	<BugCode abbrev="DTEP">Deprecated Typesafe Enum Pattern</BugCode>
-	<BugCode abbrev="SMA">Stuttered Method Arguments</BugCode>
 	<BugCode abbrev="TBP">Tristate Boolean Pattern</BugCode>
 	<BugCode abbrev="SUA">Suspicious Uninitialized Array</BugCode>
 	<BugCode abbrev="ITU">Inappropriate toString Use</BugCode>

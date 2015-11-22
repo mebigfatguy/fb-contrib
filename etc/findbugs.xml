@@ -28,8 +28,6 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedSynchronizedBlock" speed="fast" reports="BSB_BLOATED_SYNCHRONIZED_BLOCK" hidden="true" /> 
 
-    <Detector class="com.mebigfatguy.fbcontrib.detect.StutteredMethodArguments" speed="fast" reports="SMA_STUTTERED_METHOD_ARGUMENTS" hidden="true" /> 
-    
     <Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
@@ -460,7 +458,6 @@
 	<BugPattern abbrev="BED" type="BED_HIERARCHICAL_EXCEPTION_DECLARATION" category="CORRECTNESS" />
 	<BugPattern abbrev="UNNC" type="UNNC_UNNECESSARY_NEW_NULL_CHECK" category="CORRECTNESS" />
 	<BugPattern abbrev="DTEP" type="DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN" category="STYLE" />
-	<BugPattern abbrev="SMA" type="SMA_STUTTERED_METHOD_ARGUMENTS" category="STYLE" />
 	<BugPattern abbrev="TBP" type="TBP_TRISTATE_BOOLEAN_PATTERN" category="STYLE" />
 	<BugPattern abbrev="SUA" type="SUA_SUSPICIOUS_UNINITIALIZED_ARRAY" category="CORRECTNESS" />
 	<BugPattern abbrev="ITU" type="ITU_INAPPROPRIATE_TOSTRING_USE" category="CORRECTNESS" />
