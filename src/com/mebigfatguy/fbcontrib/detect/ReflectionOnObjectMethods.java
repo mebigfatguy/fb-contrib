@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -47,22 +48,19 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 
-    private static final Set<String> objectSigs = new HashSet<String>();
-
-    static {
-        // objectSigs.add("clone()"); // clone is declared protected
-        objectSigs.add("equals(Ljava/lang/Object;)");
-        objectSigs.add("finalize()");
-        objectSigs.add("getClass()");
-        objectSigs.add("hashCode()");
-        objectSigs.add("notify()");
-        objectSigs.add("notifyAll()");
-        objectSigs.add("toString()");
-        objectSigs.add("wait");
-        objectSigs.add("wait(J)");
-        objectSigs.add("wait(JI");
-
-    }
+    private static final Set<String> objectSigs = UnmodifiableSet.create(
+        // "clone()", // clone is declared protected
+        "equals(Ljava/lang/Object;)",
+        "finalize()",
+        "getClass()",
+        "hashCode()",
+        "notify()",
+        "notifyAll()",
+        "toString()",
+        "wait",
+        "wait(J)",
+        "wait(JI)"
+    );
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
