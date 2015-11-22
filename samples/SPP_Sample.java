@@ -387,5 +387,20 @@ public class SPP_Sample implements Serializable {
     public void testFPToString(Object o) {
         System.out.println(o);
     }
+    
+    public boolean testFPTrimNotUsed(StringProducer s, String t) {
+        if (s.getString().trim().length() == 0) {
+            return true;
+        }
+        
+        return t.equals("foo");
+        
+    }
 
+}
+
+class StringProducer {
+    public String getString() {
+        return "foo";
+    }
 }
