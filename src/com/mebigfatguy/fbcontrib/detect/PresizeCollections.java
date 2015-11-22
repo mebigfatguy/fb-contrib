@@ -20,7 +20,6 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -49,21 +49,19 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class PresizeCollections extends BytecodeScanningDetector {
 
-    private static final Set<String> PRESIZEABLE_COLLECTIONS = new HashSet<String>();
-
-    static {
-        PRESIZEABLE_COLLECTIONS.add("java/util/ArrayBlockingQueue");
-        PRESIZEABLE_COLLECTIONS.add("java/util/ArrayDeque");
-        PRESIZEABLE_COLLECTIONS.add("java/util/ArrayList");
-        PRESIZEABLE_COLLECTIONS.add("java/util/HashMap");
-        PRESIZEABLE_COLLECTIONS.add("java/util/HashSet");
-        PRESIZEABLE_COLLECTIONS.add("java/util/LinkedBlockingQueue");
-        PRESIZEABLE_COLLECTIONS.add("java/util/LinkedHashMap");
-        PRESIZEABLE_COLLECTIONS.add("java/util/LinkedHashSet");
-        PRESIZEABLE_COLLECTIONS.add("java/util/PriorityBlockingQueue");
-        PRESIZEABLE_COLLECTIONS.add("java/util/PriorityQueue");
-        PRESIZEABLE_COLLECTIONS.add("java/util/Vector");
-    }
+    private static final Set<String> PRESIZEABLE_COLLECTIONS = UnmodifiableSet.create(
+        "java/util/ArrayBlockingQueue",
+        "java/util/ArrayDeque",
+        "java/util/ArrayList",
+        "java/util/HashMap",
+        "java/util/HashSet",
+        "java/util/LinkedBlockingQueue",
+        "java/util/LinkedHashMap",
+        "java/util/LinkedHashSet",
+        "java/util/PriorityBlockingQueue",
+        "java/util/PriorityQueue",
+        "java/util/Vector"
+    );
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
