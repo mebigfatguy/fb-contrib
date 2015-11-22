@@ -58,6 +58,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.visitclass.LVTHelper;
 
 /**
@@ -65,6 +67,9 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  */
 @CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector {
+    
+    private static final String TRIM_PREFIX = "trim:";
+    
     private static final Set<String> collectionInterfaces = new HashSet<String>();
 
     static {
@@ -118,6 +123,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     /** branch targets, to a set of branch instructions */
     private Map<Integer, BitSet> branchTargets;
     private Set<String> staticConstants;
+    private Map<String, Integer> trimLocations;
 
     /**
      * constructs a SPP detector given the reporter to report bugs on
@@ -143,11 +149,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             stack = new OpcodeStack();
             lastPCs = new int[4];
             branchTargets = new HashMap<Integer, BitSet>();
+            trimLocations = new HashMap<String, Integer>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
             lastPCs = null;
             branchTargets = null;
+            trimLocations = null;
             staticConstants = null;
         }
     }
@@ -167,6 +175,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         lastLoadWasString = false;
         Arrays.fill(lastPCs, -1);
         branchTargets.clear();
+        trimLocations.clear();
         super.visitCode(obj);
     }
 
@@ -182,6 +191,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         String userValue = null;
         try {
             stack.precomputation(this);
+            
+            checkTrimLocations();
 
             if (isBranchByteCode(seen)) {
                 Integer branchTarget = Integer.valueOf(getBranchTarget());
@@ -206,37 +217,65 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 checkNullAndInstanceOf();
             }
 
-            if (seen == IFNE) {
+            switch (seen) {
+            case IFNE:
                 checkNotEqualsStringBuilderLength();
-            } else if (seen == IFEQ) {
+                break;
+            case IFEQ:
                 checkEqualsStringBufferLength();
-            } else if ((seen == IRETURN) && lastIfEqWasBoolean) {
-                checkForUselessTernaryReturn();
-            } else if (seen == LDC2_W) {
-                checkApproximationsOfMathConstants();
-            } else if (seen == DCMPL) {
-                checkCompareToNaNDouble();
-            } else if (seen == FCMPL) {
-                checkCompareToNaNFloat();
-            } else if (OpcodeUtils.isAStore(seen)) {
-                reg = RegisterUtils.getAStoreReg(this, seen);
-                checkStutterdAssignment(seen, reg);
-                checkImmutableUsageOfStringBuilder(reg);
-            } else if (OpcodeUtils.isALoad(seen)) {
-                sawLoad(seen);
-            } else if ((seen >= ICONST_0) && (seen <= ICONST_3)) {
-                userValue = sawIntConst(userValue);
-            } else if (seen == CALOAD) {
-                checkImproperToCharArrayUse();
-            } else if (seen == INVOKESTATIC) {
-                userValue = sawInvokeStatic(userValue);
-            } else if (seen == INVOKEVIRTUAL) {
-                userValue = sawInvokeVirtual(userValue);
-            } else if (seen == INVOKESPECIAL) {
-                sawInvokeSpecial();
-            } else if (seen == INVOKEINTERFACE) {
-                userValue = sawInvokeInterface(userValue);
+                break;
+            case IRETURN: {
+                if (lastIfEqWasBoolean) {
+                    checkForUselessTernaryReturn();
+                }
             }
+            // $FALL-THROUGH$
+            case LRETURN:
+            case DRETURN:
+            case FRETURN:
+            case ARETURN:
+                trimLocations.clear();
+                break;
+            case LDC2_W:
+                checkApproximationsOfMathConstants();
+                break;
+            case DCMPL:
+                checkCompareToNaNDouble();
+                break;
+            case FCMPL:
+                checkCompareToNaNFloat();
+                break;
+            case ICONST_0:
+            case ICONST_1:
+            case ICONST_2:
+            case ICONST_3:
+                userValue = sawIntConst(userValue);
+                break;
+            case CALOAD:
+                checkImproperToCharArrayUse();
+                break;
+            case INVOKESTATIC:
+                userValue = sawInvokeStatic(userValue);
+                break;
+            case INVOKEVIRTUAL:
+                userValue = sawInvokeVirtual(userValue);
+                break;
+            case INVOKESPECIAL:
+                sawInvokeSpecial();
+                break;
+            case INVOKEINTERFACE:
+                userValue = sawInvokeInterface(userValue);
+                break;
+            default:
+                if (OpcodeUtils.isALoad(seen)) {
+                    sawLoad(seen);
+                } else if (OpcodeUtils.isAStore(seen)) {
+                    reg = RegisterUtils.getAStoreReg(this, seen);
+                    checkStutterdAssignment(seen, reg);
+                    checkImmutableUsageOfStringBuilder(reg);
+                }
+            }
+            
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         } finally {
@@ -698,21 +737,27 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 }
             }
         } else if ("trim".equals(methodName)) {
-            userValue = "trim";
+            userValue = getTrimUserValue();
         } else if ("length".equals(methodName)) {
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item item = stack.getStackItem(0);
-                if ("trim".equals(item.getUserValue())) {
+                Object uValue = item.getUserValue();
+                if ("trim".equals(uValue)) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                } else if ((uValue instanceof String) && ((String) uValue).startsWith(TRIM_PREFIX)) {
+                    trimLocations.put(((String) uValue), Integer.valueOf(getPC()));
                 }
             }
         } else if ("equals".equals(methodName)) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item item = stack.getStackItem(1);
-                if ("trim".equals(item.getUserValue())) {
+                Object uValue = item.getUserValue();
+                if ("trim".equals(uValue)) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                } else if ((uValue instanceof String) && ((String) uValue).startsWith(TRIM_PREFIX)) {
+                    trimLocations.put(((String) uValue), Integer.valueOf(getPC()));
                 }
             }
         } else if ("toString".equals(methodName)) {
@@ -950,5 +995,47 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             cls = cls.getSuperClass();
         } while (!Values.JAVA_LANG_OBJECT.equals(cls.getClassName()));
         return false;
+    }
+    
+    private String getTrimUserValue() {
+        if (stack.getStackDepth() == 0) {
+            return null;
+        }
+        
+        OpcodeStack.Item item = stack.getStackItem(0);
+        
+        int reg = item.getRegisterNumber();
+        if (reg >= 0) {
+            return TRIM_PREFIX + reg;
+        }
+        
+        XField field = item.getXField();
+        if (field != null) {
+            return TRIM_PREFIX + field.getName();
+        }
+        
+        XMethod method = item.getReturnValueOf();
+        if (method != null) {
+            return TRIM_PREFIX + method.getName();
+        }
+        
+        return "trim";
+    }
+    
+    private void checkTrimLocations() {
+        if (trimLocations.isEmpty()) {
+            return;
+        }
+        
+        String curV = getTrimUserValue();
+        if (curV == null) {
+            return;
+        }
+        
+        Integer pc = trimLocations.remove(curV);
+        if (pc != null) {
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
+        }
     }
 }
