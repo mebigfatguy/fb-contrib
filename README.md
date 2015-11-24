@@ -66,3 +66,5 @@ Misc references about bytecode:
 For making detectors, it best to make several test cases, like those in the [sample directory](https://github.com/mebigfatguy/fb-contrib/tree/master/samples).  Even better is if you can comment where you expect bug markers to appear and why, like [this](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/samples/HES_Sample.java#L313).
 
 In your pull request, give an overview of your changes along with the related commits.
+
+If you are not up for contributing code but notice a common problem with some third party library, or general purpose pattern, please add an issue too. We always like new ideas.
