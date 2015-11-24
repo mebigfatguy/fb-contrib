@@ -185,6 +185,10 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
      * @param seen
      *            the opcode of the currently parsed instruction
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+            value = "SF_SWITCH_FALLTHROUGH",
+            justification = "This fall-through is deliberate and documented"
+        )
     @Override
     public void sawOpcode(int seen) {
         int reg = -1;
