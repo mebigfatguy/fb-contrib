@@ -67,9 +67,9 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  */
 @CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector {
-    
+
     private static final String TRIM_PREFIX = "trim:";
-    
+
     private static final Set<String> collectionInterfaces = new HashSet<String>();
 
     static {
@@ -185,13 +185,17 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
      * @param seen
      *            the opcode of the currently parsed instruction
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+        value = "SF_SWITCH_FALLTHROUGH",
+        justification = "This fall-through is deliberate and documented"
+    )
     @Override
     public void sawOpcode(int seen) {
         int reg = -1;
         String userValue = null;
         try {
             stack.precomputation(this);
-            
+
             checkTrimLocations();
 
             if (isBranchByteCode(seen)) {
@@ -275,7 +279,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     checkImmutableUsageOfStringBuilder(reg);
                 }
             }
-            
+
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         } finally {
@@ -996,42 +1000,42 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         } while (!Values.JAVA_LANG_OBJECT.equals(cls.getClassName()));
         return false;
     }
-    
+
     private String getTrimUserValue() {
         if (stack.getStackDepth() == 0) {
             return null;
         }
-        
+
         OpcodeStack.Item item = stack.getStackItem(0);
-        
+
         int reg = item.getRegisterNumber();
         if (reg >= 0) {
             return TRIM_PREFIX + reg;
         }
-        
+
         XField field = item.getXField();
         if (field != null) {
             return TRIM_PREFIX + field.getName();
         }
-        
+
         XMethod method = item.getReturnValueOf();
         if (method != null) {
             return TRIM_PREFIX + method.getName();
         }
-        
+
         return "trim";
     }
-    
+
     private void checkTrimLocations() {
         if (trimLocations.isEmpty()) {
             return;
         }
-        
+
         String curV = getTrimUserValue();
         if (curV == null) {
             return;
         }
-        
+
         Integer pc = trimLocations.remove(curV);
         if (pc != null) {
             bugReporter.reportBug(
