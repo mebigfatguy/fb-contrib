@@ -68,7 +68,7 @@ function toggleBlock(divId, imgId)
 			</li>
 			</ul>
 		</p>
-		<p style="font-weight: bold;">The latest version of fb-contrib is 6.2.3 available for download 
+		<p style="font-weight: bold;">The latest version of fb-contrib is 6.4.0 available for download 
 		<a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22fb-contrib%22">here</a>.</p>
 		<p style="font-weight: bold;">This version requires FindBugs 3.0.1 or better</p>
 		<p style="font-weight: bold;">Please note that active development for this project is now done on 
@@ -86,7 +86,14 @@ function toggleBlock(divId, imgId)
                 same kind of exception, and throw the same exception always. These blocks can
                 be coalesced into one.
                 </li>
-    		    <li><b>[OPM] Overly Permissive Method</b><br/>
+            </ul>
+        </div>  
+        <hr/>
+        <img id="v6_4_0_image" src="flip2.gif" onClick="toggleBlock('v6_4_0', 'v6_4_0_image');" align="top"/> 
+        Detectors added in v6.4.0<br/>
+        <div id="v6_4_0" style="display:block;">
+        	<ul>
+        		<li><b>[OPM] Overly Permissive Method</b><br/>
     		    Looks for methods that are declared more permissively than the code is using. For instance, declaring
     			a method public, when it could just be declared private.
     			</li>
@@ -98,12 +105,15 @@ function toggleBlock(divId, imgId)
     			Looks for classes that are not fully implemented to be a well rounded class. While
     			the class will likely work fine, it is more difficult to use or understand than necessary.
                 </li>
-            </ul>
-        </div>   
+                <li><b>[JXI] JAX-RS Issues</b><br/>
+                Looks for problems with the use of the JAX-RS specification.
+                </li>
+        	</ul>
+        </div>
         <hr/>
         <img id="v6_2_0_image" src="flip2.gif" onClick="toggleBlock('v6_2_0', 'v6_2_0_image');" align="top"/>
         Detectors added in v6.2.0<br/>
-        <div id="v6_2_0" style="display:block;">
+        <div id="v6_2_0" style="display:none;">
         	<ul>
                 <li><b>[CSI] Charset Issues</b><br/>
                 Looks for issues related to manually specified charsets by using string literals.

@@ -282,8 +282,6 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousLoopSearch" speed="fast" reports="SLS_SUSPICIOUS_LOOP_SEARCH" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" speed="fast" reports="CRF_CONFLATING_RESOURCES_AND_FILES" />
-
-    <!--  COMMENT OUT FOR POINT RELEASE -->
     
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod" speed="fast" reports="OPM_OVERLY_PERMISSIVE_METHOD" />
 	
@@ -293,6 +291,7 @@
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.JAXRSIssues" speed="fast" reports="JXI_GET_ENDPOINT_CONSUMES_CONTENT,JXI_INVALID_CONTEXT_PARAMETER_TYPE,JXI_PARM_PARAM_NOT_FOUND_IN_PATH,JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" />
 	
+    <!--  COMMENT OUT FOR POINT RELEASE -->
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -529,9 +528,9 @@
 	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME" category="CORRECTNESS"/>
 	<BugPattern abbrev="CSI" type="CSI_CHAR_SET_ISSUES_UNKNOWN_ENCODING" category="CORRECTNESS"/>
 	<BugPattern abbrev="CBC" type="CBC_CONTAINS_BASED_CONDITIONAL" category="STYLE"/>
-	<BugPattern abbrev="OPM" type="OPM_OVERLY_PERMISSIVE_METHOD" category="STYLE" experimental="true" />
-	<BugPattern abbrev="STT" type="STT_STRING_PARSING_A_FIELD" category="STYLE" experimental="true" />
-	<BugPattern abbrev="STT" type="STT_TOSTRING_STORED_IN_FIELD" category="STYLE" experimental="true" />
+	<BugPattern abbrev="OPM" type="OPM_OVERLY_PERMISSIVE_METHOD" category="STYLE" />
+	<BugPattern abbrev="STT" type="STT_STRING_PARSING_A_FIELD" category="STYLE" />
+	<BugPattern abbrev="STT" type="STT_TOSTRING_STORED_IN_FIELD" category="STYLE" />
 	<BugPattern abbrev="SLS" type="SLS_SUSPICIOUS_LOOP_SEARCH" category="CORRECTNESS" />
 	<BugPattern abbrev="CRF" type="CRF_CONFLATING_RESOURCES_AND_FILES" category="CORRECTNESS" />
 	<BugPattern abbrev="IMC" type="IMC_IMMATURE_CLASS_NO_EQUALS" category="STYLE" />
