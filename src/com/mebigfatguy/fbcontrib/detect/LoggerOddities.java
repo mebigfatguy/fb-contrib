@@ -18,7 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -36,6 +35,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -54,26 +54,27 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 @CustomUserValue
 public class LoggerOddities extends BytecodeScanningDetector {
+    
     private static JavaClass THROWABLE_CLASS;
-    private static Set<String> LOGGER_METHODS;
-    private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
-    private static final Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
-
     static {
         try {
             THROWABLE_CLASS = Repository.lookupClass("java/lang/Throwable");
-
-            LOGGER_METHODS = new HashSet<String>();
-            LOGGER_METHODS.add("trace");
-            LOGGER_METHODS.add("debug");
-            LOGGER_METHODS.add("info");
-            LOGGER_METHODS.add("warn");
-            LOGGER_METHODS.add("error");
-            LOGGER_METHODS.add("fatal");
         } catch (ClassNotFoundException cnfe) {
             THROWABLE_CLASS = null;
         }
     }
+    
+    private static final Set<String> LOGGER_METHODS = UnmodifiableSet.create(
+        "trace",
+        "debug",
+        "info",
+        "warn",
+        "error",
+        "fatal"
+    );
+    
+    private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
+    private static final Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
