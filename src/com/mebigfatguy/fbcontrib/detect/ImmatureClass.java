@@ -22,6 +22,8 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  */
 public class ImmatureClass extends PreorderVisitor implements Detector {
 
+    enum HEStatus {NOT_NEEDED, UNKNOWN, NEEDED};
+    
     private BugReporter bugReporter;
     
     public ImmatureClass(BugReporter reporter) {
@@ -46,8 +48,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         
             try {
                 boolean clsHasRuntimeAnnotation = classHasRuntimeVisibleAnnotation(cls);
-                boolean needsEqualsHashCode = true;
-                boolean hasField = false;
+                HEStatus heStatus = HEStatus.UNKNOWN;
 
                 for (Field f : cls.getFields()) {
                     if (!f.isStatic() && !f.isSynthetic()) {
@@ -60,26 +61,28 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                                                     .addClass(cls));
                                 return;    
                             }
-                            if (needsEqualsHashCode) {
+                            if (heStatus != HEStatus.NOT_NEEDED) {
                                 String fieldSig = f.getSignature();
-                                if (fieldSig.startsWith("L") && (!fieldSig.startsWith("Ljava"))) {
-                                    JavaClass fieldClass = Repository.lookupClass(fieldSig.substring(1, fieldSig.length() - 1));
-                                    if (!hasMethodInHierarchy(fieldClass, "equals",  "(Ljava/lang/Object)Z")) {
-                                        needsEqualsHashCode = false;
+                                if (fieldSig.startsWith("L")) {
+                                    if  (!fieldSig.startsWith("Ljava")) {
+                                        JavaClass fieldClass = Repository.lookupClass(fieldSig.substring(1, fieldSig.length() - 1));
+                                        if (!hasMethodInHierarchy(fieldClass, "equals",  "(Ljava/lang/Object)Z")) {
+                                            heStatus = HEStatus.NOT_NEEDED;
+                                        }
+                                    } else if (!fieldSig.startsWith("Ljava/lang/") && !fieldSig.startsWith("Ljava/util/")) {
+                                        heStatus = HEStatus.NOT_NEEDED;
                                     }
-                                } else if (fieldSig.startsWith("L") && !fieldSig.startsWith("Ljava/lang/") && !fieldSig.startsWith("Ljava/util/")) {
-                                    needsEqualsHashCode = false;
-                                } else {
-                                    hasField = true;
+                                } else if (!fieldSig.startsWith("[")) {
+                                    heStatus = HEStatus.NEEDED;
                                 }
                             }
                         } else {
-                            needsEqualsHashCode = false;
+                            heStatus = HEStatus.NOT_NEEDED;
                         }
                     }
                 }
                 
-                if (!clsHasRuntimeAnnotation && hasField && needsEqualsHashCode) {
+                if (!clsHasRuntimeAnnotation && heStatus == HEStatus.NEEDED) {
                     if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z")) {
                         bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY)
                             .addClass(cls));
