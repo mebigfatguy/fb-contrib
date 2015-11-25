@@ -33,6 +33,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -220,6 +222,13 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         if (hasExceptionOnStack()) {
                             arrayItem.setUserValue(-size);
                         }
+                    }
+                }
+            } else if (OpcodeUtils.isAStore(seen)) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if ("toString".equals(item.getUserValue())) {
+                        item.setUserValue(null);
                     }
                 }
             }
