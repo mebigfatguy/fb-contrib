@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -43,39 +44,37 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class SluggishGui extends BytecodeScanningDetector {
 
-    private static final Set<String> expensiveCalls = new HashSet<String>();
-
-    static {
-        expensiveCalls.add("java/io/BufferedOutputStream:<init>");
-        expensiveCalls.add("java/io/DataOutputStream:<init>");
-        expensiveCalls.add("java/io/FileOutputStream:<init>");
-        expensiveCalls.add("java/io/ObjectOutputStream:<init>");
-        expensiveCalls.add("java/io/PipedOutputStream:<init>");
-        expensiveCalls.add("java/io/BufferedInputStream:<init>");
-        expensiveCalls.add("java/io/DataInputStream:<init>");
-        expensiveCalls.add("java/io/FileInputStream:<init>");
-        expensiveCalls.add("java/io/ObjectInputStream:<init>");
-        expensiveCalls.add("java/io/PipedInputStream:<init>");
-        expensiveCalls.add("java/io/BufferedWriter:<init>");
-        expensiveCalls.add("java/io/FileWriter:<init>");
-        expensiveCalls.add("java/io/OutpuStreamWriter:<init>");
-        expensiveCalls.add("java/io/BufferedReader:<init>");
-        expensiveCalls.add("java/io/FileReader:<init>");
-        expensiveCalls.add("java/io/InputStreamReader:<init>");
-        expensiveCalls.add("java/io/RandomAccessFile:<init>");
-        expensiveCalls.add("java/lang/Class:getResourceAsStream");
-        expensiveCalls.add("java/lang/ClassLoader:getResourceAsStream");
-        expensiveCalls.add("java/lang/ClassLoader:loadClass");
-        expensiveCalls.add("java/sql/DriverManager:getConnection");
-        expensiveCalls.add("java/sql/Connection:createStatement");
-        expensiveCalls.add("java/sql/Connection:prepareStatement");
-        expensiveCalls.add("java/sql/Connection:prepareCall");
-        expensiveCalls.add("javax/sql/DataSource:getConnection");
-        expensiveCalls.add("javax/xml/parsers/DocumentBuilder:parse");
-        expensiveCalls.add("javax/xml/parsers/DocumentBuilder:parse");
-        expensiveCalls.add("javax/xml/parsers/SAXParser:parse");
-        expensiveCalls.add("javax/xml/transform/Transformer:transform");
-    }
+    private static final Set<String> expensiveCalls = UnmodifiableSet.create(
+        "java/io/BufferedOutputStream:<init>",
+        "java/io/DataOutputStream:<init>",
+        "java/io/FileOutputStream:<init>",
+        "java/io/ObjectOutputStream:<init>",
+        "java/io/PipedOutputStream:<init>",
+        "java/io/BufferedInputStream:<init>",
+        "java/io/DataInputStream:<init>",
+        "java/io/FileInputStream:<init>",
+        "java/io/ObjectInputStream:<init>",
+        "java/io/PipedInputStream:<init>",
+        "java/io/BufferedWriter:<init>",
+        "java/io/FileWriter:<init>",
+        "java/io/OutpuStreamWriter:<init>",
+        "java/io/BufferedReader:<init>",
+        "java/io/FileReader:<init>",
+        "java/io/InputStreamReader:<init>",
+        "java/io/RandomAccessFile:<init>",
+        "java/lang/Class:getResourceAsStream",
+        "java/lang/ClassLoader:getResourceAsStream",
+        "java/lang/ClassLoader:loadClass",
+        "java/sql/DriverManager:getConnection",
+        "java/sql/Connection:createStatement",
+        "java/sql/Connection:prepareStatement",
+        "java/sql/Connection:prepareCall",
+        "javax/sql/DataSource:getConnection",
+        "javax/xml/parsers/DocumentBuilder:parse",
+        "javax/xml/parsers/DocumentBuilder:parse",
+        "javax/xml/parsers/SAXParser:parse",
+        "javax/xml/transform/Transformer:transform"
+    );
 
     private BugReporter bugReporter;
     private Set<String> expensiveThisCalls;
