@@ -26,6 +26,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -42,17 +43,17 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
         SEEN_NOTHING, SEEN_VALUE, SEEN_VALUEOFSTRING, SEEN_PARSE, SEEN_CTOR, SEEN_VALUEOFPRIMITIVE, SEEN_ICONST, SEEN_GETSTATIC
     }
 
-    private static final Map<String, String[]> boxClasses = new HashMap<String, String[]>();
+    private static final Map<String, BoxParms> boxClasses = new HashMap<String, BoxParms>();
 
     static {
-        boxClasses.put("java/lang/Boolean", new String[] { "booleanValue()Z", "(Z)V", "(Z)Ljava/lang/Boolean;" });
-        boxClasses.put("java/lang/Character", new String[] { "charValue()C", "(C)V", "(C)Ljava/lang/Character;" });
-        boxClasses.put("java/lang/Byte", new String[] { "byteValue()B", "(B)V", "(B)Ljava/lang/Byte;" });
-        boxClasses.put("java/lang/Short", new String[] { "shortValue()S", "(S)V", "(S)Ljava/lang/Short;" });
-        boxClasses.put("java/lang/Integer", new String[] { "intValue()I", "(I)V", "(I)Ljava/lang/Integer;" });
-        boxClasses.put("java/lang/Long", new String[] { "longValue()J", "(J)V", "(J)Ljava/lang/Long;" });
-        boxClasses.put("java/lang/Float", new String[] { "floatValue()F", "(F)V", "(F)Ljava/lang/Float;" });
-        boxClasses.put("java/lang/Double", new String[] { "doubleValue()D", "(D)V", "(D)Ljava/lang/Double;" });
+        boxClasses.put("java/lang/Boolean", new BoxParms("booleanValue()Z", "(Z)V", "(Z)Ljava/lang/Boolean;"));
+        boxClasses.put("java/lang/Character", new BoxParms("charValue()C", "(C)V", "(C)Ljava/lang/Character;"));
+        boxClasses.put("java/lang/Byte", new BoxParms("byteValue()B", "(B)V", "(B)Ljava/lang/Byte;"));
+        boxClasses.put("java/lang/Short", new BoxParms("shortValue()S", "(S)V", "(S)Ljava/lang/Short;"));
+        boxClasses.put("java/lang/Integer", new BoxParms("intValue()I", "(I)V", "(I)Ljava/lang/Integer;"));
+        boxClasses.put("java/lang/Long", new BoxParms("longValue()J", "(J)V", "(J)Ljava/lang/Long;"));
+        boxClasses.put("java/lang/Float", new BoxParms("floatValue()F", "(F)V", "(F)Ljava/lang/Float;"));
+        boxClasses.put("java/lang/Double", new BoxParms("doubleValue()D", "(D)V", "(D)Ljava/lang/Double;"));
     }
 
     private static final Map<String, String> parseClasses = new HashMap<String, String>();
@@ -111,16 +112,16 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
         case SEEN_NOTHING:
             if (seen == INVOKEVIRTUAL) {
                 boxClass = getClassConstantOperand();
-                String[] boxSigs = boxClasses.get(boxClass);
+                BoxParms boxSigs = boxClasses.get(boxClass);
                 if (boxSigs != null) {
                     String methodInfo = getNameConstantOperand() + getSigConstantOperand();
-                    if (boxSigs[0].equals(methodInfo)) {
+                    if (boxSigs.getPrimitiveValueSignature().equals(methodInfo)) {
                         state = State.SEEN_VALUE;
                     }
                 }
             } else if (seen == INVOKESTATIC) {
                 boxClass = getClassConstantOperand();
-                String[] boxSigs = boxClasses.get(boxClass);
+                BoxParms boxSigs = boxClasses.get(boxClass);
                 if (boxSigs != null) {
                     if ("valueOf".equals(getNameConstantOperand())) {
                         String sig = getSigConstantOperand();
@@ -142,9 +143,9 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                 }
             } else if (seen == INVOKESPECIAL) {
                 boxClass = getClassConstantOperand();
-                String[] boxSigs = boxClasses.get(boxClass);
+                BoxParms boxSigs = boxClasses.get(boxClass);
                 if (boxSigs != null) {
-                    if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && boxSigs[1].equals(getSigConstantOperand())) {
+                    if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && boxSigs.getCtorSignature().equals(getSigConstantOperand())) {
                         state = State.SEEN_CTOR;
                     }
                 }
@@ -170,7 +171,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             if (seen == INVOKESPECIAL) {
                 if (boxClass.equals(getClassConstantOperand())) {
                     String methodName = getNameConstantOperand();
-                    String boxSig = boxClasses.get(boxClass)[1];
+                    String boxSig = boxClasses.get(boxClass).getCtorSignature();
                     if (Values.CONSTRUCTOR.equals(methodName)) {
                         String methodSig = getSigConstantOperand();
                         if (boxSig.equals(methodSig)) {
@@ -182,7 +183,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             } else if (seen == INVOKESTATIC) {
                 if (boxClass.equals(getClassConstantOperand())) {
                     String methodName = getNameConstantOperand();
-                    String boxSig = boxClasses.get(boxClass)[2];
+                    String boxSig = boxClasses.get(boxClass).getValueOfSignature();
                     if ("valueOf".equals(methodName)) {
                         String methodSig = getSigConstantOperand();
                         if (boxSig.equals(methodSig)) {
@@ -198,8 +199,8 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
         case SEEN_CTOR:
         case SEEN_VALUEOFPRIMITIVE:
             if (seen == INVOKEVIRTUAL) {
-                String[] boxSigs = boxClasses.get(boxClass);
-                if (boxSigs[0].equals(getNameConstantOperand() + getSigConstantOperand())) {
+                BoxParms boxSigs = boxClasses.get(boxClass);
+                if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_UNBOX.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                             .addSourceLine(this));
                 } else if (getSigConstantOperand().startsWith("()") && getNameConstantOperand().endsWith("Value")) {
@@ -212,8 +213,8 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
 
         case SEEN_VALUEOFSTRING:
             if (seen == INVOKEVIRTUAL) {
-                String[] boxSigs = boxClasses.get(boxClass);
-                if (boxSigs[0].equals(getNameConstantOperand() + getSigConstantOperand())) {
+                BoxParms boxSigs = boxClasses.get(boxClass);
+                if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_PARSE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                             .addSourceLine(this));
                 }
@@ -261,6 +262,36 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             state = State.SEEN_NOTHING;
             sawOpcode(seen);
             break;
+        }
+    }
+    
+    static class BoxParms {
+        
+        private String primitiveValueSignature;
+        private String ctorSignature;
+        private String valueOfSignature;
+        
+        BoxParms(String primValueSig, String ctorSig, String valueOfSig) {
+            primitiveValueSignature = primValueSig;
+            ctorSignature = ctorSig;
+            valueOfSignature = valueOfSig;
+        }
+
+        public String getPrimitiveValueSignature() {
+            return primitiveValueSignature;
+        }
+
+        public String getCtorSignature() {
+            return ctorSignature;
+        }
+
+        public String getValueOfSignature() {
+            return valueOfSignature;
+        }
+        
+        @Override
+        public String toString() {
+            return ToString.build(this);
         }
     }
 }
