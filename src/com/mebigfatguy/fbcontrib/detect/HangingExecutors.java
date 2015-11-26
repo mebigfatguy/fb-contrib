@@ -35,6 +35,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -55,26 +56,15 @@ import edu.umd.cs.findbugs.ba.XMethod;
  */
 public class HangingExecutors extends BytecodeScanningDetector {
 
-    private static final Set<String> hangableSig;
+    private static final Set<String> hangableSig = UnmodifiableSet.create(
+        "Ljava/util/concurrent/ExecutorService;",
+        "Ljava/util/concurrent/AbstractExecutorService;",
+        "Ljava/util/concurrent/ForkJoinPool;",
+        "Ljava/util/concurrent/ScheduledThreadPoolExecutor;",
+        "Ljava/util/concurrent/ThreadPoolExecutor;"
+    );
 
-    static {
-        Set<String> hs = new HashSet<String>();
-        hs.add("Ljava/util/concurrent/ExecutorService;");
-        hs.add("Ljava/util/concurrent/AbstractExecutorService;");
-        hs.add("Ljava/util/concurrent/ForkJoinPool;");
-        hs.add("Ljava/util/concurrent/ScheduledThreadPoolExecutor;");
-        hs.add("Ljava/util/concurrent/ThreadPoolExecutor;");
-        hangableSig = Collections.unmodifiableSet(hs);
-    }
-
-    private static final Set<String> shutdownMethods;
-
-    static {
-        Set<String> sm = new HashSet<String>();
-        sm.add("shutdown");
-        sm.add("shutdownNow");
-        shutdownMethods = Collections.unmodifiableSet(sm);
-    }
+    private static final Set<String> shutdownMethods = UnmodifiableSet.create("shutdown","shutdownNow");
 
     private final BugReporter bugReporter;
     private Map<XField, AnnotationPriority> hangingFieldCandidates;
