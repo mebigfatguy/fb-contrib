@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.debug;
 
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -57,7 +58,7 @@ public class OCSDebugger extends BytecodeScanningDetector {
         String curMethodDesc = getClassContext().getJavaClass().getClassName() + "." + m.getName() + m.getSignature();
         if (curMethodDesc.equals(METHOD_DESC)) {
             try {
-                pw = new PrintWriter(OUTPUT_FILE_NAME, "UTF-8");
+                pw = new PrintWriter(OUTPUT_FILE_NAME, StandardCharsets.UTF_8.name());
                 stack.resetForMethodEntry(this);
 
                 super.visitCode(obj);
