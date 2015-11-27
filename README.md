@@ -49,8 +49,7 @@ For example, If you are using FindBugs with Eclipse (and you extracted Eclipse t
 ##Setting up for Development - Maven##
 1. Download/install [Maven](https://maven.apache.org), version 2.2.1 or newer.
 2. Clone the Git repository, as per step 3 above.
-3. (Optional) Change the artifact version in the POM; for building from the head, you may prefer to use a SNAPSHOT version number.
-4. Run `mvn clean install` in the fb-contrib directory.
+3. Run `mvn clean install` in the fb-contrib directory.
 
 ##Contributing##
 Once you have the dev environment set up, feel free to make changes and pull requests.
