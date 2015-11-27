@@ -171,10 +171,11 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
             case INVOKEVIRTUAL:
             case INVOKEINTERFACE:
             case INVOKESTATIC:
-                FQMethod methodCall = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                String signature = getSigConstantOperand();
+                FQMethod methodCall = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), signature);
                 unit = TIME_UNIT_GENERATING_METHODS.get(methodCall);
                 if (unit == Units.CALLER) {
-                    int offset = Type.getArgumentTypes(getSigConstantOperand()).length;
+                    int offset = Type.getArgumentTypes(signature).length;
                     if (stack.getStackDepth() > offset) {
                         OpcodeStack.Item item = stack.getStackItem(offset);
                         unit = (Units) item.getUserValue();

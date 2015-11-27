@@ -223,13 +223,13 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             if (mi.wasCalledPublicly() || !mi.wasCalled()) {
                 continue;
             }
-
-            String methodName = entry.getKey().getMethodName();
-            if (isGetterSetter(methodName, entry.getKey().getSignature())) {
-                continue;
-            }
             
             StatisticsKey key = entry.getKey();
+
+            String methodName = key.getMethodName();
+            if (isGetterSetter(methodName, key.getSignature())) {
+                continue;
+            }
 
             if (isOverlyPermissive(declaredAccess)) {
                 try {
