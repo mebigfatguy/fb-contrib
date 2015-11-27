@@ -110,6 +110,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                         return;
                     }
                 } catch (ClassNotFoundException e) {
+                    bugReporter.reportMissingClass(e);
                     return;
                 }
             }
