@@ -144,7 +144,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                             if (stack.getStackDepth() > parmOffset) {
                                 OpcodeStack.Item item = stack.getStackItem(parmOffset);
 
-                                Comparable<?> cons = (Comparable<?>) item.getConstant();
+                                Comparable cons = (Comparable) item.getConstant();
                                 if (!info.isValid(cons)) {
                                     int badParm = 1 + (info.fromStart ? info.parameterOffset : Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
                                     bugReporter.reportBug(new BugInstance(this, BugType.ICA_INVALID_CONSTANT_ARGUMENT.name(), NORMAL_PRIORITY).addClass(this)
@@ -169,7 +169,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
      * legal values, and what offset from the start or end of the method the parm
      * is
      */
-    static class ParameterInfo<T extends Comparable<?>> {
+    static class ParameterInfo<T extends Comparable<T>> {
         private int parameterOffset;
         private boolean fromStart;
         private Set<T> validValues;
@@ -198,7 +198,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
             return info;
         }
 
-        public boolean isValid(Comparable o) {
+        public boolean isValid(Comparable<T> o) {
             if (o == null) {
                 return true;
             }
@@ -211,7 +211,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         }
     }
 
-    static class Range<T extends Comparable<?>> {
+    static class Range<T extends Comparable<T>> {
         T from;
         T to;
 
