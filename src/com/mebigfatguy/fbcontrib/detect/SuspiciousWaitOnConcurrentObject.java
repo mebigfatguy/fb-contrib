@@ -18,7 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -26,6 +25,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -38,12 +38,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * java.util.concurrent package where it is likely that await was intended.
  */
 public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
-    private static final Set<String> concurrentAwaitClasses = new HashSet<String>();
-
-    static {
-        concurrentAwaitClasses.add("java.util.concurrent.CountDownLatch");
-        concurrentAwaitClasses.add("java.util.concurrent.CyclicBarrier");
-    }
+    private static final Set<String> concurrentAwaitClasses = UnmodifiableSet.create(
+        "java.util.concurrent.CountDownLatch",
+        "java.util.concurrent.CyclicBarrier"
+    );
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
