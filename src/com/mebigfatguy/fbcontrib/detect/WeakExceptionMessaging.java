@@ -19,7 +19,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -32,6 +31,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -51,7 +51,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class WeakExceptionMessaging extends BytecodeScanningDetector {
 
     private static JavaClass exceptionClass;
-    private static final Set<String> ignorableExceptionTypes = new HashSet<String>();
+    private static final Set<String> ignorableExceptionTypes = UnmodifiableSet.create("java.lang.UnsupportedOperationException");
 
     static {
         try {
@@ -59,8 +59,6 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
         } catch (ClassNotFoundException cnfe) {
             exceptionClass = null;
         }
-
-        ignorableExceptionTypes.add("java.lang.UnsupportedOperationException");
     }
 
     private final BugReporter bugReporter;
