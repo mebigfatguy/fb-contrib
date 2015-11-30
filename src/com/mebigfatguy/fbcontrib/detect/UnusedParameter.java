@@ -20,7 +20,6 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -33,6 +32,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -49,22 +49,20 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class UnusedParameter extends BytecodeScanningDetector {
 
-    private static Set<String> IGNORE_METHODS = new HashSet<String>();
-
-    static {
-        IGNORE_METHODS.add(Values.CONSTRUCTOR);
-        IGNORE_METHODS.add(Values.STATIC_INITIALIZER);
-        IGNORE_METHODS.add("main");
-        IGNORE_METHODS.add("premain");
-        IGNORE_METHODS.add("agentmain");
-        IGNORE_METHODS.add("writeObject");
-        IGNORE_METHODS.add("readObject");
-        IGNORE_METHODS.add("readObjectNoData");
-        IGNORE_METHODS.add("writeReplace");
-        IGNORE_METHODS.add("readResolve");
-        IGNORE_METHODS.add("writeExternal");
-        IGNORE_METHODS.add("readExternal");
-    }
+    private static Set<String> IGNORE_METHODS = UnmodifiableSet.create(
+        Values.CONSTRUCTOR,
+        Values.STATIC_INITIALIZER,
+        "main",
+        "premain",
+        "agentmain",
+        "writeObject",
+        "readObject",
+        "readObjectNoData",
+        "writeReplace",
+        "readResolve",
+        "writeExternal",
+        "readExternal"
+    );
 
     private BugReporter bugReporter;
 
