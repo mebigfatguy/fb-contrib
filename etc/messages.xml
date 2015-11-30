@@ -52,7 +52,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SyncCollectionIterators">
 		<Details>
 			<![CDATA[
-			<p>Looks for use of iterators on synchronized collections built from the java.util.Collections class</p>
+			<p>Looks for use of iterators on synchronized collections built from the java.util.Collections class.</p>
 			<p>As the collection in question was built through Collections.synchronizedXXX, an assumption
 			is made that this collection must be multithreaded safe. However, iterator access is used,
 			which is explicitly unsafe. When iterators are to be used, synchronization should be done manually.</p>
@@ -322,7 +322,7 @@
 			Since primitive wrapper classes are immutable this is needless garbage being created. Just
 			use the original reference.
 			</p>
-			<p>It also looks for calls to BoxedClass.valueOf(x) where X is already a Boxed class</p>
+			<p>It also looks for calls to BoxedClass.valueOf(x) where X is already a BoxedClass</p>
 			<p>It also looks for calls to BoxedClass.valueOf(myString).boxedValue(), when instead it is
 			simpler to use BoxedClass.parseBoxed(myString)</p>
 			<p>It is a fast detector.</p>
@@ -696,7 +696,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousComparatorReturnValues">
 		<Details>
 			<![CDATA[
-			<p>Looks for class that implement Comparator or Comparable, and whose compare or compareTo
+			<p>Looks for classes that implement Comparator or Comparable, and whose compare or compareTo
 			methods return constant values only, but that don't represent the three possible choice
 			(a negative number, 0, and a positive number).</p>
 			<p>It is a fast detector.</p>
@@ -847,11 +847,11 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.UnitTestAssertionOddities">
 		<Details>
 			<![CDATA[
-			<p>Looks for junit or testng test case methods that use assertions with odd parameters.
+			<p>Looks for JUnit or TestNG test case methods that use assertions with odd parameters.
 			Including in this is:
 			<ul>
-				<li>Passing a constant as the second (actual) parameter in a junit test</li>
-				<li>not using the three parameter version of asserts for doubles</li>
+				<li>Passing a constant as the second (actual) parameter in a JUnit test</li>
+				<li>Not using the three parameter version of asserts for doubles</li>
 				<li>Passing true or false as the first parameter instead of using assertTrue, or assertFalse</li>
 				<li>Using the assert keyword</li>
 			</ul>
@@ -1496,7 +1496,7 @@
             <p>Looks for classes that store fields that are Strings that impersonate instances of classes, or collections that are
             fields that hold Strings that impersonate a class. Examples of String impersonating are storing:
             <ul>
-                <li>the result of a toString call</li>
+                <li>The result of a toString call</li>
                 <li>Strings build from parsing or building strings from other objects, such as "1,2,3,4" or "Project:3"</li>
             </ul>
             By using Strings you are throwing away type-safety, and making it difficult to reason about what the values of variables
@@ -1513,7 +1513,7 @@
     		<p>Looks for methods that assign a value to a variable in an if equals conditional in a loop, but does not break after doing so.
     		Since equality would seem to be a one time event, continuing with the loop seems pointless, and a break statement in the if statement
     		seems like it should be added.</p>
-    		<p>It is a fast detector</p>
+    		<p>It is a fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1521,10 +1521,10 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles">
     	<Details>
     		<![CDATA[
-    		<p>Looks for methods that use the File api on resources retrieved from URLs where the URL in question isn't from a file protocol.
-    		In the case of classpath resources, this will work if the code is executed from directories, but fail using jars.
-    		If using resources, then use URL.openStream() method instead of File apis.</p>
-    		<p>It is a fast detector</p>
+    		<p>Looks for methods that use the File API on resources retrieved from URLs where the URL in question isn't from a file protocol.
+    		In the case of classpath resources, this will work if the code is executed from directories, but fail using JARs.
+    		If using resources, then use URL.openStream() method instead of File APIs.</p>
+    		<p>It is a fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1533,12 +1533,12 @@
     	<Details>
     		<![CDATA[
     		<p>Looks for classes that are not fully complete from a usability point of view. Making them more difficult to use
-    		than should be. Things such as
-    		<UL>
-    		<LI>Missing toString() method</LI>
-    		</UL>
+    		than it should be. Things such as
+    		<ul>
+    		<li>Missing toString() method</li>
+    		</ul>
     		</p>
-    		<p>It is a moderately fast detector</p>
+    		<p>It is a moderately fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1737,7 +1737,7 @@
 			<![CDATA[
 			<p>This method declares a RuntimeException derived class in its throws clause.
 			This may indicate a misunderstanding as to how unchecked exceptions are handled.
-			If is felt that a RuntimeException is so prevalent that it should be declared, it
+			If it is felt that a RuntimeException is so prevalent that it should be declared, it
 			is probably a better idea to prevent the occurrence in code.</p>
 			]]>
 		</Details>
@@ -2195,11 +2195,11 @@
 	</BugPattern>
 	
 	<BugPattern type="COM_PARENT_DELEGATED_CALL">
-		<ShortDescription>Method merely delegates to it's superclass's version</ShortDescription>
-		<LongDescription>Method {1} merely delegates to it's superclass's version</LongDescription>
+		<ShortDescription>Method merely delegates to its superclass's version</ShortDescription>
+		<LongDescription>Method {1} merely delegates to its superclass's version</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method is implemented to just delegate it's implementation by calling
+			<p>This method is implemented to just delegate its implementation by calling
 			the superclass method with the same signature. This method can just be removed.</p>
 			]]>
 		</Details>
@@ -3123,7 +3123,7 @@
 		<LongDescription>Method {1} uses iterator().next() on a List to get the first item</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This Method calls myList.iterator().next() on a List to get the first item. It is more performant
+			<p>This method calls myList.iterator().next() on a List to get the first item. It is more performant
 			to just use myList.get(0).</p>
 			]]>
 		</Details>
@@ -3247,8 +3247,8 @@
 	</BugPattern>
 
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
-		<ShortDescription>Method assigns a variable in a larger scope then is needed</ShortDescription>
-		<LongDescription>Method {1} assigns a variable in a larger scope then is needed</LongDescription>
+		<ShortDescription>Method assigns a variable in a larger scope than is needed</ShortDescription>
+		<LongDescription>Method {1} assigns a variable in a larger scope than is needed</LongDescription>
 		<Details>
 			<![CDATA[
 			<p><em>THIS DETECTOR IS HIGHLY EXPERIMENTAL AND IS LIKELY TO CREATE A LOT OF FUD</em></p>
@@ -3447,8 +3447,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT">
-		<ShortDescription>Junit test method passes constant to second (actual) assertion parameter</ShortDescription>
-		<LongDescription>Junit test method {1} passes constant to second (actual) assertion parameter</LongDescription>
+		<ShortDescription>JUnit test method passes constant to second (actual) assertion parameter</ShortDescription>
+		<LongDescription>JUnit test method {1} passes constant to second (actual) assertion parameter</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method calls assert passing a constant value as the second of the two values. The assert
@@ -3459,8 +3459,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE">
-		<ShortDescription>Junit test method asserts that two doubles are exactly equal</ShortDescription>
-		<LongDescription>Junit test method {1} asserts that two doubles are exactly equal</LongDescription>
+		<ShortDescription>JUnit test method asserts that two doubles are exactly equal</ShortDescription>
+		<LongDescription>JUnit test method {1} asserts that two doubles are exactly equal</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method calls assert with two doubles or Doubles. Due to the imprecision of doubles, you
@@ -3470,8 +3470,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT">
-		<ShortDescription>Junit test method asserts that a value is true or false</ShortDescription>
-		<LongDescription>Junit test method {1} asserts that a value is true or false</LongDescription>
+		<ShortDescription>JUnit test method asserts that a value is true or false</ShortDescription>
+		<LongDescription>JUnit test method {1} asserts that a value is true or false</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method asserts that a value is equal to true or false. It is simpler to just
@@ -3481,8 +3481,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL">
-		<ShortDescription>Junit test method asserts that an auto-boxed value is not null</ShortDescription>
-		<LongDescription>Junit test method {1} asserts that an auto-boxed value is not null</LongDescription>
+		<ShortDescription>JUnit test method asserts that an autoboxed value is not null</ShortDescription>
+		<LongDescription>JUnit test method {1} asserts that an autoboxed value is not null</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method asserts that a primitive value that was autoboxed into a boxed primitive was not
@@ -3493,66 +3493,66 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED">
-	        <ShortDescription>Junit test method uses Java asserts rather than a junit assertion</ShortDescription>
-	        <LongDescription>Junit test method {1} uses Java asserts rather than a junit assertion</LongDescription>
+		<ShortDescription>JUnit test method uses Java asserts rather than a JUnit assertion</ShortDescription>
+		<LongDescription>JUnit test method {1} uses Java asserts rather than a JUnit assertion</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method uses a Java assert to assure that a certain state is in effect. As this is
-			a junit test it makes more sense to either check this condition with a junit assert, or allow
+			a JUnit test it makes more sense to either check this condition with a JUnit assert, or allow
 			a following exception to occur.</p>
 			]]>
 		</Details>
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NULL">
-		<ShortDescription>Junit test method passes null Assert.assertEquals</ShortDescription>
-		<LongDescription>Junit test method {1} passes null to Assert.assertEquals</LongDescription>
+		<ShortDescription>JUnit test method passes null Assert.assertEquals</ShortDescription>
+		<LongDescription>JUnit test method {1} passes null to Assert.assertEquals</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method compares an object's equality to null. It is better to use the Assert.assertNull
-			method so that the junit failure method is more meaningful of the intended test.</p>
+			method so that the JUnit failure method is more meaningful of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
 	
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL">
-		<ShortDescription>Junit test method passes null Assert.assertNotEquals</ShortDescription>
-		<LongDescription>Junit test method {1} passes null to Assert.assertNotEquals</LongDescription>
+		<ShortDescription>JUnit test method passes null Assert.assertNotEquals</ShortDescription>
+		<LongDescription>JUnit test method {1} passes null to Assert.assertNotEquals</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method compares an object's inequality to null. It is better to use the Assert.assertNotNull
-			method so that the junit failure method is more meaningful of the intended test.</p>
+			method so that the JUnit failure method is more meaningful of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
 	
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS">
-		<ShortDescription>Junit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortDescription>
-		<LongDescription>Junit test method {1} passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongDescription>
+		<ShortDescription>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortDescription>
+		<LongDescription>JUnit test method {1} passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse / Assert.assertTrue.
 			It is better to pass the two values that are being equated to the Assert.assertEquals method so that the
-			junit failure method is more meaningful of the intended test.</p>
+			JUnit failure method is more meaningful of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
 	
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS">
-		<ShortDescription>Junit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortDescription>
-		<LongDescription>Junit test method {1} passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongDescription>
+		<ShortDescription>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortDescription>
+		<LongDescription>JUnit test method {1} passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse / Assert.assertTrue.
 			It is better to pass the two values that are being equated to the Assert.assertNotEquals method so that the
-			junit failure method is more meaningful of the intended test.</p>
+			JUnit failure method is more meaningful of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
 	
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT">
-		<ShortDescription>Junit test method appears to have no assertions</ShortDescription>
-		<LongDescription>Junit test method {1} appears to have no assertions</LongDescription>
+		<ShortDescription>JUnit test method appears to have no assertions</ShortDescription>
+		<LongDescription>JUnit test method {1} appears to have no assertions</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This JUnit test method has no assertions. While a unit test could still be valid if it relies on whether
@@ -3569,7 +3569,7 @@
 		<Details>
 			<![CDATA[
 			<p>This JUnit 4 test is still using classes from the junit.framework.* package. You should switch them
-			over to the corresponding org.junit.* set of classes, instead</p>
+			over to the corresponding org.junit.* set of classes, instead.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3609,8 +3609,8 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_IMPOSSIBLE_NULL">
-		<ShortDescription>TestNG test method asserts that an auto-boxed value is not null</ShortDescription>
-		<LongDescription>TestNG test method {1} asserts that an auto-boxed value is not null</LongDescription>
+		<ShortDescription>TestNG test method asserts that an autoboxed value is not null</ShortDescription>
+		<LongDescription>TestNG test method {1} asserts that an autoboxed value is not null</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method asserts that a primitive value that was autoboxed into a boxed primitive was not
@@ -3621,12 +3621,12 @@
 	</BugPattern>
 
 	<BugPattern type="UTAO_TESTNG_ASSERTION_ODDITIES_ASSERT_USED">
-	        <ShortDescription>TestNG test method uses Java asserts rather than a testng assertion</ShortDescription>
-	        <LongDescription>TestNG test method {1} uses Java asserts rather than a testng assertion</LongDescription>
+	        <ShortDescription>TestNG test method uses Java asserts rather than a TestNG assertion</ShortDescription>
+	        <LongDescription>TestNG test method {1} uses Java asserts rather than a TestNG assertion</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method uses a Java assert to assure that a certain state is in effect. As this is
-			a testng test it makes more sense to either check this condition with a testng assert, or allow
+			a TestNG test it makes more sense to either check this condition with a TestNG assert, or allow
 			a following exception to occur.</p>
 			]]>
 		</Details>
@@ -3724,7 +3724,7 @@
 			<p>This method catches an exception and generates a new exception of type java.lang.Exception, passing the
 			original exception as the new Exception's cause.  If the original Exception was actually an java.lang.Error, this
 			is dubious as you should not be handling errors. If the original exception is a more specific exception, there is no
-			reason to wrap it in an exception of the java.lang.Exception class, and just obfuscates the type of error that is occuring.
+			reason to wrap it in an exception of the java.lang.Exception class, and just obfuscates the type of error that is occurring.
 			</p>
 			]]>
 		</Details>
@@ -3872,9 +3872,9 @@
 			type functionality, which seems dubious when done on a collection</p>
 			<p>Finally, as a collection is often modified, problems will occur if the collection is
 			contained in a set, because the hashCode, equals or compareTo values will change while the
-			collection is in the set</p>
+			collection is in the set.</p>
 			<p>If you wish to maintain a collection of collections, it is probably better to use a List
-			as the outer collection</p>
+			as the outer collection.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4172,7 +4172,7 @@
 		<LongDescription>Method {1} calls deprecated SecureRandom method {2}</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>The <code>In JDK 1.5 or less, SecureRandom()</code> constructors and <code>SecureRandom.getSeed()</code> method are recommended against using. Call <code>SecureRandom.getInstance()</code> and <code>SecureRandom.getInstance().generateSeed()</code> instead.</p>
+			<p>In JDK 1.5 or less, the <code>SecureRandom()</code> constructors and <code>SecureRandom.getSeed()</code> method are recommended against using. Call <code>SecureRandom.getInstance()</code> and <code>SecureRandom.getInstance().generateSeed()</code> instead.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4246,7 +4246,7 @@
 
 			<p>As per the Java specifications, "UTF-8", "US-ASCII", "UTF-16" and "ISO-8859-1" will all be valid <a href = "http://docs.oracle.com/javase/7/docs/api/java/nio/charset/Charset.html#standard">encoding charsets</a>.  If you aren't sure, try "UTF-8".</p>
 
-			<p><b>New in Java 1.7</b>, You can specify an encoding from <code>StandardCharsets</code>, like <code>StandardCharsets.UTF_8</code>.  These are generally preferrable because you don't have to deal with <code>UnsupportedEncodingException</code>.</p>
+			<p><b>New in Java 1.7</b>, you can specify an encoding from <code>StandardCharsets</code>, like <code>StandardCharsets.UTF_8</code>.  These are generally preferrable because you don't have to deal with <code>UnsupportedEncodingException</code>.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4450,7 +4450,7 @@
 		<LongDescription>Method {1} compares class name instead of comparing the class</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>In a JVM, Two classes are the same class (and consequently the same type) if
+			<p>In a JVM, two classes are the same class (and consequently the same type) if
 			they are loaded by the same class loader, and they have the same fully
 			qualified name [JVMSpec 1999].
 
@@ -4484,8 +4484,8 @@
 	</BugPattern>
 
 	<BugPattern type="CU_CLONE_USABILITY_MISMATCHED_RETURN">
-		<ShortDescription>Clone method declares it returns a type different then the owning class</ShortDescription>
-		<LongDescription>Clone method {1} declares it returns a type different then the owning class</LongDescription>
+		<ShortDescription>Clone method declares it returns a type different than the owning class</ShortDescription>
+		<LongDescription>Clone method {1} declares it returns a type different than the owning class</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This class implements the Cloneable interface but defines its clone method to return a type
@@ -4531,7 +4531,7 @@
 			and thus needlessly causes intermediate reallocations of the collection.</p>
 			<p>You can use the constructor that takes an initial size and that will be much better, but
 			due to the loadFactor of Maps and Sets, even this will not be a correct estimate.</p>
-			<p>If you are using guava, use its methods that allocate maps and sets with a predetermined size,
+			<p>If you are using Guava, use its methods that allocate maps and sets with a predetermined size,
 			to get the best chance for no reallocations, such as:
 			<ul>
 			    <li>Sets.newHashSetWithExpectedSize(int)</li>
@@ -4655,7 +4655,7 @@
         <Details>
             <![CDATA[
             <p>This method attempts to modify a collection that it got from a source that could potentially have created an
-            immutable collection, thru Arrays.asList, Collections.unmodifiableXXX, or one of guava's methods. Doing so will cause
+            immutable collection, through Arrays.asList, Collections.unmodifiableXXX, or one of Guava's methods. Doing so will cause
             an exception, as these collections are not mutable.</p>
             ]]>
         </Details>
@@ -4979,13 +4979,13 @@
     </BugPattern>
     
     <BugPattern type="CRF_CONFLATING_RESOURCES_AND_FILES">
-    	<ShortDescription>This method accesses URL resources using the File api</ShortDescription>
-    	<LongDescription>This method {1} accesses URL resources using the File api]</LongDescription>
+    	<ShortDescription>This method accesses URL resources using the File API</ShortDescription>
+    	<LongDescription>This method {1} accesses URL resources using the File API</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method fetches a resource from a URL, and uses the File api to manipulate it. If this resource is a 
-    		classpath resource, it will work if the resource is a file in a directory. If however the file is inside a jar file
-    		this will fail. Use the URL.openStream api instead to access the data of the classpath resource.
+    		<p>This method fetches a resource from a URL, and uses the File API to manipulate it. If this resource is a
+    		classpath resource, it will work if the resource is a file in a directory. If however the file is inside a JAR file
+    		this will fail. Use the URL.openStream API instead to access the data of the classpath resource.
     		</p>
     		]]>
     	</Details>
@@ -4996,7 +4996,7 @@
     	<LongDescription>Class {0} does not implement an equals method</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This class which has instance fields has no equals(Object o) method, It is possible that this
+    		<p>This class which has instance fields has no equals(Object o) method. It is possible that this
     		class is never used in a context where this is required, it is often assumed, however, from clients 
     		of this class that it is, so it is good to add such methods when you create them.
     		</p>
@@ -5009,7 +5009,7 @@
     	<LongDescription>Class {0} does not implement a hashCode method</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This class which has instance fields has no hashCode() method, It is possible that this
+    		<p>This class which has instance fields has no hashCode() method. It is possible that this
     		class is never used in a context where this is required, it is often assumed, however, from clients 
     		of this class that it is, so it is good to add such methods when you create them.
     		</p>
@@ -5050,7 +5050,7 @@
     	<Details>
     		<![CDATA[
     		<p>This JAX-RS endpoint is annotated to be used as @GET requests, but also documents that it
-    		consumes JSON or XML data. Since a get request pulls parameters from the url, and not 
+    		consumes JSON or XML data. Since a GET request pulls parameters from the URL, and not
     		the body of request, this pattern is problematic. If you wish to consume JSON or XML data,
     		this request should be annotated with @POST.
     		]]>
@@ -5075,7 +5075,7 @@
 		        <li>javax.servlet.HttpServletRequest</li>
 		        <li>javax.servlet.HttpServletResponse</li>
 		    </ul>
-		    It is possible that your container can supply additional types, but these types are not standard are may
+		    It is possible that your container can supply additional types, but these types are not standard and may
 		    not be supported on other application servers.</p>
     		]]>
        	</Details>
@@ -5099,7 +5099,7 @@
     		<![CDATA[
     		<p>This JAX-RS endpoint declares parameters without specifying where the value of this parameter comes from.
     		You can specify this by using one of several 'Param' annotations (@PathParam, @CookieParam, @FormParam @HeaderParam @MatrixParam @QueryParam),
-    		by adding a @Context parameter annotation, or you can declare that the method @Consumes an xml or json stream.
+    		by adding a @Context parameter annotation, or you can declare that the method @Consumes an XML or JSON stream.
     		]]>
        	</Details>
     </BugPattern>
