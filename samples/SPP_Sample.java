@@ -1,6 +1,8 @@
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Calendar;
@@ -396,7 +398,12 @@ public class SPP_Sample implements Serializable {
         return t.equals("foo");
         
     }
-
+    
+    public void fpGitHubIssue81(PreparedStatement sqlQuery, String name) throws SQLException {
+        if (name != null && !(name = name.trim()).equals("")) {
+            sqlQuery.setString(1, name + "%");
+        }
+    }
 }
 
 class StringProducer {
