@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -44,20 +45,18 @@ import edu.umd.cs.findbugs.ba.XField;
  * class or interface inheritance other than java.lang.Object. Doing so, makes
  * for brittle code, relying either on positional correspondence for type, or a
  * reliance on instanceof to determine type. A better design usually can be had
- * by creating a seperate class, which defines the different types required, and
+ * by creating a separate class, which defines the different types required, and
  * add an instance of that class to the collection, or array.
  */
 public class UnrelatedCollectionContents extends BytecodeScanningDetector {
-    private static final Set<String> COLLECTION_CLASSES = new HashSet<String>();
-
-    static {
-        COLLECTION_CLASSES.add("java/util/Collection");
-        COLLECTION_CLASSES.add("java/util/List");
-        COLLECTION_CLASSES.add("java/util/Map");
-        COLLECTION_CLASSES.add("java/util/Set");
-        COLLECTION_CLASSES.add("java/util/SortedMap");
-        COLLECTION_CLASSES.add("java/util/SortedSet");
-    }
+    private static final Set<String> COLLECTION_CLASSES = UnmodifiableSet.create(
+        "java/util/Collection",
+        "java/util/List",
+        "java/util/Map",
+        "java/util/Set",
+        "java/util/SortedMap",
+        "java/util/SortedSet"
+    );
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
