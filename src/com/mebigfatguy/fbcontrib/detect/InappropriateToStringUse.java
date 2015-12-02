@@ -19,7 +19,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -32,6 +31,7 @@ import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -51,34 +51,30 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class InappropriateToStringUse extends BytecodeScanningDetector {
 
-    private static final Set<String> validToStringClasses = new HashSet<String>();
+    private static final Set<String> validToStringClasses = UnmodifiableSet.create(
+            "java/lang/Object", // too many fps
+            "java/lang/Byte",
+            "java/lang/Character",
+            "java/lang/Short",
+            "java/lang/Integer",
+            "java/lang/Boolean",
+            "java/lang/Float",
+            "java/lang/Double",
+            "java/lang/Long",
+            "java/lang/String",
+            "java/lang/Number",
+            "java/lang/StringBuffer",
+            "java/lang/StringBuilder",
+            "java/io/StringWriter"
+    );
 
-    static {
-        validToStringClasses.add("java/lang/Object"); // too many fps
-        validToStringClasses.add("java/lang/Byte");
-        validToStringClasses.add("java/lang/Character");
-        validToStringClasses.add("java/lang/Short");
-        validToStringClasses.add("java/lang/Integer");
-        validToStringClasses.add("java/lang/Boolean");
-        validToStringClasses.add("java/lang/Float");
-        validToStringClasses.add("java/lang/Double");
-        validToStringClasses.add("java/lang/Long");
-        validToStringClasses.add("java/lang/String");
-        validToStringClasses.add("java/lang/Number");
-        validToStringClasses.add("java/lang/StringBuffer");
-        validToStringClasses.add("java/lang/StringBuilder");
-        validToStringClasses.add("java/io/StringWriter");
-    }
-
-    private static final Set<String> stringAlgoMethods = new HashSet<String>();
-
-    static {
-        stringAlgoMethods.add("indexOf");
-        stringAlgoMethods.add("contains");
-        stringAlgoMethods.add("startsWith");
-        stringAlgoMethods.add("endsWith");
-        stringAlgoMethods.add("substring");
-    }
+    private static final Set<String> stringAlgoMethods = UnmodifiableSet.create(
+            "indexOf",
+            "contains",
+            "startsWith",
+            "endsWith",
+            "substring"
+    );
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
