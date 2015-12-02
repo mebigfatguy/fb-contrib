@@ -50,6 +50,7 @@ import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -67,8 +68,6 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
  */
 @CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector {
-
-    private static final String TRIM_PREFIX = "trim:";
 
     private static final Set<String> collectionInterfaces = new HashSet<String>();
 
@@ -89,7 +88,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     }
 
     private static final String LITERAL = "literal";
-    private static final Pattern APPEND_PATTERN = Pattern.compile("append:([0-9]+):(.*)");
+    private static final Pattern APPEND_PATTERN = Pattern.compile("([0-9]+):(.*)");
 
     private static JavaClass calendarClass;
 
@@ -123,7 +122,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     /** branch targets, to a set of branch instructions */
     private Map<Integer, BitSet> branchTargets;
     private Set<String> staticConstants;
-    private Map<String, Integer> trimLocations;
+    private Map<SPPUserValue, Integer> trimLocations;
 
     /**
      * constructs a SPP detector given the reporter to report bugs on
@@ -149,7 +148,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             stack = new OpcodeStack();
             lastPCs = new int[4];
             branchTargets = new HashMap<Integer, BitSet>();
-            trimLocations = new HashMap<String, Integer>();
+            trimLocations = new HashMap<SPPUserValue, Integer>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -185,14 +184,11 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
      * @param seen
      *            the opcode of the currently parsed instruction
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-            value = "SF_SWITCH_FALLTHROUGH",
-            justification = "This fall-through is deliberate and documented"
-        )
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH", justification = "This fall-through is deliberate and documented")
     @Override
     public void sawOpcode(int seen) {
         int reg = -1;
-        String userValue = null;
+        SPPUserValue userValue = null;
         try {
             stack.precomputation(this);
 
@@ -233,7 +229,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     checkForUselessTernaryReturn();
                 }
             }
-            // $FALL-THROUGH$
+                // $FALL-THROUGH$
             case LRETURN:
             case DRETURN:
             case FRETURN:
@@ -291,8 +287,11 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (userValue != null) {
                     item.setUserValue(userValue);
-                } else if (("iterator".equals(item.getUserValue()) && (seen == GETFIELD)) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
-                    item.setUserValue(null);
+                } else {
+                    SPPUserValue uv = (SPPUserValue) item.getUserValue();
+                    if ((((uv != null) && (uv.getMethod() == SPPMethod.ITERATOR)) && (seen == GETFIELD)) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+                        item.setUserValue(null);
+                    }
                 }
             }
 
@@ -306,19 +305,19 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private void checkImproperToCharArrayUse() {
         if (stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            String ic = (String) item.getUserValue();
-            if ("iconst".equals(ic)) {
+            SPPUserValue uv = (SPPUserValue) item.getUserValue();
+            if ((uv != null) && (uv.getMethod() == SPPMethod.ICONST)) {
                 bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_CHARAT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
             }
         }
     }
 
-    private String sawIntConst(String userValue) {
+    private SPPUserValue sawIntConst(SPPUserValue userValue) {
         if (stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            String tca = (String) item.getUserValue();
-            if ("toCharArray".equals(tca)) {
-                userValue = "iconst";
+            SPPUserValue uv = (SPPUserValue) item.getUserValue();
+            if ((uv != null) && (uv.getMethod() == SPPMethod.TOCHARARRAY)) {
+                userValue = new SPPUserValue(SPPMethod.ICONST);
             }
         }
         return userValue;
@@ -336,25 +335,24 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     }
 
     /**
-     * determines whether this operation is storing the result of a trim() call, where the trimmed string
-     * was duplicated on the stack. If it was, it clears any trim uservalue that was left behind in the dupped
-     * stack object
+     * determines whether this operation is storing the result of a trim() call, where the trimmed string was duplicated on the stack. If it was, it clears any
+     * trim uservalue that was left behind in the dupped stack object
      */
     private void checkTrimDupStore() {
         if ((stack.getStackDepth() >= 2) && (getPrevOpcode(1) == Constants.DUP)) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            String uv = (String) item.getUserValue();
-            if ((uv == null) || (!uv.startsWith("trim"))) 
+            SPPUserValue uv = (SPPUserValue) item.getUserValue();
+            if ((uv == null) || (uv.getMethod() != SPPMethod.TRIM))
                 return;
-            
+
             item = stack.getStackItem(1);
-            if ((uv == null) || (!uv.startsWith("trim"))) 
+            if ((uv == null) || (uv.getMethod() != SPPMethod.TRIM))
                 return;
-            
+
             item.setUserValue(null);
         }
     }
-    
+
     private void checkStutterdAssignment(int seen, int reg) {
         if ((seen == lastOpcode) && (reg == lastReg)) {
             bugReporter.reportBug(
@@ -365,12 +363,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private void checkImmutableUsageOfStringBuilder(int reg) {
         if (stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            String mName = (String) item.getUserValue();
-            if (mName != null) {
-                if ("trim".equals(mName)) {
+            SPPUserValue userValue = (SPPUserValue) item.getUserValue();
+            if (userValue != null) {
+                if (userValue.getMethod() == SPPMethod.TRIM) {
                     item.setUserValue(null);
-                } else {
-                    Matcher m = APPEND_PATTERN.matcher(mName);
+                } else if (userValue.getMethod() == SPPMethod.APPEND) {
+                    Matcher m = APPEND_PATTERN.matcher(userValue.getDetails());
                     if (m.matches()) {
                         int appendReg = Integer.parseInt(m.group(1));
                         if (reg == appendReg) {
@@ -539,7 +537,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private void checkSizeEquals0() {
         if (stack.getStackDepth() == 1) {
             OpcodeStack.Item item = stack.getStackItem(0);
-            if ("size".equals(item.getUserValue())) {
+            SPPUserValue uv = (SPPUserValue) item.getUserValue();
+            if ((uv != null) && (uv.getMethod() == SPPMethod.SIZE)) {
                 bugReporter
                         .reportBug(new BugInstance(this, BugType.SPP_USE_ISEMPTY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
             }
@@ -579,12 +578,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         return ((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W);
     }
 
-    private String sawInvokeStatic(String userValue) {
+    private SPPUserValue sawInvokeStatic(SPPUserValue userValue) {
         String className = getClassConstantOperand();
         String methodName = getNameConstantOperand();
         if ("java/lang/System".equals(className)) {
             if ("getProperties".equals(methodName)) {
-                userValue = "getProperties";
+                userValue = new SPPUserValue(SPPMethod.GETPROPERTIES);
             } else if ("arraycopy".equals(methodName)) {
                 if (stack.getStackDepth() >= 5) {
                     OpcodeStack.Item item = stack.getStackItem(2);
@@ -633,7 +632,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         return userValue;
     }
 
-    private String sawInvokeVirtual(String userValue) throws ClassNotFoundException {
+    private SPPUserValue sawInvokeVirtual(SPPUserValue userValue) throws ClassNotFoundException {
         String className = getClassConstantOperand();
         String methodName = getNameConstantOperand();
         if ("java/util/BitSet".equals(className)) {
@@ -672,7 +671,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         }
     }
 
-    private String stringBufferSilliness(String userValue, String methodName) {
+    private SPPUserValue stringBufferSilliness(SPPUserValue userValue, String methodName) {
         if ("append".equals(methodName)) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item valItem = stack.getStackItem(0);
@@ -682,9 +681,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 argIsLiteralString = argIsLiteralString && !looksLikeStaticFieldValue((String) constant);
 
                 if (argIsLiteralString) {
-                    String existingAppend = (String) sbItem.getUserValue();
-                    if (existingAppend != null) {
-                        Matcher m = APPEND_PATTERN.matcher(existingAppend);
+                    SPPUserValue uv = (SPPUserValue) sbItem.getUserValue();
+                    if ((uv != null) && (uv.getMethod() == SPPMethod.APPEND)) {
+                        Matcher m = APPEND_PATTERN.matcher(uv.getDetails());
                         if (m.matches() && LITERAL.equals(m.group(2))) {
                             bugReporter.reportBug(new BugInstance(this, BugType.SPP_DOUBLE_APPENDED_LITERALS.name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(this).addSourceLine(this));
@@ -695,13 +694,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
                 String literal = argIsLiteralString ? LITERAL : "";
                 if (sbItem.getRegisterNumber() > -1) {
-                    userValue = "append:" + sbItem.getRegisterNumber() + ':' + literal;
+                    userValue = new SPPUserValue(SPPMethod.APPEND, sbItem.getRegisterNumber() + ":" + literal);
                 } else {
-                    userValue = (String) sbItem.getUserValue();
-                    if (userValue != null) {
-                        Matcher m = APPEND_PATTERN.matcher(userValue);
+                    userValue = (SPPUserValue) sbItem.getUserValue();
+                    if ((userValue != null) && (userValue.getMethod() == SPPMethod.APPEND)) {
+                        Matcher m = APPEND_PATTERN.matcher(userValue.getDetails());
                         if (m.matches()) {
-                            userValue = "append:" + m.group(1) + ':' + literal;
+                            userValue = new SPPUserValue(SPPMethod.APPEND, m.group(1) + ':' + literal);
                         }
                     }
                 }
@@ -710,7 +709,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         return userValue;
     }
 
-    private String stringSilliness(String userValue, String methodName, String signature) {
+    private SPPUserValue stringSilliness(SPPUserValue userValue, String methodName, String signature) {
 
         Integer stackOffset = methodsThatAreSillyOnStringLiterals.get(methodName + signature);
         if (stackOffset != null) {
@@ -744,13 +743,15 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 }
             }
         } else if ("toCharArray".equals(methodName)) {
-            userValue = "toCharArray";
+            userValue = new SPPUserValue(SPPMethod.TOCHARARRAY);
         } else if ("toLowerCase".equals(methodName) || "toUpperCase".equals(methodName)) {
-            userValue = "IgnoreCase";
+            userValue = new SPPUserValue(SPPMethod.IGNORECASE);
         } else if ("equalsIgnoreCase".equals(methodName) || "compareToIgnoreCase".equals(methodName)) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item item = stack.getStackItem(1);
-                if ("IgnoreCase".equals(item.getUserValue())) {
+                SPPUserValue uv = (SPPUserValue) item.getUserValue();
+                
+                if ((uv != null) && (uv.getMethod() == SPPMethod.IGNORECASE)) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.SPP_USELESS_CASING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
@@ -766,23 +767,27 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         } else if ("length".equals(methodName)) {
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item item = stack.getStackItem(0);
-                Object uValue = item.getUserValue();
-                if ("trim".equals(uValue)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                } else if ((uValue instanceof String) && ((String) uValue).startsWith(TRIM_PREFIX)) {
-                    trimLocations.put(((String) uValue), Integer.valueOf(getPC()));
+                SPPUserValue uv = (SPPUserValue) item.getUserValue();
+                if ((uv != null) && (uv.getMethod() == SPPMethod.TRIM)) {
+                    if (uv.getDetails() == null) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                    } else {
+                        trimLocations.put(uv, Integer.valueOf(getPC()));
+                    }
                 }
             }
         } else if ("equals".equals(methodName)) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item item = stack.getStackItem(1);
-                Object uValue = item.getUserValue();
-                if ("trim".equals(uValue)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                } else if ((uValue instanceof String) && ((String) uValue).startsWith(TRIM_PREFIX)) {
-                    trimLocations.put(((String) uValue), Integer.valueOf(getPC()));
+                SPPUserValue uv = (SPPUserValue) item.getUserValue();
+                if ((uv != null) && (uv.getMethod() == SPPMethod.TRIM)) {
+                    if (uv.getDetails() == null) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                    } else {
+                        trimLocations.put(uv, Integer.valueOf(getPC()));
+                    }
                 }
             }
         } else if ("toString".equals(methodName)) {
@@ -891,7 +896,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         if (("get".equals(methodName) || "getProperty".equals(methodName))) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item item = stack.getStackItem(1);
-                if ("getProperties".equals(item.getUserValue())) {
+                SPPUserValue uv = (SPPUserValue) item.getUserValue();
+                if ((uv != null) && (uv.getMethod() == SPPMethod.GETPROPERTIES)) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.SPP_USE_GETPROPERTY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
@@ -899,19 +905,20 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         }
     }
 
-    private String sawInvokeInterface(String userValue) {
+    private SPPUserValue sawInvokeInterface(SPPUserValue userValue) {
         String className = getClassConstantOperand();
         if ("java/util/Map".equals(className)) {
             String method = getNameConstantOperand();
             if ("keySet".equals(method)) {
-                userValue = "keySet";
+                userValue = new SPPUserValue(SPPMethod.KEYSET);
             }
         } else if ("java/util/Set".equals(className)) {
             String method = getNameConstantOperand();
             if ("contains".equals(method)) {
                 if (stack.getStackDepth() >= 2) {
                     OpcodeStack.Item item = stack.getStackItem(1);
-                    if ("keySet".equals(item.getUserValue())) {
+                    SPPUserValue uv = (SPPUserValue) item.getUserValue();
+                    if ((uv != null) && (uv.getMethod() == SPPMethod.KEYSET)) {
                         bugReporter.reportBug(
                                 new BugInstance(this, BugType.SPP_USE_CONTAINSKEY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
@@ -920,14 +927,15 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         } else if ("java/util/List".equals(className)) {
             String method = getNameConstantOperand();
             if ("iterator".equals(method)) {
-                userValue = "iterator";
+                userValue = new SPPUserValue(SPPMethod.ITERATOR);
             }
         } else if ("java/util/Iterator".equals(className)) {
             String method = getNameConstantOperand();
             if ("next".equals(method)) {
                 if (stack.getStackDepth() >= 1) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    if ("iterator".equals(item.getUserValue())) {
+                    SPPUserValue uv = (SPPUserValue) item.getUserValue();
+                    if ((uv != null) && (uv.getMethod() == SPPMethod.ITERATOR)) {
                         bugReporter.reportBug(
                                 new BugInstance(this, BugType.SPP_USE_GET0.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
@@ -938,7 +946,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         if (collectionInterfaces.contains(className)) {
             String method = getNameConstantOperand();
             if ("size".equals(method)) {
-                userValue = "size";
+                userValue = new SPPUserValue(SPPMethod.SIZE);
             }
         }
         return userValue;
@@ -1022,7 +1030,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         return false;
     }
 
-    private String getTrimUserValue() {
+    private SPPUserValue getTrimUserValue() {
         if (stack.getStackDepth() == 0) {
             return null;
         }
@@ -1031,20 +1039,20 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
         int reg = item.getRegisterNumber();
         if (reg >= 0) {
-            return TRIM_PREFIX + reg;
+            return new SPPUserValue(SPPMethod.TRIM, String.valueOf(reg));
         }
 
         XField field = item.getXField();
         if (field != null) {
-            return TRIM_PREFIX + field.getName();
+            return new SPPUserValue(SPPMethod.TRIM, field.getName());
         }
 
         XMethod method = item.getReturnValueOf();
         if (method != null) {
-            return TRIM_PREFIX + method.getName();
+            return new SPPUserValue(SPPMethod.TRIM, method.getName());
         }
 
-        return "trim";
+        return new SPPUserValue(SPPMethod.TRIM);
     }
 
     private void checkTrimLocations() {
@@ -1052,15 +1060,69 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             return;
         }
 
-        String curV = getTrimUserValue();
+        SPPUserValue curV = getTrimUserValue();
         if (curV == null) {
             return;
         }
 
         Integer pc = trimLocations.remove(curV);
         if (pc != null) {
-            bugReporter.reportBug(
-                    new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
+            bugReporter.reportBug(new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this,
+                    pc.intValue()));
+        }
+    }
+    
+    enum SPPMethod { APPEND, GETPROPERTIES, ICONST, IGNORECASE, ITERATOR, KEYSET, TOCHARARRAY, SIZE, TRIM }
+    
+    static class SPPUserValue {
+        
+        private SPPMethod method;
+        private String details;
+        
+        public SPPUserValue(SPPMethod mthd) {
+            this(mthd, null);
+        }
+        
+        public SPPUserValue(SPPMethod mthd, String detail) {
+            method = mthd;
+            details = detail;
+        }
+        
+        public SPPMethod getMethod() {
+            return method;
+        }
+
+        public String getDetails() {
+            return details;
+        }
+
+        @Override
+        public int hashCode() {
+            return method.hashCode() ^ ((details == null) ? 0 : details.hashCode());
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof SPPUserValue)) {
+                return false;
+            }
+            
+            SPPUserValue that = (SPPUserValue) o;
+            
+            if (method != that.method) {
+                return false;
+            }
+            
+            if (details == null) {
+                return that.details == null;
+            }
+            
+            return details.equals(that.details);
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
         }
     }
 }
