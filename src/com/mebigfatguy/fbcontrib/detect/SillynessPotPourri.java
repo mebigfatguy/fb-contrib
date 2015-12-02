@@ -275,6 +275,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     sawLoad(seen);
                 } else if (OpcodeUtils.isAStore(seen)) {
                     reg = RegisterUtils.getAStoreReg(this, seen);
+                    checkTrimDupStore();
                     checkStutterdAssignment(seen, reg);
                     checkImmutableUsageOfStringBuilder(reg);
                 }
@@ -334,6 +335,26 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * determines whether this operation is storing the result of a trim() call, where the trimmed string
+     * was duplicated on the stack. If it was, it clears any trim uservalue that was left behind in the dupped
+     * stack object
+     */
+    private void checkTrimDupStore() {
+        if ((stack.getStackDepth() >= 2) && (getPrevOpcode(1) == Constants.DUP)) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            String uv = (String) item.getUserValue();
+            if ((uv == null) || (!uv.startsWith("trim"))) 
+                return;
+            
+            item = stack.getStackItem(1);
+            if ((uv == null) || (!uv.startsWith("trim"))) 
+                return;
+            
+            item.setUserValue(null);
+        }
+    }
+    
     private void checkStutterdAssignment(int seen, int reg) {
         if ((seen == lastOpcode) && (reg == lastReg)) {
             bugReporter.reportBug(
