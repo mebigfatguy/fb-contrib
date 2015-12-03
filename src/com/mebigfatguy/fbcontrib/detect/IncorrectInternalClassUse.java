@@ -18,7 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Constant;
@@ -28,6 +27,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -40,23 +40,24 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class IncorrectInternalClassUse implements Detector {
     private final BugReporter bugReporter;
-    private static final Set<String> internalPackages = new HashSet<String>();
-    private static final Set<String> externalPackages = new HashSet<String>();
 
-    static {
-        internalPackages.add("sun/");
-        internalPackages.add("org/apache/commons/digester/annotations/internal");
-        internalPackages.add("org/apache/xerces/");
-        internalPackages.add("org/apache/xalan/");
-        internalPackages.add("org/mockito/internal/");
-        internalPackages.add("org/springframework/asm/");
-        internalPackages.add("org/springframework/cglib/");
-        internalPackages.add("org/springframework/objenesis/");
-        externalPackages.add("org/apache/xerces/xni/");
-        externalPackages.add("org/apache/xerces/xs/");
-        externalPackages.add("org/apache/xalan/extensions");
-    }
-
+    private static final Set<String> internalPackages = UnmodifiableSet.create(
+        "sun/",
+        "org/apache/commons/digester/annotations/internal",
+        "org/apache/xerces/",
+        "org/apache/xalan/",
+        "org/mockito/internal/",
+        "org/springframework/asm/",
+        "org/springframework/cglib/",
+        "org/springframework/objenesis/"
+    );
+    
+    private static final Set<String> externalPackages = UnmodifiableSet.create(
+        "org/apache/xerces/xni/",
+        "org/apache/xerces/xs/",
+        "org/apache/xalan/extensions"
+    );
+    
     /**
      * constructs a IICU detector given the reporter to report bugs on
      *
@@ -99,6 +100,7 @@ public class IncorrectInternalClassUse implements Detector {
      */
     @Override
     public void report() {
+        // not used, required by the interface
     }
 
     /**
