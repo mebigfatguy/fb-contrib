@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -46,27 +47,23 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     private static final int MAX_ATTRIBUTE_CODE_LENGTH = 60;
 
-    private static final Set<String> tagClasses = new HashSet<String>();
+    private static final Set<String> tagClasses = UnmodifiableSet.create(
+            "javax.servlet.jsp.tagext.TagSupport",
+            "javax.servlet.jsp.tagext.BodyTagSupport"
+    );
 
-    static {
-        tagClasses.add("javax.servlet.jsp.tagext.TagSupport");
-        tagClasses.add("javax.servlet.jsp.tagext.BodyTagSupport");
-    }
-
-    private static final Set<String> validAttrTypes = new HashSet<String>();
-
-    static {
-        validAttrTypes.add("B");
-        validAttrTypes.add("C");
-        validAttrTypes.add("D");
-        validAttrTypes.add("F");
-        validAttrTypes.add("I");
-        validAttrTypes.add("J");
-        validAttrTypes.add("S");
-        validAttrTypes.add("Z");
-        validAttrTypes.add("Ljava/lang/String;");
-        validAttrTypes.add("Ljava/util/Date;");
-    }
+    private static final Set<String> validAttrTypes = UnmodifiableSet.create(
+            "B",
+            "C",
+            "D",
+            "F",
+            "I",
+            "J",
+            "S",
+            "Z",
+            "Ljava/lang/String;",
+            "Ljava/util/Date;"
+    );
 
     private final BugReporter bugReporter;
     /**
