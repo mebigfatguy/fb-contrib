@@ -26,6 +26,7 @@ import java.util.Set;
 import org.apache.bcel.Constants;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -61,11 +62,7 @@ public class LocalSynchronizedCollection extends LocalTypeDetector {
         synchClassMethods.put("java/util/Collections", syncMethods);
     }
 
-    private static final Set<String> selfReturningMethods = new HashSet<String>();
-
-    static {
-        selfReturningMethods.add("java/lang/StringBuffer.append");
-    }
+    private static final Set<String> selfReturningMethods = UnmodifiableSet.create("java/lang/StringBuffer.append");
 
     private BugReporter bugReporter;
 
