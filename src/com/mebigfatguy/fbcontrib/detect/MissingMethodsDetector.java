@@ -354,8 +354,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 if (uo instanceof Boolean) {
                     int reg = RegisterUtils.getAStoreReg(this, seen);
                     localSpecialObjects.put(Integer.valueOf(reg), Integer.valueOf(getPC()));
-                    if (depth > 1) {
-                        // the astore was preceded by a dup
+                    if (getPrevOpcode(1) == DUP) {
                         item = stack.getStackItem(1);
                         item.setUserValue(Integer.valueOf(reg));
                     }
