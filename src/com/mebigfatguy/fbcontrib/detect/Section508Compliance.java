@@ -52,9 +52,8 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 @CustomUserValue
 public class Section508Compliance extends BytecodeScanningDetector {
-    private static final String SAW_TEXT_LABEL = "SAW_TEXT_LABEL";
-    private static final String FROM_UIMANAGER = "FROM_UIMANAGER";
-    private static final String APPENDED_STRING = "APPENDED_STRING";
+    
+    private enum S508UserValue { SAW_TEXT_LABEL, FROM_UIMANAGER, APPENDED_STRING };
 
     private static JavaClass windowClass;
     private static JavaClass componentClass;
@@ -220,7 +219,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
             if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    if ("Ljavax/swing/JLabel;".equals(item.getSignature()) && (SAW_TEXT_LABEL.equals(item.getUserValue()))) {
+                    if ("Ljavax/swing/JLabel;".equals(item.getSignature()) && (S508UserValue.SAW_TEXT_LABEL == item.getUserValue())) {
                         int reg = RegisterUtils.getAStoreReg(this, seen);
                         localLabels.put(Integer.valueOf(reg), SourceLineAnnotation.fromVisitedInstruction(this));
                     }
@@ -228,7 +227,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
             } else if (seen == PUTFIELD) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    if (!SAW_TEXT_LABEL.equals(item.getUserValue())) {
+                    if (S508UserValue.SAW_TEXT_LABEL != item.getUserValue()) {
                         FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), getNameConstantOperand(), getSigConstantOperand(), false);
                         fieldLabels.remove(XFactory.createXField(fa));
                     }
@@ -276,7 +275,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
                     } else if ("toString".equals(methodName)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item item = stack.getStackItem(0);
-                            if (APPENDED_STRING.equals(item.getUserValue())) {
+                            if (S508UserValue.APPENDED_STRING == item.getUserValue()) {
                                 sawAppend = true;
                             }
                         }
@@ -304,17 +303,17 @@ public class Section508Compliance extends BytecodeScanningDetector {
             if (sawTextLabel) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(SAW_TEXT_LABEL);
+                    item.setUserValue(S508UserValue.SAW_TEXT_LABEL);
                 }
             } else if (sawUIManager) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(FROM_UIMANAGER);
+                    item.setUserValue(S508UserValue.FROM_UIMANAGER);
                 }
             } else if (sawAppend) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(APPENDED_STRING);
+                    item.setUserValue(S508UserValue.APPENDED_STRING);
                 }
             }
         }
@@ -335,7 +334,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
                 if (item.getConstant() != null) {
                     bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_TRANSLATABLE_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                             .addSourceLine(this));
-                } else if (APPENDED_STRING.equals(item.getUserValue())) {
+                } else if (S508UserValue.APPENDED_STRING == item.getUserValue()) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.S508C_APPENDED_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
 
@@ -381,7 +380,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
             int argCount = Type.getArgumentTypes(getSigConstantOperand()).length;
             if (stack.getStackDepth() > argCount) {
                 OpcodeStack.Item item = stack.getStackItem(0);
-                if (!FROM_UIMANAGER.equals(item.getUserValue())) {
+                if (S508UserValue.FROM_UIMANAGER != item.getUserValue()) {
                     item = stack.getStackItem(argCount);
                     JavaClass cls = item.getJavaClass();
                     if (((jcomponentClass != null) && cls.instanceOf(jcomponentClass)) || ((componentClass != null) && cls.instanceOf(componentClass))) {
