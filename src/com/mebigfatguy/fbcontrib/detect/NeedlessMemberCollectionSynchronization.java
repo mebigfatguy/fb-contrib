@@ -32,6 +32,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -72,38 +73,34 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
         }
     }
 
-    private static Set<String> syncCollections = new HashSet<String>();
-
-    static {
-        syncCollections.add("java/util/Vector");
-        syncCollections.add("java/util/Hashtable");
-    }
-
-    private static Set<String> modifyingMethods = new HashSet<String>();
-
-    static {
-        modifyingMethods.add("add");
-        modifyingMethods.add("addAll");
-        modifyingMethods.add("addFirst");
-        modifyingMethods.add("addElement");
-        modifyingMethods.add("addLast");
-        modifyingMethods.add("clear");
-        modifyingMethods.add("insertElementAt");
-        modifyingMethods.add("put");
-        modifyingMethods.add("remove");
-        modifyingMethods.add("removeAll");
-        modifyingMethods.add("removeAllElements");
-        modifyingMethods.add("removeElement");
-        modifyingMethods.add("removeElementAt");
-        modifyingMethods.add("removeFirst");
-        modifyingMethods.add("removeLast");
-        modifyingMethods.add("removeRange");
-        modifyingMethods.add("retainAll");
-        modifyingMethods.add("set");
-        modifyingMethods.add("setElementAt");
-        modifyingMethods.add("setSize");
-    }
-
+    private static Set<String> syncCollections = UnmodifiableSet.create(
+            "java/util/Vector",
+            "java/util/Hashtable"
+    );
+    
+    private static Set<String> modifyingMethods = UnmodifiableSet.create(
+            "add",
+            "addAll",
+            "addFirst",
+            "addElement",
+            "addLast",
+            "clear",
+            "insertElementAt",
+            "put",
+            "remove",
+            "removeAll",
+            "removeAllElements",
+            "removeElement",
+            "removeElementAt",
+            "removeFirst",
+            "removeLast",
+            "removeRange",
+            "retainAll",
+            "set",
+            "setElementAt",
+            "setSize"
+    );
+    
     private enum State {
         IN_METHOD, IN_CLINIT, IN_INIT
     };
