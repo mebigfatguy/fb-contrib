@@ -911,7 +911,7 @@
 			should not be counted on.</p>
 			Packages that shouldn't be used are:
 			<ul>
-				<li>com.sun.xxx</li>
+				<li>sun.xxx</li>
 				<li>org.apache.xerces.xxx</li>
 				<li>org.apache.xalan.xxx</li>
 			</ul>
@@ -3852,7 +3852,7 @@
 			to change or removal. You should not be using these classes.</p>
 			Packages that shouldn't be used are:
 			<ul>
-				<li>com.sun.xxx</li>
+				<li>sun.xxx</li>
 				<li>org.apache.xerces.xxx</li>
 				<li>org.apache.xalan.xxx</li>
 			</ul>
