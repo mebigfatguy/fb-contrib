@@ -51,6 +51,7 @@ import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -69,24 +70,20 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
 @CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector {
 
-    private static final Set<String> collectionInterfaces = new HashSet<String>();
-
-    static {
-        collectionInterfaces.add("java/util/Collection");
-        collectionInterfaces.add("java/util/List");
-        collectionInterfaces.add("java/util/Set");
-        collectionInterfaces.add("java/util/SortedSet");
-        collectionInterfaces.add("java/util/Map");
-        collectionInterfaces.add("java/util/SortedMap");
-    }
-
-    private static final Set<String> oddMissingEqualsClasses = new HashSet<String>();
-
-    static {
-        oddMissingEqualsClasses.add("java.lang.StringBuffer");
-        oddMissingEqualsClasses.add("java.lang.StringBuilder");
-    }
-
+    private static final Set<String> collectionInterfaces = UnmodifiableSet.create(
+            "java/util/Collection",
+            "java/util/List",
+            "java/util/Set",
+            "java/util/SortedSet",
+            "java/util/Map",
+            "java/util/SortedMap"
+    );
+    
+    private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create(
+            "java.lang.StringBuffer",
+            "java.lang.StringBuilder"
+    );
+    
     private static final String LITERAL = "literal";
     private static final Pattern APPEND_PATTERN = Pattern.compile("([0-9]+):(.*)");
 

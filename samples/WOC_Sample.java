@@ -45,6 +45,13 @@ public class WOC_Sample {
             System.out.println("woops");
         }
     }
+    
+    public void testIterateEmpty() {
+        Set<String> ss = new HashSet<String>();
+        
+        for (String s : ss) {
+        }
+    }
 
     public Map<String, String> testFPWOCReturn() {
         // no tag, value is returned
