@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -40,20 +41,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * the keys for all the queries previously needed in the loop.
  */
 public class SQLInLoop extends BytecodeScanningDetector {
-    private static final Set<String> queryClasses = new HashSet<String>();
+    private static final Set<String> queryClasses = UnmodifiableSet.create(
+        "java/sql/Statement",
+        "java/sql/PreparedStatement",
+        "java/sql/CallableStatement"
+    );
+    
 
-    static {
-        queryClasses.add("java/sql/Statement");
-        queryClasses.add("java/sql/PreparedStatement");
-        queryClasses.add("java/sql/CallableStatement");
-    }
-
-    private static final Set<String> queryMethods = new HashSet<String>();
-
-    static {
-        queryMethods.add("execute");
-        queryMethods.add("executeQuery");
-    }
+    private static final Set<String> queryMethods = UnmodifiableSet.create("execute", "executeQuery");
 
     private final BugReporter bugReporter;
     List<Integer> queryLocations;
