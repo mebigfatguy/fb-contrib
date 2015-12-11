@@ -27,6 +27,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -44,24 +46,20 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 public class SyncCollectionIterators extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
-    private static Set<String> synchCollectionNames = new HashSet<String>();
-
-    static {
-        synchCollectionNames.add("synchronizedSet");
-        synchCollectionNames.add("synchronizedMap");
-        synchCollectionNames.add("synchronizedList");
-        synchCollectionNames.add("synchronizedSortedSet");
-        synchCollectionNames.add("synchronizedSortedMap");
-    }
-
-    private static Set<String> mapToSetMethods = new HashSet<String>();
-
-    static {
-        mapToSetMethods.add("keySet");
-        mapToSetMethods.add("entrySet");
-        mapToSetMethods.add("values");
-    }
-
+    private static final Set<String> synchCollectionNames = UnmodifiableSet.create(
+            "synchronizedSet",
+            "synchronizedMap",
+            "synchronizedList",
+            "synchronizedSortedSet",
+            "synchronizedSortedMap"
+    );
+    
+    private static final Set<String> mapToSetMethods = UnmodifiableSet.create(
+            "keySet",
+            "entrySet",
+            "values"
+    );
+    
     enum State {
         SEEN_NOTHING, SEEN_SYNC, SEEN_LOAD
     }
