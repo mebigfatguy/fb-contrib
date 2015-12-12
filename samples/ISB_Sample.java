@@ -120,6 +120,10 @@ public class ISB_Sample {
     enum MonsterSpeak {UNGA, BUNGA}
     
     public String speak(MonsterSpeak s) {
+        return "hello" + 1 + s.toString();
+    }
+    
+    public String fpSpeak(MonsterSpeak s) {
         return 1 + s.toString();
     }
 
