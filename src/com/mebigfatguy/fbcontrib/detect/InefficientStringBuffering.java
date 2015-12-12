@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.ConstantString;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -40,7 +41,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class InefficientStringBuffering extends BytecodeScanningDetector {
     private enum AppendType {
-        NONE, CLEAR, NESTED, TOSTRING
+        CLEAR, NESTED, TOSTRING
     };
 
     private BugReporter bugReporter;
@@ -90,23 +91,24 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(final int seen) {
-        AppendType apType = AppendType.NONE;
+        ISBUserValue userValue = null;
+        
         try {
             stack.precomputation(this);
 
             if (seen == INVOKESPECIAL) {
-                apType = sawInvokeSpecial(apType);
+                userValue = sawInvokeSpecial(userValue);
             } else if (seen == INVOKEVIRTUAL) {
                 if (sawLDCEmpty) {
                     dealWithEmptyString();
                 }
-                apType = sawInvokeVirtual(apType);
+                userValue = sawInvokeVirtual(userValue);
 
             } else if ((seen == GOTO) || (seen == GOTO_W)) {
                 int depth = stack.getStackDepth();
                 for (int i = 0; i < depth; i++) {
                     OpcodeStack.Item itm = stack.getStackItem(i);
-                    itm.setUserValue(AppendType.NONE);
+                    itm.setUserValue(null);
                 }
             } else if ((seen == LDC) || (seen == LDC_W)) {
                 Constant c = getConstantRefOperand();
@@ -117,14 +119,14 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                     }
                 }
             } else if (OpcodeUtils.isALoad(seen)) {
-                apType = AppendType.CLEAR;
+                userValue = new ISBUserValue(AppendType.CLEAR, true);
             }
         } finally {
             handleOpcode(seen);
-            if (apType != AppendType.NONE) {
+            if (userValue != null) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
-                    itm.setUserValue(apType);
+                    itm.setUserValue(userValue);
                 }
             }
         }
@@ -136,43 +138,60 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         TernaryPatcher.post(stack, seen);
     }
 
-    private AppendType sawInvokeVirtual(AppendType apType) {
+    private ISBUserValue sawInvokeVirtual(ISBUserValue userValue) {
         String calledClass = getClassConstantOperand();
         if (("java/lang/StringBuffer".equals(calledClass) || "java/lang/StringBuilder".equals(calledClass))) {
             String methodName = getNameConstantOperand();
             if ("append".equals(methodName)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(1);
-                apType = (itm == null) ? AppendType.NONE : (AppendType) itm.getUserValue();
+                userValue = (ISBUserValue) itm.getUserValue();
 
                 if (stack.getStackDepth() > 0) {
                     itm = stack.getStackItem(0);
-                    Object userVal = itm.getUserValue();
-                    AppendType apValue = (userVal instanceof AppendType ? (AppendType) userVal : AppendType.NONE);
-                    switch (apValue) {
-                    case NESTED:
-                        bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(),
-                                "toString".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                        break;
-                    case TOSTRING:
-                        bugReporter.reportBug(new BugInstance(this, BugType.ISB_TOSTRING_APPENDING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
-                        break;
-                    default:
-                        break;
+                    ISBUserValue uv = (ISBUserValue) itm.getUserValue();
+                    if (uv != null) {
+                        switch (uv.getAppendType()) {
+                        case NESTED:
+                            bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(),
+                                    "toString".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                            break;
+                        case TOSTRING:
+                            if (stack.getStackDepth() > 1) {
+                                itm = stack.getStackItem(1);
+                                if (itm != null) {
+                                    uv = (ISBUserValue) itm.getUserValue();
+                                    
+                                    if ((uv != null) && uv.hasResolvedString()) {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.ISB_TOSTRING_APPENDING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                            .addSourceLine(this));
+                                    }
+                                }
+                            }   
+                            break;
+                        default:
+                            break;
+                        }
                     }
+                }
+                
+                if (getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
+                    if (userValue == null) {
+                        userValue = new ISBUserValue(AppendType.CLEAR, true);
+                    } else {
+                        userValue = new ISBUserValue(userValue.getAppendType(), true);
+                    }   
                 }
             } else if ("toString".equals(methodName)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(0);
-                apType = (itm == null) ? AppendType.NONE : (AppendType) itm.getUserValue();
+                userValue = (ISBUserValue) itm.getUserValue();
             }
         } else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())) {
-            // calls to this.toString() are okay, some people like to be
-            // explicit
+            // calls to this.toString() are okay, some people like to be explicit
             if ((stack.getStackDepth() > 0) && (stack.getStackItem(0).getRegisterNumber() != 0)) {
-                apType = AppendType.TOSTRING;
+                userValue = new ISBUserValue(AppendType.TOSTRING);
             }
         }
-        return apType;
+        return userValue;
     }
 
     private void dealWithEmptyString() {
@@ -195,7 +214,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         }
     }
 
-    private AppendType sawInvokeSpecial(AppendType apType) {
+    private ISBUserValue sawInvokeSpecial(ISBUserValue userValue) {
         String calledClass = getClassConstantOperand();
         if (("java/lang/StringBuffer".equals(calledClass) || "java/lang/StringBuilder".equals(calledClass))
                 && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
@@ -203,20 +222,24 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
             if ("()V".equals(signature)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(2);
                 if (itm != null) {
-                    apType = AppendType.NESTED;
+                    userValue = new ISBUserValue(AppendType.NESTED);
                 }
             } else if ("(Ljava/lang/String;)V".equals(signature)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
-                    apType = (AppendType) itm.getUserValue();
-                    if (apType == AppendType.NESTED) {
+                    userValue = (ISBUserValue) itm.getUserValue();
+                    if ((userValue != null) && userValue.getAppendType() == AppendType.NESTED) {
                         bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(), NORMAL_PRIORITY).addClass(this)
                                 .addMethod(this).addSourceLine(this));
+                    }
+                    
+                    if (userValue == null) {
+                        userValue = new ISBUserValue(AppendType.CLEAR, true);
                     }
                 }
             }
         }
-        return apType;
+        return userValue;
     }
 
     private OpcodeStack.Item getStringBufferItemAt(int depth) {
@@ -229,5 +252,54 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         }
 
         return null;
+    }
+
+    class ISBUserValue {
+        
+        private AppendType appendType;
+        private boolean hasResolvedString;
+        
+        public ISBUserValue(AppendType appType) {
+            this(appType, false);
+        }
+        
+        public ISBUserValue(AppendType appType, boolean resolved) {
+            appendType = appType;
+            hasResolvedString = resolved;
+        }
+
+        public AppendType getAppendType() {
+            return appendType;
+        }
+
+        public boolean hasResolvedString() {
+            return hasResolvedString;
+        }
+
+        @Override
+        public int hashCode() {
+            return appendType.hashCode() ^ (hasResolvedString ? 1 : 0);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof ISBUserValue)) {
+                return false;
+            }
+            
+            ISBUserValue that = (ISBUserValue) obj;
+            return (appendType == that.appendType) && (hasResolvedString == that.hasResolvedString);
+        }
+
+        private InefficientStringBuffering getOuterType() {
+            return InefficientStringBuffering.this;
+        }
+        
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+        
+        
     }
 }
