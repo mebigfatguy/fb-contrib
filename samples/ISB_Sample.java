@@ -116,5 +116,11 @@ public class ISB_Sample {
     public String xform(String a) {
         return a;
     }
+    
+    enum MonsterSpeak {UNGA, BUNGA}
+    
+    public String speak(MonsterSpeak s) {
+        return 1 + s.toString();
+    }
 
 }
