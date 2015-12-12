@@ -20,7 +20,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE 
+<!-- COMMENT OUT FOR RELEASE -->
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -32,7 +32,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-    COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
