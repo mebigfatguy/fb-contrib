@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -50,79 +51,73 @@ import edu.umd.cs.findbugs.ba.XField;
  *
  */
 public class PossibleMemoryBloat extends BytecodeScanningDetector {
-    private static final Set<String> bloatableSigs = new HashSet<String>();
-    private static final Set<String> nonBloatableSigs = new HashSet<String>();
+    
+    private static final Set<String> bloatableSigs = UnmodifiableSet.create(
+        "Ljava/util/concurrent/ArrayBlockingQueue;",
+        "Ljava/util/ArrayList;",
+        "Ljava/util/concurrent/BlockingQueue;",
+        "Ljava/util/Collection;",
+        "Ljava/util/concurrent/ConcurrentHashMap;",
+        "Ljava/util/concurrent/ConcurrentSkipListMap;",
+        "Ljava/util/concurrent/ConcurrentSkipListSet;",
+        "Ljava/util/concurrent/CopyOnWriteArraySet;",
+        "Ljava/util/EnumSet;",
+        "Ljava/util/EnumMap;",
+        "Ljava/util/HashMap;",
+        "Ljava/util/HashSet;",
+        "Ljava/util/Hashtable;",
+        "Ljava/util/IdentityHashMap;",
+        "Ljava/util/concurrent/LinkedBlockingQueue;",
+        "Ljava/util/LinkedHashMap;",
+        "Ljava/util/LinkedHashSet;",
+        "Ljava/util/LinkedList;",
+        "Ljava/util/List;",
+        "Ljava/util/concurrent/PriorityBlockingQueue;",
+        "Ljava/util/PriorityQueue;",
+        "Ljava/util/Map;",
+        "Ljava/util/Queue;",
+        "Ljava/util/Set;",
+        "Ljava/util/SortedSet;",
+        "Ljava/util/SortedMap;",
+        "Ljava/util/Stack;",
+        "Ljava/lang/StringBuffer;",
+        "Ljava/lang/StringBuilder;",
+        "Ljava/util/TreeMap;",
+        "Ljava/util/TreeSet;",
+        "Ljava/util/Vector;"
+    );
+    
+    private static final Set<String> nonBloatableSigs = UnmodifiableSet.create("Ljava/util/WeakHashMap;");
 
-    static {
-        bloatableSigs.add("Ljava/util/concurrent/ArrayBlockingQueue;");
-        bloatableSigs.add("Ljava/util/ArrayList;");
-        bloatableSigs.add("Ljava/util/concurrent/BlockingQueue;");
-        bloatableSigs.add("Ljava/util/Collection;");
-        bloatableSigs.add("Ljava/util/concurrent/ConcurrentHashMap;");
-        bloatableSigs.add("Ljava/util/concurrent/ConcurrentSkipListMap;");
-        bloatableSigs.add("Ljava/util/concurrent/ConcurrentSkipListSet;");
-        bloatableSigs.add("Ljava/util/concurrent/CopyOnWriteArraySet;");
-        bloatableSigs.add("Ljava/util/EnumSet;");
-        bloatableSigs.add("Ljava/util/EnumMap;");
-        bloatableSigs.add("Ljava/util/HashMap;");
-        bloatableSigs.add("Ljava/util/HashSet;");
-        bloatableSigs.add("Ljava/util/Hashtable;");
-        bloatableSigs.add("Ljava/util/IdentityHashMap;");
-        bloatableSigs.add("Ljava/util/concurrent/LinkedBlockingQueue;");
-        bloatableSigs.add("Ljava/util/LinkedHashMap;");
-        bloatableSigs.add("Ljava/util/LinkedHashSet;");
-        bloatableSigs.add("Ljava/util/LinkedList;");
-        bloatableSigs.add("Ljava/util/List;");
-        bloatableSigs.add("Ljava/util/concurrent/PriorityBlockingQueue;");
-        bloatableSigs.add("Ljava/util/PriorityQueue;");
-        bloatableSigs.add("Ljava/util/Map;");
-        bloatableSigs.add("Ljava/util/Queue;");
-        bloatableSigs.add("Ljava/util/Set;");
-        bloatableSigs.add("Ljava/util/SortedSet;");
-        bloatableSigs.add("Ljava/util/SortedMap;");
-        bloatableSigs.add("Ljava/util/Stack;");
-        bloatableSigs.add("Ljava/lang/StringBuffer;");
-        bloatableSigs.add("Ljava/lang/StringBuilder;");
-        bloatableSigs.add("Ljava/util/TreeMap;");
-        bloatableSigs.add("Ljava/util/TreeSet;");
-        bloatableSigs.add("Ljava/util/Vector;");
+    private static final Set<String> decreasingMethods = UnmodifiableSet.create(
+        "clear",
+        "delete",
+        "deleteCharAt",
+        "drainTo",
+        "poll",
+        "pollFirst",
+        "pollLast",
+        "pop",
+        "remove",
+        "removeAll",
+        "removeAllElements",
+        "removeElementAt",
+        "removeRange",
+        "setLength",
+        "take"
+    );
 
-        nonBloatableSigs.add("Ljava/util/WeakHashMap;");
-    }
-
-    private static final Set<String> decreasingMethods = new HashSet<String>();
-
-    static {
-        decreasingMethods.add("clear");
-        decreasingMethods.add("delete");
-        decreasingMethods.add("deleteCharAt");
-        decreasingMethods.add("drainTo");
-        decreasingMethods.add("poll");
-        decreasingMethods.add("pollFirst");
-        decreasingMethods.add("pollLast");
-        decreasingMethods.add("pop");
-        decreasingMethods.add("remove");
-        decreasingMethods.add("removeAll");
-        decreasingMethods.add("removeAllElements");
-        decreasingMethods.add("removeElementAt");
-        decreasingMethods.add("removeRange");
-        decreasingMethods.add("setLength");
-        decreasingMethods.add("take");
-    }
-
-    private static final Set<String> increasingMethods = new HashSet<String>();
-
-    static {
-        increasingMethods.add("add");
-        increasingMethods.add("addAll");
-        increasingMethods.add("addElement");
-        increasingMethods.add("addFirst");
-        increasingMethods.add("addLast");
-        increasingMethods.add("append");
-        increasingMethods.add("insertElementAt");
-        increasingMethods.add("offer");
-        increasingMethods.add("put");
-    }
+    private static final Set<String> increasingMethods = UnmodifiableSet.create(
+        "add",
+        "addAll",
+        "addElement",
+        "addFirst",
+        "addLast",
+        "append",
+        "insertElementAt",
+        "offer",
+        "put"
+    );
 
     private final BugReporter bugReporter;
     private Map<XField, FieldAnnotation> bloatableCandidates;
