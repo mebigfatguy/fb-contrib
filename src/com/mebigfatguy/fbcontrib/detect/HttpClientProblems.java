@@ -19,7 +19,6 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashSet;
 import java.util.Set;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
