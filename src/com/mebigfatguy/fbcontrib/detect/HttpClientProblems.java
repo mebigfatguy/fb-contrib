@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -34,39 +35,32 @@ import edu.umd.cs.findbugs.BugReporter;
  */
 public class HttpClientProblems extends MissingMethodsDetector {
 
-    private static Set<String> httpRequestClasses = new HashSet<String>();
+    private static Set<String> httpRequestClasses = UnmodifiableSet.create(
+        "org.apache.http.client.methods.HttpGet",
+        "org.apache.http.client.methods.HttpPut",
+        "org.apache.http.client.methods.HttpDelete",
+        "org.apache.http.client.methods.HttpPost",
+        "org.apache.http.client.methods.HttpPatch"
+    );
 
-    static {
-        httpRequestClasses.add("org.apache.http.client.methods.HttpGet");
-        httpRequestClasses.add("org.apache.http.client.methods.HttpPut");
-        httpRequestClasses.add("org.apache.http.client.methods.HttpDelete");
-        httpRequestClasses.add("org.apache.http.client.methods.HttpPost");
-        httpRequestClasses.add("org.apache.http.client.methods.HttpPatch");
-    }
-
-    private static Set<String> resetMethods = new HashSet<String>();
-
-    static {
-        resetMethods.add("reset");
-        resetMethods.add("releaseConnection");
-    }
-
+    private static Set<String> resetMethods = UnmodifiableSet.create(
+        "reset",
+        "releaseConnection"
+    );
+    
     // Any methods that should not be treated as a "will call a reset method"
-    private static Set<String> whiteListMethods = new HashSet<String>();
-
-    static {
-        whiteListMethods.add("execute");
-        whiteListMethods.add("fatal");
-        whiteListMethods.add("error");
-        whiteListMethods.add("info");
-        whiteListMethods.add("debug");
-        whiteListMethods.add("trace");
-        whiteListMethods.add("println");
-        whiteListMethods.add("print");
-        whiteListMethods.add("format");
-        whiteListMethods.add("append"); // for when Java uses StringBuilders to
-                                        // append Strings
-    }
+    private static Set<String> whiteListMethods = UnmodifiableSet.create(
+        "execute",
+        "fatal",
+        "error",
+        "info",
+        "debug",
+        "trace",
+        "println",
+        "print",
+        "format",
+        "append" // for when Java uses StringBuilders to append Strings
+    );
 
     public HttpClientProblems(BugReporter bugReporter) {
         super(bugReporter);
