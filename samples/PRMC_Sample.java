@@ -15,6 +15,8 @@ public class PRMC_Sample {
     private static PRMC_Sample SAMPLE1;
     private static PRMC_Sample SAMPLE2;
     String data;
+    String[] array1;
+    String[] array2;
 
     public boolean test1(Calendar c) {
         Date d = c.getTime();
@@ -148,5 +150,9 @@ public class PRMC_Sample {
             sb.append("--");
             return sb.toString();
         }
+    }
+    
+    public String fpSFIssue71() {
+        return Arrays.toString(array1) + Arrays.toString(array2);
     }
 }
