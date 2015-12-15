@@ -1547,6 +1547,17 @@
     	<Details>
     		<![CDATA[
     		<p>Looks for problems with the use of the JAX-RS specification.</p>
+    		<p>It is a fast detector</p>
+    		]]>
+    	</Details>
+    </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.JPAIssues">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for problems with the use of the JPA specification, including spring's
+    		support of JPA</p>
+    		<p>It is a fast detector</p>
     		]]>
     	</Details>
     </Detector>
@@ -5103,6 +5114,18 @@
     		]]>
        	</Details>
     </BugPattern>
+    
+    <BugPattern type="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD">
+    	<ShortDescription>Method has a Spring @Transactional annotation on it, but is non-public</ShortDescription>
+    	<LongDescription>Method {1} has a Spring @Transactional annotation on it, but is non-public</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method specifies a Spring @Transactional annotation but the method is defined as being non public.
+    		Spring only creates transactional boundaries on methods that are public, and so this annotation not doing 
+    		anything for this method. Make the public, or place the annotation on a more appropriate method.
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5234,4 +5257,5 @@
 	<BugCode abbrev="CRF">Conflating Resources And Files</BugCode>
 	<BugCode abbrev="IMC">Immature Class</BugCode>
 	<BugCode abbrev="JXI">JAX-RS Issues</BugCode>
+	<BugCode abbrev="JPAI">JPA Issues</BugCode>
 </MessageCollection>

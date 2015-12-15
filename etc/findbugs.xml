@@ -292,6 +292,9 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.JAXRSIssues" speed="fast" reports="JXI_GET_ENDPOINT_CONSUMES_CONTENT,JXI_INVALID_CONTEXT_PARAMETER_TYPE,JXI_PARM_PARAM_NOT_FOUND_IN_PATH,JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" />
 	
     <!--  COMMENT OUT FOR POINT RELEASE -->
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.JPAIssues" speed="fast" reports="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD"/>
+    
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -541,5 +544,6 @@
 	<BugPattern abbrev="JXI" type="JXI_INVALID_CONTEXT_PARAMETER_TYPE" category="CORRECTNESS" />
 	<BugPattern abbrev="JXI" type="JXI_PARM_PARAM_NOT_FOUND_IN_PATH" category="CORRECTNESS" />
 	<BugPattern abbrev="JXI" type="JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" category="CORRECTNESS" />
+	<BugPattern abbrev="JPAI" type="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD" category="CORRECTNESS" experimental="true"/>
 	
 </FindbugsPlugin>
