@@ -86,6 +86,10 @@ function toggleBlock(divId, imgId)
                 same kind of exception, and throw the same exception always. These blocks can
                 be coalesced into one.
                 </li>
+                <li><b>[JPAI] JPA Issues</b><br/>
+                Looks for various issues around the use of the Java Persistence API (JPA), including
+                with use with spring-tx.
+                </li>
             </ul>
         </div>  
         <hr/>
