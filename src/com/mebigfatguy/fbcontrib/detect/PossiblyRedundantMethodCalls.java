@@ -264,10 +264,18 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                     Object[] parmConstants = new Object[parmCount];
                     for (int i = 0; i < parmCount; i++) {
                         OpcodeStack.Item parm = stack.getStackItem(i);
-                        if ((parm.getSignature().charAt(0) == '[') && (!Values.ZERO.equals(parm.getConstant()))) {
-                            return;
-                        }
                         parmConstants[i] = parm.getConstant();
+                        if (parm.getSignature().charAt(0) == '[') {
+                            if (!Values.ZERO.equals(parm.getConstant())) {
+                                return;
+                            }
+                            XField f = parm.getXField();
+                            if (f != null) {
+                                //Two different fields holding a 0 length array should be considered different
+                                parmConstants[i] = f.getName() + ":" + parmConstants[i];
+                            }
+                         }
+                        
                         if (parmConstants[i] == null) {
                             return;
                         }
