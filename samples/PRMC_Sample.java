@@ -152,7 +152,12 @@ public class PRMC_Sample {
         }
     }
     
-    public String fpSFIssue71() {
-        return Arrays.toString(array1) + Arrays.toString(array2);
-    }
-}
+    class SFIssue71 {
+        protected String[] inc = new String[0];
+        protected String[] dec = new String[0];
+        
+        public void fplog() {
+            System.out.println(Arrays.toString(inc));
+            System.out.println(Arrays.toString(dec));
+        }
+    }}
