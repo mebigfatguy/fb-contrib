@@ -293,7 +293,7 @@
 	
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.JPAIssues" speed="fast" reports="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.JPAIssues" speed="fast" reports="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD,JPAI_HC_EQUALS_ON_MANAGED_ENTITY"/>
     
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
@@ -545,5 +545,6 @@
 	<BugPattern abbrev="JXI" type="JXI_PARM_PARAM_NOT_FOUND_IN_PATH" category="CORRECTNESS" />
 	<BugPattern abbrev="JXI" type="JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" category="CORRECTNESS" />
 	<BugPattern abbrev="JPAI" type="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="JPAI" type="JPAI_HC_EQUALS_ON_MANAGED_ENTITY" category="CORRECTNESS" experimental="true"/>
 	
 </FindbugsPlugin>
