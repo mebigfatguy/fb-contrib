@@ -52,11 +52,7 @@ public class JPAIssues extends DismantleBytecode implements Detector {
             }
         } finally {
             transactionalMethods = null;
-            isEntity = false;
-            hasId = false;
-            hasGeneratedValue = false;
-            hasHCEquals = false;
-         }
+        }
     }
     
     @Override
@@ -72,6 +68,11 @@ public class JPAIssues extends DismantleBytecode implements Detector {
     
     private void catalogClass(JavaClass cls) {
         transactionalMethods = new HashSet<FQMethod>();
+        isEntity = false;
+        hasId = false;
+        hasGeneratedValue = false;
+        hasHCEquals = false;
+        
         for (AnnotationEntry entry : cls.getAnnotationEntries()) {
             if ("Ljavax/persistence/Entity;".equals(entry.getAnnotationType())) {
                 isEntity = true;
