@@ -102,6 +102,7 @@
 			<pathelement location="${lib.dir}/commons-codec-${commons-codec.version}.jar" />
 			<pathelement location="${lib.dir}/jsr311-api-${jsr311-api.version}.jar" />
 			<pathelement location="${lib.dir}/spring-tx-${spring-tx.version}.jar" />
+			<pathelement location="${lib.dir}/javax.persistence-${javax.persistence.version}.jar" />
 		</path>
 	</target>
 
