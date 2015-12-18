@@ -44,7 +44,7 @@ public class JPAIssues extends DismantleBytecode implements Detector {
             
             if (isEntity && hasHCEquals && hasId && hasGeneratedValue) {
                 bugReporter.reportBug(new BugInstance(this, BugType.JPAI_HC_EQUALS_ON_MANAGED_ENTITY.name(), LOW_PRIORITY)
-                        .addClass(this));
+                        .addClass(cls));
             }
             
             if (!transactionalMethods.isEmpty()) {
