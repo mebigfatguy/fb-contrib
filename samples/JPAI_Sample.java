@@ -1,6 +1,14 @@
+import java.util.List;
+
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -25,17 +33,28 @@ public class JPAI_Sample {
     @Table(name = "MY_ENTITY")
     public static class MyEntity {
         
-        public Integer id;
+        private Integer id;
+        private List<SubEntity> subEntities;
         
         @Id
         @SequenceGenerator(name = "MY_ENTITY_SEQ", sequenceName = "MY_ENTITY_SEQ", allocationSize = 100)
         @GeneratedValue(generator = "MY_ENTITY_SEQ")
+        @Column(name = "ID", nullable = false, unique = true)
         public Integer getId() {
             return id;
         }
         
         public void setId(Integer id) {
             this.id = id;
+        }
+
+        @OneToMany(cascade=CascadeType.ALL, fetch=FetchType.EAGER, mappedBy = "myEntity", targetEntity = MyEntity.class)
+        public List<SubEntity> getSubEntities() {
+            return subEntities;
+        }
+        
+        public void setSubEntities(List<SubEntity> subEntities) {
+            this.subEntities = subEntities;
         }
         
         @Override
@@ -56,5 +75,37 @@ public class JPAI_Sample {
             
             return id.equals(that.id);
         }
+    }
+    
+    @Entity
+    @Table(name = "SUB_ENTITY")
+    public static class SubEntity {
+        
+        public Integer subId;
+        public MyEntity myEntity;
+        
+        @Id
+        @SequenceGenerator(name = "SUB_ENTITY_SEQ", sequenceName = "SUB_ENTITY_SEQ", allocationSize = 100)
+        @GeneratedValue(generator = "SUB_ENTITY_SEQ")
+        @Column(name = "SUB_ID", nullable = false, unique = true)
+        public Integer getSubId() {
+            return subId;
+        }
+        
+        public void setSubId(Integer subId) {
+            this.subId = subId;
+        }
+
+        @JoinColumn(name = "ID", referencedColumnName = "ID", nullable = false)
+        @ManyToOne(fetch = FetchType.EAGER, targetEntity = MyEntity.class)
+        public MyEntity getMyEntity() {
+            return myEntity;
+        }
+
+        public void setMyEntity(MyEntity myEntity) {
+            this.myEntity = myEntity;
+        }
+        
+        
     }
 }
