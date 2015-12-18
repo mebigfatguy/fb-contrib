@@ -5122,7 +5122,7 @@
     		<![CDATA[
     		<p>This method specifies a Spring @Transactional annotation but the method is defined as being non public.
     		Spring only creates transactional boundaries on methods that are public, and so this annotation not doing 
-    		anything for this method. Make the public, or place the annotation on a more appropriate method.
+    		anything for this method. Make the method public, or place the annotation on a more appropriate method.
     		]]>
     	</Details>
     </BugPattern>
