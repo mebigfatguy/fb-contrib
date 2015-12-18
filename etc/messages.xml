@@ -5152,6 +5152,20 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="JPAI_INEFFICIENT_EAGER_FETCH">
+    	<ShortDescription>OneToMany join specifies 1+n EAGER join</ShortDescription>
+    	<LongDescription>OneToMany join specifies 1+n EAGER join</LongDescription>
+    	<Details>
+    	<![CDATA[
+    	<p>This JPA entity specifies a @OneToMany join with a fetch type of EAGER. By Default EAGER joins perform
+    	select operations on each element returned from the original query in sequence, thus producing 1 + n queries.
+    	If you are going to use EAGER joins, it is wise to specify a Join type by using @Fetch annotations in
+    	Hibernate or @JoinFetch/@BatchFetch annotations (or hints) in EclipseLink, for example. Even so, These
+    	annotations may only apply in limited cases, such as in the use of find.</p>
+    	]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 

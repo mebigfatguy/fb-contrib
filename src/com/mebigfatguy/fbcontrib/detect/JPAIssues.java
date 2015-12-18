@@ -5,6 +5,7 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
@@ -33,6 +34,8 @@ public class JPAIssues extends BytecodeScanningDetector {
     private boolean isEntity;
     private boolean hasId;
     private boolean hasGeneratedValue;
+    private boolean hasEagerOneToMany;
+    private boolean hasFetch;
     private boolean hasHCEquals;
     
     public JPAIssues(BugReporter bugReporter) {
@@ -45,9 +48,15 @@ public class JPAIssues extends BytecodeScanningDetector {
             cls = clsContext.getJavaClass();
             catalogClass(cls);
             
-            if (isEntity && hasHCEquals && hasId && hasGeneratedValue) {
-                bugReporter.reportBug(new BugInstance(this, BugType.JPAI_HC_EQUALS_ON_MANAGED_ENTITY.name(), LOW_PRIORITY)
-                        .addClass(cls));
+            if (isEntity) {
+                if (hasHCEquals && hasId && hasGeneratedValue) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_HC_EQUALS_ON_MANAGED_ENTITY.name(), LOW_PRIORITY)
+                            .addClass(cls));
+                }
+                if (hasEagerOneToMany && !hasFetch) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_INEFFICIENT_EAGER_FETCH.name(), LOW_PRIORITY)
+                            .addClass(cls));
+                }
             }
             
             if (!transactionalMethods.isEmpty()) {
@@ -104,6 +113,7 @@ public class JPAIssues extends BytecodeScanningDetector {
         isEntity = false;
         hasId = false;
         hasGeneratedValue = false;
+        hasEagerOneToMany = false;
         hasHCEquals = false;
         
         for (AnnotationEntry entry : cls.getAnnotationEntries()) {
@@ -143,6 +153,21 @@ public class JPAIssues extends BytecodeScanningDetector {
                 
             case "Ljavax/persistence/GeneratedValue;":
                 hasGeneratedValue = true;
+                break;
+                
+            case "Ljavax/persistence/OneToMany;":
+                for (ElementValuePair pair : entry.getElementValuePairs()) {
+                    if ("fetch".equals(pair.getNameString()) && "EAGER".equals(pair.getValue().stringifyValue())) {
+                        hasEagerOneToMany = true;
+                        break;
+                    }
+                }
+                break;
+                
+            case "Lorg/hibernate/annotations/Fetch;":
+            case "Lorg/eclipse/persistence/annotations/JoinFetch;":
+            case "Lorg/eclipse/persistence/annotations/BatchFetch;":
+                hasFetch = true;
                 break;
             }
         }
