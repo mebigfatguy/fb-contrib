@@ -4,28 +4,31 @@ import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 
 /**
  * looks for various issues around the use of the Java Persistence API (JPA)
  */
-public class JPAIssues extends DismantleBytecode implements Detector {
+public class JPAIssues extends BytecodeScanningDetector {
     
     private BugReporter bugReporter;
     
     private JavaClass cls;
+    private OpcodeStack stack;
     private Set<FQMethod> transactionalMethods;
     private boolean isEntity;
     private boolean hasId;
@@ -48,10 +51,12 @@ public class JPAIssues extends DismantleBytecode implements Detector {
             }
             
             if (!transactionalMethods.isEmpty()) {
-                cls.accept(this);
+                stack = new OpcodeStack();
+                super.visitClassContext(clsContext);
             }
         } finally {
             transactionalMethods = null;
+            stack = null;
         }
     }
     
@@ -63,6 +68,34 @@ public class JPAIssues extends DismantleBytecode implements Detector {
                         .addClass(this)
                         .addMethod(this));
             }
+        }
+    }
+    
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        super.visitCode(obj);
+    }
+    
+    @Override
+    public void sawOpcode(int seen) {
+        try {
+            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+                if (transactionalMethods.contains(new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()))) {
+                    Type[] parmTypes = Type.getArgumentTypes(getSigConstantOperand());
+                    if (stack.getStackDepth() > parmTypes.length) {
+                        OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
+                        if (itm.getRegisterNumber() == 0) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), NORMAL_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(this)
+                                    .addSourceLine(this));
+                        }
+                    }
+                }
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
         }
     }
     
@@ -113,10 +146,5 @@ public class JPAIssues extends DismantleBytecode implements Detector {
                 break;
             }
         }
-    }
-
-    @Override
-    public void report() {
-        //required by interface
     }
 }

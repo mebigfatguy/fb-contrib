@@ -5140,6 +5140,18 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="JPAI_NON_PROXIED_TRANSACTION_CALL">
+    	<ShortDescription>Method annotated with @Transactional is called from a non Spring proxy</ShortDescription>
+    	<LongDescription>Method {1} annotated with @Transactional is called from a non Spring proxy</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method call is to a method that has a @Transactional annotation on it. However since this call is from the
+    		same class, it is not going through any Spring proxy, and thus the transactional quality of this method is completely
+    		lost. @Transactional method must always be called through a Spring bean that is autowired.</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 

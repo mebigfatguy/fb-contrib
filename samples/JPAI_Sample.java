@@ -13,6 +13,14 @@ public class JPAI_Sample {
         
     }
     
+    @Transactional
+    public void writeGoodData() {
+    }
+    
+    private void badWrite() {
+        writeGoodData();
+    }
+    
     @Entity
     @Table(name = "MY_ENTITY")
     public static class MyEntity {
