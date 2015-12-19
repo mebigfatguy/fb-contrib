@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantString;
@@ -25,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -53,6 +57,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     }
 
     private final BugReporter bugReporter;
+    private Set<QMethod> interfaceMethods;
     private String methodName;
     private State state;
 
@@ -74,9 +79,16 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
-        JavaClass cls = classContext.getJavaClass();
-        if (cls.isAbstract()) {
-            super.visitClassContext(classContext);
+        try {
+            JavaClass cls = classContext.getJavaClass();
+            if (cls.isAbstract()) {
+                interfaceMethods = collectInterfaceMethods(cls);
+                super.visitClassContext(classContext);
+            }      
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        } finally {
+            interfaceMethods = null;
         }
     }
 
@@ -102,8 +114,10 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         if (Values.CONSTRUCTOR.equals(methodName) || Values.STATIC_INITIALIZER.equals(methodName))
             return;
-
-        super.visitCode(obj);
+        
+        if (!interfaceMethods.contains(new QMethod(methodName, getMethod().getSignature()))) {
+            super.visitCode(obj);
+        }
     }
 
     /**
@@ -169,5 +183,16 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
             bugReporter.reportMissingClass(cnfe);
             state = State.SAW_DONE;
         }
+    }
+    
+    private Set<QMethod> collectInterfaceMethods(JavaClass cls) throws ClassNotFoundException {
+        Set<QMethod> methods = new HashSet<QMethod>();
+        for (JavaClass inf : cls.getAllInterfaces()) {
+            for (Method m : inf.getMethods()) {
+                methods.add(new QMethod(m.getName(), m.getSignature()));
+            }
+        }
+        
+        return methods;
     }
 }
