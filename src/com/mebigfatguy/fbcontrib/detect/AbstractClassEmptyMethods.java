@@ -75,8 +75,9 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
-        if (cls.isAbstract())
+        if (cls.isAbstract()) {
             super.visitClassContext(classContext);
+        }
     }
 
     /**
