@@ -39,9 +39,11 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -66,8 +68,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
     private static JavaClass collectionClass;
     private static JavaClass iteratorClass;
     private static Set<JavaClass> exceptionClasses;
-    private static final Set<String> collectionMethods;
-
+    
     static {
         try {
             collectionClass = Repository.lookupClass("java/util/Collection");
@@ -84,26 +85,31 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         } catch (ClassNotFoundException cnfe) {
             // don't have a bugReporter yet, so do nothing
         }
-
-        collectionMethods = new HashSet<String>(3);
-        collectionMethods.add("entrySet()Ljava/lang/Set;");
-        collectionMethods.add("keySet()Ljava/lang/Set;");
-        collectionMethods.add("values()Ljava/lang/Collection;");
     }
 
-    private static final Map<String, Integer> modifyingMethods;
+    private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(
+            new QMethod("entrySet", "()Ljava/lang/Set;"),
+            new QMethod("keySet", "()Ljava/lang/Set;"),
+            new QMethod("values", "()Ljava/lang/Collection;")
+    );
+    
+    private static final Map<QMethod, Integer> modifyingMethods;
 
     static {
-        Map<String, Integer> mm = new HashMap<String, Integer>();
-        mm.put("add(Ljava/lang/Object;)Z", Values.ONE);
-        mm.put("addAll(Ljava/util/Collection;)Z", Values.ONE);
-        mm.put("addAll(ILjava/util/Collection;)Z", Values.TWO);
-        mm.put("clear()V", Values.ZERO);
-        mm.put("remove(I)Ljava/lang/Object;", Values.ONE);
-        mm.put("removeAll(Ljava/util/Collection;)Z", Values.ONE);
-        mm.put("retainAll(Ljava/util/Collection;)Z", Values.ONE);
-        modifyingMethods = Collections.<String, Integer>unmodifiableMap(mm);
+        Map<QMethod, Integer> mm = new HashMap<QMethod, Integer>();
+        mm.put(new QMethod("add", "(Ljava/lang/Object;)Z"), Values.ONE);
+        mm.put(new QMethod("addAll", "(Ljava/util/Collection;)Z"), Values.ONE);
+        mm.put(new QMethod("addAll", "(ILjava/util/Collection;)Z"), Values.TWO);
+        mm.put(new QMethod("clear", "()V"), Values.ZERO);
+        mm.put(new QMethod("remove", "(I)Ljava/lang/Object;"), Values.ONE);
+        mm.put(new QMethod("removeAll", "(Ljava/util/Collection;)Z"), Values.ONE);
+        mm.put(new QMethod("retainAll", "(Ljava/util/Collection;)Z"), Values.ONE);
+        modifyingMethods = Collections.<QMethod, Integer>unmodifiableMap(mm);
     }
+    
+    private static final QMethod ITERATOR = new QMethod("iterator", "()Ljava/util/Iterator;");
+    private static final QMethod REMOVE = new QMethod("remove", "(Ljava/lang/Object;)Z");
+    private static final QMethod HASNEXT = new QMethod("hasNext", "()Z");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
@@ -186,7 +192,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
-                String methodInfo = methodName + signature;
+                QMethod methodInfo = new QMethod(methodName, signature);
 
                 if (isCollection(className)) {
                     if (collectionMethods.contains(methodInfo)) {
@@ -195,12 +201,12 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                             groupId = findCollectionGroup(itm, true);
 
                         }
-                    } else if ("iterator()Ljava/util/Iterator;".equals(methodInfo)) {
+                    } else if (ITERATOR.equals(methodInfo)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             groupId = findCollectionGroup(itm, true);
                         }
-                    } else if ("remove(Ljava/lang/Object;)Z".equals(methodInfo)) {
+                    } else if (REMOVE.equals(methodInfo)) {
                         if (stack.getStackDepth() > 1) {
                             OpcodeStack.Item itm = stack.getStackItem(1);
                             int id = findCollectionGroup(itm, true);
@@ -252,7 +258,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                             }
                         }
                     }
-                } else if ("java/util/Iterator".equals(className) && "hasNext()Z".equals(methodInfo)) {
+                } else if ("java/util/Iterator".equals(className) && HASNEXT.equals(methodInfo)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         Integer id = (Integer) itm.getUserValue();
