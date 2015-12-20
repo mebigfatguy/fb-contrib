@@ -32,6 +32,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -50,32 +51,27 @@ import edu.umd.cs.findbugs.ba.XField;
  * the case that order is important, consider using LinkedHashSet.
  */
 public class DubiousListCollection extends BytecodeScanningDetector {
-    private static final Set<String> setMethods;
-    private static final Set<String> listMethods;
-
-    static {
-        Set<String> sm = new HashSet<String>();
-        sm.add("contains(Ljava/lang/Object;)Z");
-        sm.add("containsAll(Ljava/util/Collection;)Z");
-        sm.add("remove(Ljava/lang/Object;)Ljava/lang/Object;");
-        sm.add("removeAll(Ljava/util/Collection;)Z");
-        sm.add("retainAll(Ljava/util/Collection;)Z");
-        setMethods = Collections.<String>unmodifiableSet(sm);
-
-        Set<String> lm = new HashSet<String>();
-        lm.add("add(ILjava/lang/Object;)V");
-        lm.add("addAll(ILjava/util/Collection;)Z");
-        lm.add("lastIndexOf(Ljava/lang/Object;)I");
-        lm.add("remove(I)Ljava/lang/Object;");
-        lm.add("set(ILjava/lang/Object;)Ljava/lang/Object;");
-        lm.add("subList(II)Ljava/util/List;");
-        lm.add("listIterator()Ljava/util/ListIterator;");
-        lm.add("listIterator(I)Ljava/util/ListIterator;");
-        listMethods = Collections.<String>unmodifiableSet(lm);
-
+    
+    private static final Set<String> setMethods = UnmodifiableSet.create(
+            "contains(Ljava/lang/Object;)Z",
+            "containsAll(Ljava/util/Collection;)Z",
+            "remove(Ljava/lang/Object;)Ljava/lang/Object;",
+            "removeAll(Ljava/util/Collection;)Z",
+            "retainAll(Ljava/util/Collection;)Z"
+    );
+            
+    private static final Set<String> listMethods = UnmodifiableSet.create(
+        "add(ILjava/lang/Object;)V",
+        "addAll(ILjava/util/Collection;)Z",
+        "lastIndexOf(Ljava/lang/Object;)I",
+        "remove(I)Ljava/lang/Object;",
+        "set(ILjava/lang/Object;)Ljava/lang/Object;",
+        "subList(II)Ljava/util/List;",
+        "listIterator()Ljava/util/ListIterator;",
+        "listIterator(I)Ljava/util/ListIterator;"
         // Theoretically get(i) and indexOf(Object) are list Methods but are so
         // abused, as to be meaningless
-    }
+    );
 
     private final BugReporter bugReporter;
     private final OpcodeStack stack = new OpcodeStack();
