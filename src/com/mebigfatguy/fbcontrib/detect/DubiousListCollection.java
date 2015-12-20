@@ -1,26 +1,24 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2015 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -31,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
@@ -44,33 +43,35 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for fields that are implementations of java.util.List, but that are
- * used in a set-like fashion. Since lookup type operations are performed using
- * a linear search for Lists, the performance for large Lists will be poor.
- * Consideration should be made as to whether these fields should be sets. In
- * the case that order is important, consider using LinkedHashSet.
+ * looks for fields that are implementations of java.util.List, but that are used in a set-like fashion. Since lookup type operations are performed using a
+ * linear search for Lists, the performance for large Lists will be poor. Consideration should be made as to whether these fields should be sets. In the case
+ * that order is important, consider using LinkedHashSet.
  */
 public class DubiousListCollection extends BytecodeScanningDetector {
-    
-    private static final Set<String> setMethods = UnmodifiableSet.create(
-            "contains(Ljava/lang/Object;)Z",
-            "containsAll(Ljava/util/Collection;)Z",
-            "remove(Ljava/lang/Object;)Ljava/lang/Object;",
-            "removeAll(Ljava/util/Collection;)Z",
-            "retainAll(Ljava/util/Collection;)Z"
+
+    private static final Set<QMethod> setMethods = UnmodifiableSet.create(
+            //@formatter:off
+            new QMethod("contains", "(Ljava/lang/Object;)Z"),
+            new QMethod("containsAll", "(Ljava/util/Collection;)Z"),
+            new QMethod("remove", "(Ljava/lang/Object;)Ljava/lang/Object;"),
+            new QMethod("removeAll", "(Ljava/util/Collection;)Z"),
+            new QMethod("retainAll", "(Ljava/util/Collection;)Z")
+            //@formatter:on
     );
-            
-    private static final Set<String> listMethods = UnmodifiableSet.create(
-        "add(ILjava/lang/Object;)V",
-        "addAll(ILjava/util/Collection;)Z",
-        "lastIndexOf(Ljava/lang/Object;)I",
-        "remove(I)Ljava/lang/Object;",
-        "set(ILjava/lang/Object;)Ljava/lang/Object;",
-        "subList(II)Ljava/util/List;",
-        "listIterator()Ljava/util/ListIterator;",
-        "listIterator(I)Ljava/util/ListIterator;"
-        // Theoretically get(i) and indexOf(Object) are list Methods but are so
-        // abused, as to be meaningless
+
+    private static final Set<QMethod> listMethods = UnmodifiableSet.create(
+            //@formatter:off
+            new QMethod("add", "(ILjava/lang/Object;)V"),
+            new QMethod("addAll", "(ILjava/util/Collection;)Z"),
+            new QMethod("lastIndexOf", "(Ljava/lang/Object;)I"),
+            new QMethod("remove", "(I)Ljava/lang/Object;"),
+            new QMethod("set", "(ILjava/lang/Object;)Ljava/lang/Object;"),
+            new QMethod("subList", "(II)Ljava/util/List;"),
+            new QMethod("listIterator", "()Ljava/util/ListIterator;"),
+            new QMethod("listIterator", "(I)Ljava/util/ListIterator;")
+            // Theoretically get(i) and indexOf(Object) are list Methods but are so
+            // abused, as to be meaningless
+           //@formatter:on
     );
 
     private final BugReporter bugReporter;
@@ -79,7 +80,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 
     /**
      * constructs a DLC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -89,7 +90,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to accept classes that define List based fields
-     * 
+     *
      * @param classContext
      *            the context object for the currently parsed class
      */
@@ -115,7 +116,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset the opcode stack object
-     * 
+     *
      * @param obj
      *            the code object for the currently parse method
      */
@@ -126,9 +127,8 @@ public class DubiousListCollection extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to record all method calls on List fields. If a
-     * method is not a set based method, remove it from further consideration
-     * 
+     * overrides the visitor to record all method calls on List fields. If a method is not a set based method, remove it from further consideration
+     *
      * @param seen
      *            the current opcode parsed.
      */
@@ -148,11 +148,12 @@ public class DubiousListCollection extends BytecodeScanningDetector {
                         FieldInfo fi = fieldsReported.get(fieldName);
                         if (fi != null) {
                             String methodName = getNameConstantOperand();
-                            String methodInfo = methodName + signature;
-                            if (listMethods.contains(methodInfo))
+                            QMethod methodInfo = new QMethod(methodName, signature);
+                            if (listMethods.contains(methodInfo)) {
                                 fieldsReported.remove(fieldName);
-                            else if (setMethods.contains(methodInfo))
+                            } else if (setMethods.contains(methodInfo)) {
                                 fi.addUse(getPC());
+                            }
                         }
                     }
                 }
@@ -181,14 +182,13 @@ public class DubiousListCollection extends BytecodeScanningDetector {
     }
 
     /**
-     * return the field object that the current method was called on, by finding
-     * the reference down in the stack based on the number of parameters
-     * 
+     * return the field object that the current method was called on, by finding the reference down in the stack based on the number of parameters
+     *
      * @param stk
      *            the opcode stack where fields are stored
      * @param signature
      *            the signature of the called method
-     * 
+     *
      * @return the field annotation for the field whose method was executed
      */
     private static XField getFieldFromStack(final OpcodeStack stk, final String signature) {
@@ -201,8 +201,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the detector, by reporting all remaining fields that only have
-     * set based access
+     * implements the detector, by reporting all remaining fields that only have set based access
      */
     private void reportBugs() {
         int major = getClassContext().getJavaClass().getMajor();
@@ -224,18 +223,19 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 
     /**
      * builds a field annotation by finding the field in the classes' field list
-     * 
+     *
      * @param fieldName
      *            the field for which to built the field annotation
-     * 
+     *
      * @return the field annotation of the specified field
      */
     private FieldAnnotation getFieldAnnotation(final String fieldName) {
         JavaClass cls = getClassContext().getJavaClass();
         Field[] fields = cls.getFields();
         for (Field f : fields) {
-            if (f.getName().equals(fieldName))
+            if (f.getName().equals(fieldName)) {
                 return new FieldAnnotation(cls.getClassName(), fieldName, f.getSignature(), (f.getAccessFlags() & Constants.ACC_STATIC) != 0);
+            }
         }
         return null; // shouldn't happen
     }
@@ -250,12 +250,14 @@ public class DubiousListCollection extends BytecodeScanningDetector {
         /**
          * increments the number of times this field has a set method called on it
          *
-         * @param pc the current instruction offset
+         * @param pc
+         *            the current instruction offset
          */
         public void addUse(final int pc) {
             setCnt++;
-            if (slAnnotation == null)
+            if (slAnnotation == null) {
                 slAnnotation = SourceLineAnnotation.fromVisitedInstruction(DubiousListCollection.this.getClassContext(), DubiousListCollection.this, pc);
+            }
         }
 
         public SourceLineAnnotation getSourceLineAnnotation() {
