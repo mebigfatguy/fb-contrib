@@ -78,6 +78,8 @@ public class JPAIssues extends BytecodeScanningDetector {
                         .addMethod(this));
             }
         }
+        
+        super.visitMethod(obj);
     }
     
     @Override
@@ -90,7 +92,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
-                if (transactionalMethods.contains(new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()))) {
+                if (transactionalMethods.contains(new FQMethod(getDottedClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()))) {
                     Type[] parmTypes = Type.getArgumentTypes(getSigConstantOperand());
                     if (stack.getStackDepth() > parmTypes.length) {
                         OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
