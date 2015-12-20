@@ -217,9 +217,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 if (stack.getStackDepth() >= 3) {
                     OpcodeStack.Item arrayItem = stack.getStackItem(2);
                     Integer size = (Integer) arrayItem.getUserValue();
-                    if ((size != null) && (size > 0)) {
+                    if ((size != null) && (size.intValue() > 0)) {
                         if (hasExceptionOnStack()) {
-                            arrayItem.setUserValue(-size);
+                            arrayItem.setUserValue(Integer.valueOf(-size.intValue()));
                         }
                     }
                 }
