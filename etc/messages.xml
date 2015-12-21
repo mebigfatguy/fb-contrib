@@ -5166,6 +5166,18 @@
     	]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="JPAI_IGNORED_MERGE_RESULT">
+    	<ShortDescription>Method ignores the return value of EntityManager.merge</ShortDescription>
+    	<LongDescription>Method {1} ignores the return value of EntityManager.merge</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method calls EntityManager.merge, and throws away the resultant value. This result is the 
+    		managed entity version of the potentially unmanaged object that was passed to merge. You should use
+    		the returned managed entity for any further use.</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
