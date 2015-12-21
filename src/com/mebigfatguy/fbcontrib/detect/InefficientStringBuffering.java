@@ -92,7 +92,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(final int seen) {
         ISBUserValue userValue = null;
-        
+
         try {
             stack.precomputation(this);
 
@@ -151,35 +151,36 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                     ISBUserValue uv = (ISBUserValue) itm.getUserValue();
                     if (uv != null) {
                         switch (uv.getAppendType()) {
-                        case NESTED:
-                            bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(),
-                                    "toString".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                            case NESTED:
+                                bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(),
+                                        "toString".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                                .addSourceLine(this));
                             break;
-                        case TOSTRING:
-                            if (stack.getStackDepth() > 1) {
-                                itm = stack.getStackItem(1);
-                                if (itm != null) {
-                                    uv = (ISBUserValue) itm.getUserValue();
-                                    
-                                    if ((uv != null) && uv.hasResolvedString()) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.ISB_TOSTRING_APPENDING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                            .addSourceLine(this));
+                            case TOSTRING:
+                                if (stack.getStackDepth() > 1) {
+                                    itm = stack.getStackItem(1);
+                                    if (itm != null) {
+                                        uv = (ISBUserValue) itm.getUserValue();
+
+                                        if ((uv != null) && uv.hasResolvedString()) {
+                                            bugReporter.reportBug(new BugInstance(this, BugType.ISB_TOSTRING_APPENDING.name(), NORMAL_PRIORITY).addClass(this)
+                                                    .addMethod(this).addSourceLine(this));
+                                        }
                                     }
                                 }
-                            }   
                             break;
-                        default:
+                            default:
                             break;
                         }
                     }
                 }
-                
+
                 if (getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
                     if (userValue == null) {
                         userValue = new ISBUserValue(AppendType.CLEAR, true);
                     } else {
                         userValue = new ISBUserValue(userValue.getAppendType(), true);
-                    }   
+                    }
                 }
             } else if ("toString".equals(methodName)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(0);
@@ -228,11 +229,11 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     userValue = (ISBUserValue) itm.getUserValue();
-                    if ((userValue != null) && userValue.getAppendType() == AppendType.NESTED) {
+                    if ((userValue != null) && (userValue.getAppendType() == AppendType.NESTED)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(), NORMAL_PRIORITY).addClass(this)
                                 .addMethod(this).addSourceLine(this));
                     }
-                    
+
                     if (userValue == null) {
                         userValue = new ISBUserValue(AppendType.CLEAR, true);
                     }
@@ -255,14 +256,14 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
     }
 
     class ISBUserValue {
-        
+
         private AppendType appendType;
         private boolean hasResolvedString;
-        
+
         public ISBUserValue(AppendType appType) {
             this(appType, false);
         }
-        
+
         public ISBUserValue(AppendType appType, boolean resolved) {
             appendType = appType;
             hasResolvedString = resolved;
@@ -286,20 +287,15 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
             if (!(obj instanceof ISBUserValue)) {
                 return false;
             }
-            
+
             ISBUserValue that = (ISBUserValue) obj;
             return (appendType == that.appendType) && (hasResolvedString == that.hasResolvedString);
         }
 
-        private InefficientStringBuffering getOuterType() {
-            return InefficientStringBuffering.this;
-        }
-        
         @Override
         public String toString() {
             return ToString.build(this);
         }
-        
-        
+
     }
 }
