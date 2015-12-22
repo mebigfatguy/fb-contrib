@@ -33,6 +33,9 @@ public class UMTP_Sample {
 
     public <X, Y> void fpEmbedded(Map<X, Map<String, Y>> x) {
     }
+    
+    public <C, K extends C, V extends C> void fpParentRestriction(Iterable<K> source, Map<K, V> target) {
+    }
 
     public Object getFoo() {
         return null;
