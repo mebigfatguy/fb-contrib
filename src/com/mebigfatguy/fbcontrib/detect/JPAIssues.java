@@ -1,7 +1,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
@@ -36,7 +36,7 @@ public class JPAIssues extends BytecodeScanningDetector {
 
     private JavaClass cls;
     private OpcodeStack stack;
-    private Set<FQMethod> transactionalMethods;
+    private Map<FQMethod, Boolean> transactionalMethods;
     private boolean isEntity;
     private boolean hasId;
     private boolean hasGeneratedValue;
@@ -76,7 +76,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     @Override
     public void visitMethod(Method obj) {
         if (!obj.isPublic()) {
-            if (transactionalMethods.contains(new FQMethod(cls.getClassName(), obj.getName(), obj.getSignature()))) {
+            if (transactionalMethods.containsKey(new FQMethod(cls.getClassName(), obj.getName(), obj.getSignature()))) {
                 bugReporter
                         .reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
             }
@@ -103,7 +103,7 @@ public class JPAIssues extends BytecodeScanningDetector {
                     String methodName = getNameConstantOperand();
                     String signature = getSigConstantOperand();
 
-                    if (transactionalMethods.contains(new FQMethod(dottedCls, methodName, signature))) {
+                    if (transactionalMethods.containsKey(new FQMethod(dottedCls, methodName, signature))) {
                         Type[] parmTypes = Type.getArgumentTypes(signature);
                         if (stack.getStackDepth() > parmTypes.length) {
                             OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
@@ -142,7 +142,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     private void catalogClass(JavaClass cls) {
-        transactionalMethods = new HashSet<FQMethod>();
+        transactionalMethods = new HashMap<FQMethod, Boolean>();
         isEntity = false;
         hasId = false;
         hasGeneratedValue = false;
@@ -176,7 +176,14 @@ public class JPAIssues extends BytecodeScanningDetector {
             switch (type) {
                 case "Lorg/springframework/transaction/annotation/Transactional;":
                     if (fm instanceof Method) {
-                        transactionalMethods.add(new FQMethod(cls.getClassName(), fm.getName(), fm.getSignature()));
+                        Boolean isWrite = Boolean.FALSE;
+                        for (ElementValuePair pair : entry.getElementValuePairs()) {
+                            if ("readOnly".equals(pair.getNameString())) {
+                                isWrite = Boolean.valueOf("FALSE".equalsIgnoreCase(pair.getValue().stringifyValue()));
+                                break;
+                            }
+                        }
+                        transactionalMethods.put(new FQMethod(cls.getClassName(), fm.getName(), fm.getSignature()), isWrite);
                     }
                 break;
 
