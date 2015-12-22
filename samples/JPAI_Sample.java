@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,6 +44,19 @@ public class JPAI_Sample {
         e.setSubEntities(ss);
 
         em.flush();
+    }
+
+    @Transactional
+    public void noRollbacks(MyEntity e) throws IOException {
+
+    }
+
+    @Transactional(rollbackFor = SQLException.class, noRollbackFor = IOException.class)
+    public void noDeclaredRollbackExceptions() {
+    }
+
+    @Transactional(rollbackFor = SQLException.class, noRollbackFor = IOException.class)
+    public void fpDefinedRollBack(MyEntity e) throws SQLException, IOException {
     }
 
     @Entity
