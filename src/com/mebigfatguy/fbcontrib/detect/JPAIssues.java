@@ -232,6 +232,14 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * this method limits the scope of a bad tri-state boolean pattern. The map could contain the TransactionType, but that would bloat the map horribly. So
+     * hide the conversion from Boolean to TransactionType in this method
+     *
+     * @param m
+     *            the method to check for transactional methods
+     * @return whether the method is Transactional non, read or write
+     */
     private TransactionalType getTransactionalType(Method m) {
         Boolean isWrite = transactionalMethods.get(new FQMethod(cls.getClassName(), m.getName(), m.getSignature()));
         if (isWrite == null) {
