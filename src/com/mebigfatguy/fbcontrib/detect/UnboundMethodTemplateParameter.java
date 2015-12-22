@@ -38,14 +38,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * Looks for methods that declare method level template parameter(s) that are
- * not bound to any of the method's parameters, and thus is not adding any
+ * Looks for methods that declare method level template parameter(s) that are not bound to any of the method's parameters, and thus is not adding any
  * validation/type safety to the method, and is just confusing.
  */
 public class UnboundMethodTemplateParameter extends PreorderVisitor implements Detector {
 
     private static final Pattern TEMPLATED_SIGNATURE = Pattern.compile("(\\<[^\\>]+\\>)(.+)");
-    private static final Pattern TEMPLATE = Pattern.compile("\\<?([^:]+):[^;]*;");
+    private static final Pattern TEMPLATE = Pattern.compile("\\<?([^:]+):([^;]*);");
     private final BugReporter bugReporter;
 
     public UnboundMethodTemplateParameter(BugReporter bugReporter) {
@@ -65,8 +64,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     }
 
     /**
-     * implements the visitor to find methods that declare template parameters
-     * that are not bound to any parameter.
+     * implements the visitor to find methods that declare template parameters that are not bound to any parameter.
      *
      * @param obj
      *            the context object of the currently parsed method
@@ -78,11 +76,13 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
             if ("Signature".equals(a.getName())) {
                 TemplateSignature ts = parseSignatureAttribute((Signature) a);
                 if (ts != null) {
-                    for (String templateParm : ts.templateParameters) {
-                        if (!ts.signature.contains("T" + templateParm + ";") && !ts.signature.contains("[T" + templateParm + ";")) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addString("Template Parameter: " + templateParm));
-                            return;
+                    for (TemplateItem templateParm : ts.templateParameters) {
+                        if (!ts.signature.contains("T" + templateParm.templateType + ";") && !ts.signature.contains("[T" + templateParm.templateType + ";")) {
+                            if (!isTemplateParent(templateParm.templateType, ts.templateParameters)) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addString("Template Parameter: " + templateParm.templateType));
+                                return;
+                            }
                         }
                     }
                 }
@@ -97,13 +97,30 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     }
 
     /**
-     * builds a template signature object based on the signature attribute of
-     * the method
+     * looks to see if this templateType is a parent of another template type
+     *
+     * @param templateType
+     *            the type to look for
+     * @param items
+     *            the items to search
+     * @return whether this template type is something another template type extends
+     */
+    private boolean isTemplateParent(String templateType, TemplateItem[] items) {
+        for (TemplateItem item : items) {
+            if (templateType.equals(item.templateExtension)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * builds a template signature object based on the signature attribute of the method
      *
      * @param signatureAttribute
      *            the signature attribute
-     * @return a template signature if there are templates defined, otherwise
-     *         null
+     * @return a template signature if there are templates defined, otherwise null
      */
     private static TemplateSignature parseSignatureAttribute(Signature signatureAttribute) {
 
@@ -112,14 +129,12 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
             TemplateSignature ts = new TemplateSignature();
             ts.signature = m.group(2);
 
-            String template = m.group(1);
-
-            m = TEMPLATE.matcher(template);
-            List<String> templates = new ArrayList<String>(4);
+            m = TEMPLATE.matcher(m.group(1));
+            List<TemplateItem> templates = new ArrayList<TemplateItem>(4);
             while (m.find()) {
-                templates.add(m.group(1));
+                templates.add(new TemplateItem(m.group(1), m.group(2)));
             }
-            ts.templateParameters = templates.toArray(new String[templates.size()]);
+            ts.templateParameters = templates.toArray(new TemplateItem[templates.size()]);
 
             return ts;
         }
@@ -128,12 +143,26 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     }
 
     /**
-     * a simple data only class for holding the template parameters and method
-     * signature
+     * a simple data only class for holding the template parameters and method signature
      */
     static class TemplateSignature {
-        String[] templateParameters;
+        TemplateItem[] templateParameters;
         String signature;
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    }
+
+    static class TemplateItem {
+        String templateType;
+        String templateExtension;
+
+        public TemplateItem(String type, String extension) {
+            templateType = type;
+            templateExtension = extension.startsWith("L") ? "" : extension.substring(1);
+        }
 
         @Override
         public String toString() {
