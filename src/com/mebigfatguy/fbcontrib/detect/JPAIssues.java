@@ -3,6 +3,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ElementValuePair;
@@ -31,6 +32,22 @@ public class JPAIssues extends BytecodeScanningDetector {
     enum JPAUserValue {
         MERGE
     };
+
+    enum TransactionalType {
+        NONE, READ, WRITE;
+    }
+
+    private static JavaClass exceptionClass;
+    private static JavaClass runtimeExceptionClass;
+
+    static {
+        try {
+            exceptionClass = Repository.lookupClass("java.lang.Exception");
+            runtimeExceptionClass = Repository.lookupClass("java.lang.RuntimeException");
+        } catch (Exception e) {
+            // can't log, have no bugReporter
+        }
+    }
 
     private BugReporter bugReporter;
 
@@ -75,11 +92,13 @@ public class JPAIssues extends BytecodeScanningDetector {
 
     @Override
     public void visitMethod(Method obj) {
-        if (!obj.isPublic()) {
-            if (transactionalMethods.containsKey(new FQMethod(cls.getClassName(), obj.getName(), obj.getSignature()))) {
-                bugReporter
-                        .reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
-            }
+        TransactionalType transType = getTransactionalType(obj);
+        if (!obj.isPublic() && (transType != TransactionalType.NONE)) {
+            bugReporter.reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
+        }
+
+        if (transType == TransactionalType.WRITE) {
+
         }
 
         super.visitMethod(obj);
@@ -212,4 +231,14 @@ public class JPAIssues extends BytecodeScanningDetector {
             }
         }
     }
+
+    private TransactionalType getTransactionalType(Method m) {
+        Boolean isWrite = transactionalMethods.get(new FQMethod(cls.getClassName(), m.getName(), m.getSignature()));
+        if (isWrite == null) {
+            return TransactionalType.NONE;
+        }
+
+        return isWrite ? TransactionalType.WRITE : TransactionalType.READ;
+    }
+
 }
