@@ -59,6 +59,10 @@ public class JPAI_Sample {
     public void fpDefinedRollBack(MyEntity e) throws SQLException, IOException {
     }
 
+    @Transactional(readOnly = true)
+    public void fpReadOnlyExceptions(MyEntity e) throws IOException {
+    }
+
     @Entity
     @Table(name = "MY_ENTITY")
     public static class MyEntity {
