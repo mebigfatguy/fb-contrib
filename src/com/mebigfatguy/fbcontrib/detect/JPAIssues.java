@@ -102,7 +102,8 @@ public class JPAIssues extends BytecodeScanningDetector {
     public void visitMethod(Method obj) {
         TransactionalType transType = getTransactionalType(obj);
         if (!obj.isPublic() && (transType != TransactionalType.NONE)) {
-            bugReporter.reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
+            bugReporter
+                    .reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, obj));
         }
 
         if (transType == TransactionalType.WRITE) {
@@ -259,9 +260,9 @@ public class JPAIssues extends BytecodeScanningDetector {
                 if (annotation.getNumElementValuePairs() == 0) {
                     return Collections.<JavaClass> emptySet();
                 }
+                Set<JavaClass> rollbackExceptions = new HashSet<JavaClass>();
                 for (ElementValuePair pair : annotation.getElementValuePairs()) {
                     if ("rollbackFor".equals(pair.getNameString()) || "noRollbackFor".equals(pair.getNameString())) {
-                        Set<JavaClass> rollbackExceptions = new HashSet<JavaClass>();
 
                         String exNames = pair.getValue().stringifyValue();
                         Matcher m = annotationClassPattern.matcher(exNames);
@@ -272,9 +273,9 @@ public class JPAIssues extends BytecodeScanningDetector {
                                 rollbackExceptions.add(exCls);
                             }
                         }
-                        return rollbackExceptions;
                     }
                 }
+                return rollbackExceptions;
             }
         }
 
