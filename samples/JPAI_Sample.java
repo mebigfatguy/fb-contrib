@@ -51,7 +51,7 @@ public class JPAI_Sample {
 
     }
 
-    @Transactional(rollbackFor = SQLException.class, noRollbackFor = IOException.class)
+    @Transactional(rollbackFor = { SQLException.class, CloneNotSupportedException.class }, noRollbackFor = IOException.class)
     public void noDeclaredRollbackExceptions() {
     }
 

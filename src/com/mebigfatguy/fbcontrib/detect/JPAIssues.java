@@ -1,12 +1,18 @@
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ElementValuePair;
+import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
@@ -48,6 +54,8 @@ public class JPAIssues extends BytecodeScanningDetector {
             // can't log, have no bugReporter
         }
     }
+
+    private static final Pattern annotationClassPattern = Pattern.compile("(L[^;]+;)");
 
     private BugReporter bugReporter;
 
@@ -98,7 +106,19 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
 
         if (transType == TransactionalType.WRITE) {
+            try {
+                Set<JavaClass> annotatedRollBackExceptions = getAnnotatedRollbackExceptions(obj);
+                Set<JavaClass> declaredExceptions = getDeclaredExceptions(obj);
 
+                for (JavaClass declEx : declaredExceptions) {
+                    if (!annotatedRollBackExceptions.contains(declEx)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(cls, obj).addString("Exception: " + declEx.getClassName()));
+                    }
+                }
+            } catch (ClassNotFoundException cnfe) {
+                bugReporter.reportMissingClass(cnfe);
+            }
         }
 
         super.visitMethod(obj);
@@ -230,6 +250,52 @@ public class JPAIssues extends BytecodeScanningDetector {
                 break;
             }
         }
+    }
+
+    private Set<JavaClass> getAnnotatedRollbackExceptions(Method method) throws ClassNotFoundException {
+
+        for (AnnotationEntry annotation : method.getAnnotationEntries()) {
+            if ("Lorg/springframework/transaction/annotation/Transactional;".equals(annotation.getAnnotationType())) {
+                if (annotation.getNumElementValuePairs() == 0) {
+                    return Collections.<JavaClass> emptySet();
+                }
+                for (ElementValuePair pair : annotation.getElementValuePairs()) {
+                    if ("rollbackFor".equals(pair.getNameString()) || "noRollbackFor".equals(pair.getNameString())) {
+                        Set<JavaClass> rollbackExceptions = new HashSet<JavaClass>();
+
+                        String exNames = pair.getValue().stringifyValue();
+                        Matcher m = annotationClassPattern.matcher(exNames);
+                        while (m.find()) {
+                            String exName = m.group(1);
+                            JavaClass exCls = Repository.lookupClass(exName.substring(1, exName.length() - 1));
+                            if (!exCls.instanceOf(runtimeExceptionClass)) {
+                                rollbackExceptions.add(exCls);
+                            }
+                        }
+                        return rollbackExceptions;
+                    }
+                }
+            }
+        }
+
+        return Collections.<JavaClass> emptySet();
+    }
+
+    private Set<JavaClass> getDeclaredExceptions(Method method) throws ClassNotFoundException {
+        ExceptionTable et = method.getExceptionTable();
+        if ((et == null) || (et.getLength() == 0)) {
+            return Collections.<JavaClass> emptySet();
+        }
+
+        Set<JavaClass> exceptions = new HashSet<JavaClass>();
+        for (String en : et.getExceptionNames()) {
+            JavaClass exCls = Repository.lookupClass(en);
+            if (!exCls.instanceOf(runtimeExceptionClass)) {
+                exceptions.add(exCls);
+            }
+        }
+
+        return exceptions;
     }
 
     /**

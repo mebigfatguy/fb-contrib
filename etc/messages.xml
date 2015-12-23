@@ -5178,6 +5178,19 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING">
+    	<ShortDescription>Method does not specify how to handle transaction when exception is thrown</ShortDescription>
+    	<LongDescription>Method {1} does not specify how to handle transaction when exception is thrown</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method declares that it throws one or more non-runtime exceptions. It also is annotated with a
+    		@Transactional annotation but fails to describe whether to rollback the transaction or not based on this
+    		thrown exception. use 'rollbackFor' or 'noRollbackFor' attributes of the Transactional annotation to 
+    		document this.</p>
+    		]]> 
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
