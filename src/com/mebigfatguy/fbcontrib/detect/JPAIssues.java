@@ -107,7 +107,14 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
 
         if (transType == TransactionalType.WRITE) {
-            reportUnhandledThrownExceptions(obj);
+            try {
+                Set<JavaClass> annotatedRollBackExceptions = getAnnotatedRollbackExceptions(obj);
+                Set<JavaClass> declaredExceptions = getDeclaredExceptions(obj);
+                reportExceptionMismatch(obj, annotatedRollBackExceptions, declaredExceptions, false, BugType.JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING);
+                reportExceptionMismatch(obj, declaredExceptions, annotatedRollBackExceptions, true, BugType.JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING);
+            } catch (ClassNotFoundException cnfe) {
+                bugReporter.reportMissingClass(cnfe);
+            }
         }
 
         super.visitMethod(obj);
@@ -241,30 +248,32 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
     }
 
-    private void reportUnhandledThrownExceptions(Method method) {
+    private void reportExceptionMismatch(Method method, Set<JavaClass> expectedExceptions, Set<JavaClass> actualExceptions, boolean checkByDirectionally,
+            BugType bugType) {
         try {
-            Set<JavaClass> annotatedRollBackExceptions = getAnnotatedRollbackExceptions(method);
-            Set<JavaClass> declaredExceptions = getDeclaredExceptions(method);
-
-            for (JavaClass declEx : declaredExceptions) {
+            for (JavaClass declEx : actualExceptions) {
                 boolean handled = false;
-                for (JavaClass annotEx : annotatedRollBackExceptions) {
-                    if (declEx.instanceOf(annotEx)) {
+                for (JavaClass annotEx : expectedExceptions) {
+                    if (declEx.instanceOf(annotEx) || (checkByDirectionally && annotEx.instanceOf(declEx))) {
                         handled = true;
                         break;
                     }
                 }
 
                 if (!handled) {
-                    if (!annotatedRollBackExceptions.contains(declEx)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING.name(), NORMAL_PRIORITY)
-                                .addClass(this).addMethod(cls, method).addString("Exception: " + declEx.getClassName()));
+                    if (!expectedExceptions.contains(declEx)) {
+                        bugReporter.reportBug(new BugInstance(this, bugType.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, method)
+                                .addString("Exception: " + declEx.getClassName()));
                     }
                 }
             }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }
+    }
+
+    private void reportNonThrownAnnotationRollbacks(Method method) {
+
     }
 
     private Set<JavaClass> getAnnotatedRollbackExceptions(Method method) throws ClassNotFoundException {
