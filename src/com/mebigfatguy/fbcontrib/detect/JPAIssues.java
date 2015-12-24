@@ -43,12 +43,10 @@ public class JPAIssues extends BytecodeScanningDetector {
         NONE, READ, WRITE;
     }
 
-    private static JavaClass exceptionClass;
     private static JavaClass runtimeExceptionClass;
 
     static {
         try {
-            exceptionClass = Repository.lookupClass("java.lang.Exception");
             runtimeExceptionClass = Repository.lookupClass("java.lang.RuntimeException");
         } catch (Exception e) {
             // can't log, have no bugReporter
@@ -106,7 +104,7 @@ public class JPAIssues extends BytecodeScanningDetector {
                     .reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, obj));
         }
 
-        if (transType == TransactionalType.WRITE) {
+        if ((transType == TransactionalType.WRITE) && (runtimeExceptionClass != null)) {
             try {
                 Set<JavaClass> annotatedRollBackExceptions = getAnnotatedRollbackExceptions(obj);
                 Set<JavaClass> declaredExceptions = getDeclaredExceptions(obj);
