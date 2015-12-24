@@ -270,10 +270,6 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
     }
 
-    private void reportNonThrownAnnotationRollbacks(Method method) {
-
-    }
-
     private Set<JavaClass> getAnnotatedRollbackExceptions(Method method) throws ClassNotFoundException {
 
         for (AnnotationEntry annotation : method.getAnnotationEntries()) {
@@ -324,17 +320,17 @@ public class JPAIssues extends BytecodeScanningDetector {
      * this method limits the scope of a bad tri-state boolean pattern. The map could contain the TransactionType, but that would bloat the map horribly. So
      * hide the conversion from Boolean to TransactionType in this method
      *
-     * @param m
+     * @param method
      *            the method to check for transactional methods
      * @return whether the method is Transactional non, read or write
      */
-    private TransactionalType getTransactionalType(Method m) {
-        Boolean isWrite = transactionalMethods.get(new FQMethod(cls.getClassName(), m.getName(), m.getSignature()));
+    private TransactionalType getTransactionalType(Method method) {
+        Boolean isWrite = transactionalMethods.get(new FQMethod(cls.getClassName(), method.getName(), method.getSignature()));
         if (isWrite == null) {
             return TransactionalType.NONE;
         }
 
-        return isWrite ? TransactionalType.WRITE : TransactionalType.READ;
+        return isWrite.booleanValue() ? TransactionalType.WRITE : TransactionalType.READ;
     }
 
 }
