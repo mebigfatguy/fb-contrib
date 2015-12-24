@@ -1,3 +1,4 @@
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -56,7 +57,7 @@ public class JPAI_Sample {
     }
 
     @Transactional(rollbackFor = SQLException.class, noRollbackFor = IOException.class)
-    public void fpDefinedRollBack(MyEntity e) throws SQLException, IOException {
+    public void fpDefinedRollBack(MyEntity e) throws SQLException, FileNotFoundException {
     }
 
     @Transactional(readOnly = true)

@@ -107,19 +107,7 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
 
         if (transType == TransactionalType.WRITE) {
-            try {
-                Set<JavaClass> annotatedRollBackExceptions = getAnnotatedRollbackExceptions(obj);
-                Set<JavaClass> declaredExceptions = getDeclaredExceptions(obj);
-
-                for (JavaClass declEx : declaredExceptions) {
-                    if (!annotatedRollBackExceptions.contains(declEx)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING.name(), NORMAL_PRIORITY)
-                                .addClass(this).addMethod(cls, obj).addString("Exception: " + declEx.getClassName()));
-                    }
-                }
-            } catch (ClassNotFoundException cnfe) {
-                bugReporter.reportMissingClass(cnfe);
-            }
+            reportUnhandledThrownExceptions(obj);
         }
 
         super.visitMethod(obj);
@@ -250,6 +238,32 @@ public class JPAIssues extends BytecodeScanningDetector {
                     hasFetch = true;
                 break;
             }
+        }
+    }
+
+    private void reportUnhandledThrownExceptions(Method method) {
+        try {
+            Set<JavaClass> annotatedRollBackExceptions = getAnnotatedRollbackExceptions(method);
+            Set<JavaClass> declaredExceptions = getDeclaredExceptions(method);
+
+            for (JavaClass declEx : declaredExceptions) {
+                boolean handled = false;
+                for (JavaClass annotEx : annotatedRollBackExceptions) {
+                    if (declEx.instanceOf(annotEx)) {
+                        handled = true;
+                        break;
+                    }
+                }
+
+                if (!handled) {
+                    if (!annotatedRollBackExceptions.contains(declEx)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(cls, method).addString("Exception: " + declEx.getClassName()));
+                    }
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
         }
     }
 
