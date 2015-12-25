@@ -32,10 +32,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for definitions of methods that have an array as the last parameter.
- * Since this class is compiled with java 1.5 or better, it would be more
- * flexible for clients of this method to define this parameter as a vararg
- * parameter.
+ * looks for definitions of methods that have an array as the last parameter. Since this class is compiled with java 1.5 or better, it would be more flexible
+ * for clients of this method to define this parameter as a vararg parameter.
  */
 public class UseVarArgs extends PreorderVisitor implements Detector {
     private final BugReporter bugReporter;
@@ -47,8 +45,9 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
 
     /**
      * overrides the visitor to make sure that the class was compiled by java 1.5 or later.
-     * 
-     * @param classContext the context object of the currently parsed class
+     *
+     * @param classContext
+     *            the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -62,6 +61,12 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
         }
     }
 
+    /**
+     * overrides the visitor to look for methods that has an array as a last parameter of an array type, where the base type is not like the previous parameter
+     * nor something like a char or byte array.
+     *
+     * @parm obj the currently parse method
+     */
     @Override
     public void visitMethod(Method obj) {
         try {
@@ -107,10 +112,20 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
         }
     }
 
+    /**
+     * overrides the visitor, but not used
+     */
     @Override
     public void report() {
     }
 
+    /**
+     * determines whether a bunch of types are similar and thus would be confusing to have one be a varargs.
+     *
+     * @param argTypes
+     *            the parameter types to check
+     * @return whether the parameter are similar
+     */
     private static boolean hasSimilarParms(Type... argTypes) {
 
         for (int i = 0; i < (argTypes.length - 1); i++) {
@@ -133,13 +148,15 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
         return false;
     }
 
-    /** looks to see if this method is derived from a super class. If it is
-     * we don't want to report on it, as that would entail changing a whole hierarchy
-     * 
-     * @param m the current method
+    /**
+     * looks to see if this method is derived from a super class. If it is we don't want to report on it, as that would entail changing a whole hierarchy
+     *
+     * @param m
+     *            the current method
      * @return if the method is inherited
-     * 
-     * @throws ClassNotFoundException if the super class(s) aren't found
+     *
+     * @throws ClassNotFoundException
+     *             if the super class(s) aren't found
      */
     private boolean isInherited(Method m) throws ClassNotFoundException {
         JavaClass[] infs = javaClass.getAllInterfaces();
@@ -159,6 +176,16 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
         return false;
     }
 
+    /**
+     * looks to see if a class has a method with a specific name and signature
+     *
+     * @param c
+     *            the class to check
+     * @param candidateMethod
+     *            the method to look for
+     *
+     * @return whether this class has the exact method
+     */
     private static boolean hasMethod(JavaClass c, Method candidateMethod) {
         String name = candidateMethod.getName();
         String sig = candidateMethod.getSignature();
