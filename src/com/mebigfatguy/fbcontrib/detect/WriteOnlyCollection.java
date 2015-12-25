@@ -63,10 +63,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 
 /**
- * Looks for allocations and initializations of java collections, but that are
- * never read from or accessed to gain information. This represents a collection
- * of no use, and most probably can be removed. It is similar to a dead local
- * store.
+ * Looks for allocations and initializations of java collections, but that are never read from or accessed to gain information. This represents a collection of
+ * no use, and most probably can be removed. It is similar to a dead local store.
  */
 @CustomUserValue
 public class WriteOnlyCollection extends MissingMethodsDetector {
@@ -132,12 +130,12 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newLinkedHashMap", "()Ljava/util/LinkedHashMap;"));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newConcurrentMap", "()Ljava/util/concurrent/ConcurrentHashMap;"));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", "()Ljava/util/TreeMap;"));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", "(Ljava/util/Comparator;)Ljava/util/TreeMap;"));                                  
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newIdentityHashMap", "()Ljava/util/IdentityHashMap;"));                                  
-        
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", "(Ljava/util/Comparator;)Ljava/util/TreeMap;"));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newIdentityHashMap", "()Ljava/util/IdentityHashMap;"));
+
         collectionFactoryMethods = Collections.<FQMethod> unmodifiableSet(cfm);
     }
-    
+
     private static final Set<String> nonInformationalMethods;
 
     static {
@@ -169,7 +167,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 
     /**
      * constructs a WOC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -178,9 +176,8 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     }
 
     /**
-     * overrides the visitor to see what how many register slots are taken by
-     * parameters.
-     * 
+     * overrides the visitor to see what how many register slots are taken by parameters.
+     *
      * @param obj
      *            the currently parsed method
      */
@@ -190,6 +187,11 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
         super.visitMethod(obj);
     }
 
+    /**
+     * overrides the visitor to look for PUTFIELDS of collections
+     *
+     * @parm seen the currently parsed opcode
+     */
     @Override
     public void sawOpcode(int seen) {
         if (seen == PUTFIELD) {
@@ -205,21 +207,46 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
         super.sawOpcode(seen);
     }
 
+    /**
+     * implements the MissingMethodsDetector to generate a Bug Instance when a bug is found around collections stored in fields
+     *
+     * @return the BugInstance
+     */
     @Override
     protected BugInstance makeFieldBugInstance() {
         return new BugInstance(this, BugType.WOC_WRITE_ONLY_COLLECTION_FIELD.name(), NORMAL_PRIORITY);
     }
 
+    /**
+     * implements the MissingMethodsDetector to generate a Bug Instance when a bug is found around collections stored in a local variable
+     *
+     * @return the BugInstance
+     */
     @Override
     protected BugInstance makeLocalBugInstance() {
         return new BugInstance(this, BugType.WOC_WRITE_ONLY_COLLECTION_LOCAL.name(), NORMAL_PRIORITY);
     }
 
+    /**
+     * implements the MissingMethodsDetector to determine whether this class type is a collection
+     *
+     * @parm type the class type to check
+     * @return whether this class is a collection
+     */
     @Override
     protected boolean doesObjectNeedToBeWatched(String type) {
         return collectionClasses.contains(type);
     }
 
+    /**
+     * implements the MissingMethodsDetector to determine whether this factory-like method returns a collection
+     *
+     * @parm type the clsName the class name of the factory
+     * @parm methodName the method name of the factory
+     * @parm signature the signature of the factory method
+     *
+     * @return whether this class is a collection
+     */
     @Override
     protected boolean doesStaticFactoryReturnNeedToBeWatched(String clsName, String methodName, String signature) {
         return collectionFactoryMethods.contains(new FQMethod(clsName, methodName, signature));
@@ -227,8 +254,9 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
 
     /**
      * determines if the method is returns information that could be used by the caller
-     * 
-     * @param methodName, collection method name
+     *
+     * @param methodName,
+     *            collection method name
      * @return true if the caller could use the return value to learn something about the collection
      */
     @Override
