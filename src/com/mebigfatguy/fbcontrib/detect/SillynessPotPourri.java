@@ -47,6 +47,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -70,20 +71,11 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
 @CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector {
 
-    private static final Set<String> collectionInterfaces = UnmodifiableSet.create(
-            "java/util/Collection",
-            "java/util/List",
-            "java/util/Set",
-            "java/util/SortedSet",
-            "java/util/Map",
-            "java/util/SortedMap"
-    );
-    
-    private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create(
-            "java.lang.StringBuffer",
-            "java.lang.StringBuilder"
-    );
-    
+    private static final Set<String> collectionInterfaces = UnmodifiableSet.create("java/util/Collection", "java/util/List", "java/util/Set",
+            "java/util/SortedSet", "java/util/Map", "java/util/SortedMap");
+
+    private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create("java.lang.StringBuffer", "java.lang.StringBuilder");
+
     private static final String LITERAL = "literal";
     private static final Pattern APPEND_PATTERN = Pattern.compile("([0-9]+):(.*)");
 
@@ -97,15 +89,15 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         }
     }
 
-    private static Map<String, Integer> methodsThatAreSillyOnStringLiterals = new HashMap<String, Integer>();
+    private static Map<QMethod, Integer> methodsThatAreSillyOnStringLiterals = new HashMap<QMethod, Integer>();
 
     static {
-        methodsThatAreSillyOnStringLiterals.put("toLowerCase()Ljava/lang/String;", Values.ZERO);
-        methodsThatAreSillyOnStringLiterals.put("toUpperCase()Ljava/lang/String;", Values.ZERO);
-        methodsThatAreSillyOnStringLiterals.put("toLowerCase(Ljava/util/Locale;)Ljava/lang/String;", Values.ONE);
-        methodsThatAreSillyOnStringLiterals.put("toUpperCase(Ljava/util/Locale;)Ljava/lang/String;", Values.ONE);
-        methodsThatAreSillyOnStringLiterals.put("trim()Ljava/lang/String;", Values.ZERO);
-        methodsThatAreSillyOnStringLiterals.put("isEmpty()Z", Values.ZERO);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("toLowerCase", "()Ljava/lang/String;"), Values.ZERO);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("toUpperCase", "()Ljava/lang/String;"), Values.ZERO);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("toLowerCase", "(Ljava/util/Locale;)Ljava/lang/String;"), Values.ONE);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("toUpperCase", "(Ljava/util/Locale;)Ljava/lang/String;"), Values.ONE);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("trim", "()Ljava/lang/String;"), Values.ZERO);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("isEmpty", "()Z"), Values.ZERO);
     }
 
     private final BugReporter bugReporter;
@@ -215,63 +207,63 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             }
 
             switch (seen) {
-            case IFNE:
-                checkNotEqualsStringBuilderLength();
+                case IFNE:
+                    checkNotEqualsStringBuilderLength();
                 break;
-            case IFEQ:
-                checkEqualsStringBufferLength();
+                case IFEQ:
+                    checkEqualsStringBufferLength();
                 break;
-            case IRETURN: {
-                if (lastIfEqWasBoolean) {
-                    checkForUselessTernaryReturn();
+                case IRETURN: {
+                    if (lastIfEqWasBoolean) {
+                        checkForUselessTernaryReturn();
+                    }
                 }
-            }
-                // $FALL-THROUGH$
-            case LRETURN:
-            case DRETURN:
-            case FRETURN:
-            case ARETURN:
-                trimLocations.clear();
+                    // $FALL-THROUGH$
+                case LRETURN:
+                case DRETURN:
+                case FRETURN:
+                case ARETURN:
+                    trimLocations.clear();
                 break;
-            case LDC2_W:
-                checkApproximationsOfMathConstants();
+                case LDC2_W:
+                    checkApproximationsOfMathConstants();
                 break;
-            case DCMPL:
-                checkCompareToNaNDouble();
+                case DCMPL:
+                    checkCompareToNaNDouble();
                 break;
-            case FCMPL:
-                checkCompareToNaNFloat();
+                case FCMPL:
+                    checkCompareToNaNFloat();
                 break;
-            case ICONST_0:
-            case ICONST_1:
-            case ICONST_2:
-            case ICONST_3:
-                userValue = sawIntConst(userValue);
+                case ICONST_0:
+                case ICONST_1:
+                case ICONST_2:
+                case ICONST_3:
+                    userValue = sawIntConst(userValue);
                 break;
-            case CALOAD:
-                checkImproperToCharArrayUse();
+                case CALOAD:
+                    checkImproperToCharArrayUse();
                 break;
-            case INVOKESTATIC:
-                userValue = sawInvokeStatic(userValue);
+                case INVOKESTATIC:
+                    userValue = sawInvokeStatic(userValue);
                 break;
-            case INVOKEVIRTUAL:
-                userValue = sawInvokeVirtual(userValue);
+                case INVOKEVIRTUAL:
+                    userValue = sawInvokeVirtual(userValue);
                 break;
-            case INVOKESPECIAL:
-                sawInvokeSpecial();
+                case INVOKESPECIAL:
+                    sawInvokeSpecial();
                 break;
-            case INVOKEINTERFACE:
-                userValue = sawInvokeInterface(userValue);
+                case INVOKEINTERFACE:
+                    userValue = sawInvokeInterface(userValue);
                 break;
-            default:
-                if (OpcodeUtils.isALoad(seen)) {
-                    sawLoad(seen);
-                } else if (OpcodeUtils.isAStore(seen)) {
-                    reg = RegisterUtils.getAStoreReg(this, seen);
-                    checkTrimDupStore();
-                    checkStutterdAssignment(seen, reg);
-                    checkImmutableUsageOfStringBuilder(reg);
-                }
+                default:
+                    if (OpcodeUtils.isALoad(seen)) {
+                        sawLoad(seen);
+                    } else if (OpcodeUtils.isAStore(seen)) {
+                        reg = RegisterUtils.getAStoreReg(this, seen);
+                        checkTrimDupStore();
+                        checkStutterdAssignment(seen, reg);
+                        checkImmutableUsageOfStringBuilder(reg);
+                    }
             }
 
         } catch (ClassNotFoundException cnfe) {
@@ -286,7 +278,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     item.setUserValue(userValue);
                 } else {
                     SPPUserValue uv = (SPPUserValue) item.getUserValue();
-                    if ((((uv != null) && (uv.getMethod() == SPPMethod.ITERATOR)) && (seen == GETFIELD)) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+                    if ((((uv != null) && (uv.getMethod() == SPPMethod.ITERATOR)) && (seen == GETFIELD)) || (seen == ALOAD)
+                            || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
                         item.setUserValue(null);
                     }
                 }
@@ -339,12 +332,14 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         if ((stack.getStackDepth() >= 2) && (getPrevOpcode(1) == Constants.DUP)) {
             OpcodeStack.Item item = stack.getStackItem(0);
             SPPUserValue uv = (SPPUserValue) item.getUserValue();
-            if ((uv == null) || (uv.getMethod() != SPPMethod.TRIM))
+            if ((uv == null) || (uv.getMethod() != SPPMethod.TRIM)) {
                 return;
+            }
 
             item = stack.getStackItem(1);
-            if ((uv == null) || (uv.getMethod() != SPPMethod.TRIM))
+            if ((uv == null) || (uv.getMethod() != SPPMethod.TRIM)) {
                 return;
+            }
 
             item.setUserValue(null);
         }
@@ -708,7 +703,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     private SPPUserValue stringSilliness(SPPUserValue userValue, String methodName, String signature) {
 
-        Integer stackOffset = methodsThatAreSillyOnStringLiterals.get(methodName + signature);
+        Integer stackOffset = methodsThatAreSillyOnStringLiterals.get(new QMethod(methodName, signature));
         if (stackOffset != null) {
             if (stack.getStackDepth() > stackOffset.intValue()) {
 
@@ -726,8 +721,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 }
             }
         }
-        // not an elseif because the below cases might be in the set
-        // methodsThatAreSillyOnStringLiterals
+        // not an elseif because the below cases might be in the set methodsThatAreSillyOnStringLiterals
         if ("intern".equals(methodName)) {
             String owningMethod = getMethod().getName();
             if (!Values.STATIC_INITIALIZER.equals(owningMethod)) {
@@ -747,7 +741,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item item = stack.getStackItem(1);
                 SPPUserValue uv = (SPPUserValue) item.getUserValue();
-                
+
                 if ((uv != null) && (uv.getMethod() == SPPMethod.IGNORECASE)) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.SPP_USELESS_CASING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
@@ -1068,23 +1062,25 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     pc.intValue()));
         }
     }
-    
-    enum SPPMethod { APPEND, GETPROPERTIES, ICONST, IGNORECASE, ITERATOR, KEYSET, TOCHARARRAY, SIZE, TRIM }
-    
+
+    enum SPPMethod {
+        APPEND, GETPROPERTIES, ICONST, IGNORECASE, ITERATOR, KEYSET, TOCHARARRAY, SIZE, TRIM
+    }
+
     static class SPPUserValue {
-        
+
         private SPPMethod method;
         private String details;
-        
+
         public SPPUserValue(SPPMethod mthd) {
             this(mthd, null);
         }
-        
+
         public SPPUserValue(SPPMethod mthd, String detail) {
             method = mthd;
             details = detail;
         }
-        
+
         public SPPMethod getMethod() {
             return method;
         }
@@ -1097,23 +1093,23 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         public int hashCode() {
             return method.hashCode() ^ ((details == null) ? 0 : details.hashCode());
         }
-        
+
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof SPPUserValue)) {
                 return false;
             }
-            
+
             SPPUserValue that = (SPPUserValue) o;
-            
+
             if (method != that.method) {
                 return false;
             }
-            
+
             if (details == null) {
                 return that.details == null;
             }
-            
+
             return details.equals(that.details);
         }
 
