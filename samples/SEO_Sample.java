@@ -1,8 +1,8 @@
 import java.util.Random;
 
-public class SCO_Sample {
+public class SEO_Sample {
 
-    public void sco() {
+    public void seo() {
         int a = calcA();
         int b = calcB();
         
