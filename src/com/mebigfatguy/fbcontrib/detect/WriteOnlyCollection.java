@@ -241,7 +241,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * implements the MissingMethodsDetector to determine whether this factory-like method returns a collection
      *
-     * @param type the clsName the class name of the factory
+     * @param clsName the clsName the class name of the factory
      * @param methodName the method name of the factory
      * @param signature the signature of the factory method
      *
