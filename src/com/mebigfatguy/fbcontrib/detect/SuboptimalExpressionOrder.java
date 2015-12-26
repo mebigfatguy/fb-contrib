@@ -94,6 +94,9 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case FCMPG:
                 case DCMPL:
                 case DCMPG:
+                case IAND:
+                case IOR:
+                case IXOR:
                     if (stack.getStackDepth() >= 2) {
                         for (int i = 0; i <= 1; i++) {
                             OpcodeStack.Item itm = stack.getStackItem(i);
@@ -220,6 +223,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                     
                 case INSTANCEOF:
                 case ARRAYLENGTH:
+                case CHECKCAST:
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         userValue = (Integer) itm.getUserValue();
