@@ -190,7 +190,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * overrides the visitor to look for PUTFIELDS of collections
      *
-     * @parm seen the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -230,7 +230,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * implements the MissingMethodsDetector to determine whether this class type is a collection
      *
-     * @parm type the class type to check
+     * @param type the class type to check
      * @return whether this class is a collection
      */
     @Override
@@ -241,9 +241,9 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * implements the MissingMethodsDetector to determine whether this factory-like method returns a collection
      *
-     * @parm type the clsName the class name of the factory
-     * @parm methodName the method name of the factory
-     * @parm signature the signature of the factory method
+     * @param type the clsName the class name of the factory
+     * @param methodName the method name of the factory
+     * @param signature the signature of the factory method
      *
      * @return whether this class is a collection
      */
