@@ -3,6 +3,8 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
+import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -22,12 +24,12 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
 
-    enum SEOUserValue { METHOD };
+    private static final int NORMAL_WEIGHT_LIMIT = 50;
     
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private int conditionalTarget;
-    private boolean sawMethod;
+    private int sawMethodWeight;
     
     /**
     * constructs a SEO detector given the reporter to report bugs on
@@ -53,17 +55,17 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         conditionalTarget = -1;
-        sawMethod = false;
+        sawMethodWeight = 0;
         super.visitCode(obj);
     }
     
     @Override
     public void sawOpcode(int seen) {
-        SEOUserValue userValue = null;
+        Integer userValue = null;
         
         if ((conditionalTarget != -1) && (getPC() >= conditionalTarget)) {
             conditionalTarget = -1;
-            sawMethod = false;
+            sawMethodWeight = 0;
         }
         
         try {
@@ -75,11 +77,16 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                     String signature = getSigConstantOperand();
                     Type t = Type.getReturnType(signature);
                     if (t == Type.VOID) {
-                        sawMethod = false;
+                        sawMethodWeight = 0;
                         return;
                     }
 
-                    userValue = SEOUserValue.METHOD;
+                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassConstantOperand(), getNameConstantOperand(), signature);
+                    if (mi == null) {
+                        userValue = Integer.valueOf(NORMAL_WEIGHT_LIMIT);
+                    } else {
+                        userValue = Integer.valueOf(mi.getNumBytes());
+                    }
                     break;
                     
                 case LCMP:
@@ -89,16 +96,13 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case DCMPG:
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (itm.getUserValue() == SEOUserValue.METHOD) {
-                            userValue = SEOUserValue.METHOD;
-                        } else {
+                        userValue = (Integer) itm.getUserValue();
+                        if (userValue == null) {
                             itm = stack.getStackItem(1);
-                            if (itm.getUserValue() == SEOUserValue.METHOD) {
-                                userValue = SEOUserValue.METHOD;
-                            }
+                            userValue = (Integer) itm.getUserValue();
                         }
                     } else {
-                        sawMethod = false;
+                        sawMethodWeight = 0;
                     }
                     break;
                 
@@ -122,21 +126,22 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         conditionalTarget = getBranchTarget();
                     } else if (conditionalTarget != getBranchTarget()) {
                         conditionalTarget = -1;
-                        sawMethod = false;
+                        sawMethodWeight = 0;
                         return;
                     }
                     
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         
-                        if (itm.getUserValue() == SEOUserValue.METHOD) {
-                            sawMethod = true;
-                        } else if (sawMethod) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(), NORMAL_PRIORITY)
+                        Integer uv = (Integer) itm.getUserValue();
+                        if (uv != null) {
+                            sawMethodWeight = uv.intValue();
+                        } else if (sawMethodWeight > 0) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(), sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY)
                                     .addClass(this)
                                     .addMethod(this)
                                     .addSourceLine(this));
-                            sawMethod = false;
+                            sawMethodWeight = 0;
                             conditionalTarget = Integer.MAX_VALUE;
                         }
                     }
@@ -168,7 +173,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case ASTORE_1:
                 case ASTORE_2:
                 case ASTORE_3:
-                    sawMethod = false;
+                    sawMethodWeight = 0;
                     conditionalTarget = -1;
                     break;
             }
@@ -179,9 +184,5 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 itm.setUserValue(userValue);
             }
         }
-    }
-    
-    private boolean isMethodInvolved(int seen) {
-        return false;
     }
 }
