@@ -8,7 +8,7 @@ public class SEO_Sample {
         
         System.out.println(a + b);
         
-        if (hasC() && (a == 0) && (b == 0)) {
+        if (hasC() && (a == 0) && (b > 3)) {
             System.out.println(a - b);
         }
     }

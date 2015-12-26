@@ -1561,6 +1561,18 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SuboptimalExpressionOrder">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for conditional expressions that are a combination of simple local variable (in)equalities
+    		and tests on the results of method calls where the method calls are done first. By placing the simple
+    		conditions first you may elminate costly calls in certain cases. This assumes that the method calls
+    		do not have side effects that should happen always.</p>
+    		<p>It is a fast detector</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5203,6 +5215,23 @@
     		]]> 
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="SEO_SUBOPTIMAL_EXPRESSION_ORDER">
+    	<ShortDescription>Method orders expressions in a conditional in a sub optimal way</ShortDescription>
+    	<LongDescription>Method {1} orders expressions in a conditional in a sub optimal way</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method builds a conditional for an if or while statement where the expressions contain both simple
+			local variable comparisons, as well as comparisons on method calls. The expression orders these so that the method calls
+			come before the simple local variable call comparisons. This causes method calls to be executed in conditions when they
+			do not need to be, and thus potentially causes a lot of code to be executed for nothing. By ordering the expressions so that
+			the simple conditions contains local variable conditions are first, you eliminate this waste. This assumes that the method
+			calls do not have side effects. If the method do have side effects, it is probably a better idea to pull these calls out of
+			the condition and execute them first, assigning a value to a local variable. In this way you give a hint that the call may have
+			side effects.</p>
+			]]>
+		</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5335,4 +5364,5 @@
 	<BugCode abbrev="IMC">Immature Class</BugCode>
 	<BugCode abbrev="JXI">JAX-RS Issues</BugCode>
 	<BugCode abbrev="JPAI">JPA Issues</BugCode>
+	<BugCode abbrev="SEO">Suboptimal Expression Order</BugCode>
 </MessageCollection>

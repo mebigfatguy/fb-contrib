@@ -295,6 +295,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.JPAIssues" speed="fast" reports="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD,JPAI_HC_EQUALS_ON_MANAGED_ENTITY,JPAI_NON_PROXIED_TRANSACTION_CALL,JPAI_INEFFICIENT_EAGER_FETCH,JPAI_IGNORED_MERGE_RESULT,JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING,JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING"/>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SuboptimalExpressionOrder" speed="fast" reports="SEO_SUBOPTIMAL_EXPRESSION_ORDER"/>
+    
     <!--  COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -551,5 +553,6 @@
 	<BugPattern abbrev="JPAI" type="JPAI_IGNORED_MERGE_RESULT" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="JPAI" type="JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="JPAI" type="JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="SEO" type="SEO_SUBOPTIMAL_EXPRESSION_ORDER" category="PERFORMANCE" experimental="true"/>
 	
 </FindbugsPlugin>
