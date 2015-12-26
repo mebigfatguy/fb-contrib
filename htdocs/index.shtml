@@ -93,7 +93,7 @@ function toggleBlock(divId, imgId)
                 <li><b>[SEO] Suboptimal Expression Order</b><br/>
                 Looks for conditional expressions where both simple local variable (in)equalities are used
 				along with method calls, where the method calls are done first. By placing the simple local 
-				Checks first, you eliminate potentially costly calls in some cases. This assumes that the methods
+				checks first, you eliminate potentially costly calls in some cases. This assumes that the methods
 				called won't have side-effects that are desired. At present it only looks for simple sequences
 				of 'and' based conditions.
 				</li>
