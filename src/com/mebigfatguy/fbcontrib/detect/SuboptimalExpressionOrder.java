@@ -82,7 +82,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                     }
 
                     MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassConstantOperand(), getNameConstantOperand(), signature);
-                    if (mi == null) {
+                    if ((mi == null) || (mi.getNumBytes() == 0)) {
                         userValue = Integer.valueOf(NORMAL_WEIGHT_LIMIT);
                     } else {
                         userValue = Integer.valueOf(mi.getNumBytes());
@@ -95,14 +95,55 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case DCMPL:
                 case DCMPG:
                     if (stack.getStackDepth() >= 2) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        userValue = (Integer) itm.getUserValue();
-                        if (userValue == null) {
-                            itm = stack.getStackItem(1);
+                        for (int i = 0; i <= 1; i++) {
+                            OpcodeStack.Item itm = stack.getStackItem(i);
                             userValue = (Integer) itm.getUserValue();
+                            if (userValue != null) {
+                                break;
+                            }
                         }
                     } else {
                         sawMethodWeight = 0;
+                    }
+                    break;
+                    
+                case IF_ICMPEQ:
+                case IF_ICMPNE:
+                case IF_ICMPLT:
+                case IF_ICMPGE:
+                case IF_ICMPGT:
+                case IF_ICMPLE:
+                case IF_ACMPEQ:
+                case IF_ACMPNE:
+                    if (conditionalTarget < 0) {
+                        conditionalTarget = getBranchTarget();
+                    } else if (conditionalTarget != getBranchTarget()) {
+                        conditionalTarget = -1;
+                        sawMethodWeight = 0;
+                        return;
+                    }
+                    
+                    if (stack.getStackDepth() >= 2) {
+                        int expWeight = 0;
+                        for (int i = 0; i <= 1; i++) {
+                            OpcodeStack.Item itm = stack.getStackItem(i);
+                        
+                            Integer uv = (Integer) itm.getUserValue();
+                            if (uv != null) {
+                                expWeight = Math.max(uv.intValue(), expWeight);
+                            }
+                        }
+                        
+                        if ((expWeight == 0) && sawMethodWeight > 0) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(), sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(this)
+                                    .addSourceLine(this));
+                            sawMethodWeight = 0;
+                            conditionalTarget = Integer.MAX_VALUE;
+                        } else {
+                            sawMethodWeight = Math.max(sawMethodWeight, expWeight);
+                        }
                     }
                     break;
                 
@@ -112,14 +153,6 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case IFGE:
                 case IFGT:
                 case IFLE:
-                case IF_ICMPEQ:
-                case IF_ICMPNE:
-                case IF_ICMPLT:
-                case IF_ICMPGE:
-                case IF_ICMPGT:
-                case IF_ICMPLE:
-                case IF_ACMPEQ:
-                case IF_ACMPNE:
                 case IFNULL:
                 case IFNONNULL:
                     if (conditionalTarget < 0) {
@@ -130,12 +163,12 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         return;
                     }
                     
-                    if (stack.getStackDepth() > 0) {
+                    if (stack.getStackDepth() >= 1) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         
                         Integer uv = (Integer) itm.getUserValue();
                         if (uv != null) {
-                            sawMethodWeight = uv.intValue();
+                            sawMethodWeight = Math.max(sawMethodWeight, uv.intValue());
                         } else if (sawMethodWeight > 0) {
                             bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(), sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY)
                                     .addClass(this)
@@ -146,7 +179,6 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         }
                     }
                     break;
-                          
 
                 case ISTORE:
                 case LSTORE:
@@ -173,6 +205,10 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case ASTORE_1:
                 case ASTORE_2:
                 case ASTORE_3:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        itm.setUserValue(null);
+                    }
                     sawMethodWeight = 0;
                     conditionalTarget = -1;
                     break;
