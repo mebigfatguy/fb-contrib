@@ -21,9 +21,13 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+
+import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -50,7 +54,22 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         int getPriority() {
             return bugPriority;
         }
+        
+        @Override 
+        public int hashCode() {
+            return bugPattern.hashCode() ^ bugPriority;
+        }
 
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ReportInfo)) {
+                return false;
+            }
+            
+            ReportInfo that = (ReportInfo) o;
+            return bugPattern.equals(that.bugPattern) && (bugPriority == that.bugPriority);
+        }
+        
         @Override
         public String toString() {
             return ToString.build(this);
@@ -118,8 +137,15 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         dumbMethods.put(new FQMethod("java/lang/String", "getBytes", "()[B"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
         dumbMethods.put(new FQMethod("java/util/Locale", "setDefault", "(Ljava/util/Locale;)V"), new ReportInfo("MDM_SETDEFAULTLOCALE", NORMAL_PRIORITY));
     }
+    
+    private static final Set<ReportInfo> assertableReports = UnmodifiableSet.create(
+            new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY)
+    );
 
     private final BugReporter bugReporter;
+    
+    private boolean sawAssertionDisabled;
+    private int assertionEnd;
 
     /**
      * constructs an MDM detector given the reporter to report bugs on
@@ -145,6 +171,13 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
 
         super.visitClassContext(classContext);
     }
+    
+    @Override
+    public void visitCode(Code obj) {
+        sawAssertionDisabled = false;
+        assertionEnd = 0;
+        super.visitCode(obj);
+    }
 
     @Override
     public void sawOpcode(int seen) {
@@ -152,9 +185,22 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
             final ReportInfo info = dumbMethods.get(getFQMethod());
             if (info != null) {
-                reportBug(info);
+                if ((assertionEnd < getPC()) || !assertableReports.contains(info)) {
+                    reportBug(info);
+                }
+            }
+        } else if (seen == GETSTATIC) {
+            if ("$assertionsDisabled".equals(getNameConstantOperand())) {
+                sawAssertionDisabled = true;
+                return;
+            }
+        } else if (seen == IFNE) {
+            if (sawAssertionDisabled) {
+                assertionEnd = getBranchTarget();
             }
         }
+        
+        sawAssertionDisabled = false;
     }
 
     private FQMethod getFQMethod() {
