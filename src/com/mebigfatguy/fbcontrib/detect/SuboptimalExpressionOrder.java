@@ -217,6 +217,8 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                     break;
                     
                 case ATHROW:
+                case POP:
+                case POP2:
                     sawMethodWeight = 0;
                     conditionalTarget = -1;
                     break;
