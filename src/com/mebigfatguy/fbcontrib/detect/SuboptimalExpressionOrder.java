@@ -97,9 +97,10 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         return;
                     }
 
-                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassConstantOperand(), getNameConstantOperand(), signature);
+                    String clsName = getClassConstantOperand();
+                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName, getNameConstantOperand(), signature);
                     if ((mi == null) || (mi.getNumBytes() == 0)) {
-                        userValue = Integer.valueOf(NORMAL_WEIGHT_LIMIT);
+                        userValue = Integer.valueOf(clsName.startsWith("java") ? 1 : NORMAL_WEIGHT_LIMIT);
                     } else {
                         userValue = Integer.valueOf(mi.getNumBytes());
                     }
