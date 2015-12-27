@@ -41,6 +41,11 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
     }
     
+    /**
+     * overrides the visitor to setup the opcode stack
+     * 
+     * @param clsContext the context object of the currently parse class
+     */
     @Override
     public void visitClassContext(ClassContext clsContext) {
         try {
@@ -51,6 +56,11 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
         }
     }
     
+    /**
+     * overrides the visitor to reset the opcode stack, and initialize vars
+     * 
+     * @param obj the code object of the currently parsed method
+     */
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
@@ -59,6 +69,12 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
         super.visitCode(obj);
     }
     
+    /**
+     * overrides the visitor to look for chains of expressions joined by 'and' that
+     * have method calls before simple local variable conditions
+     * 
+     * @param seen the currently parse opcode
+     */
     @Override
     public void sawOpcode(int seen) {
         Integer userValue = null;
