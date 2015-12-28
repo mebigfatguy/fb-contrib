@@ -53,10 +53,20 @@ public class UseSplit extends BytecodeScanningDetector {
     private State state;
     private int loopStart, loopEnd;
 
+    /**
+     * constructs a USS detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
     public UseSplit(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * implements the visitor to make sure the class is at least java 1.4 and to
+     * reset the opcode stack
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -88,6 +98,12 @@ public class UseSplit extends BytecodeScanningDetector {
         super.visitCode(obj);
     }
 
+    /**
+     * implements the visitor to look for code that uses StringTokenizer when a
+     * simple String.split could be used.
+     * 
+     * @param seen the currently parsed opcode
+     */
     @Override
     public void sawOpcode(int seen) {
         try {
