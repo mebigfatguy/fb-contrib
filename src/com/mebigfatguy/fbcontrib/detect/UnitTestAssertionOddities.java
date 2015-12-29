@@ -179,7 +179,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                     
                     sawAssert = true;
                     
-                    if ((hasAnnotation && OLD_ASSERT_CLASS.equals(clsName) && frameworkType == TestFrameworkType.JUNIT)) {
+                    if (hasAnnotation && (frameworkType == TestFrameworkType.JUNIT) && OLD_ASSERT_CLASS.equals(clsName)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USING_DEPRECATED.name(), NORMAL_PRIORITY)
                                 .addClass(this).addMethod(this).addSourceLine(this));
                     }

@@ -871,7 +871,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                     stores.remove(Integer.valueOf(r));
                 }
 
-                if ((stores.size() > 0) && (children != null)) {
+                if ((children != null) && (stores.size() > 0)) {
                     for (Map.Entry<Integer, Integer> entry : stores.entrySet()) {
                         int childUseCount = 0;
                         boolean inIgnoreSB = false;

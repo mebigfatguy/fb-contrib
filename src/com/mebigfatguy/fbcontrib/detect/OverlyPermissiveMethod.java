@@ -178,11 +178,11 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             Type[] parmTypes = Type.getArgumentTypes(methodSignature);
             boolean voidReturn = "V".equals(Type.getReturnType(methodSignature).getSignature());
             
-            if ((methodName.charAt(0) == 'g') && (parmTypes.length == 0) && !voidReturn) {
+            if ((parmTypes.length == 0) && !voidReturn && (methodName.charAt(0) == 'g')) {
                 return true;
             }
             
-            if ((methodName.charAt(0) == 's') && (parmTypes.length == 1) && voidReturn) {
+            if ((parmTypes.length == 1) && voidReturn && (methodName.charAt(0) == 's')) {
                 return true;
             }
         }

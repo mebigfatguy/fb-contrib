@@ -134,7 +134,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
                 String sig = m.getSignature();
                 Type ret = Type.getReturnType(sig);
                 Type[] args = Type.getArgumentTypes(sig);
-                if (ret.equals(Type.VOID) && (args.length == 1)) {
+                if ((args.length == 1) && ret.equals(Type.VOID)) {
                     String parmSig = args[0].getSignature();
                     if (validAttrTypes.contains(parmSig)) {
                         Code code = m.getCode();

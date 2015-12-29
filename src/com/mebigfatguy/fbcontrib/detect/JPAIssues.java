@@ -99,7 +99,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     @Override
     public void visitMethod(Method obj) {
         TransactionalType transType = getTransactionalType(obj);
-        if (!obj.isPublic() && (transType != TransactionalType.NONE)) {
+        if ((transType != TransactionalType.NONE) && !obj.isPublic()) {
             bugReporter
                     .reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, obj));
         }
