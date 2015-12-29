@@ -36,6 +36,9 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
+/**
+ * looks for various issues around use of the JAX_RS standard
+ */
 public class JAXRSIssues extends PreorderVisitor implements Detector {
 
     private static final Set<String> METHOD_ANNOTATIONS = UnmodifiableSet.create(

@@ -153,7 +153,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
     
     /**
      * looks to see the field has a runtime visible annotation, if it does it might be autowired
-     * or someother mechanism attached that makes them less interesting for a tostring call.
+     * or some other mechanism attached that makes them less interesting for a toString call.
      * 
      * @param f the field to check
      * @return if the field has a runtime visible annotation
