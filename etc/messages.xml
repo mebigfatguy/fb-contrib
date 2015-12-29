@@ -3268,6 +3268,20 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="SPP_NULL_CHECK_ON_OPTIONAL">
+		<ShortDescription>Method checks an Optional reference for null or non nullness</ShortDescription>
+		<LongDescription>Method {1} checks an Optional reference for null or non nullness</LongDescription>
+		<Details>
+			<![CDATA[
+			This method uses an Optional variable, and checks the reference value for whether it is null or not null.
+			Since the point of the Optional class is to avoid 'the null reference problem', having code that needs to 
+			check the reference itself is self defeating, and therefore makes the use of the Optional variable useless.
+			You should never use a variable of type Optional that has a value of null, and so there should be no need to
+			check for it.
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
 		<ShortDescription>Method assigns a variable in a larger scope than is needed</ShortDescription>

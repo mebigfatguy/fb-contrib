@@ -17,6 +17,8 @@ import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import com.google.common.base.Optional;
+
 @SuppressWarnings("all")
 public class SPP_Sample implements Serializable {
     public static final long serialVersionUID = -2766574418713802220L;
@@ -366,6 +368,14 @@ public class SPP_Sample implements Serializable {
         // no tag
         System.out.println(x.trim());
         return x;
+    }
+    
+    public String testOptional(Optional<String> o) {
+        if (o == null) {
+            return "";
+        }
+        
+        return o.get();
     }
 
     public boolean fpNullAndInstanceOf(Object o) {

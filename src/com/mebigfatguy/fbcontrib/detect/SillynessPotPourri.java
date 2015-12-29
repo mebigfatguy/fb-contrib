@@ -76,6 +76,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create("java.lang.StringBuffer", "java.lang.StringBuilder");
 
+    private static final Set<String> optionalClasses = UnmodifiableSet.create("java.util.Optional", "com.google.common.base.Optional");
+    
     private static final String LITERAL = "literal";
     private static final Pattern APPEND_PATTERN = Pattern.compile("([0-9]+):(.*)");
 
@@ -254,6 +256,19 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 break;
                 case INVOKEINTERFACE:
                     userValue = sawInvokeInterface(userValue);
+                break;
+                case IFNULL:
+                case IFNONNULL:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        JavaClass cls = itm.getJavaClass();
+                        if ((cls != null) && optionalClasses.contains(cls.getClassName())) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SPP_NULL_CHECK_ON_OPTIONAL.name(), NORMAL_PRIORITY)
+                                    .addClass(this)
+                                    .addMethod(this)
+                                    .addSourceLine(this));
+                        }
+                    }
                 break;
                 default:
                     if (OpcodeUtils.isALoad(seen)) {
