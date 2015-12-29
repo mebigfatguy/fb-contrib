@@ -67,10 +67,24 @@ public class JPAIssues extends BytecodeScanningDetector {
     private boolean hasFetch;
     private boolean hasHCEquals;
 
+    /**
+     * constructs a JPA detector given the reporter to report bugs on
+     * 
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+
     public JPAIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * implements the visitor to find @Entity classes that have both generated @Ids
+     * and have implemented hashCode/equals. Also looks for eager one to many join
+     * fetches as that leads to 1+n queries.
+     * 
+     * @param clsContext the context object of the currently parsed class
+     */
     @Override
     public void visitClassContext(ClassContext clsContext) {
         try {
@@ -96,6 +110,13 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to look for non public methods that have an @Transactional annotation applied to it.
+     * Spring only scans public methods for special handling. It also looks to see if the exceptions thrown by the
+     * method line up with the declared exceptions handled in the @Transactional annotation.
+     * 
+     * @param obj the currently parse method
+     */
     @Override
     public void visitMethod(Method obj) {
         TransactionalType transType = getTransactionalType(obj);
@@ -118,12 +139,24 @@ public class JPAIssues extends BytecodeScanningDetector {
         super.visitMethod(obj);
     }
 
+    /**
+     * implements the visitor to reset the opcode stack
+     * 
+     * @param obj the currently parsed code block
+     */
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         super.visitCode(obj);
     }
 
+    /**
+     * implements the visitor to look for calls to @Transactional methods that do not go through a spring
+     * proxy. These methods are easily seen as internal class calls. There are other cases as well, from 
+     * external/internal classes but these aren't reported.
+     * 
+     *  @param seen the currently parsed opcode
+     */
     @Override
     public void sawOpcode(int seen) {
         JPAUserValue userValue = null;
@@ -174,6 +207,12 @@ public class JPAIssues extends BytecodeScanningDetector {
 
     }
 
+    /**
+     * parses the current class for spring-tx and jpa annotations, as well as hashCode and
+     * equals methods.
+     * 
+     * @param cls the currently parsed class
+     */
     private void catalogClass(JavaClass cls) {
         transactionalMethods = new HashMap<FQMethod, Boolean>();
         isEntity = false;
@@ -203,6 +242,11 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * parses a field or method for spring-tx or jpa annotations
+     * 
+     * @param fm the currently parsed field or method
+     */
     private void catalogFieldOrMethod(FieldOrMethod fm) {
         for (AnnotationEntry entry : fm.getAnnotationEntries()) {
             String type = entry.getAnnotationType();
@@ -246,6 +290,17 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * compares the current methods exceptions to those declared in the spring-tx's @Transactional method, both rollbackFor and
+     * noRollbackFor. It looks both ways, exceptions thrown that aren't handled by rollbacks/norollbacks, and Spring declarations
+     * that aren't actually thrown.
+     * 
+     * @param method the currently parsed method
+     * @param expectedExceptions exceptions declared in the @Transactional annotation
+     * @param actualExceptions non-runtime exceptions that are thrown by the method
+     * @param checkByDirectionally whether to check both ways 
+     * @param bugType what type of bug to report if found
+     */
     private void reportExceptionMismatch(Method method, Set<JavaClass> expectedExceptions, Set<JavaClass> actualExceptions, boolean checkByDirectionally,
             BugType bugType) {
         try {
@@ -270,6 +325,16 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * parses an spring-tx @Transactional annotations for rollbackFor/noRollbackfor attributes of a @Transactional
+     * annotation.
+     * 
+     * @param method the currently parsed method
+     * 
+     * @return the exception classes declared in the @Transactional annotation
+     * 
+     * @throws ClassNotFoundException if exception classes are not found
+     */
     private Set<JavaClass> getAnnotatedRollbackExceptions(Method method) throws ClassNotFoundException {
 
         for (AnnotationEntry annotation : method.getAnnotationEntries()) {
@@ -299,6 +364,15 @@ public class JPAIssues extends BytecodeScanningDetector {
         return Collections.<JavaClass> emptySet();
     }
 
+    /**
+     * retrieves the set of non-runtime exceptions that are declared to be thrown by the method
+     * 
+     * @param method the currently parsed method
+     * 
+     * @return the set of exceptions thrown
+     * 
+     * @throws ClassNotFoundException if an exception class is not found
+     */
     private Set<JavaClass> getDeclaredExceptions(Method method) throws ClassNotFoundException {
         ExceptionTable et = method.getExceptionTable();
         if ((et == null) || (et.getLength() == 0)) {
