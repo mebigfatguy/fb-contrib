@@ -76,7 +76,11 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create("java.lang.StringBuffer", "java.lang.StringBuilder");
 
-    private static final Set<String> optionalClasses = UnmodifiableSet.create("java.util.Optional", "com.google.common.base.Optional");
+    private static final Set<String> optionalClasses = UnmodifiableSet.create(
+            "java.util.Optional", 
+            "com.google.common.base.Optional",
+            "org.openjdk.jmh.util.Optional"
+    );
     
     private static final String LITERAL = "literal";
     private static final Pattern APPEND_PATTERN = Pattern.compile("([0-9]+):(.*)");
