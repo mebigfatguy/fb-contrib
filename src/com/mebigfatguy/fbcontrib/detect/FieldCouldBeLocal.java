@@ -42,6 +42,8 @@ import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
+import org.apache.bcel.generic.ObjectType;
+import org.apache.bcel.generic.ReferenceType;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -275,13 +277,15 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                 } else if (ins instanceof INVOKESPECIAL) {
                     INVOKESPECIAL is = (INVOKESPECIAL) ins;
 
-                    if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg)) && (is.getClassName(cpg).startsWith(clsContext.getJavaClass().getClassName() + "$"))) {
+                    ReferenceType rt = is.getReferenceType(cpg);
+                    if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg)) && ((rt instanceof ObjectType) && ((ObjectType) rt).getClassName().startsWith(clsContext.getJavaClass().getClassName() + "$"))) {
                         localizableFields.clear();
                     }
                 } else if (ins instanceof INVOKEVIRTUAL) {
                     INVOKEVIRTUAL is = (INVOKEVIRTUAL) ins;
 
-                    if (is.getClassName(cpg).equals(clsName)) {
+                    ReferenceType rt = is.getReferenceType(cpg);
+                    if ((rt instanceof ObjectType) && ((ObjectType) rt).getClassName().equals(clsName)) {
                         String methodDesc = is.getName(cpg) + is.getSignature(cpg);
                         Set<String> fields = methodFieldModifiers.get(methodDesc);
                         if (fields != null) {
