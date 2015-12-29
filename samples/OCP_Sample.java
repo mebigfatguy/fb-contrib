@@ -165,6 +165,7 @@ class Z {
 }
 
 class fpOverride {
+    @SuppressWarnings("deprecation")
     public static final Comparator<Date> COMPARATOR = new Comparator<Date>() {
 
         @Override // no tag, override

@@ -3,6 +3,7 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 
+@SuppressWarnings("deprecation")
 public class UTAO_Sample extends TestCase {
 
     public void testExactDoubles(double d1, double d2) {
@@ -93,6 +94,7 @@ class New {
     }
     
     @Test
+    @SuppressWarnings("deprecation")
     public void usingOldClasses(int x) {
         junit.framework.Assert.assertEquals(0,  x);
     }
