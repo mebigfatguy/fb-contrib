@@ -253,6 +253,11 @@ public class LoggerOddities extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * looks for a variety of logging issues with log statements
+     * 
+     * @throws ClassNotFoundException if the exception class, or a parent class can't be found
+     */
     private void checkForProblemsWithLoggerMethods() throws ClassNotFoundException {
         String callingClsName = getClassConstantOperand();
         if (callingClsName.endsWith("Log") || (callingClsName.endsWith("Logger"))) {
@@ -316,6 +321,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * looks for slf4j calls where an exception is passed as a logger parameter, expecting to be substituted for a {}
+     * marker. As slf4j just passes the exception down to the message generation itself, the {} marker will go unpopulated.
+     */
     private void checkForLoggerParam() {
         if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
             String cls = getClassConstantOperand();
@@ -339,6 +348,11 @@ public class LoggerOddities extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * looks for instantiation of a logger with what looks like a class name that isn't the same
+     * as the class in which it exists. There are some cases where a 'classname-like' string is 
+     * presented purposely different than this class, and an attempt is made to ignore those.
+     */
     private void lookForSuspectClasses() {
         String callingClsName = getClassConstantOperand();
         String mthName = getNameConstantOperand();

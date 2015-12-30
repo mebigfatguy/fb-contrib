@@ -3859,8 +3859,9 @@
        <LongDescription>Method {1} creates exception with logger parameter markers in message</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This method creates a standard exception passing a message string which contains an SLF4J style
-	       parameter marker '{}'. This marker will not be translated as it is not processed by the Exception class.
+	       <p>This method passes a standard exception as a logger parameter, and expects this exception to be substituted in
+	        an SLF4J style parameter marker '{}'. This marker will not be translated as SLF4J doesn't process the Exception class
+	        for markers.
 	       </p>
 	       ]]>
 	   </Details>
