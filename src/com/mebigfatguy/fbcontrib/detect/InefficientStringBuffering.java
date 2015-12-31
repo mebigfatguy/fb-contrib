@@ -144,7 +144,9 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
             String methodName = getNameConstantOperand();
             if ("append".equals(methodName)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(1);
-                userValue = (ISBUserValue) itm.getUserValue();
+                if (itm != null) {
+                    userValue = (ISBUserValue) itm.getUserValue();
+                }
 
                 if (stack.getStackDepth() > 0) {
                     itm = stack.getStackItem(0);
