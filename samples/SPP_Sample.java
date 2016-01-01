@@ -387,6 +387,14 @@ public class SPP_Sample implements Serializable {
         }
         return Math.random() > 0.5;
     }
+    
+    public boolean fpNullAndInstanceOfUnrelated(Throwable t, Object tag) {
+        if ((tag != null) && (t instanceof RuntimeException)) {
+            return true;
+        }
+        
+        return false;
+    }
 
     public void testToString() {
         SPP_Sample s = new SPP_Sample();
