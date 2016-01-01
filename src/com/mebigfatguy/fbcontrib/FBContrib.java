@@ -1,6 +1,6 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
- * Copyright (C) 2005-2015 Dave Brosius
+ * Copyright (C) 2005-2016 Dave Brosius
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -34,7 +34,7 @@ public class FBContrib {
     public static void main(final String[] args) {
         JOptionPane.showMessageDialog(null,
                 "To use fb-contrib, copy this jar file into your local FindBugs plugin directory, and use FindBugs as usual.\n\nfb-contrib is a trademark of MeBigFatGuy.com\nFindBugs is a trademark of the University of Maryland",
-                "fb-contrib: copyright 2005-2015", JOptionPane.INFORMATION_MESSAGE);
+                "fb-contrib: copyright 2005-2016", JOptionPane.INFORMATION_MESSAGE);
         System.exit(0);
     }
 }

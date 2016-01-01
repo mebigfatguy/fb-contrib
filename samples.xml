@@ -17490,7 +17490,7 @@
     </Class>
   </BugInstance>
   <Errors errors="0" missingClasses="0"></Errors>
-  <FindBugsSummary timestamp="Sun, 15 Nov 2015 15:05:41 -0500" total_classes="265" referenced_classes="856" total_bugs="1896" total_size="5428" num_packages="1" java_version="1.8.0_31" vm_version="25.31-b07" cpu_seconds="42.39" clock_seconds="342.95" peak_mbytes="151.75" alloc_mbytes="989.88" gc_seconds="3.63" priority_3="679" priority_2="1021" priority_1="196">
+  <FindBugsSummary timestamp="Sun, 15 Nov 2016 15:05:41 -0500" total_classes="265" referenced_classes="856" total_bugs="1896" total_size="5428" num_packages="1" java_version="1.8.0_31" vm_version="25.31-b07" cpu_seconds="42.39" clock_seconds="342.95" peak_mbytes="151.75" alloc_mbytes="989.88" gc_seconds="3.63" priority_3="679" priority_2="1021" priority_1="196">
     <PackageStats package="" total_bugs="1896" total_types="265" total_size="5428" priority_3="679" priority_2="1021" priority_1="196">
       <ClassStats class="A" sourceFile="SCR_Sample.java" interface="false" size="3" bugs="1" priority_3="1"/>
       <ClassStats class="ABC_Sample" sourceFile="ABC_Sample.java" interface="false" size="14" bugs="6" priority_3="3" priority_2="3"/>
