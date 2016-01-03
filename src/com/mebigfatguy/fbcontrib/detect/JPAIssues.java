@@ -98,6 +98,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     private boolean hasFetch;
     private boolean hasHCEquals;
     private TransactionalType methodTransType;
+    private boolean isPublic;
 
     /**
      * constructs a JPA detector given the reporter to report bugs on
@@ -180,9 +181,12 @@ public class JPAIssues extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
 
-        if ((getMethod().getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
+        int access = getMethod().getAccessFlags();
+        if ((access & Constants.ACC_SYNTHETIC) != 0) {
             return;
         }
+        
+        isPublic = (access & Constants.ACC_PUBLIC) != 0;
         
         stack.resetForMethodEntry(this);
         super.visitCode(obj);
@@ -213,7 +217,7 @@ public class JPAIssues extends BytecodeScanningDetector {
                         if (stack.getStackDepth() > parmTypes.length) {
                             OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
                             if (itm.getRegisterNumber() == 0) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), NORMAL_PRIORITY).addClass(this)
+                                bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), isPublic ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this)
                                         .addMethod(this).addSourceLine(this));
                             }
                         }
