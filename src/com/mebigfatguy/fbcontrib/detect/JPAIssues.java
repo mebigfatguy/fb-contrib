@@ -60,6 +60,18 @@ public class JPAIssues extends BytecodeScanningDetector {
 
     enum TransactionalType {
         NONE, READ, WRITE;
+        
+        public static boolean isContainedBy(TransactionalType type, TransactionalType containedType) {
+            if (type == NONE) {
+                return true;
+            }
+            
+            if ((type == READ) && ((containedType == READ) || (containedType == WRITE))) {
+                return true;
+            }
+            
+            return ((type == WRITE) && (containedType == WRITE));
+        }
     }
 
     private static JavaClass runtimeExceptionClass;
@@ -78,13 +90,14 @@ public class JPAIssues extends BytecodeScanningDetector {
 
     private JavaClass cls;
     private OpcodeStack stack;
-    private Map<FQMethod, Boolean> transactionalMethods;
+    private Map<FQMethod, TransactionalType> transactionalMethods;
     private boolean isEntity;
     private boolean hasId;
     private boolean hasGeneratedValue;
     private boolean hasEagerOneToMany;
     private boolean hasFetch;
     private boolean hasHCEquals;
+    private TransactionalType methodTransType;
 
     /**
      * constructs a JPA detector given the reporter to report bugs on
@@ -139,13 +152,13 @@ public class JPAIssues extends BytecodeScanningDetector {
     @Override
     public void visitMethod(Method obj) {
         
-        TransactionalType transType = getTransactionalType(obj);
-        if ((transType != TransactionalType.NONE) && !obj.isPublic()) {
+        methodTransType = getTransactionalType(obj);
+        if ((methodTransType != TransactionalType.NONE) && !obj.isPublic()) {
             bugReporter
                     .reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, obj));
         }
 
-        if ((transType == TransactionalType.WRITE) && (runtimeExceptionClass != null)) {
+        if ((methodTransType == TransactionalType.WRITE) && (runtimeExceptionClass != null)) {
             try {
                 Set<JavaClass> annotatedRollBackExceptions = getAnnotatedRollbackExceptions(obj);
                 Set<JavaClass> declaredExceptions = getDeclaredExceptions(obj);
@@ -194,7 +207,8 @@ public class JPAIssues extends BytecodeScanningDetector {
                     String methodName = getNameConstantOperand();
                     String signature = getSigConstantOperand();
 
-                    if (transactionalMethods.containsKey(new FQMethod(dottedCls, methodName, signature))) {
+                    TransactionalType calledMethodTransType = getTransactionalType(new FQMethod(dottedCls, methodName, signature));
+                    if ((calledMethodTransType != TransactionalType.NONE) && !TransactionalType.isContainedBy(calledMethodTransType, methodTransType)) {
                         Type[] parmTypes = Type.getArgumentTypes(signature);
                         if (stack.getStackDepth() > parmTypes.length) {
                             OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
@@ -239,7 +253,7 @@ public class JPAIssues extends BytecodeScanningDetector {
      * @param cls the currently parsed class
      */
     private void catalogClass(JavaClass cls) {
-        transactionalMethods = new HashMap<FQMethod, Boolean>();
+        transactionalMethods = new HashMap<FQMethod, TransactionalType>();
         isEntity = false;
         hasId = false;
         hasGeneratedValue = false;
@@ -285,7 +299,7 @@ public class JPAIssues extends BytecodeScanningDetector {
                                 break;
                             }
                         }
-                        transactionalMethods.put(new FQMethod(cls.getClassName(), fm.getName(), fm.getSignature()), isWrite);
+                        transactionalMethods.put(new FQMethod(cls.getClassName(), fm.getName(), fm.getSignature()), isWrite ? TransactionalType.WRITE : TransactionalType.READ);
                     }
                 break;
 
@@ -416,20 +430,30 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * this method limits the scope of a bad tri-state boolean pattern. The map could contain the TransactionType, but that would bloat the map horribly. So
-     * hide the conversion from Boolean to TransactionType in this method
+     * returns the type of transactional annotation is applied to this method
      *
      * @param method
      *            the method to check for transactional methods
      * @return whether the method is Transactional non, read or write
      */
     private TransactionalType getTransactionalType(Method method) {
-        Boolean isWrite = transactionalMethods.get(new FQMethod(cls.getClassName(), method.getName(), method.getSignature()));
-        if (isWrite == null) {
+        return getTransactionalType(new FQMethod(cls.getClassName(), method.getName(), method.getSignature()));
+    }
+    
+    /**
+     * returns the type of transactional annotation is applied to this method
+     *
+     * @param method
+     *            the method to check for transactional methods
+     * @return whether the method is Transactional non, read or write
+     */
+    private TransactionalType getTransactionalType(FQMethod method) {
+        TransactionalType type = transactionalMethods.get(method);
+        if (type == null) {
             return TransactionalType.NONE;
         }
 
-        return isWrite.booleanValue() ? TransactionalType.WRITE : TransactionalType.READ;
+        return type;
     }
 
 }
