@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
@@ -137,6 +138,10 @@ public class JPAIssues extends BytecodeScanningDetector {
      */
     @Override
     public void visitMethod(Method obj) {
+        if ((obj.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
+            return;
+        }
+        
         TransactionalType transType = getTransactionalType(obj);
         if ((transType != TransactionalType.NONE) && !obj.isPublic()) {
             bugReporter
