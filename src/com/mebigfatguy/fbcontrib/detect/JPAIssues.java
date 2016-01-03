@@ -138,9 +138,6 @@ public class JPAIssues extends BytecodeScanningDetector {
      */
     @Override
     public void visitMethod(Method obj) {
-        if ((obj.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
-            return;
-        }
         
         TransactionalType transType = getTransactionalType(obj);
         if ((transType != TransactionalType.NONE) && !obj.isPublic()) {
@@ -169,6 +166,11 @@ public class JPAIssues extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
+
+        if ((getMethod().getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
+            return;
+        }
+        
         stack.resetForMethodEntry(this);
         super.visitCode(obj);
     }
