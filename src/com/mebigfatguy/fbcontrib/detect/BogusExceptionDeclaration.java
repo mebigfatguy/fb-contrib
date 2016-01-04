@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * to be thrown are related through inheritance.
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
-    
+
     private static JavaClass runtimeExceptionClass;
     private static JavaClass exceptionClass;
     private static final Set<String> safeClasses = UnmodifiableSet.create(
@@ -86,10 +86,10 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to create the opcode stack
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
-     * 
+     *
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -191,7 +191,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
      * checks to see if this method is constructor of an instance based inner
      * class, as jdk1.5 compiler has a bug where it attaches bogus exception
      * declarations to this constructors in some cases.
-     * 
+     *
      * @param m
      *            the method to check
      * @param cls
@@ -245,15 +245,12 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                                     for (String thrownException : thrownExceptions) {
                                         declaredCheckedExceptions.remove(thrownException);
                                         JavaClass exCls = Repository.lookupClass(thrownException);
-                                        JavaClass superCls = exCls.getSuperClass();
                                         do {
-                                            exCls = superCls;
-                                            if (exCls != null) {
-                                                declaredCheckedExceptions.remove(exCls.getClassName());
-                                                superCls = exCls.getSuperClass();
-                                            } else {
+                                            exCls = exCls.getSuperClass();
+                                            if (exCls == null) {
                                                 break;
                                             }
+                                            declaredCheckedExceptions.remove(exCls.getClassName());
                                         } while (!declaredCheckedExceptions.isEmpty() && !"java.lang.Exception".equals(exCls.getClassName())
                                                 && !"java.lang.Error".equals(exCls.getClassName()));
 
