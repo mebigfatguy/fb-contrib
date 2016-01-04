@@ -164,7 +164,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
                         encoding = (String) item.getConstant();
                         if (encoding != null) {
                             encoding = encoding.toUpperCase(Locale.ENGLISH);
-                            if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
+                            if ((classVersion >= Constants.MAJOR_1_7) && STANDARD_JDK7_ENCODINGS.contains(encoding)) {
                                 // the counts put in the Pair are indexed from
                                 // the beginning of
                                 String changedMethodSig = replaceNthArgWithCharsetString(methodSig, offset);
@@ -183,7 +183,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
                             encoding = (String) item.getConstant();
                             if (encoding != null) {
                                 encoding = encoding.toUpperCase(Locale.ENGLISH);
-                                if (STANDARD_JDK7_ENCODINGS.contains(encoding) && (classVersion >= Constants.MAJOR_1_7)) {
+                                if ((classVersion >= Constants.MAJOR_1_7) && STANDARD_JDK7_ENCODINGS.contains(encoding)) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET_NAME.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this).addCalledMethod(this));
                                 }
