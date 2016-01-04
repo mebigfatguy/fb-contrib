@@ -104,7 +104,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
         int sigPos = sig.indexOf(")[");
         if (sigPos >= 0) {
             Method m = getMethod();
-            if (m.getName().equals(INITIAL_VALUE)) {
+            if (INITIAL_VALUE.equals(m.getName())) {
                 try {
                     if ((THREAD_LOCAL_CLASS == null) || getClassContext().getJavaClass().instanceOf(THREAD_LOCAL_CLASS)) {
                         return;

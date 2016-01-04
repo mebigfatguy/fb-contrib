@@ -177,7 +177,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
                                     }
                                 }
                             }
-                            if (clsName.equals("java/lang/Exception") && getSigConstantOperand().equals("(Ljava/lang/Throwable;)V")) {
+                            if ("java/lang/Exception".equals(clsName) && "(Ljava/lang/Throwable;)V".equals(getSigConstantOperand())) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY).addClass(this).addMethod(this)
                                         .addSourceLine(this));
                             }
