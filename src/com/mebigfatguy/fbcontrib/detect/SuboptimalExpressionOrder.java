@@ -34,7 +34,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for conditional expressions where both simple local variable (in)equalities are used
- * along with method calls, where the method calls are done first. By placing the simple local 
+ * along with method calls, where the method calls are done first. By placing the simple local
  * checks first, you eliminate potentially costly calls in some cases. This assumes that the methods
  * called won't have side-effects that are desired. At present it only looks for simple sequences
  * of 'and' based conditions.
@@ -43,25 +43,25 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
 
     private static final int NORMAL_WEIGHT_LIMIT = 50;
-    
+
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private int conditionalTarget;
     private int sawMethodWeight;
-    
+
     /**
     * constructs a SEO detector given the reporter to report bugs on
-    * 
+    *
     * @param bugReporter
     *            the sync of bug reports
     */
     public SuboptimalExpressionOrder(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
-    
+
     /**
      * overrides the visitor to setup the opcode stack
-     * 
+     *
      * @param clsContext the context object of the currently parse class
      */
     @Override
@@ -73,10 +73,10 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
             stack = null;
         }
     }
-    
+
     /**
      * overrides the visitor to reset the opcode stack, and initialize vars
-     * 
+     *
      * @param obj the code object of the currently parsed method
      */
     @Override
@@ -86,22 +86,26 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
         sawMethodWeight = 0;
         super.visitCode(obj);
     }
-    
+
     /**
      * overrides the visitor to look for chains of expressions joined by 'and' that
      * have method calls before simple local variable conditions
-     * 
+     *
      * @param seen the currently parse opcode
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+        value = "SF_SWITCH_NO_DEFAULT",
+        justification = "We don't need or want to handle every opcode"
+    )
     @Override
     public void sawOpcode(int seen) {
         Integer userValue = null;
-        
+
         if ((conditionalTarget != -1) && (getPC() >= conditionalTarget)) {
             conditionalTarget = -1;
             sawMethodWeight = 0;
         }
-        
+
         try {
             switch (seen) {
                 case INVOKESPECIAL:
@@ -123,7 +127,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         userValue = Integer.valueOf(mi.getNumBytes());
                     }
                     break;
-                    
+
                 case LCMP:
                 case FCMPL:
                 case FCMPG:
@@ -144,7 +148,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         sawMethodWeight = 0;
                     }
                     break;
-                    
+
                 case IF_ICMPEQ:
                 case IF_ICMPNE:
                 case IF_ICMPLT:
@@ -160,18 +164,18 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         sawMethodWeight = 0;
                         return;
                     }
-                    
+
                     if (stack.getStackDepth() >= 2) {
                         int expWeight = 0;
                         for (int i = 0; i <= 1; i++) {
                             OpcodeStack.Item itm = stack.getStackItem(i);
-                        
+
                             Integer uv = (Integer) itm.getUserValue();
                             if (uv != null) {
                                 expWeight = Math.max(uv.intValue(), expWeight);
                             }
                         }
-                        
+
                         if ((expWeight == 0) && sawMethodWeight > 0) {
                             bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(), sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY)
                                     .addClass(this)
@@ -184,7 +188,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         }
                     }
                     break;
-                
+
                 case IFEQ:
                 case IFNE:
                 case IFLT:
@@ -200,10 +204,10 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         sawMethodWeight = 0;
                         return;
                     }
-                    
+
                     if (stack.getStackDepth() >= 1) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
-                        
+
                         Integer uv = (Integer) itm.getUserValue();
                         if (uv != null) {
                             sawMethodWeight = Math.max(sawMethodWeight, uv.intValue());
@@ -250,7 +254,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                     sawMethodWeight = 0;
                     conditionalTarget = -1;
                     break;
-                    
+
                 case ATHROW:
                 case POP:
                 case POP2:
@@ -261,7 +265,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                     sawMethodWeight = 0;
                     conditionalTarget = -1;
                     break;
-                    
+
                 case INSTANCEOF: // maybe instanceof should be a reset op
                 case ARRAYLENGTH:
                 case CHECKCAST:

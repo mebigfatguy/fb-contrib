@@ -257,7 +257,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         return null;
     }
 
-    class ISBUserValue {
+    static class ISBUserValue {
 
         private AppendType appendType;
         private boolean hasResolvedString;
