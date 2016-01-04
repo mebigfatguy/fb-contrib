@@ -77,11 +77,11 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create("java.lang.StringBuffer", "java.lang.StringBuilder");
 
     private static final Set<String> optionalClasses = UnmodifiableSet.create(
-            "java.util.Optional", 
+            "java.util.Optional",
             "com.google.common.base.Optional",
             "org.openjdk.jmh.util.Optional"
     );
-    
+
     private static final String LITERAL = "literal";
     private static final Pattern APPEND_PATTERN = Pattern.compile("([0-9]+):(.*)");
 
@@ -706,7 +706,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
                 String literal = argIsLiteralString ? LITERAL : "";
                 if (sbItem.getRegisterNumber() > -1) {
-                    userValue = new SPPUserValue(SPPMethod.APPEND, sbItem.getRegisterNumber() + ":" + literal);
+                    userValue = new SPPUserValue(SPPMethod.APPEND, sbItem.getRegisterNumber() + ':' + literal);
                 } else {
                     userValue = (SPPUserValue) sbItem.getUserValue();
                     if ((userValue != null) && (userValue.getMethod() == SPPMethod.APPEND)) {

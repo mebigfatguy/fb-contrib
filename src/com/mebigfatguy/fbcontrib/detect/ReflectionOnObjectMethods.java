@@ -68,7 +68,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 
     /**
      * constructs a ROOM detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -286,20 +286,20 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     private static String buildReflectionSignature(String methodName, String[] parmTypes) {
         StringBuilder sb = new StringBuilder(64);
         sb.append(methodName);
-        sb.append("(");
+        sb.append('(');
         if (parmTypes != null) {
             for (String type : parmTypes) {
-                sb.append("L");
+                sb.append('L');
                 if (type == null) {
                     return "";
                 }
                 sb.append(type);
                 if ((type.length() > 1) || ("IJ".indexOf(type) < 0)) {
-                    sb.append(";");
+                    sb.append(';');
                 }
             }
         }
-        sb.append(")");
+        sb.append(')');
         return sb.toString();
     }
 

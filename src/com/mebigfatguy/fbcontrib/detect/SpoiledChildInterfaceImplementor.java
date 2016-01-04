@@ -128,7 +128,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
         for (Method m : cls.getMethods()) {
             String methodName = m.getName();
             if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName) && (!"clone".equals(methodName))) {
-                methods.add(methodName + ":" + m.getSignature());
+                methods.add(methodName + ':' + m.getSignature());
             }
         }
 

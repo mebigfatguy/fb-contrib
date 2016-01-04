@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -77,7 +77,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
     /**
      * constructs a NRTL detector given the reporter to report bugs on.
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -88,7 +88,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for classes that extend the TagSupport or
      * BodyTagSupport class
-     * 
+     *
      * @param classContext
      *            the context object for the currently parsed class
      */
@@ -122,7 +122,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
     /**
      * collect all possible attributes given the name of methods available.
-     * 
+     *
      * @return the map of possible attributes/types
      */
     private static Map<String, String> getAttributes(JavaClass cls) {
@@ -139,7 +139,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
                     if (validAttrTypes.contains(parmSig)) {
                         Code code = m.getCode();
                         if ((code != null) && (code.getCode().length < MAX_ATTRIBUTE_CODE_LENGTH)) {
-                            atts.put(name + ":" + sig, parmSig);
+                            atts.put(name + ':' + sig, parmSig);
                         }
                     }
                 }
@@ -150,7 +150,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed code object
      */
@@ -165,7 +165,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         if (seen == PUTFIELD) {
-            String methodInfo = getMethodName() + ":" + getMethodSig();
+            String methodInfo = getMethodName() + ':' + getMethodSig();
             Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
             if (fields == null) {
                 fields = new HashMap<String, SourceLineAnnotation>();
@@ -176,7 +176,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
             FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), fieldName, fieldSig, false);
             fieldAnnotations.put(fieldName, fa);
-            fields.put(fieldName + ":" + fieldSig, SourceLineAnnotation.fromVisitedInstruction(this));
+            fields.put(fieldName + ':' + fieldSig, SourceLineAnnotation.fromVisitedInstruction(this));
         }
     }
 

@@ -135,7 +135,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
             case INVOKEINTERFACE:
             case INVOKEVIRTUAL:
                 String sig = getSigConstantOperand();
-                String mInfo = getClassConstantOperand() + "#" + getNameConstantOperand() + sig;
+                String mInfo = getClassConstantOperand() + '#' + getNameConstantOperand() + sig;
                 for (Map.Entry<Pattern, List<ParameterInfo<?>>> entry : PATTERNS.entrySet()) {
                     Matcher m = entry.getKey().matcher(mInfo);
                     if (m.matches()) {
@@ -164,7 +164,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     }
 
     /**
-     * holds information about parameters that expect constant values that 
+     * holds information about parameters that expect constant values that
      * should have been enums but were created pre enums.  It specifies the
      * legal values, and what offset from the start or end of the method the parm
      * is

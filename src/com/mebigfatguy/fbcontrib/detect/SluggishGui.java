@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -87,7 +87,7 @@ public class SluggishGui extends BytecodeScanningDetector {
 
     /**
      * constructs a SG detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -97,7 +97,7 @@ public class SluggishGui extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset look for gui interfaces
-     * 
+     *
      * @param classContext
      *            the context object for the currently parsed class
      */
@@ -146,7 +146,7 @@ public class SluggishGui extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor collect method info
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed method
      */
@@ -159,7 +159,7 @@ public class SluggishGui extends BytecodeScanningDetector {
     /**
      * overrides the visitor to segregate method into two, those that implement
      * listeners, and those that don't. The ones that don't are processed first.
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -183,7 +183,7 @@ public class SluggishGui extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to look for the execution of expensive calls
-     * 
+     *
      * @param seen
      *            the currently parsed opcode
      */
@@ -195,15 +195,15 @@ public class SluggishGui extends BytecodeScanningDetector {
         if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC)) {
             String clsName = getClassConstantOperand();
             String mName = getNameConstantOperand();
-            String methodInfo = clsName + ":" + mName;
-            String thisMethodInfo = (clsName.equals(getClassName())) ? (mName + ":" + methodSig) : "0";
+            String methodInfo = clsName + ':' + mName;
+            String thisMethodInfo = (clsName.equals(getClassName())) ? (mName + ':' + methodSig) : "0";
 
             if (expensiveCalls.contains(methodInfo) || expensiveThisCalls.contains(thisMethodInfo)) {
                 if (isListenerMethod) {
                     bugReporter.reportBug(new BugInstance(this, BugType.SG_SLUGGISH_GUI.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this.getClassContext().getJavaClass(), listenerCode.get(this.getCode())));
                 } else {
-                    expensiveThisCalls.add(getMethodName() + ":" + getMethodSig());
+                    expensiveThisCalls.add(getMethodName() + ':' + getMethodSig());
                 }
                 methodReported = true;
             }

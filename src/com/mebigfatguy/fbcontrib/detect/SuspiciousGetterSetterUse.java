@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -46,7 +46,7 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
 
     /**
      * constructs a SGSU detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -57,7 +57,7 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the state to SEEN_NOTHING, and clear the
      * beanReference, propName and propType
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -75,7 +75,7 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
     /**
      * overrides the visitor to look for a setXXX with the value returned from a
      * getXXX using the same base object.
-     * 
+     *
      * @param seen
      *            the currently parsed opcode
      */
@@ -115,14 +115,14 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
 
             case GETFIELD: {
                 if (sawField) {
-                    beanReference2 += ":" + getNameConstantOperand();
+                    beanReference2 += ':' + getNameConstantOperand();
                     if (beanReference1.equals(beanReference2)) {
                         state = State.SEEN_DUAL_LOADS;
                         reset = false;
                     }
                 } else {
                     state = State.SEEN_GETFIELD;
-                    beanReference1 += ":" + getNameConstantOperand();
+                    beanReference1 += ':' + getNameConstantOperand();
                     sawField = true;
                     reset = false;
                 }
@@ -170,7 +170,7 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
         case SEEN_INVOKEVIRTUAL:
             if (seen == INVOKEVIRTUAL) {
                 String sig = getSigConstantOperand();
-                if (sig.equals("(" + propType + ")V")) {
+                if (sig.equals('(' + propType + ")V")) {
                     String name = getNameConstantOperand();
                     if (name.startsWith("set")) {
                         if (propName.equals(name.substring("set".length()))) {

@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -60,7 +60,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
 
     /**
      * constructs a ODN detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -71,7 +71,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and clear the stack, node creations and
      * store maps
-     * 
+     *
      * @param classContext
      *            the context object for the currently parsed class
      */
@@ -91,7 +91,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to clear the opcode stack for the next code
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed code block
      */
@@ -122,7 +122,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
     /**
      * implements the visitor to find DOM based nodes that are allocated but not
      * appended to an existing node (or returned).
-     * 
+     *
      * @param seen
      *            the currently parsed opcode
      */
@@ -136,7 +136,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
 
             if (seen == INVOKEINTERFACE) {
                 String className = getClassConstantOperand();
-                String methodInfo = getNameConstantOperand() + ":" + getSigConstantOperand();
+                String methodInfo = getNameConstantOperand() + ':' + getSigConstantOperand();
                 if ("org/w3c/dom/Document".equals(className)) {
                     if (domCreationMethods.contains(methodInfo)) {
                         sawCreate = true;
@@ -199,10 +199,10 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
     /**
      * returns the pc where this DOM Node was created, or null if this isn't a
      * DOM node that was created
-     * 
+     *
      * @param index
      *            the index into the stack of the item to be checked
-     * 
+     *
      * @return the pc where this NODE was created, or null
      */
     private Integer findDOMNodeCreationPoint(int index) {
