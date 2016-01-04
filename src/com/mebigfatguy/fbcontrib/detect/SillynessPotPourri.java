@@ -356,6 +356,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             }
 
             item = stack.getStackItem(1);
+            uv = (SPPUserValue) item.getUserValue();
             if ((uv == null) || (uv.getMethod() != SPPMethod.TRIM)) {
                 return;
             }
