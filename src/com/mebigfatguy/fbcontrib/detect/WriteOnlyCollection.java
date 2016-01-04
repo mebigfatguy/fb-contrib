@@ -72,7 +72,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     private static final Set<String> collectionClasses;
 
     static {
-        Set<String> cc = new HashSet<String>();
+        Set<String> cc = new HashSet<String>(35);
         cc.add(Set.class.getName());
         cc.add(Map.class.getName());
         cc.add(List.class.getName());
@@ -110,7 +110,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     private static final Set<FQMethod> collectionFactoryMethods;
 
     static {
-        Set<FQMethod> cfm = new HashSet<FQMethod>();
+        Set<FQMethod> cfm = new HashSet<FQMethod>(25);
         cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayList", "()Ljava/util/ArrayList;"));
         cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithCapacity", "(I)Ljava/util/ArrayList;"));
         cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithExpectedSize", "(I)Ljava/util/ArrayList;"));
@@ -139,7 +139,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     private static final Set<String> nonInformationalMethods;
 
     static {
-        Set<String> nim = new HashSet<String>();
+        Set<String> nim = new HashSet<String>(20);
         nim.add("add");
         nim.add("addAll");
         nim.add("addElement");
