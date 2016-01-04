@@ -62,7 +62,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_2), "(jdk|j2?re)1.2");
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_3), "(jdk|j2?re)1.3");
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_4), "(jdk|j2?re)1.4");
-        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_5), "((jdk|j2?re)1.5)|(java-5)");
+        VER_REG_EX.put(Values.JAVA_5, "((jdk|j2?re)1.5)|(java-5)");
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_6), "((jdk|j2?re)1.6)|(java-6)");
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_7), "((jdk|j2?re)1.7)|(java-7)");
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_8), "((jdk|j2?re)1.8)|(java-8)");
@@ -75,7 +75,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_2), Values.TWO);
         HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_3), Values.THREE);
         HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_4), Values.FOUR);
-        HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_5), Values.FIVE);
+        HUMAN_VERSIONS.put(Values.JAVA_5, Values.FIVE);
         HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_6), Values.SIX);
         HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_7), Values.SEVEN);
         HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_8), Values.EIGHT);

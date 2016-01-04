@@ -310,7 +310,6 @@ class LocalHangingExecutor extends LocalTypeDetector {
 
     private static final Map<String, Set<String>> watchedClassMethods;
     private static final Map<String, Integer> syncCtors;
-    private static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 
     static {
         Set<String> forExecutors = new HashSet<String>();
@@ -324,8 +323,8 @@ class LocalHangingExecutor extends LocalTypeDetector {
         watchedClassMethods = Collections.unmodifiableMap(wcm);
 
         Map<String, Integer> sc = new HashMap<String, Integer>();
-        sc.put("java/util/concurrent/ThreadPoolExecutor", JAVA_5);
-        sc.put("java/util/concurrent/ScheduledThreadPoolExecutor", JAVA_5);
+        sc.put("java/util/concurrent/ThreadPoolExecutor", Values.JAVA_5);
+        sc.put("java/util/concurrent/ScheduledThreadPoolExecutor", Values.JAVA_5);
         syncCtors = Collections.unmodifiableMap(sc);
     }
 

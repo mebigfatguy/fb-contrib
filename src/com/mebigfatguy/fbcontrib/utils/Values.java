@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import org.apache.bcel.Constants;
+
 /**
  * a class holding common constants used throughout fb-contrib
  */
@@ -39,6 +41,8 @@ public class Values {
 
     public static final String JAVA_LANG_OBJECT = "java.lang.Object";
     public static final String JAVA_LANG_STRING = "java.lang.String";
+    
+    public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 
     private Values() {
     }

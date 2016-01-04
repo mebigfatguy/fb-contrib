@@ -27,6 +27,7 @@ import org.apache.bcel.Constants;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -42,12 +43,11 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 public class LocalSynchronizedCollection extends LocalTypeDetector {
     private static final Map<String, Integer> syncCtors = new HashMap<String, Integer>();
     private static final Integer JAVA_1_1 = Integer.valueOf(Constants.MAJOR_1_1);
-    private static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 
     static {
         syncCtors.put("java/util/Vector", JAVA_1_1);
         syncCtors.put("java/util/Hashtable", JAVA_1_1);
-        syncCtors.put("java/lang/StringBuffer", JAVA_5);
+        syncCtors.put("java/lang/StringBuffer", Values.JAVA_5);
     }
 
     private static final Map<String, Set<String>> synchClassMethods = new HashMap<String, Set<String>>();
