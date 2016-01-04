@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -65,7 +65,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
     /**
      * constructs a SUA detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -75,7 +75,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset the stack
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -94,7 +94,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     /**
      * overrides the visitor to check to see if the method returns an array, and
      * if so resets the stack for this method.
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed code block
      */
@@ -104,7 +104,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
         int sigPos = sig.indexOf(")[");
         if (sigPos >= 0) {
             Method m = getMethod();
-            if (m.getName().equals(INITIAL_VALUE)) {
+            if (INITIAL_VALUE.equals(m.getName())) {
                 try {
                     if ((THREAD_LOCAL_CLASS == null) || getClassContext().getJavaClass().instanceOf(THREAD_LOCAL_CLASS)) {
                         return;
@@ -127,7 +127,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
      * that denotes it as being uninitialized, and then if the array is
      * populated to remove that user value. It then finds return values that
      * have uninitialized arrays
-     * 
+     *
      * @param seen
      *            the context parameter of the currently parsed op code
      */
@@ -141,7 +141,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
             case NEWARRAY: {
                 if (!isTOS0()) {
                     int typeCode = getIntConstant();
-                    String sig = "[" + SignatureUtils.getTypeCodeSignature(typeCode);
+                    String sig = '[' + SignatureUtils.getTypeCodeSignature(typeCode);
                     if (returnArraySig.equals(sig)) {
                         userValue = UNINIT_ARRAY;
                     }
@@ -151,7 +151,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
             case ANEWARRAY: {
                 if (!isTOS0()) {
-                    String sig = "[L" + getClassConstantOperand() + ";";
+                    String sig = "[L" + getClassConstantOperand() + ';';
                     if (returnArraySig.equals(sig)) {
                         userValue = UNINIT_ARRAY;
                     }

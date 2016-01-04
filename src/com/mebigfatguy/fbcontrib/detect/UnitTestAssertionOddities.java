@@ -50,7 +50,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
 
     private static final String BOOLEAN_TYPE_SIGNATURE = "Ljava/lang/Boolean;";
     private static final String LJAVA_LANG_DOUBLE = "Ljava/lang/Double;";
-    
+
     private static final String TESTCASE_CLASS = "junit.framework.TestCase";
     private static final String TEST_CLASS = "org.junit.Test";
     private static final String TEST_ANNOTATION_SIGNATURE = "Lorg/junit/Test;";
@@ -132,7 +132,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         Method m = getMethod();
         frameworkType = isTestCaseDerived && m.getName().startsWith("test") ? TestFrameworkType.JUNIT : TestFrameworkType.UNKNOWN;
         hasAnnotation = false;
-        
+
         if ((frameworkType == TestFrameworkType.UNKNOWN) && isAnnotationCapable) {
             AnnotationEntry[] annotations = m.getAnnotationEntries();
             if (annotations != null) {
@@ -176,14 +176,14 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             if (seen == INVOKESTATIC) {
                 String clsName = getClassConstantOperand();
                 if (OLD_ASSERT_CLASS.equals(clsName) || NEW_ASSERT_CLASS.equals(clsName) || NG_JUNIT_ASSERT_CLASS.equals(clsName)) {
-                    
+
                     sawAssert = true;
-                    
+
                     if (hasAnnotation && (frameworkType == TestFrameworkType.JUNIT) && OLD_ASSERT_CLASS.equals(clsName)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USING_DEPRECATED.name(), NORMAL_PRIORITY)
                                 .addClass(this).addMethod(this).addSourceLine(this));
                     }
-                    
+
                     String methodName = getNameConstantOperand();
                     if ("assertEquals".equals(methodName)) {
                         String signature = getSigConstantOperand();
@@ -194,8 +194,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                             	OpcodeStack.Item item0 = stack.getStackItem(0);
                                 OpcodeStack.Item expectedItem = stack.getStackItem(1);
                                 Object cons1 = expectedItem.getConstant();
-                                if (cons1 != null && expectedItem.getSignature().equals(BOOLEAN_TYPE_SIGNATURE)
-                                        && item0.getSignature().equals(BOOLEAN_TYPE_SIGNATURE)) {
+                                if (cons1 != null && BOOLEAN_TYPE_SIGNATURE.equals(expectedItem.getSignature())
+                                        && BOOLEAN_TYPE_SIGNATURE.equals(item0.getSignature())) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                     return;
@@ -305,7 +305,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                         } else {
                             return;
                         }
-                    	
+
                 	    if (expectedItem.isNull()) {
                             bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL.name(), NORMAL_PRIORITY)
                                     .addClass(this).addMethod(this).addSourceLine(this));
@@ -431,7 +431,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private boolean isFloatingPtPrimitive(String signature) {
         return "D".equals(signature) || "F".equals(signature);
     }
-    
+
     private boolean hasExpects() {
         AnnotationEntry[] annotations = getMethod().getAnnotationEntries();
         if (annotations != null) {
@@ -450,7 +450,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                 }
             }
         }
-        
+
         return false;
     }
 }

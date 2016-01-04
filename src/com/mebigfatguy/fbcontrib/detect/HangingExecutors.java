@@ -83,7 +83,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
      * finds ExecutorService objects that don't get a call to the terminating
      * methods, and thus, never appear to be shutdown properly (the threads
      * exist until shutdown is called)
-     * 
+     *
      * @param classContext
      *            the class context object of the currently parsed java class
      */
@@ -133,7 +133,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the opcode stack
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -149,7 +149,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to collect the method name
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed method
      */
@@ -161,7 +161,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
     /**
      * Browses for calls to shutdown() and shutdownNow(), and if they happen,
      * remove the hanging candidate, as there is a chance it will be called.
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -310,6 +310,7 @@ class LocalHangingExecutor extends LocalTypeDetector {
 
     private static final Map<String, Set<String>> watchedClassMethods;
     private static final Map<String, Integer> syncCtors;
+    private static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 
     static {
         Set<String> forExecutors = new HashSet<String>();
@@ -323,8 +324,8 @@ class LocalHangingExecutor extends LocalTypeDetector {
         watchedClassMethods = Collections.unmodifiableMap(wcm);
 
         Map<String, Integer> sc = new HashMap<String, Integer>();
-        sc.put("java/util/concurrent/ThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
-        sc.put("java/util/concurrent/ScheduledThreadPoolExecutor", Integer.valueOf(Constants.MAJOR_1_5));
+        sc.put("java/util/concurrent/ThreadPoolExecutor", JAVA_5);
+        sc.put("java/util/concurrent/ScheduledThreadPoolExecutor", JAVA_5);
         syncCtors = Collections.unmodifiableMap(sc);
     }
 

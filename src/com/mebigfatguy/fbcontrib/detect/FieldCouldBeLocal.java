@@ -78,7 +78,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
     /**
      * constructs a FCBL detector given the reporter to report bugs on.
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -100,7 +100,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
             visitedBlocks = new BitSet();
             clsContext = classContext;
             clsName = clsContext.getJavaClass().getClassName();
-            clsSig = "L" + clsName.replace('.', '/') + ";";
+            clsSig = 'L' + clsName.replace('.', '/') + ';';
             JavaClass cls = classContext.getJavaClass();
             Field[] fields = cls.getFields();
             ConstantPool cp = classContext.getConstantPoolGen().getConstantPool();
@@ -278,7 +278,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                     INVOKESPECIAL is = (INVOKESPECIAL) ins;
 
                     ReferenceType rt = is.getReferenceType(cpg);
-                    if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg)) && ((rt instanceof ObjectType) && ((ObjectType) rt).getClassName().startsWith(clsContext.getJavaClass().getClassName() + "$"))) {
+                    if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg)) && ((rt instanceof ObjectType) && ((ObjectType) rt).getClassName().startsWith(clsContext.getJavaClass().getClassName() + '$'))) {
                         localizableFields.clear();
                     }
                 } else if (ins instanceof INVOKEVIRTUAL) {
@@ -314,7 +314,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
      * builds up the method to field map of what method write to which fields
      * this is one recursively so that if method A calls method B, and method B
      * writes to field C, then A modifies F.
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -335,7 +335,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         /**
          * creates a FieldInfo from an annotation, and assumes no source line
          * information
-         * 
+         *
          * @param fa
          *            the field annotation for this field
          * @param hasExternalAnnotation
@@ -349,7 +349,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
         /**
          * set the source line annotation of first use for this field
-         * 
+         *
          * @param sla
          *            the source line annotation
          */
@@ -361,7 +361,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
         /**
          * get the field annotation for this field
-         * 
+         *
          * @return the field annotation
          */
         FieldAnnotation getFieldAnnotation() {
@@ -370,7 +370,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
         /**
          * get the source line annotation for the first use of this field
-         * 
+         *
          * @return the source line annotation
          */
         SourceLineAnnotation getSrcLineAnnotation() {
@@ -379,7 +379,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
         /**
          * gets whether the field has a non java annotation
-         * 
+         *
          * @return if the field has a non java annotation
          */
         boolean hasAnnotation() {
@@ -406,7 +406,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         /**
          * creates a BlockState consisting of the next basic block to parse, and
          * what fields are to be checked
-         * 
+         *
          * @param bb
          *            the basic block to parse
          * @param fields
@@ -421,7 +421,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         /**
          * creates a BlockState consisting of the next basic block to parse, and
          * what fields are to be checked
-         * 
+         *
          * @param bb
          *            the basic block to parse
          * @param the
@@ -435,7 +435,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
         /**
          * get the basic block to parse
-         * 
+         *
          * @return the basic block
          */
         public BasicBlock getBasicBlock() {
@@ -444,7 +444,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
         /**
          * returns the number of unchecked fields
-         * 
+         *
          * @return the number of unchecked fields
          */
         public int getUncheckedFieldSize() {
@@ -454,7 +454,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         /**
          * return the field from the set of unchecked fields if this occurs make
          * a copy of the set on write to reduce memory usage
-         * 
+         *
          * @return whether the object was removed.
          */
         public boolean removeUncheckedField(String field) {

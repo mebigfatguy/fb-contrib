@@ -300,7 +300,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     }
 
     private static File getRTJarFromProperty(Integer requestedVersion) {
-        String jdkHome = System.getProperty(SJVU_JDKHOME + "." + HUMAN_VERSIONS.get(requestedVersion));
+        String jdkHome = System.getProperty(SJVU_JDKHOME + '.' + HUMAN_VERSIONS.get(requestedVersion));
         if (jdkHome == null)
             return null;
 

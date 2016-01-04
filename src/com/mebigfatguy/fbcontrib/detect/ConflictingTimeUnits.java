@@ -50,7 +50,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
     private static final Map<FQMethod, Units> TIME_UNIT_GENERATING_METHODS;
 
     static {
-        Map<FQMethod, Units> tugm = new HashMap<FQMethod, Units>();
+        Map<FQMethod, Units> tugm = new HashMap<FQMethod, Units>(50);
         tugm.put(new FQMethod("java/lang/System", "currentTimeMillis", "()J"), Units.MILLIS);
         tugm.put(new FQMethod("java/lang/System", "nanoTime", "()J"), Units.NANOS);
         tugm.put(new FQMethod("java/sql/Timestamp", "getTime", "()J"), Units.MILLIS);
@@ -99,7 +99,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         tugm.put(new FQMethod("java/time/LocalTime", "getSecond", "()I"), Units.SECONDS);
         tugm.put(new FQMethod("java/time/LocalTime", "toNanoOfDay", "()J"), Units.NANOS);
         tugm.put(new FQMethod("java/time/LocalTime", "toSecondOfDay", "()I"), Units.SECONDS);
-       TIME_UNIT_GENERATING_METHODS = Collections.<FQMethod, Units> unmodifiableMap(tugm);
+        TIME_UNIT_GENERATING_METHODS = Collections.<FQMethod, Units> unmodifiableMap(tugm);
     }
 
     private static final Map<String, Units> TIMEUNIT_TO_UNITS;

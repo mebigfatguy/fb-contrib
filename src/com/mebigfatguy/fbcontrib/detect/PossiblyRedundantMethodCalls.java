@@ -239,7 +239,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         fieldSource = "";
                     }
                 }
-                fieldMethodCalls.remove(fieldSource + ":" + getNameConstantOperand());
+                fieldMethodCalls.remove(fieldSource + ':' + getNameConstantOperand());
             } else if (seen == GETFIELD) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
@@ -272,10 +272,10 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                             XField f = parm.getXField();
                             if (f != null) {
                                 //Two different fields holding a 0 length array should be considered different
-                                parmConstants[i] = f.getName() + ":" + parmConstants[i];
+                                parmConstants[i] = f.getName() + ':' + parmConstants[i];
                             }
                          }
-                        
+
                         if (parmConstants[i] == null) {
                             return;
                         }
@@ -301,7 +301,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                             if (fieldSource == null) {
                                 fieldSource = "";
                             }
-                            mc = fieldMethodCalls.get(fieldSource + ":" + field.getName());
+                            mc = fieldMethodCalls.get(fieldSource + ':' + field.getName());
                         } else {
                             return;
                         }
@@ -344,7 +344,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                                     }
                                 }
 
-                                fieldMethodCalls.remove(fieldSource + ":" + field.getName());
+                                fieldMethodCalls.remove(fieldSource + ':' + field.getName());
                             }
                         }
                     } else {
@@ -360,7 +360,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                                 if (fieldSource == null) {
                                     fieldSource = "";
                                 }
-                                fieldMethodCalls.put(fieldSource + ":" + field.getName(), new MethodCall(methodName, signature, parmConstants, pc, ln));
+                                fieldMethodCalls.put(fieldSource + ':' + field.getName(), new MethodCall(methodName, signature, parmConstants, pc, ln));
                             }
                         }
                     }

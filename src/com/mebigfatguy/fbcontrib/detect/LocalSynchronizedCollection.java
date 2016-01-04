@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -41,11 +41,13 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 @CustomUserValue
 public class LocalSynchronizedCollection extends LocalTypeDetector {
     private static final Map<String, Integer> syncCtors = new HashMap<String, Integer>();
+    private static final Integer JAVA_1_1 = Integer.valueOf(Constants.MAJOR_1_1);
+    private static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 
     static {
-        syncCtors.put("java/util/Vector", Integer.valueOf(Constants.MAJOR_1_1));
-        syncCtors.put("java/util/Hashtable", Integer.valueOf(Constants.MAJOR_1_1));
-        syncCtors.put("java/lang/StringBuffer", Integer.valueOf(Constants.MAJOR_1_5));
+        syncCtors.put("java/util/Vector", JAVA_1_1);
+        syncCtors.put("java/util/Hashtable", JAVA_1_1);
+        syncCtors.put("java/lang/StringBuffer", JAVA_5);
     }
 
     private static final Map<String, Set<String>> synchClassMethods = new HashMap<String, Set<String>>();
@@ -68,7 +70,7 @@ public class LocalSynchronizedCollection extends LocalTypeDetector {
 
     /**
      * constructs a LSYC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */

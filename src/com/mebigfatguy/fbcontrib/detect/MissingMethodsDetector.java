@@ -69,7 +69,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             String clsName = classContext.getJavaClass().getClassName();
             isInnerClass = clsName.contains("$");
 
-            clsSignature = "L" + clsName.replace('.', '/') + ";";
+            clsSignature = 'L' + clsName.replace('.', '/') + ';';
             stack = new OpcodeStack();
             localSpecialObjects = new HashMap<Integer, Integer>();
             fieldSpecialObjects = new HashMap<String, String>();
@@ -337,7 +337,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         processMethodParms();
         return userObject;
     }
-    
+
     private Object sawInvokeStatic(Object userObject) {
         if (doesStaticFactoryReturnNeedToBeWatched(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand())) {
             userObject = Boolean.TRUE;
@@ -390,7 +390,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
      * Checks to see if any of the locals or fields that we are tracking are
      * passed into another method. If they are, we clear out our tracking of
      * them, because we can't easily track their progress into the method.
-     * 
+     *
      * This can be overridden to check for exceptions to this rule, for example,
      * being logged to the console not counting.
      */
@@ -408,7 +408,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     /**
      * informs the missing method detector that a field should no longer be
      * considered special
-     * 
+     *
      * @param name
      *            the name of the field
      */
@@ -421,7 +421,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     protected abstract BugInstance makeLocalBugInstance();
 
     protected abstract boolean doesObjectNeedToBeWatched(String type);
-    
+
     protected abstract boolean doesStaticFactoryReturnNeedToBeWatched(String clsName, String methodName, String signature);
 
     protected abstract boolean isMethodThatShouldBeCalled(String methodName);

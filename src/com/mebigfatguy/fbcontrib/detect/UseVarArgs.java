@@ -88,7 +88,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
                 return;
             }
 
-            if (lastParmSig.equals("[B") || lastParmSig.equals("[C")) {
+            if ("[B".equals(lastParmSig) || "[C".equals(lastParmSig)) {
                 return;
             }
 

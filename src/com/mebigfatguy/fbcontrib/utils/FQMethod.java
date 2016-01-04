@@ -23,36 +23,36 @@ public final class FQMethod {
     private String className;
     private String methodName;
     private String signature;
-    
+
     public FQMethod(String className, String methodName, String signature) {
         this.className = className;
         this.methodName = methodName;
         this.signature = signature;
     }
-    
+
     @Override
     public int hashCode() {
         return className.hashCode() ^ methodName.hashCode() ^ signature.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof FQMethod)) {
             return false;
         }
-        
+
         FQMethod that = (FQMethod) o;
-        
+
         return className.equals(that.className) && methodName.equals(that.methodName) && signature.equals(that.signature);
     }
-    
+
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
     @Override
     public String toString() {
-        return className + "." + methodName + signature;
+        return className + '.' + methodName + signature;
     }
-    
-    
-    
-    
+
+
+
+
 }

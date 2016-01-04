@@ -22,6 +22,7 @@ import java.awt.Adjustable;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -52,39 +53,41 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class InvalidConstantArgument extends BytecodeScanningDetector {
 
-    private static final Map<Pattern, List<ParameterInfo<?>>> PATTERNS = new HashMap<Pattern, List<ParameterInfo<?>>>();
+    private static final Map<Pattern, List<ParameterInfo<?>>> PATTERNS;
 
     static {
-        addPattern("javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V",
+        Map<Pattern, List<ParameterInfo<?>>> patterns = new HashMap<Pattern, List<ParameterInfo<?>>>(10);
+        addPattern(patterns, "javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V",
                 ParameterInfo.createIntegerParameterInfo(0, false, JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE,
                         JOptionPane.WARNING_MESSAGE));
-        addPattern("javax/swing/BorderFactory#createBevelBorder\\(I.*\\)Ljavax/swing/border/Border;",
+        addPattern(patterns, "javax/swing/BorderFactory#createBevelBorder\\(I.*\\)Ljavax/swing/border/Border;",
                 ParameterInfo.createIntegerParameterInfo(0, true, BevelBorder.LOWERED, BevelBorder.RAISED));
-        addPattern("javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;",
+        addPattern(patterns, "javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;",
                 ParameterInfo.createIntegerParameterInfo(0, true, EtchedBorder.LOWERED, EtchedBorder.RAISED));
-        addPattern("javax/swing/JScrollBar#\\<init\\>\\(I.*\\)V",
+        addPattern(patterns, "javax/swing/JScrollBar#\\<init\\>\\(I.*\\)V",
                 ParameterInfo.createIntegerParameterInfo(0, true, Adjustable.HORIZONTAL, Adjustable.VERTICAL));
-        addPattern("java/lang/Thread#setPriority\\(I\\)V",
+        addPattern(patterns, "java/lang/Thread#setPriority\\(I\\)V",
                 new ParameterInfo<Integer>(0, true, Range.createIntegerRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY)));
-        addPattern("java/math/BigDecimal#divide\\(Ljava/math/BigDecimal;.*I\\)Ljava/math/BigDecimal;",
+        addPattern(patterns, "java/math/BigDecimal#divide\\(Ljava/math/BigDecimal;.*I\\)Ljava/math/BigDecimal;",
                 new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
-        addPattern("java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;",
+        addPattern(patterns, "java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;",
                 new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
-        addPattern("java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;", ParameterInfo.createIntegerParameterInfo(0, true,
+        addPattern(patterns, "java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;", ParameterInfo.createIntegerParameterInfo(0, true,
                 ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE));
-        addPattern("java/sql/Connection#createStatement\\(III?\\)Ljava/sql/Statement;",
+        addPattern(patterns, "java/sql/Connection#createStatement\\(III?\\)Ljava/sql/Statement;",
                 ParameterInfo.createIntegerParameterInfo(0, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.TYPE_SCROLL_SENSITIVE),
                 ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE));
 
-        addPattern("java/sql/Connection#prepare[^\\(]+\\(Ljava/lang/String;III?\\)Ljava/sql/PreparedStatement;",
+        addPattern(patterns, "java/sql/Connection#prepare[^\\(]+\\(Ljava/lang/String;III?\\)Ljava/sql/PreparedStatement;",
                 ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.TYPE_SCROLL_SENSITIVE),
                 ParameterInfo.createIntegerParameterInfo(2, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE));
+        PATTERNS = Collections.<Pattern, List<ParameterInfo<?>>>unmodifiableMap(patterns);
     }
 
-    private static void addPattern(String pattern, ParameterInfo<?>... info) {
-        PATTERNS.put(Pattern.compile(pattern), Arrays.asList(info));
+    private static void addPattern(Map<Pattern, List<ParameterInfo<?>>> patterns, String pattern, ParameterInfo<?>... info) {
+        patterns.put(Pattern.compile(pattern), Arrays.asList(info));
     }
 
     private BugReporter bugReporter;
@@ -102,7 +105,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to initialize the opcode stack
-     * 
+     *
      * @param classContext the context of the currently parsed class
      */
     @Override
@@ -117,7 +120,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset the opcode stack
-     * 
+     *
      * @param obj the currently parsed method
      */
     @Override
@@ -135,7 +138,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
             case INVOKEINTERFACE:
             case INVOKEVIRTUAL:
                 String sig = getSigConstantOperand();
-                String mInfo = getClassConstantOperand() + "#" + getNameConstantOperand() + sig;
+                String mInfo = getClassConstantOperand() + '#' + getNameConstantOperand() + sig;
                 for (Map.Entry<Pattern, List<ParameterInfo<?>>> entry : PATTERNS.entrySet()) {
                     Matcher m = entry.getKey().matcher(mInfo);
                     if (m.matches()) {
@@ -164,7 +167,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     }
 
     /**
-     * holds information about parameters that expect constant values that 
+     * holds information about parameters that expect constant values that
      * should have been enums but were created pre enums.  It specifies the
      * legal values, and what offset from the start or end of the method the parm
      * is

@@ -56,7 +56,7 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
 
     /**
      * constructs a NPMC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -108,7 +108,7 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
             case INVOKESTATIC:
                 String sig = getSigConstantOperand();
                 if (!sig.endsWith("V")) {
-                    methodInfo = getClassConstantOperand() + "@" + getNameConstantOperand() + getSigConstantOperand();
+                    methodInfo = getClassConstantOperand() + '@' + getNameConstantOperand() + getSigConstantOperand();
                 }
                 break;
 

@@ -2,17 +2,17 @@
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Kevin Lubick
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -53,14 +53,14 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     /**
      * Should return a map of constructors that should be watched, as well as
      * version number of Java that the given constructor becomes a bad idea.
-     * 
+     *
      * e.g. StringBuffer was the only way to efficiently concatenate a string
      * until the faster, non-thread safe StringBuilder was introduced in 1.5.
      * Thus, in code that targets before 1.5, FindBugs should not report a
      * LocalSynchronizedCollection bug. Therefore, the entry
      * &lt;"java/lang/StringBuffer", Constants.MAJOR_1_5&gt; is in the returned
      * map.
-     * 
+     *
      * @return the map of watched constructors
      */
     protected abstract Map<String, Integer> getWatchedConstructors();
@@ -68,7 +68,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     /**
      * Should return a map of a class and a set of "factory" methods that create
      * types that should be reported buggy (when made as local variables).
-     * 
+     *
      * @return map of factory methods
      */
     protected abstract Map<String, Set<String>> getWatchedClassMethods();
@@ -76,14 +76,14 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     /**
      * returns a set of self returning methods, that is, methods that when
      * called on a a synchronized collection return themselves.
-     * 
+     *
      * @return a set of self referential methods
      */
     protected abstract Set<String> getSelfReturningMethods();
 
     /**
      * Given this RegisterInfo, report an appropriate bug.
-     * 
+     *
      * @param cri
      *            the register info
      */
@@ -91,7 +91,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to create and clear the stack and suspectLocals
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -110,7 +110,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to collect parameter registers
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed method
      */
@@ -125,7 +125,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the stack
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -146,7 +146,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     /**
      * implements the visitor to find the constructors defined in
      * getWatchedConstructors() and the method calls in getWatchedClassMethods()
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -263,7 +263,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     protected Integer checkSelfReturningMethods() {
         Integer tosIsSyncColReg = null;
         Set<String> selfReturningMethods = getSelfReturningMethods();
-        String methodName = getClassConstantOperand() + "." + getNameConstantOperand();
+        String methodName = getClassConstantOperand() + '.' + getNameConstantOperand();
         for (String selfRefNames : selfReturningMethods)
             if (methodName.equals(selfRefNames)) {
                 Type[] parmTypes = Type.getArgumentTypes(getSigConstantOperand());
