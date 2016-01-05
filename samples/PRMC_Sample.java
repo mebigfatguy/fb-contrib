@@ -127,6 +127,20 @@ public class PRMC_Sample {
         System.out.println(Arrays.asList("foo"));
         System.out.println(Arrays.asList("bar"));
     }
+    
+    public void fpWithFinally() {
+        Object foo = new Object();
+        try {
+            willThrow();
+            System.err.println(foo.toString());
+        } finally {
+            System.out.println(foo.toString());
+        }
+    }
+    
+    void willThrow() {
+        throw new RuntimeException("kaboom!");
+    }
 
     public void setValue(int i) {
     }
