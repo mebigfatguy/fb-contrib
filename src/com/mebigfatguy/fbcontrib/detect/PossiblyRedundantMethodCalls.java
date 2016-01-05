@@ -181,6 +181,10 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the stack, and method call maps for new method
+     * Note: that when collecting branch targets, it's unfortunately not good enough to just
+     * collect the handler pcs, as javac plays fast and loose, and will sometimes jam code below the
+     * end pc and before the first handler pc, which gets executed. So we need to clear our 
+     * maps if we go past the end pc as well.
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -194,6 +198,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         branchTargets.clear();
         CodeException[] codeExceptions = obj.getExceptionTable();
         for (CodeException codeEx : codeExceptions) {
+            //adding the end pc seems silly, but it is need because javac may repeat
+            //part of the finally block in the try block, at times.
+            branchTargets.set(codeEx.getEndPC());
             branchTargets.set(codeEx.getHandlerPC());
         }
         super.visitCode(obj);
