@@ -153,6 +153,10 @@ public class JPAIssues extends BytecodeScanningDetector {
     @Override
     public void visitMethod(Method obj) {
 
+        int access = getMethod().getAccessFlags();
+        if ((access & Constants.ACC_SYNTHETIC) != 0) {
+            return;
+        }
         methodTransType = getTransactionalType(obj);
         if ((methodTransType != TransactionalType.NONE) && !obj.isPublic()) {
             bugReporter
@@ -174,7 +178,9 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the opcode stack
+     * implements the visitor to reset the opcode stack, Note that the synthetic check is done in both visitMethod and visitCode as
+     * visitMethod is not a proper listener stopping method. We don't want to report issues reported in visitMethod if
+     * it is synthetic, but we also don't want it to get into sawOpcode, so that is why it is done here as well.
      *
      * @param obj the currently parsed code block
      */
