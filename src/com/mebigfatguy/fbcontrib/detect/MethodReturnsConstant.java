@@ -154,6 +154,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
 
                     returnRegister = item.getRegisterNumber();
                     returnConstant = constant;
+                    returnPC = getPC();
                 }
             } else if ((seen == GOTO) || (seen == GOTO_W)) {
                 if (stack.getStackDepth() > 0) {
