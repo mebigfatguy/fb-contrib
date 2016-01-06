@@ -1573,6 +1573,15 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.IOIssues">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for various issues around doing I/O with streams and reader/writers.</p>
+    		<p>It is a fast detector</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5247,6 +5256,20 @@
 			]]>
 		</Details>
     </BugPattern>
+    
+    <BugPattern type="IOI_DOUBLE_BUFFER_COPY">
+    	<ShortDescription>Method passes a Buffered Stream/Reader/Writer to a already buffering copy method</ShortDescription>
+    	<LongDescription>Method {1} passes a Buffered Stream/Reader/Writer to a already buffering copy method</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method copys data from input to output using streams or reader/writers using a well known copy method, from java.nio, commons-io, 
+    		springframework, guava or poi. These methods are efficient in that they copy these files using buffers. However this method is also 
+    		buffering the streams, causing a double buffering to occur. So data first goes to one buffer, then is copied too another buffer, before
+    		making it to the destination (or vice-versa). This just causes the copy operation to be inefficent both from a time perspective, as well
+    		as a memory allocation one. When using these copy methods, do not pass buffered streams/readers/writers.
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5380,4 +5403,5 @@
 	<BugCode abbrev="JXI">JAX-RS Issues</BugCode>
 	<BugCode abbrev="JPAI">JPA Issues</BugCode>
 	<BugCode abbrev="SEO">Suboptimal Expression Order</BugCode>
+	<BugCode abbrev="IOI">IO Issues</BugCode>
 </MessageCollection>

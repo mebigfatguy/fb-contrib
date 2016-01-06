@@ -297,6 +297,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.SuboptimalExpressionOrder" speed="fast" reports="SEO_SUBOPTIMAL_EXPRESSION_ORDER"/>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.IOIssues" speed="fast" reports="IOI_DOUBLE_BUFFER_COPY"/>
+    
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -555,5 +557,6 @@
 	<BugPattern abbrev="JPAI" type="JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="JPAI" type="JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="SEO" type="SEO_SUBOPTIMAL_EXPRESSION_ORDER" category="PERFORMANCE" experimental="true"/>
+	<BugPattern abbrev="IOI" type="IOI_DOUBLE_BUFFER_COPY" category="PERFORMANCE" experimental="true"/>
 	
 </FindbugsPlugin>

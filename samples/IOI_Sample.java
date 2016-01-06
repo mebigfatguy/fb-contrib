@@ -9,12 +9,11 @@ import org.apache.commons.io.IOUtils;
 
 public class IOI_Sample {
 
-    public byte[] getData(File f) throws IOException {
-        try (InputStream is = new BufferedInputStream(new FileInputStream(f));
-             ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
-            
+    public byte[] getIOIData(File f) throws IOException {
+        try (InputStream is = new BufferedInputStream(new FileInputStream(f)); ByteArrayOutputStream baos = new ByteArrayOutputStream()) {
+
             IOUtils.copy(is, baos);
-            
+
             return baos.toByteArray();
         }
     }
