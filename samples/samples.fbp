@@ -12,6 +12,7 @@
   <AuxClasspathEntry>../lib/httpclient-cache-4.3.4.jar</AuxClasspathEntry>
   <AuxClasspathEntry>../lib/httpcore-4.3.2.jar</AuxClasspathEntry>
   <AuxClasspathEntry>../lib/commons-codec-1.6.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>../lib/commons-io-1.3.2.jar</AuxClasspathEntry>
   <AuxClasspathEntry>../lib/junit-4.12.jar</AuxClasspathEntry>
   <AuxClasspathEntry>../lib/testng-6.9.6.jar</AuxClasspathEntry>
   <AuxClasspathEntry>../lib/jsr311-api-1.1.1.jar</AuxClasspathEntry>

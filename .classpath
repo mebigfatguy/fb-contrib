@@ -29,5 +29,6 @@
 	<classpathentry kind="lib" path="lib/jsr311-api-1.1.1.jar" sourcepath="lib/sources/jsr311-api-1.1.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/spring-tx-4.2.3.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/javax.persistence-2.1.1.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-1.3.2.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
