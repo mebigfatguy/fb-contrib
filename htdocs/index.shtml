@@ -97,6 +97,9 @@ function toggleBlock(divId, imgId)
 				called won't have side-effects that are desired. At present it only looks for simple sequences
 				of 'and' based conditions.
 				</li>
+				<li><b>[IOI] IO Issues</b><br/>
+				looks for various issues around input/output/streaming Library use.
+				</li>
             </ul>
         </div>  
         <hr/>
