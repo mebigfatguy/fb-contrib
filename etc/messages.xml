@@ -5262,11 +5262,24 @@
     	<LongDescription>Method {1} passes a Buffered Stream/Reader/Writer to a already buffering copy method</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method copys data from input to output using streams or reader/writers using a well known copy method, from java.nio, commons-io, 
+    		<p>This method copies data from input to output using streams or reader/writers using a well known copy method, from java.nio, commons-io, 
     		springframework, guava or poi. These methods are efficient in that they copy these files using buffers. However this method is also 
     		buffering the streams, causing a double buffering to occur. So data first goes to one buffer, then is copied too another buffer, before
     		making it to the destination (or vice-versa). This just causes the copy operation to be inefficent both from a time perspective, as well
     		as a memory allocation one. When using these copy methods, do not pass buffered streams/readers/writers.
+    		]]>
+    	</Details>
+    </BugPattern>
+    
+    <BugPattern type="IOI_COPY_WITH_READER">
+        <ShortDescription>Method performs bulk stream copy with a java.io.Reader derived input</ShortDescription>
+    	<LongDescription>Method {1} performs bulk stream copy with a java.io.Reader derived input</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method copies data from a java.io.Reader derived class to an output class, using a bulk copy method
+    		supplied by java.nio, commons-io, springframework, guava or poi. Since you are copying the entire stream, you
+    		don't care about it's contents, and thus using a Reader is wasteful as a reader has to do the hard work of
+    		converting byte data to characters, when there is no need to do this. Use stream based inputs for better performance.</p>
     		]]>
     	</Details>
     </BugPattern>
