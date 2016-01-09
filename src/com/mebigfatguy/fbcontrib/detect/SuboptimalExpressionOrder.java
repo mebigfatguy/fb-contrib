@@ -24,6 +24,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -33,11 +34,9 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for conditional expressions where both simple local variable (in)equalities are used
- * along with method calls, where the method calls are done first. By placing the simple local
- * checks first, you eliminate potentially costly calls in some cases. This assumes that the methods
- * called won't have side-effects that are desired. At present it only looks for simple sequences
- * of 'and' based conditions.
+ * looks for conditional expressions where both simple local variable (in)equalities are used along with method calls, where the method calls are done first. By
+ * placing the simple local checks first, you eliminate potentially costly calls in some cases. This assumes that the methods called won't have side-effects
+ * that are desired. At present it only looks for simple sequences of 'and' based conditions.
  */
 @CustomUserValue
 public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
@@ -50,11 +49,11 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
     private int sawMethodWeight;
 
     /**
-    * constructs a SEO detector given the reporter to report bugs on
-    *
-    * @param bugReporter
-    *            the sync of bug reports
-    */
+     * constructs a SEO detector given the reporter to report bugs on
+     *
+     * @param bugReporter
+     *            the sync of bug reports
+     */
     public SuboptimalExpressionOrder(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -62,7 +61,8 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
     /**
      * overrides the visitor to setup the opcode stack
      *
-     * @param clsContext the context object of the currently parse class
+     * @param clsContext
+     *            the context object of the currently parse class
      */
     @Override
     public void visitClassContext(ClassContext clsContext) {
@@ -77,7 +77,8 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the opcode stack, and initialize vars
      *
-     * @param obj the code object of the currently parsed method
+     * @param obj
+     *            the code object of the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -88,15 +89,12 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for chains of expressions joined by 'and' that
-     * have method calls before simple local variable conditions
+     * overrides the visitor to look for chains of expressions joined by 'and' that have method calls before simple local variable conditions
      *
-     * @param seen the currently parse opcode
+     * @param seen
+     *            the currently parse opcode
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        value = "SF_SWITCH_NO_DEFAULT",
-        justification = "We don't need or want to handle every opcode"
-    )
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "We don't need or want to handle every opcode")
     @Override
     public void sawOpcode(int seen) {
         Integer userValue = null;
@@ -122,11 +120,11 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                     String clsName = getClassConstantOperand();
                     MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName, getNameConstantOperand(), signature);
                     if ((mi == null) || (mi.getNumBytes() == 0)) {
-                        userValue = Integer.valueOf(clsName.startsWith("java") ? 1 : NORMAL_WEIGHT_LIMIT);
+                        userValue = Values.ONE;
                     } else {
                         userValue = Integer.valueOf(mi.getNumBytes());
                     }
-                    break;
+                break;
 
                 case LCMP:
                 case FCMPL:
@@ -147,7 +145,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                     } else {
                         sawMethodWeight = 0;
                     }
-                    break;
+                break;
 
                 case IF_ICMPEQ:
                 case IF_ICMPNE:
@@ -176,18 +174,17 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                             }
                         }
 
-                        if ((expWeight == 0) && sawMethodWeight > 0) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(), sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                    .addClass(this)
-                                    .addMethod(this)
-                                    .addSourceLine(this));
+                        if ((expWeight == 0) && (sawMethodWeight > 0)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(),
+                                    sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this)
+                                            .addSourceLine(this));
                             sawMethodWeight = 0;
                             conditionalTarget = Integer.MAX_VALUE;
                         } else {
                             sawMethodWeight = Math.max(sawMethodWeight, expWeight);
                         }
                     }
-                    break;
+                break;
 
                 case IFEQ:
                 case IFNE:
@@ -212,15 +209,14 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         if (uv != null) {
                             sawMethodWeight = Math.max(sawMethodWeight, uv.intValue());
                         } else if (sawMethodWeight > 0) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(), sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                    .addClass(this)
-                                    .addMethod(this)
-                                    .addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(),
+                                    sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this)
+                                            .addSourceLine(this));
                             sawMethodWeight = 0;
                             conditionalTarget = Integer.MAX_VALUE;
                         }
                     }
-                    break;
+                break;
 
                 case ISTORE:
                 case LSTORE:
@@ -253,7 +249,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                     }
                     sawMethodWeight = 0;
                     conditionalTarget = -1;
-                    break;
+                break;
 
                 case ATHROW:
                 case POP:
@@ -265,7 +261,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case IINC:
                     sawMethodWeight = 0;
                     conditionalTarget = -1;
-                    break;
+                break;
 
                 case INSTANCEOF: // maybe instanceof should be a reset op
                 case ARRAYLENGTH:
@@ -274,7 +270,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         userValue = (Integer) itm.getUserValue();
                     }
-                    break;
+                break;
             }
         } finally {
             stack.sawOpcode(this, seen);
