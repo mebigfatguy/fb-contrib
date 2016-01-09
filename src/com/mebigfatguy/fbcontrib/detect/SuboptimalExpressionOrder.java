@@ -259,11 +259,11 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case PUTFIELD:
                 case PUTSTATIC:
                 case IINC:
+                case INSTANCEOF:
                     sawMethodWeight = 0;
                     conditionalTarget = -1;
                 break;
 
-                case INSTANCEOF: // maybe instanceof should be a reset op
                 case ARRAYLENGTH:
                 case CHECKCAST:
                     if (stack.getStackDepth() > 0) {
