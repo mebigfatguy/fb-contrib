@@ -86,8 +86,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     private static final Set<Pattern> dangerousAssignmentMethodPatterns = UnmodifiableSet.create(
         //@formatter:off
             Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE),
-            Pattern.compile(".*\\.read.*", Pattern.CASE_INSENSITIVE),
-            Pattern.compile(".*\\.create.*", Pattern.CASE_INSENSITIVE)
+            Pattern.compile(".*\\.read[^.]*", Pattern.CASE_INSENSITIVE),
+            Pattern.compile(".*\\.create[^.]*", Pattern.CASE_INSENSITIVE)
         //@formatter:on
     );
 
