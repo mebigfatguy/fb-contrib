@@ -41,6 +41,7 @@ import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -51,48 +52,40 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for variable assignments at a scope larger than its use. In this case,
- * the assignment can be pushed down into the smaller scope to reduce the
+ * looks for variable assignments at a scope larger than its use. In this case, the assignment can be pushed down into the smaller scope to reduce the
  * performance impact of that assignment.
  */
 @CustomUserValue
 public class BloatedAssignmentScope extends BytecodeScanningDetector {
-    private static final Set<String> dangerousAssignmentClassSources;
-    private static final Set<String> dangerousAssignmentMethodSources;
-    private static final Set<Pattern> dangerousAssignmentMethodPatterns;
-    private static final Set<String> dangerousStoreClassSigs;
+    private static final Set<String> dangerousAssignmentClassSources = UnmodifiableSet.create(
+        //@formatter:off
+        "java/io/BufferedInputStream",
+        "java/io/DataInput",
+        "java/io/DataInputStream",
+        "java/io/InputStream",
+        "java/io/ObjectInputStream",
+        "java/io/BufferedReader",
+        "java/io/FileReader",
+        "java/io/Reader",
+        "javax/nio/channels/Channel",
+        "io/netty/channel/Channel"
+        //@formatter:on
+    );
 
-    static {
-        Set<String> dacs = new HashSet<String>();
-        dacs.add("java/io/BufferedInputStream");
-        dacs.add("java/io/DataInput");
-        dacs.add("java/io/DataInputStream");
-        dacs.add("java/io/InputStream");
-        dacs.add("java/io/ObjectInputStream");
-        dacs.add("java/io/BufferedReader");
-        dacs.add("java/io/FileReader");
-        dacs.add("java/io/Reader");
-        dacs.add("javax/nio/channels/Channel");
-        dacs.add("io/netty/channel/Channel");
-        dangerousAssignmentClassSources = Collections.<String>unmodifiableSet(dacs);
+    private static final Set<String> dangerousAssignmentMethodSources = UnmodifiableSet.create(
+        //@formatter:off
+        "java/lang/System.currentTimeMillis()J",
+        "java/lang/System.nanoTime()J",
+        "java/util/Calendar.get(I)I",
+        "java/util/GregorianCalendar.get(I)I",
+        "java/util/Iterator.next()Ljava/lang/Object;",
+        "java/util/regex/Matcher.start()I"
+        //@formatter:on
+    );
 
-        Set<String> dams = new HashSet<String>();
-        dams.add("java/lang/System.currentTimeMillis()J");
-        dams.add("java/lang/System.nanoTime()J");
-        dams.add("java/util/Calendar.get(I)I");
-        dams.add("java/util/GregorianCalendar.get(I)I");
-        dams.add("java/util/Iterator.next()Ljava/lang/Object;");
-        dams.add("java/util/regex/Matcher.start()I");
-        dangerousAssignmentMethodSources = Collections.<String>unmodifiableSet(dams);
+    private static final Set<Pattern> dangerousAssignmentMethodPatterns = UnmodifiableSet.create(Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE));
 
-        Set<Pattern> damp = new HashSet<Pattern>();
-        damp.add(Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE));
-        dangerousAssignmentMethodPatterns = Collections.<Pattern>unmodifiableSet(damp);
-
-        Set<String> dscs = new HashSet<String>();
-        dscs.add("Ljava/util/concurrent/Future;");
-        dangerousStoreClassSigs = Collections.<String>unmodifiableSet(dscs);
-    }
+    private static final Set<String> dangerousStoreClassSigs = UnmodifiableSet.create("Ljava/util/concurrent/Future;");
 
     BugReporter bugReporter;
     private OpcodeStack stack;
@@ -117,8 +110,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to create and the clear the register to location
-     * map
+     * implements the visitor to create and the clear the register to location map
      *
      * @param classContext
      *            the context object of the currently parsed class
@@ -192,8 +184,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for variables assigned below the scope in
-     * which they are used.
+     * implements the visitor to look for variables assigned below the scope in which they are used.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -216,7 +207,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
                 if (catchHandlers.get(pc)) {
                     ignoreRegs.set(reg);
-                    ScopeBlock catchSB = findScopeBlock(rootScopeBlock, pc+1);
+                    ScopeBlock catchSB = findScopeBlock(rootScopeBlock, pc + 1);
                     if ((catchSB != null) && (catchSB.getStart() < pc)) {
                         ScopeBlock sb = new ScopeBlock(pc, catchSB.getFinish());
                         catchSB.setFinish(getPC() - 1);
@@ -415,11 +406,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * returns either a register number of a field reference of the object that
-     * a method is being called on, or null, if it can't be determined.
+     * returns either a register number of a field reference of the object that a method is being called on, or null, if it can't be determined.
      *
-     * @return either an Integer for a register, or a String for the field name,
-     *         or null
+     * @return either an Integer for a register, or a String for the field name, or null
      */
     private Comparable<?> getCallingObject() {
         String sig = getSigConstantOperand();
@@ -439,8 +428,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /*
-         * We ignore the possibility of two fields with the same name in
-         * different classes
+         * We ignore the possibility of two fields with the same name in different classes
          */
         XField f = caller.getXField();
         if (f != null) {
@@ -450,8 +438,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * returns the scope block in which this register was assigned, by
-     * traversing the scope block tree
+     * returns the scope block in which this register was assigned, by traversing the scope block tree
      *
      * @param sb
      *            the scope block to start searching in
@@ -476,8 +463,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * returns an existing scope block that has the same target as the one
-     * looked for
+     * returns an existing scope block that has the same target as the one looked for
      *
      * @param sb
      *            the scope block to start with
@@ -534,8 +520,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      *
      * @param pc
      *            the current instruction
-     * @return the pc of the handler for this pc if it's the start of a try
-     *         block, or -1
+     * @return the pc of the handler for this pc if it's the start of a try block, or -1
      *
      */
     private int findCatchHandlerFor(int pc) {
@@ -762,8 +747,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /**
-         * removes stores to registers that where retrieved from method calls on
-         * assocObject
+         * removes stores to registers that where retrieved from method calls on assocObject
          *
          * @param assocObject
          *            the object that a method call was just performed on
@@ -799,8 +783,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /**
-         * adds a scope block to this subtree by finding the correct place in
-         * the hierarchy to store it
+         * adds a scope block to this subtree by finding the correct place in the hierarchy to store it
          *
          * @param newChild
          *            the scope block to add to the tree
@@ -846,8 +829,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /**
-         * report stores that occur at scopes higher than associated loads that
-         * are not involved with loops
+         * report stores that occur at scopes higher than associated loads that are not involved with loops
          */
         public void findBugs(Set<Integer> parentUsedRegs) {
             if (isLoop) {
@@ -902,8 +884,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /**
-         * returns whether this block either loads or stores into the register
-         * in question
+         * returns whether this block either loads or stores into the register in question
          *
          * @param reg
          *            the register to look for loads or stores
