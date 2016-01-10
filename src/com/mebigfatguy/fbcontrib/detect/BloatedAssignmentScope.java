@@ -408,6 +408,13 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                         break;
                     }
                 }
+
+                if (sb.getStart() > target) {
+                    ScopeBlock previous = findPreviousSiblingScopeBlock(sb);
+                    if ((previous != null) && (previous.getStart() >= target)) {
+                        sb = previous;
+                    }
+                }
                 sb.setLoop();
             }
         }
@@ -597,6 +604,35 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         return parentBlock;
+    }
+
+    /**
+     * looks for the ScopeBlock has the same parent as this given one, but precedes it in the list.
+     *
+     * @param sb
+     *            the scope block to look for the previous scope block
+     * @return the previous sibling scope block, or null if doesn't exist
+     */
+    private ScopeBlock findPreviousSiblingScopeBlock(ScopeBlock sb) {
+        ScopeBlock parent = sb.getParent();
+        if (parent == null) {
+            return null;
+        }
+
+        List<ScopeBlock> children = parent.getChildren();
+        if (children == null) {
+            return null;
+        }
+
+        ScopeBlock lastSibling = null;
+        for (ScopeBlock sibling : children) {
+            if (sibling.equals(sb)) {
+                return lastSibling;
+            }
+            lastSibling = sibling;
+        }
+
+        return null;
     }
 
     /**
