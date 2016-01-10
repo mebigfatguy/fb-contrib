@@ -460,8 +460,15 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      * @return a user object to place on the return value's OpcodeStack item
      */
     private UserObject sawInstanceCall(int pc) {
-        if ("wasNull".equals(getNameConstantOperand()) && "()Z".equals(getSigConstantOperand())) {
+        String signature = getSigConstantOperand();
+
+        // this is kind of a wart. there should be a more seemless way to check this
+        if ("wasNull".equals(getNameConstantOperand()) && "()Z".equals(signature)) {
             dontReport = true;
+        }
+
+        if (signature.endsWith("V")) {
+            return null;
         }
 
         UserObject uo = new UserObject();
@@ -484,6 +491,11 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      * @return the user object to place on the OpcodeStack
      */
     private UserObject sawStaticCall() {
+
+        if (getSigConstantOperand().endsWith("V")) {
+            return null;
+        }
+
         UserObject uo = new UserObject();
         uo.isRisky = isRiskyMethodCall();
         return uo;
