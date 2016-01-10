@@ -191,16 +191,16 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                         if ((argTypes.length == 2) || (argTypes.length == 3)) {
 
                             if (stack.getStackDepth() >= 2) {
-                            	OpcodeStack.Item item0 = stack.getStackItem(0);
+                                OpcodeStack.Item item0 = stack.getStackItem(0);
                                 OpcodeStack.Item expectedItem = stack.getStackItem(1);
                                 Object cons1 = expectedItem.getConstant();
-                                if (cons1 != null && BOOLEAN_TYPE_SIGNATURE.equals(expectedItem.getSignature())
+                                if ((cons1 != null) && BOOLEAN_TYPE_SIGNATURE.equals(expectedItem.getSignature())
                                         && BOOLEAN_TYPE_SIGNATURE.equals(item0.getSignature())) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                     return;
                                 }
-                                if ((item0.getConstant() != null) && (cons1 == null)
+                                if ((cons1 == null) && (item0.getConstant() != null)
                                         && ((argTypes.length == 2) || !isFloatingPtPrimitive(item0.getSignature()))) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
@@ -212,25 +212,25 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                     return;
                                 }
                                 if (argTypes[argTypes.length - 1].equals(Type.DOUBLE) && argTypes[argTypes.length - 2].equals(Type.DOUBLE)) {
-                                	if (argTypes.length < 3 || !argTypes[argTypes.length - 3].equals(Type.DOUBLE)) {
-	                                    bugReporter
-	                                            .reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
-	                                                    .addClass(this).addMethod(this).addSourceLine(this));
-	                                    return;
-                                	}
+                                    if ((argTypes.length < 3) || !argTypes[argTypes.length - 3].equals(Type.DOUBLE)) {
+                                        bugReporter
+                                                .reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
+                                                        .addClass(this).addMethod(this).addSourceLine(this));
+                                        return;
+                                    }
                                 }
                             }
                         }
                     } else if ("assertNotEquals".equals(methodName)) {
-                    	String signature = getSigConstantOperand();
+                        String signature = getSigConstantOperand();
                         Type[] argTypes = Type.getArgumentTypes(signature);
-                        if ((argTypes.length == 2 || argTypes.length == 3) && stack.getStackDepth() >= 2) {
+                        if (((argTypes.length == 2) || (argTypes.length == 3)) && (stack.getStackDepth() >= 2)) {
                             OpcodeStack.Item expectedItem = stack.getStackItem(1);
-                    	    if (expectedItem.isNull()) {
+                            if (expectedItem.isNull()) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
-                    	    }
+                            }
                         }
                     } else if ("assertNotNull".equals(methodName)) {
                         if (stack.getStackDepth() > 0) {
@@ -295,10 +295,10 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                             }
                         }
                     } else if ("assertNotEquals".equals(methodName)) {
-                    	String signature = getSigConstantOperand();
+                        String signature = getSigConstantOperand();
                         Type[] argTypes = Type.getArgumentTypes(signature);
-                    	OpcodeStack.Item expectedItem;
-                    	if ((argTypes.length == 2) && (stack.getStackDepth() >= 2)) {
+                        OpcodeStack.Item expectedItem;
+                        if ((argTypes.length == 2) && (stack.getStackDepth() >= 2)) {
                             expectedItem = stack.getStackItem(0);
                         } else if ((argTypes.length == 3) && (stack.getStackDepth() >= 3)) {
                             expectedItem = stack.getStackItem(1);
@@ -306,11 +306,11 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                             return;
                         }
 
-                	    if (expectedItem.isNull()) {
+                        if (expectedItem.isNull()) {
                             bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL.name(), NORMAL_PRIORITY)
                                     .addClass(this).addMethod(this).addSourceLine(this));
                             return;
-                	    }
+                        }
                     } else if ("assertNotNull".equals(methodName)) {
                         if (stack.getStackDepth() > 0) {
                             if ("valueOf".equals(stack.getStackItem(0).getUserValue())) {
@@ -351,51 +351,51 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             }
 
             switch (state) {
-            case SAW_NOTHING:
-            case SAW_EQUALS:
-            	// starting the chain, reset to false
-            	checkIsNegated = false;
-                if (seen == IF_ICMPNE) {
-                    state = State.SAW_IF_ICMPNE;
-                } else if (seen == IFNE) {
-                    state = State.SAW_IF_NE;
-                    checkIsNegated = true;
-                } else if (seen == IF_ICMPEQ) {
-                    state = State.SAW_IF_ICMPEQ;
-                    checkIsNegated = true;
-                } else {
-                    state = State.SAW_NOTHING;
-                }
+                case SAW_NOTHING:
+                case SAW_EQUALS:
+                    // starting the chain, reset to false
+                    checkIsNegated = false;
+                    if (seen == IF_ICMPNE) {
+                        state = State.SAW_IF_ICMPNE;
+                    } else if (seen == IFNE) {
+                        state = State.SAW_IF_NE;
+                        checkIsNegated = true;
+                    } else if (seen == IF_ICMPEQ) {
+                        state = State.SAW_IF_ICMPEQ;
+                        checkIsNegated = true;
+                    } else {
+                        state = State.SAW_NOTHING;
+                    }
                 break;
 
-            case SAW_IF_ICMPEQ:
-            case SAW_IF_NE:
-            case SAW_IF_ICMPNE:
-                if (seen == ICONST_1) {
-                    state = State.SAW_ICONST_1;
-                } else {
-                    state = State.SAW_NOTHING;
-                }
+                case SAW_IF_ICMPEQ:
+                case SAW_IF_NE:
+                case SAW_IF_ICMPNE:
+                    if (seen == ICONST_1) {
+                        state = State.SAW_ICONST_1;
+                    } else {
+                        state = State.SAW_NOTHING;
+                    }
                 break;
 
-            case SAW_ICONST_1:
-                if (seen == GOTO) {
-                    state = State.SAW_GOTO;
-                } else {
-                    state = State.SAW_NOTHING;
-                }
+                case SAW_ICONST_1:
+                    if (seen == GOTO) {
+                        state = State.SAW_GOTO;
+                    } else {
+                        state = State.SAW_NOTHING;
+                    }
                 break;
 
-            case SAW_GOTO:
-                if (seen == ICONST_0) {
-                    state = State.SAW_ICONST_0;
-                } else {
-                    state = State.SAW_NOTHING;
-                }
+                case SAW_GOTO:
+                    if (seen == ICONST_0) {
+                        state = State.SAW_ICONST_0;
+                    } else {
+                        state = State.SAW_NOTHING;
+                    }
                 break;
 
-            default:
-                state = State.SAW_NOTHING;
+                default:
+                    state = State.SAW_NOTHING;
                 break;
             }
 

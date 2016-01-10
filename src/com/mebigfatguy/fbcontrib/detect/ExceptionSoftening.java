@@ -247,7 +247,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
                         Integer returnVal = (Integer) item.getConstant();
                         if (returnVal == null) {
                             hasValidFalseReturn = true;
-                        } else if ((returnVal.intValue() == 0) && (catchFalseReturnPC < 0)) {
+                        } else if ((catchFalseReturnPC < 0) && (returnVal.intValue() == 0)) {
                             Set<String> sigs = findPossibleCatchSignatures(catchInfos, getPC());
                             for (String sig : sigs) {
                                 if (!sig.isEmpty()) {
