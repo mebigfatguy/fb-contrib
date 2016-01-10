@@ -35,9 +35,8 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for classes that implement interfaces by relying on methods being
- * implemented in super classes, even though the superclass knows nothing about
- * the interface being implemented by the child.
+ * looks for classes that implement interfaces by relying on methods being implemented in super classes, even though the superclass knows nothing about the
+ * interface being implemented by the child.
  */
 public class SpoiledChildInterfaceImplementor implements Detector {
 
@@ -54,8 +53,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     }
 
     /**
-     * looks for classes that implement interfaces but don't provide those
-     * methods
+     * looks for classes that implement interfaces but don't provide those methods
      *
      * @param classContext
      *            the context object of the currently parsed class
@@ -89,7 +87,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                                     BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
                                             .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
                                     for (String nameSig : infMethods) {
-                                        bi.addString("\t" + nameSig);
+                                        bi.addString('\t' + nameSig);
                                     }
 
                                     bugReporter.reportBug(bi);
@@ -115,8 +113,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     }
 
     /**
-     * builds a set of all non constructor or static initializer
-     * method/signatures
+     * builds a set of all non constructor or static initializer method/signatures
      *
      * @param cls
      *            the class to build the method set from
@@ -136,9 +133,8 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     }
 
     /**
-     * removes methods found in an interface when a super interface having the
-     * same methods is implemented in a parent. While this is somewhat hinky,
-     * we'll allow it.
+     * removes methods found in an interface when a super interface having the same methods is implemented in a parent. While this is somewhat hinky, we'll
+     * allow it.
      *
      * @param inf
      *            the interface to look for super interfaces for
