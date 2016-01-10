@@ -79,7 +79,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         "java/util/Calendar.get(I)I",
         "java/util/GregorianCalendar.get(I)I",
         "java/util/Iterator.next()Ljava/lang/Object;",
-        "java/util/regex/Matcher.start()I"
+        "java/util/regex/Matcher.start()I",
+        "java/util/concurrent/TimeUnit.toMillis(J)J"
         //@formatter:on
     );
 
