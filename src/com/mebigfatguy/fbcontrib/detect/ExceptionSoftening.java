@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -55,13 +55,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that catch checked exceptions, and throw unchecked
- * exceptions in their place. There are several levels of concern. Least
- * important are methods constrained by interface or super class contracts not
- * to throw checked exceptions but appear owned by the same author. Next are
- * methods constrained by interface or super class contracts and throw other
- * types of checked exceptions. Lastly are method not constrained by any
- * interface or superclass contract.
+ * looks for methods that catch checked exceptions, and throw unchecked exceptions in their place. There are several levels of concern. Least important are
+ * methods constrained by interface or super class contracts not to throw checked exceptions but appear owned by the same author. Next are methods constrained
+ * by interface or super class contracts and throw other types of checked exceptions. Lastly are method not constrained by any interface or superclass contract.
  */
 public class ExceptionSoftening extends BytecodeScanningDetector {
     private static JavaClass runtimeClass;
@@ -86,7 +82,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
     /**
      * constructs a EXS detector given the reporter to report bugs on.
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -96,7 +92,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset the stack
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -113,9 +109,8 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for methods that catch checked exceptions
-     * and rethrow runtime exceptions
-     * 
+     * overrides the visitor to look for methods that catch checked exceptions and rethrow runtime exceptions
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -151,7 +146,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to find catch blocks that throw runtime exceptions
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -164,10 +159,11 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
             CodeException ex = catchHandlerPCs.get(Integer.valueOf(pc));
             if (ex != null) {
                 int endPC;
-                if ((seen == GOTO) || (seen == GOTO_W))
+                if ((seen == GOTO) || (seen == GOTO_W)) {
                     endPC = this.getBranchTarget();
-                else
+                } else {
                     endPC = Integer.MAX_VALUE;
+                }
                 ConstantPool pool = getConstantPool();
                 ConstantClass ccls = (ConstantClass) pool.getConstant(ex.getCatchType());
                 String catchSig = ccls.getBytes(pool);
@@ -198,8 +194,9 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
                                     if (!anyRuntimes) {
 
-                                        if (constrainingInfo == null)
+                                        if (constrainingInfo == null) {
                                             constrainingInfo = getConstrainingInfo(getClassContext().getJavaClass(), getMethod());
+                                        }
 
                                         BugType bug = null;
                                         int priority = NORMAL_PRIORITY;
@@ -214,15 +211,17 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
                                             String pack1 = constrainingInfo.keySet().iterator().next();
                                             String pack2 = getClassContext().getJavaClass().getClassName();
                                             int dotPos = pack1.lastIndexOf('.');
-                                            if (dotPos >= 0)
+                                            if (dotPos >= 0) {
                                                 pack1 = pack1.substring(0, dotPos);
-                                            else
+                                            } else {
                                                 pack1 = "";
+                                            }
                                             dotPos = pack2.lastIndexOf('.');
-                                            if (dotPos >= 0)
+                                            if (dotPos >= 0) {
                                                 pack2 = pack2.substring(0, dotPos);
-                                            else
+                                            } else {
                                                 pack2 = "";
+                                            }
                                             if (SignatureUtils.similarPackages(pack1, pack2, 2)) {
                                                 bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CHECKED;
                                                 priority = NORMAL_PRIORITY;
@@ -248,7 +247,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
                         Integer returnVal = (Integer) item.getConstant();
                         if (returnVal == null) {
                             hasValidFalseReturn = true;
-                        } else if ((returnVal.intValue() == 0) && (catchFalseReturnPC < 0)) {
+                        } else if ((catchFalseReturnPC < 0) && (returnVal.intValue() == 0)) {
                             Set<String> sigs = findPossibleCatchSignatures(catchInfos, getPC());
                             for (String sig : sigs) {
                                 if (!sig.isEmpty()) {
@@ -270,9 +269,8 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
     }
 
     /**
-     * collects all the valid exception objects (ones where start and finish are
-     * before the target) and with a catch type
-     * 
+     * collects all the valid exception objects (ones where start and finish are before the target) and with a catch type
+     *
      * @param exceptions
      *            the exceptions from the class file
      * @return the filtered exceptions keyed by catch end pc
@@ -295,9 +293,8 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
     }
 
     /**
-     * remove catchinfo blocks from the map where the handler end is before the
-     * current pc
-     * 
+     * remove catchinfo blocks from the map where the handler end is before the current pc
+     *
      * @param infos
      *            the exception handlers installed
      * @param pc
@@ -306,15 +303,15 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
     private static void removeFinishedCatchBlocks(List<CatchInfo> infos, int pc) {
         Iterator<CatchInfo> it = infos.iterator();
         while (it.hasNext()) {
-            if (it.next().getFinish() < pc)
+            if (it.next().getFinish() < pc) {
                 it.remove();
+            }
         }
     }
 
     /**
-     * reduces the end pc based on the optional LocalVariableTable's exception
-     * register scope
-     * 
+     * reduces the end pc based on the optional LocalVariableTable's exception register scope
+     *
      * @param infos
      *            the list of active catch blocks
      * @param pc
@@ -339,7 +336,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
     /**
      * returns an array of catch types that the current pc is in
-     * 
+     *
      * @param infos
      *            the list of catch infos for this method
      * @param pc
@@ -362,13 +359,11 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
     }
 
     /**
-     * finds the super class or interface that constrains the types of
-     * exceptions that can be thrown from the given method
-     * 
+     * finds the super class or interface that constrains the types of exceptions that can be thrown from the given method
+     *
      * @param m
      *            the method to check
-     * @return a map containing the class name to a set of exceptions that
-     *         constrain this method
+     * @return a map containing the class name to a set of exceptions that constrain this method
      */
     private Map<String, Set<String>> getConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
         String methodName = m.getName();
@@ -410,14 +405,14 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
     /**
      * finds a method that matches the name and signature in the given class
-     * 
+     *
      * @param cls
      *            the class to look in
      * @param methodName
      *            the name to look for
      * @param methodSig
      *            the signature to look for
-     * 
+     *
      * @return the method or null
      */
     private static Method findMethod(JavaClass cls, String methodName, String methodSig) {
@@ -431,15 +426,13 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
     }
 
     /**
-     * returns exception names describing what exceptions are allowed to be
-     * thrown
-     * 
+     * returns exception names describing what exceptions are allowed to be thrown
+     *
      * @param cls
      *            the cls to find the exceptions in
      * @param m
      *            the method to add exceptions from
-     * @return a map with one entry of a class name to a set of exceptions that
-     *         constrain what can be thrown.
+     * @return a map with one entry of a class name to a set of exceptions that constrain what can be thrown.
      */
     private static Map<String, Set<String>> buildConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
         Map<String, Set<String>> constraintInfo = new HashMap<String, Set<String>>();
@@ -453,8 +446,9 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
                     ConstantClass ccls = (ConstantClass) pool.getConstant(index);
                     String exName = ccls.getBytes(pool);
                     JavaClass exClass = Repository.lookupClass(exName);
-                    if (!exClass.instanceOf(runtimeClass))
+                    if (!exClass.instanceOf(runtimeClass)) {
                         exs.add(ccls.getBytes(pool));
+                    }
                 }
             }
         }
@@ -464,7 +458,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
     /**
      * returns whether a method explicitly throws an exception
-     * 
+     *
      * @param method
      *            the currently parsed method
      * @return if the method throws an exception
@@ -474,6 +468,10 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
         return (bytecodeSet != null) && (bytecodeSet.get(Constants.ATHROW));
     }
 
+    /**
+     * holds information about a catch block the start and end pcs, as well as the exception signature. you can't always determine the end of a catch block, and
+     * in this case the value will be Integer.MAX_VALUE
+     */
     private static class CatchInfo {
         private final int catchStart;
         private int catchFinish;

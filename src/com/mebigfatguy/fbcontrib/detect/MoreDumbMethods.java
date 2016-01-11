@@ -2,17 +2,17 @@
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Chris Peterson
  * Copyright (C) 2005-2016 Jean-Noel Rouvignac
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -54,8 +54,8 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         int getPriority() {
             return bugPriority;
         }
-        
-        @Override 
+
+        @Override
         public int hashCode() {
             return bugPattern.hashCode() ^ bugPriority;
         }
@@ -65,11 +65,11 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
             if (!(o instanceof ReportInfo)) {
                 return false;
             }
-            
+
             ReportInfo that = (ReportInfo) o;
-            return bugPattern.equals(that.bugPattern) && (bugPriority == that.bugPriority);
+            return (bugPriority == that.bugPriority) && bugPattern.equals(that.bugPattern);
         }
-        
+
         @Override
         public String toString() {
             return ToString.build(this);
@@ -90,7 +90,8 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         //
         // Network checks
         //
-        dumbMethods.put(new FQMethod("java/net/InetAddress", "getLocalHost", "()Ljava/net/InetAddress;"), new ReportInfo("MDM_INETADDRESS_GETLOCALHOST", NORMAL_PRIORITY));
+        dumbMethods.put(new FQMethod("java/net/InetAddress", "getLocalHost", "()Ljava/net/InetAddress;"),
+                new ReportInfo("MDM_INETADDRESS_GETLOCALHOST", NORMAL_PRIORITY));
 
         dumbMethods.put(new FQMethod("java/net/ServerSocket", "<init>", "(I)V"), new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", NORMAL_PRIORITY));
         dumbMethods.put(new FQMethod("java/net/ServerSocket", "<init>", "(II)V"), new ReportInfo("MDM_PROMISCUOUS_SERVERSOCKET", NORMAL_PRIORITY));
@@ -120,14 +121,16 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         dumbMethods.put(new FQMethod("java/util/concurrent/locks/Lock", "lock", "()V"), new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
         dumbMethods.put(new FQMethod("java/util/concurrent/locks/Lock", "lockInterruptibly", "()V"), new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
         dumbMethods.put(new FQMethod("java/util/concurrent/locks/ReentrantLock", "lock", "()V"), new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
-        dumbMethods.put(new FQMethod("java/util/concurrent/locks/ReentrantLock", "lockInterruptibly", "()V"), new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
+        dumbMethods.put(new FQMethod("java/util/concurrent/locks/ReentrantLock", "lockInterruptibly", "()V"),
+                new ReportInfo("MDM_WAIT_WITHOUT_TIMEOUT", LOW_PRIORITY));
 
         dumbMethods.put(new FQMethod("java/util/concurrent/locks/Condition", "signal", "()V"), new ReportInfo("MDM_SIGNAL_NOT_SIGNALALL", NORMAL_PRIORITY));
 
         dumbMethods.put(new FQMethod("java/util/concurrent/locks/Lock", "tryLock", "()Z"), new ReportInfo("MDM_THREAD_FAIRNESS", LOW_PRIORITY));
         dumbMethods.put(new FQMethod("java/util/concurrent/locks/ReentrantLock", "tryLock", "()Z"), new ReportInfo("MDM_THREAD_FAIRNESS", LOW_PRIORITY));
 
-        dumbMethods.put(new FQMethod("java/util/concurrent/locks/ReentrantLock", "isHeldByCurrentThread", "()Z"), new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
+        dumbMethods.put(new FQMethod("java/util/concurrent/locks/ReentrantLock", "isHeldByCurrentThread", "()Z"),
+                new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
         dumbMethods.put(new FQMethod("java/util/concurrent/locks/ReentrantLock", "isLocked", "()Z"), new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
 
         //
@@ -137,19 +140,17 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         dumbMethods.put(new FQMethod("java/lang/String", "getBytes", "()[B"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
         dumbMethods.put(new FQMethod("java/util/Locale", "setDefault", "(Ljava/util/Locale;)V"), new ReportInfo("MDM_SETDEFAULTLOCALE", NORMAL_PRIORITY));
     }
-    
-    private static final Set<ReportInfo> assertableReports = UnmodifiableSet.create(
-            new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY)
-    );
+
+    private static final Set<ReportInfo> assertableReports = UnmodifiableSet.create(new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
 
     private final BugReporter bugReporter;
-    
+
     private boolean sawAssertionDisabled;
     private int assertionEnd;
 
     /**
      * constructs an MDM detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -171,7 +172,7 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
 
         super.visitClassContext(classContext);
     }
-    
+
     @Override
     public void visitCode(Code obj) {
         sawAssertionDisabled = false;
@@ -182,7 +183,7 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
+        if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC)) {
             final ReportInfo info = dumbMethods.get(getFQMethod());
             if (info != null) {
                 if ((assertionEnd < getPC()) || !assertableReports.contains(info)) {
@@ -199,7 +200,7 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
                 assertionEnd = getBranchTarget();
             }
         }
-        
+
         sawAssertionDisabled = false;
     }
 

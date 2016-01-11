@@ -105,7 +105,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
      *            the items to search
      * @return whether this template type is something another template type extends
      */
-    private boolean isTemplateParent(String templateType, TemplateItem[] items) {
+    private boolean isTemplateParent(String templateType, TemplateItem... items) {
         for (TemplateItem item : items) {
             if (templateType.equals(item.templateExtension)) {
                 return true;

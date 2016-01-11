@@ -41,6 +41,7 @@ import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -51,48 +52,47 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for variable assignments at a scope larger than its use. In this case,
- * the assignment can be pushed down into the smaller scope to reduce the
+ * looks for variable assignments at a scope larger than its use. In this case, the assignment can be pushed down into the smaller scope to reduce the
  * performance impact of that assignment.
  */
 @CustomUserValue
 public class BloatedAssignmentScope extends BytecodeScanningDetector {
-    private static final Set<String> dangerousAssignmentClassSources;
-    private static final Set<String> dangerousAssignmentMethodSources;
-    private static final Set<Pattern> dangerousAssignmentMethodPatterns;
-    private static final Set<String> dangerousStoreClassSigs;
+    private static final Set<String> dangerousAssignmentClassSources = UnmodifiableSet.create(
+        //@formatter:off
+        "java/io/BufferedInputStream",
+        "java/io/DataInput",
+        "java/io/DataInputStream",
+        "java/io/InputStream",
+        "java/io/ObjectInputStream",
+        "java/io/BufferedReader",
+        "java/io/FileReader",
+        "java/io/Reader",
+        "javax/nio/channels/Channel",
+        "io/netty/channel/Channel"
+        //@formatter:on
+    );
 
-    static {
-        Set<String> dacs = new HashSet<String>();
-        dacs.add("java/io/BufferedInputStream");
-        dacs.add("java/io/DataInput");
-        dacs.add("java/io/DataInputStream");
-        dacs.add("java/io/InputStream");
-        dacs.add("java/io/ObjectInputStream");
-        dacs.add("java/io/BufferedReader");
-        dacs.add("java/io/FileReader");
-        dacs.add("java/io/Reader");
-        dacs.add("javax/nio/channels/Channel");
-        dacs.add("io/netty/channel/Channel");
-        dangerousAssignmentClassSources = Collections.<String>unmodifiableSet(dacs);
+    private static final Set<String> dangerousAssignmentMethodSources = UnmodifiableSet.create(
+        //@formatter:off
+        "java/lang/System.currentTimeMillis()J",
+        "java/lang/System.nanoTime()J",
+        "java/util/Calendar.get(I)I",
+        "java/util/GregorianCalendar.get(I)I",
+        "java/util/Iterator.next()Ljava/lang/Object;",
+        "java/util/regex/Matcher.start()I",
+        "java/util/concurrent/TimeUnit.toMillis(J)J"
+        //@formatter:on
+    );
 
-        Set<String> dams = new HashSet<String>();
-        dams.add("java/lang/System.currentTimeMillis()J");
-        dams.add("java/lang/System.nanoTime()J");
-        dams.add("java/util/Calendar.get(I)I");
-        dams.add("java/util/GregorianCalendar.get(I)I");
-        dams.add("java/util/Iterator.next()Ljava/lang/Object;");
-        dams.add("java/util/regex/Matcher.start()I");
-        dangerousAssignmentMethodSources = Collections.<String>unmodifiableSet(dams);
+    private static final Set<Pattern> dangerousAssignmentMethodPatterns = UnmodifiableSet.create(
+        //@formatter:off
+            Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE),
+            Pattern.compile(".*\\.read[^.]*", Pattern.CASE_INSENSITIVE),
+            Pattern.compile(".*\\.create[^.]*", Pattern.CASE_INSENSITIVE)
+        //@formatter:on
+    );
 
-        Set<Pattern> damp = new HashSet<Pattern>();
-        damp.add(Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE));
-        dangerousAssignmentMethodPatterns = Collections.<Pattern>unmodifiableSet(damp);
-
-        Set<String> dscs = new HashSet<String>();
-        dscs.add("Ljava/util/concurrent/Future;");
-        dangerousStoreClassSigs = Collections.<String>unmodifiableSet(dscs);
-    }
+    private static final Set<String> dangerousStoreClassSigs = UnmodifiableSet.create("Ljava/util/concurrent/Future;");
 
     BugReporter bugReporter;
     private OpcodeStack stack;
@@ -117,8 +117,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to create and the clear the register to location
-     * map
+     * implements the visitor to create and the clear the register to location map
      *
      * @param classContext
      *            the context object of the currently parsed class
@@ -192,8 +191,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for variables assigned below the scope in
-     * which they are used.
+     * implements the visitor to look for variables assigned below the scope in which they are used.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -212,191 +210,23 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             }
 
             if (OpcodeUtils.isStore(seen)) {
-                int reg = RegisterUtils.getStoreReg(this, seen);
-
-                if (catchHandlers.get(pc)) {
-                    ignoreRegs.set(reg);
-                    ScopeBlock catchSB = findScopeBlock(rootScopeBlock, pc+1);
-                    if ((catchSB != null) && (catchSB.getStart() < pc)) {
-                        ScopeBlock sb = new ScopeBlock(pc, catchSB.getFinish());
-                        catchSB.setFinish(getPC() - 1);
-                        rootScopeBlock.addChild(sb);
-                    }
-                } else if (monitorSyncPCs.size() > 0) {
-                    ignoreRegs.set(reg);
-                } else if (sawNull) {
-                    ignoreRegs.set(reg);
-                } else if (isRiskyStoreClass(reg)) {
-                    ignoreRegs.set(reg);
-                }
-
-                if (!ignoreRegs.get(reg)) {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
-                    if (sb != null) {
-                        UserObject assoc = null;
-                        if (stack.getStackDepth() > 0) {
-                            assoc = (UserObject) stack.getStackItem(0).getUserValue();
-                        }
-
-                        if ((assoc != null) && assoc.isRisky) {
-                            ignoreRegs.set(reg);
-                        } else {
-                            sb.addStore(reg, pc, assoc);
-                            if (sawDup) {
-                                sb.addLoad(reg, pc);
-                            }
-                        }
-                    } else {
-                        ignoreRegs.set(reg);
-                    }
-                }
+                sawStore(seen, pc);
             } else if (seen == IINC) {
-                int reg = getRegisterOperand();
-                if (!ignoreRegs.get(reg)) {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
-                    if (sb != null) {
-                        sb.addLoad(reg, pc);
-                    } else {
-                        ignoreRegs.set(reg);
-                    }
-                }
-                if (catchHandlers.get(pc)) {
-                    ignoreRegs.set(reg);
-                } else if (monitorSyncPCs.size() > 0) {
-                    ignoreRegs.set(reg);
-                } else if (sawNull) {
-                    ignoreRegs.set(reg);
-                }
-
-                if (!ignoreRegs.get(reg)) {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
-                    if (sb != null) {
-                        sb.addStore(reg, pc, null);
-                        if (sawDup) {
-                            sb.addLoad(reg, pc);
-                        }
-                    } else {
-                        ignoreRegs.set(reg);
-                    }
-                }
+                sawIINC(pc);
             } else if (OpcodeUtils.isLoad(seen)) {
-                int reg = RegisterUtils.getLoadReg(this, seen);
-                if (!ignoreRegs.get(reg)) {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
-                    if (sb != null) {
-                        sb.addLoad(reg, pc);
-                    } else {
-                        ignoreRegs.set(reg);
-                    }
-                }
+                sawLoad(seen, pc);
             } else if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W)) {
-                int target = getBranchTarget();
-                if (target > pc) {
-                    if ((seen == GOTO) || (seen == GOTO_W)) {
-                        int nextPC = getNextPC();
-                        if (!switchTargets.get(nextPC)) {
-                            ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, pc, nextPC);
-                            if (sb == null) {
-                                sb = new ScopeBlock(pc, target);
-                                sb.setLoop();
-                                sb.setGoto();
-                                rootScopeBlock.addChild(sb);
-                            } else {
-                                sb = new ScopeBlock(nextPC, target);
-                                sb.setGoto();
-                                rootScopeBlock.addChild(sb);
-                            }
-                        }
-                    } else {
-                        ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, pc, target);
-                        if ((sb != null) && (!sb.isLoop()) && !sb.isCase() && !sb.hasChildren()) {
-                            if (sb.isGoto()) {
-                                ScopeBlock parent = sb.getParent();
-                                sb.pushUpLoadStores();
-                                if (parent != null) {
-                                    parent.removeChild(sb);
-                                }
-                                sb = new ScopeBlock(pc, target);
-                                rootScopeBlock.addChild(sb);
-                            } else {
-                                sb.pushUpLoadStores();
-                                sb.setStart(pc);
-                            }
-                        } else {
-                            sb = new ScopeBlock(pc, target);
-                            rootScopeBlock.addChild(sb);
-                        }
-                    }
-                } else {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
-                    if (sb != null) {
-                        ScopeBlock parentSB = sb.getParent();
-                        while (parentSB != null) {
-                            if (parentSB.getStart() >= target) {
-                                sb = parentSB;
-                                parentSB = parentSB.getParent();
-                            } else {
-                                break;
-                            }
-                        }
-                        sb.setLoop();
-                    }
-                }
+                sawBranch(seen, pc);
             } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
-                int[] offsets = getSwitchOffsets();
-                List<Integer> targets = new ArrayList<Integer>(offsets.length);
-                for (int offset : offsets) {
-                    targets.add(Integer.valueOf(offset + pc));
-                }
-                Integer defOffset = Integer.valueOf(getDefaultSwitchOffset() + pc);
-                if (!targets.contains(defOffset)) {
-                    targets.add(defOffset);
-                }
-                Collections.sort(targets);
-
-                Integer lastTarget = targets.get(0);
-                for (int i = 1; i < targets.size(); i++) {
-                    Integer nextTarget = targets.get(i);
-                    ScopeBlock sb = new ScopeBlock(lastTarget.intValue(), nextTarget.intValue());
-                    sb.setCase();
-                    rootScopeBlock.addChild(sb);
-                    lastTarget = nextTarget;
-                }
-                for (Integer target : targets) {
-                    switchTargets.set(target.intValue());
-                }
+                sawSwitch(pc);
             } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
-                if ("wasNull".equals(getNameConstantOperand()) && "()Z".equals(getSigConstantOperand())) {
-                    dontReport = true;
-                }
-
-                uo = new UserObject();
-                uo.isRisky = isRiskyMethodCall();
-                uo.caller = getCallingObject();
-
-                if (uo.caller != null) {
-                    ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
-                    if (sb != null) {
-                        sb.removeByAssoc(uo.caller);
-                    }
-                }
+                uo = sawInstanceCall(pc);
             } else if ((seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
-                uo = new UserObject();
-                uo.isRisky = isRiskyMethodCall();
+                uo = sawStaticCall();
             } else if (seen == MONITORENTER) {
-                monitorSyncPCs.add(Integer.valueOf(pc));
-
-                ScopeBlock sb = new ScopeBlock(pc, Integer.MAX_VALUE);
-                sb.setSync();
-                rootScopeBlock.addChild(sb);
+                sawMonitorEnter(pc);
             } else if (seen == MONITOREXIT) {
-                if (monitorSyncPCs.size() > 0) {
-                    ScopeBlock sb = findSynchronizedScopeBlock(rootScopeBlock, monitorSyncPCs.get(0).intValue());
-                    if (sb != null) {
-                        sb.setFinish(pc);
-                    }
-                    monitorSyncPCs.remove(monitorSyncPCs.size() - 1);
-                }
+                sawMonitorExit(pc);
             }
 
             sawDup = (seen == DUP);
@@ -415,11 +245,296 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * returns either a register number of a field reference of the object that
-     * a method is being called on, or null, if it can't be determined.
+     * processes a register store by updating the appropriate scope block to mark this register as being stored in the block
      *
-     * @return either an Integer for a register, or a String for the field name,
-     *         or null
+     * @param seen
+     *            the currently parsed opcode
+     * @param pc
+     *            the current program counter
+     */
+    private void sawStore(int seen, int pc) {
+        int reg = RegisterUtils.getStoreReg(this, seen);
+
+        if (catchHandlers.get(pc)) {
+            ignoreRegs.set(reg);
+            ScopeBlock catchSB = findScopeBlock(rootScopeBlock, pc + 1);
+            if ((catchSB != null) && (catchSB.getStart() < pc)) {
+                ScopeBlock sb = new ScopeBlock(pc, catchSB.getFinish());
+                catchSB.setFinish(getPC() - 1);
+                rootScopeBlock.addChild(sb);
+            }
+        } else if (monitorSyncPCs.size() > 0) {
+            ignoreRegs.set(reg);
+        } else if (sawNull) {
+            ignoreRegs.set(reg);
+        } else if (isRiskyStoreClass(reg)) {
+            ignoreRegs.set(reg);
+        }
+
+        if (!ignoreRegs.get(reg)) {
+            ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
+            if (sb != null) {
+                UserObject assoc = null;
+                if (stack.getStackDepth() > 0) {
+                    assoc = (UserObject) stack.getStackItem(0).getUserValue();
+                }
+
+                if ((assoc != null) && assoc.isRisky) {
+                    ignoreRegs.set(reg);
+                } else {
+                    sb.addStore(reg, pc, assoc);
+                    if (sawDup) {
+                        sb.addLoad(reg, pc);
+                    }
+                }
+            } else {
+                ignoreRegs.set(reg);
+            }
+        }
+    }
+
+    /**
+     * processes a register IINC by updating the appropriate scope block to mark this register as being stored in the block
+     *
+     * @param pc
+     *            the current program counter
+     */
+    private void sawIINC(int pc) {
+        int reg = getRegisterOperand();
+        if (!ignoreRegs.get(reg)) {
+            ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
+            if (sb != null) {
+                sb.addLoad(reg, pc);
+            } else {
+                ignoreRegs.set(reg);
+            }
+        }
+        if (catchHandlers.get(pc)) {
+            ignoreRegs.set(reg);
+        } else if (monitorSyncPCs.size() > 0) {
+            ignoreRegs.set(reg);
+        } else if (sawNull) {
+            ignoreRegs.set(reg);
+        }
+
+        if (!ignoreRegs.get(reg)) {
+            ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
+            if (sb != null) {
+                sb.addStore(reg, pc, null);
+                if (sawDup) {
+                    sb.addLoad(reg, pc);
+                }
+            } else {
+                ignoreRegs.set(reg);
+            }
+        }
+    }
+
+    /**
+     * processes a register store by updating the appropriate scope block to mark this register as being read in the block
+     *
+     * @param seen
+     *            the currently parsed opcode
+     * @param pc
+     *            the current program counter
+     */
+    private void sawLoad(int seen, int pc) {
+        int reg = RegisterUtils.getLoadReg(this, seen);
+        if (!ignoreRegs.get(reg)) {
+            ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
+            if (sb != null) {
+                sb.addLoad(reg, pc);
+            } else {
+                ignoreRegs.set(reg);
+            }
+        }
+    }
+
+    /**
+     * creates a scope block to describe this branch location.
+     *
+     * @param seen
+     *            the currently parsed opcode
+     * @param pc
+     *            the current program counter
+     */
+    private void sawBranch(int seen, int pc) {
+        int target = getBranchTarget();
+        if (target > pc) {
+            if ((seen == GOTO) || (seen == GOTO_W)) {
+                int nextPC = getNextPC();
+                if (!switchTargets.get(nextPC)) {
+                    ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, pc, nextPC);
+                    if (sb == null) {
+                        sb = new ScopeBlock(pc, target);
+                        sb.setLoop();
+                        sb.setGoto();
+                        rootScopeBlock.addChild(sb);
+                    } else {
+                        sb = new ScopeBlock(nextPC, target);
+                        sb.setGoto();
+                        rootScopeBlock.addChild(sb);
+                    }
+                }
+            } else {
+                ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, pc, target);
+                if ((sb != null) && (!sb.isLoop()) && !sb.isCase() && !sb.hasChildren()) {
+                    if (sb.isGoto()) {
+                        ScopeBlock parent = sb.getParent();
+                        sb.pushUpLoadStores();
+                        if (parent != null) {
+                            parent.removeChild(sb);
+                        }
+                        sb = new ScopeBlock(pc, target);
+                        rootScopeBlock.addChild(sb);
+                    } else {
+                        sb.pushUpLoadStores();
+                        sb.setStart(pc);
+                    }
+                } else {
+                    sb = new ScopeBlock(pc, target);
+                    rootScopeBlock.addChild(sb);
+                }
+            }
+        } else {
+            ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
+            if (sb != null) {
+                ScopeBlock parentSB = sb.getParent();
+                while (parentSB != null) {
+                    if (parentSB.getStart() >= target) {
+                        sb = parentSB;
+                        parentSB = parentSB.getParent();
+                    } else {
+                        break;
+                    }
+                }
+
+                if (sb.getStart() > target) {
+                    ScopeBlock previous = findPreviousSiblingScopeBlock(sb);
+                    if ((previous != null) && (previous.getStart() >= target)) {
+                        sb = previous;
+                    }
+                }
+                sb.setLoop();
+            }
+        }
+    }
+
+    /**
+     * creates a new scope block for each case statement
+     *
+     * @param pc
+     *            the current program counter
+     */
+    private void sawSwitch(int pc) {
+        int[] offsets = getSwitchOffsets();
+        List<Integer> targets = new ArrayList<Integer>(offsets.length);
+        for (int offset : offsets) {
+            targets.add(Integer.valueOf(offset + pc));
+        }
+        Integer defOffset = Integer.valueOf(getDefaultSwitchOffset() + pc);
+        if (!targets.contains(defOffset)) {
+            targets.add(defOffset);
+        }
+        Collections.sort(targets);
+
+        Integer lastTarget = targets.get(0);
+        for (int i = 1; i < targets.size(); i++) {
+            Integer nextTarget = targets.get(i);
+            ScopeBlock sb = new ScopeBlock(lastTarget.intValue(), nextTarget.intValue());
+            sb.setCase();
+            rootScopeBlock.addChild(sb);
+            lastTarget = nextTarget;
+        }
+        for (Integer target : targets) {
+            switchTargets.set(target.intValue());
+        }
+    }
+
+    /**
+     * processes a instance method call to see if that call is 'risky', if so mark the variable(s) associated with the caller as not reportable
+     *
+     * @param pc
+     *            the current program counter
+     *
+     * @return a user object to place on the return value's OpcodeStack item
+     */
+    private UserObject sawInstanceCall(int pc) {
+        String signature = getSigConstantOperand();
+
+        // this is kind of a wart. there should be a more seemless way to check this
+        if ("wasNull".equals(getNameConstantOperand()) && "()Z".equals(signature)) {
+            dontReport = true;
+        }
+
+        if (signature.endsWith("V")) {
+            return null;
+        }
+
+        UserObject uo = new UserObject();
+        uo.isRisky = isRiskyMethodCall();
+        uo.caller = getCallingObject();
+
+        if (uo.caller != null) {
+            ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
+            if (sb != null) {
+                sb.removeByAssoc(uo.caller);
+            }
+        }
+
+        return uo;
+    }
+
+    /**
+     * processes a static call or initializer by checking to see if the call is risky, and returning a OpcodeStack item user value saying so.
+     *
+     * @return the user object to place on the OpcodeStack
+     */
+    private UserObject sawStaticCall() {
+
+        if (getSigConstantOperand().endsWith("V")) {
+            return null;
+        }
+
+        UserObject uo = new UserObject();
+        uo.isRisky = isRiskyMethodCall();
+        return uo;
+    }
+
+    /**
+     * processes a monitor enter call to create a scope block
+     *
+     * @param pc
+     *            the current program counter
+     */
+    private void sawMonitorEnter(int pc) {
+        monitorSyncPCs.add(Integer.valueOf(pc));
+
+        ScopeBlock sb = new ScopeBlock(pc, Integer.MAX_VALUE);
+        sb.setSync();
+        rootScopeBlock.addChild(sb);
+    }
+
+    /**
+     * processes a monitor exit to set the end of the already created scope block
+     *
+     * @param pc
+     *            the current program counter
+     */
+    private void sawMonitorExit(int pc) {
+        if (monitorSyncPCs.size() > 0) {
+            ScopeBlock sb = findSynchronizedScopeBlock(rootScopeBlock, monitorSyncPCs.get(0).intValue());
+            if (sb != null) {
+                sb.setFinish(pc);
+            }
+            monitorSyncPCs.remove(monitorSyncPCs.size() - 1);
+        }
+    }
+
+    /**
+     * returns either a register number of a field reference of the object that a method is being called on, or null, if it can't be determined.
+     *
+     * @return either an Integer for a register, or a String for the field name, or null
      */
     private Comparable<?> getCallingObject() {
         String sig = getSigConstantOperand();
@@ -439,8 +554,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /*
-         * We ignore the possibility of two fields with the same name in
-         * different classes
+         * We ignore the possibility of two fields with the same name in different classes
          */
         XField f = caller.getXField();
         if (f != null) {
@@ -450,8 +564,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * returns the scope block in which this register was assigned, by
-     * traversing the scope block tree
+     * returns the scope block in which this register was assigned, by traversing the scope block tree
      *
      * @param sb
      *            the scope block to start searching in
@@ -476,8 +589,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * returns an existing scope block that has the same target as the one
-     * looked for
+     * returns an existing scope block that has the same target as the one looked for
      *
      * @param sb
      *            the scope block to start with
@@ -504,6 +616,35 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         return parentBlock;
+    }
+
+    /**
+     * looks for the ScopeBlock has the same parent as this given one, but precedes it in the list.
+     *
+     * @param sb
+     *            the scope block to look for the previous scope block
+     * @return the previous sibling scope block, or null if doesn't exist
+     */
+    private ScopeBlock findPreviousSiblingScopeBlock(ScopeBlock sb) {
+        ScopeBlock parent = sb.getParent();
+        if (parent == null) {
+            return null;
+        }
+
+        List<ScopeBlock> children = parent.getChildren();
+        if (children == null) {
+            return null;
+        }
+
+        ScopeBlock lastSibling = null;
+        for (ScopeBlock sibling : children) {
+            if (sibling.equals(sb)) {
+                return lastSibling;
+            }
+            lastSibling = sibling;
+        }
+
+        return null;
     }
 
     /**
@@ -534,8 +675,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      *
      * @param pc
      *            the current instruction
-     * @return the pc of the handler for this pc if it's the start of a try
-     *         block, or -1
+     * @return the pc of the handler for this pc if it's the start of a try block, or -1
      *
      */
     private int findCatchHandlerFor(int pc) {
@@ -762,8 +902,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /**
-         * removes stores to registers that where retrieved from method calls on
-         * assocObject
+         * removes stores to registers that where retrieved from method calls on assocObject
          *
          * @param assocObject
          *            the object that a method call was just performed on
@@ -799,8 +938,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /**
-         * adds a scope block to this subtree by finding the correct place in
-         * the hierarchy to store it
+         * adds a scope block to this subtree by finding the correct place in the hierarchy to store it
          *
          * @param newChild
          *            the scope block to add to the tree
@@ -846,8 +984,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /**
-         * report stores that occur at scopes higher than associated loads that
-         * are not involved with loops
+         * report stores that occur at scopes higher than associated loads that are not involved with loops
          */
         public void findBugs(Set<Integer> parentUsedRegs) {
             if (isLoop) {
@@ -902,8 +1039,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         /**
-         * returns whether this block either loads or stores into the register
-         * in question
+         * returns whether this block either loads or stores into the register in question
          *
          * @param reg
          *            the register to look for loads or stores

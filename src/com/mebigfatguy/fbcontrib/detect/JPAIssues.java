@@ -112,11 +112,11 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find @Entity classes that have both generated @Ids
-     * and have implemented hashCode/equals. Also looks for eager one to many join
+     * implements the visitor to find @Entity classes that have both generated @Ids and have implemented hashCode/equals. Also looks for eager one to many join
      * fetches as that leads to 1+n queries.
      *
-     * @param clsContext the context object of the currently parsed class
+     * @param clsContext
+     *            the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext clsContext) {
@@ -144,11 +144,11 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for non public methods that have an @Transactional annotation applied to it.
-     * Spring only scans public methods for special handling. It also looks to see if the exceptions thrown by the
-     * method line up with the declared exceptions handled in the @Transactional annotation.
+     * implements the visitor to look for non public methods that have an @Transactional annotation applied to it. Spring only scans public methods for special
+     * handling. It also looks to see if the exceptions thrown by the method line up with the declared exceptions handled in the @Transactional annotation.
      *
-     * @param obj the currently parse method
+     * @param obj
+     *            the currently parse method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -178,11 +178,12 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the opcode stack, Note that the synthetic check is done in both visitMethod and visitCode as
-     * visitMethod is not a proper listener stopping method. We don't want to report issues reported in visitMethod if
-     * it is synthetic, but we also don't want it to get into sawOpcode, so that is why it is done here as well.
+     * implements the visitor to reset the opcode stack, Note that the synthetic check is done in both visitMethod and visitCode as visitMethod is not a proper
+     * listener stopping method. We don't want to report issues reported in visitMethod if it is synthetic, but we also don't want it to get into sawOpcode, so
+     * that is why it is done here as well.
      *
-     * @param obj the currently parsed code block
+     * @param obj
+     *            the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -199,16 +200,12 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls to @Transactional methods that do not go through a spring
-     * proxy. These methods are easily seen as internal class calls. There are other cases as well, from
-     * external/internal classes but these aren't reported.
+     * implements the visitor to look for calls to @Transactional methods that do not go through a spring proxy. These methods are easily seen as internal class
+     * calls. There are other cases as well, from external/internal classes but these aren't reported.
      *
-     *  @param seen the currently parsed opcode
+     * @param seen
+     *            the currently parsed opcode
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        value = "SF_SWITCH_NO_DEFAULT",
-        justification = "We don't need or want to handle every opcode"
-    )
     @Override
     public void sawOpcode(int seen) {
         JPAUserValue userValue = null;
@@ -227,8 +224,9 @@ public class JPAIssues extends BytecodeScanningDetector {
                         if (stack.getStackDepth() > parmTypes.length) {
                             OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
                             if (itm.getRegisterNumber() == 0) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), isPublic ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), isPublic ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
                     }
@@ -249,6 +247,9 @@ public class JPAIssues extends BytecodeScanningDetector {
                     }
                     break;
                 }
+
+                default:
+                break;
             }
         } finally {
             stack.sawOpcode(this, seen);
@@ -261,10 +262,10 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * parses the current class for spring-tx and jpa annotations, as well as hashCode and
-     * equals methods.
+     * parses the current class for spring-tx and jpa annotations, as well as hashCode and equals methods.
      *
-     * @param cls the currently parsed class
+     * @param cls
+     *            the currently parsed class
      */
     private void catalogClass(JavaClass cls) {
         transactionalMethods = new HashMap<FQMethod, TransactionalType>();
@@ -298,12 +299,9 @@ public class JPAIssues extends BytecodeScanningDetector {
     /**
      * parses a field or method for spring-tx or jpa annotations
      *
-     * @param fm the currently parsed field or method
+     * @param fm
+     *            the currently parsed field or method
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        value = "SF_SWITCH_NO_DEFAULT",
-        justification = "We don't need or want to handle every annotation"
-    )
     private void catalogFieldOrMethod(FieldOrMethod fm) {
         for (AnnotationEntry entry : fm.getAnnotationEntries()) {
             String type = entry.getAnnotationType();
@@ -317,7 +315,8 @@ public class JPAIssues extends BytecodeScanningDetector {
                                 break;
                             }
                         }
-                        transactionalMethods.put(new FQMethod(cls.getClassName(), fm.getName(), fm.getSignature()), isWrite ? TransactionalType.WRITE : TransactionalType.READ);
+                        transactionalMethods.put(new FQMethod(cls.getClassName(), fm.getName(), fm.getSignature()),
+                                isWrite ? TransactionalType.WRITE : TransactionalType.READ);
                     }
                 break;
 
@@ -343,20 +342,27 @@ public class JPAIssues extends BytecodeScanningDetector {
                 case "Lorg/eclipse/persistence/annotations/BatchFetch;":
                     hasFetch = true;
                 break;
+
+                default:
+                break;
             }
         }
     }
 
     /**
-     * compares the current methods exceptions to those declared in the spring-tx's @Transactional method, both rollbackFor and
-     * noRollbackFor. It looks both ways, exceptions thrown that aren't handled by rollbacks/norollbacks, and Spring declarations
-     * that aren't actually thrown.
+     * compares the current methods exceptions to those declared in the spring-tx's @Transactional method, both rollbackFor and noRollbackFor. It looks both
+     * ways, exceptions thrown that aren't handled by rollbacks/norollbacks, and Spring declarations that aren't actually thrown.
      *
-     * @param method the currently parsed method
-     * @param expectedExceptions exceptions declared in the @Transactional annotation
-     * @param actualExceptions non-runtime exceptions that are thrown by the method
-     * @param checkByDirectionally whether to check both ways
-     * @param bugType what type of bug to report if found
+     * @param method
+     *            the currently parsed method
+     * @param expectedExceptions
+     *            exceptions declared in the @Transactional annotation
+     * @param actualExceptions
+     *            non-runtime exceptions that are thrown by the method
+     * @param checkByDirectionally
+     *            whether to check both ways
+     * @param bugType
+     *            what type of bug to report if found
      */
     private void reportExceptionMismatch(Method method, Set<JavaClass> expectedExceptions, Set<JavaClass> actualExceptions, boolean checkByDirectionally,
             BugType bugType) {
@@ -383,14 +389,15 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * parses an spring-tx @Transactional annotations for rollbackFor/noRollbackfor attributes of a @Transactional
-     * annotation.
+     * parses an spring-tx @Transactional annotations for rollbackFor/noRollbackfor attributes of a @Transactional annotation.
      *
-     * @param method the currently parsed method
+     * @param method
+     *            the currently parsed method
      *
      * @return the exception classes declared in the @Transactional annotation
      *
-     * @throws ClassNotFoundException if exception classes are not found
+     * @throws ClassNotFoundException
+     *             if exception classes are not found
      */
     private Set<JavaClass> getAnnotatedRollbackExceptions(Method method) throws ClassNotFoundException {
 
@@ -424,11 +431,13 @@ public class JPAIssues extends BytecodeScanningDetector {
     /**
      * retrieves the set of non-runtime exceptions that are declared to be thrown by the method
      *
-     * @param method the currently parsed method
+     * @param method
+     *            the currently parsed method
      *
      * @return the set of exceptions thrown
      *
-     * @throws ClassNotFoundException if an exception class is not found
+     * @throws ClassNotFoundException
+     *             if an exception class is not found
      */
     private Set<JavaClass> getDeclaredExceptions(Method method) throws ClassNotFoundException {
         ExceptionTable et = method.getExceptionTable();

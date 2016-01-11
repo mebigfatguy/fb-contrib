@@ -57,18 +57,15 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 
 /**
- * looks for deletion of items from a collection using the remove method of the
- * collection at the same time that the collection is being iterated on. If this
- * occurs the iterator will become invalid and throw a
- * ConcurrentModificationException. Instead, the remove should be called on the
- * iterator itself.
+ * looks for deletion of items from a collection using the remove method of the collection at the same time that the collection is being iterated on. If this
+ * occurs the iterator will become invalid and throw a ConcurrentModificationException. Instead, the remove should be called on the iterator itself.
  */
 @CustomUserValue
 public class DeletingWhileIterating extends BytecodeScanningDetector {
     private static JavaClass collectionClass;
     private static JavaClass iteratorClass;
     private static Set<JavaClass> exceptionClasses;
-    
+
     static {
         try {
             collectionClass = Repository.lookupClass("java/util/Collection");
@@ -87,12 +84,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         }
     }
 
-    private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(
-            new QMethod("entrySet", "()Ljava/lang/Set;"),
-            new QMethod("keySet", "()Ljava/lang/Set;"),
-            new QMethod("values", "()Ljava/lang/Collection;")
-    );
-    
+    private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(new QMethod("entrySet", "()Ljava/lang/Set;"),
+            new QMethod("keySet", "()Ljava/lang/Set;"), new QMethod("values", "()Ljava/lang/Collection;"));
+
     private static final Map<QMethod, Integer> modifyingMethods;
 
     static {
@@ -104,9 +98,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         mm.put(new QMethod("remove", "(I)Ljava/lang/Object;"), Values.ONE);
         mm.put(new QMethod("removeAll", "(Ljava/util/Collection;)Z"), Values.ONE);
         mm.put(new QMethod("retainAll", "(Ljava/util/Collection;)Z"), Values.ONE);
-        modifyingMethods = Collections.<QMethod, Integer>unmodifiableMap(mm);
+        modifyingMethods = Collections.<QMethod, Integer> unmodifiableMap(mm);
     }
-    
+
     private static final QMethod ITERATOR = new QMethod("iterator", "()Ljava/util/Iterator;");
     private static final QMethod REMOVE = new QMethod("remove", "(Ljava/lang/Object;)Z");
     private static final QMethod HASNEXT = new QMethod("hasNext", "()Z");
@@ -129,8 +123,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to setup the opcode stack, collectionGroups,
-     * groupToIterator and loops
+     * implements the visitor to setup the opcode stack, collectionGroups, groupToIterator and loops
      *
      * @param classContext
      *            the context object of the currently parsed class
@@ -157,8 +150,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the stack, collectionGroups,
-     * groupToIterator and loops
+     * implements the visitor to reset the stack, collectionGroups, groupToIterator and loops
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -175,8 +167,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for deletes on collections that are being
-     * iterated
+     * implements the visitor to look for deletes on collections that are being iterated
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -362,6 +353,16 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * looks to see if the following instruction is a GOTO, preceded by potentially a pop
+     *
+     * @param loop
+     *            the loop structure we are checking
+     * @param needsPop
+     *            whether we expect to see a pop next
+     *
+     * @return whether a GOTO is found
+     */
     private boolean breakFollows(Loop loop, boolean needsPop) {
 
         byte[] code = getCode().getCode();
@@ -386,16 +387,12 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
     }
 
     /**
-     * This attempts to see if there is some form of a return statement
-     * following the collection modifying statement in the loop. It is a bad
-     * cheat, because, we may allow a POP, or an ALOAD/ILOAD etc before the
-     * return. this is sloppy tho as it might be a multibyte instruction. It
-     * also might be a complex piece of code to load the return, or the method
-     * may not allow returns. But hopefully it's better than it was.
+     * This attempts to see if there is some form of a return statement following the collection modifying statement in the loop. It is a bad cheat, because, we
+     * may allow a POP, or an ALOAD/ILOAD etc before the return. this is sloppy tho as it might be a multibyte instruction. It also might be a complex piece of
+     * code to load the return, or the method may not allow returns. But hopefully it's better than it was.
      *
      * @param couldSeePop
-     *            if the preceding instruction returns a value, and thus might
-     *            need to be popped
+     *            if the preceding instruction returns a value, and thus might need to be popped
      */
     private boolean returnFollows(boolean couldSeePop) {
 
@@ -421,6 +418,13 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         return false;
     }
 
+    /**
+     * returns whether the class name is derived from java.util.Collection
+     *
+     * @param className
+     *            the class to check
+     * @return whether the class is a collection
+     */
     private boolean isCollection(String className) {
         try {
             JavaClass cls = Repository.lookupClass(className);
@@ -431,6 +435,13 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * given an register or field, look to see if this thing is associated with an already discovered loop
+     *
+     * @param itm
+     *            the item containing the register or field
+     * @return the group element
+     */
     private static Comparable<?> getGroupElement(OpcodeStack.Item itm) {
         Comparable<?> groupElement = null;
 

@@ -20,7 +20,9 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -40,6 +42,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 @CustomUserValue
 public class IOIssues extends BytecodeScanningDetector {
+
+    enum IOIUserValue {
+        BUFFER, READER
+    };
 
     private static final String ANY_PARMS = "(*)";
     private static Set<FQMethod> COPY_METHODS = UnmodifiableSet.create(
@@ -62,6 +68,16 @@ public class IOIssues extends BytecodeScanningDetector {
             "java.io.BufferedWriter"
     //@formatter:on
     );
+
+    private static JavaClass READER_CLASS;
+
+    static {
+        try {
+            READER_CLASS = Repository.lookupClass("java.io.Reader");
+        } catch (ClassNotFoundException cnfe) {
+            READER_CLASS = null;
+        }
+    }
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -107,14 +123,15 @@ public class IOIssues extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to look for common api copy utilities to copy streams where the passed in Stream is Buffered. Since these libraries already handle
-     * the buffering, you are just slowing them down by the extra copy.
+     * the buffering, you are just slowing them down by the extra copy. Also look for copies where the source is a Reader, as this is just wasteful. Can't wrap
+     * my head around whether a Writer output is sometime valid, might be, so for now ignoring that.
      *
      * @param seen
      *            the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
-        Boolean uvSawBuffer = null;
+        IOIUserValue uvSawBuffer = null;
 
         try {
             switch (seen) {
@@ -124,7 +141,12 @@ public class IOIssues extends BytecodeScanningDetector {
 
                     if (Values.CONSTRUCTOR.equals(methodName)) {
                         if (BUFFERED_CLASSES.contains(clsName)) {
-                            uvSawBuffer = Boolean.TRUE;
+                            uvSawBuffer = IOIUserValue.BUFFER;
+                        } else {
+                            JavaClass cls = Repository.lookupClass(clsName);
+                            if (cls.instanceOf(READER_CLASS)) {
+                                uvSawBuffer = IOIUserValue.READER;
+                            }
                         }
                     }
                 }
@@ -140,9 +162,18 @@ public class IOIssues extends BytecodeScanningDetector {
                         if (stack.getStackDepth() >= argTypes.length) {
                             for (int i = 0; i < argTypes.length; i++) {
                                 OpcodeStack.Item itm = stack.getStackItem(i);
-                                if (itm.getUserValue() != null) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.IOI_DOUBLE_BUFFER_COPY.name(), NORMAL_PRIORITY).addClass(this)
-                                            .addMethod(this).addSourceLine(this));
+                                IOIUserValue uv = (IOIUserValue) itm.getUserValue();
+                                if (uv != null) {
+                                    switch (uv) {
+                                        case BUFFER:
+                                            bugReporter.reportBug(new BugInstance(this, BugType.IOI_DOUBLE_BUFFER_COPY.name(), NORMAL_PRIORITY).addClass(this)
+                                                    .addMethod(this).addSourceLine(this));
+                                        break;
+
+                                        case READER:
+                                            bugReporter.reportBug(new BugInstance(this, BugType.IOI_COPY_WITH_READER.name(), NORMAL_PRIORITY).addClass(this)
+                                                    .addMethod(this).addSourceLine(this));
+                                    }
                                     break;
                                 }
                             }
@@ -154,6 +185,8 @@ public class IOIssues extends BytecodeScanningDetector {
                 default:
                 break;
             }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
         } finally {
             stack.sawOpcode(this, seen);
             if ((uvSawBuffer != null) && (stack.getStackDepth() > 0)) {
