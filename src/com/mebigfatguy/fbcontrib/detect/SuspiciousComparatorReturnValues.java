@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -42,12 +42,12 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 @CustomUserValue
 public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
-    private static Map<JavaClass, String> compareClasses = new HashMap<JavaClass, String>();
+    private static Map<JavaClass, MethodInfo> compareClasses = new HashMap<JavaClass, MethodInfo>();
 
     static {
         try {
-            compareClasses.put(Repository.lookupClass("java/lang/Comparable"), "compareTo:1:I");
-            compareClasses.put(Repository.lookupClass("java/util/Comparator"), "compare:2:I");
+            compareClasses.put(Repository.lookupClass("java/lang/Comparable"), new MethodInfo("compareTo", 1, "I"));
+            compareClasses.put(Repository.lookupClass("java/util/Comparator"), new MethodInfo("compare", 2, "I"));
         } catch (ClassNotFoundException cnfe) {
             // don't have a bugReporter yet, so do nothing
         }
@@ -55,7 +55,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
 
     private OpcodeStack stack;
     private final BugReporter bugReporter;
-    private String[] methodInfo;
+    private MethodInfo methodInfo;
     private boolean indeterminate;
     private boolean seenNegative;
     private boolean seenPositive;
@@ -66,7 +66,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
 
     /**
      * constructs a SCRV detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -78,9 +78,9 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             JavaClass cls = classContext.getJavaClass();
-            for (Map.Entry<JavaClass, String> entry : compareClasses.entrySet()) {
+            for (Map.Entry<JavaClass, MethodInfo> entry : compareClasses.entrySet()) {
                 if (cls.implementationOf(entry.getKey())) {
-                    methodInfo = entry.getValue().split(":");
+                    methodInfo = entry.getValue();
                     stack = new OpcodeStack();
                     super.visitClassContext(classContext);
                     break;
@@ -102,8 +102,8 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
 
         String methodName = getMethodName();
         String methodSig = getMethodSig();
-        if (methodName.equals(methodInfo[0]) && methodSig.endsWith(methodInfo[2])
-                && (Type.getArgumentTypes(methodSig).length == Integer.parseInt(methodInfo[1]))) {
+        if (methodName.equals(methodInfo.methodName) && methodSig.endsWith(methodInfo.signatureEnding)
+                && (Type.getArgumentTypes(methodSig).length == methodInfo.argumentCount)) {
             stack.resetForMethodEntry(this);
             indeterminate = false;
             seenNegative = false;
@@ -140,12 +140,12 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                     if ((sawConstant != null) || (stack.getStackDepth() > 0)) {
                         Integer returnValue = null;
                         if (sawConstant != null) {
-                            returnValue = sawConstant; 
+                            returnValue = sawConstant;
                         } else {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             returnValue = (Integer) item.getConstant();
                         }
-                        
+
                         if (returnValue == null) {
                             indeterminate = true;
                         } else {
@@ -166,11 +166,11 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                         }
                     } else
                         indeterminate = true;
-                    
+
                     sawConstant = null;
                 }
                 break;
-                
+
                 case GOTO:
                 case GOTO_W: {
                     if (stack.getStackDepth() > 0)
@@ -180,7 +180,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                     }
                 }
                 break;
-                
+
                 case IFEQ:
                 case IFNE:
                 case IFLT:
@@ -194,7 +194,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                 case IF_ICMPGT:
                 case IF_ICMPLE:
                 case IF_ACMPEQ:
-                case IF_ACMPNE: 
+                case IF_ACMPNE:
                 case IFNULL:
                 case IFNONNULL: {
                     if (furthestBranchTarget < getBranchTarget()) {
@@ -202,7 +202,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                     }
                 }
                 break;
-                
+
                 case LOOKUPSWITCH:
                 case TABLESWITCH: {
                     int defTarget = getDefaultSwitchOffset() + getPC();
@@ -211,7 +211,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                     }
                 }
                 break;
-                
+
                 case ATHROW: {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
@@ -222,30 +222,43 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                     }
                 }
                 break;
-                
-                /* these three opcodes are here because findbugs proper is broken, 
+
+                /* these three opcodes are here because findbugs proper is broken,
                  * it sometimes doesn't push this constant on the stack, because of bad branch handling */
                 case ICONST_0:
-                    if (getNextOpcode() == IRETURN) {   
+                    if (getNextOpcode() == IRETURN) {
                         sawConstant = Integer.valueOf(0);
                     }
                 break;
-                
+
                 case ICONST_M1:
-                    if (getNextOpcode() == IRETURN) {   
+                    if (getNextOpcode() == IRETURN) {
                         sawConstant = Integer.valueOf(-1);
                     }
                 break;
-                
+
                 case ICONST_1:
-                    if (getNextOpcode() == IRETURN) {   
+                    if (getNextOpcode() == IRETURN) {
                         sawConstant = Integer.valueOf(1);
                     }
                 break;
-                    
+
             }
         } finally {
             stack.sawOpcode(this, seen);
         }
+    }
+
+}
+
+class MethodInfo {
+    final String methodName;
+    final int argumentCount;
+    final String signatureEnding;
+
+    MethodInfo(String methodName, int argumentCount, String signatureEnding) {
+        this.methodName = methodName;
+        this.argumentCount = argumentCount;
+        this.signatureEnding = signatureEnding;
     }
 }
