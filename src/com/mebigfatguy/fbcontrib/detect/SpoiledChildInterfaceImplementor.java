@@ -89,7 +89,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                                     BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
                                             .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
                                     for (String nameSig : infMethods) {
-                                        bi.addString("\t" + nameSig);
+                                        bi.addString('\t' + nameSig);
                                     }
 
                                     bugReporter.reportBug(bi);
