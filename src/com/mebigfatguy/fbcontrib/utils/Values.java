@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+
 import org.apache.bcel.Constants;
 
 /**
@@ -41,8 +43,11 @@ public class Values {
 
     public static final String JAVA_LANG_OBJECT = "java.lang.Object";
     public static final String JAVA_LANG_STRING = "java.lang.String";
-    
+
     public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
+
+    public static final Integer NORMAL_PRIORITY = Integer.valueOf(BytecodeScanningDetector.NORMAL_PRIORITY);
+    public static final Integer LOW_PRIORITY = Integer.valueOf(BytecodeScanningDetector.LOW_PRIORITY);
 
     private Values() {
     }
