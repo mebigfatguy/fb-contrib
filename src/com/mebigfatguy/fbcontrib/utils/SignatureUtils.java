@@ -31,8 +31,7 @@ import org.apache.bcel.generic.Type;
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 
 /**
- * a collection of static methods for parsing signatures to find information out
- * about them
+ * a collection of static methods for parsing signatures to find information out about them
  */
 public class SignatureUtils {
 
@@ -76,8 +75,7 @@ public class SignatureUtils {
     }
 
     /**
-     * returns whether or not the two packages have the same first 'depth'
-     * parts, if they exist
+     * returns whether or not the two packages have the same first 'depth' parts, if they exist
      *
      * @param packName1
      *            the first package to check
@@ -123,29 +121,29 @@ public class SignatureUtils {
      */
     public static String getTypeCodeSignature(int typeCode) {
         switch (typeCode) {
-        case Constants.T_BOOLEAN:
-            return "Z";
+            case Constants.T_BOOLEAN:
+                return "Z";
 
-        case Constants.T_CHAR:
-            return "C";
+            case Constants.T_CHAR:
+                return "C";
 
-        case Constants.T_FLOAT:
-            return "F";
+            case Constants.T_FLOAT:
+                return "F";
 
-        case Constants.T_DOUBLE:
-            return "D";
+            case Constants.T_DOUBLE:
+                return "D";
 
-        case Constants.T_BYTE:
-            return "B";
+            case Constants.T_BYTE:
+                return "B";
 
-        case Constants.T_SHORT:
-            return "S";
+            case Constants.T_SHORT:
+                return "S";
 
-        case Constants.T_INT:
-            return "I";
+            case Constants.T_INT:
+                return "I";
 
-        case Constants.T_LONG:
-            return "L";
+            case Constants.T_LONG:
+                return "L";
         }
 
         return "Ljava/lang/Object;";
@@ -174,11 +172,13 @@ public class SignatureUtils {
      *
      * @param m
      *            the method for which you want the parameters
-     * @return a map of parameter types (expect empty slots when doubles/longs
-     *         are used
+     * @return a map of parameter types (expect empty slots when doubles/longs are used
      */
     public static Map<Integer, String> getParameterSignatures(Method m) {
         Type[] parms = m.getArgumentTypes();
+        if (parms.length == 0) {
+            return Collections.emptyMap();
+        }
 
         Map<Integer, String> parmSigs = new LinkedHashMap<Integer, String>(parms.length);
 
@@ -253,13 +253,13 @@ public class SignatureUtils {
     public static int getSignatureSize(String signature) {
         return (TWO_SLOT_TYPES.contains(signature)) ? 2 : 1;
     }
-    
+
     public static String stripSignature(String signature) {
         if (signature.startsWith("L") && signature.endsWith(";")) {
-            return signature.substring(1, signature.length() - 1).replace('/',  '.');
+            return signature.substring(1, signature.length() - 1).replace('/', '.');
         }
-        
-        return signature.replace('/',  '.');
+
+        return signature.replace('/', '.');
     }
 
 }
