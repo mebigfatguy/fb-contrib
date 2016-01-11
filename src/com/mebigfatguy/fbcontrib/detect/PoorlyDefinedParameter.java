@@ -117,7 +117,6 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
                         loadedReg = RegisterUtils.getALoadReg(this, seen);
                         parmSig = parmSigs.get(Integer.valueOf(loadedReg));
                         if (parmSig != null) {
-                            parmSig = parmSig.substring(1, parmSig.length() - 1);
                             state = State.SAW_LOAD;
                         }
                     }
@@ -125,7 +124,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
 
                 case SAW_LOAD:
                     if (seen == CHECKCAST) {
-                        castClass = getClassConstantOperand();
+                        castClass = classToSignature(getClassConstantOperand());
                         if (!castClass.equals(parmSig)) {
                             state = State.SAW_CHECKCAST;
                             return;
@@ -192,6 +191,17 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
                 downwardBranchTarget = -1;
             }
         }
+    }
+
+    /**
+     * returns a slashed class name into a signature, like java/lang/String -- Ljava/lang/String;
+     *
+     * @param clsName
+     *            the class name to convert
+     * @return the signature format of the class
+     */
+    private String classToSignature(String clsName) {
+        return 'L' + clsName + ';';
     }
 
     private static class BugInfo {
