@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -69,7 +70,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             String clsName = classContext.getJavaClass().getClassName();
             isInnerClass = clsName.contains("$");
 
-            clsSignature = 'L' + clsName.replace('.', '/') + ';';
+            clsSignature = SignatureUtils.toSignature(clsName);
             stack = new OpcodeStack();
             localSpecialObjects = new HashMap<Integer, Integer>();
             fieldSpecialObjects = new HashMap<String, String>();

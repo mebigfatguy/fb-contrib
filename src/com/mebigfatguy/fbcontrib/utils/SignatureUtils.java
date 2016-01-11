@@ -253,13 +253,17 @@ public class SignatureUtils {
     public static int getSignatureSize(String signature) {
         return (TWO_SLOT_TYPES.contains(signature)) ? 2 : 1;
     }
-    
+
     public static String stripSignature(String signature) {
         if (signature.startsWith("L") && signature.endsWith(";")) {
             return signature.substring(1, signature.length() - 1).replace('/',  '.');
         }
-        
+
         return signature.replace('/',  '.');
+    }
+
+    public static String toSignature(String className) {
+        return 'L' + className.replace('.', '/') + ';';
     }
 
 }
