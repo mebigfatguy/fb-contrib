@@ -55,7 +55,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 @CustomUserValue
 public class LoggerOddities extends BytecodeScanningDetector {
-    
+
     private static JavaClass THROWABLE_CLASS;
     static {
         try {
@@ -64,7 +64,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
             THROWABLE_CLASS = null;
         }
     }
-    
+
     private static final Set<String> LOGGER_METHODS = UnmodifiableSet.create(
         "trace",
         "debug",
@@ -73,7 +73,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
         "error",
         "fatal"
     );
-    
+
     private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
     private static final Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
 
@@ -83,7 +83,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
     /**
      * constructs a LO detector given the reporter to report bugs on.
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -94,7 +94,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * implements the visitor to discover what the class name is if it is a
      * normal class, or the owning class, if the class is an anonymous class.
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -102,19 +102,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            nameOfThisClass = classContext.getJavaClass().getClassName();
-            int subclassIndex = nameOfThisClass.indexOf('$');
-            while (subclassIndex >= 0) {
-                String simpleName = nameOfThisClass.substring(subclassIndex + 1);
-                try {
-                    Integer.parseInt(simpleName);
-                    nameOfThisClass = nameOfThisClass.substring(0, subclassIndex);
-                    subclassIndex = nameOfThisClass.indexOf('$');
-                } catch (NumberFormatException nfe) {
-                    subclassIndex = -1;
-                }
-            }
-            nameOfThisClass = nameOfThisClass.replace('.', '/');
+            nameOfThisClass = SignatureUtils.getNonAnonymousPortion(classContext.getJavaClass().getClassName());
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -123,7 +111,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the stack
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -146,7 +134,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for calls to Logger.getLogger with the
      * wrong class name
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -255,7 +243,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
     /**
      * looks for a variety of logging issues with log statements
-     * 
+     *
      * @throws ClassNotFoundException if the exception class, or a parent class can't be found
      */
     private void checkForProblemsWithLoggerMethods() throws ClassNotFoundException {
@@ -350,7 +338,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
     /**
      * looks for instantiation of a logger with what looks like a class name that isn't the same
-     * as the class in which it exists. There are some cases where a 'classname-like' string is 
+     * as the class in which it exists. There are some cases where a 'classname-like' string is
      * presented purposely different than this class, and an attempt is made to ignore those.
      */
     private void lookForSuspectClasses() {
@@ -435,20 +423,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
         if (loggingClassName != null) {
             if (stack.getStackDepth() > 0) {
-                if (!loggingClassName.equals(nameOfThisClass)) {
-                    boolean isPrefix = nameOfThisClass.startsWith(loggingClassName);
-                    boolean isAnonClassPrefix;
-                    if (isPrefix) {
-                        String anonClass = nameOfThisClass.substring(loggingClassName.length());
-                        isAnonClassPrefix = anonClass.matches("(\\$\\d+)+");
-                    } else {
-                        isAnonClassPrefix = false;
-                    }
-
-                    if (!isAnonClassPrefix) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_CLASS.name(), loggingPriority).addClass(this).addMethod(this)
-                                .addSourceLine(this).addString(loggingClassName).addString(nameOfThisClass));
-                    }
+                if (!loggingClassName.equals(SignatureUtils.getNonAnonymousPortion(nameOfThisClass))) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_CLASS.name(), loggingPriority).addClass(this).addMethod(this)
+                            .addSourceLine(this).addString(loggingClassName).addString(nameOfThisClass));
                 }
             }
         }
@@ -456,7 +433,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
     /**
      * returns the number of anchors {} in a string
-     * 
+     *
      * @param formatString
      *            the format string
      * @return the number of anchors
@@ -476,7 +453,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * returns the number of parameters slf4j is expecting to inject into the
      * format string
-     * 
+     *
      * @param signature
      *            the method signature of the error, warn, info, debug statement
      * @return the number of expected parameters
@@ -498,7 +475,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * returns whether an exception object is on the stack slf4j will find this,
      * and not include it in the parm list so i we find one, just don't report
-     * 
+     *
      * @return whether or not an exception i present
      */
     private boolean hasExceptionOnStack() {
