@@ -101,7 +101,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
             visitedBlocks = new BitSet();
             clsContext = classContext;
             clsName = clsContext.getJavaClass().getClassName();
-            clsSig = SignatureUtils.toSignature(clsName);
+            clsSig = SignatureUtils.classToSignature(clsName);
             JavaClass cls = classContext.getJavaClass();
             Field[] fields = cls.getFields();
             ConstantPool cp = classContext.getConstantPoolGen().getConstantPool();

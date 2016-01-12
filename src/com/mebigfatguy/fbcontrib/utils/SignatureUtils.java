@@ -263,7 +263,14 @@ public class SignatureUtils {
         return signature.replace('/', '.');
     }
 
-    public static String toSignature(String className) {
+    /**
+     * returns a slashed class name into a signature, like java/lang/String -- Ljava/lang/String;
+     *
+     * @param clsName
+     *            the class name to convert
+     * @return the signature format of the class
+     */
+    public static String classToSignature(String className) {
         return 'L' + className.replace('.', '/') + ';';
     }
 

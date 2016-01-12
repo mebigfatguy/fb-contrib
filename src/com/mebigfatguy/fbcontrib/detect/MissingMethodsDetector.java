@@ -70,7 +70,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             String clsName = classContext.getJavaClass().getClassName();
             isInnerClass = clsName.contains("$");
 
-            clsSignature = SignatureUtils.toSignature(clsName);
+            clsSignature = SignatureUtils.classToSignature(clsName);
             stack = new OpcodeStack();
             localSpecialObjects = new HashMap<Integer, Integer>();
             fieldSpecialObjects = new HashMap<String, String>();
