@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -128,7 +129,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                     Type[] args = Type.getArgumentTypes(getSigConstantOperand());
                     if ((args.length > 0) || (pInfo.popPC == (getPC() - 1))) {
                         if (args.length == (stack.getStackDepth() - pInfo.popDepth)) {
-                            if (classDefinesStaticMethod(pInfo.popSignature.substring(1, pInfo.popSignature.length() - 1))) {
+                            if (classDefinesStaticMethod(SignatureUtils.stripSignature(pInfo.popSignature))) {
                                 int lineNumber = -1;
                                 if (lineNumberTable != null) {
                                     lineNumber = lineNumberTable.getSourceLine(getPC());
@@ -176,7 +177,6 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
     }
 
     boolean classDefinesStaticMethod(String popSignature) throws ClassNotFoundException {
-        popSignature = popSignature.replace('/', '.');
         if (Values.JAVA_LANG_OBJECT.equals(popSignature) || "java.lang.Class".equals(popSignature)) {
             return false;
         }
