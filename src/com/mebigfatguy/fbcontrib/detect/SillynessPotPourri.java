@@ -68,6 +68,10 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
 /**
  * looks for silly bugs that are simple but do not fit into one large pattern.
  */
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+    value = "CLI_CONSTANT_LIST_INDEX",
+    justification = "lastPCs is an int[] of size 4 for efficiency reasons"
+)
 @CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector {
 

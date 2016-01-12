@@ -52,7 +52,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
 
     /**
      * constructs a MRC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -78,6 +78,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
      * @param obj
      *            the context object of the currently parsed code block
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL", justification = "False positives occur when state is maintained across callbacks")
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();

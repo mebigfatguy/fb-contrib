@@ -98,7 +98,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the opcode stack
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -123,10 +123,14 @@ public class PresizeCollections extends BytecodeScanningDetector {
      * implements the visitor to look for creation of collections that are then
      * populated with a known number of elements usually based on another
      * collection, but the new collection is not presized.
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+        value = "CLI_CONSTANT_LIST_INDEX",
+        justification = "Constrained by FindBugs API"
+    )
     @Override
     public void sawOpcode(int seen) {
         boolean sawAlloc = false;

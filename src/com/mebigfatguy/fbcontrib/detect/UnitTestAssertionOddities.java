@@ -127,6 +127,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         }
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL", justification = "False positives occur when state is maintained across callbacks")
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
@@ -166,6 +167,10 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         }
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
+        value = "CLI_CONSTANT_LIST_INDEX",
+        justification = "Constrained by FindBugs API"
+    )
     @Override
     public void sawOpcode(int seen) {
         String userValue = null;
