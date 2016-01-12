@@ -255,16 +255,28 @@ public class SignatureUtils {
         return (TWO_SLOT_TYPES.contains(signature)) ? 2 : 1;
     }
 
+    /**
+     * converts a signature, like Ljava/lang/String;
+     * into a dotted class name.
+     */
     public static String stripSignature(String signature) {
-        if (signature.startsWith("L") && signature.endsWith(";")) {
-            return signature.substring(1, signature.length() - 1).replace('/', '.');
-        }
-
-        return signature.replace('/', '.');
+        return trimSignature(signature).replace('/', '.');
     }
 
     /**
-     * returns a slashed class name into a signature, like java/lang/String -- Ljava/lang/String;
+     * converts a signature, like Ljava/lang/String;
+     * into a slashed class name.
+     */
+    public static String trimSignature(String signature) {
+        if (signature.startsWith("L") && signature.endsWith(";")) {
+            return signature.substring(1, signature.length() - 1);
+        }
+
+        return signature;
+    }
+
+    /**
+     * returns a slashed or dotted class name into a signature, like java/lang/String -- Ljava/lang/String;
      *
      * @param clsName
      *            the class name to convert
