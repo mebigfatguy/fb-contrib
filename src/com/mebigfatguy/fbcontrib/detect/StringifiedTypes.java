@@ -74,12 +74,12 @@ public class StringifiedTypes extends BytecodeScanningDetector {
     private static final Map<String, Integer> STRING_PARSE_METHODS = new HashMap<String, Integer>();
 
     static {
-        STRING_PARSE_METHODS.put("indexOf", Values.NORMAL_PRIORITY);
-        STRING_PARSE_METHODS.put("lastIndexOf", Values.NORMAL_PRIORITY);
-        STRING_PARSE_METHODS.put("substring", Values.NORMAL_PRIORITY);
-        STRING_PARSE_METHODS.put("split", Values.NORMAL_PRIORITY);
-        STRING_PARSE_METHODS.put("startsWith", Values.LOW_PRIORITY);
-        STRING_PARSE_METHODS.put("endsWith", Values.LOW_PRIORITY);
+        STRING_PARSE_METHODS.put("indexOf", Values.NORMAL_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("lastIndexOf", Values.NORMAL_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("substring", Values.NORMAL_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("split", Values.NORMAL_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("startsWith", Values.LOW_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("endsWith", Values.LOW_BUG_PRIORITY);
     }
 
     private static final String TO_STRING = "toString";
