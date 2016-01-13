@@ -293,7 +293,7 @@ public class SignatureUtils {
     /**
      * returns the class name, discarding any anonymous component
      */
-    public String getNonAnonymousPortion(String className) {
+    public static String getNonAnonymousPortion(String className) {
         String[] components = CLASS_COMPONENT_DELIMITER.split(className);
         StringBuilder buffer = new StringBuilder(className.length()).append(components[0]);
         for (int i = 1; i < components.length && !ANONYMOUS_COMPONENT.matcher(components[i]).matches(); i++) {
