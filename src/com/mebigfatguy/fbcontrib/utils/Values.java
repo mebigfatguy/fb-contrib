@@ -46,8 +46,8 @@ public class Values {
 
     public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 
-    public static final Integer NORMAL_PRIORITY = Integer.valueOf(BytecodeScanningDetector.NORMAL_PRIORITY);
-    public static final Integer LOW_PRIORITY = Integer.valueOf(BytecodeScanningDetector.LOW_PRIORITY);
+    public static final Integer NORMAL_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.NORMAL_PRIORITY);
+    public static final Integer LOW_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.LOW_PRIORITY);
 
     private Values() {
     }
