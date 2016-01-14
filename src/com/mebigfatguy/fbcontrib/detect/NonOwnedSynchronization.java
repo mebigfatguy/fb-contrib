@@ -135,11 +135,11 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
                 case ALOAD_3: {
                     int reg = RegisterUtils.getALoadReg(this, seen);
                     if ((reg == 0) && getMethod().isStatic()) {
-                        tosIsPriority = LOW;
+                        tosIsPriority = Values.LOW_BUG_PRIORITY;
                     } else {
                         tosIsPriority = regPriorities.get(Integer.valueOf(reg));
                         if (tosIsPriority == null) {
-                            tosIsPriority = NORMAL;
+                            tosIsPriority = Values.NORMAL_BUG_PRIORITY;
                         }
                     }
                 }
