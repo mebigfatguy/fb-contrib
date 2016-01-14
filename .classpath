@@ -30,5 +30,6 @@
 	<classpathentry kind="lib" path="lib/spring-tx-4.2.3.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/javax.persistence-2.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.3.2.jar" sourcepath="lib/sources/commons-io-1.3.2-sources.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-all-2.0.2-beta.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>

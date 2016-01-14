@@ -104,6 +104,7 @@
 			<pathelement location="${lib.dir}/jsr311-api-${jsr311-api.version}.jar" />
 			<pathelement location="${lib.dir}/spring-tx-${spring-tx.version}.jar" />
 			<pathelement location="${lib.dir}/javax.persistence-${javax.persistence.version}.jar" />
+			<pathelement location="${lib.dir}/mockito-all-${mockito-all.version}.jar" />
 		</path>
 	</target>
 
