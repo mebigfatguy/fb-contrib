@@ -39,11 +39,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for constructors, private methods or static methods that declare that
- * they throw specific checked exceptions, but that do not. This just causes
- * callers of these methods to do extra work to handle an exception that will
- * never be thrown. also looks for throws clauses where two exceptions declared
- * to be thrown are related through inheritance.
+ * looks for constructors, private methods or static methods that declare that they throw specific checked exceptions, but that do not. This just causes callers
+ * of these methods to do extra work to handle an exception that will never be thrown. also looks for throws clauses where two exceptions declared to be thrown
+ * are related through inheritance.
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
@@ -109,8 +107,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to see if the method declares that it throws any
-     * checked exceptions.
+     * implements the visitor to see if the method declares that it throws any checked exceptions.
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -155,7 +152,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
             if (!method.isSynthetic()) {
                 String[] exNames = et.getExceptionNames();
-                for (int i = 0; i < exNames.length - 1; i++) {
+                for (int i = 0; i < (exNames.length - 1); i++) {
                     try {
                         JavaClass exCls1 = Repository.lookupClass(exNames[i]);
                         for (int j = i + 1; j < exNames.length; j++) {
@@ -188,16 +185,14 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     }
 
     /**
-     * checks to see if this method is constructor of an instance based inner
-     * class, as jdk1.5 compiler has a bug where it attaches bogus exception
-     * declarations to this constructors in some cases.
+     * checks to see if this method is constructor of an instance based inner class, as jdk1.5 compiler has a bug where it attaches bogus exception declarations
+     * to this constructors in some cases.
      *
      * @param m
      *            the method to check
      * @param cls
      *            the cls that owns the method
-     * @return whether this method is a ctor of an instance based anonymous
-     *         inner class
+     * @return whether this method is a ctor of an instance based anonymous inner class
      */
     private static boolean isAnonymousInnerCtor(Method m, JavaClass cls) {
         if (!Values.CONSTRUCTOR.equals(m.getName())) {
@@ -215,8 +210,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for method calls that could throw the
-     * exceptions that are listed in the declaration.
+     * implements the visitor to look for method calls that could throw the exceptions that are listed in the declaration.
      */
     @Override
     public void sawOpcode(int seen) {
@@ -255,8 +249,6 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                                                 && !"java.lang.Error".equals(exCls.getClassName()));
 
                                     }
-                                } else {
-                                    declaredCheckedExceptions.clear();
                                 }
                                 found = true;
                                 break;
