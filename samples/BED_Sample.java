@@ -78,4 +78,13 @@ public class BED_Sample {
         File.createTempFile("foo", "bar");
         return "Test".getBytes("UTF-8");
     }
+
+    private void issue92a() throws InterruptedException {
+        System.out.println("test");
+    }
+
+    public static void issue92b() throws InterruptedException {
+        System.out.println("test");
+    }
+
 }
