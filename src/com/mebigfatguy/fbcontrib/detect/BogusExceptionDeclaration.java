@@ -237,17 +237,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                                 if (et != null) {
                                     String[] thrownExceptions = et.getExceptionNames();
                                     for (String thrownException : thrownExceptions) {
-                                        declaredCheckedExceptions.remove(thrownException);
-                                        JavaClass exCls = Repository.lookupClass(thrownException);
-                                        do {
-                                            exCls = exCls.getSuperClass();
-                                            if (exCls == null) {
-                                                break;
-                                            }
-                                            declaredCheckedExceptions.remove(exCls.getClassName());
-                                        } while (!declaredCheckedExceptions.isEmpty() && !"java.lang.Exception".equals(exCls.getClassName())
-                                                && !"java.lang.Error".equals(exCls.getClassName()));
-
+                                        removeThrownExceptionHierarchy(thrownException);
                                     }
                                 }
                                 found = true;
@@ -267,12 +257,39 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     String exSig = item.getSignature();
-                    String exClass = SignatureUtils.stripSignature(exSig);
-                    declaredCheckedExceptions.remove(exClass);
+                    String thrownException = SignatureUtils.stripSignature(exSig);
+                    removeThrownExceptionHierarchy(thrownException);
+                } else {
+                    declaredCheckedExceptions.clear();
                 }
             }
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    /**
+     * removes this thrown exception the list of declared thrown exceptions, including all exceptions in this exception's hierarchy. If an exception class is
+     * found that can't be loaded, then just clear the list of declared checked exceptions and get out.
+     *
+     * @param thrownException
+     *            the exception and it's hierarchy to remove
+     */
+    private void removeThrownExceptionHierarchy(String thrownException) {
+        try {
+            declaredCheckedExceptions.remove(thrownException);
+            JavaClass exCls = Repository.lookupClass(thrownException);
+            do {
+                exCls = exCls.getSuperClass();
+                if (exCls == null) {
+                    break;
+                }
+                declaredCheckedExceptions.remove(exCls.getClassName());
+            } while (!declaredCheckedExceptions.isEmpty() && !"java.lang.Exception".equals(exCls.getClassName())
+                    && !"java.lang.Error".equals(exCls.getClassName()));
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+            declaredCheckedExceptions.clear();
         }
     }
 }
