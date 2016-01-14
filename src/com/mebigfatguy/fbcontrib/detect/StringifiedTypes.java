@@ -38,8 +38,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for string fields that appear to be built with parsing or calling
- * toString() on another object, or from objects that are fields.
+ * looks for string fields that appear to be built with parsing or calling toString() on another object, or from objects that are fields.
  */
 @CustomUserValue
 public class StringifiedTypes extends BytecodeScanningDetector {
@@ -112,10 +111,6 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         super.visitCode(obj);
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        value = "SF_SWITCH_NO_DEFAULT",
-        justification = "We don't need or want to handle every opcode"
-    )
     @Override
     public void sawOpcode(int seen) {
         String userValue = null;
@@ -124,127 +119,129 @@ public class StringifiedTypes extends BytecodeScanningDetector {
             stack.precomputation(this);
             int stackDepth = stack.getStackDepth();
             switch (seen) {
-            case INVOKEVIRTUAL: {
-                String clsName = getClassConstantOperand();
-                String methodName = getNameConstantOperand();
-                String sig = getSigConstantOperand();
-                boolean isStringBuilder = "java/lang/StringBuilder".equals(clsName) || "java/lang/StringBuffer".equals(clsName);
+                case INVOKEVIRTUAL: {
+                    String clsName = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
+                    String sig = getSigConstantOperand();
+                    boolean isStringBuilder = "java/lang/StringBuilder".equals(clsName) || "java/lang/StringBuffer".equals(clsName);
 
-                if (TO_STRING.equals(methodName) && "()Ljava/lang/String;".equals(sig)) {
-                    if (isStringBuilder) {
-                        if (stackDepth > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            userValue = (String) item.getUserValue();
+                    if (TO_STRING.equals(methodName) && "()Ljava/lang/String;".equals(sig)) {
+                        if (isStringBuilder) {
+                            if (stackDepth > 0) {
+                                OpcodeStack.Item item = stack.getStackItem(0);
+                                userValue = (String) item.getUserValue();
+                            }
+                        } else {
+                            userValue = TO_STRING;
                         }
-                    } else {
-                        userValue = TO_STRING;
-                    }
-                } else if (isStringBuilder) {
-                    if ("append".equals(methodName)) {
-                        if (stackDepth > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            userValue = (String) item.getUserValue();
-                            if (userValue == null) {
-                                if (!"Ljava/lang/String;".equals(item.getSignature())) {
-                                    userValue = TO_STRING;
-                                    if (stackDepth > 1) {
-                                        item = stack.getStackItem(1);
-                                        int reg = item.getRegisterNumber();
-                                        if (reg >= 0) {
-                                            toStringStringBuilders.set(reg);
+                    } else if (isStringBuilder) {
+                        if ("append".equals(methodName)) {
+                            if (stackDepth > 0) {
+                                OpcodeStack.Item item = stack.getStackItem(0);
+                                userValue = (String) item.getUserValue();
+                                if (userValue == null) {
+                                    if (!"Ljava/lang/String;".equals(item.getSignature())) {
+                                        userValue = TO_STRING;
+                                        if (stackDepth > 1) {
+                                            item = stack.getStackItem(1);
+                                            int reg = item.getRegisterNumber();
+                                            if (reg >= 0) {
+                                                toStringStringBuilders.set(reg);
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                    } else if ("setLength".equals(methodName)) {
-                        if (stackDepth > 1) {
-                            OpcodeStack.Item item = stack.getStackItem(1);
-                            item.setUserValue(null);
-                            int reg = item.getRegisterNumber();
-                            if (reg >= 0) {
-                                toStringStringBuilders.clear(reg);
-                            }
-                        }
-                    }
-                } else if ("java/lang/String".equals(clsName)) {
-                    Integer priority = STRING_PARSE_METHODS.get(methodName);
-                    if (priority != null) {
-                        Type[] parmTypes = Type.getArgumentTypes(sig);
-                        if (stackDepth > parmTypes.length) {
-                            OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
-                            if ((item.getXField() != null) || FROM_FIELD.equals(item.getUserValue())) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.STT_STRING_PARSING_A_FIELD.name(), priority.intValue()).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            }
-                        }
-                    }
-                }
-            }
-                break;
-
-            case INVOKEINTERFACE: {
-                String clsName = getClassConstantOperand();
-                String methodName = getNameConstantOperand();
-                String sig = getSigConstantOperand();
-
-                Type[] parmTypes = Type.getArgumentTypes(sig);
-                if (stackDepth > parmTypes.length) {
-                    FQMethod cm = new FQMethod(clsName, methodName, sig);
-                    checkParms = COLLECTION_PARMS.get(cm);
-                    if (checkParms != null) {
-                        OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
-                        if (item.getXField() != null) {
-                            for (int parm : checkParms) {
-                                if (parm >= 0) {
-                                    item = stack.getStackItem(parm);
-                                    if (TO_STRING.equals(item.getUserValue())) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this)
-                                                .addMethod(this).addSourceLine(this));
-                                        break;
-                                    }
+                        } else if ("setLength".equals(methodName)) {
+                            if (stackDepth > 1) {
+                                OpcodeStack.Item item = stack.getStackItem(1);
+                                item.setUserValue(null);
+                                int reg = item.getRegisterNumber();
+                                if (reg >= 0) {
+                                    toStringStringBuilders.clear(reg);
                                 }
                             }
-                        } else {
-                            checkParms = null;
+                        }
+                    } else if ("java/lang/String".equals(clsName)) {
+                        Integer priority = STRING_PARSE_METHODS.get(methodName);
+                        if (priority != null) {
+                            Type[] parmTypes = Type.getArgumentTypes(sig);
+                            if (stackDepth > parmTypes.length) {
+                                OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
+                                if ((item.getXField() != null) || FROM_FIELD.equals(item.getUserValue())) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.STT_STRING_PARSING_A_FIELD.name(), priority.intValue()).addClass(this)
+                                            .addMethod(this).addSourceLine(this));
+                                }
+                            }
                         }
                     }
                 }
-            }
                 break;
 
-            case PUTFIELD:
-                if (stackDepth > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    if ("toString".equals(item.getUserValue())) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
+                case INVOKEINTERFACE: {
+                    String clsName = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
+                    String sig = getSigConstantOperand();
+
+                    Type[] parmTypes = Type.getArgumentTypes(sig);
+                    if (stackDepth > parmTypes.length) {
+                        FQMethod cm = new FQMethod(clsName, methodName, sig);
+                        checkParms = COLLECTION_PARMS.get(cm);
+                        if (checkParms != null) {
+                            OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
+                            if (item.getXField() != null) {
+                                for (int parm : checkParms) {
+                                    if (parm >= 0) {
+                                        item = stack.getStackItem(parm);
+                                        if (TO_STRING.equals(item.getUserValue())) {
+                                            bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                            break;
+                                        }
+                                    }
+                                }
+                            } else {
+                                checkParms = null;
+                            }
+                        }
                     }
                 }
                 break;
 
-            case ALOAD:
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3: {
-                int reg = RegisterUtils.getALoadReg(this, seen);
-                if (toStringStringBuilders.get(reg)) {
-                    userValue = TO_STRING;
+                case PUTFIELD:
+                    if (stackDepth > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        if ("toString".equals(item.getUserValue())) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
+                    }
+                break;
+
+                case ALOAD:
+                case ALOAD_0:
+                case ALOAD_1:
+                case ALOAD_2:
+                case ALOAD_3: {
+                    int reg = RegisterUtils.getALoadReg(this, seen);
+                    if (toStringStringBuilders.get(reg)) {
+                        userValue = TO_STRING;
+                    }
                 }
-            }
                 break;
 
-            case ASTORE:
-            case ASTORE_0:
-            case ASTORE_1:
-            case ASTORE_2:
-            case ASTORE_3: {
-                int reg = RegisterUtils.getAStoreReg(this, seen);
-                toStringStringBuilders.clear(reg);
-            }
+                case ASTORE:
+                case ASTORE_0:
+                case ASTORE_1:
+                case ASTORE_2:
+                case ASTORE_3: {
+                    int reg = RegisterUtils.getAStoreReg(this, seen);
+                    toStringStringBuilders.clear(reg);
+                }
                 break;
 
+                default:
+                break;
             }
         } finally {
             stack.sawOpcode(this, seen);
