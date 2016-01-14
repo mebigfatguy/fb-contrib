@@ -28,6 +28,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -73,12 +74,12 @@ public class StringifiedTypes extends BytecodeScanningDetector {
     private static final Map<String, Integer> STRING_PARSE_METHODS = new HashMap<String, Integer>();
 
     static {
-        STRING_PARSE_METHODS.put("indexOf", Integer.valueOf(NORMAL_PRIORITY));
-        STRING_PARSE_METHODS.put("lastIndexOf", Integer.valueOf(NORMAL_PRIORITY));
-        STRING_PARSE_METHODS.put("substring", Integer.valueOf(NORMAL_PRIORITY));
-        STRING_PARSE_METHODS.put("split", Integer.valueOf(NORMAL_PRIORITY));
-        STRING_PARSE_METHODS.put("startsWith", Integer.valueOf(LOW_PRIORITY));
-        STRING_PARSE_METHODS.put("endsWith", Integer.valueOf(LOW_PRIORITY));
+        STRING_PARSE_METHODS.put("indexOf", Values.NORMAL_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("lastIndexOf", Values.NORMAL_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("substring", Values.NORMAL_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("split", Values.NORMAL_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("startsWith", Values.LOW_BUG_PRIORITY);
+        STRING_PARSE_METHODS.put("endsWith", Values.LOW_BUG_PRIORITY);
     }
 
     private static final String TO_STRING = "toString";
@@ -121,6 +122,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         int[] checkParms = null;
         try {
             stack.precomputation(this);
+            int stackDepth = stack.getStackDepth();
             switch (seen) {
             case INVOKEVIRTUAL: {
                 String clsName = getClassConstantOperand();
@@ -130,7 +132,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
 
                 if (TO_STRING.equals(methodName) && "()Ljava/lang/String;".equals(sig)) {
                     if (isStringBuilder) {
-                        if (stack.getStackDepth() > 0) {
+                        if (stackDepth > 0) {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             userValue = (String) item.getUserValue();
                         }
@@ -139,13 +141,13 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                     }
                 } else if (isStringBuilder) {
                     if ("append".equals(methodName)) {
-                        if (stack.getStackDepth() > 0) {
+                        if (stackDepth > 0) {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             userValue = (String) item.getUserValue();
                             if (userValue == null) {
                                 if (!"Ljava/lang/String;".equals(item.getSignature())) {
                                     userValue = TO_STRING;
-                                    if (stack.getStackDepth() > 1) {
+                                    if (stackDepth > 1) {
                                         item = stack.getStackItem(1);
                                         int reg = item.getRegisterNumber();
                                         if (reg >= 0) {
@@ -156,7 +158,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                             }
                         }
                     } else if ("setLength".equals(methodName)) {
-                        if (stack.getStackDepth() > 1) {
+                        if (stackDepth > 1) {
                             OpcodeStack.Item item = stack.getStackItem(1);
                             item.setUserValue(null);
                             int reg = item.getRegisterNumber();
@@ -169,7 +171,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                     Integer priority = STRING_PARSE_METHODS.get(methodName);
                     if (priority != null) {
                         Type[] parmTypes = Type.getArgumentTypes(sig);
-                        if (stack.getStackDepth() > parmTypes.length) {
+                        if (stackDepth > parmTypes.length) {
                             OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
                             if ((item.getXField() != null) || FROM_FIELD.equals(item.getUserValue())) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.STT_STRING_PARSING_A_FIELD.name(), priority.intValue()).addClass(this)
@@ -187,7 +189,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                 String sig = getSigConstantOperand();
 
                 Type[] parmTypes = Type.getArgumentTypes(sig);
-                if (stack.getStackDepth() > parmTypes.length) {
+                if (stackDepth > parmTypes.length) {
                     FQMethod cm = new FQMethod(clsName, methodName, sig);
                     checkParms = COLLECTION_PARMS.get(cm);
                     if (checkParms != null) {
@@ -212,7 +214,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                 break;
 
             case PUTFIELD:
-                if (stack.getStackDepth() > 0) {
+                if (stackDepth > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     if ("toString".equals(item.getUserValue())) {
                         bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)

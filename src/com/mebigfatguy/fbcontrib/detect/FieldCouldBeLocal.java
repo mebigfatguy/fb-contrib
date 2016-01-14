@@ -46,6 +46,7 @@ import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -100,7 +101,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
             visitedBlocks = new BitSet();
             clsContext = classContext;
             clsName = clsContext.getJavaClass().getClassName();
-            clsSig = 'L' + clsName.replace('.', '/') + ';';
+            clsSig = SignatureUtils.classToSignature(clsName);
             JavaClass cls = classContext.getJavaClass();
             Field[] fields = cls.getFields();
             ConstantPool cp = classContext.getConstantPoolGen().getConstantPool();

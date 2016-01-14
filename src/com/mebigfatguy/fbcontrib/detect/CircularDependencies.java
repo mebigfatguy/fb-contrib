@@ -49,7 +49,7 @@ public class CircularDependencies extends BytecodeScanningDetector {
 
     /**
      * constructs a CD detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -74,10 +74,7 @@ public class CircularDependencies extends BytecodeScanningDetector {
             if (clsName.equals(refClsName))
                 return;
 
-            if (clsName.startsWith(refClsName) && (refClsName.indexOf('$') >= 0))
-                return;
-
-            if (refClsName.startsWith(clsName) && (clsName.indexOf('$') >= 0))
+            if (isEnclosingClassName(clsName, refClsName) || isEnclosingClassName(refClsName, clsName))
                 return;
 
             if (isStaticChild(clsName, refClsName) || isStaticChild(refClsName, clsName))
@@ -91,6 +88,10 @@ public class CircularDependencies extends BytecodeScanningDetector {
 
             dependencies.add(refClsName);
         }
+    }
+
+    private boolean isEnclosingClassName(String outerClass, String innerClass) {
+        return innerClass.startsWith(outerClass) && innerClass.indexOf('$') >= 0;
     }
 
     @Override

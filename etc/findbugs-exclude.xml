@@ -1,0 +1,7 @@
+<FindBugsFilter>
+    <!-- The sawOpcode method is just ugly. -->
+    <Match>
+        <Method name="sawOpcode"/>
+        <Bug pattern="CC_CYCLOMATIC_COMPLEXITY"/>
+    </Match>
+</FindBugsFilter>

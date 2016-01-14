@@ -99,6 +99,7 @@ public class CloneUsability extends BytecodeScanningDetector {
      * @param obj
      *            the method being parsed
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL", justification = "False positives occur when state is maintained across callbacks")
     @Override
     public void visitCode(Code obj) {
         try {
@@ -142,7 +143,7 @@ public class CloneUsability extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to look for a CloneNotSupported being thrown
-     * 
+     *
      * @param seen the currently parsed opcode
      */
     @Override

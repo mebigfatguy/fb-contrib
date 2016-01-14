@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -46,7 +47,7 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
 
     /**
      * constructs a NIR detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -56,7 +57,7 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
 
     /**
      * overrides the interface to collect the line number table, and reset state
-     * 
+     *
      * @param obj
      *            the content object of the currently parsed code
      */
@@ -78,7 +79,7 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
     /**
      * overrides the interface to find accesses of static variables off of an
      * instance immediately fetched from a method call.
-     * 
+     *
      * @param seen
      *            the opcode of the currently visited instruction
      */
@@ -92,8 +93,7 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
                 if (retType.getSignature().startsWith("L")) {
                     String clsName = getClassConstantOperand();
                     if (!"java/lang/Object".equals(clsName) && !"java/lang/String".equals(clsName)) {
-                        returnType = retType.getSignature();
-                        returnType = returnType.substring(1, returnType.length() - 1);
+                        returnType = SignatureUtils.trimSignature(retType.getSignature());
                         invokePC = getPC();
                         state = State.SEEN_INVOKE;
                     }

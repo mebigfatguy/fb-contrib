@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -37,6 +38,9 @@ import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 public class SignatureUtils {
 
     private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create("J", "D");
+
+    private static final Pattern CLASS_COMPONENT_DELIMITER = Pattern.compile("\\$");
+    private static final Pattern ANONYMOUS_COMPONENT = Pattern.compile("^[1-9][0-9]{0,9}$");
 
     /**
      * private to reinforce the helper status of the class
@@ -255,12 +259,47 @@ public class SignatureUtils {
         return (TWO_SLOT_TYPES.contains(signature)) ? 2 : 1;
     }
 
+    /**
+     * converts a signature, like Ljava/lang/String;
+     * into a dotted class name.
+     */
     public static String stripSignature(String signature) {
+        return trimSignature(signature).replace('/', '.');
+    }
+
+    /**
+     * converts a signature, like Ljava/lang/String;
+     * into a slashed class name.
+     */
+    public static String trimSignature(String signature) {
         if (signature.startsWith("L") && signature.endsWith(";")) {
-            return signature.substring(1, signature.length() - 1).replace('/', '.');
+            return signature.substring(1, signature.length() - 1);
         }
 
-        return signature.replace('/', '.');
+        return signature;
+    }
+
+    /**
+     * returns a slashed or dotted class name into a signature, like java/lang/String -- Ljava/lang/String;
+     *
+     * @param clsName
+     *            the class name to convert
+     * @return the signature format of the class
+     */
+    public static String classToSignature(String className) {
+        return 'L' + className.replace('.', '/') + ';';
+    }
+
+    /**
+     * returns the class name, discarding any anonymous component
+     */
+    public static String getNonAnonymousPortion(String className) {
+        String[] components = CLASS_COMPONENT_DELIMITER.split(className);
+        StringBuilder buffer = new StringBuilder(className.length()).append(components[0]);
+        for (int i = 1; i < components.length && !ANONYMOUS_COMPONENT.matcher(components[i]).matches(); i++) {
+            buffer.append('$').append(components[i]);
+        }
+        return buffer.toString();
     }
 
 }
