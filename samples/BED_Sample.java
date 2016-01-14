@@ -66,6 +66,13 @@ public class BED_Sample {
         }
     }
 
+    static void fpJustThrowIt(boolean permissible, String message) throws IOException {
+        IOException e = new FileNotFoundException(message);
+        if (!permissible) {
+            throw e;
+        }
+    }
+
     public Object iAmCreatingAnObject() {
         return new Object() {
             private byte[] iHaveToThrowAnException() throws IOException {
