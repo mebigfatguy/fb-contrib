@@ -19,10 +19,14 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ElementValuePair;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -36,6 +40,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 
 /** looks for odd uses of the Assert class of the JUnit and TestNG framework */
 @CustomUserValue
@@ -75,6 +81,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private boolean checkIsNegated;
     private TestFrameworkType frameworkType;
     private boolean hasAnnotation;
+    private Set<FieldDescriptor> fieldsWithAnnotations;
 
     /**
      * constructs a JOA detector given the reporter to report bugs on
@@ -118,12 +125,14 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             isAnnotationCapable = (cls.getMajor() >= 5) && ((testAnnotationClass != null) || (testNGAnnotationClass != null));
             if (isTestCaseDerived || isAnnotationCapable) {
                 stack = new OpcodeStack();
+                fieldsWithAnnotations = new HashSet<FieldDescriptor>();
                 super.visitClassContext(classContext);
             }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         } finally {
             stack = null;
+            fieldsWithAnnotations = null;
         }
     }
 
@@ -167,10 +176,14 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         }
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        value = "CLI_CONSTANT_LIST_INDEX",
-        justification = "Constrained by FindBugs API"
-    )
+    @Override
+    public void visitField(Field obj) {
+        if (obj.getAnnotationEntries().length > 0) {
+            fieldsWithAnnotations.add(getFieldDescriptor());
+        }
+    }
+
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "CLI_CONSTANT_LIST_INDEX", justification = "Constrained by FindBugs API")
     @Override
     public void sawOpcode(int seen) {
         String userValue = null;
@@ -311,10 +324,13 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                             return;
                         }
 
-                        if (expectedItem.isNull()) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL.name(), NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this));
-                            return;
+                        XField fld = expectedItem.getXField();
+                        if ((fld == null) || !fieldsWithAnnotations.contains(fld.getFieldDescriptor())) {
+                            if (expectedItem.isNull()) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                                return;
+                            }
                         }
                     } else if ("assertNotNull".equals(methodName)) {
                         if (stack.getStackDepth() > 0) {
