@@ -112,7 +112,7 @@
 		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true" />
 			<attribute name="http://xml.org/sax/features/namespaces" value="true" />
-			<fileset dir="${etc.dir}" includes="*.xml" />
+			<fileset dir="${etc.dir}" includes="*.xml" excludes="findbugs-exclude.xml"/>
 		</xmlvalidate>
 		<bug-rank-check-style findbugsxml="etc/findbugs.xml" failOnMissingDetector="false" />
 	</target>
