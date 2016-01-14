@@ -2,7 +2,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-import org.testng.annotations.BeforeMethod;
 
 import junit.framework.TestCase;
 
@@ -191,14 +190,14 @@ class GitHubIssue94 {
     @Mock
     private Object mockObject;
 
-    @BeforeMethod
+    @org.testng.annotations.BeforeMethod
     public void setUp() throws Exception {
         MockitoAnnotations.initMocks(this);
 
         realObject = new Object();
     }
 
-    @Test
+    @org.testng.annotations.Test
     public void fpShouldNotEqualMockObject() {
         org.testng.Assert.assertNotEquals(realObject, mockObject);
     }
