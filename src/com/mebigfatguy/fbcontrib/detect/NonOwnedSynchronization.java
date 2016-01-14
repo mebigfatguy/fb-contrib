@@ -40,25 +40,20 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that synchronize on variables that are not owned by the
- * current class. Doing this causes confusion when two classes use the same
- * variable for their own synchronization purposes. For cleanest separation of
- * interests, only synchronize on private fields of the class. Note that 'this'
- * is not owned by the current class and synchronization on 'this' should be
- * avoided as well.
+ * looks for methods that synchronize on variables that are not owned by the current class. Doing this causes confusion when two classes use the same variable
+ * for their own synchronization purposes. For cleanest separation of interests, only synchronize on private fields of the class. Note that 'this' is not owned
+ * by the current class and synchronization on 'this' should be avoided as well.
  */
 @CustomUserValue
 public class NonOwnedSynchronization extends BytecodeScanningDetector {
     private static final Integer OWNED = Integer.valueOf(Integer.MAX_VALUE);
-    private static final Integer LOW = Integer.valueOf(LOW_PRIORITY);
-    private static final Integer NORMAL = Integer.valueOf(NORMAL_PRIORITY);
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private Map<Integer, Integer> regPriorities;
 
     /**
      * constructs a NOS detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -90,7 +85,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
      */
     public boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return bytecodeSet != null && (bytecodeSet.get(Constants.MONITORENTER));
+        return (bytecodeSet != null) && (bytecodeSet.get(Constants.MONITORENTER));
     }
 
     /**
@@ -106,10 +101,12 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
             stack.resetForMethodEntry(this);
             regPriorities.clear();
             int[] parmRegs = RegisterUtils.getParameterRegisters(method);
-            for (int reg : parmRegs)
-                regPriorities.put(Integer.valueOf(reg), NORMAL);
-            if (!method.isStatic())
-                regPriorities.put(Values.ZERO, LOW);
+            for (int reg : parmRegs) {
+                regPriorities.put(Integer.valueOf(reg), Values.NORMAL_BUG_PRIORITY);
+            }
+            if (!method.isStatic()) {
+                regPriorities.put(Values.ZERO, Values.LOW_BUG_PRIORITY);
+            }
             super.visitCode(obj);
         }
     }
@@ -127,90 +124,93 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-            case GETFIELD:
-                tosIsPriority = OWNED;
+                case GETFIELD:
+                    tosIsPriority = OWNED;
                 break;
 
-            case ALOAD:
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3: {
-                int reg = RegisterUtils.getALoadReg(this, seen);
-                if ((reg == 0) && getMethod().isStatic())
-                    tosIsPriority = LOW;
-                else {
-                    tosIsPriority = regPriorities.get(Integer.valueOf(reg));
-                    if (tosIsPriority == null)
-                        tosIsPriority = NORMAL;
-                }
-            }
-                break;
-
-            case ASTORE:
-            case ASTORE_0:
-            case ASTORE_1:
-            case ASTORE_2:
-            case ASTORE_3: {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    Integer priority = (Integer) item.getUserValue();
-                    regPriorities.put(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)), priority);
-                }
-            }
-                break;
-
-            case INVOKEVIRTUAL:
-            case INVOKEINTERFACE: {
-                String sig = getSigConstantOperand();
-                Type t = Type.getReturnType(sig);
-                if (t.getSignature().startsWith("L")) {
-                    int parmCnt = Type.getArgumentTypes(sig).length;
-                    if (stack.getStackDepth() > parmCnt) {
-                        OpcodeStack.Item itm = stack.getStackItem(parmCnt);
-                        Integer priority = (Integer) itm.getUserValue();
-                        if ((priority != null) && OWNED.equals(priority)) {
-                            tosIsPriority = OWNED;
-                        } else {
-                            int reg = itm.getRegisterNumber();
-                            if (reg > 0)
-                                tosIsPriority = regPriorities.get(Integer.valueOf(reg));
-                            else
-                                tosIsPriority = OWNED;
+                case ALOAD:
+                case ALOAD_0:
+                case ALOAD_1:
+                case ALOAD_2:
+                case ALOAD_3: {
+                    int reg = RegisterUtils.getALoadReg(this, seen);
+                    if ((reg == 0) && getMethod().isStatic()) {
+                        tosIsPriority = LOW;
+                    } else {
+                        tosIsPriority = regPriorities.get(Integer.valueOf(reg));
+                        if (tosIsPriority == null) {
+                            tosIsPriority = NORMAL;
                         }
                     }
                 }
-            }
                 break;
 
-            case INVOKESTATIC: {
-                String sig = getSigConstantOperand();
-                Type t = Type.getReturnType(sig);
-                if (t.getSignature().startsWith("L"))
-                    tosIsPriority = OWNED; // can't be sure
-            }
-                break;
-
-            case INVOKESPECIAL: {
-                String name = getNameConstantOperand();
-                if (Values.CONSTRUCTOR.equals(name)) {
-                    tosIsPriority = OWNED;
-                }
-            }
-                break;
-
-            case MONITORENTER: {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    Integer priority = (Integer) itm.getUserValue();
-                    if ((priority != null) && (!priority.equals(OWNED))) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.NOS_NON_OWNED_SYNCHRONIZATION.name(), priority.intValue()).addClass(this)
-                                .addMethod(this).addSourceLine(this));
+                case ASTORE:
+                case ASTORE_0:
+                case ASTORE_1:
+                case ASTORE_2:
+                case ASTORE_3: {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        Integer priority = (Integer) item.getUserValue();
+                        regPriorities.put(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)), priority);
                     }
                 }
-            }
                 break;
-            default:
+
+                case INVOKEVIRTUAL:
+                case INVOKEINTERFACE: {
+                    String sig = getSigConstantOperand();
+                    Type t = Type.getReturnType(sig);
+                    if (t.getSignature().startsWith("L")) {
+                        int parmCnt = Type.getArgumentTypes(sig).length;
+                        if (stack.getStackDepth() > parmCnt) {
+                            OpcodeStack.Item itm = stack.getStackItem(parmCnt);
+                            Integer priority = (Integer) itm.getUserValue();
+                            if ((priority != null) && OWNED.equals(priority)) {
+                                tosIsPriority = OWNED;
+                            } else {
+                                int reg = itm.getRegisterNumber();
+                                if (reg > 0) {
+                                    tosIsPriority = regPriorities.get(Integer.valueOf(reg));
+                                } else {
+                                    tosIsPriority = OWNED;
+                                }
+                            }
+                        }
+                    }
+                }
+                break;
+
+                case INVOKESTATIC: {
+                    String sig = getSigConstantOperand();
+                    Type t = Type.getReturnType(sig);
+                    if (t.getSignature().startsWith("L")) {
+                        tosIsPriority = OWNED; // can't be sure
+                    }
+                }
+                break;
+
+                case INVOKESPECIAL: {
+                    String name = getNameConstantOperand();
+                    if (Values.CONSTRUCTOR.equals(name)) {
+                        tosIsPriority = OWNED;
+                    }
+                }
+                break;
+
+                case MONITORENTER: {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        Integer priority = (Integer) itm.getUserValue();
+                        if ((priority != null) && (!priority.equals(OWNED))) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.NOS_NON_OWNED_SYNCHRONIZATION.name(), priority.intValue()).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
+                    }
+                }
+                break;
+                default:
                 break;
             }
         } finally {
