@@ -360,9 +360,6 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     loggingClassName = (String) item.getConstant();
-                    if (loggingClassName != null) {
-                        loggingClassName = loggingClassName.replace('.', '/');
-                    }
                     loggingPriority = LOW_PRIORITY;
                 }
             }
@@ -382,22 +379,17 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
                     if (loggingClassName != null) {
                         // first look at the constant passed in
-                        loggingClassName = loggingClassName.replace('.', '/');
                         loggingPriority = LOW_PRIORITY;
                     } else if (userValue instanceof String) {
                         // try the user value, which may have been set by a call
                         // to Foo.class.getName()
                         loggingClassName = (String) userValue;
-                        loggingClassName = loggingClassName.replace('.', '/');
                     }
                 }
             } else if ("(Ljava/lang/String;Lorg/apache/log4j/spi/LoggerFactory;)Lorg/apache/log4j/Logger;".equals(signature)) {
                 if (stack.getStackDepth() > 1) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     loggingClassName = (String) item.getConstant();
-                    if (loggingClassName != null) {
-                        loggingClassName = loggingClassName.replace('.', '/');
-                    }
                     loggingPriority = LOW_PRIORITY;
                 }
             }
@@ -413,15 +405,13 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     loggingClassName = (String) item.getConstant();
-                    if (loggingClassName != null) {
-                        loggingClassName = loggingClassName.replace('.', '/');
-                    }
                     loggingPriority = LOW_PRIORITY;
                 }
             }
         }
 
         if (loggingClassName != null) {
+            loggingClassName = loggingClassName.replace('/', '.');
             if (stack.getStackDepth() > 0) {
                 if (!loggingClassName.equals(SignatureUtils.getNonAnonymousPortion(nameOfThisClass))) {
                     bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_CLASS.name(), loggingPriority).addClass(this).addMethod(this)

@@ -319,6 +319,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
      *
      * @return whether or not the class is general purpose
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "EXS_EXCEPTION_SOFTENING_RETURN_FALSE", justification = "No other simple way to determine whether class exists")
     private boolean generalPurpose(final String className) {
 
         if (className.startsWith("java.") || className.startsWith("javax.")) {
