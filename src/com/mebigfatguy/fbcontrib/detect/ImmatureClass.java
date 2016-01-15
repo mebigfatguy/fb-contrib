@@ -237,7 +237,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
 
             for (int i = 0; i < numArgs; i++) {
                 LocalVariable lv = lvt.getLocalVariable(offset + i, 0);
-                if (lv == null) {
+                if ((lv == null) || (lv.getName() == null)) {
                     continue methods;
                 }
 
