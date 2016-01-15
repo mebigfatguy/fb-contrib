@@ -26,6 +26,7 @@ import java.util.Map;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
@@ -45,6 +46,15 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 @CustomUserValue
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
+
+    /**
+     * holds a user value for a StringBuilder or StringBuffer on the stack that is an online append ideally there would be an UNKNOWN option, rather than null,
+     * but findbugs seems to have a nasty bug with static fields holding onto uservalues across detectors
+     */
+    enum UCPMUserValue {
+        INLINE
+    }
+
     private final static Map<FQMethod, Object> characterMethods;
 
     static {
@@ -145,6 +155,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
+
         try {
             stack.precomputation(this);
 
@@ -163,12 +174,13 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                         reportBug();
                     }
                 }
+
             } else if (seen == DUP) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     String duppedSig = itm.getSignature();
                     if ("Ljava/lang/StringBuilder;".equals(duppedSig) || "Ljava/lang/StringBuffer;".equals(duppedSig)) {
-                        itm.setUserValue(Boolean.TRUE);
+                        itm.setUserValue(UCPMUserValue.INLINE);
                     }
                 }
             } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == PUTSTATIC)) {
@@ -178,7 +190,13 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                 }
             }
         } finally {
+            UCPMUserValue uv = callHasInline(seen);
+
             stack.sawOpcode(this, seen);
+            if ((uv == UCPMUserValue.INLINE) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(uv);
+            }
         }
     }
 
@@ -221,9 +239,35 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
         if (stack.getStackDepth() > 1) {
             OpcodeStack.Item itm = stack.getStackItem(1);
-            return itm.getUserValue() != null;
+            return itm.getUserValue() == UCPMUserValue.INLINE;
         }
 
         return true;
+    }
+
+    /**
+     * checks to see if the current opcode is an INVOKEVIRTUAL call that has a INLINE userValue on the caller and a return value. If so, return it.
+     *
+     * @param seen
+     *            the currently parsed opcode
+     * @return whether the caller has an INLINE tag on it
+     *
+     */
+    private UCPMUserValue callHasInline(int seen) {
+        if (seen != INVOKEVIRTUAL) {
+            return null;
+        }
+
+        String sig = getSigConstantOperand();
+        String returnSig = Type.getReturnType(sig).getSignature();
+        if ("Ljava/lang/StringBuilder;".equals(returnSig) || "Ljava/lang/StringBuffer;".equals(returnSig)) {
+            int parmCount = Type.getArgumentTypes(sig).length;
+            if (stack.getStackDepth() > parmCount) {
+                OpcodeStack.Item itm = stack.getStackItem(parmCount);
+                return (UCPMUserValue) itm.getUserValue();
+            }
+        }
+
+        return null;
     }
 }
