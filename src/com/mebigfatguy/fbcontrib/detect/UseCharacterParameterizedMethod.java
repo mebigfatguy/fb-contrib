@@ -207,6 +207,13 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         return false;
     }
 
+    /**
+     * looks to see if we are in a inline string append like "(" + a + ")";
+     *
+     * @param fqm
+     *            the method that is being called
+     * @return whether we are in an inline string append
+     */
     private boolean isInlineAppend(FQMethod fqm) {
         if (!"java/lang/StringBuilder".equals(fqm.getClassName()) && !"java/lang/StringBuffer".equals(fqm.getClassName())) {
             return false;
