@@ -1,9 +1,14 @@
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
@@ -22,6 +27,10 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * use than necessary.
  */
 public class ImmatureClass extends PreorderVisitor implements Detector {
+
+    private static final Pattern ARG_PATTERN = Pattern.compile("(arg|parm|param)\\d");
+
+    private static final int MAX_EMPTY_METHOD_SIZE = 2; // ACONST_NULL, ARETURN
 
     enum HEStatus {
         NOT_NEEDED, UNKNOWN, NEEDED
@@ -52,6 +61,8 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
             try {
                 boolean clsHasRuntimeAnnotation = classHasRuntimeVisibleAnnotation(cls);
                 HEStatus heStatus = HEStatus.UNKNOWN;
+
+                checkIDEGeneratedParmNames(cls);
 
                 for (Field f : cls.getFields()) {
                     if (!f.isStatic() && !f.isSynthetic()) {
@@ -91,6 +102,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                         bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_HASHCODE.name(), LOW_PRIORITY).addClass(cls));
                     }
                 }
+
             } catch (ClassNotFoundException cnfe) {
                 bugReporter.reportMissingClass(cnfe);
             }
@@ -175,6 +187,13 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         return false;
     }
 
+    /**
+     * checks to see if it this class has unit test related annotations attached to methods
+     *
+     * @param cls
+     *            the class to check
+     * @return if a unit test annotation was found
+     */
     private static boolean isTestClass(JavaClass cls) {
         for (Method m : cls.getMethods()) {
             for (AnnotationEntry entry : m.getAnnotationEntries()) {
@@ -186,6 +205,53 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         }
 
         return false;
+    }
+
+    private void checkIDEGeneratedParmNames(JavaClass cls) {
+
+        methods: for (Method m : cls.getMethods()) {
+            if (!m.isPublic()) {
+                continue;
+            }
+
+            String name = m.getName();
+            if (Values.CONSTRUCTOR.equals(name) || Values.STATIC_INITIALIZER.equals(name)) {
+                continue;
+            }
+
+            LocalVariableTable lvt = m.getLocalVariableTable();
+            if (lvt == null) {
+                continue;
+            }
+
+            if (m.getCode().getCode().length <= MAX_EMPTY_METHOD_SIZE) {
+                continue;
+            }
+
+            int numArgs = m.getArgumentTypes().length;
+            if (numArgs == 0) {
+                continue;
+            }
+
+            int offset = m.isStatic() ? 0 : 1;
+
+            for (int i = 0; i < numArgs; i++) {
+                LocalVariable lv = lvt.getLocalVariable(offset + i, 0);
+                if (lv == null) {
+                    continue methods;
+                }
+
+                Matcher ma = ARG_PATTERN.matcher(lv.getName());
+                if (!ma.matches()) {
+                    continue methods;
+                }
+            }
+
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES.name(), NORMAL_PRIORITY).addClass(cls).addMethod(cls, m));
+            return;
+
+        }
     }
 
 }

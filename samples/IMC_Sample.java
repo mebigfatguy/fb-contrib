@@ -5,6 +5,8 @@ import java.lang.annotation.Target;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.objectweb.asm.AnnotationVisitor;
+import org.objectweb.asm.Opcodes;
 
 public class IMC_Sample {
 
@@ -43,5 +45,21 @@ class FPIMCTestClass {
     @Test
     public void doTest() {
         Assert.assertEquals(data1, data2);
+    }
+}
+
+class MyVisitor extends AnnotationVisitor {
+
+    String name;
+
+    public MyVisitor() {
+        super(Opcodes.ASM4);
+    }
+
+    @Override
+    public AnnotationVisitor visitAnnotation(String arg0, String arg1) {
+        name = arg0;
+
+        return super.visitAnnotation(arg0, arg1);
     }
 }
