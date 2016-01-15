@@ -152,14 +152,12 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                                     }
                                 }
                             }
-                        } else if ("setLength".equals(methodName)) {
-                            if (stackDepth > 1) {
-                                OpcodeStack.Item item = stack.getStackItem(1);
-                                item.setUserValue(null);
-                                int reg = item.getRegisterNumber();
-                                if (reg >= 0) {
-                                    toStringStringBuilders.clear(reg);
-                                }
+                        } else if (stackDepth > 1 && "setLength".equals(methodName)) {
+                            OpcodeStack.Item item = stack.getStackItem(1);
+                            item.setUserValue(null);
+                            int reg = item.getRegisterNumber();
+                            if (reg >= 0) {
+                                toStringStringBuilders.clear(reg);
                             }
                         }
                     } else if ("java/lang/String".equals(clsName)) {
