@@ -30,6 +30,10 @@ public final class FQMethod {
         this.signature = signature;
     }
 
+    public String getClassName() {
+        return className;
+    }
+
     @Override
     public int hashCode() {
         return className.hashCode() ^ methodName.hashCode() ^ signature.hashCode();
@@ -51,8 +55,5 @@ public final class FQMethod {
     public String toString() {
         return className + '.' + methodName + signature;
     }
-
-
-
 
 }

@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -36,14 +36,14 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that pass single character string constants as parameters
- * to methods that alternatively have an overridden method that accepts a
- * character instead. It is more performant for the method to handle a single
- * character than a String.
+ * looks for methods that pass single character string constants as parameters to methods that alternatively have an overridden method that accepts a character
+ * instead. It is more performant for the method to handle a single character than a String.
  */
+@CustomUserValue
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     private final static Map<FQMethod, Object> characterMethods;
 
@@ -88,7 +88,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
     /**
      * constructs a UCPM detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -98,7 +98,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to create and clear the opcode stack
-     * 
+     *
      * @param context
      *            the context object for the currently parsed class
      */
@@ -114,7 +114,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
     /**
      * looks for methods that contain a LDC opcode
-     * 
+     *
      * @param obj
      *            the context object of the current method
      * @return if the class uses LDC instructions
@@ -127,7 +127,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
     /**
      * prescreens the method, and reset the stack
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed method
      */
@@ -140,9 +140,8 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for method calls that pass a constant
-     * string as a parameter when the string is only one character long, and
-     * there is an alternate method passing a character.
+     * implements the visitor to look for method calls that pass a constant string as a parameter when the string is only one character long, and there is an
+     * alternate method passing a character.
      */
     @Override
     public void sawOpcode(int seen) {
@@ -155,12 +154,27 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                 Object posObject = characterMethods.get(key);
                 if (posObject instanceof Integer) {
                     if (checkSingleParamMethod((Integer) posObject)) {
-                        reportBug();
+                        if (!isInlineAppend(key)) {
+                            reportBug();
+                        }
                     }
                 } else if (posObject instanceof IntPair) {
                     if (checkDoubleParamMethod((IntPair) posObject)) {
                         reportBug();
                     }
+                }
+            } else if (seen == DUP) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    String duppedSig = itm.getSignature();
+                    if ("Ljava/lang/StringBuilder;".equals(duppedSig) || "Ljava/lang/StringBuffer;".equals(duppedSig)) {
+                        itm.setUserValue(Boolean.TRUE);
+                    }
+                }
+            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == PUTSTATIC)) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    itm.setUserValue(null);
                 }
             }
         } finally {
@@ -191,5 +205,18 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
             }
         }
         return false;
+    }
+
+    private boolean isInlineAppend(FQMethod fqm) {
+        if (!"java/lang/StringBuilder".equals(fqm.getClassName()) && !"java/lang/StringBuffer".equals(fqm.getClassName())) {
+            return false;
+        }
+
+        if (stack.getStackDepth() > 1) {
+            OpcodeStack.Item itm = stack.getStackItem(1);
+            return itm.getUserValue() != null;
+        }
+
+        return true;
     }
 }

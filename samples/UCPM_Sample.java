@@ -61,4 +61,9 @@ public class UCPM_Sample {
     public String fpGitHubIssue95(int value) {
         return "(" + value + ")";
     }
+
+    public String okIssue95(int value) {
+        StringBuilder sb = new StringBuilder();
+        return sb.append("(").append(value).append(")").toString();
+    }
 }
