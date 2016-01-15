@@ -101,7 +101,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
 
                     int priority = NORMAL_PRIORITY;
                     for (JavaClass cls : returnTypes.keySet()) {
-                        if ((cls != null) && Values.JAVA_LANG_OBJECT.equals(cls.getClassName())) {
+                        if ((cls != null) && Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
                             priority = LOW_PRIORITY;
                             break;
                         }

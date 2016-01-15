@@ -570,7 +570,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     private void removeUselessDefiners(String parmSig, final int reg) {
         if (parmSig.startsWith("L")) {
             parmSig = SignatureUtils.stripSignature(parmSig);
-            if (Values.JAVA_LANG_OBJECT.equals(parmSig)) {
+            if (Values.DOTTED_JAVA_LANG_OBJECT.equals(parmSig)) {
                 parameterDefiners.remove(Integer.valueOf(reg));
                 return;
             }

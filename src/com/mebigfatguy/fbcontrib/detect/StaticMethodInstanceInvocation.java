@@ -42,8 +42,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that make static method calls using an instance reference.
- * For documentation purposes, it is better to call the method using the class
+ * looks for methods that make static method calls using an instance reference. For documentation purposes, it is better to call the method using the class
  * name. This may represent a change in definition that should be noticed.
  */
 public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
@@ -102,8 +101,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for static method calls from instance
-     * variables
+     * implements the visitor to look for static method calls from instance variables
      *
      * @param seen
      *            the opcode of the currently visited instruction
@@ -177,7 +175,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
     }
 
     boolean classDefinesStaticMethod(String popSignature) throws ClassNotFoundException {
-        if (Values.JAVA_LANG_OBJECT.equals(popSignature) || "java.lang.Class".equals(popSignature)) {
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(popSignature) || Values.DOTTED_JAVA_LANG_CLASS.equals(popSignature)) {
             return false;
         }
 

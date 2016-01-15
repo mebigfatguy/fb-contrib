@@ -44,8 +44,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * finds methods that excessively use methods from another class. This probably
- * means these methods should be defined in that other class.
+ * finds methods that excessively use methods from another class. This probably means these methods should be defined in that other class.
  */
 public class ClassEnvy extends BytecodeScanningDetector {
     private static final String ENVY_PERCENT_PROPERTY = "fb-contrib.ce.percent";
@@ -130,8 +129,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for the method that uses another class the
-     * most, and if it exceeds the threshold reports it
+     * overrides the visitor to look for the method that uses another class the most, and if it exceeds the threshold reports it
      *
      * @param obj
      *            the code that is currently being parsed
@@ -173,8 +171,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for method calls, and populate a class
-     * access count map based on the owning class of methods called.
+     * overrides the visitor to look for method calls, and populate a class access count map based on the owning class of methods called.
      *
      * @param seen
      *            the opcode currently being parsed
@@ -266,8 +263,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     }
 
     /**
-     * increment the count of class access of the specified class if it is in a
-     * similar package to the caller, and is not general purpose
+     * increment the count of class access of the specified class if it is in a similar package to the caller, and is not general purpose
      *
      * @param calledClass
      *            the class to check
@@ -311,8 +307,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     }
 
     /**
-     * checks to see if the specified class is a built in class, or implements a
-     * simple interface
+     * checks to see if the specified class is a built in class, or implements a simple interface
      *
      * @param className
      *            the class in question
@@ -342,8 +337,8 @@ public class ClassEnvy extends BytecodeScanningDetector {
             JavaClass[] sups = cls.getSuperClasses();
             for (JavaClass sup : sups) {
                 String supName = sup.getClassName();
-                if (Values.JAVA_LANG_OBJECT.equals(supName) || "java.lang.Exception".equals(supName) || "java.lang.RuntimeException".equals(supName)
-                        || "java.lang.Throwable".equals(supName)) {
+                if (Values.DOTTED_JAVA_LANG_OBJECT.equals(supName) || Values.DOTTED_JAVA_LANG_EXCEPTION.equals(supName)
+                        || "java.lang.RuntimeException".equals(supName) || "java.lang.Throwable".equals(supName)) {
                     continue;
                 }
                 if (supName.startsWith("java.lang.") || supName.startsWith("javax.lang.")) {

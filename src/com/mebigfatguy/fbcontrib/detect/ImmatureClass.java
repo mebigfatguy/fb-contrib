@@ -119,7 +119,7 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         
         do {
             String clsName = cls.getClassName();
-            if (Values.JAVA_LANG_OBJECT.equals(clsName)) {
+            if (Values.DOTTED_JAVA_LANG_OBJECT.equals(clsName)) {
                 return false;
             }
             

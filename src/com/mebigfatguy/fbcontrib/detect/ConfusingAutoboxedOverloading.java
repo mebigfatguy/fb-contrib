@@ -171,7 +171,7 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
      */
     private void populateMethodInfo(JavaClass cls, Map<String, Set<String>> methodInfo) {
         try {
-            if (Values.JAVA_LANG_OBJECT.equals(cls.getClassName())) {
+            if (Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
                 return;
             }
 

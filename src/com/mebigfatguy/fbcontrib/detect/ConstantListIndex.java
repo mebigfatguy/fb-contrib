@@ -57,8 +57,8 @@ public class ConstantListIndex extends BytecodeScanningDetector {
 
     static {
         Set<FQMethod> um = new HashSet<FQMethod>();
-        um.add(new FQMethod(Values.JAVA_LANG_STRING, "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
-        um.add(new FQMethod(Values.JAVA_LANG_STRING, "split", "(Ljava/lang/String;I)[Ljava/lang/String;"));
+        um.add(new FQMethod(Values.DOTTED_JAVA_LANG_STRING, "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod(Values.DOTTED_JAVA_LANG_STRING, "split", "(Ljava/lang/String;I)[Ljava/lang/String;"));
         ubiquitousMethods = Collections.unmodifiableSet(um);
 
         try {

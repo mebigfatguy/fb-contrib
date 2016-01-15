@@ -889,8 +889,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             JavaClass toStringClass = item.getJavaClass();
             if (toStringClass != null) {
                 String toStringClassName = toStringClass.getClassName();
-                if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !Values.JAVA_LANG_OBJECT.equals(toStringClassName)
-                        && !Values.JAVA_LANG_STRING.equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
+                if (!toStringClass.isInterface() && !toStringClass.isAbstract() && !Values.DOTTED_JAVA_LANG_OBJECT.equals(toStringClassName)
+                        && !Values.DOTTED_JAVA_LANG_STRING.equals(toStringClassName) && toStringClasses.add(toStringClassName)) {
                     try {
                         JavaClass cls = Repository.lookupClass(toStringClassName);
 
@@ -1041,7 +1041,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 }
             }
             cls = cls.getSuperClass();
-        } while (!Values.JAVA_LANG_OBJECT.equals(cls.getClassName()));
+        } while (!Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName()));
         return false;
     }
 

@@ -67,7 +67,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                 return;
             }
 
-            if (Values.JAVA_LANG_OBJECT.equals(cls.getSuperclassName())) {
+            if (Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getSuperclassName())) {
                 return;
             }
 

@@ -252,7 +252,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         }
 
         JavaClass cls = addItm.getJavaClass();
-        if ((cls == null) || Values.JAVA_LANG_OBJECT.equals(cls.getClassName())) {
+        if ((cls == null) || Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
             return;
         }
 
@@ -269,7 +269,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         JavaClass[] sups = cls.getSuperClasses();
         for (JavaClass sup : sups) {
             String name = sup.getClassName();
-            if (!Values.JAVA_LANG_OBJECT.equals(name)) {
+            if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(name)) {
                 supers.add(name);
             }
         }

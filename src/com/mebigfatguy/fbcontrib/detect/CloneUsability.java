@@ -109,7 +109,7 @@ public class CloneUsability extends BytecodeScanningDetector {
                 String returnClsName = m.getReturnType().getSignature();
                 returnClsName = SignatureUtils.stripSignature(returnClsName);
                 if (!clsName.equals(returnClsName)) {
-                    if (Values.JAVA_LANG_OBJECT.equals(returnClsName)) {
+                    if (Values.DOTTED_JAVA_LANG_OBJECT.equals(returnClsName)) {
                         bugReporter.reportBug(
                                 new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                     } else {
