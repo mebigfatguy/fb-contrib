@@ -57,4 +57,8 @@ public class UCPM_Sample {
         // no tag, starts with doesn't have a char equivalent
         return s.startsWith("*") ? s.substring(1) : s;
     }
+
+    public String fpGitHubIssue95(int value) {
+        return "(" + value + ")";
+    }
 }
