@@ -207,6 +207,12 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
         return false;
     }
 
+    /**
+     * looks for methods that have it's parameters all follow the form arg0, arg1, arg2, or parm0, parm1, parm2 etc, where the method actually has code in it
+     *
+     * @param cls
+     *            the class to check
+     */
     private void checkIDEGeneratedParmNames(JavaClass cls) {
 
         methods: for (Method m : cls.getMethods()) {
