@@ -31,9 +31,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for two or more try catch blocks that are consecutive and catch the
- * same kind of exception, and throw the same exception always. These blocks can
- * be coalesced into one.
+ * looks for two or more try catch blocks that are consecutive and catch the same kind of exception, and throw the same exception always. These blocks can be
+ * coalesced into one.
  */
 
 @CustomUserValue
@@ -276,15 +275,15 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
             BEFORE, IN_TRY, IN_CATCH, AFTER
         };
 
-        int startPC;
-        int endPC;
-        int handlerPC;
-        int endHandlerPC;
-        BitSet catchTypes;
-        String exSig;
-        String throwSig;
-        String message;
-        State state;
+        private int startPC;
+        private int endPC;
+        private int handlerPC;
+        private int endHandlerPC;
+        private BitSet catchTypes;
+        private String exSig;
+        private String throwSig;
+        private String message;
+        private State state;
 
         TryBlock(CodeException ce) {
             startPC = ce.getStartPC();
