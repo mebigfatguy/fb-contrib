@@ -58,6 +58,11 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * overrides the visitor to reset the opcode stack
+     *
+     * @classContext the currently parsed class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -70,6 +75,13 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * overrides the visitor to look for 'idea' try catch blocks to find issues specifically, method needs two or more try catch blocks that only catch one
+     * exception type.
+     *
+     * @param obj
+     *            the currently parsed code object
+     */
     @Override
     public void visitCode(Code obj) {
 
@@ -137,6 +149,13 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
             transitionPoints = null;
         }
     }
+
+    /**
+     * overrides the visitor to document what catch blocks do with regard to rethrowing the exceptions, and if the message is a static message
+     *
+     * @param seen
+     *            the currently parsed opcode
+     */
 
     @Override
     public void sawOpcode(int seen) {
@@ -242,6 +261,13 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * looks for an existing try block that has this pc as a start of the try
+     *
+     * @param pc
+     *            the current program counter
+     * @return the tryblock if this statement starts it, else null
+     */
     private TryBlock findBlockWithStart(int pc) {
 
         for (TryBlock block : blocks) {
