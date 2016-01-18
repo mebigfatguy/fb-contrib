@@ -5258,7 +5258,7 @@
     	<LongDescription>Method {1} orders expressions in a conditional in a sub optimal way</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method builds a conditional for an if or while statement where the expressions contain both simple
+			<p>This method builds a conditional expression, for example, in an if or while statement where the expressions contain both simple
 			local variable comparisons, as well as comparisons on method calls. The expression orders these so that the method calls
 			come before the simple local variable call comparisons. This causes method calls to be executed in conditions when they
 			do not need to be, and thus potentially causes a lot of code to be executed for nothing. By ordering the expressions so that
