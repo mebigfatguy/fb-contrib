@@ -39,30 +39,14 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for tag libraries that are not recycleable because backing members of
- * taglib attributes are set in areas besides the setter method for the
- * attribute.
+ * looks for tag libraries that are not recycleable because backing members of taglib attributes are set in areas besides the setter method for the attribute.
  */
 public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     private static final int MAX_ATTRIBUTE_CODE_LENGTH = 60;
 
-    private static final Set<String> tagClasses = UnmodifiableSet.create(
-            "javax.servlet.jsp.tagext.TagSupport",
-            "javax.servlet.jsp.tagext.BodyTagSupport"
-    );
+    private static final Set<String> tagClasses = UnmodifiableSet.create("javax.servlet.jsp.tagext.TagSupport", "javax.servlet.jsp.tagext.BodyTagSupport");
 
-    private static final Set<String> validAttrTypes = UnmodifiableSet.create(
-            "B",
-            "C",
-            "D",
-            "F",
-            "I",
-            "J",
-            "S",
-            "Z",
-            "Ljava/lang/String;",
-            "Ljava/util/Date;"
-    );
+    private static final Set<String> validAttrTypes = UnmodifiableSet.create("B", "C", "D", "F", "I", "J", "S", "Z", "Ljava/lang/String;", "Ljava/util/Date;");
 
     private final BugReporter bugReporter;
     /**
@@ -86,8 +70,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for classes that extend the TagSupport or
-     * BodyTagSupport class
+     * implements the visitor to look for classes that extend the TagSupport or BodyTagSupport class
      *
      * @param classContext
      *            the context object for the currently parsed class
@@ -162,6 +145,12 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to record storing of fields, and where they occur
+     *
+     * @param seen
+     *            the currently parsed opcode
+     */
     @Override
     public void sawOpcode(int seen) {
         if (seen == PUTFIELD) {
