@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -38,13 +38,10 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for methods that compare strings against literal strings, where the
- * literal string is passed as the parameter. If the .equals or .compareTo is
- * called on the literal itself, passing the variable as the parameter, you
- * avoid the possibility of a NullPointerException.
- * 
- * Updated for 1.7 to not throw false positives for string-based switch
- * statements (which are susceptible to NPEs). String-based switch generate
+ * looks for methods that compare strings against literal strings, where the literal string is passed as the parameter. If the .equals or .compareTo is called
+ * on the literal itself, passing the variable as the parameter, you avoid the possibility of a NullPointerException.
+ *
+ * Updated for 1.7 to not throw false positives for string-based switch statements (which are susceptible to NPEs). String-based switch generate
  * String.equals(Constant) bytecodes, and thus, must be accounted for
  */
 @CustomUserValue
@@ -58,7 +55,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
 
     /**
      * constructs a LSC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -68,7 +65,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to create and clear the stack
-     * 
+     *
      * @param classContext
      *            the context object for the currently parsed class
      */
@@ -86,7 +83,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
 
     /**
      * looks for methods that contain a LDC or LDC_W opcodes
-     * 
+     *
      * @param method
      *            the context object of the current method
      * @return if the class loads constants
@@ -98,7 +95,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset the opcode stack
-     * 
+     *
      * @param obj
      *            the code object for the currently parsed method
      */
@@ -113,7 +110,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
 
     /**
      * looks for strings comparisons where the stack object is a literal
-     * 
+     *
      * @param seen
      *            the currently parsed opcode
      */
@@ -124,65 +121,66 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-            case INVOKEVIRTUAL:
-                if ("java/lang/String".equals(getClassConstantOperand())) {
-                    String calledMethodName = getNameConstantOperand();
-                    String calledMethodSig = getSigConstantOperand();
+                case INVOKEVIRTUAL:
+                    if ("java/lang/String".equals(getClassConstantOperand())) {
+                        String calledMethodName = getNameConstantOperand();
+                        String calledMethodSig = getSigConstantOperand();
 
-                    if (("equals".equals(calledMethodName) && "(Ljava/lang/Object;)Z".equals(calledMethodSig))
-                            || ("compareTo".equals(calledMethodName) && "(Ljava/lang/String;)I".equals(calledMethodSig))
-                            || ("equalsIgnoreCase".equals(calledMethodName) && "(Ljava/lang/String;)Z".equals(calledMethodSig))) {
+                        if (("equals".equals(calledMethodName) && "(Ljava/lang/Object;)Z".equals(calledMethodSig))
+                                || ("compareTo".equals(calledMethodName) && "(Ljava/lang/String;)I".equals(calledMethodSig))
+                                || ("equalsIgnoreCase".equals(calledMethodName) && "(Ljava/lang/String;)Z".equals(calledMethodSig))) {
 
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            Object constant = itm.getConstant();
-                            if ((constant != null) && constant.getClass().equals(String.class)) {
-                                if (!lookupSwitchOnString()) {
-                                    bugReporter.reportBug(new BugInstance(this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY) // very
-                                                                                                                                // confident
-                                            .addClass(this).addMethod(this).addSourceLine(this));
+                            if (stack.getStackDepth() > 0) {
+                                OpcodeStack.Item itm = stack.getStackItem(0);
+                                Object constant = itm.getConstant();
+                                if ((constant != null) && constant.getClass().equals(String.class)) {
+                                    if (!lookupSwitchOnString()) {
+                                        bugReporter.reportBug(new BugInstance(this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY) // very
+                                                                                                                                    // confident
+                                                .addClass(this).addMethod(this).addSourceLine(this));
+                                    }
+
                                 }
-
                             }
-                        }
-                    } else if ("hashCode".equals(calledMethodName)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            int reg = item.getRegisterNumber();
-                            if (reg >= 0)
-                                hashCodedStringRef = String.valueOf(reg);
-                            else {
-                                XField xf = item.getXField();
-                                if (xf != null)
-                                    hashCodedStringRef = xf.getName();
-                                else {
-                                    XMethod xm = item.getReturnValueOf();
-                                    if (xm != null)
-                                        hashCodedStringRef = xm.toString();
-                                }
+                        } else if ("hashCode".equals(calledMethodName)) {
+                            if (stack.getStackDepth() > 0) {
+                                OpcodeStack.Item item = stack.getStackItem(0);
+                                int reg = item.getRegisterNumber();
+                                if (reg >= 0) {
+                                    hashCodedStringRef = String.valueOf(reg);
+                                } else {
+                                    XField xf = item.getXField();
+                                    if (xf != null) {
+                                        hashCodedStringRef = xf.getName();
+                                    } else {
+                                        XMethod xm = item.getReturnValueOf();
+                                        if (xm != null) {
+                                            hashCodedStringRef = xm.toString();
+                                        }
+                                    }
 
+                                }
                             }
                         }
                     }
-                }
                 break;
 
-            case LOOKUPSWITCH:
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    String stringRef = (String) item.getUserValue();
-                    if (stringRef != null) {
-                        int[] offsets = getSwitchOffsets();
-                        BitSet bs = new BitSet();
-                        int pc = getPC();
-                        for (int offset : offsets) {
-                            bs.set(pc + offset);
+                case LOOKUPSWITCH:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        String stringRef = (String) item.getUserValue();
+                        if (stringRef != null) {
+                            int[] offsets = getSwitchOffsets();
+                            BitSet bs = new BitSet();
+                            int pc = getPC();
+                            for (int offset : offsets) {
+                                bs.set(pc + offset);
+                            }
+                            lookupSwitches.add(new LookupDetails(stringRef, bs));
                         }
-                        lookupSwitches.add(new LookupDetails(stringRef, bs));
                     }
-                }
                 break;
-            default:
+                default:
                 break;
             }
 
@@ -214,13 +212,19 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * looks to see if the string used in a equals or compareTo is the same as that of a switch statement's switch on string.
+     *
+     * @return if the string is used in a switch
+     */
     private boolean lookupSwitchOnString() {
         if (stack.getStackDepth() > 1) {
             OpcodeStack.Item item = stack.getStackItem(1);
             String stringRef = (String) item.getUserValue();
 
-            if (stringRef == null)
+            if (stringRef == null) {
                 return false;
+            }
 
             if (!lookupSwitches.isEmpty()) {
                 LookupDetails details = lookupSwitches.get(lookupSwitches.size() - 1);
@@ -231,6 +235,10 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
         return true;
     }
 
+    /**
+     * holds information about a switch statement, and it's case PC values
+     *
+     */
     static class LookupDetails {
         private String stringReference;
         private BitSet switchTargets;
