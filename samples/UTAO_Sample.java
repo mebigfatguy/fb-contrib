@@ -103,7 +103,7 @@ class New {
 }
 
 class TestNG {
-    @org.testng.annotations.Test
+    @org.testng.annotations.Test(enabled = false)
     public void nada() {
     }
 
@@ -178,7 +178,7 @@ class TestNG {
         org.testng.Assert.assertEquals(boo, 20, 0);
     }
 
-    @org.testng.annotations.Test(expectedExceptions = RuntimeException.class)
+    @org.testng.annotations.Test(expectedExceptions = RuntimeException.class, enabled = false)
     public void fpNoAssertsWithNGExpects() {
         throw new RuntimeException();
     }
@@ -197,7 +197,7 @@ class GitHubIssue94 {
         realObject = new Object();
     }
 
-    @org.testng.annotations.Test
+    @org.testng.annotations.Test(enabled = false)
     public void fpShouldNotEqualMockObject() {
         org.testng.Assert.assertNotEquals(realObject, mockObject);
     }
