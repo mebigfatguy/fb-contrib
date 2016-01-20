@@ -162,6 +162,7 @@
 
     <build>
         <sourceDirectory>${basedir}/src</sourceDirectory>
+        <testSourceDirectory>${basedir}/samples</testSourceDirectory>
         <outputDirectory>${basedir}/target/classes/main</outputDirectory>
         <resources>
             <resource>
@@ -227,20 +228,6 @@
                         <goals>
                             <goal>create</goal>
                         </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId><artifactId>build-helper-maven-plugin</artifactId><version>1.9.1</version>
-                <configuration>
-                    <sources>
-                        <source>samples</source>
-                    </sources>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>add-test-source</id>
-                        <goals><goal>add-test-source</goal></goals>
                     </execution>
                 </executions>
             </plugin>
