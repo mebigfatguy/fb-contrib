@@ -28,8 +28,6 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedSynchronizedBlock" speed="fast" reports="BSB_BLOATED_SYNCHRONIZED_BLOCK" hidden="true" /> 
 
-    <Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
-    
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
 <!-- COMMENT OUT FOR RELEASE -->
@@ -292,6 +290,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.JAXRSIssues" speed="fast" reports="JXI_GET_ENDPOINT_CONSUMES_CONTENT,JXI_INVALID_CONTEXT_PARAMETER_TYPE,JXI_PARM_PARAM_NOT_FOUND_IN_PATH,JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" />
 	
     <!-- COMMENT OUT FOR POINT RELEASE --> 
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.JPAIssues" speed="fast" reports="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD,JPAI_HC_EQUALS_ON_MANAGED_ENTITY,JPAI_NON_PROXIED_TRANSACTION_CALL,JPAI_INEFFICIENT_EAGER_FETCH,JPAI_IGNORED_MERGE_RESULT,JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING,JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING"/>
     
