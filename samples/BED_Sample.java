@@ -94,4 +94,15 @@ public class BED_Sample {
         System.out.println("test");
     }
 
+    public static Process fpInterrupted(String command) throws IOException, InterruptedException {
+
+        Object sync = new Object();
+        Process p = Runtime.getRuntime().exec(command);
+        synchronized (sync) {
+            sync.wait();
+        }
+
+        return p;
+    }
+
 }
