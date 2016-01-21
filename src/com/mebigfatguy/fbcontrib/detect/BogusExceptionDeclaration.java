@@ -252,6 +252,8 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                         bugReporter.reportMissingClass(cnfe);
                         declaredCheckedExceptions.clear();
                     }
+                } else if ("wait".equals(getNameConstantOperand())) {
+                    declaredCheckedExceptions.remove("java.lang.InterruptedException");
                 }
             } else if (seen == ATHROW) {
                 if (stack.getStackDepth() > 0) {
