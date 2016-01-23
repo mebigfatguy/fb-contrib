@@ -36,8 +36,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for class that implement Comparator or Comparable, and whose compare or
- * compareTo methods return constant values only, but that don't represent the
+ * looks for class that implement Comparator or Comparable, and whose compare or compareTo methods return constant values only, but that don't represent the
  * three possible choice (a negative number, 0, and a positive number).
  */
 @CustomUserValue
@@ -74,6 +73,12 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * implements the visitor to actually iterate twice over this class, once for compareTo and once for compare.
+     *
+     * @param classContext
+     *            the currently parsed class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -94,6 +99,14 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to check to see what constants were returned from a comparator. If no constants were returned it can't determine anything, however
+     * if only constants were returned, it looks to see if negative positive and zero was returned. It also looks to see if a non zero value is returned
+     * unconditionally. While it is possible that later check is ok, it usually means something is wrong.
+     *
+     * @param obj
+     *            the currently parsed code block
+     */
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL", justification = "False positives occur when state is maintained across callbacks")
     @Override
     public void visitCode(Code obj) {
@@ -117,65 +130,41 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
             if (!indeterminate && (!seenZero || seenUnconditionalNonZero || (obj.getCode().length > 2))) {
                 boolean seenAll = seenNegative & seenPositive & seenZero;
                 if (!seenAll || seenUnconditionalNonZero) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), (!seenAll) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this, 0));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), (!seenAll) ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this, 0));
                 }
             }
         }
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        value = "SF_SWITCH_NO_DEFAULT",
-        justification = "We don't need or want to handle every opcode"
-    )
+    /**
+     * implements the visitor to look for returns of constant values, and records them for being negative, zero or positive. It also records unconditional
+     * returns of non zero values
+     *
+     * @param seen
+     *            the currently parsed opcode
+     */
     @Override
     public void sawOpcode(int seen) {
         try {
-            if (indeterminate)
+            if (indeterminate) {
                 return;
+            }
 
             stack.precomputation(this);
 
             switch (seen) {
                 case IRETURN: {
-                    if ((sawConstant != null) || (stack.getStackDepth() > 0)) {
-                        Integer returnValue = null;
-                        if (sawConstant != null) {
-                            returnValue = sawConstant;
-                        } else {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            returnValue = (Integer) item.getConstant();
-                        }
-
-                        if (returnValue == null) {
-                            indeterminate = true;
-                        } else {
-                            int v = returnValue.intValue();
-                            if (v < 0) {
-                                seenNegative = true;
-                                if (getPC() > furthestBranchTarget) {
-                                    seenUnconditionalNonZero = true;
-                                }
-                            } else if (v > 0) {
-                                seenPositive = true;
-                                if (getPC() > furthestBranchTarget) {
-                                    seenUnconditionalNonZero = true;
-                                }
-                            } else {
-                                seenZero = true;
-                            }
-                        }
-                    } else
-                        indeterminate = true;
-
-                    sawConstant = null;
+                    processIntegerReturn();
                 }
                 break;
 
                 case GOTO:
                 case GOTO_W: {
-                    if (stack.getStackDepth() > 0)
+                    if (stack.getStackDepth() > 0) {
                         indeterminate = true;
+                    }
                     if (furthestBranchTarget < getBranchTarget()) {
                         furthestBranchTarget = getBranchTarget();
                     }
@@ -224,8 +213,10 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                 }
                 break;
 
-                /* these three opcodes are here because findbugs proper is broken,
-                 * it sometimes doesn't push this constant on the stack, because of bad branch handling */
+                /*
+                 * these three opcodes are here because findbugs proper is broken, it sometimes doesn't push this constant on the stack, because of bad branch
+                 * handling
+                 */
                 case ICONST_0:
                     if (getNextOpcode() == IRETURN) {
                         sawConstant = Integer.valueOf(0);
@@ -244,19 +235,73 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                     }
                 break;
 
+                default:
+                break;
+
             }
         } finally {
             stack.sawOpcode(this, seen);
         }
     }
 
+    /**
+     * processes an IRETURN looking for constants and categorizes them as negative, zero or positive. it also records a unconditional return of a non zero value
+     *
+     */
+    private void processIntegerReturn() {
+        if ((sawConstant != null) || (stack.getStackDepth() > 0)) {
+            Integer returnValue = null;
+            if (sawConstant != null) {
+                returnValue = sawConstant;
+            } else {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                returnValue = (Integer) item.getConstant();
+            }
+
+            if (returnValue == null) {
+                indeterminate = true;
+            } else {
+                int v = returnValue.intValue();
+                if (v < 0) {
+                    seenNegative = true;
+                    if (getPC() > furthestBranchTarget) {
+                        seenUnconditionalNonZero = true;
+                    }
+                } else if (v > 0) {
+                    seenPositive = true;
+                    if (getPC() > furthestBranchTarget) {
+                        seenUnconditionalNonZero = true;
+                    }
+                } else {
+                    seenZero = true;
+                }
+            }
+        } else {
+            indeterminate = true;
+        }
+
+        sawConstant = null;
+    }
 }
 
+/**
+ * a simple data class that holds information about a method call
+ */
 class MethodInfo {
     final String methodName;
     final int argumentCount;
     final String signatureEnding;
 
+    /**
+     * simple constructor for initializing the data
+     *
+     * @param methodName
+     *            the name of the method
+     * @param argumentCount
+     *            the number of parameters
+     * @param signatureEnding
+     *            the return value signature type
+     */
     MethodInfo(String methodName, int argumentCount, String signatureEnding) {
         this.methodName = methodName;
         this.argumentCount = argumentCount;
