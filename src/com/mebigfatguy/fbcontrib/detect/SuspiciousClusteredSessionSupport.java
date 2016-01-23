@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -38,9 +38,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that access objects in http sessions, that are complex
- * objects, modifies those objects, but does not call setAttribute to signify a
- * change so that cluster replication can happen.
+ * looks for methods that access objects in http sessions, that are complex objects, modifies those objects, but does not call setAttribute to signify a change
+ * so that cluster replication can happen.
  */
 @CustomUserValue
 public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector {
@@ -56,6 +55,12 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * implements the visitor to setup the opcode stack and attribute maps
+     *
+     * @param classContext
+     *            the currently parsed class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -70,6 +75,12 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
         }
     }
 
+    /**
+     * implements the visitor to report on attributes that have changed, without a setAttribute being called on them
+     *
+     * @param obj
+     *            the currently parsed method
+     */
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
@@ -82,6 +93,13 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
         }
     }
 
+    /**
+     * implements the visitor to collect calls to getAttribute/setAttribute and stores to attributes to see what have been modified without recalling
+     * setAttribute
+     *
+     * @param seen
+     *            the currently parsed opcode
+     */
     @Override
     public void sawOpcode(int seen) {
         String attributeName = null;
