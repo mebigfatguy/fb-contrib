@@ -232,7 +232,8 @@
 	</target>
 	
 	<target name="report" if="${delta}">
-		<echo file="${target.dir}/samples_delta.xml"/>
+		<loadfile property="diff" srcFile="${target.dir}/samples_delta.xml"/> 
+		<echo>${diff}</echo> 
 	</target>
 
 	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release" />
