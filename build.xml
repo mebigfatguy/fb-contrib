@@ -219,12 +219,12 @@
 		      <class location="${samples.classes.dir}" />
 		</findbugs>
 		
-		<fbdelta:fbdelta baseReport="${basedir}/samples.xml" updateReport="${target.dir}/samples.xml" outputReport="${target.dir}/samples_diff.txt" changed="delta"/>
+		<fbdelta:fbdelta baseReport="${basedir}/samples.xml" updateReport="${target.dir}/samples.xml" outputReport="${target.dir}/samples_delta.xml" changed="delta"/>
 		<antcall target="report"/>
 	</target>
 	
 	<target name="report" if="${delta}">
-		<echo file="${target.dir}/samples_diff.txt"/>
+		<echo file="${target.dir}/samples_delta.xml"/>
 	</target>
 
 	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release" />
