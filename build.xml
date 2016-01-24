@@ -42,6 +42,7 @@
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/1.4.0/yank-1.4.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://bitbucket.org/kjlubick/bugrankcheckstyle/downloads/bug-rank-check-style-1.0.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/vcsversion/vcsversion/0.4.0/vcsversion-0.4.0.jar" dest="${user.home}/.ant/lib"/>
+		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/fb-delta/fb-delta/0.2.0/fb-delta-0.2.0.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
 	</target>
 	
 	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank" unless="no.yank">
@@ -55,7 +56,8 @@
     <target name="info">
         <echo message="fb-contrib - a findbugs plugin"/>
         <echo message=""/>
-    	<echo message="    This project requires three jars to build fb-contrib: yank, bug-rank-check-style and vcsversion" />
+    	<echo message="    This project requires three jars to build fb-contrib: yank, bug-rank-check-style, vcsversion and" />
+    	<echo message="    and optionally fb-delta, to generate delta's of bug reports"/>
     	<echo message=""/>
         <echo message="    This project uses yank (https://github.com/mebigfatguy/yank) for dependency management"/>
         <echo message="    download yank.jar and place in ~/.ant/lib directory"/>
@@ -70,6 +72,12 @@
     	<echo message="    and can be downloaded and placed in ~/.ant/lib as well"/>
     	<echo message="    http://search.maven.org/#search%7Cga%7C1%7Cvcsversion"/>
         <echo message="===="/>
+    	<echo message="    If you want to generate delta reports between two sample.xml runs, this project also uses fb-delta to do"/>
+    	<echo message="    delta-ing between two samples.xml files, to report what has been 'fixed' and what is 'new'"/>
+    	<echo message="    and can be downloaded and placed in ~/.ant/lib as well"/>
+    	<echo message="    http://search.maven.org/#search%7Cga%7C1%7Cfb-delta"/>
+        <echo message="===="/>
+
     	<echo message="    This task can be automated by running ant infra_jars"/>
     </target>
 	
