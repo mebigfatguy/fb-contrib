@@ -213,11 +213,18 @@
 		</copy>
 	</target>
 	
-	<target name="sample_delta" depends="build" description="compares this runs reported bugs on the sample classes set, against the stored report">
+	<target name="sample_delta" depends="build" xmlns:fbdelta="antlib:com.mebigfatguy.fbdelta" description="compares this runs reported bugs on the sample classes set, against the stored report">
 		<taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${lib.dir}/findbugs-ant-${findbugs-ant.version}.jar"/>
 		<findbugs home="${findbugs.dir}" auxClassPathRef="fb-contrib.samples.classpath" output="xml:withMessages" jvmargs="-ea -Xmx800m" projectName="Samples" outputFile="${target.dir}/samples.xml">
 		      <class location="${samples.classes.dir}" />
 		</findbugs>
+		
+		<fbdelta:fbdelta baseReport="${basedir}/samples.xml" updateReport="${target.dir}/samples.xml" outputReport="${target.dir}/samples_diff.txt" changed="delta"/>
+		<antcall target="report"/>
+	</target>
+	
+	<target name="report" if="${delta}">
+		<echo file="${target.dir}/samples_diff.txt"/>
 	</target>
 
 	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release" />
