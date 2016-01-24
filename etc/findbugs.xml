@@ -207,7 +207,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousNullGuard" speed="fast" reports="SNG_SUSPICIOUS_NULL_FIELD_GUARD,SNG_SUSPICIOUS_NULL_LOCAL_GUARD" />
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.MoreDumbMethods" speed="fast"
-		reports="MDM_RUNTIME_EXIT_OR_HALT,MDM_RUNFINALIZATION,MDM_BIGDECIMAL_EQUALS,MDM_INETADDRESS_GETLOCALHOST,MDM_PROMISCUOUS_SERVERSOCKET,MDM_RANDOM_SEED,MDM_SECURERANDOM_CTOR,MDM_SECURERANDOM_GETSEED,MDM_THREAD_PRIORITIES,MDM_THREAD_YIELD,MDM_WAIT_WITHOUT_TIMEOUT,MDM_THREAD_FAIRNESS,MDM_REENTRANTLOCK_HELDBY,MDM_STRING_BYTES_ENCODING,MDM_SETDEFAULTLOCALE" />
+		reports="MDM_RUNTIME_EXIT_OR_HALT,MDM_RUNFINALIZATION,MDM_BIGDECIMAL_EQUALS,MDM_INETADDRESS_GETLOCALHOST,MDM_PROMISCUOUS_SERVERSOCKET,MDM_RANDOM_SEED,MDM_SECURERANDOM_CTOR,MDM_SECURERANDOM_GETSEED,MDM_THREAD_PRIORITIES,MDM_THREAD_YIELD,MDM_WAIT_WITHOUT_TIMEOUT,MDM_THREAD_FAIRNESS,MDM_REENTRANTLOCK_HELDBY,MDM_STRING_BYTES_ENCODING,MDM_SETDEFAULTLOCALE,MDM_LOCK_ISLOCKED,MDM_SIGNAL_NOT_SIGNALALL" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ReflectionOnObjectMethods" speed="fast" reports="ROOM_REFLECTION_ON_OBJECT_METHODS" />
 
@@ -245,7 +245,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.NonProductiveMethodCall" speed="fast" reports="NPMC_NON_PRODUCTIVE_METHOD_CALL" />
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.InvalidConstantArgument" speed="fast" reports="ICA_INVALID_CONSTANT_ARRAY" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.InvalidConstantArgument" speed="fast" reports="ICA_INVALID_CONSTANT_ARGUMENT" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ContraVariantArrayAssignment" speed="fast" hidden="true" reports="CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT,CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT" />
     
