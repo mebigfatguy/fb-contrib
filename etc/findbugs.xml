@@ -20,7 +20,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -30,7 +30,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-<!-- COMMENT OUT FOR RELEASE -->
+     COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -288,8 +288,6 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ImmatureClass" speed="moderate" reports="IMC_IMMATURE_CLASS_NO_EQUALS,IMC_IMMATURE_CLASS_NO_HASHCODE,IMC_IMMATURE_CLASS_NO_PACKAGE,IMC_IMMATURE_CLASS_NO_TOSTRING,IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES" />	
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.JAXRSIssues" speed="fast" reports="JXI_GET_ENDPOINT_CONSUMES_CONTENT,JXI_INVALID_CONTEXT_PARAMETER_TYPE,JXI_PARM_PARAM_NOT_FOUND_IN_PATH,JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" />
-	
-    <!-- COMMENT OUT FOR POINT RELEASE --> 
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.StackedTryBlocks" speed="fast" reports="STB_STACKED_TRY_BLOCKS" />
     
@@ -299,6 +297,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.IOIssues" speed="fast" reports="IOI_DOUBLE_BUFFER_COPY,IOI_COPY_WITH_READER"/>
     
+    <!-- COMMENT OUT FOR POINT RELEASE --> 
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
