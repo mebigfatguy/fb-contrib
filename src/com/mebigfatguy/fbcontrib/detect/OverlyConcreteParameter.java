@@ -94,7 +94,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     /**
      * implements the visitor to collect classes that constrains this class (super classes/interfaces) and to reset the opcode stack
      *
-     * @classContext the currently parse class
+     * @param classContext
+     *            the currently parse class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {

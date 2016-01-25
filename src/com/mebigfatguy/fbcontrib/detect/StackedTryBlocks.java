@@ -61,7 +61,8 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the opcode stack
      *
-     * @classContext the currently parsed class
+     * @param classContext
+     *            the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
