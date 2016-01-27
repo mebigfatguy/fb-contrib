@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -32,10 +32,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for fields in serializable classes that are defined as both final and
- * transient. As a transient field is not initialized when streamed, and is not
- * initialized in a constructor, it will remain null because it is defined
- * final.
+ * looks for fields in serializable classes that are defined as both final and transient. As a transient field is not initialized when streamed, and is not
+ * initialized in a constructor, it will remain null because it is defined final.
  */
 public class NonFunctionalField extends PreorderVisitor implements Detector {
 
@@ -53,7 +51,7 @@ public class NonFunctionalField extends PreorderVisitor implements Detector {
 
     /**
      * constructs a NFF detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -62,9 +60,8 @@ public class NonFunctionalField extends PreorderVisitor implements Detector {
     }
 
     /**
-     * checks to see if the class is Serializable, then looks for fields that
-     * are both final and transient
-     * 
+     * checks to see if the class is Serializable, then looks for fields that are both final and transient
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -87,7 +84,11 @@ public class NonFunctionalField extends PreorderVisitor implements Detector {
         }
     }
 
+    /**
+     * implements the visitor, but does nothing
+     */
     @Override
     public void report() {
+        // intentionally blank
     }
 }

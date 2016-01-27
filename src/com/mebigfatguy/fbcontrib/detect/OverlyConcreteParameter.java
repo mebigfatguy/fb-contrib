@@ -488,7 +488,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     }
 
     /**
-     * returns a lost of method information of all public or protected methods in this class
+     * returns a list of method information of all public or protected methods in this class
      *
      * @param cls
      *            the class to look for methods
@@ -506,6 +506,13 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         return methodInfos;
     }
 
+    /**
+     * parses through the interface that 'may' define a parameter defined by reg, and look to see if we can rule it out, because a method is called on the
+     * object that can't be satisfied by the interface, if so remove that candidate interface.
+     *
+     * @param reg
+     *            the parameter register number to look at
+     */
     private void removeUselessDefiners(final int reg) {
 
         Map<JavaClass, List<MethodInfo>> definers = parameterDefiners.get(Integer.valueOf(reg));
