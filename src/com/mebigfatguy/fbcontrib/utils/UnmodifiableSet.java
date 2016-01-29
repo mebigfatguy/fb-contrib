@@ -23,20 +23,20 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * a factory for creating unmodifiable HashSets by presenting values
- * to a var-args creator method.
+ * a factory for creating unmodifiable HashSets by presenting values to a var-args creator method.
  */
 public class UnmodifiableSet {
 
     private UnmodifiableSet() {
     }
-    
+
+    @SafeVarargs
     public static <T> Set<T> create(T... elements) {
         Set<T> s = new HashSet<T>(elements.length + (elements.length / 3) + 1);
         for (T t : elements) {
             s.add(t);
         }
-        
-        return Collections.<T>unmodifiableSet(s);
+
+        return Collections.<T> unmodifiableSet(s);
     }
 }

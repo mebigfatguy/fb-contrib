@@ -22,8 +22,8 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
-import java.util.regex.Pattern;
 import java.util.Set;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
@@ -260,16 +260,24 @@ public class SignatureUtils {
     }
 
     /**
-     * converts a signature, like Ljava/lang/String;
-     * into a dotted class name.
+     * converts a signature, like Ljava/lang/String; into a dotted class name.
+     *
+     * @param signature
+     *            a class signature
+     *
+     * @return the dotted class name
      */
     public static String stripSignature(String signature) {
         return trimSignature(signature).replace('/', '.');
     }
 
     /**
-     * converts a signature, like Ljava/lang/String;
-     * into a slashed class name.
+     * converts a signature, like Ljava/lang/String; into a slashed class name.
+     *
+     * @param signature
+     *            the class signature
+     *
+     * @return the slashed class name
      */
     public static String trimSignature(String signature) {
         if (signature.startsWith("L") && signature.endsWith(";")) {
@@ -282,7 +290,7 @@ public class SignatureUtils {
     /**
      * returns a slashed or dotted class name into a signature, like java/lang/String -- Ljava/lang/String;
      *
-     * @param clsName
+     * @param className
      *            the class name to convert
      * @return the signature format of the class
      */
@@ -291,12 +299,15 @@ public class SignatureUtils {
     }
 
     /**
-     * returns the class name, discarding any anonymous component
+     * @param className
+     *            the name of the class
+     * 
+     * @return the class name, discarding any anonymous component
      */
     public static String getNonAnonymousPortion(String className) {
         String[] components = CLASS_COMPONENT_DELIMITER.split(className);
         StringBuilder buffer = new StringBuilder(className.length()).append(components[0]);
-        for (int i = 1; i < components.length && !ANONYMOUS_COMPONENT.matcher(components[i]).matches(); i++) {
+        for (int i = 1; (i < components.length) && !ANONYMOUS_COMPONENT.matcher(components[i]).matches(); i++) {
             buffer.append('$').append(components[i]);
         }
         return buffer.toString();

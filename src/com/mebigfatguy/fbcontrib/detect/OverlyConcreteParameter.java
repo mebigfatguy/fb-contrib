@@ -54,23 +54,16 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for parameters that are defined by classes, but only use methods
- * defined by an implemented interface or super class. Relying on concrete
- * classes in public signatures causes cohesion, and makes low impact changes
- * more difficult.
+ * looks for parameters that are defined by classes, but only use methods defined by an implemented interface or super class. Relying on concrete classes in
+ * public signatures causes cohesion, and makes low impact changes more difficult.
  */
 public class OverlyConcreteParameter extends BytecodeScanningDetector {
-    
-    private static final Set<String> CONVERSION_ANNOTATIONS = UnmodifiableSet.create(
-            "Ljavax/persistence/Converter;",
-            "Ljavax/ws/rs/Consumes;"
-    );
-    
-    private static final Set<String> CONVERSION_SUPER_CLASSES = UnmodifiableSet.create(
-            "com.fasterxml.jackson.databind.JsonSerializer",
-            "com.fasterxml.jackson.databind.JsonDeserializer"
-    );
-    
+
+    private static final Set<String> CONVERSION_ANNOTATIONS = UnmodifiableSet.create("Ljavax/persistence/Converter;", "Ljavax/ws/rs/Consumes;");
+
+    private static final Set<String> CONVERSION_SUPER_CLASSES = UnmodifiableSet.create("com.fasterxml.jackson.databind.JsonSerializer",
+            "com.fasterxml.jackson.databind.JsonDeserializer");
+
     private final BugReporter bugReporter;
     private JavaClass[] constrainingClasses;
     private Map<Integer, Map<JavaClass, List<MethodInfo>>> parameterDefiners;
@@ -98,11 +91,17 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to collect classes that constrains this class (super classes/interfaces) and to reset the opcode stack
+     *
+     * @param classContext
+     *            the currently parse class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
             cls = classContext.getJavaClass();
-            
+
             if (!isaConversionClass(cls)) {
                 JavaClass[] infs = cls.getAllInterfaces();
                 JavaClass[] sups = cls.getSuperClasses();
@@ -124,17 +123,23 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to look to see if this method is constrained by a superclass or interface.
+     *
+     * @param obj
+     *            the currently parsed method
+     */
     @Override
     public void visitMethod(Method obj) {
         methodSignatureIsConstrained = false;
         String methodName = obj.getName();
 
         if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName)) {
-            
+
             String methodSig = obj.getSignature();
-            
+
             methodSignatureIsConstrained = methodIsSpecial(methodName, methodSig) || methodHasSyntheticTwin(methodName, methodSig);
-            
+
             if (!methodSignatureIsConstrained) {
                 for (AnnotationEntry entry : obj.getAnnotationEntries()) {
                     if (CONVERSION_ANNOTATIONS.contains(entry.getAnnotationType())) {
@@ -163,6 +168,12 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to collect information about the parameters of a this method
+     *
+     * @param obj
+     *            the currently parsed code block
+     */
     @Override
     public void visitCode(final Code obj) {
         try {
@@ -203,6 +214,13 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to filter out parameter use where the actual defined type of the method declaration is needed. What remains could be more
+     * abstractly defined.
+     *
+     * @param seen
+     *            the currently parsed opcode
+     */
     @Override
     public void sawOpcode(final int seen) {
         if (parameterDefiners.isEmpty()) {
@@ -321,13 +339,12 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     private static boolean methodIsSpecial(String methodName, String methodSig) {
         return ("readObject".equals(methodName) && "(Ljava/io/ObjectInputStream;)V".equals(methodSig));
     }
-    
-    
+
     /**
-     * returns whether this method has an equivalent method that is synthetic, which implies this method is 
-     * constrained by some Generified interface. We could compare parameters but that is a bunch of work that probably doesn't make this
-     * test any more precise, so just return true if method name and synthetic is found.
-     * 
+     * returns whether this method has an equivalent method that is synthetic, which implies this method is constrained by some Generified interface. We could
+     * compare parameters but that is a bunch of work that probably doesn't make this test any more precise, so just return true if method name and synthetic is
+     * found.
+     *
      * @param methodName
      * @param methodSig
      * @return if a synthetic twin is found
@@ -338,10 +355,13 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                 return true;
             }
         }
-        
+
         return false;
     }
 
+    /**
+     * implements the post processing steps to report the remaining unremoved parameter definers, ie those, that can be defined more abstractly.
+     */
     private void reportBugs() {
         Iterator<Map.Entry<Integer, Map<JavaClass, List<MethodInfo>>>> it = parameterDefiners.entrySet().iterator();
         while (it.hasNext()) {
@@ -376,6 +396,13 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * returns a string defining what parameter in the signature a certain one is, for the bug report
+     *
+     * @param num
+     *            the parameter number
+     * @return a string describing in english the parameter position
+     */
     private static String getCardinality(int num) {
         if (num == 1) {
             return "1st";
@@ -390,11 +417,9 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     }
 
     /**
-     * builds a map of method information for each method of each interface that
-     * each parameter implements of this method
+     * builds a map of method information for each method of each interface that each parameter implements of this method
      *
-     * @return a map by parameter id of all the method signatures that
-     *         interfaces of that parameter implements
+     * @return a map by parameter id of all the method signatures that interfaces of that parameter implements
      *
      * @throws ClassNotFoundException
      *             if the class can't be loaded
@@ -402,7 +427,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     private boolean buildParameterDefiners() throws ClassNotFoundException {
 
         Method m = getMethod();
-        
+
         Type[] parms = m.getArgumentTypes();
         if (parms.length == 0) {
             return false;
@@ -420,11 +445,11 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     if (clsName.startsWith("java.lang.")) {
                         continue;
                     }
-    
+
                     JavaClass cls = Repository.lookupClass(clsName);
                     if (cls.isClass() && (!cls.isAbstract())) {
                         Map<JavaClass, List<MethodInfo>> definers = getClassDefiners(cls);
-    
+
                         if (definers.size() > 0) {
                             parameterDefiners.put(Integer.valueOf(i + (methodIsStatic ? 0 : 1)), definers);
                             hasPossiblyOverlyConcreteParm = true;
@@ -438,8 +463,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     }
 
     /**
-     * returns a map of method information for each public method for each
-     * interface this class implements
+     * returns a map of method information for each public method for each interface this class implements
      *
      * @param cls
      *            the class whose interfaces to record
@@ -464,8 +488,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     }
 
     /**
-     * returns a lost of method information of all public or protected methods
-     * in this class
+     * returns a list of method information of all public or protected methods in this class
      *
      * @param cls
      *            the class to look for methods
@@ -483,6 +506,13 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         return methodInfos;
     }
 
+    /**
+     * parses through the interface that 'may' define a parameter defined by reg, and look to see if we can rule it out, because a method is called on the
+     * object that can't be satisfied by the interface, if so remove that candidate interface.
+     *
+     * @param reg
+     *            the parameter register number to look at
+     */
     private void removeUselessDefiners(final int reg) {
 
         Map<JavaClass, List<MethodInfo>> definers = parameterDefiners.get(Integer.valueOf(reg));
@@ -522,8 +552,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether this exception is handled either in a try/catch or throws
-     * clause at this pc
+     * returns whether this exception is handled either in a try/catch or throws clause at this pc
      *
      * @param ex
      *            the name of the exception
@@ -591,12 +620,12 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
             }
         }
     }
-    
+
     /**
-     * returns whether this class is used to convert types of some sort, such that
-     * you don't want to suggest reducing the class specified to be more generic
-     * 
-     * @param cls the class to check
+     * returns whether this class is used to convert types of some sort, such that you don't want to suggest reducing the class specified to be more generic
+     *
+     * @param cls
+     *            the class to check
      * @return whether this class is used in conversions
      */
     private boolean isaConversionClass(JavaClass cls) {
@@ -604,13 +633,13 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
             if (CONVERSION_ANNOTATIONS.contains(entry.getAnnotationType())) {
                 return true;
             }
-            
+
             // this ignores the fact that this class might be a grand child, but meh
             if (CONVERSION_SUPER_CLASSES.contains(cls.getSuperclassName())) {
                 return true;
             }
         }
-        
+
         return false;
     }
 

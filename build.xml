@@ -28,7 +28,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
-	<property name="fb-contrib.version" value="6.5.0-SNAPSHOT" />
+	<property name="fb-contrib.version" value="6.7.0-SNAPSHOT" />
 	
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
 	
@@ -42,6 +42,7 @@
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/1.4.0/yank-1.4.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://bitbucket.org/kjlubick/bugrankcheckstyle/downloads/bug-rank-check-style-1.0.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/vcsversion/vcsversion/0.4.0/vcsversion-0.4.0.jar" dest="${user.home}/.ant/lib"/>
+		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/fb-delta/fb-delta/0.2.0/fb-delta-0.2.0.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
 	</target>
 	
 	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank" unless="no.yank">
@@ -55,7 +56,8 @@
     <target name="info">
         <echo message="fb-contrib - a findbugs plugin"/>
         <echo message=""/>
-    	<echo message="    This project requires three jars to build fb-contrib: yank, bug-rank-check-style and vcsversion" />
+    	<echo message="    This project requires three jars to build fb-contrib: yank, bug-rank-check-style, vcsversion and" />
+    	<echo message="    and optionally fb-delta, to generate delta's of bug reports"/>
     	<echo message=""/>
         <echo message="    This project uses yank (https://github.com/mebigfatguy/yank) for dependency management"/>
         <echo message="    download yank.jar and place in ~/.ant/lib directory"/>
@@ -70,6 +72,12 @@
     	<echo message="    and can be downloaded and placed in ~/.ant/lib as well"/>
     	<echo message="    http://search.maven.org/#search%7Cga%7C1%7Cvcsversion"/>
         <echo message="===="/>
+    	<echo message="    If you want to generate delta reports between two sample.xml runs, this project also uses fb-delta to do"/>
+    	<echo message="    delta-ing between two samples.xml files, to report what has been 'fixed' and what is 'new'"/>
+    	<echo message="    and can be downloaded and placed in ~/.ant/lib as well"/>
+    	<echo message="    http://search.maven.org/#search%7Cga%7C1%7Cfb-delta"/>
+        <echo message="===="/>
+
     	<echo message="    This task can be automated by running ant infra_jars"/>
     </target>
 	
@@ -211,6 +219,21 @@
 				<include name="fb-contrib-${fb-contrib.version}.jar" />
 			</fileset>
 		</copy>
+	</target>
+	
+	<target name="sample_delta" depends="build" xmlns:fbdelta="antlib:com.mebigfatguy.fbdelta" description="compares this runs reported bugs on the sample classes set, against the stored report">
+		<taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${lib.dir}/findbugs-ant-${findbugs-ant.version}.jar"/>
+		<findbugs reportlevel="low" home="${findbugs.dir}" auxClassPathRef="fb-contrib.samples.classpath" output="xml:withMessages" jvmargs="-ea -Xmx800m" projectName="Samples" outputFile="${target.dir}/samples.xml">
+		      <class location="${samples.classes.dir}" />
+		</findbugs>
+		
+		<fbdelta:fbdelta baseReport="${basedir}/samples.xml" updateReport="${target.dir}/samples.xml" outputReport="${target.dir}/samples_delta.xml" changed="delta"/>
+		<antcall target="report"/>
+	</target>
+	
+	<target name="report" if="${delta}">
+		<loadfile property="diff" srcFile="${target.dir}/samples_delta.xml"/> 
+		<echo>${diff}</echo> 
 	</target>
 
 	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release" />

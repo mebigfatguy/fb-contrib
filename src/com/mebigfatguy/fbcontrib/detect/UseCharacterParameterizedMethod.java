@@ -164,7 +164,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
                 Object posObject = characterMethods.get(key);
                 if (posObject instanceof Integer) {
-                    if (checkSingleParamMethod((Integer) posObject)) {
+                    if (checkSingleParamMethod(((Integer) posObject).intValue())) {
                         if (!isInlineAppend(key)) {
                             reportBug();
                         }
@@ -209,10 +209,9 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         return checkSingleParamMethod(posObject.firstStringParam) && checkSingleParamMethod(posObject.secondStringParam);
     }
 
-    private boolean checkSingleParamMethod(Integer paramPos) {
-        int stackPos = paramPos.intValue();
-        if (stack.getStackDepth() > stackPos) {
-            OpcodeStack.Item itm = stack.getStackItem(stackPos);
+    private boolean checkSingleParamMethod(int paramPos) {
+        if (stack.getStackDepth() > paramPos) {
+            OpcodeStack.Item itm = stack.getStackItem(paramPos);
             // casting to CharSequence is safe as FindBugs 3 (and fb-contrib 6)
             // require Java 1.7 or later to run
             // it's also needed with the addition of support for replace (which

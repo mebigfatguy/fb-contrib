@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -51,20 +50,15 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for executors that are never shutdown, which will not allow the
- * application to terminate
+ * looks for executors that are never shutdown, which will not allow the application to terminate
  */
 public class HangingExecutors extends BytecodeScanningDetector {
 
-    private static final Set<String> hangableSig = UnmodifiableSet.create(
-        "Ljava/util/concurrent/ExecutorService;",
-        "Ljava/util/concurrent/AbstractExecutorService;",
-        "Ljava/util/concurrent/ForkJoinPool;",
-        "Ljava/util/concurrent/ScheduledThreadPoolExecutor;",
-        "Ljava/util/concurrent/ThreadPoolExecutor;"
-    );
+    private static final Set<String> hangableSig = UnmodifiableSet.create("Ljava/util/concurrent/ExecutorService;",
+            "Ljava/util/concurrent/AbstractExecutorService;", "Ljava/util/concurrent/ForkJoinPool;", "Ljava/util/concurrent/ScheduledThreadPoolExecutor;",
+            "Ljava/util/concurrent/ThreadPoolExecutor;");
 
-    private static final Set<String> shutdownMethods = UnmodifiableSet.create("shutdown","shutdownNow");
+    private static final Set<String> shutdownMethods = UnmodifiableSet.create("shutdown", "shutdownNow");
 
     private final BugReporter bugReporter;
     private Map<XField, AnnotationPriority> hangingFieldCandidates;
@@ -80,9 +74,8 @@ public class HangingExecutors extends BytecodeScanningDetector {
     }
 
     /**
-     * finds ExecutorService objects that don't get a call to the terminating
-     * methods, and thus, never appear to be shutdown properly (the threads
-     * exist until shutdown is called)
+     * finds ExecutorService objects that don't get a call to the terminating methods, and thus, never appear to be shutdown properly (the threads exist until
+     * shutdown is called)
      *
      * @param classContext
      *            the class context object of the currently parsed java class
@@ -159,8 +152,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
     }
 
     /**
-     * Browses for calls to shutdown() and shutdownNow(), and if they happen,
-     * remove the hanging candidate, as there is a chance it will be called.
+     * Browses for calls to shutdown() and shutdownNow(), and if they happen, remove the hanging candidate, as there is a chance it will be called.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
