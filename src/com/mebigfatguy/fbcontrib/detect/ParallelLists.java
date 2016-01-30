@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -35,10 +35,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for classes that maintain two or more lists or arrays associated
- * one-for-one through the same index to hold two or more pieces of related
- * information. It would be better to create a new class that holds all of these
- * pieces of information, and place instances of this class in one list.
+ * looks for classes that maintain two or more lists or arrays associated one-for-one through the same index to hold two or more pieces of related information.
+ * It would be better to create a new class that holds all of these pieces of information, and place instances of this class in one list.
  */
 public class ParallelLists extends BytecodeScanningDetector {
     private BugReporter bugReporter;
@@ -48,7 +46,7 @@ public class ParallelLists extends BytecodeScanningDetector {
 
     /**
      * constructs a PL detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -70,8 +68,9 @@ public class ParallelLists extends BytecodeScanningDetector {
                     if (sig.startsWith("java/util/") && sig.endsWith("List")) {
                         listFields.add(f.getName());
                     }
-                } else if ((sig.charAt(0) == '[') && (sig.charAt(1) != '['))
+                } else if ((sig.charAt(0) == '[') && (sig.charAt(1) != '[')) {
                     listFields.add(f.getName());
+                }
             }
 
             if (listFields.size() > 0) {
@@ -85,6 +84,12 @@ public class ParallelLists extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to reset the opcode stack, and the file maps
+     *
+     * @param obj
+     *            the currently parsed method code block
+     */
     @Override
     public void visitCode(final Code obj) {
         stack.resetForMethodEntry(this);
@@ -118,9 +123,18 @@ public class ParallelLists extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * fetch the register from a integer op code
+     *
+     * @param seen
+     *            the currently parsed opcode
+     *
+     * @return the register in use
+     */
     private int getIntOpRegister(final int seen) {
-        if ((seen == ISTORE) || (seen == IINC))
+        if ((seen == ISTORE) || (seen == IINC)) {
             return getRegisterOperand();
+        }
         return seen - ISTORE_0;
     }
 
@@ -140,8 +154,9 @@ public class ParallelLists extends BytecodeScanningDetector {
                                 new BugInstance(this, "PL_PARALLEL_LISTS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, getPC()));
                         listFields.remove(field.getName());
                         indexToFieldMap.clear();
-                    } else
+                    } else {
                         indexToFieldMap.put(Integer.valueOf(indexReg), field.getName());
+                    }
                 }
             }
         }
