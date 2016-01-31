@@ -145,7 +145,8 @@ public class CharsetIssues extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack for a new method
      *
-     * @obj the currently parsed method
+     * @param obj
+     *            the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
