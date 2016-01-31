@@ -308,10 +308,10 @@ public class JPAIssues extends BytecodeScanningDetector {
             switch (type) {
                 case "Lorg/springframework/transaction/annotation/Transactional;":
                     if (fm instanceof Method) {
-                        Boolean isWrite = Boolean.TRUE;
+                        boolean isWrite = true;
                         for (ElementValuePair pair : entry.getElementValuePairs()) {
                             if ("readOnly".equals(pair.getNameString())) {
-                                isWrite = Boolean.valueOf("false".equals(pair.getValue().stringifyValue()));
+                                isWrite = "false".equals(pair.getValue().stringifyValue());
                                 break;
                             }
                         }

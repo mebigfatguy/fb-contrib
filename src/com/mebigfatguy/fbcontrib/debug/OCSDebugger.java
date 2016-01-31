@@ -47,8 +47,9 @@ public class OCSDebugger extends BytecodeScanningDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if ((OUTPUT_FILE_NAME != null) && (METHOD_DESC != null))
+        if ((OUTPUT_FILE_NAME != null) && (METHOD_DESC != null)) {
             super.visitClassContext(classContext);
+        }
     }
 
     @Override
@@ -74,6 +75,7 @@ public class OCSDebugger extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         stack.precomputation(this);
         stack.sawOpcode(this, seen);
-        pw.println(String.format("After executing: %-16s at PC: %-5d Stack Size: %-3d", Constants.OPCODE_NAMES[getOpcode()], getPC(), stack.getStackDepth()));
+        pw.println(String.format("After executing: %-16s at PC: %-5d Stack Size: %-3d", Constants.OPCODE_NAMES[getOpcode()], Integer.valueOf(getPC()),
+                Integer.valueOf(stack.getStackDepth())));
     }
 }

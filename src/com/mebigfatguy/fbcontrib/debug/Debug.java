@@ -33,7 +33,8 @@ public class Debug {
     static {
         try {
             out = new PrintStream(
-                    new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "fb-contrib.txt").getPath(), true)), false, StandardCharsets.UTF_8.name());
+                    new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "fb-contrib.txt").getPath(), true)), false,
+                    StandardCharsets.UTF_8.name());
             out.println("===== fb-contrib console =====");
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -53,17 +54,16 @@ public class Debug {
 
     /**
      * Like println, but will print PC, if it's passed in
-     * 
-     * e.g. Debug.println(getPC(), "Hello world"); will print [PC:42] Hello
-     * world
-     * 
+     *
+     * e.g. Debug.println(getPC(), "Hello world"); will print [PC:42] Hello world
+     *
      * @param pc
      *            the program counter
      * @param obj
      *            the object to output
      */
     public static void println(int pc, Object obj) {
-        out.printf("[PC:%d] %s%n", pc, obj);
+        out.printf("[PC:%d] %s%n", Integer.valueOf(pc), obj);
     }
 
 }
