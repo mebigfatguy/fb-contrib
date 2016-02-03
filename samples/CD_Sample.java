@@ -61,3 +61,21 @@ class SuspectBuilderUse {
         return data;
     }
 }
+
+class GitHubIssue101 {
+    protected void onCreate(final String savedInstanceState) {
+        final Intent intent = new Intent(ChildWithUsedClassObj.class);
+        startActivity(intent);
+    }
+
+    private void startActivity(Intent i) {
+    }
+}
+
+class ChildWithUsedClassObj extends GitHubIssue101 {
+}
+
+class Intent {
+    Intent(Class c) {
+    }
+}
