@@ -336,6 +336,15 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * determines whether the method is a baked in special method of the jdk
+     *
+     * @param methodName
+     *            the method name to check
+     * @param methodSig
+     *            the parameter signature of the method to check
+     * @return if it is a well known baked in method
+     */
     private static boolean methodIsSpecial(String methodName, String methodSig) {
         return ("readObject".equals(methodName) && "(Ljava/io/ObjectInputStream;)V".equals(methodSig));
     }
