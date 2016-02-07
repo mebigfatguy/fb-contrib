@@ -18,33 +18,36 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+/**
+ * holds information about a method without regard to what class it is in
+ */
 public final class QMethod {
     private String methodName;
     private String signature;
-    
+
     public QMethod(String methodName, String signature) {
         this.methodName = methodName;
         this.signature = signature;
     }
-    
+
     @Override
     public int hashCode() {
         return methodName.hashCode() ^ signature.hashCode();
     }
-    
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof QMethod)) {
             return false;
         }
-        
+
         QMethod that = (QMethod) o;
-        
+
         return methodName.equals(that.methodName) && signature.equals(that.signature);
     }
-    
+
     @Override
     public String toString() {
         return ToString.build(this);
-    }  
+    }
 }
