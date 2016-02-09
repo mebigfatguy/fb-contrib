@@ -709,7 +709,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         private List<ScopeBlock> children;
 
         /**
-         * construts a new scope block
+         * constructs a new scope block
          *
          * @param start
          *            the beginning of the block
@@ -738,7 +738,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
          */
         @Override
         public String toString() {
-            return ToString.build(this);
+            return ToString.build(this, "parent");
         }
 
         /**

@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.utils;
 
 import java.lang.reflect.Field;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -44,11 +45,11 @@ public class ToString {
     private ToString() {
     }
 
-    public static String build(Object o) {
+    public static String build(Object o, String... ignoredFields) {
         VisitedInfo vi = visited.get();
         try {
             vi.count++;
-            return generate(o, vi.visited);
+            return generate(o, (ignoredFields == null) ? null : Arrays.<String> asList(ignoredFields), vi.visited);
         } finally {
             if (--vi.count == 0) {
                 vi.visited.clear();
@@ -56,7 +57,7 @@ public class ToString {
         }
     }
 
-    private static String generate(Object o, Set<Integer> visitedObjects) {
+    private static String generate(Object o, Collection<String> ignoredFields, Set<Integer> visitedObjects) {
 
         StringBuilder sb = new StringBuilder(100);
         Class<?> cls = o.getClass();
@@ -68,10 +69,11 @@ public class ToString {
                 visitedObjects.add(identityHC);
                 String sep = "";
                 for (Field f : cls.getDeclaredFields()) {
-                    if (!f.isSynthetic() && !f.getName().contains("$")) {
+                    String fieldName = f.getName();
+                    if (!f.isSynthetic() && !fieldName.contains("$") && ((ignoredFields == null) || !ignoredFields.contains(fieldName))) {
                         sb.append(sep);
                         sep = ", ";
-                        sb.append(f.getName()).append('=');
+                        sb.append(fieldName).append('=');
                         try {
                             f.setAccessible(true);
                             Object value = f.get(o);
