@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -38,8 +38,7 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for calls to HttpRequest.getParameter with parameters of the same name
- * with different cases like 'id' and 'Id'.
+ * looks for calls to HttpRequest.getParameter with parameters of the same name with different cases like 'id' and 'Id'.
  */
 public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     private static final String HTTP_SESSION = "javax/servlet/http/HttpSession";
@@ -71,7 +70,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
 
     /**
      * constructs a IKNC detector given the reporter to report bugs on
-     * 
+     *
      * @param reporter
      *            the sync of bug reports
      */
@@ -84,7 +83,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to create the opcode stack
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -100,7 +99,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the opcode stack for a new method
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -111,9 +110,8 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls to
-     * HttpServletRequest.getParameter and collect what the name of the key is.
-     * 
+     * implements the visitor to look for calls to HttpServletRequest.getParameter and collect what the name of the key is.
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -156,8 +154,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for the collected parm names, and look for
-     * duplicates that are different in casing only.
+     * implements the visitor to look for the collected parm names, and look for duplicates that are different in casing only.
      */
     @Override
     public void report() {
@@ -185,6 +182,13 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
         parmInfo.clear();
     }
 
+    /**
+     * looks to see if this method is a getAttribute/setAttribute on Session or getParameter on HttpServletRequest
+     *
+     * @param seen
+     *            the currently parsed opcode
+     * @return if it is one of these special methods
+     */
     private KeyType isKeyAccessMethod(int seen) {
         if (seen == INVOKEINTERFACE) {
             String clsName = getClassConstantOperand();

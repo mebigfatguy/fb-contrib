@@ -192,7 +192,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
                 OpcodeStack.Item nullCheckItem = stack.getStackItem(0);
                 XField fieldWhichWasNullChecked = nullCheckItem.getXField();
                 if (fieldWhichWasNullChecked != null) {
-                    exemptExecutors.put(fieldWhichWasNullChecked, getPC() + getBranchOffset());
+                    exemptExecutors.put(fieldWhichWasNullChecked, Integer.valueOf(getPC() + getBranchOffset()));
                 }
             }
         } finally {

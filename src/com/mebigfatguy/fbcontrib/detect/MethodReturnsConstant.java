@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -37,14 +38,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for private methods that can only return one constant value. either the
- * class should not return a value, or perhaps a branch was missed.
+ * looks for private methods that can only return one constant value. either the class should not return a value, or perhaps a branch was missed.
  */
 @CustomUserValue
 public class MethodReturnsConstant extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private OpcodeStack stack;
-    private int returnRegister;
+    private Integer returnRegister;
     private Map<Integer, Object> registerConstants;
     private Object returnConstant;
     private boolean methodSuspect;
@@ -86,7 +86,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
         if ((((aFlags & Constants.ACC_PRIVATE) != 0) || ((aFlags & Constants.ACC_STATIC) != 0)) && ((aFlags & Constants.ACC_SYNTHETIC) == 0)
                 && (!m.getSignature().endsWith(")Z"))) {
             stack.resetForMethodEntry(this);
-            returnRegister = -1;
+            returnRegister = Values.NEGATIVE_ONE;
             returnConstant = null;
             registerConstants.clear();
             methodSuspect = true;
@@ -153,7 +153,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                         return;
                     }
 
-                    returnRegister = item.getRegisterNumber();
+                    returnRegister = Integer.valueOf(item.getRegisterNumber());
                     returnConstant = constant;
                     returnPC = getPC();
                 }
@@ -168,9 +168,9 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 if (clsName.startsWith("java/lang/StringB")) {
                     sawSBToString = "toString".equals(getNameConstantOperand());
                 }
-            } else if ((seen >= ISTORE) && (seen <= ASTORE_3) || (seen == IINC)) {
-                int register = getRegisterOperand();
-                if ((returnRegister != -1) && (register == returnRegister)) {
+            } else if (((seen >= ISTORE) && (seen <= ASTORE_3)) || (seen == IINC)) {
+                Integer register = Integer.valueOf(getRegisterOperand());
+                if ((returnRegister.intValue() != -1) && (register.equals(returnRegister))) {
                     methodSuspect = false;
                 }
 
@@ -192,7 +192,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                     registerConstants.put(register, null);
                 }
 
-                if (returnRegister == register) {
+                if (returnRegister.equals(register)) {
                     Object constant = registerConstants.get(returnRegister);
                     if (constant != null) {
                         methodSuspect = false;

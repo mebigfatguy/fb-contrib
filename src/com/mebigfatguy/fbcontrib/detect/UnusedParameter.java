@@ -43,26 +43,13 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for private or static methods that have parameters that aren't used.
- * These parameters can be removed.
+ * looks for private or static methods that have parameters that aren't used. These parameters can be removed.
  */
 @CustomUserValue
 public class UnusedParameter extends BytecodeScanningDetector {
 
-    private static Set<String> IGNORE_METHODS = UnmodifiableSet.create(
-        Values.CONSTRUCTOR,
-        Values.STATIC_INITIALIZER,
-        "main",
-        "premain",
-        "agentmain",
-        "writeObject",
-        "readObject",
-        "readObjectNoData",
-        "writeReplace",
-        "readResolve",
-        "writeExternal",
-        "readExternal"
-    );
+    private static Set<String> IGNORE_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR, Values.STATIC_INITIALIZER, "main", "premain", "agentmain",
+            "writeObject", "readObject", "readObjectNoData", "writeReplace", "readResolve", "writeExternal", "readExternal");
 
     private BugReporter bugReporter;
 
@@ -72,7 +59,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
 
     /**
      * constructs a UP detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -101,8 +88,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to clear the parm set, and check for potential
-     * methods
+     * implements the visitor to clear the parm set, and check for potential methods
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -132,7 +118,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
                 int reg = firstReg;
                 for (int i = 0; i < parmTypes.length; ++i) {
                     unusedParms.set(reg);
-                    regToParm.put(reg, Integer.valueOf(i + 1));
+                    regToParm.put(Integer.valueOf(reg), Integer.valueOf(i + 1));
                     String parmSig = parmTypes[i].getSignature();
                     reg += SignatureUtils.getSignatureSize(parmSig);
                 }
@@ -148,7 +134,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
                         if (lv != null) {
                             String parmName = lv.getName();
                             bugReporter.reportBug(new BugInstance(this, BugType.UP_UNUSED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                    .addString("Parameter " + regToParm.get(reg) + ": " + parmName));
+                                    .addString("Parameter " + regToParm.get(Integer.valueOf(reg)) + ": " + parmName));
                         }
                         reg = unusedParms.nextSetBit(reg + 1);
                     }
@@ -173,74 +159,74 @@ public class UnusedParameter extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-            case ASTORE:
-            case ASTORE_0:
-            case ASTORE_1:
-            case ASTORE_2:
-            case ASTORE_3:
-            case ISTORE:
-            case ISTORE_0:
-            case ISTORE_1:
-            case ISTORE_2:
-            case ISTORE_3:
-            case LSTORE:
-            case LSTORE_1:
-            case LSTORE_2:
-            case LSTORE_3:
-            case FSTORE:
-            case FSTORE_0:
-            case FSTORE_1:
-            case FSTORE_2:
-            case FSTORE_3:
-            case DSTORE:
-            case DSTORE_1:
-            case DSTORE_2:
-            case DSTORE_3:
-            case ALOAD:
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3:
-            case ILOAD:
-            case ILOAD_0:
-            case ILOAD_1:
-            case ILOAD_2:
-            case ILOAD_3:
-            case LLOAD:
-            case LLOAD_0:
-            case LLOAD_1:
-            case LLOAD_2:
-            case LLOAD_3:
-            case FLOAD:
-            case FLOAD_0:
-            case FLOAD_1:
-            case FLOAD_2:
-            case FLOAD_3:
-            case DLOAD:
-            case DLOAD_0:
-            case DLOAD_1:
-            case DLOAD_2:
-            case DLOAD_3: {
-                int reg = getRegisterOperand();
-                unusedParms.clear(reg);
-            }
+                case ASTORE:
+                case ASTORE_0:
+                case ASTORE_1:
+                case ASTORE_2:
+                case ASTORE_3:
+                case ISTORE:
+                case ISTORE_0:
+                case ISTORE_1:
+                case ISTORE_2:
+                case ISTORE_3:
+                case LSTORE:
+                case LSTORE_1:
+                case LSTORE_2:
+                case LSTORE_3:
+                case FSTORE:
+                case FSTORE_0:
+                case FSTORE_1:
+                case FSTORE_2:
+                case FSTORE_3:
+                case DSTORE:
+                case DSTORE_1:
+                case DSTORE_2:
+                case DSTORE_3:
+                case ALOAD:
+                case ALOAD_0:
+                case ALOAD_1:
+                case ALOAD_2:
+                case ALOAD_3:
+                case ILOAD:
+                case ILOAD_0:
+                case ILOAD_1:
+                case ILOAD_2:
+                case ILOAD_3:
+                case LLOAD:
+                case LLOAD_0:
+                case LLOAD_1:
+                case LLOAD_2:
+                case LLOAD_3:
+                case FLOAD:
+                case FLOAD_0:
+                case FLOAD_1:
+                case FLOAD_2:
+                case FLOAD_3:
+                case DLOAD:
+                case DLOAD_0:
+                case DLOAD_1:
+                case DLOAD_2:
+                case DLOAD_3: {
+                    int reg = getRegisterOperand();
+                    unusedParms.clear(reg);
+                }
                 break;
 
-            case ARETURN:
-            case IRETURN:
-            case LRETURN:
-            case FRETURN:
-            case DRETURN: {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    int reg = item.getRegisterNumber();
-                    if (reg >= 0) {
-                        unusedParms.clear(reg);
+                case ARETURN:
+                case IRETURN:
+                case LRETURN:
+                case FRETURN:
+                case DRETURN: {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        int reg = item.getRegisterNumber();
+                        if (reg >= 0) {
+                            unusedParms.clear(reg);
+                        }
                     }
                 }
-            }
                 break;
-            default:
+                default:
                 break;
             }
         } finally {

@@ -25,6 +25,8 @@ import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -35,10 +37,8 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
- * looks for classes that have dependencies on each other in a circular way.
- * Class initialization can be compromised in this scenario, and usually points
- * to a bad data model. Consider using interfaces to break this hard circular
- * dependency.
+ * looks for classes that have dependencies on each other in a circular way. Class initialization can be compromised in this scenario, and usually points to a
+ * bad data model. Consider using interfaces to break this hard circular dependency.
  */
 public class CircularDependencies extends BytecodeScanningDetector {
     private Map<String, Set<String>> dependencyGraph = null;
@@ -68,30 +68,56 @@ public class CircularDependencies extends BytecodeScanningDetector {
         if ((seen == INVOKESPECIAL) || (seen == INVOKESTATIC) || (seen == INVOKEVIRTUAL)) {
             String refClsName = getClassConstantOperand();
             refClsName = refClsName.replace('/', '.');
-            if (refClsName.startsWith("java"))
+            if (refClsName.startsWith("java")) {
                 return;
-
-            if (clsName.equals(refClsName))
-                return;
-
-            if (isEnclosingClassName(clsName, refClsName) || isEnclosingClassName(refClsName, clsName))
-                return;
-
-            if (isStaticChild(clsName, refClsName) || isStaticChild(refClsName, clsName))
-                return;
-
-            Set<String> dependencies = dependencyGraph.get(clsName);
-            if (dependencies == null) {
-                dependencies = new HashSet<String>();
-                dependencyGraph.put(clsName, dependencies);
             }
 
+            if (clsName.equals(refClsName)) {
+                return;
+            }
+
+            if (isEnclosingClassName(clsName, refClsName) || isEnclosingClassName(refClsName, clsName)) {
+                return;
+            }
+
+            if (isStaticChild(clsName, refClsName) || isStaticChild(refClsName, clsName)) {
+                return;
+            }
+
+            Set<String> dependencies = getDependenciesForClass(clsName);
             dependencies.add(refClsName);
+
+        } else if (seen == LDC) {
+            Constant c = getConstantRefOperand();
+            if (c instanceof ConstantClass) {
+                String refClsName = getClassConstantOperand();
+                if (!refClsName.equals(clsName)) {
+                    Set<String> dependencies = getDependenciesForClass(clsName);
+                    dependencies.add(refClsName);
+                }
+            }
         }
     }
 
+    /**
+     * returns a set of dependent class names for a class, and if it doesn't exist create the set install it, and then return;
+     *
+     * @param clsName
+     *            the class for which you are trying to get dependencies
+     * @return the active set of classes that are dependent on the specified class
+     */
+    private Set<String> getDependenciesForClass(String clsName) {
+        Set<String> dependencies = dependencyGraph.get(clsName);
+        if (dependencies == null) {
+            dependencies = new HashSet<String>();
+            dependencyGraph.put(clsName, dependencies);
+        }
+
+        return dependencies;
+    }
+
     private boolean isEnclosingClassName(String outerClass, String innerClass) {
-        return innerClass.startsWith(outerClass) && innerClass.indexOf('$') >= 0;
+        return innerClass.startsWith(outerClass) && (innerClass.indexOf('$') >= 0);
     }
 
     @Override
@@ -115,8 +141,9 @@ public class CircularDependencies extends BytecodeScanningDetector {
                 dependencyGraph.remove(className);
                 pruneLeaves = true;
             }
-            if (pruneLeaves)
+            if (pruneLeaves) {
                 removeDependencyLeaves();
+            }
         }
 
         dependencyGraph.clear();
@@ -159,12 +186,14 @@ public class CircularDependencies extends BytecodeScanningDetector {
     private boolean removeLoopLinks(Set<String> loop) {
         Set<String> dependencies = null;
         for (String className : loop) {
-            if (dependencies != null)
+            if (dependencies != null) {
                 dependencies.remove(className);
+            }
             dependencies = dependencyGraph.get(className);
         }
-        if (dependencies != null)
+        if (dependencies != null) {
             dependencies.remove(loop.iterator().next());
+        }
 
         boolean removedClass = false;
         Iterator<String> cIt = loop.iterator();
@@ -191,30 +220,36 @@ public class CircularDependencies extends BytecodeScanningDetector {
             startClass = startCls;
             visited = new HashSet<String>();
             loop = new LinkedHashSet<String>();
-            if (findLoop(startClass))
+            if (findLoop(startClass)) {
                 return loop;
+            }
             return null;
         }
 
         private boolean findLoop(String curClass) {
-            if (curClass.contains("$"))
+            if (curClass.contains("$")) {
                 return false;
+            }
 
             Set<String> dependencies = dGraph.get(curClass);
-            if (dependencies == null)
+            if (dependencies == null) {
                 return false;
+            }
 
             visited.add(curClass);
             loop.add(curClass);
             for (String depClass : dependencies) {
-                if (depClass.equals(startClass))
+                if (depClass.equals(startClass)) {
                     return true;
+                }
 
-                if (visited.contains(depClass))
+                if (visited.contains(depClass)) {
                     continue;
+                }
 
-                if (findLoop(depClass))
+                if (findLoop(depClass)) {
                     return true;
+                }
             }
             loop.remove(curClass);
             return false;

@@ -19,6 +19,9 @@
 package com.mebigfatguy.fbcontrib.utils;
 
 @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
+/**
+ * holds information about a method that called, including class, method and signature
+ */
 public final class FQMethod {
     private String className;
     private String methodName;

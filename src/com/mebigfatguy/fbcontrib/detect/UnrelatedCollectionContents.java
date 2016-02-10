@@ -41,22 +41,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for collections or arrays that hold objects that are unrelated thru
- * class or interface inheritance other than java.lang.Object. Doing so, makes
- * for brittle code, relying either on positional correspondence for type, or a
- * reliance on instanceof to determine type. A better design usually can be had
- * by creating a separate class, which defines the different types required, and
- * add an instance of that class to the collection, or array.
+ * looks for collections or arrays that hold objects that are unrelated thru class or interface inheritance other than java.lang.Object. Doing so, makes for
+ * brittle code, relying either on positional correspondence for type, or a reliance on instanceof to determine type. A better design usually can be had by
+ * creating a separate class, which defines the different types required, and add an instance of that class to the collection, or array.
  */
 public class UnrelatedCollectionContents extends BytecodeScanningDetector {
-    private static final Set<String> COLLECTION_CLASSES = UnmodifiableSet.create(
-        "java/util/Collection",
-        "java/util/List",
-        "java/util/Map",
-        "java/util/Set",
-        "java/util/SortedMap",
-        "java/util/SortedSet"
-    );
+    private static final Set<String> COLLECTION_CLASSES = UnmodifiableSet.create("java/util/Collection", "java/util/List", "java/util/Map", "java/util/Set",
+            "java/util/SortedMap", "java/util/SortedSet");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
@@ -77,8 +68,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to create and destroy the stack and member
-     * collections
+     * implements the visitor to create and destroy the stack and member collections
      *
      * @param classContext
      *            the context object for the currently parsed class
@@ -97,6 +87,12 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to reset the opcode stack, and clear the various collections
+     *
+     * @param obj
+     *            the currently parsed code block
+     */
     @Override
     public void visitCode(final Code obj) {
         try {
@@ -112,6 +108,12 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to look for collection method calls that put objects into the collection that are unrelated by anything besides java.lang.Objecct
+     *
+     * @param seen
+     *            the currently parsed opcode
+     */
     @Override
     public void sawOpcode(final int seen) {
         try {
@@ -162,6 +164,17 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * processes an add into a collection, by processing all the super classes/interfaces of an object and removing the possible set of parent classes that have
+     * been seen so far, by doing what amounts to a intersection of what has been seen before, and this occurance.
+     *
+     * @param colItm
+     *            the collection that is being added to
+     * @param addItm
+     *            the added item
+     * @throws ClassNotFoundException
+     *             if a super class is not found
+     */
     private void checkAdd(final OpcodeStack.Item colItm, final OpcodeStack.Item addItm) throws ClassNotFoundException {
         int reg = colItm.getRegisterNumber();
         if (reg != -1) {
@@ -209,6 +222,19 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * intersects the set of possible superclass that this collection might have seen before with this one. If we find that there is no commonality between
+     * superclasses, report it as a bug.
+     *
+     * @param supers
+     *            the collection of possible superclass/interfaces that has been seen for this collection thus far
+     * @param sla
+     *            the location of this add
+     * @param addItm
+     *            the currently added item
+     * @throws ClassNotFoundException
+     *             if a superclass/interface can not be found
+     */
     private void mergeItem(final Set<String> supers, final Set<SourceLineAnnotation> sla, final OpcodeStack.Item addItm) throws ClassNotFoundException {
 
         if (supers.isEmpty()) {
@@ -239,6 +265,16 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * adds this item's type and all of it's superclass/interfaces to the set of possible types that could define this added item
+     *
+     * @param supers
+     *            the current set of superclass items
+     * @param addItm
+     *            the item we are adding
+     * @throws ClassNotFoundException
+     *             if a superclass/interface is not found
+     */
     private static void addNewItem(final Set<String> supers, final OpcodeStack.Item addItm) throws ClassNotFoundException {
 
         String itemSignature = addItm.getSignature();
@@ -275,6 +311,15 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * performs a typical set intersection between what types of possible superclasses/interfaces has been seen before, for this collection, and what is now
+     * seen.
+     *
+     * @param orig
+     *            the existing set of superclasses used for this collection
+     * @param add
+     *            the currently added item
+     */
     private static void intersection(final Set<String> orig, final Set<String> add) {
         Iterator<String> it = orig.iterator();
         while (it.hasNext()) {
