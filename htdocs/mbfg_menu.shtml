@@ -2,8 +2,10 @@
 			    <a id="mbfg_menu" href="#" >Other MeBigFatGuy Projects</a>
 			    <div id="mbfg_projects">
 			    	<ul>
+			    		<li><a href="https://github.com/mebigfatguy/deadmethods">DeadMethods</a></li>
+			    		<li><a href="https://github.com/mebigfatguy/hashshmash">HashShmash</a></li>
 			    		<li><a href="http://beansource.sf.net">Beansource</a></li>
-			    		<li><a href="http://fb-contrib.sf.net">FB-Contrib</a></li>
+			    		<li><a href="https://github.com/mebigfatguy/fb-contrib">FB-Contrib</a></li>
 			    		<li><a href="http://mongobrowser.sf.net">MongoBrowser</a></li>
 			    		<li><a href="http://mysfstats.sf.net">MySFStats</a></li>
 			    		<li><a href="http://patchanim.sf.net">PatchAnim</a></li>
@@ -12,7 +14,6 @@
 			    		<li><a href="http://schemalizer.sf.net">Schemalizer</a></li>	
 			    		<li><a href="http://tomailer.sf.net">ToMailer</a></li>
 			    		<li><a href="http://jd4a.sf.net">JavaDoc for Android</a></li>	
-			    		<li><a href="http://damus.sf.net">Damus</a></li>
 			    		<li><a href="http://www.heartofgoldfarm.com">Heart of Gold Farm</a></li>
 			    	</ul>
 			    </div>
