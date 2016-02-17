@@ -47,8 +47,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Looks for methods that are direct copies of the implementation in the super
- * class. This detector doesn't handle multi-level inheritance, ie child to
+ * Looks for methods that are direct copies of the implementation in the super class. This detector doesn't handle multi-level inheritance, ie child to
  * grandparent. Could be done.
  */
 public class CopiedOverriddenMethod extends BytecodeScanningDetector {
@@ -75,8 +74,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to accept classes derived from non java.lang.Object
-     * classes.
+     * overrides the visitor to accept classes derived from non java.lang.Object classes.
      *
      * @param clsContext
      *            the context object of the currently parsed class
@@ -125,8 +123,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to find code blocks of methods that are the same as
-     * its parents
+     * overrides the visitor to find code blocks of methods that are the same as its parents
      *
      * @param obj
      *            the code object of the currently parsed method
@@ -134,7 +131,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        if ((!m.isPublic() && !m.isProtected() && !m.isAbstract()) || m.isSynthetic()) {
+        if ((!m.isPublic() && !m.isProtected()) || m.isAbstract() || m.isSynthetic()) {
             return;
         }
 
@@ -158,8 +155,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for an exact call to the parent class's
-     * method using this methods parm.
+     * overrides the visitor to look for an exact call to the parent class's method using this methods parm.
      *
      * @param seen
      *            the currently parsed instruction
@@ -261,8 +257,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * compares two code blocks to see if they are equal with regard to
-     * instructions and field accesses
+     * compares two code blocks to see if they are equal with regard to instructions and field accesses
      *
      * @param child
      *            the first code block
