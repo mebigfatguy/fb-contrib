@@ -257,7 +257,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                 while (it.hasNext()) {
                     Map.Entry<Integer, Integer> entry = it.next();
                     int pc = entry.getValue().intValue();
-                    if ((branchTarget < pc) && (initializedRegs.get(entry.getKey().intValue()))) {
+                    if (branchTarget < pc && initializedRegs.get(entry.getKey().intValue())) {
                         it.remove();
                     }
                 }
@@ -265,15 +265,13 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
 
         } finally {
             stack.sawOpcode(this, seen);
-            if (sizeSet) {
-                if (stack.getStackDepth() >= 1) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(size);
-                }
+            if (sizeSet && stack.getStackDepth() >= 1) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(size);
             }
         }
     }
-    
+
     private void processArrayLoad() {
         if (stack.getStackDepth() >= 2) {
             OpcodeStack.Item indexItem = stack.getStackItem(0);
@@ -281,16 +279,14 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             if (index != null) {
                 OpcodeStack.Item arrayItem = stack.getStackItem(1);
                 Integer sz = (Integer) arrayItem.getUserValue();
-                if (sz != null) {
-                    if (index.intValue() >= sz.intValue()) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+                if (sz != null && index.intValue() >= sz.intValue()) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
                 }
             }
         }
     }
-    
+
     private void processArrayStore() {
         if (stack.getStackDepth() >= 3) {
             OpcodeStack.Item indexItem = stack.getStackItem(1);
@@ -298,15 +294,13 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
             if (index != null) {
                 OpcodeStack.Item arrayItem = stack.getStackItem(2);
                 Integer sz = (Integer) arrayItem.getUserValue();
-                if (sz != null) {
-                    if (index.intValue() >= sz.intValue()) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+                if (sz != null && index.intValue() >= sz.intValue()) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.AIOB_ARRAY_INDEX_OUT_OF_BOUNDS.name(), HIGH_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
                 }
 
                 int reg = arrayItem.getRegisterNumber();
-                if ((reg >= 0) && !initializedRegs.get(reg)) {
+                if (reg >= 0 && !initializedRegs.get(reg)) {
                     nullStoreToLocation.put(Integer.valueOf(reg), Integer.valueOf(getPC()));
                 }
             }

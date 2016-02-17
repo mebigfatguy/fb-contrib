@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -63,7 +63,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
 
     /**
      * constructs a ACEM detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -73,7 +73,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to check for abstract classes.
-     * 
+     *
      * @param classContext
      *            the context object that holds the JavaClass being parsed
      */
@@ -84,7 +84,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
             if (cls.isAbstract()) {
                 interfaceMethods = collectInterfaceMethods(cls);
                 super.visitClassContext(classContext);
-            }      
+            }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         } finally {
@@ -94,7 +94,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to grab the method name and reset the state.
-     * 
+     *
      * @param obj
      *            the method being parsed
      */
@@ -106,7 +106,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to filter out constructors.
-     * 
+     *
      * @param obj
      *            the code to parse
      */
@@ -114,7 +114,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         if (Values.CONSTRUCTOR.equals(methodName) || Values.STATIC_INITIALIZER.equals(methodName))
             return;
-        
+
         if (!interfaceMethods.contains(new QMethod(methodName, getMethod().getSignature()))) {
             super.visitCode(obj);
         }
@@ -123,7 +123,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     /**
      * overrides the visitor to look for empty methods or simple exception
      * throwers.
-     * 
+     *
      * @param seen
      *            the opcode currently being parsed
      */
@@ -139,7 +139,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
                 } else if (seen == NEW) {
                     String newClass = getClassConstantOperand();
                     JavaClass exCls = Repository.lookupClass(newClass);
-                    if ((EXCEPTION_CLASS != null) && exCls.instanceOf(EXCEPTION_CLASS))
+                    if (EXCEPTION_CLASS != null && exCls.instanceOf(EXCEPTION_CLASS))
                         state = State.SAW_NEW;
                     else
                         state = State.SAW_DONE;
@@ -155,14 +155,14 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
                 break;
 
             case SAW_DUP:
-                if (((seen == LDC) || (seen == LDC_W)) && (getConstantRefOperand() instanceof ConstantString))
+                if ((seen == LDC || seen == LDC_W) && getConstantRefOperand() instanceof ConstantString)
                     state = State.SAW_LDC;
                 else
                     state = State.SAW_DONE;
                 break;
 
             case SAW_LDC:
-                if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand()))
+                if (seen == INVOKESPECIAL && Values.CONSTRUCTOR.equals(getNameConstantOperand()))
                     state = State.SAW_INVOKESPECIAL;
                 else
                     state = State.SAW_DONE;
@@ -184,7 +184,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
             state = State.SAW_DONE;
         }
     }
-    
+
     private Set<QMethod> collectInterfaceMethods(JavaClass cls) throws ClassNotFoundException {
         Set<QMethod> methods = new HashSet<QMethod>();
         for (JavaClass inf : cls.getAllInterfaces()) {
@@ -192,7 +192,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
                 methods.add(new QMethod(m.getName(), m.getSignature()));
             }
         }
-        
+
         return methods;
     }
 }

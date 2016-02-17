@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -49,7 +49,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
 
     /**
      * constructs a ABC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -59,7 +59,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
 
     /**
      * implement the visitor to report bugs if no Tree comparators were found
-     * 
+     *
      * @param classContext
      *            the context object for the class currently being parsed
      */
@@ -92,7 +92,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the stack of opcodes
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed code block
      */
@@ -105,7 +105,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     /**
      * implements the visitor to find accesses to maps, sets and lists using
      * arrays
-     * 
+     *
      * @param seen
      *            the currently visitor opcode
      */
@@ -126,7 +126,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 1) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         String pushedSig = itm.getSignature();
-                        if ((pushedSig.length() > 0) && (pushedSig.charAt(0) == '[')) {
+                        if (pushedSig.length() > 0 && pushedSig.charAt(0) == '[') {
                             bugList = mapBugs;
                             found = true;
                         }
@@ -140,13 +140,12 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
                             found = true;
                         }
                     }
-                } else if ("java/util/List".equals(className) && "contains".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        String pushedSig = itm.getSignature();
-                        if (pushedSig.charAt(0) == '[')
-                            found = true;
-                    }
+                } else if ("java/util/List".equals(className) && "contains".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)
+                        && stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    String pushedSig = itm.getSignature();
+                    if (pushedSig.charAt(0) == '[')
+                        found = true;
                 }
 
                 if (found) {
@@ -166,11 +165,11 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
                 if (Values.CONSTRUCTOR.equals(methodName)) {
                     if (!hasMapComparator && "java/util/TreeMap".equals(className)) {
                         Type[] parms = Type.getArgumentTypes(sig);
-                        if ((parms.length == 1) && "Ljava/util/Comparator;".equals(parms[0].getSignature()))
+                        if (parms.length == 1 && "Ljava/util/Comparator;".equals(parms[0].getSignature()))
                             hasMapComparator = true;
                     } else if (!hasSetComparator && "java/util/TreeSet".equals(className)) {
                         Type[] parms = Type.getArgumentTypes(sig);
-                        if ((parms.length == 1) && "Ljava/util/Comparator;".equals(parms[0].getSignature()))
+                        if (parms.length == 1 && "Ljava/util/Comparator;".equals(parms[0].getSignature()))
                             hasSetComparator = true;
                     }
                 }

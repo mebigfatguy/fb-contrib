@@ -50,7 +50,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
 
     /**
      * constructs a AFBR detector given the reporter to report bugs on.
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -98,7 +98,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
         CodeException[] exc = obj.getExceptionTable();
         if (exc != null) {
             for (CodeException ce : exc) {
-                if ((ce.getCatchType() == 0) && (ce.getStartPC() == ce.getHandlerPC())) {
+                if (ce.getCatchType() == 0 && ce.getStartPC() == ce.getHandlerPC()) {
                     fbInfo.add(new FinallyBlockInfo(ce.getStartPC()));
                 }
             }
@@ -146,7 +146,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
             }
         }
 
-        if ((seen == ATHROW) && (loadedReg == fbi.exReg)) {
+        if (seen == ATHROW && loadedReg == fbi.exReg) {
             fbInfo.remove(0);
             sawOpcode(seen);
             return;
@@ -155,22 +155,20 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
         else
             loadedReg = -1;
 
-        if (((seen >= IRETURN) && (seen <= RETURN)) || (seen == ATHROW)) {
+        if (seen >= IRETURN && seen <= RETURN || seen == ATHROW) {
             bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLine(this));
             fbInfo.remove(0);
-        } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC)) {
+        } else if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
             try {
                 JavaClass cls = Repository.lookupClass(getClassConstantOperand());
                 Method m = findMethod(cls, getNameConstantOperand(), getSigConstantOperand());
                 if (m != null) {
                     ExceptionTable et = m.getExceptionTable();
-                    if ((et != null) && (et.getLength() > 0)) {
-                        if (!catchBlockInFinally(fbi)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), LOW_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                            fbInfo.remove(0);
-                        }
+                    if (et != null && et.getLength() > 0 && !catchBlockInFinally(fbi)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), LOW_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
+                        fbInfo.remove(0);
                     }
                 }
             } catch (ClassNotFoundException cnfe) {
@@ -216,15 +214,16 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     private boolean catchBlockInFinally(FinallyBlockInfo fBlockInfo) {
 
         CodeException[] catchExceptions = getCode().getExceptionTable();
-        if ((catchExceptions == null) || (catchExceptions.length == 0))
+        if (catchExceptions == null || catchExceptions.length == 0) {
             return false;
+        }
 
         int pc = getPC();
         for (CodeException ex : catchExceptions) {
-            if ((ex.getStartPC() <= pc) && (ex.getEndPC() >= pc)) {
-                if (ex.getStartPC() >= fBlockInfo.startPC) {
-                    return true;
-                }
+            if (ex.getStartPC() <= pc
+                && ex.getEndPC() >= pc
+                && ex.getStartPC() >= fBlockInfo.startPC) {
+                return true;
             }
         }
 
