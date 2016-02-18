@@ -95,8 +95,8 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
                 Method[] methods = superCls.getMethods();
                 for (Method m : methods) {
                     String methodName = m.getName();
-                    if ((m.isPublic() || m.isProtected()) && (!m.isAbstract() && !m.isSynthetic()
-                            && (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName)))) {
+                    if ((m.isPublic() || m.isProtected()) && !m.isAbstract() && !m.isSynthetic()
+                            && !Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName)) {
                         String methodInfo = methodName + ':' + m.getSignature();
                         superclassCode.put(methodInfo, new CodeInfo(m.getCode(), m.getAccessFlags()));
                     }
@@ -206,32 +206,25 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
 
     private boolean isExpectedParmInstruction(int seen, int parmOffset, Type type) {
 
-        if ((type == Type.OBJECT) || (type == Type.STRING) || (type == Type.STRINGBUFFER) || (type == Type.THROWABLE)) {
-            if (parmOffset <= 3) {
-                return (Constants.ALOAD_0 + parmOffset) == seen;
-            }
-            return (Constants.ALOAD == seen) && (parmOffset == getRegisterOperand());
-        } else if (type == Type.DOUBLE) {
-            if (parmOffset <= 3) {
-                return (Constants.DLOAD_0 + parmOffset) == seen;
-            }
-            return (Constants.DLOAD == seen) && (parmOffset == getRegisterOperand());
-        } else if (type == Type.FLOAT) {
-            if (parmOffset <= 3) {
-                return (Constants.FLOAD_0 + parmOffset) == seen;
-            }
-            return (Constants.FLOAD == seen) && (parmOffset == getRegisterOperand());
-        } else if (type == Type.LONG) {
-            if (parmOffset <= 3) {
-                return (Constants.LLOAD_0 + parmOffset) == seen;
-            }
-            return (Constants.LLOAD == seen) && (parmOffset == getRegisterOperand());
+        switch (getExpectedReturnInstruction(type)) {
+            case Constants.ARETURN:
+                return isExpectedParmInstruction(Constants.ALOAD_0, Constants.ALOAD, seen, parmOffset);
+            case Constants.DRETURN:
+                return isExpectedParmInstruction(Constants.DLOAD_0, Constants.DLOAD, seen, parmOffset);
+            case Constants.FRETURN:
+                return isExpectedParmInstruction(Constants.FLOAD_0, Constants.FLOAD, seen, parmOffset);
+            case Constants.LRETURN:
+                return isExpectedParmInstruction(Constants.LLOAD_0, Constants.LLOAD, seen, parmOffset);
+            default:
+                return isExpectedParmInstruction(Constants.ILOAD_0, Constants.ILOAD, seen, parmOffset);
         }
+    }
 
+    private boolean isExpectedParmInstruction(int offsetConstant, int constant, int seen, int parmOffset) {
         if (parmOffset <= 3) {
-            return (Constants.ILOAD_0 + parmOffset) == seen;
+            return (offsetConstant + parmOffset) == seen;
         }
-        return (Constants.ILOAD == seen) && (parmOffset == getRegisterOperand());
+        return (constant == seen) && (parmOffset == getRegisterOperand());
     }
 
     private static int getExpectedReturnInstruction(Type type) {
