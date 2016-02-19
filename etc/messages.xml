@@ -5247,7 +5247,7 @@
     	<Details>
     		<![CDATA[
     		<p>This method declares that it either rolls back or does not rollback a transaction based on an
-    		expected transaction being thrown. However this exception can not be thrown from this method, and so the
+    		expected exception being thrown. However this exception, nor any derived exceptions can not be thrown from this method, and so the
     		annotation is useless.</p>
     		]]> 
     	</Details>
