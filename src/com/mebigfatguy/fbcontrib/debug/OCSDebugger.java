@@ -43,6 +43,7 @@ public class OCSDebugger extends BytecodeScanningDetector {
     private PrintWriter pw = null;
 
     public OCSDebugger(@SuppressWarnings("unused") BugReporter bugReporter) {
+        // no bugs are reported, so not storing the bugReporter
     }
 
     @Override
