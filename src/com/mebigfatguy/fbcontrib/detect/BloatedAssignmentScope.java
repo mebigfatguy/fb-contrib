@@ -548,6 +548,11 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         OpcodeStack.Item caller = stack.getStackItem(types.length);
+        UserObject uo = (UserObject) caller.getUserValue();
+        if ((uo != null) && (uo.caller != null)) {
+                return uo.caller;
+        }
+        
         int reg = caller.getRegisterNumber();
         if (reg >= 0) {
             return Integer.valueOf(reg);
