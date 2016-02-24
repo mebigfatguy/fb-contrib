@@ -143,12 +143,10 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == ARETURN) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    if (!itm.isNull()) {
-                        returnTypes.put(itm.getJavaClass(), Integer.valueOf(getPC()));
-                    }
+            if ((seen == ARETURN) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                if (!itm.isNull()) {
+                    returnTypes.put(itm.getJavaClass(), Integer.valueOf(getPC()));
                 }
             }
         } catch (ClassNotFoundException cnfe) {

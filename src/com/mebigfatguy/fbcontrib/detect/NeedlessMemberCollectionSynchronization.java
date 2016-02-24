@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -76,7 +76,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
             "java/util/Vector",
             "java/util/Hashtable"
     );
-    
+
     private static Set<String> modifyingMethods = UnmodifiableSet.create(
             "add",
             "addAll",
@@ -99,7 +99,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
             "setElementAt",
             "setSize"
     );
-    
+
     private enum State {
         IN_METHOD, IN_CLINIT, IN_INIT
     };
@@ -113,7 +113,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 
     /**
      * constructs a NMCS detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -124,7 +124,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
     /**
      * implements the visitor to clear the collectionFields and stack and to
      * report collections that remain unmodified out of clinit or init
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -154,7 +154,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 
     /**
      * implements the visitor to find collection fields
-     * 
+     *
      * @param obj
      *            the context object of the currently parse field
      */
@@ -179,7 +179,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
     /**
      * implements the visitor to set the state based on the type of method being
      * parsed
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -201,7 +201,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 
     /**
      * implements the visitor to call the approriate visitor based on state
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -225,7 +225,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
     /**
      * handle <clinit> blocks by looking for putstatic calls referencing
      * synchronized collections
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -239,11 +239,9 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
                 processCollectionStore();
         } finally {
             stack.sawOpcode(this, seen);
-            if (isSyncCollection) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(Boolean.TRUE);
-                }
+            if (isSyncCollection && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(Boolean.TRUE);
             }
         }
     }
@@ -251,7 +249,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
     /**
      * handle <init> blocks by looking for putfield calls referencing
      * synchronized collections
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -264,11 +262,9 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
                 processCollectionStore();
         } finally {
             stack.sawOpcode(this, seen);
-            if (isSyncCollection) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(Boolean.TRUE);
-                }
+            if (isSyncCollection && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(Boolean.TRUE);
             }
         }
     }
@@ -276,7 +272,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
     /**
      * handles regular methods by looking for methods on collections that are
      * modifying and removes those collections from the ones under review
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -351,11 +347,9 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (isSyncCollection) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(Boolean.TRUE);
-                }
+            if (isSyncCollection && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(Boolean.TRUE);
             }
         }
 
@@ -363,7 +357,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 
     /**
      * returns whether this instruction is creating a synchronized collection
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      * @return whether a synchronized collection has just been created
@@ -373,11 +367,9 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
             if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
                 return (syncCollections.contains(getClassConstantOperand()));
             }
-        } else if (seen == INVOKESTATIC) {
-            if ("java/util/Collections".equals(getClassConstantOperand())) {
-                String methodName = getNameConstantOperand();
-                return ("synchronizedMap".equals(methodName) || "synchronizedSet".equals(methodName));
-            }
+        } else if ((seen == INVOKESTATIC) && "java/util/Collections".equals(getClassConstantOperand())) {
+            String methodName = getNameConstantOperand();
+            return ("synchronizedMap".equals(methodName) || "synchronizedSet".equals(methodName));
         }
         return false;
     }
@@ -388,17 +380,15 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
      */
     private void processCollectionStore() {
         String fieldClassName = getDottedClassConstantOperand();
-        if (fieldClassName.equals(className)) {
-            if (stack.getStackDepth() > 0) {
-                OpcodeStack.Item item = stack.getStackItem(0);
-                if (item.getUserValue() != null) {
-                    String fieldName = getNameConstantOperand();
-                    if (fieldName != null) {
-                        FieldInfo fi = collectionFields.get(fieldName);
-                        if (fi != null) {
-                            fi.getFieldAnnotation().setSourceLines(SourceLineAnnotation.fromVisitedInstruction(this));
-                            fi.setSynchronized();
-                        }
+        if (fieldClassName.equals(className) && (stack.getStackDepth() > 0)) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            if (item.getUserValue() != null) {
+                String fieldName = getNameConstantOperand();
+                if (fieldName != null) {
+                    FieldInfo fi = collectionFields.get(fieldName);
+                    if (fi != null) {
+                        fi.getFieldAnnotation().setSourceLines(SourceLineAnnotation.fromVisitedInstruction(this));
+                        fi.setSynchronized();
                     }
                 }
             }

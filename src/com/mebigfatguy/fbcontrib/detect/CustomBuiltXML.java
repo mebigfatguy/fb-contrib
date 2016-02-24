@@ -56,7 +56,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
         xp.put(Pattern.compile(".*<!\\[CDATA\\[.*", Pattern.CASE_INSENSITIVE), Boolean.TRUE);
         xp.put(Pattern.compile(".*\\]\\]>.*"), Boolean.TRUE);
         xp.put(Pattern.compile(".*xmlns:.*"), Boolean.TRUE);
-        
+
         xmlPatterns = Collections.<Pattern, Boolean> unmodifiableMap(xp);
     }
 
@@ -142,11 +142,9 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            strCon = (String) itm.getConstant();
-                        }
+                    if (Values.CONSTRUCTOR.equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig) && (stack.getStackDepth() > 0)) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        strCon = (String) itm.getConstant();
                     }
                 }
             } else if (seen == INVOKEVIRTUAL) {
@@ -154,11 +152,9 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if ("append".equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            strCon = (String) itm.getConstant();
-                        }
+                    if ("append".equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig) && (stack.getStackDepth() > 0)) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        strCon = (String) itm.getConstant();
                     }
                 }
             }

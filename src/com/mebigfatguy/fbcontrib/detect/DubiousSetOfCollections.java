@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -57,7 +57,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
 
     /**
      * constructs a DSOC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -68,7 +68,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     /**
      * implement the visitor to set up the opcode stack, and make sure that
      * collection, set and map classes could be loaded.
-     * 
+     *
      * @param clsContext
      *            the context object of the currently parsed class
      */
@@ -87,7 +87,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the opcode stack
-     * 
+     *
      * @param code
      *            the context object of the currently parsed code block
      */
@@ -100,7 +100,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     /**
      * implements the visitor look for adds to sets or puts to maps where the
      * element to be added is a collection.
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -123,15 +123,15 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
                                     .addMethod(this).addSourceLine(this));
                         }
                     }
-                } else if ("put".equals(methodName) && "(Ljava/lang/Object;LJava/lang/Object;)Ljava/lang/Object;".equals(signature)
-                        && isImplementationOf(clsName, setCls)) {
-                    if (stack.getStackDepth() > 2) {
-                        OpcodeStack.Item item = stack.getStackItem(1);
-                        JavaClass entryCls = item.getJavaClass();
-                        if (isImplementationOf(entryCls, collectionCls)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.DSOC_DUBIOUS_SET_OF_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
+                } else if ("put".equals(methodName)
+                        && "(Ljava/lang/Object;LJava/lang/Object;)Ljava/lang/Object;".equals(signature)
+                        && isImplementationOf(clsName, setCls)
+                        && (stack.getStackDepth() > 2)) {
+                    OpcodeStack.Item item = stack.getStackItem(1);
+                    JavaClass entryCls = item.getJavaClass();
+                    if (isImplementationOf(entryCls, collectionCls)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.DSOC_DUBIOUS_SET_OF_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
                     }
                 }
             }
@@ -144,7 +144,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
 
     /**
      * returns whether the class implements the interface
-     * 
+     *
      * @param clsName
      *            the name of the class
      * @param inf
@@ -167,7 +167,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
 
     /**
      * returns whether the class implements the interface
-     * 
+     *
      * @param cls
      *            the class
      * @param inf

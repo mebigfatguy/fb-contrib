@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -76,7 +76,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
 
     /**
      * constructs a CLI detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -87,17 +87,15 @@ public class ConstantListIndex extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to create and clear the const0loop set
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            if (INVOCATIONHANDLER_CLASS != null) {
-                if (classContext.getJavaClass().implementationOf(INVOCATIONHANDLER_CLASS)) {
-                    return;
-                }
+            if ((INVOCATIONHANDLER_CLASS != null) && classContext.getJavaClass().implementationOf(INVOCATIONHANDLER_CLASS)) {
+                return;
             }
             iConst0Looped = new BitSet();
             stack = new OpcodeStack();
@@ -112,7 +110,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the state
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed code block
      */
@@ -126,7 +124,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     /**
      * implements the visitor to find accesses to lists or arrays using
      * constants
-     * 
+     *
      * @param seen
      *            the currently visitor opcode
      */
@@ -137,11 +135,11 @@ public class ConstantListIndex extends BytecodeScanningDetector {
 
             switch (state) {
             case SAW_NOTHING:
-                if (seen == ICONST_0)
+                if (seen == ICONST_0) {
                     state = State.SAW_CONSTANT_0;
-                else if ((seen >= ICONST_1) && (seen <= ICONST_5))
+                } else if ((seen >= ICONST_1) && (seen <= ICONST_5)) {
                     state = State.SAW_CONSTANT;
-                else if ((seen == LDC) || (seen == LDC_W)) {
+                } else if ((seen == LDC) || (seen == LDC_W)) {
                     Constant c = getConstantRefOperand();
                     if (c instanceof ConstantInteger)
                         state = State.SAW_CONSTANT;
@@ -215,7 +213,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     /**
      * returns whether the array item was returned from a common method that the
      * user can't do anything about and so don't report CLI in this case.
-     * 
+     *
      * @param item
      *            the stack item representing the array
      * @return if the array was returned from a common method

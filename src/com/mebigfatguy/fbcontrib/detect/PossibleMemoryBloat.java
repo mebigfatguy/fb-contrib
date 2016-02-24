@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -51,7 +51,7 @@ import edu.umd.cs.findbugs.ba.XField;
  *
  */
 public class PossibleMemoryBloat extends BytecodeScanningDetector {
-    
+
     private static final Set<String> bloatableSigs = UnmodifiableSet.create(
         "Ljava/util/concurrent/ArrayBlockingQueue;",
         "Ljava/util/ArrayList;",
@@ -86,7 +86,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         "Ljava/util/TreeSet;",
         "Ljava/util/Vector;"
     );
-    
+
     private static final Set<String> nonBloatableSigs = UnmodifiableSet.create("Ljava/util/WeakHashMap;");
 
     private static final Set<String> decreasingMethods = UnmodifiableSet.create(
@@ -128,7 +128,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
     /**
      * constructs a PMB detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -139,7 +139,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     /**
      * collects static fields that are likely bloatable objects and if found
      * allows the visitor to proceed, at the end report all leftover fields
-     * 
+     *
      * @param classContext
      *            the class context object of the currently parsed java class
      */
@@ -200,7 +200,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to collect the method name
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed method
      */
@@ -211,7 +211,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the opcode stack
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -229,7 +229,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for methods that empty a bloatable field
      * if found, remove these fields from the current list
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -247,10 +247,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > argCount) {
                     OpcodeStack.Item itm = stack.getStackItem(argCount);
                     XField field = itm.getXField();
-                    if (field != null) {
-                        if (bloatableCandidates.containsKey(field)) {
-                            checkMethodAsDecreasingOrIncreasing(field);
-                        }
+                    if ((field != null) && bloatableCandidates.containsKey(field)) {
+                        checkMethodAsDecreasingOrIncreasing(field);
                     }
                 }
             } else if (seen == PUTSTATIC) {
@@ -287,10 +285,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         if (decreasingMethods.contains(mName)) {
             bloatableCandidates.remove(field);
             bloatableFields.remove(field);
-        } else if (increasingMethods.contains(mName)) {
-            if (bloatableCandidates.containsKey(field)) {
-                bloatableFields.put(field, bloatableCandidates.get(field));
-            }
+        } else if (increasingMethods.contains(mName) && bloatableCandidates.containsKey(field)) {
+            bloatableFields.put(field, bloatableCandidates.get(field));
         }
     }
 }

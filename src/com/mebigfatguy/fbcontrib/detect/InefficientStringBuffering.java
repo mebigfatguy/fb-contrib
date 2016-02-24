@@ -123,11 +123,9 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
             }
         } finally {
             handleOpcode(seen);
-            if (userValue != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    itm.setUserValue(userValue);
-                }
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(userValue);
             }
         }
     }
@@ -188,11 +186,10 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                 OpcodeStack.Item itm = getStringBufferItemAt(0);
                 userValue = (ISBUserValue) itm.getUserValue();
             }
-        } else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())) {
-            // calls to this.toString() are okay, some people like to be explicit
-            if ((stack.getStackDepth() > 0) && (stack.getStackItem(0).getRegisterNumber() != 0)) {
-                userValue = new ISBUserValue(AppendType.TOSTRING);
-            }
+        } else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())
+                // calls to this.toString() are okay, some people like to be explicit
+                && (stack.getStackDepth() > 0) && (stack.getStackItem(0).getRegisterNumber() != 0)) {
+            userValue = new ISBUserValue(AppendType.TOSTRING);
         }
         return userValue;
     }
@@ -200,18 +197,14 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
     private void dealWithEmptyString() {
         String calledClass = getClassConstantOperand();
         if (("java/lang/StringBuffer".equals(calledClass) || "java/lang/StringBuilder".equals(calledClass)) && "append".equals(getNameConstantOperand())
-                && getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
-            if (stack.getStackDepth() > 1) {
-                OpcodeStack.Item sbItm = stack.getStackItem(1);
-                if ((sbItm != null) && (sbItm.getUserValue() == null)) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    Object cons = itm.getConstant();
-                    if ((cons instanceof String) && (itm.getRegisterNumber() < 0)) {
-                        if (((String) cons).length() == 0) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.ISB_EMPTY_STRING_APPENDING.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
-                    }
+                && getSigConstantOperand().startsWith("(Ljava/lang/String;)") && (stack.getStackDepth() > 1)) {
+            OpcodeStack.Item sbItm = stack.getStackItem(1);
+            if ((sbItm != null) && (sbItm.getUserValue() == null)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                Object cons = itm.getConstant();
+                if (cons instanceof String && (itm.getRegisterNumber() < 0) && ((String) cons).isEmpty()) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.ISB_EMPTY_STRING_APPENDING.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
                 }
             }
         }
@@ -227,18 +220,16 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                 if (itm != null) {
                     userValue = new ISBUserValue(AppendType.NESTED);
                 }
-            } else if ("(Ljava/lang/String;)V".equals(signature)) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    userValue = (ISBUserValue) itm.getUserValue();
-                    if ((userValue != null) && (userValue.getAppendType() == AppendType.NESTED)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+            } else if ("(Ljava/lang/String;)V".equals(signature) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                userValue = (ISBUserValue) itm.getUserValue();
+                if ((userValue != null) && (userValue.getAppendType() == AppendType.NESTED)) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
+                }
 
-                    if (userValue == null) {
-                        userValue = new ISBUserValue(AppendType.CLEAR, true);
-                    }
+                if (userValue == null) {
+                    userValue = new ISBUserValue(AppendType.CLEAR, true);
                 }
             }
         }

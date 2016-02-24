@@ -217,11 +217,9 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (tosIsPriority != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    itm.setUserValue(tosIsPriority);
-                }
+            if (tosIsPriority != null && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(tosIsPriority);
             }
         }
     }

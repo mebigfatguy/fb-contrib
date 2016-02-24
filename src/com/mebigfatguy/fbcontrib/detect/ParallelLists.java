@@ -146,17 +146,15 @@ public class ParallelLists extends BytecodeScanningDetector {
             int indexReg = index.getRegisterNumber();
             XField field = list.getXField();
 
-            if ((indexReg >= 0) && (field != null)) {
-                if (listFields.contains(field.getName())) {
-                    String f = indexToFieldMap.get(Integer.valueOf(indexReg));
-                    if ((f != null) && (!f.equals(field.getName()))) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, "PL_PARALLEL_LISTS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, getPC()));
-                        listFields.remove(field.getName());
-                        indexToFieldMap.clear();
-                    } else {
-                        indexToFieldMap.put(Integer.valueOf(indexReg), field.getName());
-                    }
+            if ((indexReg >= 0) && (field != null) && listFields.contains(field.getName())) {
+                String f = indexToFieldMap.get(Integer.valueOf(indexReg));
+                if ((f != null) && !f.equals(field.getName())) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, "PL_PARALLEL_LISTS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, getPC()));
+                    listFields.remove(field.getName());
+                    indexToFieldMap.clear();
+                } else {
+                    indexToFieldMap.put(Integer.valueOf(indexReg), field.getName());
                 }
             }
         }

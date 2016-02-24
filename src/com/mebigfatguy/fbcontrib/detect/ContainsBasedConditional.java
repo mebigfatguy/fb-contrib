@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -63,7 +63,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 
     /**
      * constructs a CBC detector given the reporter to report bugs on
-     * 
+     *
      * @param reporter
      *            the sync of bug reports
      */
@@ -202,9 +202,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                 } else if (seen == IFEQ) {
                     conditionCount++;
                     if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(),
-                                (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY
-                                        : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY).addClass(this).addMethod(this)
+                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this).addMethod(this)
                                                 .addSourceLine(this, bugPC));
                     }
                     state = State.SAW_NOTHING;

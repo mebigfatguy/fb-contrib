@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -48,7 +48,7 @@ public class TernaryPatcher {
     /**
      * called before the execution of the parent OpcodeStack.sawOpcode() to save
      * user values if the opcode is a GOTO or GOTO_W.
-     * 
+     *
      * @param stack
      *            the OpcodeStack with the items containing user values
      * @param opcode
@@ -74,30 +74,28 @@ public class TernaryPatcher {
      * called after the execution of the parent OpcodeStack.sawOpcode, to
      * restore the user values after the GOTO or GOTO_W's mergeJumps were
      * processed
-     * 
+     *
      * @param stack
      *            the OpcodeStack with the items containing user values
      * @param opcode
      *            the opcode currently seen
      */
     public static void post(OpcodeStack stack, int opcode) {
-        if ((opcode != Constants.GOTO) && (opcode != Constants.GOTO_W)) {
-            if (sawGOTO) {
-                int depth = stack.getStackDepth();
-                if (depth > 0) {
-                    for (int i = 0; i < depth; i++) {
-                        if (userValues.size() > i) {
-                            OpcodeStack.Item item = stack.getStackItem(i);
-                            if (item.getUserValue() == null) {
-                                item.setUserValue(userValues.get(i));
-                            }
+        if ((opcode != Constants.GOTO) && (opcode != Constants.GOTO_W) && sawGOTO) {
+            int depth = stack.getStackDepth();
+            if (depth > 0) {
+                for (int i = 0; i < depth; i++) {
+                    if (userValues.size() > i) {
+                        OpcodeStack.Item item = stack.getStackItem(i);
+                        if (item.getUserValue() == null) {
+                            item.setUserValue(userValues.get(i));
                         }
                     }
                 }
-
-                userValues.clear();
-                sawGOTO = false;
             }
+
+            userValues.clear();
+            sawGOTO = false;
         }
     }
 }

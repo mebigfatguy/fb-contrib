@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -54,7 +54,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
 
     /**
      * constructs a DTEP detector given the reporter to report bugs on.
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -65,7 +65,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for classes compiled with 1.5 or better
      * that have all constructors that are private
-     * 
+     *
      * @param context
      *            the currently parsed class context object
      */
@@ -73,20 +73,17 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext context) {
         try {
             JavaClass cls = context.getJavaClass();
-            if (!cls.isEnum()) {
-                if (cls.getMajor() >= Constants.MAJOR_1_5) {
-                    Method[] methods = cls.getMethods();
-                    for (Method m : methods) {
-                        if (Values.CONSTRUCTOR.equals(m.getName())) {
-                            if ((m.getAccessFlags() & Constants.ACC_PRIVATE) == 0)
-                                return;
-                        }
+            if (!cls.isEnum() && (cls.getMajor() >= Constants.MAJOR_1_5)) {
+                Method[] methods = cls.getMethods();
+                for (Method m : methods) {
+                    if (Values.CONSTRUCTOR.equals(m.getName()) && ((m.getAccessFlags() & Constants.ACC_PRIVATE) == 0)) {
+                        return;
                     }
-                    firstEnumPC = 0;
-                    enumCount = 0;
-                    enumConstNames = new HashSet<String>(10);
-                    super.visitClassContext(context);
                 }
+                firstEnumPC = 0;
+                enumCount = 0;
+                enumConstNames = new HashSet<String>(10);
+                super.visitClassContext(context);
             }
         } finally {
             enumConstNames = null;
@@ -97,7 +94,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
      * implements the visitor to look for fields that are public static final
      * and are the same type as the owning class. it collects these object names
      * for later
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed field
      */
@@ -123,7 +120,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for static initializers to find enum
      * generation
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -137,7 +134,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to find allocations of TypesafeEnum constants
-     * 
+     *
      * @param seen
      *            the currently parsed opcode
      */

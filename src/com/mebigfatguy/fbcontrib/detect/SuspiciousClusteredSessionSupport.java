@@ -120,14 +120,12 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
                                 sawGetAttribute = true;
                             }
                         }
-                    } else if ("setAttribute".equals(methodName)) {
-                        if (stack.getStackDepth() > 1) {
-                            OpcodeStack.Item item = stack.getStackItem(1);
-                            Object con = item.getConstant();
-                            if (con instanceof String) {
-                                attributeName = (String) con;
-                                changedAttributes.remove(attributeName);
-                            }
+                    } else if ("setAttribute".equals(methodName) && (stack.getStackDepth() > 1)) {
+                        OpcodeStack.Item item = stack.getStackItem(1);
+                        Object con = item.getConstant();
+                        if (con instanceof String) {
+                            attributeName = (String) con;
+                            changedAttributes.remove(attributeName);
                         }
                     }
                 }
@@ -135,13 +133,12 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
                 int reg = RegisterUtils.getALoadReg(this, seen);
                 attributeName = savedAttributes.get(Integer.valueOf(reg));
                 sawGetAttribute = attributeName != null;
-            } else if (((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == ASTORE)) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    attributeName = (String) item.getUserValue();
-                    int reg = RegisterUtils.getAStoreReg(this, seen);
-                    savedAttributes.put(Integer.valueOf(reg), attributeName);
-                }
+            } else if ((((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == ASTORE))
+                    && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                attributeName = (String) item.getUserValue();
+                int reg = RegisterUtils.getAStoreReg(this, seen);
+                savedAttributes.put(Integer.valueOf(reg), attributeName);
             }
 
             if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
@@ -158,24 +155,20 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
                         }
                     }
                 }
-            } else if ((seen >= IASTORE) && (seen <= SASTORE)) {
-                if (stack.getStackDepth() > 2) {
-                    OpcodeStack.Item item = stack.getStackItem(2);
-                    attributeName = (String) item.getUserValue();
-                    if (attributeName != null) {
-                        changedAttributes.put(attributeName, Integer.valueOf(getPC()));
-                    }
+            } else if ((seen >= IASTORE) && (seen <= SASTORE) && (stack.getStackDepth() > 2)) {
+                OpcodeStack.Item item = stack.getStackItem(2);
+                attributeName = (String) item.getUserValue();
+                if (attributeName != null) {
+                    changedAttributes.put(attributeName, Integer.valueOf(getPC()));
                 }
             }
         } finally {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (sawGetAttribute) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(attributeName);
-                }
+            if (sawGetAttribute && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(attributeName);
             }
         }
     }

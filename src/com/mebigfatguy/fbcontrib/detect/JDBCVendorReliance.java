@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -49,7 +49,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
 
     /**
      * constructs a JVR detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -59,7 +59,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the stack and jdbc locals
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -75,7 +75,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
     /**
      * implement the visitor to reset the opcode stack and set of locals that
      * are jdbc objects
-     * 
+     *
      * @param obj
      *            the context param of the currently parsed method
      */
@@ -154,21 +154,19 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (tosIsJDBC) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    itm.setUserValue(Boolean.TRUE);
-                }
+            if (tosIsJDBC && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(Boolean.TRUE);
             }
         }
     }
 
     /**
      * returns whether the class is a jdbc class
-     * 
+     *
      * @param clsName
      *            class name or signature of a class
-     * 
+     *
      * @return if the class name is a jdbc one
      */
     private static boolean isJDBCClass(String clsName) {

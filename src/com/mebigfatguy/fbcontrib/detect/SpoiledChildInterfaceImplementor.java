@@ -81,18 +81,16 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                         if (infMethods.size() > 0) {
                             JavaClass superCls = cls.getSuperClass();
                             filterSuperInterfaceMethods(inf, infMethods, superCls);
-                            if (infMethods.size() > 0) {
-                                if (!superCls.implementationOf(inf)) {
-                                    int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
-                                    BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
-                                            .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
-                                    for (String nameSig : infMethods) {
-                                        bi.addString('\t' + nameSig);
-                                    }
-
-                                    bugReporter.reportBug(bi);
-                                    return;
+                            if (!infMethods.isEmpty() && !superCls.implementationOf(inf)) {
+                                int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
+                                BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
+                                        .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
+                                for (String nameSig : infMethods) {
+                                    bi.addString('\t' + nameSig);
                                 }
+
+                                bugReporter.reportBug(bi);
+                                return;
                             }
                         }
                     }

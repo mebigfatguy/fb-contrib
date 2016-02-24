@@ -376,11 +376,9 @@ public class JPAIssues extends BytecodeScanningDetector {
                     }
                 }
 
-                if (!handled) {
-                    if (!expectedExceptions.contains(declEx)) {
-                        bugReporter.reportBug(new BugInstance(this, bugType.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, method)
-                                .addString("Exception: " + declEx.getClassName()));
-                    }
+                if (!handled && !expectedExceptions.contains(declEx)) {
+                    bugReporter.reportBug(new BugInstance(this, bugType.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, method)
+                            .addString("Exception: " + declEx.getClassName()));
                 }
             }
         } catch (ClassNotFoundException cnfe) {

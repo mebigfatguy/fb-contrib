@@ -113,7 +113,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
 
     /**
      * constructs a USBR detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -183,16 +183,11 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
 
             switch (state) {
             case SEEN_NOTHING:
-                if (!catchTargets.contains(Integer.valueOf(getPC()))) {
-                    if (lookForStore(seen)) {
-                        if (stack.getStackDepth() >= 1) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            Integer reg = (Integer) item.getUserValue();
-                            if ((reg == null) || (reg.intValue() != storeReg)) {
-                                state = State.SEEN_STORE;
-                            }
-                        }
-
+                if (!catchTargets.contains(Integer.valueOf(getPC())) && lookForStore(seen) && (stack.getStackDepth() >= 1)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    Integer reg = (Integer) item.getUserValue();
+                    if ((reg == null) || (reg.intValue() != storeReg)) {
+                        state = State.SEEN_STORE;
                     }
                 }
                 break;
@@ -294,11 +289,9 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
      * @return the lhs register number if it exists or -1
      */
     private int processBinOp(int seen) {
-        if (binaryOps.get(seen)) {
-            if (stack.getStackDepth() >= 2) {
-                OpcodeStack.Item item = stack.getStackItem(1);
-                return item.getRegisterNumber();
-            }
+        if (binaryOps.get(seen) && (stack.getStackDepth() >= 2)) {
+            OpcodeStack.Item item = stack.getStackItem(1);
+            return item.getRegisterNumber();
         }
         return -1;
     }

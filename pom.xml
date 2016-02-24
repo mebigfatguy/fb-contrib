@@ -240,6 +240,9 @@
                 <configuration>
                     <excludeFilterFile>etc/findbugs-exclude.xml</excludeFilterFile>
                     <effort>Max</effort>
+                    <plugins>
+                        <plugin><groupId>com.mebigfatguy.fb-contrib</groupId><artifactId>fb-contrib</artifactId><version>${project.version}</version></plugin>
+                    </plugins>
                 </configuration>
                 <executions>
                     <execution>

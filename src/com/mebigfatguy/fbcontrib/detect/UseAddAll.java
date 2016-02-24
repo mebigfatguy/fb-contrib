@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -59,8 +59,8 @@ public class UseAddAll extends BytecodeScanningDetector {
     private boolean isInstanceMethod;
 
     /**
-     * constructs a UTA detector given the reporter to report bugs on
-     * 
+     * constructs a UAA detector given the reporter to report bugs on
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -77,7 +77,7 @@ public class UseAddAll extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and clear the stack, and report missing
      * class errors
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -101,7 +101,7 @@ public class UseAddAll extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the stack and userValues and loops
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -122,7 +122,7 @@ public class UseAddAll extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for manually copying of collections to
      * collections
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -186,38 +186,28 @@ public class UseAddAll extends BytecodeScanningDetector {
                             }
                         }
                     }
-                } else if ("add".equals(methodName) && "(Ljava/lang/Object;)Z".equals(signature)) {
-                    if (stack.getStackDepth() > 1) {
-                        OpcodeStack.Item colItem = stack.getStackItem(1);
-                        OpcodeStack.Item valueItem = stack.getStackItem(0);
-                        int reg = isLocalCollection(colItem);
-                        if (reg >= 0) {
-                            regOrField = Integer.valueOf(reg);
+                } else if ("add".equals(methodName) && "(Ljava/lang/Object;)Z".equals(signature) && (stack.getStackDepth() > 1)) {
+                    OpcodeStack.Item colItem = stack.getStackItem(1);
+                    OpcodeStack.Item valueItem = stack.getStackItem(0);
+                    int reg = isLocalCollection(colItem);
+                    if (reg >= 0) {
+                        regOrField = Integer.valueOf(reg);
+                        uValue = (Comparable<?>) valueItem.getUserValue();
+                        if (uValue != null) {
+                            LoopInfo loop = loops.get(uValue);
+                            if ((loop != null) && loop.isInLoop(pc) && (this.getCodeByte(getNextPC()) == POP)) {
+                                loop.foundAdd(pc);
+                            }
+                        }
+                    } else {
+                        String field = isFieldCollection(colItem);
+                        if (field != null) {
+                            regOrField = field;
                             uValue = (Comparable<?>) valueItem.getUserValue();
                             if (uValue != null) {
                                 LoopInfo loop = loops.get(uValue);
-                                if (loop != null) {
-                                    if (loop.isInLoop(pc)) {
-                                        if (this.getCodeByte(getNextPC()) == POP) {
-                                            loop.foundAdd(pc);
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            String field = isFieldCollection(colItem);
-                            if (field != null) {
-                                regOrField = field;
-                                uValue = (Comparable<?>) valueItem.getUserValue();
-                                if (uValue != null) {
-                                    LoopInfo loop = loops.get(uValue);
-                                    if (loop != null) {
-                                        if (loop.isInLoop(pc)) {
-                                            if (this.getCodeByte(getNextPC()) == POP) {
-                                                loop.foundAdd(pc);
-                                            }
-                                        }
-                                    }
+                                if ((loop != null) && loop.isInLoop(pc) && (this.getCodeByte(getNextPC()) == POP)) {
+                                    loop.foundAdd(pc);
                                 }
                             }
                         }
@@ -232,28 +222,26 @@ public class UseAddAll extends BytecodeScanningDetector {
                 sawLoad = true;
             } else if (seen == IFEQ) {
                 boolean loopFound = false;
-                if (stack.getStackDepth() > 0) {
-                    if (getBranchOffset() > 0) {
-                        int gotoPos = getBranchTarget() - 3;
-                        byte[] code = getCode().getCode();
-                        if ((0x00FF & code[gotoPos]) == GOTO) {
-                            short brOffset = (short) (0x0FF & code[gotoPos + 1]);
-                            brOffset <<= 8;
-                            brOffset |= (0x0FF & code[gotoPos + 2]);
-                            gotoPos += brOffset;
-                            if (gotoPos < pc) {
-                                OpcodeStack.Item itm = stack.getStackItem(0);
-                                uValue = (Comparable<?>) itm.getUserValue();
-                                if (uValue != null) {
-                                    loops.put(uValue, new LoopInfo(pc, getBranchTarget()));
-                                }
-                                loopFound = true;
+                if ((stack.getStackDepth() > 0) && (getBranchOffset() > 0)) {
+                    int gotoPos = getBranchTarget() - 3;
+                    byte[] code = getCode().getCode();
+                    if ((0x00FF & code[gotoPos]) == GOTO) {
+                        short brOffset = (short) (0x0FF & code[gotoPos + 1]);
+                        brOffset <<= 8;
+                        brOffset |= (0x0FF & code[gotoPos + 2]);
+                        gotoPos += brOffset;
+                        if (gotoPos < pc) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            uValue = (Comparable<?>) itm.getUserValue();
+                            if (uValue != null) {
+                                loops.put(uValue, new LoopInfo(pc, getBranchTarget()));
                             }
+                            loopFound = true;
                         }
+                    }
 
-                        if (!loopFound) {
-                            removeLoop(pc);
-                        }
+                    if (!loopFound) {
+                        removeLoop(pc);
                     }
                 }
             } else if (isInstanceMethod && (seen == PUTFIELD)) {
@@ -273,14 +261,12 @@ public class UseAddAll extends BytecodeScanningDetector {
                 }
             } else if (((seen > IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL)) {
                 removeLoop(pc);
-            } else if (seen == CHECKCAST) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    uValue = (Comparable<?>) itm.getUserValue();
-                    if (uValue != null) {
-                        regOrField = uValue;
-                        sawAlias = true;
-                    }
+            } else if ((seen == CHECKCAST) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                uValue = (Comparable<?>) itm.getUserValue();
+                if (uValue != null) {
+                    regOrField = uValue;
+                    sawAlias = true;
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -294,19 +280,17 @@ public class UseAddAll extends BytecodeScanningDetector {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     itm.setUserValue(regOrField);
                 }
-            } else if (sawLoad) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    int reg = itm.getRegisterNumber();
-                    if (reg >= 0) {
-                        uValue = userValues.get(Integer.valueOf(reg));
+            } else if (sawLoad && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                int reg = itm.getRegisterNumber();
+                if (reg >= 0) {
+                    uValue = userValues.get(Integer.valueOf(reg));
+                    itm.setUserValue(uValue);
+                } else {
+                    XField xField = itm.getXField();
+                    if (xField != null) {
+                        uValue = userValues.get(xField.getName());
                         itm.setUserValue(uValue);
-                    } else {
-                        XField xField = itm.getXField();
-                        if (xField != null) {
-                            uValue = userValues.get(xField.getName());
-                            itm.setUserValue(uValue);
-                        }
                     }
                 }
             }
@@ -316,9 +300,9 @@ public class UseAddAll extends BytecodeScanningDetector {
     /**
      * determines if the stack item refers to a collection that is stored in a
      * local variable
-     * 
+     *
      * param item the stack item to check
-     * 
+     *
      * @return the register number of the local variable that this collection
      *         refers to, or -1
      * @throws ClassNotFoundException
@@ -343,9 +327,9 @@ public class UseAddAll extends BytecodeScanningDetector {
     /**
      * determines if the stack item refers to a collection that is stored in a
      * field
-     * 
+     *
      * param item the stack item to check
-     * 
+     *
      * @return the field name of the collection, or null
      * @throws ClassNotFoundException
      *             if the items class cannot be found

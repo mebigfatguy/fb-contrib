@@ -119,11 +119,9 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         Method method = getMethod();
-        if (!method.isSynthetic()) {
-            if (prescreen(method)) {
-                stack.resetForMethodEntry(this);
-                super.visitCode(obj);
-            }
+        if (!method.isSynthetic() && prescreen(method)) {
+            stack.resetForMethodEntry(this);
+            super.visitCode(obj);
         }
     }
 
@@ -156,33 +154,31 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
                 if (getConstantRefOperand() instanceof ConstantString) {
                     sawConstant = true;
                 }
-            } else if (seen == INVOKESPECIAL) {
-                if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
-                    String clsName = getClassConstantOperand();
-                    if (clsName.indexOf("Exception") >= 0) {
-                        JavaClass exCls = Repository.lookupClass(clsName);
-                        if (exCls.instanceOf(exceptionClass)) {
-                            String sig = getSigConstantOperand();
-                            Type[] argTypes = Type.getArgumentTypes(sig);
-                            int stringParms = 0;
-                            for (int t = 0; t < argTypes.length; t++) {
-                                if ("Ljava/lang/String;".equals(argTypes[t].getSignature())) {
-                                    stringParms++;
-                                    int stackOffset = argTypes.length - t - 1;
-                                    if (stack.getStackDepth() > stackOffset) {
-                                        OpcodeStack.Item item = stack.getStackItem(stackOffset);
-                                        if (item.getUserValue() == null) {
-                                            return;
-                                        }
+            } else if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+                String clsName = getClassConstantOperand();
+                if (clsName.indexOf("Exception") >= 0) {
+                    JavaClass exCls = Repository.lookupClass(clsName);
+                    if (exCls.instanceOf(exceptionClass)) {
+                        String sig = getSigConstantOperand();
+                        Type[] argTypes = Type.getArgumentTypes(sig);
+                        int stringParms = 0;
+                        for (int t = 0; t < argTypes.length; t++) {
+                            if ("Ljava/lang/String;".equals(argTypes[t].getSignature())) {
+                                stringParms++;
+                                int stackOffset = argTypes.length - t - 1;
+                                if (stack.getStackDepth() > stackOffset) {
+                                    OpcodeStack.Item item = stack.getStackItem(stackOffset);
+                                    if (item.getUserValue() == null) {
+                                        return;
                                     }
                                 }
                             }
-                            if ("java/lang/Exception".equals(clsName) && "(Ljava/lang/Throwable;)V".equals(getSigConstantOperand())) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY).addClass(this).addMethod(this)
-                                        .addSourceLine(this));
-                            }
-                            allConstantStrings = stringParms > 0;
                         }
+                        if ("java/lang/Exception".equals(clsName) && "(Ljava/lang/Throwable;)V".equals(getSigConstantOperand())) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY).addClass(this).addMethod(this)
+                                    .addSourceLine(this));
+                        }
+                        allConstantStrings = stringParms > 0;
                     }
                 }
             }

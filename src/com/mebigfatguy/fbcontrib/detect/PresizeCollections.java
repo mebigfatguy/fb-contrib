@@ -254,13 +254,11 @@ public class PresizeCollections extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
-            if (sawAlloc) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    ++allocNumber;
-                    item.setUserValue(Integer.valueOf(allocNumber));
-                    allocLocation.put(Integer.valueOf(allocNumber), Integer.valueOf(getPC()));
-                }
+            if (sawAlloc && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                ++allocNumber;
+                item.setUserValue(Integer.valueOf(allocNumber));
+                allocLocation.put(Integer.valueOf(allocNumber), Integer.valueOf(getPC()));
             }
         }
     }

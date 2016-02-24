@@ -137,13 +137,11 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
                             OpcodeStack.Item addItm = stack.getStackItem(0);
                             checkAdd(colItm, addItm);
                         }
-                    } else if ("put".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)Z".equals(methodSig)) {
-                        if (stack.getStackDepth() > 2) {
-                            // For maps, just check the keys
-                            OpcodeStack.Item colItm = stack.getStackItem(2);
-                            OpcodeStack.Item addItm = stack.getStackItem(1);
-                            checkAdd(colItm, addItm);
-                        }
+                    } else if (("put".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)Z".equals(methodSig)) && (stack.getStackDepth() > 2)) {
+                        // For maps, just check the keys
+                        OpcodeStack.Item colItm = stack.getStackItem(2);
+                        OpcodeStack.Item addItm = stack.getStackItem(1);
+                        checkAdd(colItm, addItm);
                     }
                 }
             } else if (seen == AASTORE) {

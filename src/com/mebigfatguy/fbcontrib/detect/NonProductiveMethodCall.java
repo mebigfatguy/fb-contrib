@@ -134,11 +134,9 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
 
         } finally {
             stack.sawOpcode(this, seen);
-            if (methodInfo != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(methodInfo);
-                }
+            if (methodInfo != null && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(methodInfo);
             }
         }
     }

@@ -125,20 +125,18 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                 if (method.indexOf('$') < 0) {
                     PopInfo pInfo = popStack.get(0);
                     Type[] args = Type.getArgumentTypes(getSigConstantOperand());
-                    if ((args.length > 0) || (pInfo.popPC == (getPC() - 1))) {
-                        if (args.length == (stack.getStackDepth() - pInfo.popDepth)) {
-                            if (classDefinesStaticMethod(SignatureUtils.stripSignature(pInfo.popSignature))) {
-                                int lineNumber = -1;
-                                if (lineNumberTable != null) {
-                                    lineNumber = lineNumberTable.getSourceLine(getPC());
-                                }
-                                if (pInfo.popLineNum == lineNumber) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.SMII_STATIC_METHOD_INSTANCE_INVOCATION.name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(this).addSourceLine(this));
-                                }
-                                popStack.clear();
-                            }
+                    if (((args.length > 0) || (pInfo.popPC == (getPC() - 1)))
+                            && (args.length == (stack.getStackDepth() - pInfo.popDepth))
+                            && classDefinesStaticMethod(SignatureUtils.stripSignature(pInfo.popSignature))) {
+                        int lineNumber = -1;
+                        if (lineNumberTable != null) {
+                            lineNumber = lineNumberTable.getSourceLine(getPC());
                         }
+                        if (pInfo.popLineNum == lineNumber) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SMII_STATIC_METHOD_INSTANCE_INVOCATION.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
+                        }
+                        popStack.clear();
                     }
                 }
             }
@@ -153,17 +151,15 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                 }
             }
 
-            if (seen == POP) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    String popSig = itm.getSignature();
-                    if (popSig.charAt(0) == 'L') {
-                        int lineNumber = -1;
-                        if (lineNumberTable != null) {
-                            lineNumber = lineNumberTable.getSourceLine(getPC());
-                        }
-                        popStack.add(new PopInfo(getPC(), lineNumber, popSig, sDepth - 1));
+            if ((seen == POP) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                String popSig = itm.getSignature();
+                if (popSig.charAt(0) == 'L') {
+                    int lineNumber = -1;
+                    if (lineNumberTable != null) {
+                        lineNumber = lineNumberTable.getSourceLine(getPC());
                     }
+                    popStack.add(new PopInfo(getPC(), lineNumber, popSig, sDepth - 1));
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -182,10 +178,8 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
         JavaClass cls = Repository.lookupClass(popSignature);
         Method[] methods = cls.getMethods();
         for (Method m : methods) {
-            if (m.isStatic()) {
-                if (m.getName().equals(getNameConstantOperand()) && m.getSignature().equals(getSigConstantOperand())) {
-                    return true;
-                }
+            if (m.isStatic() && m.getName().equals(getNameConstantOperand()) && m.getSignature().equals(getSigConstantOperand())) {
+                return true;
             }
         }
 

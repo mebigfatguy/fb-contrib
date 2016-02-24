@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -46,7 +46,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
 
     /**
      * constructs a ITC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -56,7 +56,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to allocate and clear the ifStatements set
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -72,7 +72,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to clear the ifStatements set
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -85,7 +85,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
     /**
      * implements the visitor to find if/else code that checks types using
      * instanceof, and these types are related by inheritance.
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -101,11 +101,9 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
                 processed = true;
         }
 
-        if (!processed) {
-            if (OpcodeUtils.isALoad(seen)) {
-                IfStatement is = new IfStatement(this, seen);
-                ifStatements.add(is);
-            }
+        if (!processed && OpcodeUtils.isALoad(seen)) {
+            IfStatement is = new IfStatement(this, seen);
+            ifStatements.add(is);
         }
     }
 
@@ -155,11 +153,9 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
 
             case SEEN_IFEQ:
                 if (bsd.getPC() == branchTarget) {
-                    if (OpcodeUtils.isALoad(seen)) {
-                        if (reg == RegisterUtils.getALoadReg(bsd, seen)) {
-                            state = State.SEEN_ALOAD;
-                            return IfStatement.Action.PROCESSED_ACTION;
-                        }
+                    if (OpcodeUtils.isALoad(seen) && (reg == RegisterUtils.getALoadReg(bsd, seen))) {
+                        state = State.SEEN_ALOAD;
+                        return IfStatement.Action.PROCESSED_ACTION;
                     }
                     if (matchCount > 1) {
                         String clsName = bsd.getClassName();

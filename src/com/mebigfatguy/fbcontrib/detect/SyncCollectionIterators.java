@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -53,13 +53,13 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
             "synchronizedSortedSet",
             "synchronizedSortedMap"
     );
-    
+
     private static final Set<String> mapToSetMethods = UnmodifiableSet.create(
             "keySet",
             "entrySet",
             "values"
     );
-    
+
     enum State {
         SEEN_NOTHING, SEEN_SYNC, SEEN_LOAD
     }
@@ -73,7 +73,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
 
     /**
      * constructs a SCI detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -204,9 +204,8 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
                             monitorObjects.add(field.getName());
                     }
                 }
-            } else if (seen == MONITOREXIT) {
-                if (monitorObjects.size() > 0)
-                    monitorObjects.remove(monitorObjects.size() - 1);
+            } else if ((seen == MONITOREXIT) && !monitorObjects.isEmpty()) {
+                monitorObjects.remove(monitorObjects.size() - 1);
             }
         } finally {
             stack.sawOpcode(this, seen);

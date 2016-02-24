@@ -144,11 +144,9 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector {
             case IFNULL:
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    if (item.getUserValue() != null) {
-                        if (AttributesUtils.isValidLineNumber(getCode(), getPC())) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.UNNC_UNNECESSARY_NEW_NULL_CHECK.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
+                    if ((item.getUserValue() != null) && AttributesUtils.isValidLineNumber(getCode(), getPC())) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.UNNC_UNNECESSARY_NEW_NULL_CHECK.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
                     }
                 }
                 transitionPoints.add(Integer.valueOf(getBranchTarget()));

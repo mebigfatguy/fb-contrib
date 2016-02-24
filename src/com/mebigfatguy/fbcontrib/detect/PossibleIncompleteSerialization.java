@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -40,7 +40,7 @@ public class PossibleIncompleteSerialization implements Detector {
 
     /**
      * constructs a PIS detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -52,7 +52,7 @@ public class PossibleIncompleteSerialization implements Detector {
      * implements the visitor to look for classes that are serializable, and are
      * derived from non serializable classes and don't either implement methods
      * in Externalizable or Serializable to save parent class fields.
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -62,12 +62,8 @@ public class PossibleIncompleteSerialization implements Detector {
             JavaClass cls = classContext.getJavaClass();
             if (isSerializable(cls)) {
                 JavaClass superCls = cls.getSuperClass();
-                if (!isSerializable(superCls)) {
-                    if (hasSerializableFields(superCls)) {
-                        if (!hasSerializingMethods(cls)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.PIS_POSSIBLE_INCOMPLETE_SERIALIZATION.name(), NORMAL_PRIORITY).addClass(cls));
-                        }
-                    }
+                if (!isSerializable(superCls) && hasSerializableFields(superCls) && !hasSerializingMethods(cls)) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.PIS_POSSIBLE_INCOMPLETE_SERIALIZATION.name(), NORMAL_PRIORITY).addClass(cls));
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -77,7 +73,7 @@ public class PossibleIncompleteSerialization implements Detector {
 
     /**
      * returns if the class implements Serializable or Externalizable
-     * 
+     *
      * @return if the class implements Serializable or Externalizable
      */
     private static boolean isSerializable(JavaClass cls) throws ClassNotFoundException {
@@ -92,7 +88,7 @@ public class PossibleIncompleteSerialization implements Detector {
 
     /**
      * looks for fields that are candidates for serialization
-     * 
+     *
      * @arg class the class to look for fields
      * @return if their is a field that looks like it should be serialized
      */
@@ -108,7 +104,7 @@ public class PossibleIncompleteSerialization implements Detector {
     /**
      * looks to see if this class implements method described by Serializable or
      * Externalizable
-     * 
+     *
      * @param cls
      *            the class to examine for serializing methods
      * @return whether the class handles it's own serializing/externalizing
@@ -132,7 +128,7 @@ public class PossibleIncompleteSerialization implements Detector {
     public void report() {
         // Unused, requirement of the Detector interface
     }
-    
+
     @Override
     public String toString() {
         return ToString.build(this);

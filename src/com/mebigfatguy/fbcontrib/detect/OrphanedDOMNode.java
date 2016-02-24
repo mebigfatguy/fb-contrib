@@ -137,11 +137,9 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
             if (seen == INVOKEINTERFACE) {
                 String className = getClassConstantOperand();
                 String methodInfo = getNameConstantOperand() + ':' + getSigConstantOperand();
-                if ("org/w3c/dom/Document".equals(className)) {
-                    if (domCreationMethods.contains(methodInfo)) {
-                        sawCreate = true;
-                        itemPC = Integer.valueOf(getPC());
-                    }
+                if ("org/w3c/dom/Document".equals(className) && domCreationMethods.contains(methodInfo)) {
+                    sawCreate = true;
+                    itemPC = Integer.valueOf(getPC());
                 }
             } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && seen <= ASTORE_3)) {
                 Integer pc = findDOMNodeCreationPoint(0);
@@ -158,40 +156,35 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
                 itemPC = nodeStores.get(Integer.valueOf(reg));
                 if (itemPC != null)
                     sawCreate = true;
-            } else if (seen == ARETURN) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    int reg = itm.getRegisterNumber();
-                    nodeCreations.remove(itm);
-                    nodeStores.remove(Integer.valueOf(reg));
-                }
+            } else if ((seen == ARETURN) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                int reg = itm.getRegisterNumber();
+                nodeCreations.remove(itm);
+                nodeStores.remove(Integer.valueOf(reg));
             }
 
-            if (!sawCreate) {
-                if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
-                    String methodSig = getSigConstantOperand();
-                    int argCount = Type.getArgumentTypes(methodSig).length;
-                    if (stack.getStackDepth() >= argCount) {
-                        for (int a = 0; a < argCount; a++) {
-                            OpcodeStack.Item itm = stack.getStackItem(a);
-                            if (nodeCreations.containsKey(itm)) {
-                                int reg = itm.getRegisterNumber();
-                                nodeCreations.remove(itm);
-                                nodeStores.remove(Integer.valueOf(reg));
-                            }
-                        }
-                        if ((seen != INVOKESTATIC) && (stack.getStackDepth() > argCount)) {
-                            nodeCreations.remove(stack.getStackItem(argCount));
+            if (!sawCreate
+                    && ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL))) {
+                String methodSig = getSigConstantOperand();
+                int argCount = Type.getArgumentTypes(methodSig).length;
+                if (stack.getStackDepth() >= argCount) {
+                    for (int a = 0; a < argCount; a++) {
+                        OpcodeStack.Item itm = stack.getStackItem(a);
+                        if (nodeCreations.containsKey(itm)) {
+                            int reg = itm.getRegisterNumber();
+                            nodeCreations.remove(itm);
+                            nodeStores.remove(Integer.valueOf(reg));
                         }
                     }
+                    if ((seen != INVOKESTATIC) && (stack.getStackDepth() > argCount)) {
+                        nodeCreations.remove(stack.getStackItem(argCount));
+                    }
                 }
-
             }
         } finally {
             stack.sawOpcode(this, seen);
-            if (sawCreate) {
-                if (stack.getStackDepth() > 0)
-                    nodeCreations.put(stack.getStackItem(0), itemPC);
+            if (sawCreate && (stack.getStackDepth() > 0)) {
+                nodeCreations.put(stack.getStackItem(0), itemPC);
             }
         }
     }

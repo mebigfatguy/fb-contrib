@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -48,7 +48,7 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
 
     /**
      * constructs a SWCO detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -58,7 +58,7 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to check for class file version 1.5 or better
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -78,7 +78,7 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the opcode stack
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed method
      */
@@ -90,7 +90,7 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for calls to wait, on java.util.concurrent
      * classes that define await.
-     * 
+     *
      * @param seen
      *            the opcode of the currently visited instruction
      */
@@ -101,16 +101,14 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
 
             if (seen == INVOKEVIRTUAL) {
                 String methodName = getNameConstantOperand();
-                if ("wait".equals(methodName)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        JavaClass cls = itm.getJavaClass();
-                        if (cls != null) {
-                            String clsName = cls.getClassName();
-                            if (concurrentAwaitClasses.contains(clsName)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
-                            }
+                if ("wait".equals(methodName) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    JavaClass cls = itm.getJavaClass();
+                    if (cls != null) {
+                        String clsName = cls.getClassName();
+                        if (concurrentAwaitClasses.contains(clsName)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }

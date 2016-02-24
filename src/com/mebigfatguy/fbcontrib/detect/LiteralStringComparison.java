@@ -133,33 +133,28 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
                             if (stack.getStackDepth() > 0) {
                                 OpcodeStack.Item itm = stack.getStackItem(0);
                                 Object constant = itm.getConstant();
-                                if ((constant != null) && constant.getClass().equals(String.class)) {
-                                    if (!lookupSwitchOnString()) {
-                                        bugReporter.reportBug(new BugInstance(this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY) // very
-                                                                                                                                    // confident
-                                                .addClass(this).addMethod(this).addSourceLine(this));
-                                    }
-
+                                if ((constant != null) && constant.getClass().equals(String.class) && !lookupSwitchOnString()) {
+                                    bugReporter.reportBug(new BugInstance(this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY) // very
+                                                                                                                                // confident
+                                            .addClass(this).addMethod(this).addSourceLine(this));
                                 }
                             }
-                        } else if ("hashCode".equals(calledMethodName)) {
-                            if (stack.getStackDepth() > 0) {
-                                OpcodeStack.Item item = stack.getStackItem(0);
-                                int reg = item.getRegisterNumber();
-                                if (reg >= 0) {
-                                    hashCodedStringRef = String.valueOf(reg);
+                        } else if ("hashCode".equals(calledMethodName) && (stack.getStackDepth() > 0)) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            int reg = item.getRegisterNumber();
+                            if (reg >= 0) {
+                                hashCodedStringRef = String.valueOf(reg);
+                            } else {
+                                XField xf = item.getXField();
+                                if (xf != null) {
+                                    hashCodedStringRef = xf.getName();
                                 } else {
-                                    XField xf = item.getXField();
-                                    if (xf != null) {
-                                        hashCodedStringRef = xf.getName();
-                                    } else {
-                                        XMethod xm = item.getReturnValueOf();
-                                        if (xm != null) {
-                                            hashCodedStringRef = xm.toString();
-                                        }
+                                    XMethod xm = item.getReturnValueOf();
+                                    if (xm != null) {
+                                        hashCodedStringRef = xm.toString();
                                     }
-
                                 }
+
                             }
                         }
                     }
@@ -186,21 +181,17 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
 
         } finally {
             stack.sawOpcode(this, seen);
-            if (hashCodedStringRef != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(hashCodedStringRef);
-                }
+            if ((hashCodedStringRef != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(hashCodedStringRef);
             }
 
             if (!lookupSwitches.isEmpty()) {
                 int innerMostSwitch = lookupSwitches.size() - 1;
                 LookupDetails details = lookupSwitches.get(innerMostSwitch);
-                if (details.switchTargets.get(getPC())) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        item.setUserValue(details.getStringReference());
-                    }
+                if (details.switchTargets.get(getPC()) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(details.getStringReference());
                 }
 
                 // previousSetBit is a jdk1.7 api - gonna cheat cause findbugs

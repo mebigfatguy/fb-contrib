@@ -135,11 +135,9 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 
             switch (seen) {
             case ANEWARRAY: {
-                if ("java/lang/Class".equals(getClassConstantOperand())) {
-                    if (stack.getStackDepth() >= 1) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        arraySize = (Integer) item.getConstant();
-                    }
+                if ("java/lang/Class".equals(getClassConstantOperand()) && (stack.getStackDepth() >= 1)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    arraySize = (Integer) item.getConstant();
                 }
             }
                 break;
@@ -219,18 +217,16 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
                     String method = getNameConstantOperand();
                     if ("getMethod".equals(method)) {
                         String sig = getSigConstantOperand();
-                        if ("(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;".equals(sig)) {
-                            if (stack.getStackDepth() >= 2) {
-                                OpcodeStack.Item clsArgs = stack.getStackItem(0);
-                                String[] arrayTypes = (String[]) clsArgs.getUserValue();
-                                if ((arrayTypes != null) || (clsArgs.isNull())) {
-                                    OpcodeStack.Item methodItem = stack.getStackItem(1);
-                                    String methodName = (String) methodItem.getConstant();
-                                    if (methodName != null) {
-                                        String reflectionSig = buildReflectionSignature(methodName, arrayTypes);
-                                        if (objectSigs.contains(reflectionSig)) {
-                                            loadedTypes = (arrayTypes == null) ? new String[0] : arrayTypes;
-                                        }
+                        if ("(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;".equals(sig) && (stack.getStackDepth() >= 2)) {
+                            OpcodeStack.Item clsArgs = stack.getStackItem(0);
+                            String[] arrayTypes = (String[]) clsArgs.getUserValue();
+                            if ((arrayTypes != null) || (clsArgs.isNull())) {
+                                OpcodeStack.Item methodItem = stack.getStackItem(1);
+                                String methodName = (String) methodItem.getConstant();
+                                if (methodName != null) {
+                                    String reflectionSig = buildReflectionSignature(methodName, arrayTypes);
+                                    if (objectSigs.contains(reflectionSig)) {
+                                        loadedTypes = (arrayTypes == null) ? new String[0] : arrayTypes;
                                     }
                                 }
                             }
@@ -238,14 +234,12 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
                     }
                 } else if ("java/lang/reflect/Method".equals(cls)) {
                     String method = getNameConstantOperand();
-                    if ("invoke".equals(method)) {
-                        if (stack.getStackDepth() >= 3) {
-                            OpcodeStack.Item methodItem = stack.getStackItem(2);
-                            String[] arrayTypes = (String[]) methodItem.getUserValue();
-                            if (arrayTypes != null) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.ROOM_REFLECTION_ON_OBJECT_METHODS.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            }
+                    if ("invoke".equals(method) && (stack.getStackDepth() >= 3)) {
+                        OpcodeStack.Item methodItem = stack.getStackItem(2);
+                        String[] arrayTypes = (String[]) methodItem.getUserValue();
+                        if (arrayTypes != null) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.ROOM_REFLECTION_ON_OBJECT_METHODS.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
                         }
                     }
                 }
