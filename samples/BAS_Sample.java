@@ -123,6 +123,16 @@ public class BAS_Sample {
             System.out.println(h);
         }
     }
+    
+    public void tstFPRefChangeThruMethodChain(Holder h1, Holder h2, boolean b) {
+
+        String h = h1.toString().trim();
+        h1 = h2;
+
+        if (b) {
+            System.out.println(h);
+        }
+    }
 
     public void testFPSrcOverwrite(int src, boolean b) {
         int d = src;
