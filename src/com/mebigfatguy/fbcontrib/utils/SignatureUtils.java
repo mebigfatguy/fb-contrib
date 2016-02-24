@@ -159,12 +159,8 @@ public class SignatureUtils {
             if (cls != null) {
                 Method[] methods = cls.getMethods();
                 for (Method m : methods) {
-                    if (!m.isPrivate()) {
-                        if (m.getName().equals(methodName)) {
-                            if (m.getSignature().equals(signature)) {
-                                return cls;
-                            }
-                        }
+                    if (!m.isPrivate() && m.getName().equals(methodName) && m.getSignature().equals(signature)) {
+                        return cls;
                     }
                 }
             }
@@ -301,7 +297,7 @@ public class SignatureUtils {
     /**
      * @param className
      *            the name of the class
-     * 
+     *
      * @return the class name, discarding any anonymous component
      */
     public static String getNonAnonymousPortion(String className) {

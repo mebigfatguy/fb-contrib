@@ -172,11 +172,9 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
                 String sig = getSigConstantOperand();
                 if (sig.equals('(' + propType + ")V")) {
                     String name = getNameConstantOperand();
-                    if (name.startsWith("set")) {
-                        if (propName.equals(name.substring("set".length()))) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SGSU_SUSPICIOUS_GETTER_SETTER_USE.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
+                    if (name.startsWith("set") && propName.equals(name.substring("set".length()))) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.SGSU_SUSPICIOUS_GETTER_SETTER_USE.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
                     }
                 }
             }

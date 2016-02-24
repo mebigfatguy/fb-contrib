@@ -170,11 +170,9 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
                 if ((cri != null) && !cri.getIgnore()) {
                     tosIsSyncColReg = Integer.valueOf(reg);
                 }
-            } else if ((seen == PUTFIELD) || (seen == ARETURN)) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    suspectLocals.remove(item.getUserValue());
-                }
+            } else if (((seen == PUTFIELD) || (seen == ARETURN)) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                suspectLocals.remove(item.getUserValue());
             }
 
             if (suspectLocals.size() > 0) {
@@ -204,11 +202,9 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         suspectLocals.remove(item.getUserValue());
                     }
-                } else if (seen == AASTORE) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        suspectLocals.remove(item.getUserValue());
-                    }
+                } else if ((seen == AASTORE) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    suspectLocals.remove(item.getUserValue());
                 }
             }
 
@@ -217,11 +213,9 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (tosIsSyncColReg != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(tosIsSyncColReg);
-                }
+            if ((tosIsSyncColReg != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(tosIsSyncColReg);
             }
         }
     }
@@ -252,10 +246,8 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
         Integer tosIsSyncColReg = null;
         Map<String, Set<String>> mapOfClassToMethods = getWatchedClassMethods();
         for (Entry<String, Set<String>> entry : mapOfClassToMethods.entrySet())
-            if (entry.getKey().equals(getClassConstantOperand())) {
-                if (entry.getValue().contains(getNameConstantOperand())) {
-                    tosIsSyncColReg = Values.NEGATIVE_ONE;
-                }
+            if (entry.getKey().equals(getClassConstantOperand()) && entry.getValue().contains(getNameConstantOperand())) {
+                tosIsSyncColReg = Values.NEGATIVE_ONE;
             }
         return tosIsSyncColReg;
     }

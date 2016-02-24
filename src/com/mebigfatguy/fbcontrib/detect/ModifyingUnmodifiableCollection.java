@@ -134,18 +134,16 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
 
                     if (seen == INVOKEINTERFACE) {
                         Integer collectionOffset = MODIFYING_METHODS.get(new QMethod(methodName, signature));
-                        if ((collectionOffset != null) && CollectionUtils.isListSetMap(className)) {
-                            if (stack.getStackDepth() > collectionOffset.intValue()) {
-                                OpcodeStack.Item item = stack.getStackItem(collectionOffset.intValue());
-                                ImmutabilityType type = (ImmutabilityType) item.getUserValue();
+                        if ((collectionOffset != null) && CollectionUtils.isListSetMap(className) && (stack.getStackDepth() > collectionOffset.intValue())) {
+                            OpcodeStack.Item item = stack.getStackItem(collectionOffset.intValue());
+                            ImmutabilityType type = (ImmutabilityType) item.getUserValue();
 
-                                if ((type == ImmutabilityType.IMMUTABLE)
-                                        || ((type == ImmutabilityType.POSSIBLY_IMMUTABLE) && (reportedType != ImmutabilityType.POSSIBLY_IMMUTABLE))) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.MUC_MODIFYING_UNMODIFIABLE_COLLECTION.name(),
-                                            (type == ImmutabilityType.IMMUTABLE) ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                                    .addSourceLine(this));
-                                    reportedType = type;
-                                }
+                            if ((type == ImmutabilityType.IMMUTABLE)
+                                    || ((type == ImmutabilityType.POSSIBLY_IMMUTABLE) && (reportedType != ImmutabilityType.POSSIBLY_IMMUTABLE))) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.MUC_MODIFYING_UNMODIFIABLE_COLLECTION.name(),
+                                        (type == ImmutabilityType.IMMUTABLE) ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                                .addSourceLine(this));
+                                reportedType = type;
                             }
                         }
                     }
@@ -158,11 +156,9 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
             bugReporter.reportMissingClass(cnfe);
         } finally {
             stack.sawOpcode(this, seen);
-            if (imType != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(imType);
-                }
+            if ((imType != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(imType);
             }
 
         }

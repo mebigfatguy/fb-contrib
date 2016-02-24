@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -52,7 +52,7 @@ public class UseToArray extends BytecodeScanningDetector {
 
     /**
      * constructs a UTA detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -69,7 +69,7 @@ public class UseToArray extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and clear the stack, and report missing
      * class errors
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -93,7 +93,7 @@ public class UseToArray extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the stack and uservalues
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -109,9 +109,9 @@ public class UseToArray extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for manually copying of collections to
+     * implements the visitor to look for manual copying of collections to
      * arrays
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -145,13 +145,12 @@ public class UseToArray extends BytecodeScanningDetector {
                             sawAlias = true;
                         }
                     }
-                } else if ("keySet".equals(methodName) || "values".equals(methodName) || "iterator".equals(methodName) || "next".equals(methodName)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        reg = isLocalCollection(itm);
-                        if (reg >= 0) {
-                            sawAlias = true;
-                        }
+                } else if (("keySet".equals(methodName) || "values".equals(methodName) || "iterator".equals(methodName) || "next".equals(methodName))
+                        && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    reg = isLocalCollection(itm);
+                    if (reg >= 0) {
+                        sawAlias = true;
                     }
                 }
             } else if (((seen == ISTORE) || ((seen >= ISTORE_0) && (seen <= ISTORE_3))) || ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)))) {
@@ -190,14 +189,12 @@ public class UseToArray extends BytecodeScanningDetector {
                                 new BugInstance(this, BugType.UTA_USE_TO_ARRAY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
-            } else if (seen == CHECKCAST) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    uValue = itm.getUserValue();
-                    if (uValue instanceof Integer) {
-                        reg = ((Integer) uValue).intValue();
-                        sawAlias = true;
-                    }
+            } else if ((seen == CHECKCAST) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                uValue = itm.getUserValue();
+                if (uValue instanceof Integer) {
+                    reg = ((Integer) uValue).intValue();
+                    sawAlias = true;
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -220,11 +217,9 @@ public class UseToArray extends BytecodeScanningDetector {
                         itm.setUserValue(uValue);
                     }
                 }
-            } else if (sawNewArray) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    itm.setUserValue(uValue);
-                }
+            } else if (sawNewArray && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(uValue);
             }
         }
     }
@@ -232,9 +227,9 @@ public class UseToArray extends BytecodeScanningDetector {
     /**
      * determines if the stack item refers to a collection that is stored in a
      * local variable
-     * 
+     *
      * param item the stack item to check
-     * 
+     *
      * @return the register number of the local variable that this collection
      *         refers to, or -1
      * @throws ClassNotFoundException

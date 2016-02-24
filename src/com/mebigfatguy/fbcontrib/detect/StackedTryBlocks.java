@@ -127,16 +127,14 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                         for (int i = 1; i < blocks.size(); i++) {
                             TryBlock secondBlock = blocks.get(i);
 
-                            if (!blocksSplitAcrossTransitions(firstBlock, secondBlock)) {
-                                if ((firstBlock.getCatchType() == secondBlock.getCatchType())
-                                        && (firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
-                                                && (firstBlock.getMessage().equals(secondBlock.getMessage())
-                                                        && (firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature()))))) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.STB_STACKED_TRY_BLOCKS.name(), NORMAL_PRIORITY).addClass(this)
-                                            .addMethod(this).addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
-                                            .addSourceLineRange(this, secondBlock.getStartPC(), secondBlock.getEndHandlerPC()));
-
-                                }
+                            if (!blocksSplitAcrossTransitions(firstBlock, secondBlock)
+                                    && (firstBlock.getCatchType() == secondBlock.getCatchType())
+                                    && firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
+                                    && firstBlock.getMessage().equals(secondBlock.getMessage())
+                                    && firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature())) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.STB_STACKED_TRY_BLOCKS.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
+                                        .addSourceLineRange(this, secondBlock.getStartPC(), secondBlock.getEndHandlerPC()));
                             }
 
                             firstBlock = secondBlock;
@@ -169,18 +167,16 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                 for (int offset : getSwitchOffsets()) {
                     transitionPoints.add(Integer.valueOf(offset));
                 }
-            } else if (isBranch(seen)) {
+            } else if (isBranch(seen) && (getBranchOffset() < 0)) {
                 // throw out try blocks in loops, this could cause false
                 // negatives
                 // with two try/catches in one loop, but more unlikely
-                if (getBranchOffset() < 0) {
-                    Iterator<TryBlock> it = blocks.iterator();
-                    int target = getBranchTarget();
-                    while (it.hasNext()) {
-                        TryBlock block = it.next();
-                        if (block.getStartPC() >= target) {
-                            it.remove();
-                        }
+                Iterator<TryBlock> it = blocks.iterator();
+                int target = getBranchTarget();
+                while (it.hasNext()) {
+                    TryBlock block = it.next();
+                    if (block.getStartPC() >= target) {
+                        it.remove();
                     }
                 }
             }
@@ -235,13 +231,11 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                             String signature = getSigConstantOperand();
                             Type[] types = Type.getArgumentTypes(signature);
                             if (types.length > 0) {
-                                if ("Ljava/lang/String;".equals(types[0].getSignature())) {
-                                    if (stack.getStackDepth() >= types.length) {
-                                        OpcodeStack.Item item = stack.getStackItem(types.length - 1);
-                                        message = (String) item.getConstant();
-                                        if (message == null) {
-                                            message = "____UNKNOWN____" + System.identityHashCode(item);
-                                        }
+                                if ("Ljava/lang/String;".equals(types[0].getSignature()) && (stack.getStackDepth() >= types.length)) {
+                                    OpcodeStack.Item item = stack.getStackItem(types.length - 1);
+                                    message = (String) item.getConstant();
+                                    if (message == null) {
+                                        message = "____UNKNOWN____" + System.identityHashCode(item);
                                     }
                                 }
                             } else {

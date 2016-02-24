@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -83,7 +83,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
 
     /**
      * constructs a ITU detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -93,7 +93,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset the stack
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -112,7 +112,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to resets the stack for this method.
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed code block
      */
@@ -138,13 +138,11 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
                     String signature = getSigConstantOperand();
                     if ("()Ljava/lang/String;".equals(signature)) {
                         String className = getClassConstantOperand();
-                        if (!validToStringClasses.contains(className)) {
-                            if (stack.getStackDepth() > 0) {
-                                OpcodeStack.Item item = stack.getStackItem(0);
-                                JavaClass cls = item.getJavaClass();
-                                if (cls != null) {
-                                    methodPackage = cls.getPackageName();
-                                }
+                        if (!validToStringClasses.contains(className) && (stack.getStackDepth() > 0)) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            JavaClass cls = item.getJavaClass();
+                            if (cls != null) {
+                                methodPackage = cls.getPackageName();
                             }
                         }
                     }
@@ -194,11 +192,9 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (methodPackage != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(methodPackage);
-                }
+            if ((methodPackage != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(methodPackage);
             }
         }
     }

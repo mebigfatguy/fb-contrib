@@ -155,11 +155,9 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     outer: for (JavaClass cls : constrainingClasses) {
                         Method[] methods = cls.getMethods();
                         for (Method m : methods) {
-                            if (methodName.equals(m.getName())) {
-                                if (methodSig.equals(m.getSignature())) {
-                                    methodSignatureIsConstrained = true;
-                                    break outer;
-                                }
+                            if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
+                                methodSignatureIsConstrained = true;
+                                break outer;
                             }
                         }
                     }

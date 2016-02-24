@@ -74,12 +74,10 @@ public class PoorMansEnum extends BytecodeScanningDetector {
 
                     for (Map.Entry<String, Set<Object>> fieldInfo : fieldValues.entrySet()) {
                         Set<Object> values = fieldInfo.getValue();
-                        if (values != null) {
-                            if (values.size() >= 3) {
-                                String fieldName = fieldInfo.getKey();
-                                bugReporter.reportBug(new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addField(XFactory.createXField(cls, nameToField.get(fieldName))).addSourceLine(firstFieldUse.get(fieldName)));
-                            }
+                        if ((values != null) && (values.size() >= 3)) {
+                            String fieldName = fieldInfo.getKey();
+                            bugReporter.reportBug(new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addField(XFactory.createXField(cls, nameToField.get(fieldName))).addSourceLine(firstFieldUse.get(fieldName)));
                         }
                     }
                 }
@@ -110,24 +108,23 @@ public class PoorMansEnum extends BytecodeScanningDetector {
 
             if (seen == PUTFIELD) {
                 String fieldName = getNameConstantOperand();
-                if (fieldValues.containsKey(fieldName)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        Object cons = item.getConstant();
-                        if (cons == null) {
-                            fieldValues.remove(fieldName);
-                            nameToField.remove(fieldName);
-                            firstFieldUse.remove(fieldName);
-                        } else {
-                            Set<Object> values = fieldValues.get(fieldName);
-                            if (values == null) {
-                                values = new HashSet<Object>();
-                                fieldValues.put(fieldName, values);
-                                if (firstFieldUse.get(fieldName) == null)
-                                    firstFieldUse.put(fieldName, SourceLineAnnotation.fromVisitedInstruction(this));
+                if (fieldValues.containsKey(fieldName) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    Object cons = item.getConstant();
+                    if (cons == null) {
+                        fieldValues.remove(fieldName);
+                        nameToField.remove(fieldName);
+                        firstFieldUse.remove(fieldName);
+                    } else {
+                        Set<Object> values = fieldValues.get(fieldName);
+                        if (values == null) {
+                            values = new HashSet<Object>();
+                            fieldValues.put(fieldName, values);
+                            if (firstFieldUse.get(fieldName) == null) {
+                                firstFieldUse.put(fieldName, SourceLineAnnotation.fromVisitedInstruction(this));
                             }
-                            values.add(cons);
                         }
+                        values.add(cons);
                     }
                 }
             }

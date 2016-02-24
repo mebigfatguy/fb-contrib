@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -61,7 +61,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 
     /**
      * constructs an SLS detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -109,7 +109,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     /**
      * implements the visitor to find continuations after finding a search
      * result in a loop.
-     * 
+     *
      * @param seen
      *            the currently visitor opcode
      */
@@ -141,11 +141,9 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
             case SAW_IFEQ:
             case SAW_ASSIGNMENT:
                 if (getPC() >= ifeqBranchTarget) {
-                    if ((seen == GOTO) && (!storeRegs.isEmpty())) {
-                        if (getBranchTarget() < equalsPos) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this, storeRegs.values().iterator().next().intValue()));
-                        }
+                    if ((seen == GOTO) && !storeRegs.isEmpty() && (getBranchTarget() < equalsPos)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this, storeRegs.values().iterator().next().intValue()));
                     }
                     storeRegs.clear();
                     loadRegs.clear();
@@ -187,7 +185,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 
     /**
      * looks for methods that contain a GOTO opcodes
-     * 
+     *
      * @param method
      *            the context object of the current method
      * @return if the class uses synchronization

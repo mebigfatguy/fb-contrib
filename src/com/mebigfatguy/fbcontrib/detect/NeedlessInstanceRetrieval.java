@@ -114,11 +114,9 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
             if ((seen >= ACONST_NULL && seen <= DCONST_1) || (seen == GETFIELD)) {
                 state = State.SEEN_POP;
             } else if ((seen == INVOKESTATIC) || (seen == GETSTATIC)) {
-                if (getClassConstantOperand().equals(returnType)) {
-                    if (lnTable.getSourceLine(invokePC) == lnTable.getSourceLine(getPC())) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.NIR_NEEDLESS_INSTANCE_RETRIEVAL.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+                if (getClassConstantOperand().equals(returnType) && (lnTable.getSourceLine(invokePC) == lnTable.getSourceLine(getPC()))) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.NIR_NEEDLESS_INSTANCE_RETRIEVAL.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
                 }
                 state = State.SEEN_NOTHING;
                 returnType = null;

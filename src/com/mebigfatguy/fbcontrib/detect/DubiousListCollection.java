@@ -166,14 +166,12 @@ public class DubiousListCollection extends BytecodeScanningDetector {
                         fieldsReported.remove(fieldName);
                     }
                 }
-            } else if (seen == ARETURN) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    XField field = item.getXField();
-                    if (field != null) {
-                        String fieldName = field.getName();
-                        fieldsReported.remove(fieldName);
-                    }
+            } else if ((seen == ARETURN) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                XField field = item.getXField();
+                if (field != null) {
+                    String fieldName = field.getName();
+                    fieldsReported.remove(fieldName);
                 }
             }
         } finally {

@@ -120,11 +120,9 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
         case POP:
             si = stack.getStackItem(0);
             signature = si.getSignature();
-            if (isToStringBuilder(signature)) {
-                if (!stackTracker.isEmpty()) {
-                    Pair p = stackTracker.pop();
-                    registerTracker.put(Integer.valueOf(p.register), Boolean.valueOf(p.appendInvoked));
-                }
+            if (isToStringBuilder(signature) && !stackTracker.isEmpty()) {
+                Pair p = stackTracker.pop();
+                registerTracker.put(Integer.valueOf(p.register), Boolean.valueOf(p.appendInvoked));
             }
             break;
         case INVOKESPECIAL:

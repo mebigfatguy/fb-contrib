@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -49,7 +49,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
 
     /**
      * constructs a SEC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -59,7 +59,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to set up and tear down the opcode stack
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -75,7 +75,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset the state and reset the opcode stack
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code
      */
@@ -90,7 +90,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
      * overrides the visitor to look for constructors who's value is popped off
      * the stack, and not assigned before the pop of the value, or if a return
      * is issued with that object still on the stack.
-     * 
+     *
      * @param seen
      *            the opcode of the currently parse opcode
      */
@@ -142,11 +142,9 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (pc != 0) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(Integer.valueOf(pc));
-                }
+            if ((pc != 0) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(Integer.valueOf(pc));
             }
         }
     }

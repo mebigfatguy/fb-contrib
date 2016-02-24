@@ -542,16 +542,14 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                     }
                     fields.add(getNameConstantOperand());
                 }
-            } else if (seen == INVOKEVIRTUAL) {
-                if (clsName.equals(getClassConstantOperand())) {
-                    String methodDesc = getMethodName() + getMethodSig();
-                    Set<String> methods = methodCallChain.get(methodDesc);
-                    if (methods == null) {
-                        methods = new HashSet<String>();
-                        methodCallChain.put(methodDesc, methods);
-                    }
-                    methods.add(getNameConstantOperand() + getSigConstantOperand());
+            } else if ((seen == INVOKEVIRTUAL) && clsName.equals(getClassConstantOperand())) {
+                String methodDesc = getMethodName() + getMethodSig();
+                Set<String> methods = methodCallChain.get(methodDesc);
+                if (methods == null) {
+                    methods = new HashSet<String>();
+                    methodCallChain.put(methodDesc, methods);
                 }
+                methods.add(getNameConstantOperand() + getSigConstantOperand());
             }
         }
 

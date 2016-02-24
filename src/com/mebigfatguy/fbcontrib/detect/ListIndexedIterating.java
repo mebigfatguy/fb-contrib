@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -63,7 +63,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
     /**
      * constructs a LII detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -73,7 +73,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
     /**
      * overrides the interface to create and clear the stack and loops tracker
-     * 
+     *
      * @param classContext
      *            the context object for the currently parsed class
      */
@@ -91,7 +91,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
     /**
      * looks for methods that contain a IINC and GOTO or GOTO_W opcodes
-     * 
+     *
      * @param method
      *            the context object of the current method
      * @return if the class uses synchronization
@@ -103,7 +103,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset the opcode stack
-     * 
+     *
      * @param obj
      *            the code object for the currently parsed Code
      */
@@ -129,7 +129,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to find list indexed iterating
-     * 
+     *
      * @param seen
      *            the currently parsed opcode
      */
@@ -143,7 +143,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
     /**
      * the first pass of the method opcode to collet for loops information
-     * 
+     *
      * @param seen
      *            the currently parsed opcode
      */
@@ -182,7 +182,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
     /**
      * the second pass to look for get methods on the for loop reg
-     * 
+     *
      * @param seen
      *            the currently parsed opcode
      */
@@ -196,11 +196,10 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
                 switch (fl.getLoopState()) {
                 case LOOP_NOT_STARTED:
                     if (getPC() == fl.getLoopStart()) {
-                        if ((seen == ILOAD) || ((seen >= ILOAD_0) && (seen <= ILOAD_3))) {
-                            if (getReg(seen, ILOAD, ILOAD_0) == fl.getLoopReg()) {
-                                fl.setLoopState(LoopState.LOOP_INDEX_LOADED_FOR_TEST);
-                                continue;
-                            }
+                        if ((seen == ILOAD) || ((seen >= ILOAD_0) && (seen <= ILOAD_3))
+                                && (getReg(seen, ILOAD, ILOAD_0) == fl.getLoopReg())) {
+                            fl.setLoopState(LoopState.LOOP_INDEX_LOADED_FOR_TEST);
+                            continue;
                         }
                         it.remove();
                     }
@@ -273,14 +272,14 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
     /**
      * get the register operand from the passed in opcode
-     * 
+     *
      * @param seen
      *            the currently parsed opcode
      * @param generalOp
      *            the standard non numbered operand
      * @param zeroOp
      *            the base opcode from which to calculate the register
-     * 
+     *
      * @return the register operand for the instruction
      */
     private int getReg(final int seen, final int generalOp, final int zeroOp) {
@@ -302,7 +301,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
         /**
          * constructs a for loop information block
-         * 
+         *
          * @param start
          *            the start of the for loop
          * @param end
@@ -321,7 +320,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
         /**
          * get the start pc of the loop
-         * 
+         *
          * @return the start pc of the loop
          */
         public int getLoopStart() {
@@ -330,7 +329,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
         /**
          * get the end pc of the loop
-         * 
+         *
          * @return the end pc of the loop
          */
         public int getLoopEnd() {
@@ -339,7 +338,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
         /**
          * get the loop register
-         * 
+         *
          * @return the loop register
          */
         public int getLoopReg() {
@@ -348,7 +347,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
         /**
          * sets the current state of the for loop
-         * 
+         *
          * @param state
          *            the new state
          */
@@ -358,7 +357,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
         /**
          * get the current phase of the for loop
-         * 
+         *
          * @return the current state
          */
         public LoopState getLoopState() {
@@ -367,7 +366,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
         /**
          * mark that the loop register has been loaded with an iload instruction
-         * 
+         *
          * @param loaded
          *            the flag of whether the loop register is loaded
          */
@@ -377,7 +376,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
         /**
          * returns whether the loop register is on the top of the stack
-         * 
+         *
          * @return whether the loop register is on the top of the stack
          */
         public boolean getLoopRegLoaded() {
@@ -386,10 +385,10 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
         /**
          * returns whether this is the second time the loop register is found
-         * 
+         *
          * @param itm
          *            the item on the stack
-         * 
+         *
          * @return whether this is the second time the loop register is found
          */
         public boolean isSecondItem(OpcodeStack.Item itm) {

@@ -57,7 +57,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
             "java/lang/StringBuilder",
             "java/lang/AssertionError"
     );
-    
+
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     /** allocation number, info where allocated */
@@ -146,20 +146,19 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                 } else if (!switchInfos.isEmpty()) {
                     int target = getBranchTarget();
                     SwitchInfo innerSwitch = switchInfos.get(switchInfos.size() - 1);
-                    if (target > innerSwitch.switchBottom)
+                    if (target > innerSwitch.switchBottom) {
                         innerSwitch.switchBottom = target;
+                    }
                 }
                 break;
 
             case INVOKESPECIAL:
                 if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
                     String clsName = getClassConstantOperand();
-                    if (!SYNTHETIC_ALLOCATION_CLASSES.contains(clsName)) {
-                        if (switchInfos.isEmpty()) {
-                            sawAllocationNumber = Integer.valueOf(nextAllocationNumber);
-                            allocations.put(sawAllocationNumber, new AllocationInfo(getPC()));
-                            sawAllocation = true;
-                        }
+                    if (!SYNTHETIC_ALLOCATION_CLASSES.contains(clsName) && switchInfos.isEmpty()) {
+                        sawAllocationNumber = Integer.valueOf(nextAllocationNumber);
+                        allocations.put(sawAllocationNumber, new AllocationInfo(getPC()));
+                        sawAllocation = true;
                     }
                 }
                 //$FALL-THROUGH$
@@ -177,17 +176,16 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                             allocations.remove(allocation);
                         }
                     }
-                    if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || ((seen == INVOKESPECIAL))) {
-                        // ignore possible method chaining
-                        if (stack.getStackDepth() > types.length) {
-                            OpcodeStack.Item item = stack.getStackItem(types.length);
-                            Integer allocation = (Integer) item.getUserValue();
-                            if (allocation != null) {
-                                String retType = Type.getReturnType(signature).getSignature();
-                                if (!"V".equals(retType) && retType.equals(item.getSignature())) {
-                                    sawAllocationNumber = allocation;
-                                    sawAllocation = true;
-                                }
+                    if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL))
+                            // ignore possible method chaining
+                            && (stack.getStackDepth() > types.length)) {
+                        OpcodeStack.Item item = stack.getStackItem(types.length);
+                        Integer allocation = (Integer) item.getUserValue();
+                        if (allocation != null) {
+                            String retType = Type.getReturnType(signature).getSignature();
+                            if (!"V".equals(retType) && retType.equals(item.getSignature())) {
+                                sawAllocationNumber = allocation;
+                                sawAllocation = true;
                             }
                         }
                     }
@@ -301,10 +299,8 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                     nextAllocationNumber++;
             }
 
-            if (!switchInfos.isEmpty()) {
-                if (getPC() >= switchInfos.get(switchInfos.size() - 1).switchBottom) {
-                    switchInfos.remove(switchInfos.size() - 1);
-                }
+            if (!switchInfos.isEmpty() && (getPC() >= switchInfos.get(switchInfos.size() - 1).switchBottom)) {
+                switchInfos.remove(switchInfos.size() - 1);
             }
         }
     }
@@ -313,7 +309,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
      * looks to see if this register has already in scope or whether is a new
      * assignment. return true if it's a new assignment. If you can't tell,
      * return true anyway. might want to change.
-     * 
+     *
      * @param reg
      *            the store register
      * @return whether this is a new register scope assignment

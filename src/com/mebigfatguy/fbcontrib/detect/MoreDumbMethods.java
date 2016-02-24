@@ -185,20 +185,16 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
 
         if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC)) {
             final ReportInfo info = dumbMethods.get(getFQMethod());
-            if (info != null) {
-                if ((assertionEnd < getPC()) || !assertableReports.contains(info)) {
-                    reportBug(info);
-                }
+            if ((info != null) && ((assertionEnd < getPC()) || !assertableReports.contains(info))) {
+                reportBug(info);
             }
         } else if (seen == GETSTATIC) {
             if ("$assertionsDisabled".equals(getNameConstantOperand())) {
                 sawAssertionDisabled = true;
                 return;
             }
-        } else if (seen == IFNE) {
-            if (sawAssertionDisabled) {
-                assertionEnd = getBranchTarget();
-            }
+        } else if ((seen == IFNE) && sawAssertionDisabled) {
+            assertionEnd = getBranchTarget();
         }
 
         sawAssertionDisabled = false;

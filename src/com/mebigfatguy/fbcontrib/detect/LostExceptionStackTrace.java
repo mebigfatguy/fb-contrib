@@ -81,7 +81,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
 
     /**
      * constructs a LEST detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -233,16 +233,13 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                             if ("initCause".equals(getNameConstantOperand())) {
                                 String className = getClassConstantOperand();
                                 JavaClass exClass = Repository.lookupClass(className);
-                                if (exClass.instanceOf(throwableClass)) {
-                                    if (stack.getStackDepth() > 1) {
-                                        OpcodeStack.Item itm = stack.getStackItem(1);
-                                        int reg = itm.getRegisterNumber();
-                                        if (reg >= 0) {
-                                            exReg.put(Integer.valueOf(reg), Boolean.TRUE);
-                                        }
-                                        markAsValid = true; // Fixes javac
-                                                            // generated code
+                                if (exClass.instanceOf(throwableClass) && (stack.getStackDepth() > 1)) {
+                                    OpcodeStack.Item itm = stack.getStackItem(1);
+                                    int reg = itm.getRegisterNumber();
+                                    if (reg >= 0) {
+                                        exReg.put(Integer.valueOf(reg), Boolean.TRUE);
                                     }
+                                    markAsValid = true; // Fixes javac generated code
                                 }
                             } else if ("getTargetException".equals(getNameConstantOperand())
                                     && "java/lang/reflect/InvocationTargetException".equals(getClassConstantOperand())) {
@@ -304,11 +301,9 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (markAsValid) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    itm.setUserValue(Boolean.TRUE);
-                }
+            if (markAsValid && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(Boolean.TRUE);
             }
         }
     }
@@ -318,11 +313,11 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
      * exception using the original exception. It does so by looking to see if
      * the method returns an exception, and if one of the parameters is the
      * original exception
-     * 
+     *
      * @param excReg
      *            the register of the original exception caught
      * @return whether this method call could be an exception builder method
-     * 
+     *
      * @throws ClassNotFoundException
      *             if the class of the return type can't be found
      */

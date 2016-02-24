@@ -139,15 +139,13 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                             if (stackDepth > 0) {
                                 OpcodeStack.Item item = stack.getStackItem(0);
                                 userValue = (String) item.getUserValue();
-                                if (userValue == null) {
-                                    if (!"Ljava/lang/String;".equals(item.getSignature())) {
-                                        userValue = TO_STRING;
-                                        if (stackDepth > 1) {
-                                            item = stack.getStackItem(1);
-                                            int reg = item.getRegisterNumber();
-                                            if (reg >= 0) {
-                                                toStringStringBuilders.set(reg);
-                                            }
+                                if ((userValue == null) && !"Ljava/lang/String;".equals(item.getSignature())) {
+                                    userValue = TO_STRING;
+                                    if (stackDepth > 1) {
+                                        item = stack.getStackItem(1);
+                                        int reg = item.getRegisterNumber();
+                                        if (reg >= 0) {
+                                            toStringStringBuilders.set(reg);
                                         }
                                     }
                                 }
@@ -243,17 +241,13 @@ public class StringifiedTypes extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
-            if (userValue != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(userValue);
-                }
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(userValue);
             }
-            if ((checkParms != null) && (checkParms[0] == -1)) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(FROM_FIELD);
-                }
+            if ((checkParms != null) && (checkParms[0] == -1) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(FROM_FIELD);
             }
         }
     }

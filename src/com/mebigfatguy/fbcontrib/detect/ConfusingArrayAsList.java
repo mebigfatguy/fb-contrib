@@ -61,7 +61,7 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
 
     /**
      * constructs a CAAL detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -113,14 +113,12 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
                 String clsName = getClassConstantOperand();
                 if ("java/util/Arrays".equals(clsName)) {
                     String methodName = getNameConstantOperand();
-                    if ("asList".equals(methodName)) {
-                        if (stack.getStackDepth() >= 1) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            String sig = item.getSignature();
-                            if (PRIMITIVE_ARRAYS.contains(sig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.CAAL_CONFUSING_ARRAY_AS_LIST.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            }
+                    if ("asList".equals(methodName) && (stack.getStackDepth() >= 1)) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        String sig = item.getSignature();
+                        if (PRIMITIVE_ARRAYS.contains(sig)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.CAAL_CONFUSING_ARRAY_AS_LIST.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
                         }
                     }
                 }

@@ -149,12 +149,10 @@ public class CloneUsability extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
-            if (seen == ATHROW) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    if ("Ljava/lang/CloneNotSupportedException;".equals(item.getSignature())) {
-                        throwsCNFE = true;
-                    }
+            if ((seen == ATHROW) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                if ("Ljava/lang/CloneNotSupportedException;".equals(item.getSignature())) {
+                    throwsCNFE = true;
                 }
             }
         } finally {

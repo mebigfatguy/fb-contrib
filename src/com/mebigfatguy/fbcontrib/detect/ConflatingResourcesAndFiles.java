@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -43,7 +43,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 
     /**
      * constructs a CRF detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -53,7 +53,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to reset the stack
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -69,7 +69,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to resets the stack for this method.
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed code block
      */
@@ -98,12 +98,10 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
                     }
                 } else if ("java/net/URL".equals(clsName)) {
                     String methodName = getNameConstantOperand();
-                    if ("toURI".equals(methodName) || ("getFile".equals(methodName))) {
-                        if (stack.getStackDepth() > 0) {
-                            if (stack.getStackItem(0).getUserValue() != null) {
-                                sawResource = true;
-                            }
-                        }
+                    if (("toURI".equals(methodName) || "getFile".equals(methodName))
+                            && (stack.getStackDepth() > 0)
+                            && (stack.getStackItem(0).getUserValue() != null)) {
+                        sawResource = true;
                     }
                 }
             } else if (seen == INVOKESPECIAL) {
@@ -112,25 +110,21 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
                 if ("java/io/File".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     String sig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && Type.getArgumentTypes(sig).length == 1) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            if (item.getUserValue() != null) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.CRF_CONFLATING_RESOURCES_AND_FILES.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            }
+                    if (Values.CONSTRUCTOR.equals(methodName) && (Type.getArgumentTypes(sig).length == 1) && (stack.getStackDepth() > 0)) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        if (item.getUserValue() != null) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.CRF_CONFLATING_RESOURCES_AND_FILES.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
                         }
                     }
                 } else if ("java/net/URI".equals(clsName) || "java/net/URL".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     String sig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && "(Ljava/lang/String;)V".equals(sig)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            String cons = (String) item.getConstant();
+                    if (Values.CONSTRUCTOR.equals(methodName) && "(Ljava/lang/String;)V".equals(sig) && (stack.getStackDepth() > 0)) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        String cons = (String) item.getConstant();
                             if ((cons != null) && !cons.startsWith("file:/")) {
-                                sawResource = true;
-                            }
+                            sawResource = true;
                         }
                     }
                 }
@@ -138,11 +132,9 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
 
         } finally {
             stack.sawOpcode(this, seen);
-            if (sawResource) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(Boolean.TRUE);
-                }
+            if (sawResource && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(Boolean.TRUE);
             }
         }
     }

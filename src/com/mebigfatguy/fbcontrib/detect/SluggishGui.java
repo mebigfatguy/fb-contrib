@@ -168,11 +168,9 @@ public class SluggishGui extends BytecodeScanningDetector {
         for (JavaClass inf : guiInterfaces) {
             Method[] methods = inf.getMethods();
             for (Method m : methods) {
-                if (m.getName().equals(methodName)) {
-                    if (m.getSignature().equals(methodSig)) {
-                        listenerCode.put(obj, this.getMethod());
-                        return;
-                    }
+                if (m.getName().equals(methodName) && m.getSignature().equals(methodSig)) {
+                    listenerCode.put(obj, this.getMethod());
+                    return;
                 }
             }
         }

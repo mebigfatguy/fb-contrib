@@ -201,9 +201,30 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                         if (stack.getStackDepth() > 1) {
                             OpcodeStack.Item itm = stack.getStackItem(1);
                             int id = findCollectionGroup(itm, true);
+                            if ((id >= 0) && collectionGroups.get(id).isStandardCollection()) {
+                                Integer it = groupToIterator.get(Integer.valueOf(id));
+                                Loop loop = loops.get(it);
+                                if (loop != null) {
+                                    int pc = getPC();
+                                    if (loop.hasPC(pc)) {
+                                        boolean needPop = !"V".equals(Type.getReturnType(signature).getSignature());
+
+                                        if (!breakFollows(loop, needPop) && !returnFollows(needPop)) {
+                                            bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else {
+                        Integer numArgs = modifyingMethods.get(methodInfo);
+                        if ((numArgs != null) && (stack.getStackDepth() > numArgs.intValue())) {
+                            OpcodeStack.Item itm = stack.getStackItem(numArgs.intValue());
+                            int id = findCollectionGroup(itm, true);
                             if (id >= 0) {
-                                if (collectionGroups.get(id).isStandardCollection()) {
-                                    Integer it = groupToIterator.get(Integer.valueOf(id));
+                                Integer it = groupToIterator.get(Integer.valueOf(id));
+                                if (it != null) {
                                     Loop loop = loops.get(it);
                                     if (loop != null) {
                                         int pc = getPC();
@@ -213,7 +234,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                                             boolean returnFollows = breakFollows ? false : returnFollows(needPop);
 
                                             if (!breakFollows && !returnFollows) {
-                                                bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
+                                                bugReporter.reportBug(new BugInstance(this, BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
                                                         .addClass(this).addMethod(this).addSourceLine(this));
                                             }
                                         }
@@ -221,41 +242,12 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                                 }
                             }
                         }
-                    } else {
-                        Integer numArgs = modifyingMethods.get(methodInfo);
-                        if (numArgs != null) {
-                            if (stack.getStackDepth() > numArgs.intValue()) {
-                                OpcodeStack.Item itm = stack.getStackItem(numArgs.intValue());
-                                int id = findCollectionGroup(itm, true);
-                                if (id >= 0) {
-                                    Integer it = groupToIterator.get(Integer.valueOf(id));
-                                    if (it != null) {
-                                        Loop loop = loops.get(it);
-                                        if (loop != null) {
-                                            int pc = getPC();
-                                            if (loop.hasPC(pc)) {
-                                                boolean needPop = !"V".equals(Type.getReturnType(signature).getSignature());
-                                                boolean breakFollows = breakFollows(loop, needPop);
-                                                boolean returnFollows = breakFollows ? false : returnFollows(needPop);
-
-                                                if (!breakFollows && !returnFollows) {
-                                                    bugReporter.reportBug(new BugInstance(this, BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
-                                                            .addClass(this).addMethod(this).addSourceLine(this));
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
-                } else if ("java/util/Iterator".equals(className) && HASNEXT.equals(methodInfo)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        Integer id = (Integer) itm.getUserValue();
-                        if (id != null) {
-                            groupId = id.intValue();
-                        }
+                } else if ("java/util/Iterator".equals(className) && HASNEXT.equals(methodInfo) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    Integer id = (Integer) itm.getUserValue();
+                    if (id != null) {
+                        groupId = id.intValue();
                     }
                 }
             } else if ((seen == PUTFIELD) || (seen == PUTSTATIC)) {
@@ -320,22 +312,20 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                 int reg = RegisterUtils.getALoadReg(this, seen);
                 OpcodeStack.Item itm = new OpcodeStack.Item(new OpcodeStack.Item(), reg);
                 groupId = findCollectionGroup(itm, false);
-            } else if (seen == IFEQ) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    Integer id = (Integer) itm.getUserValue();
-                    if (id != null) {
-                        int target = getBranchTarget();
-                        int gotoAddr = target - 3;
-                        int ins = getCode().getCode()[gotoAddr];
-                        if (ins < 0) {
-                            ins = 256 + ins;
-                        }
-                        if ((ins == GOTO) || (ins == GOTO_W)) {
-                            Integer reg = groupToIterator.get(id);
-                            if (reg != null) {
-                                loops.put(reg, new Loop(getPC(), gotoAddr));
-                            }
+            } else if ((seen == IFEQ) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                Integer id = (Integer) itm.getUserValue();
+                if (id != null) {
+                    int target = getBranchTarget();
+                    int gotoAddr = target - 3;
+                    int ins = getCode().getCode()[gotoAddr];
+                    if (ins < 0) {
+                        ins = 256 + ins;
+                    }
+                    if ((ins == GOTO) || (ins == GOTO_W)) {
+                        Integer reg = groupToIterator.get(id);
+                        if (reg != null) {
+                            loops.put(reg, new Loop(getPC(), gotoAddr));
                         }
                     }
                 }

@@ -229,11 +229,9 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (userObject != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(userObject);
-                }
+            if ((userObject != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(userObject);
             }
             if (sawTernary) {
                 handleTernary(seen);
@@ -242,18 +240,17 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     }
 
     private void handleTernary(int seen) {
-        if ((seen == GETFIELD) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
-            if (stack.getStackDepth() > 0) {
-                OpcodeStack.Item item = stack.getStackItem(0);
-                clearUserValue(item);
-            }
+        if (((seen == GETFIELD) || (seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) && (stack.getStackDepth() > 0)) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            clearUserValue(item);
         }
         /*
          * check ALOAD_0, as if it's a field the statement after a GOTO will be
          * loading 'this'
          */
-        if ((seen != GOTO) && (seen != IFNULL) && (seen != IFNONNULL) && (seen != ALOAD_0))
+        if ((seen != GOTO) && (seen != IFNULL) && (seen != IFNONNULL) && (seen != ALOAD_0)) {
             sawTernary = false;
+        }
     }
 
     private void sawPutStatic() {

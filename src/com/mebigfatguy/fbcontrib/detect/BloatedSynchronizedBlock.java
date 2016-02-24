@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -55,7 +55,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
 
     /**
      * constructs a BSB detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -80,7 +80,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
 
     /**
      * looks for methods that contain a MONITORENTER opcodes
-     * 
+     *
      * @param method
      *            the context object of the current method
      * @return if the class uses synchronization
@@ -93,7 +93,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
     /**
      * implement the visitor to reset the sync count, the stack, and gather some
      * information
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed method
      */
@@ -117,7 +117,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
     /**
      * implement the visitor to find bloated sync blocks. This implementation
      * only checks the outer most block
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -144,9 +144,9 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                         unsafeCallOccurred = false;
                 } else
                     unsafeCallOccurred = false;
-            } else if (seen == INVOKESTATIC)
-                unsafeCallOccurred = (getDottedClassConstantOperand().equals(this.getClassContext().getJavaClass().getClassName()));
-            else if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == GOTO_W)) {
+            } else if (seen == INVOKESTATIC) {
+                unsafeCallOccurred = getDottedClassConstantOperand().equals(this.getClassContext().getJavaClass().getClassName());
+            } else if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == GOTO_W)) {
                 Integer from = Integer.valueOf(getPC());
                 Integer to = Integer.valueOf(getBranchTarget());
                 branchInfo.put(from, to);

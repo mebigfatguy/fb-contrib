@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -55,7 +55,7 @@ public class UseSplit extends BytecodeScanningDetector {
 
     /**
      * constructs a USS detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -84,7 +84,7 @@ public class UseSplit extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to reset the stack
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -101,7 +101,7 @@ public class UseSplit extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for code that uses StringTokenizer when a
      * simple String.split could be used.
-     * 
+     *
      * @param seen the currently parsed opcode
      */
     @Override
@@ -155,10 +155,11 @@ public class UseSplit extends BytecodeScanningDetector {
 
             switch (state) {
             case SEEN_NOTHING:
-                if (seen == INVOKESPECIAL) {
-                    if (("java/util/StringTokenizer".equals(getClassConstantOperand())) && (Values.CONSTRUCTOR.equals(getNameConstantOperand()))
-                            && ("(Ljava/lang/String;Ljava/lang/String;)V".equals(getSigConstantOperand())))
-                        state = State.SEEN_STRINGTOKENIZER;
+                if ((seen == INVOKESPECIAL)
+                        && "java/util/StringTokenizer".equals(getClassConstantOperand())
+                        && Values.CONSTRUCTOR.equals(getNameConstantOperand())
+                        && "(Ljava/lang/String;Ljava/lang/String;)V".equals(getSigConstantOperand())) {
+                    state = State.SEEN_STRINGTOKENIZER;
                 }
                 break;
 
@@ -213,18 +214,14 @@ public class UseSplit extends BytecodeScanningDetector {
                 break;
 
             case SEEN_NEXT:
-                if (seen == AASTORE) {
-                    if ((pc > loopStart) && (pc < loopEnd)) {
-                        if (stack.getStackDepth() > 2) {
-                            OpcodeStack.Item arrayItem = stack.getStackItem(2);
-                            State arrayType = (State) arrayItem.getUserValue();
-                            OpcodeStack.Item elemItem = stack.getStackItem(0);
-                            State elemType = (State) elemItem.getUserValue();
-                            if ((arrayType == State.SEEN_NEWARRAY) && (elemType == State.SEEN_NEXT)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.USS_USE_STRING_SPLIT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                        .addSourceLine(this));
-                            }
-                        }
+                if ((seen == AASTORE) && (pc > loopStart) && (pc < loopEnd) && (stack.getStackDepth() > 2)) {
+                    OpcodeStack.Item arrayItem = stack.getStackItem(2);
+                    State arrayType = (State) arrayItem.getUserValue();
+                    OpcodeStack.Item elemItem = stack.getStackItem(0);
+                    State elemType = (State) elemItem.getUserValue();
+                    if ((arrayType == State.SEEN_NEWARRAY) && (elemType == State.SEEN_NEXT)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.USS_USE_STRING_SPLIT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                .addSourceLine(this));
                     }
                 }
                 state = State.SEEN_NOTHING;
@@ -238,11 +235,9 @@ public class UseSplit extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (state != State.SEEN_NOTHING) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(state);
-                }
+            if ((state != State.SEEN_NOTHING) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(state);
             }
         }
     }

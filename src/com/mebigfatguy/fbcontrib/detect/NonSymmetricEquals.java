@@ -114,26 +114,24 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == CHECKCAST) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    if (item.getRegisterNumber() == 1) {
-                        String thisCls = getClassName();
-                        String equalsCls = getClassConstantOperand();
-                        if (!thisCls.equals(equalsCls)) {
-                            JavaClass thisJavaClass = getClassContext().getJavaClass();
-                            JavaClass equalsJavaClass = Repository.lookupClass(equalsCls);
-                            boolean inheritance = thisJavaClass.instanceOf(equalsJavaClass) || equalsJavaClass.instanceOf(thisJavaClass);
+            if ((seen == CHECKCAST) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                if (item.getRegisterNumber() == 1) {
+                    String thisCls = getClassName();
+                    String equalsCls = getClassConstantOperand();
+                    if (!thisCls.equals(equalsCls)) {
+                        JavaClass thisJavaClass = getClassContext().getJavaClass();
+                        JavaClass equalsJavaClass = Repository.lookupClass(equalsCls);
+                        boolean inheritance = thisJavaClass.instanceOf(equalsJavaClass) || equalsJavaClass.instanceOf(thisJavaClass);
 
-                            BugInstance bug = new BugInstance(this, BugType.NSE_NON_SYMMETRIC_EQUALS.name(), inheritance ? LOW_PRIORITY : NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this).addString(equalsCls);
-                            Map<String, BugInstance> bugs = possibleBugs.get(thisCls);
-                            if (bugs == null) {
-                                bugs = new HashMap<String, BugInstance>();
-                                possibleBugs.put(thisCls, bugs);
-                            }
-                            bugs.put(equalsCls, bug);
+                        BugInstance bug = new BugInstance(this, BugType.NSE_NON_SYMMETRIC_EQUALS.name(), inheritance ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this).addString(equalsCls);
+                        Map<String, BugInstance> bugs = possibleBugs.get(thisCls);
+                        if (bugs == null) {
+                            bugs = new HashMap<String, BugInstance>();
+                            possibleBugs.put(thisCls, bugs);
                         }
+                        bugs.put(equalsCls, bug);
                     }
                 }
             }

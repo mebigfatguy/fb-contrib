@@ -183,7 +183,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
      * implements the visitor to reset the stack, and method call maps for new method
      * Note: that when collecting branch targets, it's unfortunately not good enough to just
      * collect the handler pcs, as javac plays fast and loose, and will sometimes jam code below the
-     * end pc and before the first handler pc, which gets executed. So we need to clear our 
+     * end pc and before the first handler pc, which gets executed. So we need to clear our
      * maps if we go past the end pc as well.
      *
      * @param obj
@@ -375,11 +375,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
-            if (userValue != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(userValue);
-                }
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(userValue);
             }
         }
     }

@@ -56,7 +56,7 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
         gp.add(new FQMethod("java/awt/image/BufferedImage", "getGraphics", "()Ljava/awt/Graphics;"));
         gp.add(new FQMethod("java/awt/Graphics", "create", "()Ljava/awt/Graphics;"));
         GRAPHICS_PRODUCERS = Collections.<FQMethod>unmodifiableSet(gp);
-        
+
         Set<FQMethod> gd = new HashSet<FQMethod>();
         gd.add(new FQMethod("java/awt/Graphics", "dispose", "()V"));
         gd.add(new FQMethod("java/awt/Graphics2D", "dispose", "()V"));
@@ -73,7 +73,7 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to set up the opcode stack
-     * 
+     *
      * @param classContext the context object of the currently parsed class
      */
     @Override
@@ -90,7 +90,7 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to check for registers that have been assigned Graphics objects that haven't been disposed
-     * 
+     *
      * @param obj the code block of the currently parsed method
      */
     @Override
@@ -156,11 +156,9 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
                 FQMethod methodInfo = new FQMethod(clsName, methodName, methodSig);
                 if (GRAPHICS_PRODUCERS.contains(methodInfo)) {
                     sawNewGraphicsAt = Integer.valueOf(getPC());
-                } else if (GRAPHICS_DISPOSERS.contains(methodInfo)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
-                    }
+                } else if (GRAPHICS_DISPOSERS.contains(methodInfo) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
                 }
                 break;
             default:
@@ -170,11 +168,9 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (sawNewGraphicsAt != null) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    item.setUserValue(sawNewGraphicsAt);
-                }
+            if ((sawNewGraphicsAt != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(sawNewGraphicsAt);
             }
         }
     }

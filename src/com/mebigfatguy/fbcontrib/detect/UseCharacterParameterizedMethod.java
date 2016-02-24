@@ -164,15 +164,11 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
                 Object posObject = characterMethods.get(key);
                 if (posObject instanceof Integer) {
-                    if (checkSingleParamMethod(((Integer) posObject).intValue())) {
-                        if (!isInlineAppend(key)) {
-                            reportBug();
-                        }
-                    }
-                } else if (posObject instanceof IntPair) {
-                    if (checkDoubleParamMethod((IntPair) posObject)) {
+                    if (checkSingleParamMethod(((Integer) posObject).intValue()) && !isInlineAppend(key)) {
                         reportBug();
                     }
+                } else if (posObject instanceof IntPair && checkDoubleParamMethod((IntPair) posObject)) {
+                    reportBug();
                 }
 
             } else if (seen == DUP) {
@@ -183,11 +179,9 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                         itm.setUserValue(UCPMUserValue.INLINE);
                     }
                 }
-            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == PUTSTATIC)) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    itm.setUserValue(null);
-                }
+            } else if (((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == PUTSTATIC)) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(null);
             }
         } finally {
             UCPMUserValue uv = callHasInline(seen);

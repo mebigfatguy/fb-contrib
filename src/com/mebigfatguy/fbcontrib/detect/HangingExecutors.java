@@ -214,13 +214,11 @@ public class HangingExecutors extends BytecodeScanningDetector {
                     XMethod method = stack.getStackItem(0).getReturnValueOf();
                     if (method != null) {
                         Type[] argumentTypes = Type.getArgumentTypes(method.getSignature());
-                        if (argumentTypes.length != 0) {
-                            if ("Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes[argumentTypes.length - 1].getSignature())) {
-                                AnnotationPriority ap = this.hangingFieldCandidates.get(f);
-                                if (ap != null) {
-                                    ap.priority = LOW_PRIORITY;
-                                    this.hangingFieldCandidates.put(f, ap);
-                                }
+                        if ((argumentTypes.length != 0) && "Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes[argumentTypes.length - 1].getSignature())) {
+                            AnnotationPriority ap = this.hangingFieldCandidates.get(f);
+                            if (ap != null) {
+                                ap.priority = LOW_PRIORITY;
+                                this.hangingFieldCandidates.put(f, ap);
                             }
                         }
                     }

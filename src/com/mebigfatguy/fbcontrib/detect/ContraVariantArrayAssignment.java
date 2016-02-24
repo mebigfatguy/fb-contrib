@@ -59,7 +59,7 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 
     /**
      * constructs a CVAA detector given the reporter to report bugs on.
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -120,7 +120,7 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
                 /*
                  * OpcodeStack.Item arrayref = stack.getStackItem(2);
                  * OpcodeStack.Item value = stack.getStackItem(0);
-                 * 
+                 *
                  * if(!value.isNull()) { String sourceSignature =
                  * value.getSignature(); String targetSignature =
                  * arrayref.getSignature(); if
@@ -146,12 +146,8 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
         }
     }
 
-    private static boolean isArrayType(String signature) {
-        return Type.getType(signature) instanceof ArrayType;
-    }
-
-    private static boolean isObjectType(String signature) {
-        return ((ArrayType) Type.getType(signature)).getBasicType() instanceof ObjectType;
+    private static boolean isObjectType(Type type) {
+        return ((ArrayType) type).getBasicType() instanceof ObjectType;
     }
 
     private void checkSignatures(String sourceSignature, String targetSignature) {
@@ -160,14 +156,14 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
                 return;
             }
 
-            if (isArrayType(sourceSignature) && isArrayType(targetSignature)) {
-                if (isObjectType(sourceSignature) && isObjectType(targetSignature)) {
-                    ObjectType sourceType = (ObjectType) ((ArrayType) Type.getType(sourceSignature)).getBasicType();
-                    ObjectType targetType = (ObjectType) ((ArrayType) Type.getType(targetSignature)).getBasicType();
-                    if (!targetType.equals(sourceType) && !targetType.subclassOf(sourceType)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+            Type sourceType = Type.getType(sourceSignature);
+            Type targetType = Type.getType(targetSignature);
+            if (sourceType instanceof ArrayType && targetType instanceof ArrayType && isObjectType(sourceType) && isObjectType(targetType)) {
+                ObjectType sourceElementType = (ObjectType) ((ArrayType) sourceType).getBasicType();
+                ObjectType targetElementType = (ObjectType) ((ArrayType) targetType).getBasicType();
+                if (!targetElementType.isCastableTo(sourceElementType)) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
                 }
             }
         } catch (ClassNotFoundException cnfe) {
