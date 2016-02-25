@@ -25,6 +25,9 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -82,12 +85,9 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
             }
         }
 
-        if ((seen == FLOAD) || (seen == DLOAD))
-            forLoops.add(new FloatForLoop(getRegisterOperand(), getPC()));
-        else if ((seen >= FLOAD_0) && (seen <= FLOAD_3))
-            forLoops.add(new FloatForLoop(seen - FLOAD_0, getPC()));
-        else if ((seen >= DLOAD_0) && (seen <= DLOAD_3))
-            forLoops.add(new FloatForLoop(seen - DLOAD_0, getPC()));
+        if (OpcodeUtils.isFLoad(seen) || OpcodeUtils.isDLoad(seen)) {
+            forLoops.add(new FloatForLoop(RegisterUtils.getLoadReg(this, seen), getPC()));
+        }
     }
 
     /**
