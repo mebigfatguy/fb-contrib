@@ -198,6 +198,10 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
      * @return when it is called on this or not
      */
     private boolean isCallingOnThis(String sig) {
+        if (getMethod().isStatic()) {
+            return false;
+        }
+        
         Type[] argTypes = Type.getArgumentTypes(sig);
         if (stack.getStackDepth() <= argTypes.length) {
             return false;
