@@ -97,12 +97,12 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if (seen == INVOKESPECIAL) {
-                userValue = sawInvokeSpecial(userValue);
+                userValue = sawInvokeSpecial();
             } else if (seen == INVOKEVIRTUAL) {
                 if (sawLDCEmpty) {
                     dealWithEmptyString();
                 }
-                userValue = sawInvokeVirtual(userValue);
+                userValue = sawInvokeVirtual();
 
             } else if ((seen == GOTO) || (seen == GOTO_W)) {
                 int depth = stack.getStackDepth();
@@ -136,8 +136,10 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         TernaryPatcher.post(stack, seen);
     }
 
-    private ISBUserValue sawInvokeVirtual(ISBUserValue userValue) {
+    private ISBUserValue sawInvokeVirtual() {
+        ISBUserValue userValue = null;
         String calledClass = getClassConstantOperand();
+        
         if (("java/lang/StringBuffer".equals(calledClass) || "java/lang/StringBuilder".equals(calledClass))) {
             String methodName = getNameConstantOperand();
             if ("append".equals(methodName)) {
@@ -210,8 +212,10 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         }
     }
 
-    private ISBUserValue sawInvokeSpecial(ISBUserValue userValue) {
+    private ISBUserValue sawInvokeSpecial() {
+        ISBUserValue userValue = null;
         String calledClass = getClassConstantOperand();
+        
         if (("java/lang/StringBuffer".equals(calledClass) || "java/lang/StringBuilder".equals(calledClass))
                 && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
             String signature = getSigConstantOperand();
