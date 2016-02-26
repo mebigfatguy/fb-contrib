@@ -5107,6 +5107,17 @@
     	</Details>
     </BugPattern>
     
+    <BugPattern type="IMC_IMMATURE_CLASS_PRINTSTACKTRACE">
+    	<ShortDescription>Method prints the stack trace to the console</ShortDescription>
+    	<LongDescription>Method {1} prints the stack trace to the console</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method prints a stack trace to the console. This is non configurable, and causes an 
+    		application to look unprofessional. Switch to using loggers.
+    		]]>
+    	</Details>
+    </BugPattern>
+    
     <BugPattern type="JXI_GET_ENDPOINT_CONSUMES_CONTENT">
     	<ShortDescription>JAX-RS Method implements a GET request but consumes input</ShortDescription>
     	<LongDescription>JAX-RS Method {1} implements a GET request but consumes input</LongDescription>

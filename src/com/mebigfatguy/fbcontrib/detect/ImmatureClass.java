@@ -5,6 +5,7 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
@@ -18,15 +19,14 @@ import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.Detector;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * looks for classes that aren't fully flushed out to be easily usable for various reasons. While the class will most likely work fine, it is more difficult to
  * use than necessary.
  */
-public class ImmatureClass extends PreorderVisitor implements Detector {
+public class ImmatureClass extends BytecodeScanningDetector  {
 
     private static final Pattern ARG_PATTERN = Pattern.compile("(arg|parm|param)\\d");
 
@@ -72,7 +72,8 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                             /* only report one of these, so as not to flood the report */
                             if (!hasMethodInHierarchy(cls, "toString", "()Ljava/lang/String;")) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_TOSTRING.name(), LOW_PRIORITY).addClass(cls));
-                                return;
+                                heStatus = HEStatus.NOT_NEEDED;
+                                break;
                             }
                             if (heStatus != HEStatus.NOT_NEEDED) {
                                 String fieldSig = f.getSignature();
@@ -107,11 +108,25 @@ public class ImmatureClass extends PreorderVisitor implements Detector {
                 bugReporter.reportMissingClass(cnfe);
             }
         }
+        
+        super.visitClassContext(classContext);
     }
 
+    /**
+     * implements the visitor to check for calls to Throwable.printStackTrace()
+     * 
+     * @param seen the currently parsed opcode
+     */
     @Override
-    public void report() {
-        // required by the interface but not needed
+    public void sawOpcode(int seen) {
+        if (seen == INVOKEVIRTUAL) {
+            if ("printStackTrace".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+                bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY)
+                        .addClass(this)
+                        .addMethod(this)
+                        .addSourceLine(this));
+            }
+        }
     }
 
     /**

@@ -1,3 +1,7 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -20,6 +24,14 @@ public class IMC_Sample {
     class FPFieldIMC {
         @SuperSecret
         private String dontReportMe;
+    }
+    
+    public void psf(File f) {
+        try (InputStream is = new FileInputStream(f)) {
+            is.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
 
