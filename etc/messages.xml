@@ -5113,7 +5113,8 @@
     	<Details>
     		<![CDATA[
     		<p>This method prints a stack trace to the console. This is non configurable, and causes an 
-    		application to look unprofessional. Switch to using loggers.
+    		application to look unprofessional. Switch to using loggers so that users can control what 
+    		is logged and where.
     		]]>
     	</Details>
     </BugPattern>
