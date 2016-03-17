@@ -5086,8 +5086,8 @@
     	<LongDescription>Class {0} does not implement a toString method</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This class which has instance fields has no toString() method, which will make debugging with this
-    		class more difficult than it could be. Consider adding a method. Using libraries like commons-lang3 
+    		<p>This class, which has instance fields, has no toString() method which will make debugging with this
+    		class more difficult than it could be. Consider adding a toString() method. Using libraries like commons-lang3 
     		ToStringBuilder makes this process easy.
     		</p>
     		]]>
