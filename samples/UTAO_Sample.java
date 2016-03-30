@@ -1,6 +1,7 @@
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import junit.framework.TestCase;
@@ -202,4 +203,50 @@ class GitHubIssue94 {
         org.testng.Assert.assertNotEquals(realObject, mockObject);
     }
 
+}
+
+class GitHubIssue109 {
+    private static final String UUID = "some uuid";
+
+    @Mock
+    private Repo repository;
+    @Mock
+    private Object domainObject;
+
+    @org.testng.annotations.Test
+    public void shouldReturnDomainObjectForUuid() throws Exception {
+        MockitoAnnotations.initMocks(this);
+
+        StrutsAction action = new StrutsAction(repository);
+        Mockito.when(repository.findByUuid(UUID)).thenReturn(domainObject);
+
+        action.setUuid(UUID);
+        org.testng.Assert.assertEquals(action.execute(), Action.SUCCESS);
+        // this assertion triggers the detector
+        Assert.assertEquals(action.getDomainObject(), domainObject);
+    }
+
+    enum Action {
+        SUCCESS, FAILURE
+    };
+
+    class StrutsAction {
+        public StrutsAction(Object repo) {
+        }
+
+        public Object execute() {
+            return null;
+        }
+
+        public Object getDomainObject() {
+            return null;
+        }
+
+        void setUuid(String uuid) {
+        }
+    }
+
+    interface Repo {
+        Object findByUuid(String uuid);
+    }
 }
