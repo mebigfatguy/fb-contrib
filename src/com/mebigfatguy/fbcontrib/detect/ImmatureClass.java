@@ -5,7 +5,6 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
-import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
@@ -26,7 +25,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * looks for classes that aren't fully flushed out to be easily usable for various reasons. While the class will most likely work fine, it is more difficult to
  * use than necessary.
  */
-public class ImmatureClass extends BytecodeScanningDetector  {
+public class ImmatureClass extends BytecodeScanningDetector {
 
     private static final Pattern ARG_PATTERN = Pattern.compile("(arg|parm|param)\\d");
 
@@ -108,22 +107,21 @@ public class ImmatureClass extends BytecodeScanningDetector  {
                 bugReporter.reportMissingClass(cnfe);
             }
         }
-        
+
         super.visitClassContext(classContext);
     }
 
     /**
      * implements the visitor to check for calls to Throwable.printStackTrace()
-     * 
-     * @param seen the currently parsed opcode
+     *
+     * @param seen
+     *            the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
         if (seen == INVOKEVIRTUAL) {
             if ("printStackTrace".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
-                bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY)
-                        .addClass(this)
-                        .addMethod(this)
+                bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this));
             }
         }
