@@ -34,6 +34,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -55,6 +56,13 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private enum TestFrameworkType {
         UNKNOWN, JUNIT, TESTNG;
     }
+
+    private static final Set<String> INJECTOR_ANNOTATIONS = UnmodifiableSet.create(
+        // @formatter:off
+        "org.mockito.Mock",
+        "org.springframework.beans.factory.annotation.Autowired"
+        // @formatter:on
+    );
 
     private static final String BOOLEAN_TYPE_SIGNATURE = "Ljava/lang/Boolean;";
     private static final String LJAVA_LANG_DOUBLE = "Ljava/lang/Double;";
@@ -223,7 +231,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
-                            if (expectedItem.isNull() && !isRuntimeAnnotatedField(expectedItem)) {
+                            if (expectedItem.isNull() && !hasFieldInjectorAnnotation(expectedItem)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NULL.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
@@ -292,7 +300,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
-                            if (expectedItem.isNull() && !isRuntimeAnnotatedField(expectedItem)) {
+                            if (expectedItem.isNull() && !hasFieldInjectorAnnotation(expectedItem)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NULL.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
@@ -460,13 +468,18 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         return false;
     }
 
-    private boolean isRuntimeAnnotatedField(OpcodeStack.Item item) {
+    private boolean hasFieldInjectorAnnotation(OpcodeStack.Item item) {
         XField xf = item.getXField();
         if (xf == null) {
             return false;
         }
 
         Collection<AnnotationValue> annotations = xf.getAnnotations();
-        return !annotations.isEmpty();
+        for (AnnotationValue value : annotations) {
+            if (INJECTOR_ANNOTATIONS.contains(value.getAnnotationClass().getDottedClassName())) {
+                return true;
+            }
+        }
+        return false;
     }
 }
