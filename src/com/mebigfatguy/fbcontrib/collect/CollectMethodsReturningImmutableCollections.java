@@ -36,8 +36,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * collects methods that return a collection that could be created thru an
- * immutable method such as Arrays.aslist, etc.
+ * collects methods that return a collection that could be created thru an immutable method such as Arrays.aslist, etc.
  */
 @CustomUserValue
 public class CollectMethodsReturningImmutableCollections extends BytecodeScanningDetector implements NonReportingDetector {
@@ -90,8 +89,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
     }
 
     /**
-     * overrides the visitor to reset the stack for the new method, then checks
-     * if the immutability field is set to immutable and if so reports it
+     * overrides the visitor to reset the stack for the new method, then checks if the immutability field is set to immutable and if so reports it
      *
      * @param obj
      *            the context object of the currently parsed method
@@ -105,7 +103,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                 imType = ImmutabilityType.UNKNOWN;
                 super.visitCode(obj);
 
-                if (imType == ImmutabilityType.IMMUTABLE || imType == ImmutabilityType.POSSIBLY_IMMUTABLE) {
+                if ((imType == ImmutabilityType.IMMUTABLE) || (imType == ImmutabilityType.POSSIBLY_IMMUTABLE)) {
                     Method m = getMethod();
                     Statistics.getStatistics().addImmutabilityStatus(clsName, m.getName(), m.getSignature(), imType);
                 }
@@ -116,9 +114,8 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
     }
 
     /**
-     * overrides the visitor to look for calls to static methods that are known
-     * to return immutable collections It records those variables, and documents
-     * if what the method returns is one of those objects.
+     * overrides the visitor to look for calls to static methods that are known to return immutable collections It records those variables, and documents if
+     * what the method returns is one of those objects.
      */
     @Override
     public void sawOpcode(int seen) {
@@ -127,80 +124,86 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
             stack.precomputation(this);
 
             switch (seen) {
-            case INVOKESTATIC: {
-                String className = getClassConstantOperand();
-                String methodName = getNameConstantOperand();
+                case INVOKESTATIC: {
+                    String className = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
 
-                if (IMMUTABLE_PRODUCING_METHODS.contains(className + '.' + methodName)) {
-                    seenImmutable = ImmutabilityType.IMMUTABLE;
-                    break;
-                }
-            }
-                //$FALL-THROUGH$
-            case INVOKEINTERFACE:
-            case INVOKESPECIAL:
-            case INVOKEVIRTUAL: {
-                String className = getClassConstantOperand();
-                String methodName = getNameConstantOperand();
-                String signature = getSigConstantOperand();
-
-                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
-                seenImmutable = mi.getImmutabilityType();
-                if (seenImmutable == ImmutabilityType.UNKNOWN)
-                    seenImmutable = null;
-            }
-                break;
-
-            case ARETURN: {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    ImmutabilityType type = (ImmutabilityType) item.getUserValue();
-                    if (type == null)
-                        type = ImmutabilityType.UNKNOWN;
-
-                    switch (imType) {
-                    case UNKNOWN:
-
-                        switch (type) {
-                        case IMMUTABLE:
-                            imType = ImmutabilityType.IMMUTABLE;
-                            break;
-                        case POSSIBLY_IMMUTABLE:
-                            imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
-                            break;
-                        default:
-                            imType = ImmutabilityType.MUTABLE;
-                            break;
-                        }
-                        break;
-
-                    case IMMUTABLE:
-                        if (type != ImmutabilityType.IMMUTABLE) {
-                            imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
-                        }
-                        break;
-
-                    case POSSIBLY_IMMUTABLE:
-                        break;
-
-                    case MUTABLE:
-                        if (type == ImmutabilityType.IMMUTABLE) {
-                            imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
-                        }
+                    if (IMMUTABLE_PRODUCING_METHODS.contains(className + '.' + methodName)) {
+                        seenImmutable = ImmutabilityType.IMMUTABLE;
                         break;
                     }
                 }
+                //$FALL-THROUGH$
+                case INVOKEINTERFACE:
+                case INVOKESPECIAL:
+                case INVOKEVIRTUAL: {
+                    String className = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
+                    String signature = getSigConstantOperand();
+
+                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
+                    seenImmutable = mi.getImmutabilityType();
+                    if (seenImmutable == ImmutabilityType.UNKNOWN) {
+                        seenImmutable = null;
+                    }
+                }
                 break;
-            }
-            default:
+
+                case ARETURN: {
+                    processARreturn();
+                    break;
+                }
+                default:
                 break;
             }
 
         } finally {
             stack.sawOpcode(this, seen);
-            if (seenImmutable != null && stack.getStackDepth() > 0) {
+            if ((seenImmutable != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 item.setUserValue(seenImmutable);
+            }
+        }
+    }
+
+    private void processARreturn() {
+        if (stack.getStackDepth() > 0) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            ImmutabilityType type = (ImmutabilityType) item.getUserValue();
+            if (type == null) {
+                type = ImmutabilityType.UNKNOWN;
+            }
+
+            switch (imType) {
+                case UNKNOWN:
+
+                    switch (type) {
+                        case IMMUTABLE:
+                            imType = ImmutabilityType.IMMUTABLE;
+                        break;
+                        case POSSIBLY_IMMUTABLE:
+                            imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
+                        break;
+                        default:
+                            imType = ImmutabilityType.MUTABLE;
+                        break;
+                    }
+                break;
+
+                case IMMUTABLE:
+                    if (type != ImmutabilityType.IMMUTABLE) {
+                        imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
+                    }
+                break;
+
+                case POSSIBLY_IMMUTABLE:
+                break;
+
+                case MUTABLE:
+                    if (type == ImmutabilityType.IMMUTABLE) {
+                        imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
+                    }
+                break;
             }
         }
     }
