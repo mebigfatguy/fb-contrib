@@ -38,8 +38,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that are implemented using synchronized blocks, but are
- * overly synchronized because the beginning of the block only accesses local
+ * looks for methods that are implemented using synchronized blocks, but are overly synchronized because the beginning of the block only accesses local
  * variables, and not member variables, or this.
  */
 public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
@@ -91,8 +90,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
     }
 
     /**
-     * implement the visitor to reset the sync count, the stack, and gather some
-     * information
+     * implement the visitor to reset the sync count, the stack, and gather some information
      *
      * @param obj
      *            the context object for the currently parsed method
@@ -101,10 +99,11 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         Method m = getMethod();
         if (prescreen(m)) {
-            if (m.isSynchronized())
+            if (m.isSynchronized()) {
                 syncPC = 0;
-            else
+            } else {
                 syncPC = -1;
+            }
             isStatic = m.isStatic();
             unsafeAliases.clear();
             unsafeAliases.set(0);
@@ -115,8 +114,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
     }
 
     /**
-     * implement the visitor to find bloated sync blocks. This implementation
-     * only checks the outer most block
+     * implement the visitor to find bloated sync blocks. This implementation only checks the outer most block
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -128,8 +126,9 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
 
             if (unsafeCallOccurred && OpcodeUtils.isAStore(seen)) {
                 int storeReg = RegisterUtils.getAStoreReg(this, seen);
-                if (storeReg >= 0)
+                if (storeReg >= 0) {
                     unsafeAliases.set(storeReg);
+                }
             }
 
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEDYNAMIC)) {
@@ -140,10 +139,12 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > parmCount) {
                         OpcodeStack.Item itm = stack.getStackItem(parmCount);
                         unsafeCallOccurred = unsafeAliases.get(itm.getRegisterNumber());
-                    } else
+                    } else {
                         unsafeCallOccurred = false;
-                } else
+                    }
+                } else {
                     unsafeCallOccurred = false;
+                }
             } else if (seen == INVOKESTATIC) {
                 unsafeCallOccurred = getDottedClassConstantOperand().equals(this.getClassContext().getJavaClass().getClassName());
             } else if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == GOTO_W)) {
@@ -151,8 +152,9 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                 Integer to = Integer.valueOf(getBranchTarget());
                 branchInfo.put(from, to);
                 unsafeCallOccurred = false;
-            } else
+            } else {
                 unsafeCallOccurred = false;
+            }
 
             if (seen == MONITORENTER) {
                 if (syncPC < 0) {
@@ -165,41 +167,45 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if (seen == MONITOREXIT)
+            } else if (seen == MONITOREXIT) {
                 syncPC = -1;
-            else if (syncPC >= 0) {
-                // TODO: probably static calls are unsafe only if the monitor is
-                // on a static
-                boolean unsafe = unsafeCallOccurred;
-                unsafe |= ((seen == PUTFIELD) || (seen == GETFIELD) || (seen == GETSTATIC) || (seen == PUTSTATIC));
-                unsafe |= (!isStatic) && ((seen == ALOAD_0) || (seen == ASTORE_0));
-                int aloadReg = RegisterUtils.getALoadReg(this, seen);
-                unsafe |= (aloadReg >= 0) && unsafeAliases.get(aloadReg);
-                if (unsafe) {
-                    // If a branch exists in the safe code, make sure the entire
-                    // branch
-                    // is in the safe code, otherwise trim before the branch
-                    int pc = getPC();
-                    if ((pc - syncPC) > minSafeCodeLength) {
-                        for (Map.Entry<Integer, Integer> entry : branchInfo.entrySet()) {
-                            int bStart = entry.getKey().intValue();
-                            if ((bStart >= syncPC) && (bStart <= pc)) {
-                                int bEnd = entry.getValue().intValue();
-                                if (bEnd > pc) {
-                                    pc = bStart - 1;
-                                }
-                            }
-                        }
-                        if ((pc - syncPC) > minSafeCodeLength) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.BSB_BLOATED_SYNCHRONIZED_BLOCK.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLineRange(this, syncPC + 1, pc));
-                        }
-                    }
-                    syncPC = -1;
-                }
+            } else if (syncPC >= 0) {
+                processSyncBlockInstruction(seen);
             }
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    private void processSyncBlockInstruction(int seen) {
+        // TODO: probably static calls are unsafe only if the monitor is
+        // on a static
+        boolean unsafe = unsafeCallOccurred;
+        unsafe |= ((seen == PUTFIELD) || (seen == GETFIELD) || (seen == GETSTATIC) || (seen == PUTSTATIC));
+        unsafe |= (!isStatic) && ((seen == ALOAD_0) || (seen == ASTORE_0));
+        int aloadReg = RegisterUtils.getALoadReg(this, seen);
+        unsafe |= (aloadReg >= 0) && unsafeAliases.get(aloadReg);
+        if (unsafe) {
+            // If a branch exists in the safe code, make sure the entire
+            // branch
+            // is in the safe code, otherwise trim before the branch
+            int pc = getPC();
+            if ((pc - syncPC) > minSafeCodeLength) {
+                for (Map.Entry<Integer, Integer> entry : branchInfo.entrySet()) {
+                    int bStart = entry.getKey().intValue();
+                    if ((bStart >= syncPC) && (bStart <= pc)) {
+                        int bEnd = entry.getValue().intValue();
+                        if (bEnd > pc) {
+                            pc = bStart - 1;
+                        }
+                    }
+                }
+                if ((pc - syncPC) > minSafeCodeLength) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.BSB_BLOATED_SYNCHRONIZED_BLOCK.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLineRange(this, syncPC + 1, pc));
+                }
+            }
+            syncPC = -1;
         }
     }
 }
