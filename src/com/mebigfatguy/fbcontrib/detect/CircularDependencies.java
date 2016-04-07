@@ -66,35 +66,43 @@ public class CircularDependencies extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         if ((seen == INVOKESPECIAL) || (seen == INVOKESTATIC) || (seen == INVOKEVIRTUAL)) {
-            String refClsName = getClassConstantOperand();
-            refClsName = refClsName.replace('/', '.');
-            if (refClsName.startsWith("java")) {
-                return;
-            }
-
-            if (clsName.equals(refClsName)) {
-                return;
-            }
-
-            if (isEnclosingClassName(clsName, refClsName) || isEnclosingClassName(refClsName, clsName)) {
-                return;
-            }
-
-            if (isStaticChild(clsName, refClsName) || isStaticChild(refClsName, clsName)) {
-                return;
-            }
-
-            Set<String> dependencies = getDependenciesForClass(clsName);
-            dependencies.add(refClsName);
+            processInvoke();
 
         } else if (seen == LDC) {
-            Constant c = getConstantRefOperand();
-            if (c instanceof ConstantClass) {
-                String refClsName = getClassConstantOperand();
-                if (!refClsName.equals(clsName)) {
-                    Set<String> dependencies = getDependenciesForClass(clsName);
-                    dependencies.add(refClsName);
-                }
+            processLoadConstant();
+        }
+    }
+
+    private void processInvoke() {
+        String refClsName = getClassConstantOperand();
+        refClsName = refClsName.replace('/', '.');
+        if (refClsName.startsWith("java")) {
+            return;
+        }
+
+        if (clsName.equals(refClsName)) {
+            return;
+        }
+
+        if (isEnclosingClassName(clsName, refClsName) || isEnclosingClassName(refClsName, clsName)) {
+            return;
+        }
+
+        if (isStaticChild(clsName, refClsName) || isStaticChild(refClsName, clsName)) {
+            return;
+        }
+
+        Set<String> dependencies = getDependenciesForClass(clsName);
+        dependencies.add(refClsName);
+    }
+
+    private void processLoadConstant() {
+        Constant c = getConstantRefOperand();
+        if (c instanceof ConstantClass) {
+            String refClsName = getClassConstantOperand();
+            if (!refClsName.equals(clsName)) {
+                Set<String> dependencies = getDependenciesForClass(clsName);
+                dependencies.add(refClsName);
             }
         }
     }
