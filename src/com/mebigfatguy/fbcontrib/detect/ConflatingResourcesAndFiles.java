@@ -32,8 +32,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that conflate the use of resources and files. Converting
- * URLs retrieved from potentially non file resources, into files objects.
+ * looks for methods that conflate the use of resources and files. Converting URLs retrieved from potentially non file resources, into files objects.
  */
 @CustomUserValue
 public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
@@ -89,45 +88,9 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if (seen == INVOKEVIRTUAL) {
-                String clsName = getClassConstantOperand();
-
-                if ("java/lang/Class".equals(clsName)) {
-                    String methodName = getNameConstantOperand();
-                    if ("getResource".equals(methodName)) {
-                        sawResource = true;
-                    }
-                } else if ("java/net/URL".equals(clsName)) {
-                    String methodName = getNameConstantOperand();
-                    if (("toURI".equals(methodName) || "getFile".equals(methodName))
-                            && (stack.getStackDepth() > 0)
-                            && (stack.getStackItem(0).getUserValue() != null)) {
-                        sawResource = true;
-                    }
-                }
+                sawResource = processInvokeVirtual();
             } else if (seen == INVOKESPECIAL) {
-                String clsName = getClassConstantOperand();
-
-                if ("java/io/File".equals(clsName)) {
-                    String methodName = getNameConstantOperand();
-                    String sig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && (Type.getArgumentTypes(sig).length == 1) && (stack.getStackDepth() > 0)) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        if (item.getUserValue() != null) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CRF_CONFLATING_RESOURCES_AND_FILES.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
-                    }
-                } else if ("java/net/URI".equals(clsName) || "java/net/URL".equals(clsName)) {
-                    String methodName = getNameConstantOperand();
-                    String sig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && "(Ljava/lang/String;)V".equals(sig) && (stack.getStackDepth() > 0)) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        String cons = (String) item.getConstant();
-                            if ((cons != null) && !cons.startsWith("file:/")) {
-                            sawResource = true;
-                        }
-                    }
-                }
+                sawResource = processInvokeSpecial();
             }
 
         } finally {
@@ -137,5 +100,51 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
                 item.setUserValue(Boolean.TRUE);
             }
         }
+    }
+
+    private boolean processInvokeVirtual() {
+        String clsName = getClassConstantOperand();
+
+        if ("java/lang/Class".equals(clsName)) {
+            String methodName = getNameConstantOperand();
+            if ("getResource".equals(methodName)) {
+                return true;
+            }
+        } else if ("java/net/URL".equals(clsName)) {
+            String methodName = getNameConstantOperand();
+            if (("toURI".equals(methodName) || "getFile".equals(methodName)) && (stack.getStackDepth() > 0) && (stack.getStackItem(0).getUserValue() != null)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean processInvokeSpecial() {
+        String clsName = getClassConstantOperand();
+
+        if ("java/io/File".equals(clsName)) {
+            String methodName = getNameConstantOperand();
+            String sig = getSigConstantOperand();
+            if (Values.CONSTRUCTOR.equals(methodName) && (Type.getArgumentTypes(sig).length == 1) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                if (item.getUserValue() != null) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.CRF_CONFLATING_RESOURCES_AND_FILES.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
+                }
+            }
+        } else if ("java/net/URI".equals(clsName) || "java/net/URL".equals(clsName)) {
+            String methodName = getNameConstantOperand();
+            String sig = getSigConstantOperand();
+            if (Values.CONSTRUCTOR.equals(methodName) && "(Ljava/lang/String;)V".equals(sig) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                String cons = (String) item.getConstant();
+                if ((cons != null) && !cons.startsWith("file:/")) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }
