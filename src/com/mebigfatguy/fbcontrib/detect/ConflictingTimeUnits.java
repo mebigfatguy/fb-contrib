@@ -36,8 +36,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that perform arithmetic operations on values representing
- * time where the time unit is incompatible, ie adding a millisecond value to a
+ * looks for methods that perform arithmetic operations on values representing time where the time unit is incompatible, ie adding a millisecond value to a
  * nanosecond value.
  */
 @CustomUserValue
@@ -113,7 +112,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         tutu.put("MINUTES", Units.MINUTES);
         tutu.put("HOURS", Units.HOURS);
         tutu.put("DAYS", Units.DAYS);
-        TIMEUNIT_TO_UNITS = Collections.<String, Units>unmodifiableMap(tutu);
+        TIMEUNIT_TO_UNITS = Collections.<String, Units> unmodifiableMap(tutu);
     }
 
     private BugReporter bugReporter;
@@ -158,8 +157,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for operations on two time unit values that
-     * are conflicting
+     * overrides the visitor to look for operations on two time unit values that are conflicting
      */
     @Override
     public void sawOpcode(int seen) {
@@ -168,63 +166,41 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-            case INVOKEVIRTUAL:
-            case INVOKEINTERFACE:
-            case INVOKESTATIC:
-                String signature = getSigConstantOperand();
-                FQMethod methodCall = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), signature);
-                unit = TIME_UNIT_GENERATING_METHODS.get(methodCall);
-                if (unit == Units.CALLER) {
-                    int offset = Type.getArgumentTypes(signature).length;
-                    if (stack.getStackDepth() > offset) {
-                        OpcodeStack.Item item = stack.getStackItem(offset);
+                case INVOKEVIRTUAL:
+                case INVOKEINTERFACE:
+                case INVOKESTATIC:
+                    unit = processInvoke();
+                break;
+
+                case GETSTATIC:
+                    String clsName = getClassConstantOperand();
+                    if ("java/util/concurrent/TimeUnit".equals(clsName) || "edu/emory/matchcs/backport/java/util/concurrent/TimeUnit".equals(clsName)) {
+                        unit = TIMEUNIT_TO_UNITS.get(getNameConstantOperand());
+                    }
+                break;
+
+                case L2I:
+                case I2L:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
                         unit = (Units) item.getUserValue();
-                    } else {
-                        unit = null;
                     }
-                }
                 break;
 
-            case GETSTATIC:
-                String clsName = getClassConstantOperand();
-                if ("java/util/concurrent/TimeUnit".equals(clsName) || "edu/emory/matchcs/backport/java/util/concurrent/TimeUnit".equals(clsName)) {
-                    unit = TIMEUNIT_TO_UNITS.get(getNameConstantOperand());
-                }
+                case IADD:
+                case ISUB:
+                case IMUL:
+                case IDIV:
+                case IREM:
+                case LADD:
+                case LSUB:
+                case LMUL:
+                case LDIV:
+                case LREM:
+                    processArithmetic();
                 break;
 
-            case L2I:
-            case I2L:
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    unit = (Units) item.getUserValue();
-                }
-                break;
-
-            case IADD:
-            case ISUB:
-            case IMUL:
-            case IDIV:
-            case IREM:
-            case LADD:
-            case LSUB:
-            case LMUL:
-            case LDIV:
-            case LREM:
-                if (stack.getStackDepth() > 1) {
-                    OpcodeStack.Item arg1 = stack.getStackItem(0);
-                    OpcodeStack.Item arg2 = stack.getStackItem(1);
-
-                    Units u1 = (Units) arg1.getUserValue();
-                    Units u2 = (Units) arg2.getUserValue();
-
-                    if ((u1 != null) && (u2 != null) && (u1 != u2)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CTU_CONFLICTING_TIME_UNITS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this).addString(u1.toString()).addString(u2.toString()));
-                    }
-                }
-                break;
-
-            default:
+                default:
                 break;
             }
         } finally {
@@ -232,6 +208,38 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
             if ((unit != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 item.setUserValue(unit);
+            }
+        }
+    }
+
+    private Units processInvoke() {
+        String signature = getSigConstantOperand();
+        FQMethod methodCall = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), signature);
+        Units unit = TIME_UNIT_GENERATING_METHODS.get(methodCall);
+        if (unit == Units.CALLER) {
+            int offset = Type.getArgumentTypes(signature).length;
+            if (stack.getStackDepth() > offset) {
+                OpcodeStack.Item item = stack.getStackItem(offset);
+                unit = (Units) item.getUserValue();
+            } else {
+                unit = null;
+            }
+        }
+
+        return unit;
+    }
+
+    private void processArithmetic() {
+        if (stack.getStackDepth() > 1) {
+            OpcodeStack.Item arg1 = stack.getStackItem(0);
+            OpcodeStack.Item arg2 = stack.getStackItem(1);
+
+            Units u1 = (Units) arg1.getUserValue();
+            Units u2 = (Units) arg2.getUserValue();
+
+            if ((u1 != null) && (u2 != null) && (u1 != u2)) {
+                bugReporter.reportBug(new BugInstance(this, BugType.CTU_CONFLICTING_TIME_UNITS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(this).addString(u1.toString()).addString(u2.toString()));
             }
         }
     }
