@@ -36,10 +36,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for classes that appear to implement the old style type safe enum
- * pattern that was used before java added Enum support to the language. Since
- * this class is compiled with java 1.5 or later, it would be simpler to just
- * use java enums
+ * looks for classes that appear to implement the old style type safe enum pattern that was used before java added Enum support to the language. Since this
+ * class is compiled with java 1.5 or later, it would be simpler to just use java enums
  */
 public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     enum State {
@@ -63,8 +61,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for classes compiled with 1.5 or better
-     * that have all constructors that are private
+     * implements the visitor to look for classes compiled with 1.5 or better that have all constructors that are private
      *
      * @param context
      *            the currently parsed class context object
@@ -91,9 +88,8 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for fields that are public static final
-     * and are the same type as the owning class. it collects these object names
-     * for later
+     * implements the visitor to look for fields that are public static final and are the same type as the owning class. it collects these object names for
+     * later
      *
      * @param obj
      *            the context object of the currently parsed field
@@ -118,8 +114,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for static initializers to find enum
-     * generation
+     * implements the visitor to look for static initializers to find enum generation
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -145,21 +140,27 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
                 state = State.SAW_INVOKESPECIAL;
             }
         } else if (state == State.SAW_INVOKESPECIAL) {
-            if (seen == PUTSTATIC) {
-                String fieldName = getNameConstantOperand();
-                if (enumConstNames.contains(fieldName)) {
-                    if (enumCount == 0)
-                        firstEnumPC = getPC();
-                    enumCount++;
-                    if (enumCount >= 2) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this, firstEnumPC));
-                        state = State.SAW_BUG;
-                    }
+            handleInvokeSpecialState(seen);
+        }
+    }
+
+    private void handleInvokeSpecialState(int seen) {
+        if (seen == PUTSTATIC) {
+            String fieldName = getNameConstantOperand();
+            if (enumConstNames.contains(fieldName)) {
+                if (enumCount == 0) {
+                    firstEnumPC = getPC();
+                }
+                enumCount++;
+                if (enumCount >= 2) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.DTEP_DEPRECATED_TYPESAFE_ENUM_PATTERN.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this, firstEnumPC));
+                    state = State.SAW_BUG;
                 }
             }
-            if (state != State.SAW_BUG)
-                state = State.SAW_NOTHING;
+        }
+        if (state != State.SAW_BUG) {
+            state = State.SAW_NOTHING;
         }
     }
 
