@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -43,11 +43,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that return a parameter after making what looks like
- * modifications to that parameter. This leads to confusion for the user of this
- * method as it isn't obvious that the 'original' object is modified. If the
- * point of this method is to modify the parameter, it is probably better just
- * to have the method be a void method, to avoid confusion.
+ * looks for methods that return a parameter after making what looks like modifications to that parameter. This leads to confusion for the user of this method
+ * as it isn't obvious that the 'original' object is modified. If the point of this method is to modify the parameter, it is probably better just to have the
+ * method be a void method, to avoid confusion.
  */
 public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
     private static final Set<String> knownImmutables;
@@ -73,7 +71,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
 
     /**
      * constructs a CFS detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -82,9 +80,8 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to initialize/destroy the possible parameter
-     * registers and opcode stack
-     * 
+     * implements the visitor to initialize/destroy the possible parameter registers and opcode stack
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -101,9 +98,8 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for any non-immutable typed parameters are
-     * assignable to the return type. If found, the method is parsed.
-     * 
+     * implements the visitor to look for any non-immutable typed parameters are assignable to the return type. If found, the method is parsed.
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -152,8 +148,9 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (possibleParmRegs.isEmpty())
+        if (possibleParmRegs.isEmpty()) {
             return;
+        }
 
         try {
             stack.precomputation(this);
@@ -163,37 +160,44 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     int reg = item.getRegisterNumber();
                     ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
-                    if (pu != null)
+                    if (pu != null) {
                         pu.setReturnPC(getPC());
+                    }
                 }
             } else if (seen == PUTFIELD) {
                 if (stack.getStackDepth() > 1) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     int reg = item.getRegisterNumber();
                     ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
-                    if (pu != null)
+                    if (pu != null) {
                         pu.setAlteredPC(getPC());
+                    }
                 }
             } else if (OpcodeUtils.isAStore(seen)) {
                 int reg = RegisterUtils.getAStoreReg(this, seen);
                 possibleParmRegs.remove(Integer.valueOf(reg));
             } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
-                String calledSig = getSigConstantOperand();
-                String calledRet = Type.getReturnType(calledSig).getSignature();
-                if ("V".equals(calledRet)) {
-                    int calledObjOffset = Type.getArgumentTypes(calledSig).length;
-                    if (stack.getStackDepth() > calledObjOffset) {
-                        OpcodeStack.Item item = stack.getStackItem(calledObjOffset);
-                        int reg = item.getRegisterNumber();
-                        ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
-                        if (pu != null)
-                            pu.setAlteredPC(getPC());
-                    }
-                }
+                processInvoke();
             }
 
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    private void processInvoke() {
+        String calledSig = getSigConstantOperand();
+        String calledRet = Type.getReturnType(calledSig).getSignature();
+        if ("V".equals(calledRet)) {
+            int calledObjOffset = Type.getArgumentTypes(calledSig).length;
+            if (stack.getStackDepth() > calledObjOffset) {
+                OpcodeStack.Item item = stack.getStackItem(calledObjOffset);
+                int reg = item.getRegisterNumber();
+                ParmUsage pu = possibleParmRegs.get(Integer.valueOf(reg));
+                if (pu != null) {
+                    pu.setAlteredPC(getPC());
+                }
+            }
         }
     }
 
@@ -206,8 +210,9 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
         }
 
         void setAlteredPC(int pc) {
-            if (alteredPC < 0)
+            if (alteredPC < 0) {
                 alteredPC = pc;
+            }
         }
 
         @Override
