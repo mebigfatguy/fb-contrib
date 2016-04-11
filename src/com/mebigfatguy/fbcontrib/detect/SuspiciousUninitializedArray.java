@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -97,7 +98,13 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
-        String sig = getMethod().getSignature();
+
+        Method m = getMethod();
+        if ((m.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
+            return;
+        }
+
+        String sig = m.getSignature();
         int sigPos = sig.indexOf(")[");
         if (sigPos >= 0) {
             Method m = getMethod();
