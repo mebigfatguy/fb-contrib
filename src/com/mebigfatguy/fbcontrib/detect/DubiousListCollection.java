@@ -138,34 +138,9 @@ public class DubiousListCollection extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if (seen == INVOKEINTERFACE) {
-                String className = this.getClassConstantOperand();
-
-                if (className.startsWith("java/util/") && className.endsWith("List")) {
-                    String signature = getSigConstantOperand();
-                    XField field = getFieldFromStack(stack, signature);
-                    if (field != null) {
-                        String fieldName = field.getName();
-                        FieldInfo fi = fieldsReported.get(fieldName);
-                        if (fi != null) {
-                            String methodName = getNameConstantOperand();
-                            QMethod methodInfo = new QMethod(methodName, signature);
-                            if (listMethods.contains(methodInfo)) {
-                                fieldsReported.remove(fieldName);
-                            } else if (setMethods.contains(methodInfo)) {
-                                fi.addUse(getPC());
-                            }
-                        }
-                    }
-                }
+                processInvokeInterface();
             } else if (seen == INVOKEVIRTUAL) {
-                String className = getClassConstantOperand();
-                if (className.startsWith("java/util/") && className.endsWith("List")) {
-                    XField field = getFieldFromStack(stack, getSigConstantOperand());
-                    if (field != null) {
-                        String fieldName = field.getName();
-                        fieldsReported.remove(fieldName);
-                    }
-                }
+                processInvokeVirtual();
             } else if ((seen == ARETURN) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 XField field = item.getXField();
@@ -176,6 +151,39 @@ public class DubiousListCollection extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    private void processInvokeInterface() {
+        String className = this.getClassConstantOperand();
+
+        if (className.startsWith("java/util/") && className.endsWith("List")) {
+            String signature = getSigConstantOperand();
+            XField field = getFieldFromStack(stack, signature);
+            if (field != null) {
+                String fieldName = field.getName();
+                FieldInfo fi = fieldsReported.get(fieldName);
+                if (fi != null) {
+                    String methodName = getNameConstantOperand();
+                    QMethod methodInfo = new QMethod(methodName, signature);
+                    if (listMethods.contains(methodInfo)) {
+                        fieldsReported.remove(fieldName);
+                    } else if (setMethods.contains(methodInfo)) {
+                        fi.addUse(getPC());
+                    }
+                }
+            }
+        }
+    }
+
+    private void processInvokeVirtual() {
+        String className = getClassConstantOperand();
+        if (className.startsWith("java/util/") && className.endsWith("List")) {
+            XField field = getFieldFromStack(stack, getSigConstantOperand());
+            if (field != null) {
+                String fieldName = field.getName();
+                fieldsReported.remove(fieldName);
+            }
         }
     }
 
