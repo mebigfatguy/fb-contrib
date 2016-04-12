@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<BugCollection version="3.0.2-dev-20150525-a8ecbcc" sequence="0" timestamp="1456558230799" analysisTimestamp="1456558231010" release="">
+<BugCollection version="3.0.2-dev-20150525-a8ecbcc" sequence="0" timestamp="1460502579474" analysisTimestamp="1460502579617" release="">
   <Project projectName="Samples">
     <Jar>/home/dave/dev/fb-contrib/target/classes/samples</Jar>
     <AuxClasspathEntry>/home/dave/dev/fb-contrib/lib/javax.servlet.jsp-api-2.3.1.jar</AuxClasspathEntry>
@@ -7607,17 +7607,82 @@
       <Message>At CD_Sample.java:[line 72]</Message>
     </SourceLine>
   </BugInstance>
+  <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="8f5ecb55cd8ad663e5f639a1e2048bf6" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class is defined in the default package</ShortMessage>
+    <LongMessage>Class GitHubIssue109 id defined in the default package</LongMessage>
+    <Class classname="GitHubIssue109" primary="true">
+      <SourceLine classname="GitHubIssue109" start="208" end="227" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 208-227]</Message>
+      </SourceLine>
+      <Message>In class GitHubIssue109</Message>
+    </Class>
+    <SourceLine classname="GitHubIssue109" start="208" end="227" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[lines 208-227]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="bd91b87f3a9af5f315bbcf7315f61548" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class is defined in the default package</ShortMessage>
+    <LongMessage>Class GitHubIssue109$Action id defined in the default package</LongMessage>
+    <Class classname="GitHubIssue109$Action" primary="true">
+      <SourceLine classname="GitHubIssue109$Action" start="229" end="230" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 229-230]</Message>
+      </SourceLine>
+      <Message>In class GitHubIssue109$Action</Message>
+    </Class>
+    <SourceLine classname="GitHubIssue109$Action" start="229" end="230" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[lines 229-230]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="2098f93540d195017f81ca49d510178f" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class is defined in the default package</ShortMessage>
+    <LongMessage>Class GitHubIssue109$Repo id defined in the default package</LongMessage>
+    <Class classname="GitHubIssue109$Repo" primary="true">
+      <SourceLine classname="GitHubIssue109$Repo" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>In UTAO_Sample.java</Message>
+      </SourceLine>
+      <Message>In class GitHubIssue109$Repo</Message>
+    </Class>
+    <SourceLine classname="GitHubIssue109$Repo" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>In UTAO_Sample.java</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="1f88f32fa6216b875cc01eb7ded3a5a0" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class is defined in the default package</ShortMessage>
+    <LongMessage>Class GitHubIssue109$StrutsAction id defined in the default package</LongMessage>
+    <Class classname="GitHubIssue109$StrutsAction" primary="true">
+      <SourceLine classname="GitHubIssue109$StrutsAction" start="234" end="246" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 234-246]</Message>
+      </SourceLine>
+      <Message>In class GitHubIssue109$StrutsAction</Message>
+    </Class>
+    <SourceLine classname="GitHubIssue109$StrutsAction" start="234" end="246" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[lines 234-246]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="SIC_INNER_SHOULD_BE_STATIC" priority="2" rank="18" abbrev="SIC" category="PERFORMANCE" instanceHash="62b1cfd8b150260f6dbd91f448616099" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Should be a static inner class</ShortMessage>
+    <LongMessage>Should GitHubIssue109$StrutsAction be a _static_ inner class?</LongMessage>
+    <Class classname="GitHubIssue109$StrutsAction" primary="true">
+      <SourceLine classname="GitHubIssue109$StrutsAction" start="234" end="246" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 234-246]</Message>
+      </SourceLine>
+      <Message>In class GitHubIssue109$StrutsAction</Message>
+    </Class>
+    <SourceLine classname="GitHubIssue109$StrutsAction" start="234" end="246" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[lines 234-246]</Message>
+    </SourceLine>
+  </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="5b55d192685ce4f7c3be942bf4571b8" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class GitHubIssue94 id defined in the default package</LongMessage>
     <Class classname="GitHubIssue94" primary="true">
-      <SourceLine classname="GitHubIssue94" start="187" end="203" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 187-203]</Message>
+      <SourceLine classname="GitHubIssue94" start="188" end="204" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 188-204]</Message>
       </SourceLine>
       <Message>In class GitHubIssue94</Message>
     </Class>
-    <SourceLine classname="GitHubIssue94" start="187" end="203" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
-      <Message>At UTAO_Sample.java:[lines 187-203]</Message>
+    <SourceLine classname="GitHubIssue94" start="188" end="204" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[lines 188-204]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_FIELD" priority="2" rank="7" abbrev="HCP" category="CORRECTNESS" instanceHash="f00245c51730b034019300c7e22130fd" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
@@ -19849,47 +19914,47 @@
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class New id defined in the default package</LongMessage>
     <Class classname="New" primary="true">
-      <SourceLine classname="New" start="79" end="102" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 79-102]</Message>
+      <SourceLine classname="New" start="80" end="103" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 80-103]</Message>
       </SourceLine>
       <Message>In class New</Message>
     </Class>
-    <SourceLine classname="New" start="79" end="102" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
-      <Message>At UTAO_Sample.java:[lines 79-102]</Message>
+    <SourceLine classname="New" start="80" end="103" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[lines 80-103]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT" priority="3" rank="12" abbrev="UTAO" category="CORRECTNESS" instanceHash="77a275748462d58f03e7b7d5aae30462" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JUnit test method appears to have no assertions</ShortMessage>
     <LongMessage>JUnit test method New.nada() appears to have no assertions</LongMessage>
     <Class classname="New" primary="true">
-      <SourceLine classname="New" start="79" end="102" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 79-102]</Message>
+      <SourceLine classname="New" start="80" end="103" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 80-103]</Message>
       </SourceLine>
       <Message>In class New</Message>
     </Class>
     <Method classname="New" name="nada" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="New" start="82" end="82" startBytecode="0" endBytecode="42" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="New" start="83" end="83" startBytecode="0" endBytecode="42" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method New.nada()</Message>
     </Method>
-    <SourceLine classname="New" start="82" end="82" startBytecode="0" endBytecode="42" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
-      <Message>At UTAO_Sample.java:[line 82]</Message>
+    <SourceLine classname="New" start="83" end="83" startBytecode="0" endBytecode="42" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[line 83]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USING_DEPRECATED" priority="2" rank="8" abbrev="UTAO" category="CORRECTNESS" instanceHash="514412f82720b986260b4081a57c0c3" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JUnit 4 test using deprecated junit.framework.* classes</ShortMessage>
     <LongMessage>JUnit 4 test New.usingOldClasses(int) using deprecated junit.framework.* classes</LongMessage>
     <Class classname="New" primary="true">
-      <SourceLine classname="New" start="79" end="102" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 79-102]</Message>
+      <SourceLine classname="New" start="80" end="103" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 80-103]</Message>
       </SourceLine>
       <Message>In class New</Message>
     </Class>
     <Method classname="New" name="usingOldClasses" signature="(I)V" isStatic="false" primary="true">
-      <SourceLine classname="New" start="101" end="102" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="New" start="102" end="103" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method New.usingOldClasses(int)</Message>
     </Method>
-    <SourceLine classname="New" primary="true" start="101" end="101" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 101]</Message>
+    <SourceLine classname="New" primary="true" start="102" end="102" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 102]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="91d1712bc90d608c86cc83e570bfbdaa" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
@@ -31690,30 +31755,30 @@
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class TestNG id defined in the default package</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
-    <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
-      <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+    <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[lines 106-184]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" priority="3" rank="20" abbrev="PRMC" category="PERFORMANCE" instanceHash="c65b8812e65fe61b973e5d9ac54b56ab" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method TestNG.testUseAssertEquals(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="153" end="155" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="154" end="156" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="154" end="154" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 154]</Message>
+    <SourceLine classname="TestNG" primary="true" start="155" end="155" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 155]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -31723,17 +31788,17 @@
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method TestNG.testUseAssertEqualsCrossed(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="171" end="173" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="172" end="174" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="172" end="172" startBytecode="21" endBytecode="21" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 172]</Message>
+    <SourceLine classname="TestNG" primary="true" start="173" end="173" startBytecode="21" endBytecode="21" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 173]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -31743,17 +31808,17 @@
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method TestNG.testUseAssertNotEquals(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertNotEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="159" end="161" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="160" end="162" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertNotEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="160" end="160" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 160]</Message>
+    <SourceLine classname="TestNG" primary="true" start="161" end="161" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 161]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -31763,17 +31828,17 @@
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method TestNG.testUseAssertNotEqualsCrossed(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertNotEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="165" end="167" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="166" end="168" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertNotEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="166" end="166" startBytecode="21" endBytecode="21" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 166]</Message>
+    <SourceLine classname="TestNG" primary="true" start="167" end="167" startBytecode="21" endBytecode="21" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 167]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -31783,306 +31848,306 @@
     <ShortMessage>TestNG test method passes constant to first (actual) assertion parameter</ShortMessage>
     <LongMessage>TestNG test method TestNG.testWrongOrder(int) passes constant to first (actual) assertion parameter</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testWrongOrder" signature="(I)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="137" end="138" startBytecode="0" endBytecode="62" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="138" end="139" startBytecode="0" endBytecode="62" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testWrongOrder(int)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="137" end="137" startBytecode="3" endBytecode="3" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 137]</Message>
+    <SourceLine classname="TestNG" primary="true" start="138" end="138" startBytecode="3" endBytecode="3" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 138]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_ASSERT_USED" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="11e2d79af23ad1f4a7f50d8bbfcf9478" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>TestNG test method uses Java asserts rather than a TestNG assertion</ShortMessage>
     <LongMessage>TestNG test method TestNG.testAssertUsed(String) uses Java asserts rather than a TestNG assertion</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testAssertUsed" signature="(Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="148" end="149" startBytecode="0" endBytecode="83" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="149" end="150" startBytecode="0" endBytecode="83" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testAssertUsed(String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="148" end="148" startBytecode="17" endBytecode="17" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 148]</Message>
+    <SourceLine classname="TestNG" primary="true" start="149" end="149" startBytecode="17" endBytecode="17" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 149]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT" priority="2" rank="17" abbrev="UTAO" category="STYLE" instanceHash="c4a55ac37ee826f8961f25f4595ffa42" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>TestNG test method asserts that a value is true or false</ShortMessage>
     <LongMessage>TestNG test method TestNG.testFalse(boolean) asserts that a value is true or false</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testFalse" signature="(Z)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="117" end="118" startBytecode="0" endBytecode="63" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="118" end="119" startBytecode="0" endBytecode="63" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testFalse(boolean)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="117" end="117" startBytecode="4" endBytecode="4" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 117]</Message>
+    <SourceLine classname="TestNG" primary="true" start="118" end="118" startBytecode="4" endBytecode="4" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 118]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT" priority="2" rank="17" abbrev="UTAO" category="STYLE" instanceHash="9309e24a70cfe9686ecffc808d26a3e3" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>TestNG test method asserts that a value is true or false</ShortMessage>
     <LongMessage>TestNG test method TestNG.testTrue(boolean) asserts that a value is true or false</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testTrue" signature="(Z)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="112" end="113" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="113" end="114" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testTrue(boolean)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="112" end="112" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 112]</Message>
+    <SourceLine classname="TestNG" primary="true" start="113" end="113" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 113]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_IMPOSSIBLE_NULL" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="833bbbdf16ae9761477bb7917dc2d4df" instanceOccurrenceNum="0" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method asserts that an autoboxed value is not null</ShortMessage>
     <LongMessage>TestNG test method TestNG.testAutoBoxNotNull(int) asserts that an autoboxed value is not null</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testAutoBoxNotNull" signature="(I)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="142" end="144" startBytecode="0" endBytecode="94" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="143" end="145" startBytecode="0" endBytecode="94" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testAutoBoxNotNull(int)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="142" end="142" startBytecode="4" endBytecode="4" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 142]</Message>
+    <SourceLine classname="TestNG" primary="true" start="143" end="143" startBytecode="4" endBytecode="4" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 143]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_IMPOSSIBLE_NULL" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="833bbbdf16ae9761477bb7917dc2d4df" instanceOccurrenceNum="1" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method asserts that an autoboxed value is not null</ShortMessage>
     <LongMessage>TestNG test method TestNG.testAutoBoxNotNull(int) asserts that an autoboxed value is not null</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testAutoBoxNotNull" signature="(I)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="142" end="144" startBytecode="0" endBytecode="94" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="143" end="145" startBytecode="0" endBytecode="94" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testAutoBoxNotNull(int)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="143" end="143" startBytecode="20" endBytecode="20" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 143]</Message>
+    <SourceLine classname="TestNG" primary="true" start="144" end="144" startBytecode="20" endBytecode="20" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 144]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE" priority="2" rank="17" abbrev="UTAO" category="STYLE" instanceHash="2d6d8ab381478964e72515541ee02907" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>TestNG test method asserts that two doubles are exactly equal</ShortMessage>
     <LongMessage>TestNG test method TestNG.testExactDoubles(double, double) asserts that two doubles are exactly equal</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testExactDoubles" signature="(DD)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="122" end="123" startBytecode="0" endBytecode="79" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="123" end="124" startBytecode="0" endBytecode="79" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testExactDoubles(double, double)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="122" end="122" startBytecode="10" endBytecode="10" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 122]</Message>
+    <SourceLine classname="TestNG" primary="true" start="123" end="123" startBytecode="10" endBytecode="10" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 123]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT" priority="3" rank="12" abbrev="UTAO" category="CORRECTNESS" instanceHash="4c5141cae9f3fee862e34511a553ddf6" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>TestNG test method appears to have no assertions</ShortMessage>
     <LongMessage>TestNG test method TestNG.nada() appears to have no assertions</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="nada" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="108" end="108" startBytecode="0" endBytecode="42" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="109" end="109" startBytecode="0" endBytecode="42" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.nada()</Message>
     </Method>
-    <SourceLine classname="TestNG" start="108" end="108" startBytecode="0" endBytecode="42" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
-      <Message>At UTAO_Sample.java:[line 108]</Message>
+    <SourceLine classname="TestNG" start="109" end="109" startBytecode="0" endBytecode="42" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[line 109]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="885ca3568c116a77cd10c625f3672ce7" instanceOccurrenceNum="0" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>TestNG test method TestNG.testUseAssertEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="153" end="155" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="154" end="156" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="153" end="153" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 153]</Message>
+    <SourceLine classname="TestNG" primary="true" start="154" end="154" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 154]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="885ca3568c116a77cd10c625f3672ce7" instanceOccurrenceNum="1" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>TestNG test method TestNG.testUseAssertEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="153" end="155" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="154" end="156" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="154" end="154" startBytecode="24" endBytecode="24" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 154]</Message>
+    <SourceLine classname="TestNG" primary="true" start="155" end="155" startBytecode="24" endBytecode="24" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 155]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="67549290726c27d5325017a0aeda22f5" instanceOccurrenceNum="0" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>TestNG test method TestNG.testUseAssertEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="171" end="173" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="172" end="174" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="171" end="171" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 171]</Message>
+    <SourceLine classname="TestNG" primary="true" start="172" end="172" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 172]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="67549290726c27d5325017a0aeda22f5" instanceOccurrenceNum="1" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>TestNG test method TestNG.testUseAssertEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="171" end="173" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="172" end="174" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="172" end="172" startBytecode="32" endBytecode="32" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 172]</Message>
+    <SourceLine classname="TestNG" primary="true" start="173" end="173" startBytecode="32" endBytecode="32" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 173]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="f44254b07ea20326fed0cf1a217cf599" instanceOccurrenceNum="0" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>TestNG test method TestNG.testUseAssertNotEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertNotEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="159" end="161" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="160" end="162" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertNotEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="159" end="159" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 159]</Message>
+    <SourceLine classname="TestNG" primary="true" start="160" end="160" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 160]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="f44254b07ea20326fed0cf1a217cf599" instanceOccurrenceNum="1" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>TestNG test method TestNG.testUseAssertNotEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertNotEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="159" end="161" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="160" end="162" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertNotEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="160" end="160" startBytecode="24" endBytecode="24" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 160]</Message>
+    <SourceLine classname="TestNG" primary="true" start="161" end="161" startBytecode="24" endBytecode="24" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 161]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="418e83b226f0d28b88ca07e7fdc8ce4c" instanceOccurrenceNum="0" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>TestNG test method TestNG.testUseAssertNotEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertNotEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="165" end="167" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="166" end="168" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertNotEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="165" end="165" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 165]</Message>
+    <SourceLine classname="TestNG" primary="true" start="166" end="166" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 166]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="418e83b226f0d28b88ca07e7fdc8ce4c" instanceOccurrenceNum="1" instanceOccurrenceMax="1">
     <ShortMessage>TestNG test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>TestNG test method TestNG.testUseAssertNotEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testUseAssertNotEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="165" end="167" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="166" end="168" startBytecode="0" endBytecode="119" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testUseAssertNotEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="166" end="166" startBytecode="32" endBytecode="32" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 166]</Message>
+    <SourceLine classname="TestNG" primary="true" start="167" end="167" startBytecode="32" endBytecode="32" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 167]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="7215b7dca35dab8a0a27877e7bb39cca" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>TestNG test method passes null Assert.assertNotEquals</ShortMessage>
     <LongMessage>TestNG test method TestNG.testNotNull(String) passes null to Assert.assertNotEquals</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testNotNull" signature="(Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="132" end="133" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="133" end="134" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testNotNull(String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="132" end="132" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 132]</Message>
+    <SourceLine classname="TestNG" primary="true" start="133" end="133" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 133]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_TESTNG_ASSERTION_ODDITIES_USE_ASSERT_NULL" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="39c3e3a442732a89e98e1550bdd15e99" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>TestNG test method passes null Assert.assertEquals</ShortMessage>
     <LongMessage>TestNG test method TestNG.testNull(String) passes null to Assert.assertEquals</LongMessage>
     <Class classname="TestNG" primary="true">
-      <SourceLine classname="TestNG" start="105" end="183" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 105-183]</Message>
+      <SourceLine classname="TestNG" start="106" end="184" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 106-184]</Message>
       </SourceLine>
       <Message>In class TestNG</Message>
     </Class>
     <Method classname="TestNG" name="testNull" signature="(Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="TestNG" start="127" end="128" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="TestNG" start="128" end="129" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method TestNG.testNull(String)</Message>
     </Method>
-    <SourceLine classname="TestNG" primary="true" start="127" end="127" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 127]</Message>
+    <SourceLine classname="TestNG" primary="true" start="128" end="128" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 128]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="f265ae8bafaa2128214f5754fbf49ff5" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
@@ -33899,64 +33964,64 @@
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class UTAO_Sample id defined in the default package</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
-    <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
-      <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+    <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java" synthetic="true">
+      <Message>At UTAO_Sample.java:[lines 9-77]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" priority="2" rank="18" abbrev="NAB" category="PERFORMANCE" instanceHash="f15d4448825d93b674175597df5ec13" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method needlessly boxes a boolean constant</ShortMessage>
     <LongMessage>Method UTAO_Sample.testFalse(boolean) needlessly boxes a boolean constant</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testFalse" signature="(Z)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="23" end="24" startBytecode="0" endBytecode="69" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="24" end="25" startBytecode="0" endBytecode="69" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testFalse(boolean)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="23" end="23" startBytecode="3" endBytecode="3" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 23]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="24" end="24" startBytecode="3" endBytecode="3" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 24]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" priority="2" rank="18" abbrev="NAB" category="PERFORMANCE" instanceHash="19092c7f24194231e1a04e06a2b094f9" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method needlessly boxes a boolean constant</ShortMessage>
     <LongMessage>Method UTAO_Sample.testTrue(boolean) needlessly boxes a boolean constant</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testTrue" signature="(Z)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="19" end="20" startBytecode="0" endBytecode="67" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="20" end="21" startBytecode="0" endBytecode="67" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testTrue(boolean)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="19" end="19" startBytecode="1" endBytecode="1" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 19]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="20" end="20" startBytecode="1" endBytecode="1" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 20]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS" priority="3" rank="20" abbrev="PRMC" category="PERFORMANCE" instanceHash="e781a8fa463296848f5991c3226672a" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method UTAO_Sample.testUseAssertEquals(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="48" end="50" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="49" end="51" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="49" end="49" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 49]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="50" end="50" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 50]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -33966,17 +34031,17 @@
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method UTAO_Sample.testUseAssertEqualsCrossed(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="67" end="71" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="68" end="72" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="68" end="68" startBytecode="21" endBytecode="21" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 68]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="69" end="69" startBytecode="21" endBytecode="21" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 69]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -33986,17 +34051,17 @@
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method UTAO_Sample.testUseAssertEqualsCrossed(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="67" end="71" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="68" end="72" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="70" end="70" startBytecode="60" endBytecode="60" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 70]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="71" end="71" startBytecode="60" endBytecode="60" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 71]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -34006,17 +34071,17 @@
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method UTAO_Sample.testUseAssertNotEquals(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="53" end="57" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="54" end="58" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="54" end="54" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 54]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="55" end="55" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 55]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -34026,17 +34091,17 @@
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method UTAO_Sample.testUseAssertNotEquals(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="53" end="57" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="54" end="58" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="56" end="56" startBytecode="44" endBytecode="44" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 56]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="57" end="57" startBytecode="44" endBytecode="44" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 57]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -34046,17 +34111,17 @@
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="60" end="64" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="61" end="65" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="61" end="61" startBytecode="21" endBytecode="21" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 61]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="62" end="62" startBytecode="21" endBytecode="21" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 62]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -34066,17 +34131,17 @@
     <ShortMessage>Method appears to call the same method on the same object redundantly</ShortMessage>
     <LongMessage>Method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String) appears to call the same method on the same object redundantly</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="60" end="64" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="61" end="65" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="63" end="63" startBytecode="60" endBytecode="60" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 63]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="64" end="64" startBytecode="60" endBytecode="60" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 64]</Message>
     </SourceLine>
     <String value="length()I">
       <Message>Value length()I</Message>
@@ -34086,408 +34151,408 @@
     <ShortMessage>JUnit test method passes constant to second (actual) assertion parameter</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testWrongOrder(int) passes constant to second (actual) assertion parameter</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testWrongOrder" signature="(I)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="35" end="36" startBytecode="0" endBytecode="64" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="36" end="37" startBytecode="0" endBytecode="64" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testWrongOrder(int)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="35" end="35" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 35]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="36" end="36" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 36]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_ASSERT_USED" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="2b5c9f7303bf1f8d18535e18083ed97c" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JUnit test method uses Java asserts rather than a JUnit assertion</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testAssertUsed(String) uses Java asserts rather than a JUnit assertion</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testAssertUsed" signature="(Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="44" end="45" startBytecode="0" endBytecode="83" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="45" end="46" startBytecode="0" endBytecode="83" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testAssertUsed(String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="44" end="44" startBytecode="17" endBytecode="17" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 44]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="45" end="45" startBytecode="17" endBytecode="17" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 45]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT" priority="2" rank="17" abbrev="UTAO" category="STYLE" instanceHash="3516ce509353f70839fd33d1c369ebe0" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JUnit test method asserts that a value is true or false</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testFalse(boolean) asserts that a value is true or false</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testFalse" signature="(Z)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="23" end="24" startBytecode="0" endBytecode="69" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="24" end="25" startBytecode="0" endBytecode="69" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testFalse(boolean)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="23" end="23" startBytecode="10" endBytecode="10" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 23]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="24" end="24" startBytecode="10" endBytecode="10" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 24]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT" priority="2" rank="17" abbrev="UTAO" category="STYLE" instanceHash="301f0b880459a2151985a75758e51195" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JUnit test method asserts that a value is true or false</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testTrue(boolean) asserts that a value is true or false</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testTrue" signature="(Z)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="19" end="20" startBytecode="0" endBytecode="67" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="20" end="21" startBytecode="0" endBytecode="67" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testTrue(boolean)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="19" end="19" startBytecode="8" endBytecode="8" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 19]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="20" end="20" startBytecode="8" endBytecode="8" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 20]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="659845953ad10e2177bd4b2722376a08" instanceOccurrenceNum="0" instanceOccurrenceMax="1">
     <ShortMessage>JUnit test method asserts that an autoboxed value is not null</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testAutoBoxNotNull(int) asserts that an autoboxed value is not null</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testAutoBoxNotNull" signature="(I)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="39" end="41" startBytecode="0" endBytecode="94" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="40" end="42" startBytecode="0" endBytecode="94" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testAutoBoxNotNull(int)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="39" end="39" startBytecode="4" endBytecode="4" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 39]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="40" end="40" startBytecode="4" endBytecode="4" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 40]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_IMPOSSIBLE_NULL" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="659845953ad10e2177bd4b2722376a08" instanceOccurrenceNum="1" instanceOccurrenceMax="1">
     <ShortMessage>JUnit test method asserts that an autoboxed value is not null</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testAutoBoxNotNull(int) asserts that an autoboxed value is not null</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testAutoBoxNotNull" signature="(I)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="39" end="41" startBytecode="0" endBytecode="94" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="40" end="42" startBytecode="0" endBytecode="94" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testAutoBoxNotNull(int)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="40" end="40" startBytecode="20" endBytecode="20" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 40]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="41" end="41" startBytecode="20" endBytecode="20" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 41]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE" priority="2" rank="17" abbrev="UTAO" category="STYLE" instanceHash="528e2b8d91e7350626d3c7d36c811ec" instanceOccurrenceNum="0" instanceOccurrenceMax="1">
     <ShortMessage>JUnit test method asserts that two doubles are exactly equal</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testExactDoubles(double, double) asserts that two doubles are exactly equal</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testExactDoubles" signature="(DD)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="12" end="16" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="13" end="17" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testExactDoubles(double, double)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="12" end="12" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 12]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="13" end="13" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 13]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE" priority="2" rank="17" abbrev="UTAO" category="STYLE" instanceHash="528e2b8d91e7350626d3c7d36c811ec" instanceOccurrenceNum="1" instanceOccurrenceMax="1">
     <ShortMessage>JUnit test method asserts that two doubles are exactly equal</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testExactDoubles(double, double) asserts that two doubles are exactly equal</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testExactDoubles" signature="(DD)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="12" end="16" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="13" end="17" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testExactDoubles(double, double)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="13" end="13" startBytecode="9" endBytecode="9" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 13]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="14" end="14" startBytecode="9" endBytecode="9" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 14]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="705c461d13a87886796e077848878ab2" instanceOccurrenceNum="0" instanceOccurrenceMax="1">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="48" end="50" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="49" end="51" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="48" end="48" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 48]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="49" end="49" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 49]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="705c461d13a87886796e077848878ab2" instanceOccurrenceNum="1" instanceOccurrenceMax="1">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="48" end="50" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="49" end="51" startBytecode="0" endBytecode="108" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="49" end="49" startBytecode="24" endBytecode="24" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 49]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="50" end="50" startBytecode="24" endBytecode="24" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 50]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="c97b48c5a794f722bbdfa64135eb7e88" instanceOccurrenceNum="0" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="67" end="71" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="68" end="72" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="67" end="67" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 67]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="68" end="68" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 68]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="c97b48c5a794f722bbdfa64135eb7e88" instanceOccurrenceNum="1" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="67" end="71" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="68" end="72" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="68" end="68" startBytecode="32" endBytecode="32" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 68]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="69" end="69" startBytecode="32" endBytecode="32" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 69]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="c97b48c5a794f722bbdfa64135eb7e88" instanceOccurrenceNum="2" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="67" end="71" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="68" end="72" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="69" end="69" startBytecode="50" endBytecode="50" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 69]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="70" end="70" startBytecode="50" endBytecode="50" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 70]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="c97b48c5a794f722bbdfa64135eb7e88" instanceOccurrenceNum="3" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="67" end="71" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="68" end="72" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="70" end="70" startBytecode="71" endBytecode="71" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 70]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="71" end="71" startBytecode="71" endBytecode="71" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 71]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="f97d1fecf4229185c2b7957afc98d3f4" instanceOccurrenceNum="0" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertNotEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="53" end="57" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="54" end="58" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="53" end="53" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 53]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="54" end="54" startBytecode="5" endBytecode="5" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 54]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="f97d1fecf4229185c2b7957afc98d3f4" instanceOccurrenceNum="1" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertNotEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="53" end="57" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="54" end="58" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="54" end="54" startBytecode="24" endBytecode="24" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 54]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="55" end="55" startBytecode="24" endBytecode="24" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 55]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="f97d1fecf4229185c2b7957afc98d3f4" instanceOccurrenceNum="2" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertNotEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="53" end="57" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="54" end="58" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="55" end="55" startBytecode="34" endBytecode="34" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 55]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="56" end="56" startBytecode="34" endBytecode="34" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 56]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="f97d1fecf4229185c2b7957afc98d3f4" instanceOccurrenceNum="3" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertNotEquals(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEquals" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="53" end="57" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="54" end="58" startBytecode="0" endBytecode="171" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEquals(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="56" end="56" startBytecode="55" endBytecode="55" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 56]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="57" end="57" startBytecode="55" endBytecode="55" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 57]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="c5f788c483ab887f115ec29f0c780c47" instanceOccurrenceNum="0" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="60" end="64" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="61" end="65" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="60" end="60" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 60]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="61" end="61" startBytecode="13" endBytecode="13" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 61]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="c5f788c483ab887f115ec29f0c780c47" instanceOccurrenceNum="1" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="60" end="64" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="61" end="65" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="61" end="61" startBytecode="32" endBytecode="32" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 61]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="62" end="62" startBytecode="32" endBytecode="32" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 62]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="c5f788c483ab887f115ec29f0c780c47" instanceOccurrenceNum="2" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="60" end="64" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="61" end="65" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="62" end="62" startBytecode="50" endBytecode="50" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 62]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="63" end="63" startBytecode="50" endBytecode="50" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 63]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_EQUALS" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="c5f788c483ab887f115ec29f0c780c47" instanceOccurrenceNum="3" instanceOccurrenceMax="3">
     <ShortMessage>JUnit test method passes boolean expression to Assert.assertFalse / Assert.assertTrue</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String) passes boolean expression to Assert.assertFalse / Assert.assertTrue</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testUseAssertNotEqualsCrossed" signature="(Ljava/lang/String;Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="60" end="64" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="61" end="65" startBytecode="0" endBytecode="214" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testUseAssertNotEqualsCrossed(String, String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="63" end="63" startBytecode="71" endBytecode="71" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 63]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="64" end="64" startBytecode="71" endBytecode="71" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 64]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="f34ce8cceb260d093f2a97599451ca98" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JUnit test method passes null Assert.assertNotEquals</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testNotNull(String) passes null to Assert.assertNotEquals</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testNotNull" signature="(Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="31" end="32" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="32" end="33" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testNotNull(String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="31" end="31" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 31]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="32" end="32" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 32]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NULL" priority="2" rank="7" abbrev="UTAO" category="CORRECTNESS" instanceHash="e4a3af2b007726b686250d278f6faa90" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JUnit test method passes null Assert.assertEquals</ShortMessage>
     <LongMessage>JUnit test method UTAO_Sample.testNull(String) passes null to Assert.assertEquals</LongMessage>
     <Class classname="UTAO_Sample" primary="true">
-      <SourceLine classname="UTAO_Sample" start="8" end="76" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-        <Message>At UTAO_Sample.java:[lines 8-76]</Message>
+      <SourceLine classname="UTAO_Sample" start="9" end="77" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+        <Message>At UTAO_Sample.java:[lines 9-77]</Message>
       </SourceLine>
       <Message>In class UTAO_Sample</Message>
     </Class>
     <Method classname="UTAO_Sample" name="testNull" signature="(Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="UTAO_Sample" start="27" end="28" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
+      <SourceLine classname="UTAO_Sample" start="28" end="29" startBytecode="0" endBytecode="61" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java"/>
       <Message>In method UTAO_Sample.testNull(String)</Message>
     </Method>
-    <SourceLine classname="UTAO_Sample" primary="true" start="27" end="27" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
-      <Message>At UTAO_Sample.java:[line 27]</Message>
+    <SourceLine classname="UTAO_Sample" primary="true" start="28" end="28" startBytecode="2" endBytecode="2" sourcefile="UTAO_Sample.java" sourcepath="UTAO_Sample.java">
+      <Message>At UTAO_Sample.java:[line 28]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="775812a26fea1c8d9bcc29513c4360e1" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
@@ -38513,7 +38578,7 @@ removed.
     		
     		<p>This method fetches a resource from a URL, and uses the File API to manipulate it. If this resource is a
     		classpath resource, it will work if the resource is a file in a directory. If however the file is inside a JAR file
-    		this will fail. Use the URL.openStream API instead to access the data of the classpath resource.
+    		this will fail. To avoid this confusing inconsistency, use the URL.openStream API instead to access the data of the classpath resource.
     		</p>
     		
     	]]></Details>
@@ -39591,8 +39656,8 @@ the caller.
     <ShortDescription>Class does not implement a toString method</ShortDescription>
     <Details><![CDATA[
     		
-    		<p>This class which has instance fields has no toString() method, which will make debugging with this
-    		class more difficult than it could be. Consider adding a method. Using libraries like commons-lang3 
+    		<p>This class, which has instance fields, has no toString() method which will make debugging with this
+    		class more difficult than it could be. Consider adding a toString() method. Using libraries like commons-lang3 
     		ToStringBuilder makes this process easy.
     		</p>
     		
@@ -40174,7 +40239,7 @@ Common false-positive cases include:</p>
   <Errors errors="0" missingClasses="1">
     <MissingClass>org.objectweb.asm.AnnotationVisitor</MissingClass>
   </Errors>
-  <FindBugsSummary timestamp="Sat, 27 Feb 2016 02:30:30 -0500" total_classes="281" referenced_classes="893" total_bugs="1935" total_size="5646" num_packages="1" java_version="1.8.0_65" vm_version="25.65-b01" cpu_seconds="36.55" clock_seconds="82.38" peak_mbytes="133.20" alloc_mbytes="773.38" gc_seconds="5.19" priority_3="695" priority_2="1039" priority_1="201">
+  <FindBugsSummary timestamp="Tue, 12 Apr 2016 19:09:39 -0400" total_classes="285" referenced_classes="899" total_bugs="1940" total_size="5683" num_packages="1" java_version="1.8.0_65" vm_version="25.65-b01" cpu_seconds="36.90" clock_seconds="82.01" peak_mbytes="139.35" alloc_mbytes="773.38" gc_seconds="5.34" priority_3="699" priority_2="1040" priority_1="201">
     <FileStats path="ABC_Sample.java" bugCount="9" size="29" bugHash="8a811ce1354a6c3d7b584a84966816f1"/>
     <FileStats path="ACEM_Sample.java" bugCount="4" size="11" bugHash="07f3b584e55eacb88503f0c723e779ac"/>
     <FileStats path="AFBR_Sample.java" bugCount="1" size="30" bugHash="70dd49a5ba8cce9a516bfefdd14516d9"/>
@@ -40300,12 +40365,12 @@ Common false-positive cases include:</p>
     <FileStats path="URV_Sample.java" bugCount="6" size="20" bugHash="12d5075eb69e3c49077425cc92c4bd90"/>
     <FileStats path="USBR_Sample.java" bugCount="7" size="30" bugHash="767f8187642a4802f6345f8015aef191"/>
     <FileStats path="USS_Sample.java" bugCount="5" size="55" bugHash="43f83b3fbbb878dc1049a26b7d469fbf"/>
-    <FileStats path="UTAO_Sample.java" bugCount="61" size="142" bugHash="9764a751b9ecc9c2e6d074a89efdc9f1"/>
+    <FileStats path="UTAO_Sample.java" bugCount="66" size="179" bugHash="957067b00cde37b15690d7a42868a435"/>
     <FileStats path="UTA_Sample.java" bugCount="5" size="20" bugHash="75991e2fe9d139d2c4fc706831ce74b5"/>
     <FileStats path="UVA_Sample.java" bugCount="6" size="28" bugHash="9057950e5520453ce2f861cea1224c06"/>
     <FileStats path="WEM_Sample.java" bugCount="7" size="30" bugHash="846fa06bcc5a3865edf77cab0813f22d"/>
     <FileStats path="WOC_Sample.java" bugCount="23" size="135" bugHash="58b95ab671bc47ecfbadeaaf850b5c1a"/>
-    <PackageStats package="" total_bugs="1935" total_types="281" total_size="5646" priority_3="695" priority_2="1039" priority_1="201">
+    <PackageStats package="" total_bugs="1940" total_types="285" total_size="5683" priority_3="699" priority_2="1040" priority_1="201">
       <ClassStats class="A" sourceFile="SCR_Sample.java" interface="false" size="3" bugs="1" priority_3="1"/>
       <ClassStats class="ABC_Sample" sourceFile="ABC_Sample.java" interface="false" size="13" bugs="6" priority_3="3" priority_2="3"/>
       <ClassStats class="ABC_Sample$UseComparator" sourceFile="ABC_Sample.java" interface="false" size="9" bugs="1" priority_3="1"/>
@@ -40379,6 +40444,10 @@ Common false-positive cases include:</p>
       <ClassStats class="FixedThreadPoolProblem" sourceFile="HES_Sample.java" interface="false" size="10" bugs="3" priority_3="2" priority_2="1"/>
       <ClassStats class="Foo" sourceFile="ACEM_Sample.java" interface="true" size="2" bugs="1" priority_3="1"/>
       <ClassStats class="GitHubIssue101" sourceFile="CD_Sample.java" interface="false" size="9" bugs="3" priority_3="1" priority_2="2"/>
+      <ClassStats class="GitHubIssue109" sourceFile="UTAO_Sample.java" interface="false" size="14" bugs="1" priority_3="1"/>
+      <ClassStats class="GitHubIssue109$Action" sourceFile="UTAO_Sample.java" interface="false" size="10" bugs="1" priority_3="1"/>
+      <ClassStats class="GitHubIssue109$Repo" sourceFile="UTAO_Sample.java" interface="true" size="2" bugs="1" priority_3="1"/>
+      <ClassStats class="GitHubIssue109$StrutsAction" sourceFile="UTAO_Sample.java" interface="false" size="11" bugs="2" priority_3="1" priority_2="1"/>
       <ClassStats class="GitHubIssue94" sourceFile="UTAO_Sample.java" interface="false" size="12" bugs="1" priority_3="1"/>
       <ClassStats class="HCP_Sample" sourceFile="HCP_Sample.java" interface="false" size="87" bugs="11" priority_3="1" priority_2="10"/>
       <ClassStats class="HES_Sample" sourceFile="HES_Sample.java" interface="false" size="8" bugs="1" priority_3="1"/>
@@ -40589,83 +40658,82 @@ Common false-positive cases include:</p>
       <ClassStats class="s2" sourceFile="COM_Sample.java" interface="false" size="6" bugs="2" priority_3="2"/>
     </PackageStats>
     <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="5363" invocations="2875" avgMicrosecondsPerInvocation="1865" maxMicrosecondsPerInvocation="353772" standardDeviationMircosecondsPerInvocation="10962"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="4777" invocations="2849" avgMicrosecondsPerInvocation="1677" maxMicrosecondsPerInvocation="178418" standardDeviationMircosecondsPerInvocation="7265"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="3847" invocations="893" avgMicrosecondsPerInvocation="4308" maxMicrosecondsPerInvocation="350539" standardDeviationMircosecondsPerInvocation="15210"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="3229" invocations="893" avgMicrosecondsPerInvocation="3616" maxMicrosecondsPerInvocation="120019" standardDeviationMircosecondsPerInvocation="8933"/>
-      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="2573" invocations="2600" avgMicrosecondsPerInvocation="989" maxMicrosecondsPerInvocation="425441" standardDeviationMircosecondsPerInvocation="8601"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="1986" invocations="1216" avgMicrosecondsPerInvocation="1633" maxMicrosecondsPerInvocation="58828" standardDeviationMircosecondsPerInvocation="3876"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="1800" invocations="1240" avgMicrosecondsPerInvocation="1452" maxMicrosecondsPerInvocation="43387" standardDeviationMircosecondsPerInvocation="3484"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="1776" invocations="1277" avgMicrosecondsPerInvocation="1390" maxMicrosecondsPerInvocation="80377" standardDeviationMircosecondsPerInvocation="4566"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1674" invocations="1230" avgMicrosecondsPerInvocation="1361" maxMicrosecondsPerInvocation="94898" standardDeviationMircosecondsPerInvocation="3974"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="1384" invocations="1295" avgMicrosecondsPerInvocation="1068" maxMicrosecondsPerInvocation="70674" standardDeviationMircosecondsPerInvocation="3185"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="1225" invocations="1240" avgMicrosecondsPerInvocation="988" maxMicrosecondsPerInvocation="73170" standardDeviationMircosecondsPerInvocation="3497"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="1113" invocations="1021" avgMicrosecondsPerInvocation="1090" maxMicrosecondsPerInvocation="80235" standardDeviationMircosecondsPerInvocation="3722"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="1092" invocations="893" avgMicrosecondsPerInvocation="1223" maxMicrosecondsPerInvocation="24467" standardDeviationMircosecondsPerInvocation="3055"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="1045" invocations="1474" avgMicrosecondsPerInvocation="709" maxMicrosecondsPerInvocation="116207" standardDeviationMircosecondsPerInvocation="4371"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectStatistics" totalMilliseconds="1031" invocations="893" avgMicrosecondsPerInvocation="1155" maxMicrosecondsPerInvocation="74062" standardDeviationMircosecondsPerInvocation="4581"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue" totalMilliseconds="961" invocations="281" avgMicrosecondsPerInvocation="3421" maxMicrosecondsPerInvocation="765113" standardDeviationMircosecondsPerInvocation="45596"/>
-      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="864" invocations="71805" avgMicrosecondsPerInvocation="12" maxMicrosecondsPerInvocation="16244" standardDeviationMircosecondsPerInvocation="240"/>
-      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="781" invocations="2757" avgMicrosecondsPerInvocation="283" maxMicrosecondsPerInvocation="69051" standardDeviationMircosecondsPerInvocation="2037"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="756" invocations="893" avgMicrosecondsPerInvocation="847" maxMicrosecondsPerInvocation="38045" standardDeviationMircosecondsPerInvocation="2786"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="731" invocations="893" avgMicrosecondsPerInvocation="819" maxMicrosecondsPerInvocation="62208" standardDeviationMircosecondsPerInvocation="3241"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" totalMilliseconds="696" invocations="281" avgMicrosecondsPerInvocation="2479" maxMicrosecondsPerInvocation="108149" standardDeviationMircosecondsPerInvocation="7593"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="663" invocations="893" avgMicrosecondsPerInvocation="742" maxMicrosecondsPerInvocation="39383" standardDeviationMircosecondsPerInvocation="2345"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="627" invocations="893" avgMicrosecondsPerInvocation="702" maxMicrosecondsPerInvocation="80656" standardDeviationMircosecondsPerInvocation="4735"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="620" invocations="1255" avgMicrosecondsPerInvocation="494" maxMicrosecondsPerInvocation="216701" standardDeviationMircosecondsPerInvocation="6256"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="614" invocations="893" avgMicrosecondsPerInvocation="688" maxMicrosecondsPerInvocation="120623" standardDeviationMircosecondsPerInvocation="4576"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="613" invocations="893" avgMicrosecondsPerInvocation="687" maxMicrosecondsPerInvocation="66794" standardDeviationMircosecondsPerInvocation="2925"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" totalMilliseconds="600" invocations="893" avgMicrosecondsPerInvocation="672" maxMicrosecondsPerInvocation="45717" standardDeviationMircosecondsPerInvocation="2495"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="532" invocations="893" avgMicrosecondsPerInvocation="596" maxMicrosecondsPerInvocation="30502" standardDeviationMircosecondsPerInvocation="2218"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="442" invocations="281" avgMicrosecondsPerInvocation="1572" maxMicrosecondsPerInvocation="69600" standardDeviationMircosecondsPerInvocation="5301"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="434" invocations="281" avgMicrosecondsPerInvocation="1547" maxMicrosecondsPerInvocation="91021" standardDeviationMircosecondsPerInvocation="6213"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="408" invocations="281" avgMicrosecondsPerInvocation="1453" maxMicrosecondsPerInvocation="22681" standardDeviationMircosecondsPerInvocation="3302"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="376" invocations="281" avgMicrosecondsPerInvocation="1339" maxMicrosecondsPerInvocation="20931" standardDeviationMircosecondsPerInvocation="3083"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="370" invocations="1240" avgMicrosecondsPerInvocation="298" maxMicrosecondsPerInvocation="13809" standardDeviationMircosecondsPerInvocation="1128"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="364" invocations="16460" avgMicrosecondsPerInvocation="22" maxMicrosecondsPerInvocation="23144" standardDeviationMircosecondsPerInvocation="398"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" totalMilliseconds="358" invocations="281" avgMicrosecondsPerInvocation="1276" maxMicrosecondsPerInvocation="23414" standardDeviationMircosecondsPerInvocation="3074"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="354" invocations="281" avgMicrosecondsPerInvocation="1260" maxMicrosecondsPerInvocation="18451" standardDeviationMircosecondsPerInvocation="2912"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="349" invocations="1216" avgMicrosecondsPerInvocation="287" maxMicrosecondsPerInvocation="12605" standardDeviationMircosecondsPerInvocation="1117"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="339" invocations="281" avgMicrosecondsPerInvocation="1208" maxMicrosecondsPerInvocation="24401" standardDeviationMircosecondsPerInvocation="3195"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="335" invocations="893" avgMicrosecondsPerInvocation="375" maxMicrosecondsPerInvocation="14526" standardDeviationMircosecondsPerInvocation="1276"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" totalMilliseconds="330" invocations="281" avgMicrosecondsPerInvocation="1177" maxMicrosecondsPerInvocation="34367" standardDeviationMircosecondsPerInvocation="3405"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" totalMilliseconds="321" invocations="281" avgMicrosecondsPerInvocation="1142" maxMicrosecondsPerInvocation="66037" standardDeviationMircosecondsPerInvocation="4560"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="314" invocations="281" avgMicrosecondsPerInvocation="1120" maxMicrosecondsPerInvocation="43765" standardDeviationMircosecondsPerInvocation="3900"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" totalMilliseconds="300" invocations="281" avgMicrosecondsPerInvocation="1069" maxMicrosecondsPerInvocation="18802" standardDeviationMircosecondsPerInvocation="2548"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="291" invocations="281" avgMicrosecondsPerInvocation="1037" maxMicrosecondsPerInvocation="17633" standardDeviationMircosecondsPerInvocation="2431"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HangingExecutors" totalMilliseconds="289" invocations="281" avgMicrosecondsPerInvocation="1031" maxMicrosecondsPerInvocation="16663" standardDeviationMircosecondsPerInvocation="2323"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison" totalMilliseconds="286" invocations="281" avgMicrosecondsPerInvocation="1021" maxMicrosecondsPerInvocation="11766" standardDeviationMircosecondsPerInvocation="2267"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="286" invocations="281" avgMicrosecondsPerInvocation="1019" maxMicrosecondsPerInvocation="21085" standardDeviationMircosecondsPerInvocation="2637"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InefficientStringBuffering" totalMilliseconds="284" invocations="281" avgMicrosecondsPerInvocation="1013" maxMicrosecondsPerInvocation="59782" standardDeviationMircosecondsPerInvocation="4145"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="277" invocations="281" avgMicrosecondsPerInvocation="985" maxMicrosecondsPerInvocation="13616" standardDeviationMircosecondsPerInvocation="2035"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="276" invocations="281" avgMicrosecondsPerInvocation="983" maxMicrosecondsPerInvocation="31567" standardDeviationMircosecondsPerInvocation="2964"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="268" invocations="1209" avgMicrosecondsPerInvocation="222" maxMicrosecondsPerInvocation="12213" standardDeviationMircosecondsPerInvocation="1045"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.CharsetIssues" totalMilliseconds="266" invocations="281" avgMicrosecondsPerInvocation="950" maxMicrosecondsPerInvocation="84909" standardDeviationMircosecondsPerInvocation="5312"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="266" invocations="218" avgMicrosecondsPerInvocation="1223" maxMicrosecondsPerInvocation="15818" standardDeviationMircosecondsPerInvocation="2679"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="263" invocations="281" avgMicrosecondsPerInvocation="936" maxMicrosecondsPerInvocation="18030" standardDeviationMircosecondsPerInvocation="2842"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBadForLoop" totalMilliseconds="256" invocations="281" avgMicrosecondsPerInvocation="913" maxMicrosecondsPerInvocation="78895" standardDeviationMircosecondsPerInvocation="4942"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="254" invocations="281" avgMicrosecondsPerInvocation="905" maxMicrosecondsPerInvocation="15080" standardDeviationMircosecondsPerInvocation="2165"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="248" invocations="281" avgMicrosecondsPerInvocation="884" maxMicrosecondsPerInvocation="26310" standardDeviationMircosecondsPerInvocation="2494"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PartiallyConstructedObjectAccess" totalMilliseconds="248" invocations="281" avgMicrosecondsPerInvocation="883" maxMicrosecondsPerInvocation="65892" standardDeviationMircosecondsPerInvocation="4401"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SuspiciousClusteredSessionSupport" totalMilliseconds="247" invocations="281" avgMicrosecondsPerInvocation="880" maxMicrosecondsPerInvocation="23086" standardDeviationMircosecondsPerInvocation="2483"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RepeatedConditionals" totalMilliseconds="246" invocations="281" avgMicrosecondsPerInvocation="877" maxMicrosecondsPerInvocation="16705" standardDeviationMircosecondsPerInvocation="2326"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HttpClientProblems" totalMilliseconds="246" invocations="281" avgMicrosecondsPerInvocation="877" maxMicrosecondsPerInvocation="15898" standardDeviationMircosecondsPerInvocation="2323"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.CheckRelaxingNullnessAnnotation" totalMilliseconds="244" invocations="281" avgMicrosecondsPerInvocation="871" maxMicrosecondsPerInvocation="50266" standardDeviationMircosecondsPerInvocation="3671"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossibleConstantAllocationInLoop" totalMilliseconds="244" invocations="281" avgMicrosecondsPerInvocation="868" maxMicrosecondsPerInvocation="23555" standardDeviationMircosecondsPerInvocation="2726"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UseAddAll" totalMilliseconds="240" invocations="281" avgMicrosecondsPerInvocation="855" maxMicrosecondsPerInvocation="11168" standardDeviationMircosecondsPerInvocation="1998"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ConfusingArrayAsList" totalMilliseconds="237" invocations="281" avgMicrosecondsPerInvocation="846" maxMicrosecondsPerInvocation="24475" standardDeviationMircosecondsPerInvocation="2601"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBadCast2" totalMilliseconds="234" invocations="281" avgMicrosecondsPerInvocation="834" maxMicrosecondsPerInvocation="63290" standardDeviationMircosecondsPerInvocation="4423"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueRangeAnalysisFactory" totalMilliseconds="230" invocations="1255" avgMicrosecondsPerInvocation="183" maxMicrosecondsPerInvocation="37465" standardDeviationMircosecondsPerInvocation="1406"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ConstantListIndex" totalMilliseconds="226" invocations="281" avgMicrosecondsPerInvocation="807" maxMicrosecondsPerInvocation="20384" standardDeviationMircosecondsPerInvocation="2294"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InvalidConstantArgument" totalMilliseconds="226" invocations="281" avgMicrosecondsPerInvocation="806" maxMicrosecondsPerInvocation="18003" standardDeviationMircosecondsPerInvocation="2258"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BackportReusePublicIdentifiers" totalMilliseconds="225" invocations="281" avgMicrosecondsPerInvocation="801" maxMicrosecondsPerInvocation="17013" standardDeviationMircosecondsPerInvocation="2227"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.Section508Compliance" totalMilliseconds="223" invocations="281" avgMicrosecondsPerInvocation="796" maxMicrosecondsPerInvocation="16237" standardDeviationMircosecondsPerInvocation="2020"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ContainsBasedConditional" totalMilliseconds="222" invocations="281" avgMicrosecondsPerInvocation="792" maxMicrosecondsPerInvocation="18466" standardDeviationMircosecondsPerInvocation="2108"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SyncCollectionIterators" totalMilliseconds="221" invocations="281" avgMicrosecondsPerInvocation="788" maxMicrosecondsPerInvocation="12595" standardDeviationMircosecondsPerInvocation="2043"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossiblyRedundantMethodCalls" totalMilliseconds="219" invocations="281" avgMicrosecondsPerInvocation="782" maxMicrosecondsPerInvocation="14473" standardDeviationMircosecondsPerInvocation="1892"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.NeedlessAutoboxing" totalMilliseconds="218" invocations="281" avgMicrosecondsPerInvocation="779" maxMicrosecondsPerInvocation="36956" standardDeviationMircosecondsPerInvocation="2825"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SuboptimalExpressionOrder" totalMilliseconds="218" invocations="281" avgMicrosecondsPerInvocation="776" maxMicrosecondsPerInvocation="55773" standardDeviationMircosecondsPerInvocation="3636"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.TailRecursion" totalMilliseconds="216" invocations="281" avgMicrosecondsPerInvocation="769" maxMicrosecondsPerInvocation="22059" standardDeviationMircosecondsPerInvocation="2380"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="5271" invocations="2914" avgMicrosecondsPerInvocation="1809" maxMicrosecondsPerInvocation="198746" standardDeviationMircosecondsPerInvocation="6719"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="4992" invocations="2883" avgMicrosecondsPerInvocation="1731" maxMicrosecondsPerInvocation="548614" standardDeviationMircosecondsPerInvocation="11912"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="3368" invocations="899" avgMicrosecondsPerInvocation="3747" maxMicrosecondsPerInvocation="118228" standardDeviationMircosecondsPerInvocation="9503"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="3313" invocations="899" avgMicrosecondsPerInvocation="3685" maxMicrosecondsPerInvocation="92303" standardDeviationMircosecondsPerInvocation="8983"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="3024" invocations="1226" avgMicrosecondsPerInvocation="2467" maxMicrosecondsPerInvocation="899846" standardDeviationMircosecondsPerInvocation="26066"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="2283" invocations="2610" avgMicrosecondsPerInvocation="874" maxMicrosecondsPerInvocation="82934" standardDeviationMircosecondsPerInvocation="2543"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1756" invocations="1240" avgMicrosecondsPerInvocation="1416" maxMicrosecondsPerInvocation="98432" standardDeviationMircosecondsPerInvocation="4474"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="1745" invocations="1287" avgMicrosecondsPerInvocation="1356" maxMicrosecondsPerInvocation="84034" standardDeviationMircosecondsPerInvocation="4673"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="1689" invocations="1250" avgMicrosecondsPerInvocation="1351" maxMicrosecondsPerInvocation="52775" standardDeviationMircosecondsPerInvocation="3414"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="1318" invocations="1305" avgMicrosecondsPerInvocation="1010" maxMicrosecondsPerInvocation="54511" standardDeviationMircosecondsPerInvocation="2959"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="1151" invocations="1250" avgMicrosecondsPerInvocation="921" maxMicrosecondsPerInvocation="76546" standardDeviationMircosecondsPerInvocation="3014"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="1128" invocations="1028" avgMicrosecondsPerInvocation="1097" maxMicrosecondsPerInvocation="55189" standardDeviationMircosecondsPerInvocation="3214"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="1100" invocations="1492" avgMicrosecondsPerInvocation="737" maxMicrosecondsPerInvocation="112069" standardDeviationMircosecondsPerInvocation="4508"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="1099" invocations="2790" avgMicrosecondsPerInvocation="394" maxMicrosecondsPerInvocation="389724" standardDeviationMircosecondsPerInvocation="7514"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="1089" invocations="899" avgMicrosecondsPerInvocation="1212" maxMicrosecondsPerInvocation="37329" standardDeviationMircosecondsPerInvocation="3073"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectStatistics" totalMilliseconds="840" invocations="899" avgMicrosecondsPerInvocation="934" maxMicrosecondsPerInvocation="31821" standardDeviationMircosecondsPerInvocation="2518"/>
+      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="789" invocations="72807" avgMicrosecondsPerInvocation="10" maxMicrosecondsPerInvocation="14784" standardDeviationMircosecondsPerInvocation="210"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="750" invocations="899" avgMicrosecondsPerInvocation="834" maxMicrosecondsPerInvocation="127187" standardDeviationMircosecondsPerInvocation="5155"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="695" invocations="899" avgMicrosecondsPerInvocation="773" maxMicrosecondsPerInvocation="87263" standardDeviationMircosecondsPerInvocation="5339"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="694" invocations="899" avgMicrosecondsPerInvocation="772" maxMicrosecondsPerInvocation="38335" standardDeviationMircosecondsPerInvocation="2297"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="670" invocations="899" avgMicrosecondsPerInvocation="746" maxMicrosecondsPerInvocation="34599" standardDeviationMircosecondsPerInvocation="2477"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="632" invocations="899" avgMicrosecondsPerInvocation="704" maxMicrosecondsPerInvocation="49999" standardDeviationMircosecondsPerInvocation="2720"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="600" invocations="1266" avgMicrosecondsPerInvocation="474" maxMicrosecondsPerInvocation="219122" standardDeviationMircosecondsPerInvocation="6303"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="561" invocations="899" avgMicrosecondsPerInvocation="625" maxMicrosecondsPerInvocation="26070" standardDeviationMircosecondsPerInvocation="1908"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="547" invocations="285" avgMicrosecondsPerInvocation="1919" maxMicrosecondsPerInvocation="141485" standardDeviationMircosecondsPerInvocation="9063"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="545" invocations="285" avgMicrosecondsPerInvocation="1912" maxMicrosecondsPerInvocation="63681" standardDeviationMircosecondsPerInvocation="5599"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" totalMilliseconds="531" invocations="899" avgMicrosecondsPerInvocation="591" maxMicrosecondsPerInvocation="17562" standardDeviationMircosecondsPerInvocation="1783"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="465" invocations="899" avgMicrosecondsPerInvocation="517" maxMicrosecondsPerInvocation="24638" standardDeviationMircosecondsPerInvocation="2015"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" totalMilliseconds="428" invocations="285" avgMicrosecondsPerInvocation="1502" maxMicrosecondsPerInvocation="21789" standardDeviationMircosecondsPerInvocation="3246"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="412" invocations="899" avgMicrosecondsPerInvocation="458" maxMicrosecondsPerInvocation="80979" standardDeviationMircosecondsPerInvocation="3192"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="410" invocations="1250" avgMicrosecondsPerInvocation="328" maxMicrosecondsPerInvocation="18957" standardDeviationMircosecondsPerInvocation="1402"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="408" invocations="285" avgMicrosecondsPerInvocation="1432" maxMicrosecondsPerInvocation="46841" standardDeviationMircosecondsPerInvocation="5077"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ModifyingUnmodifiableCollection" totalMilliseconds="384" invocations="285" avgMicrosecondsPerInvocation="1348" maxMicrosecondsPerInvocation="105084" standardDeviationMircosecondsPerInvocation="7308"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="358" invocations="16516" avgMicrosecondsPerInvocation="21" maxMicrosecondsPerInvocation="25149" standardDeviationMircosecondsPerInvocation="410"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="346" invocations="285" avgMicrosecondsPerInvocation="1217" maxMicrosecondsPerInvocation="20135" standardDeviationMircosecondsPerInvocation="2998"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="346" invocations="285" avgMicrosecondsPerInvocation="1215" maxMicrosecondsPerInvocation="23378" standardDeviationMircosecondsPerInvocation="2895"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InconsistentKeyNameCasing" totalMilliseconds="334" invocations="285" avgMicrosecondsPerInvocation="1172" maxMicrosecondsPerInvocation="99701" standardDeviationMircosecondsPerInvocation="7598"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" totalMilliseconds="330" invocations="285" avgMicrosecondsPerInvocation="1159" maxMicrosecondsPerInvocation="26758" standardDeviationMircosecondsPerInvocation="2961"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SuspiciousNullGuard" totalMilliseconds="325" invocations="285" avgMicrosecondsPerInvocation="1142" maxMicrosecondsPerInvocation="96732" standardDeviationMircosecondsPerInvocation="6100"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="310" invocations="218" avgMicrosecondsPerInvocation="1426" maxMicrosecondsPerInvocation="20016" standardDeviationMircosecondsPerInvocation="3326"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HangingExecutors" totalMilliseconds="309" invocations="285" avgMicrosecondsPerInvocation="1086" maxMicrosecondsPerInvocation="21480" standardDeviationMircosecondsPerInvocation="2539"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="309" invocations="285" avgMicrosecondsPerInvocation="1084" maxMicrosecondsPerInvocation="22238" standardDeviationMircosecondsPerInvocation="2693"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" totalMilliseconds="308" invocations="285" avgMicrosecondsPerInvocation="1083" maxMicrosecondsPerInvocation="22249" standardDeviationMircosecondsPerInvocation="2481"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="302" invocations="285" avgMicrosecondsPerInvocation="1060" maxMicrosecondsPerInvocation="29554" standardDeviationMircosecondsPerInvocation="2834"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" totalMilliseconds="300" invocations="285" avgMicrosecondsPerInvocation="1053" maxMicrosecondsPerInvocation="18752" standardDeviationMircosecondsPerInvocation="2496"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="298" invocations="285" avgMicrosecondsPerInvocation="1046" maxMicrosecondsPerInvocation="15294" standardDeviationMircosecondsPerInvocation="2246"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="294" invocations="285" avgMicrosecondsPerInvocation="1031" maxMicrosecondsPerInvocation="15965" standardDeviationMircosecondsPerInvocation="2381"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" totalMilliseconds="282" invocations="285" avgMicrosecondsPerInvocation="992" maxMicrosecondsPerInvocation="20597" standardDeviationMircosecondsPerInvocation="2627"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="273" invocations="1219" avgMicrosecondsPerInvocation="224" maxMicrosecondsPerInvocation="22475" standardDeviationMircosecondsPerInvocation="1203"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LoggerOddities" totalMilliseconds="271" invocations="285" avgMicrosecondsPerInvocation="954" maxMicrosecondsPerInvocation="19258" standardDeviationMircosecondsPerInvocation="2303"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ContraVariantArrayAssignment" totalMilliseconds="262" invocations="285" avgMicrosecondsPerInvocation="921" maxMicrosecondsPerInvocation="60735" standardDeviationMircosecondsPerInvocation="4101"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="262" invocations="285" avgMicrosecondsPerInvocation="920" maxMicrosecondsPerInvocation="22174" standardDeviationMircosecondsPerInvocation="2484"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="261" invocations="1226" avgMicrosecondsPerInvocation="213" maxMicrosecondsPerInvocation="14255" standardDeviationMircosecondsPerInvocation="884"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindHEmismatch" totalMilliseconds="259" invocations="285" avgMicrosecondsPerInvocation="910" maxMicrosecondsPerInvocation="18045" standardDeviationMircosecondsPerInvocation="2373"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueRangeAnalysisFactory" totalMilliseconds="256" invocations="1266" avgMicrosecondsPerInvocation="202" maxMicrosecondsPerInvocation="36823" standardDeviationMircosecondsPerInvocation="1412"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossibleUnsuspectedSerialization" totalMilliseconds="256" invocations="285" avgMicrosecondsPerInvocation="899" maxMicrosecondsPerInvocation="82065" standardDeviationMircosecondsPerInvocation="5127"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.Section508Compliance" totalMilliseconds="254" invocations="285" avgMicrosecondsPerInvocation="892" maxMicrosecondsPerInvocation="15815" standardDeviationMircosecondsPerInvocation="2249"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteLoop" totalMilliseconds="246" invocations="285" avgMicrosecondsPerInvocation="864" maxMicrosecondsPerInvocation="20747" standardDeviationMircosecondsPerInvocation="2496"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PresizeCollections" totalMilliseconds="244" invocations="285" avgMicrosecondsPerInvocation="858" maxMicrosecondsPerInvocation="18430" standardDeviationMircosecondsPerInvocation="2254"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InappropriateToStringUse" totalMilliseconds="241" invocations="285" avgMicrosecondsPerInvocation="848" maxMicrosecondsPerInvocation="25412" standardDeviationMircosecondsPerInvocation="2479"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="240" invocations="285" avgMicrosecondsPerInvocation="842" maxMicrosecondsPerInvocation="19677" standardDeviationMircosecondsPerInvocation="2728"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HttpClientProblems" totalMilliseconds="240" invocations="285" avgMicrosecondsPerInvocation="842" maxMicrosecondsPerInvocation="17363" standardDeviationMircosecondsPerInvocation="2267"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.CommonsStringBuilderToString" totalMilliseconds="240" invocations="285" avgMicrosecondsPerInvocation="842" maxMicrosecondsPerInvocation="62445" standardDeviationMircosecondsPerInvocation="3949"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison" totalMilliseconds="236" invocations="285" avgMicrosecondsPerInvocation="829" maxMicrosecondsPerInvocation="13917" standardDeviationMircosecondsPerInvocation="2054"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.Naming" totalMilliseconds="235" invocations="285" avgMicrosecondsPerInvocation="825" maxMicrosecondsPerInvocation="16517" standardDeviationMircosecondsPerInvocation="2406"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SerializableIdiom" totalMilliseconds="233" invocations="285" avgMicrosecondsPerInvocation="820" maxMicrosecondsPerInvocation="23408" standardDeviationMircosecondsPerInvocation="2502"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" totalMilliseconds="233" invocations="285" avgMicrosecondsPerInvocation="820" maxMicrosecondsPerInvocation="41629" standardDeviationMircosecondsPerInvocation="3285"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="232" invocations="285" avgMicrosecondsPerInvocation="815" maxMicrosecondsPerInvocation="13643" standardDeviationMircosecondsPerInvocation="1915"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossiblyRedundantMethodCalls" totalMilliseconds="231" invocations="285" avgMicrosecondsPerInvocation="810" maxMicrosecondsPerInvocation="13614" standardDeviationMircosecondsPerInvocation="2060"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="230" invocations="285" avgMicrosecondsPerInvocation="810" maxMicrosecondsPerInvocation="14117" standardDeviationMircosecondsPerInvocation="1904"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue" totalMilliseconds="230" invocations="285" avgMicrosecondsPerInvocation="808" maxMicrosecondsPerInvocation="22379" standardDeviationMircosecondsPerInvocation="2497"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UseSplit" totalMilliseconds="228" invocations="285" avgMicrosecondsPerInvocation="800" maxMicrosecondsPerInvocation="13904" standardDeviationMircosecondsPerInvocation="2125"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents" totalMilliseconds="227" invocations="285" avgMicrosecondsPerInvocation="798" maxMicrosecondsPerInvocation="15981" standardDeviationMircosecondsPerInvocation="2236"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossibleConstantAllocationInLoop" totalMilliseconds="224" invocations="285" avgMicrosecondsPerInvocation="787" maxMicrosecondsPerInvocation="13611" standardDeviationMircosecondsPerInvocation="2088"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.IOIssues" totalMilliseconds="221" invocations="285" avgMicrosecondsPerInvocation="775" maxMicrosecondsPerInvocation="24766" standardDeviationMircosecondsPerInvocation="2305"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SyncCollectionIterators" totalMilliseconds="220" invocations="285" avgMicrosecondsPerInvocation="774" maxMicrosecondsPerInvocation="23961" standardDeviationMircosecondsPerInvocation="2431"/>
     </FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>
