@@ -175,90 +175,97 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
             removeFinishedCatchBlocks(catchInfos, pc);
 
             if (seen == ATHROW) {
-                try {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        JavaClass exClass = itm.getJavaClass();
-                        if ((exClass != null) && exClass.instanceOf(runtimeClass) && (catchInfos.size() > 0)) {
-                            Set<String> possibleCatchSignatures = findPossibleCatchSignatures(catchInfos, pc);
-                            if (!possibleCatchSignatures.contains(exClass.getClassName())) {
-                                boolean anyRuntimes = false;
-                                for (String possibleCatches : possibleCatchSignatures) {
-                                    exClass = Repository.lookupClass(possibleCatches);
-                                    if (exClass.instanceOf(runtimeClass)) {
-                                        anyRuntimes = true;
-                                        break;
-                                    }
-                                }
-
-                                if (!anyRuntimes) {
-
-                                    if (constrainingInfo == null) {
-                                        constrainingInfo = getConstrainingInfo(getClassContext().getJavaClass(), getMethod());
-                                    }
-
-                                    BugType bug = null;
-                                    int priority = NORMAL_PRIORITY;
-
-                                    if (constrainingInfo == null) {
-                                        bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS;
-                                        priority = HIGH_PRIORITY;
-                                    } else if (!constrainingInfo.values().iterator().next().isEmpty()) {
-                                        bug = BugType.EXS_EXCEPTION_SOFTENING_HAS_CHECKED;
-                                        priority = NORMAL_PRIORITY;
-                                    } else {
-                                        String pack1 = constrainingInfo.keySet().iterator().next();
-                                        String pack2 = getClassContext().getJavaClass().getClassName();
-                                        int dotPos = pack1.lastIndexOf('.');
-                                        if (dotPos >= 0) {
-                                            pack1 = pack1.substring(0, dotPos);
-                                        } else {
-                                            pack1 = "";
-                                        }
-                                        dotPos = pack2.lastIndexOf('.');
-                                        if (dotPos >= 0) {
-                                            pack2 = pack2.substring(0, dotPos);
-                                        } else {
-                                            pack2 = "";
-                                        }
-                                        if (SignatureUtils.similarPackages(pack1, pack2, 2)) {
-                                            bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CHECKED;
-                                            priority = NORMAL_PRIORITY;
-                                        }
-                                    }
-
-                                    if (bug != null) {
-                                        bugReporter
-                                                .reportBug(new BugInstance(this, bug.name(), priority).addClass(this).addMethod(this).addSourceLine(this));
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch (ClassNotFoundException cnfe) {
-                    bugReporter.reportMissingClass(cnfe);
-                }
+                processThrow();
             } else if ((seen == IRETURN) && isBooleanMethod && !hasValidFalseReturn && (stack.getStackDepth() > 0)) {
-                OpcodeStack.Item item = stack.getStackItem(0);
-                Integer returnVal = (Integer) item.getConstant();
-                if (returnVal == null) {
-                    hasValidFalseReturn = true;
-                } else if ((catchFalseReturnPC < 0) && (returnVal.intValue() == 0)) {
-                    Set<String> sigs = findPossibleCatchSignatures(catchInfos, getPC());
-                    for (String sig : sigs) {
-                        if (!sig.isEmpty()) {
-                            catchFalseReturnPC = getPC();
-                            break;
-                        }
-                    }
-                    if (catchFalseReturnPC < 0) {
-                        hasValidFalseReturn = true;
-                    }
-                }
+                processBooleanReturn();
             }
 
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    private void processThrow() {
+        try {
+            if (stack.getStackDepth() > 0) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                JavaClass exClass = itm.getJavaClass();
+                if ((exClass != null) && exClass.instanceOf(runtimeClass) && (catchInfos.size() > 0)) {
+                    Set<String> possibleCatchSignatures = findPossibleCatchSignatures(catchInfos, getPC());
+                    if (!possibleCatchSignatures.contains(exClass.getClassName())) {
+                        boolean anyRuntimes = false;
+                        for (String possibleCatches : possibleCatchSignatures) {
+                            exClass = Repository.lookupClass(possibleCatches);
+                            if (exClass.instanceOf(runtimeClass)) {
+                                anyRuntimes = true;
+                                break;
+                            }
+                        }
+
+                        if (!anyRuntimes) {
+
+                            if (constrainingInfo == null) {
+                                constrainingInfo = getConstrainingInfo(getClassContext().getJavaClass(), getMethod());
+                            }
+
+                            BugType bug = null;
+                            int priority = NORMAL_PRIORITY;
+
+                            if (constrainingInfo == null) {
+                                bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS;
+                                priority = HIGH_PRIORITY;
+                            } else if (!constrainingInfo.values().iterator().next().isEmpty()) {
+                                bug = BugType.EXS_EXCEPTION_SOFTENING_HAS_CHECKED;
+                                priority = NORMAL_PRIORITY;
+                            } else {
+                                String pack1 = constrainingInfo.keySet().iterator().next();
+                                String pack2 = getClassContext().getJavaClass().getClassName();
+                                int dotPos = pack1.lastIndexOf('.');
+                                if (dotPos >= 0) {
+                                    pack1 = pack1.substring(0, dotPos);
+                                } else {
+                                    pack1 = "";
+                                }
+                                dotPos = pack2.lastIndexOf('.');
+                                if (dotPos >= 0) {
+                                    pack2 = pack2.substring(0, dotPos);
+                                } else {
+                                    pack2 = "";
+                                }
+                                if (SignatureUtils.similarPackages(pack1, pack2, 2)) {
+                                    bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CHECKED;
+                                    priority = NORMAL_PRIORITY;
+                                }
+                            }
+
+                            if (bug != null) {
+                                bugReporter.reportBug(new BugInstance(this, bug.name(), priority).addClass(this).addMethod(this).addSourceLine(this));
+                            }
+                        }
+                    }
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+    }
+
+    private void processBooleanReturn() {
+        OpcodeStack.Item item = stack.getStackItem(0);
+        Integer returnVal = (Integer) item.getConstant();
+        if (returnVal == null) {
+            hasValidFalseReturn = true;
+        } else if ((catchFalseReturnPC < 0) && (returnVal.intValue() == 0)) {
+            Set<String> sigs = findPossibleCatchSignatures(catchInfos, getPC());
+            for (String sig : sigs) {
+                if (!sig.isEmpty()) {
+                    catchFalseReturnPC = getPC();
+                    break;
+                }
+            }
+            if (catchFalseReturnPC < 0) {
+                hasValidFalseReturn = true;
+            }
         }
     }
 
