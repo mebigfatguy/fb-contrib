@@ -167,16 +167,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
-                String sig = getSigConstantOperand();
-                int argCount = Type.getArgumentTypes(sig).length;
-                if (stack.getStackDepth() > argCount) {
-                    OpcodeStack.Item invokeeItem = stack.getStackItem(argCount);
-                    XField fieldOnWhichMethodIsInvoked = invokeeItem.getXField();
-                    if (fieldOnWhichMethodIsInvoked != null) {
-                        removeCandidateIfShutdownCalled(fieldOnWhichMethodIsInvoked);
-                        addExemptionIfShutdownCalled(fieldOnWhichMethodIsInvoked);
-                    }
-                }
+                processInvoke();
             }
             // TODO Should not include private methods
             else if (seen == ARETURN) {
@@ -200,6 +191,19 @@ public class HangingExecutors extends BytecodeScanningDetector {
         }
     }
 
+    private void processInvoke() {
+        String sig = getSigConstantOperand();
+        int argCount = Type.getArgumentTypes(sig).length;
+        if (stack.getStackDepth() > argCount) {
+            OpcodeStack.Item invokeeItem = stack.getStackItem(argCount);
+            XField fieldOnWhichMethodIsInvoked = invokeeItem.getXField();
+            if (fieldOnWhichMethodIsInvoked != null) {
+                removeCandidateIfShutdownCalled(fieldOnWhichMethodIsInvoked);
+                addExemptionIfShutdownCalled(fieldOnWhichMethodIsInvoked);
+            }
+        }
+    }
+
     private void lookForCustomThreadFactoriesInConstructors(int seen) {
         try {
             stack.precomputation(this);
@@ -214,7 +218,8 @@ public class HangingExecutors extends BytecodeScanningDetector {
                     XMethod method = stack.getStackItem(0).getReturnValueOf();
                     if (method != null) {
                         Type[] argumentTypes = Type.getArgumentTypes(method.getSignature());
-                        if ((argumentTypes.length != 0) && "Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes[argumentTypes.length - 1].getSignature())) {
+                        if ((argumentTypes.length != 0)
+                                && "Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes[argumentTypes.length - 1].getSignature())) {
                             AnnotationPriority ap = this.hangingFieldCandidates.get(f);
                             if (ap != null) {
                                 ap.priority = LOW_PRIORITY;
