@@ -42,39 +42,18 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for methods that rely on the format of the string fetched from another
- * object's toString method, when that method appears not to be owned by the
- * author of the calling method. As the implementation of toString() is often
- * considered a private implementation detail of a class, and not something that
- * should be relied on, depending on it's format is dangerous.
+ * looks for methods that rely on the format of the string fetched from another object's toString method, when that method appears not to be owned by the author
+ * of the calling method. As the implementation of toString() is often considered a private implementation detail of a class, and not something that should be
+ * relied on, depending on it's format is dangerous.
  */
 @CustomUserValue
 public class InappropriateToStringUse extends BytecodeScanningDetector {
 
-    private static final Set<String> validToStringClasses = UnmodifiableSet.create(
-            "java/lang/Object", // too many fps
-            "java/lang/Byte",
-            "java/lang/Character",
-            "java/lang/Short",
-            "java/lang/Integer",
-            "java/lang/Boolean",
-            "java/lang/Float",
-            "java/lang/Double",
-            "java/lang/Long",
-            "java/lang/String",
-            "java/lang/Number",
-            "java/lang/StringBuffer",
-            "java/lang/StringBuilder",
-            "java/io/StringWriter"
-    );
+    private static final Set<String> validToStringClasses = UnmodifiableSet.create("java/lang/Object", // too many fps
+            "java/lang/Byte", "java/lang/Character", "java/lang/Short", "java/lang/Integer", "java/lang/Boolean", "java/lang/Float", "java/lang/Double",
+            "java/lang/Long", "java/lang/String", "java/lang/Number", "java/lang/StringBuffer", "java/lang/StringBuilder", "java/io/StringWriter");
 
-    private static final Set<String> stringAlgoMethods = UnmodifiableSet.create(
-            "indexOf",
-            "contains",
-            "startsWith",
-            "endsWith",
-            "substring"
-    );
+    private static final Set<String> stringAlgoMethods = UnmodifiableSet.create("indexOf", "contains", "startsWith", "endsWith", "substring");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
@@ -133,40 +112,8 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if (seen == INVOKEVIRTUAL) {
-                String methodName = getNameConstantOperand();
-                if ("toString".equals(methodName)) {
-                    String signature = getSigConstantOperand();
-                    if ("()Ljava/lang/String;".equals(signature)) {
-                        String className = getClassConstantOperand();
-                        if (!validToStringClasses.contains(className) && (stack.getStackDepth() > 0)) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            JavaClass cls = item.getJavaClass();
-                            if (cls != null) {
-                                methodPackage = cls.getPackageName();
-                            }
-                        }
-                    }
-                } else if (stringAlgoMethods.contains(methodName)) {
-                    String className = getClassConstantOperand();
-                    if ("java/lang/String".equals(className)) {
-                        String signature = getSigConstantOperand();
-                        int numParms = Type.getArgumentTypes(signature).length;
-                        if (stack.getStackDepth() > numParms) {
-                            OpcodeStack.Item item = stack.getStackItem(numParms);
-                            if (item.getUserValue() != null) {
-                                XMethod xm = item.getReturnValueOf();
-                                String tsPackage = null;
-                                if (xm != null) {
-                                    tsPackage = xm.getPackageName();
-                                }
-                                if ((tsPackage == null) || !SignatureUtils.similarPackages(tsPackage, packageName, 2)) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.ITU_INAPPROPRIATE_TOSTRING_USE.name(), NORMAL_PRIORITY).addClass(this)
-                                            .addMethod(this).addSourceLine(this));
-                                }
-                            }
-                        }
-                    }
-                }
+                methodPackage = processInvokeVirtual();
+
             } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
@@ -197,6 +144,45 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
                 item.setUserValue(methodPackage);
             }
         }
+    }
+
+    private String processInvokeVirtual() throws ClassNotFoundException {
+        String methodName = getNameConstantOperand();
+        if ("toString".equals(methodName)) {
+            String signature = getSigConstantOperand();
+            if ("()Ljava/lang/String;".equals(signature)) {
+                String className = getClassConstantOperand();
+                if (!validToStringClasses.contains(className) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    JavaClass cls = item.getJavaClass();
+                    if (cls != null) {
+                        return cls.getPackageName();
+                    }
+                }
+            }
+        } else if (stringAlgoMethods.contains(methodName)) {
+            String className = getClassConstantOperand();
+            if ("java/lang/String".equals(className)) {
+                String signature = getSigConstantOperand();
+                int numParms = Type.getArgumentTypes(signature).length;
+                if (stack.getStackDepth() > numParms) {
+                    OpcodeStack.Item item = stack.getStackItem(numParms);
+                    if (item.getUserValue() != null) {
+                        XMethod xm = item.getReturnValueOf();
+                        String tsPackage = null;
+                        if (xm != null) {
+                            tsPackage = xm.getPackageName();
+                        }
+                        if ((tsPackage == null) || !SignatureUtils.similarPackages(tsPackage, packageName, 2)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.ITU_INAPPROPRIATE_TOSTRING_USE.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
+                    }
+                }
+            }
+        }
+
+        return null;
     }
 
 }
