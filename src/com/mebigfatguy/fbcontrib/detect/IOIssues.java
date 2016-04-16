@@ -135,51 +135,12 @@ public class IOIssues extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case INVOKESPECIAL: {
-                    String clsName = getDottedClassConstantOperand();
-                    String methodName = getNameConstantOperand();
-
-                    if (Values.CONSTRUCTOR.equals(methodName)) {
-                        if (BUFFERED_CLASSES.contains(clsName)) {
-                            uvSawBuffer = IOIUserValue.BUFFER;
-                        } else {
-                            JavaClass cls = Repository.lookupClass(clsName);
-                            if (cls.instanceOf(READER_CLASS)) {
-                                uvSawBuffer = IOIUserValue.READER;
-                            }
-                        }
-                    }
-                }
+                case INVOKESPECIAL:
+                    uvSawBuffer = processInvokeSpecial();
                 break;
 
-                case INVOKESTATIC: {
-                    String clsName = getDottedClassConstantOperand();
-                    String methodName = getNameConstantOperand();
-                    FQMethod m = new FQMethod(clsName, methodName, ANY_PARMS);
-                    if (COPY_METHODS.contains(m)) {
-                        String signature = getSigConstantOperand();
-                        Type[] argTypes = Type.getArgumentTypes(signature);
-                        if (stack.getStackDepth() >= argTypes.length) {
-                            for (int i = 0; i < argTypes.length; i++) {
-                                OpcodeStack.Item itm = stack.getStackItem(i);
-                                IOIUserValue uv = (IOIUserValue) itm.getUserValue();
-                                if (uv != null) {
-                                    switch (uv) {
-                                        case BUFFER:
-                                            bugReporter.reportBug(new BugInstance(this, BugType.IOI_DOUBLE_BUFFER_COPY.name(), NORMAL_PRIORITY).addClass(this)
-                                                    .addMethod(this).addSourceLine(this));
-                                        break;
-
-                                        case READER:
-                                            bugReporter.reportBug(new BugInstance(this, BugType.IOI_COPY_WITH_READER.name(), NORMAL_PRIORITY).addClass(this)
-                                                    .addMethod(this).addSourceLine(this));
-                                    }
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+                case INVOKESTATIC:
+                    processInvokeStatic();
                 break;
 
                 default:
@@ -192,6 +153,53 @@ public class IOIssues extends BytecodeScanningDetector {
             if ((uvSawBuffer != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(uvSawBuffer);
+            }
+        }
+    }
+
+    private IOIUserValue processInvokeSpecial() throws ClassNotFoundException {
+        String clsName = getDottedClassConstantOperand();
+        String methodName = getNameConstantOperand();
+
+        if (Values.CONSTRUCTOR.equals(methodName)) {
+            if (BUFFERED_CLASSES.contains(clsName)) {
+                return IOIUserValue.BUFFER;
+            } else {
+                JavaClass cls = Repository.lookupClass(clsName);
+                if (cls.instanceOf(READER_CLASS)) {
+                    return IOIUserValue.READER;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private void processInvokeStatic() {
+        String clsName = getDottedClassConstantOperand();
+        String methodName = getNameConstantOperand();
+        FQMethod m = new FQMethod(clsName, methodName, ANY_PARMS);
+        if (COPY_METHODS.contains(m)) {
+            String signature = getSigConstantOperand();
+            Type[] argTypes = Type.getArgumentTypes(signature);
+            if (stack.getStackDepth() >= argTypes.length) {
+                for (int i = 0; i < argTypes.length; i++) {
+                    OpcodeStack.Item itm = stack.getStackItem(i);
+                    IOIUserValue uv = (IOIUserValue) itm.getUserValue();
+                    if (uv != null) {
+                        switch (uv) {
+                            case BUFFER:
+                                bugReporter.reportBug(new BugInstance(this, BugType.IOI_DOUBLE_BUFFER_COPY.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                            break;
+
+                            case READER:
+                                bugReporter.reportBug(new BugInstance(this, BugType.IOI_COPY_WITH_READER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                        .addSourceLine(this));
+                        }
+                        break;
+                    }
+                }
             }
         }
     }
