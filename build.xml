@@ -28,7 +28,7 @@
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
 
-	<property name="fb-contrib.version" value="6.6.1" />
+	<property name="fb-contrib.version" value="6.7.0-SNAPSHOT" />
 	
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
 	
