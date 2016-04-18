@@ -207,7 +207,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 Object cons = itm.getConstant();
                 if ((cons instanceof String) && (itm.getRegisterNumber() < 0) && ((String) cons).isEmpty()) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.ISB_EMPTY_STRING_APPENDING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                    bugReporter.reportBug(new BugInstance(this, BugType.ISB_EMPTY_STRING_APPENDING.name(), LOW_PRIORITY).addClass(this).addMethod(this)
                             .addSourceLine(this));
                 }
             }
