@@ -214,26 +214,7 @@ public class JPAIssues extends BytecodeScanningDetector {
             switch (seen) {
                 case INVOKEVIRTUAL:
                 case INVOKEINTERFACE: {
-                    String dottedCls = getDottedClassConstantOperand();
-                    String methodName = getNameConstantOperand();
-                    String signature = getSigConstantOperand();
-
-                    TransactionalType calledMethodTransType = getTransactionalType(new FQMethod(dottedCls, methodName, signature));
-                    if ((calledMethodTransType != TransactionalType.NONE) && !TransactionalType.isContainedBy(calledMethodTransType, methodTransType)) {
-                        Type[] parmTypes = Type.getArgumentTypes(signature);
-                        if (stack.getStackDepth() > parmTypes.length) {
-                            OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
-                            if (itm.getRegisterNumber() == 0) {
-                                bugReporter.reportBug(
-                                        new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), isPublic ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                                .addClass(this).addMethod(this).addSourceLine(this));
-                            }
-                        }
-                    }
-
-                    if ("javax.persistence.EntityManager".equals(dottedCls) && "merge".equals(methodName)) {
-                        userValue = JPAUserValue.MERGE;
-                    }
+                    userValue = processInvoke();
                     break;
                 }
 
@@ -259,6 +240,30 @@ public class JPAIssues extends BytecodeScanningDetector {
             }
         }
 
+    }
+
+    private JPAUserValue processInvoke() {
+        String dottedCls = getDottedClassConstantOperand();
+        String methodName = getNameConstantOperand();
+        String signature = getSigConstantOperand();
+
+        TransactionalType calledMethodTransType = getTransactionalType(new FQMethod(dottedCls, methodName, signature));
+        if ((calledMethodTransType != TransactionalType.NONE) && !TransactionalType.isContainedBy(calledMethodTransType, methodTransType)) {
+            Type[] parmTypes = Type.getArgumentTypes(signature);
+            if (stack.getStackDepth() > parmTypes.length) {
+                OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
+                if (itm.getRegisterNumber() == 0) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), isPublic ? NORMAL_PRIORITY : LOW_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this));
+                }
+            }
+        }
+
+        if ("javax.persistence.EntityManager".equals(dottedCls) && "merge".equals(methodName)) {
+            return JPAUserValue.MERGE;
+        }
+
+        return null;
     }
 
     /**
