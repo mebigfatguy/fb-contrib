@@ -2715,7 +2715,14 @@
 			<p>This method catches an exception, and throws a different exception, without incorporating the
 			original exception. Doing so hides the original source of the exception making debugging and fixing
 			these problems difficult. It is better to use the constructor of this new exception that takes an
-			original exception so that this detail can be passed along to the user.</p>
+			original exception so that this detail can be passed along to the user. If this exception has no constructor
+			that takes an initial cause parameter, use the initCause method to initialize it instead.</p>
+			<p>
+			<code>
+				catch (IOExcepion e) {
+					throw new MySpecialException("Failed to open configuration", e);
+				}
+			</code>
 			]]>
 		</Details>
 	</BugPattern>
