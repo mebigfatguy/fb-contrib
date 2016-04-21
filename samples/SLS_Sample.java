@@ -4,6 +4,7 @@ import java.util.Map;
 public class SLS_Sample {
     private String name;
     private int age;
+    private int height;
 
     SLS_Sample hasIt(List<SLS_Sample> l, String n) {
 
@@ -32,7 +33,7 @@ public class SLS_Sample {
     boolean fpSetFlag(Map<String, SLS_Sample> m, String name) {
         boolean found = false;
         for (SLS_Sample s : m.values()) {
-            if (s == null || s.name.equals(name)) {
+            if ((s == null) || s.name.equals(name)) {
                 found = true;
                 s.age = 1;
             }
@@ -50,6 +51,24 @@ public class SLS_Sample {
         }
 
         return total;
+    }
+
+    void fpTwoSets(List<SLS_Sample> l, String name, int age, int height) {
+        String n = null;
+        int a = 0;
+        int h = 0;
+
+        for (SLS_Sample s : l) {
+            if (s.name.equals(name)) {
+                n = s.name;
+            } else if (s.age == age) {
+                a = s.age;
+            } else if (s.height == height) {
+                h = s.height;
+            }
+        }
+
+        System.out.println("Found: " + n + " " + a + " " + h);
     }
 
 }
