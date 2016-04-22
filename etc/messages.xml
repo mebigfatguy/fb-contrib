@@ -4957,7 +4957,7 @@
     		JDK. It's possible that this application will only be deployed on a JVM that does recognize this encoding, but
     		it seem dubious that this is the case.</p>
     		<p>
-    		The standard JDK encodings are "UTF-8", "US-ASCII", "ISO-8859-1", "UTF-16BE", "UTF-16LE", "UTF-16".  These are all case-sensitive.
+    		The standard JDK encodings (for Java 8) are "UTF-8", "US-ASCII", "ISO-8859-1", "UTF-16BE", "UTF-16LE", "UTF-16".  These are all case-sensitive.
     		</p>
     		]]>
     	</Details>
