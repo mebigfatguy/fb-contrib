@@ -5082,8 +5082,11 @@
     		<![CDATA[
     		<p>This class has been created in the default package. Classes should be defined in a 
     		proper package structure, typically defined by the reverse of the domain name of the 
-    		owner of the code base. Putting code in the default (no) package limits it usefulness, and
-    		leaves it open to name collisions.
+    		owner of the code base. Putting code in the default (no) package limits it usefulness, including
+    		<ol>
+    		<li>Not able to import this class into classes with packages</li>
+    		<li>Leaves it open to name collisions with other packages.</li>
+    		</ol>
     		</p>
     		]]>
     	</Details>
