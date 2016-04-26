@@ -5032,6 +5032,16 @@
     		<p>This method continues with a loop, and does not break out of it, after finding an setting a variable in an if
     		condition based on equality. Since continuing on in the loop would seem to be unlikely to find the item again, breaking
     		at this point would seem to be the proper action.</p>
+    		<p>Example:
+    		<code>
+    		int age = 0;
+    		for (Person p : people) {
+    			if (p.getName.equals("Dave")) {
+    				age = p.getAge();
+    			}
+    		}
+    		</code>
+    		It is likely you wanted a break after getting the age for "Dave".
     		]]>
     	</Details>
     </BugPattern>
