@@ -118,6 +118,10 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         try {
             Method method = getMethod();
+            if (method.isSynthetic()) {
+                return;
+            }
+
             isBooleanMethod = Type.BOOLEAN.equals(method.getReturnType());
             if (isBooleanMethod || prescreen(method)) {
                 catchHandlerPCs = collectExceptions(obj.getExceptionTable());
