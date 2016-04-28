@@ -36,7 +36,7 @@
 			<![CDATA[
 			<p>Looks for appending strings inside of calls to StringBuffer or StringBuilder append.</p>
 			<pre>
-				StringBuffer sb = new StringBuffer();
+				StringBuilder sb = new StringBuilder();
 				sb.append(a + b);
 				return sb.toString();
 			</pre>
