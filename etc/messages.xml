@@ -4155,6 +4155,14 @@
 			<p>This method tests a local variable to make sure it's not null before executing a conditional block of
 			code. However in the conditional block it reassigns the local variable. It is likely that the guard
 			should have been a check to see if the local variable is null, not that the local variable was not null.</p>
+			<p>example:
+			<code>
+			if (name != null) {
+			    name = person.getName();
+			}
+			</code>
+			It is possible this is correct, but it seems likely the guard was meant to be <code>if (name == null)</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
