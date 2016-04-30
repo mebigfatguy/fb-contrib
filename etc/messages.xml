@@ -4079,6 +4079,21 @@
 			symmetry rule of equivalence is maintained, that being if a equals b, then b equals a. It does not
 			appear that the class that is being compared to this class knows about this class, and doesn't compare itself
 			to this.</p>
+			<p>
+			Here's an example of a BAD equals method, do NOT do this
+			<code>
+			class Person {
+			    public boolean equals(Object o) {
+			        if (o instanceof Person) {
+			            return name.equals((Person) o).name);
+			        } else if (o instanceof String) +
+			            return name.equals(o);
+			        }
+			        return false;
+			    }
+			}
+			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
