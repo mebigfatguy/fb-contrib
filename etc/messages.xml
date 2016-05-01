@@ -773,6 +773,8 @@
 			<p>Looks for calls to classes and methods that do not exist in the JDK for which this class is
 			compiled. This can happen if you specify the -source and -target options of the javac compiler, and
 			specify a target that is less than the JDK version of the javac compiler.</p>
+			<p>It relies on the system property -Dfb-contrib.sjvu.jdkhome=/path/to/older/jdk/to/check" to specify
+			what JDK to compare against. If this property is not set, this detector does nothing.</p>
 			<p>It is a slow detector.</p>
 			]]>
 		</Details>
