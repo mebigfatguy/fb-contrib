@@ -168,11 +168,11 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     }
 
     private void processInvokeSpecial() {
-        String className = getClassConstantOperand();
         String methodName = getNameConstantOperand();
-        String sig = getSigConstantOperand();
 
         if (Values.CONSTRUCTOR.equals(methodName)) {
+            String className = getClassConstantOperand();
+            String sig = getSigConstantOperand();
             if (!hasMapComparator && "java/util/TreeMap".equals(className)) {
                 Type[] parms = Type.getArgumentTypes(sig);
                 if ((parms.length == 1) && "Ljava/util/Comparator;".equals(parms[0].getSignature())) {
