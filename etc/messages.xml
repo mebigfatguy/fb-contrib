@@ -115,6 +115,15 @@
 			If a RuntimeException is declared, it implies that this exception type is expected to happen,
 			which if true should be handled in code, and not propagated. </p>
 			<p>It is a fast detector.</p>
+			<p> as an example, every method could be declared like this
+			<code>
+			public void foo() throws NullPointerException {
+			}
+			</code>
+			But what does that tell you? Is this method very very likely to throw NullPointerExceptoins? 
+			If it is, why isn't this method handling them so that exceptions aren't thrown. So don't do this
+			If an NPE is very likely, then check for it, and handle the situation.
+			</p>
 			]]>
 		</Details>
 	</Detector>
