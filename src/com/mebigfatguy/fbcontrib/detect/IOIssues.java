@@ -158,10 +158,10 @@ public class IOIssues extends BytecodeScanningDetector {
     }
 
     private IOIUserValue processInvokeSpecial() throws ClassNotFoundException {
-        String clsName = getDottedClassConstantOperand();
         String methodName = getNameConstantOperand();
 
         if (Values.CONSTRUCTOR.equals(methodName)) {
+            String clsName = getDottedClassConstantOperand();
             if (BUFFERED_CLASSES.contains(clsName)) {
                 return IOIUserValue.BUFFER;
             } else {
