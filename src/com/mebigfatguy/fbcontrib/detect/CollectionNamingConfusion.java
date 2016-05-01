@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Locale;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -132,7 +134,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "EXS_EXCEPTION_SOFTENING_RETURN_FALSE", justification = "No other simple way to determine whether class exists")
     private boolean checkConfusedName(String name, String signature) {
         try {
-            name = name.toLowerCase();
+            name = name.toLowerCase(Locale.ENGLISH);
             if ((name.endsWith("map") || (name.endsWith("set") && !name.endsWith("toset")) || name.endsWith("list") || name.endsWith("queue"))
                     && signature.startsWith("Ljava/util/")) {
                 String clsName = SignatureUtils.stripSignature(signature);

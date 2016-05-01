@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Set;
 
 import org.apache.bcel.Repository;
@@ -414,7 +415,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             }
 
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
-                String lcName = getNameConstantOperand().toLowerCase();
+                String lcName = getNameConstantOperand().toLowerCase(Locale.ENGLISH);
                 if (seen == INVOKEVIRTUAL) {
                     String sig = getSigConstantOperand();
                     if ("equals".equals(lcName) && "(Ljava/lang/Object;)Z".equals(sig)) {
