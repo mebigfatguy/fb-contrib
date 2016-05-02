@@ -103,7 +103,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
      */
     public boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return bytecodeSet != null && (bytecodeSet.get(Constants.NEWARRAY) || bytecodeSet.get(Constants.ANEWARRAY));
+        return (bytecodeSet != null) && (bytecodeSet.get(Constants.NEWARRAY) || bytecodeSet.get(Constants.ANEWARRAY));
     }
 
     /**
@@ -139,7 +139,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         Integer size = (Integer) itm.getConstant();
-                        if (size != null && size.intValue() == 1) {
+                        if ((size != null) && (size.intValue() == 1)) {
                             userValue = Values.NEGATIVE_ONE;
                         }
                     }
@@ -187,7 +187,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
                         OpcodeStack.Item arItm = stack.getStackItem(1);
                         int arReg = arItm.getRegisterNumber();
                         WrapperInfo wi = wrappers.get(Integer.valueOf(arReg));
-                        if (wi != null && wi.wasArg) {
+                        if ((wi != null) && wi.wasArg) {
                             userValue = Integer.valueOf(wi.wrappedReg);
                         }
                     }
@@ -248,7 +248,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (userValue != null && stack.getStackDepth() > 0) {
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(userValue);
             }
@@ -266,7 +266,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
         if (stack.getStackDepth() >= 1) {
             OpcodeStack.Item itm = stack.getStackItem(0);
             String sig = itm.getSignature();
-            if (sig.length() > 0 && itm.getSignature().charAt(0) == '[') {
+            if ((sig.length() > 0) && (sig.charAt(0) == '[')) {
                 int reg = RegisterUtils.getAStoreReg(this, seen);
                 Integer elReg = (Integer) itm.getUserValue();
                 if (elReg != null) {
@@ -302,8 +302,9 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
                 }
             } else {
                 OpcodeStack.Item elItm = stack.getStackItem(0);
-                if (elItm.getRegisterNumber() != -1) {
-                    return Integer.valueOf(elItm.getRegisterNumber());
+                reg = elItm.getRegisterNumber();
+                if (reg != -1) {
+                    return Integer.valueOf(reg);
                 }
             }
         }
@@ -324,7 +325,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
                 for (int i = 0; i < args.length; i++) {
                     Type t = args[i];
                     String argSig = t.getSignature();
-                    if (argSig.length() > 0 && argSig.charAt(0) == '[') {
+                    if ((argSig.length() > 0) && (argSig.charAt(0) == '[')) {
                         OpcodeStack.Item itm = stack.getStackItem(args.length - i - 1);
                         int arrayReg = itm.getRegisterNumber();
                         WrapperInfo wi = wrappers.get(Integer.valueOf(arrayReg));

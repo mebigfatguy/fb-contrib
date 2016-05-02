@@ -39,8 +39,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 
 /**
- * looks for simple fields that only store one of several constant values. This
- * usually is an indication that this field should really be an enum type.
+ * looks for simple fields that only store one of several constant values. This usually is an indication that this field should really be an enum type.
  */
 public class PoorMansEnum extends BytecodeScanningDetector {
 
@@ -63,8 +62,9 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                 nameToField = new HashMap<String, Field>();
                 for (Field f : cls.getFields()) {
                     if (f.isPrivate() && !f.isSynthetic()) {
-                        fieldValues.put(f.getName(), null);
-                        nameToField.put(f.getName(), f);
+                        String fieldName = f.getName();
+                        fieldValues.put(fieldName, null);
+                        nameToField.put(fieldName, f);
                     }
                 }
                 if (!fieldValues.isEmpty()) {

@@ -260,10 +260,11 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
         if (returnVal == null) {
             hasValidFalseReturn = true;
         } else if ((catchFalseReturnPC < 0) && (returnVal.intValue() == 0)) {
-            Set<String> sigs = findPossibleCatchSignatures(catchInfos, getPC());
+            int pc = getPC();
+            Set<String> sigs = findPossibleCatchSignatures(catchInfos, pc);
             for (String sig : sigs) {
                 if (!sig.isEmpty()) {
-                    catchFalseReturnPC = getPC();
+                    catchFalseReturnPC = pc;
                     break;
                 }
             }
