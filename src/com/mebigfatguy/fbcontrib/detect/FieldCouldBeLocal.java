@@ -63,8 +63,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Edge;
 
 /**
- * finds fields that are used in a locals only fashion, specifically private
- * fields that are accessed first in each method with a store vs. a load.
+ * finds fields that are used in a locals only fashion, specifically private fields that are accessed first in each method with a store vs. a load.
  */
 public class FieldCouldBeLocal extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -88,8 +87,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to collect localizable fields, and then report
-     * those that survive all method checks.
+     * overrides the visitor to collect localizable fields, and then report those that survive all method checks.
      *
      * @param classContext
      *            the context object that holds the JavaClass parsed
@@ -143,8 +141,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to navigate basic blocks looking for all first
-     * usages of fields, removing those that are read from first.
+     * overrides the visitor to navigate basic blocks looking for all first usages of fields, removing those that are read from first.
      *
      * @param obj
      *            the context object of the currently parsed method
@@ -184,10 +181,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to pass through constructors and static
-     * initializers to the byte code scanning code. These methods are not
-     * reported, but are used to build SourceLineAnnotations for fields, if
-     * accessed.
+     * implements the visitor to pass through constructors and static initializers to the byte code scanning code. These methods are not reported, but are used
+     * to build SourceLineAnnotations for fields, if accessed.
      *
      * @param obj
      *            the context object of the currently parsed code attribute
@@ -204,8 +199,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to add SourceLineAnnotations for fields in
-     * constructors and static initializers.
+     * implements the visitor to add SourceLineAnnotations for fields in constructors and static initializers.
      *
      * @param seen
      *            the opcode of the currently visited instruction
@@ -223,11 +217,9 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
     }
 
     /**
-     * looks in this basic block for the first access to the fields in
-     * uncheckedFields. Once found the item is removed from uncheckedFields, and
-     * removed from localizableFields if the access is a GETFIELD. If any
-     * unchecked fields remain, this method is recursively called on all
-     * outgoing edges of this basic block.
+     * looks in this basic block for the first access to the fields in uncheckedFields. Once found the item is removed from uncheckedFields, and removed from
+     * localizableFields if the access is a GETFIELD. If any unchecked fields remain, this method is recursively called on all outgoing edges of this basic
+     * block.
      *
      * @param bb
      *            this basic block
@@ -268,10 +260,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                                         return;
                                     }
                                 }
-                            } else {
-                                if (finfo != null) {
-                                    finfo.setSrcLineAnnotation(SourceLineAnnotation.fromVisitedInstruction(clsContext, this, ih.getPosition()));
-                                }
+                            } else if (finfo != null) {
+                                finfo.setSrcLineAnnotation(SourceLineAnnotation.fromVisitedInstruction(clsContext, this, ih.getPosition()));
                             }
                         }
                     }
@@ -279,7 +269,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                     INVOKESPECIAL is = (INVOKESPECIAL) ins;
 
                     ReferenceType rt = is.getReferenceType(cpg);
-                    if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg)) && ((rt instanceof ObjectType) && ((ObjectType) rt).getClassName().startsWith(clsContext.getJavaClass().getClassName() + '$'))) {
+                    if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg))
+                            && ((rt instanceof ObjectType) && ((ObjectType) rt).getClassName().startsWith(clsContext.getJavaClass().getClassName() + '$'))) {
                         localizableFields.clear();
                     }
                 } else if (ins instanceof INVOKEVIRTUAL) {
@@ -312,9 +303,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
     }
 
     /**
-     * builds up the method to field map of what method write to which fields
-     * this is one recursively so that if method A calls method B, and method B
-     * writes to field C, then A modifies F.
+     * builds up the method to field map of what method write to which fields this is one recursively so that if method A calls method B, and method B writes to
+     * field C, then A modifies F.
      *
      * @param classContext
      *            the context object of the currently parsed class
@@ -334,8 +324,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         private final boolean hasAnnotation;
 
         /**
-         * creates a FieldInfo from an annotation, and assumes no source line
-         * information
+         * creates a FieldInfo from an annotation, and assumes no source line information
          *
          * @param fa
          *            the field annotation for this field
@@ -394,10 +383,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
     }
 
     /**
-     * holds the parse state of the current basic block, and what fields are
-     * left to be checked the fields that are left to be checked are a reference
-     * from the parent block and a new collection is created on first write to
-     * the set to reduce memory concerns.
+     * holds the parse state of the current basic block, and what fields are left to be checked the fields that are left to be checked are a reference from the
+     * parent block and a new collection is created on first write to the set to reduce memory concerns.
      */
     private static class BlockState {
         private final BasicBlock basicBlock;
@@ -405,8 +392,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         private boolean fieldsAreSharedWithParent;
 
         /**
-         * creates a BlockState consisting of the next basic block to parse, and
-         * what fields are to be checked
+         * creates a BlockState consisting of the next basic block to parse, and what fields are to be checked
          *
          * @param bb
          *            the basic block to parse
@@ -420,8 +406,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         }
 
         /**
-         * creates a BlockState consisting of the next basic block to parse, and
-         * what fields are to be checked
+         * creates a BlockState consisting of the next basic block to parse, and what fields are to be checked
          *
          * @param bb
          *            the basic block to parse
@@ -453,8 +438,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         }
 
         /**
-         * return the field from the set of unchecked fields if this occurs make
-         * a copy of the set on write to reduce memory usage
+         * return the field from the set of unchecked fields if this occurs make a copy of the set on write to reduce memory usage
          *
          * @return whether the object was removed.
          */
