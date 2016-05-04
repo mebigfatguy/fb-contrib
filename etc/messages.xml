@@ -1669,7 +1669,8 @@
 			does not suffer the potential for <code>NullPointerException</code>s, and is easier to read.</p>
 			
 			<p>
-			Keep in mind that Java compiles simple <code>String</code> concatenation to use <code>StringBuilder</code>s, so you may see this bug even when you don't use <code>StringBuilder</code>s explicitly.
+			Keep in mind that Java compiles simple <code>String</code> concatenation to use <code>StringBuilder</code>s, 
+			so you may see this bug even when you don't use <code>StringBuilder</code>s explicitly.
 			</p>
 			
 			<p>
@@ -1929,6 +1930,14 @@
 			math is imprecise, rounding errors will accumulate over time each time the loop is
 			executed. It is usually better to use integer indexing, and calculate the new value
 			of the floating point number at the top of the loop body.</p>
+			<p>Example:
+			<code>
+			for (float f = 1.0f; f <= 10.0f; f+= 0.1f) {
+				System.out.println(f);
+			}
+			</code>
+			The last value printed may not be 10.0, but instead might be 9.900001 or such
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
