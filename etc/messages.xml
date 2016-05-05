@@ -4714,7 +4714,8 @@
             <![CDATA[
             <p>This class defines a field or local collection variable with a name that contains a different type
             of collection in its name. An example would be a Set<User> called userList. This is confusing to the reader,
-            and likely caused by a previous refactor of type, without changing the name.</p>
+            and likely caused by a previous refactor of type, without changing the name. This detector is obviously
+            only checking for english names.</p>
             ]]> 
         </Details>
 	</BugPattern>
@@ -4739,7 +4740,9 @@
 	       <p>This method defines parameters that are never used. As this method is either static of private,
 	       and can't be derived from, it is safe to remove these parameters and simplify your method.
 	       You should consider, while unlikely, that this method may be used reflectively, and thus you will
-	       want to change that call as well.</p>
+	       want to change that call as well. It is likely once you remove the parameter, there will be
+	       a chain of method calls that have spent time creating this parameter and passing it down the line.
+	       All of this may be able to be removed.</p>
 	       ]]>
 	   </Details>
 	</BugPattern>
