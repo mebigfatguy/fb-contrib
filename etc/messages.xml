@@ -4392,6 +4392,12 @@
 			of a design flaw in the Properties class by deriving from Hashtable instead of using aggregation.
 			If you want a collection that holds other types of objects, use a Hashtable, or better still newer collections
 			like HashMap or TreeMap.</p>
+			<p>
+			Don't use <code>properties.put("foo", bar);</code>
+			</p>
+			<p>
+			Do use <code>properties.setProperty("foo", "bar");</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4404,6 +4410,12 @@
 			<p>This method uses the inherited method from Hashtable put(String key, Object value) in
 			a Properties object. Since the Properties object was intended to be only a String to String
 			map, use of the derived put method is discouraged. Use the Properties.setProperty method instead.</p>
+			<p>
+			Don't use <code>properties.put("foo", "bar");</code>
+			</p>
+			<p>
+			Do use <code>properties.setProperty("foo", "bar");</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
