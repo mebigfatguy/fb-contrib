@@ -115,13 +115,13 @@
 			If a RuntimeException is declared, it implies that this exception type is expected to happen,
 			which if true should be handled in code, and not propagated. </p>
 			<p>It is a fast detector.</p>
-			<p> as an example, every method could be declared like this
+			<p>As an example, every method could be declared like this:
 			<code>
 			public void foo() throws NullPointerException {
 			}
 			</code>
-			But what does that tell you? Is this method very very likely to throw NullPointerExceptoins? 
-			If it is, why isn't this method handling them so that exceptions aren't thrown. So don't do this
+			But what does that tell you? Is this method very very likely to throw NullPointerExceptions?
+			If it is, why isn't this method handling them so that exceptions aren't thrown. So don't do this.
 			If an NPE is very likely, then check for it, and handle the situation.
 			</p>
 			]]>
@@ -155,7 +155,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.PartiallyConstructedObjectAccess">
 		<Details>
 			<![CDATA[
-			<p>Looks for constructors of non final classes that make method calls to non final methods.
+			<p>Looks for constructors of non-final classes that make method calls to non-final methods.
 			As these methods could be overridden, the overridden method will be accessing an object that
 			is only partially constructed, perhaps causing problems. Making these called methods final is
 			an easy fix, where possible.</p>
@@ -500,7 +500,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for uses of JDBC vendor specific classes and methods making the database
-			access code non portable.</p>
+			access code non-portable.</p>
 			<p>It is a fast detector.</p>
 			]]>
 		</Details>
@@ -986,7 +986,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that are declared to return a Boolean, but return a null
-			value. As this now allows the method to return 3 values, the use of Boolean is
+			value. As this now allows the method to return three values, the use of Boolean is
 			dubious. It would be better to just define a new enumeration with three values,
 			and return that.</p>
 			<p>It is a fast detector.</p>
@@ -1561,7 +1561,7 @@
     	<Details>
     		<![CDATA[
     		<p>Looks for problems with the use of the JAX-RS specification.</p>
-    		<p>It is a fast detector</p>
+    		<p>It is a fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1571,7 +1571,7 @@
     		<![CDATA[
     		<p>Looks for problems with the use of the JPA specification, including spring's
     		support of JPA</p>
-    		<p>It is a fast detector</p>
+    		<p>It is a fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1581,9 +1581,9 @@
     		<![CDATA[
     		<p>Looks for conditional expressions that are a combination of simple local variable (in)equalities
     		and tests on the results of method calls where the method calls are done first. By placing the simple
-    		conditions first you may elminate costly calls in certain cases. This assumes that the method calls
+    		conditions first you may eliminate costly calls in certain cases. This assumes that the method calls
     		do not have side effects that should happen always.</p>
-    		<p>It is a fast detector</p>
+    		<p>It is a fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1592,7 +1592,7 @@
     	<Details>
     		<![CDATA[
     		<p>Looks for various issues around doing I/O with streams and reader/writers.</p>
-    		<p>It is a fast detector</p>
+    		<p>It is a fast detector.</p>
     		]]>
     	</Details>
     </Detector>
@@ -1846,7 +1846,7 @@
 			<p>This class defines a field based on java.util.List, but uses it to some extent like a Set. Since
 			lookup type operations are performed using a linear search for Lists, the performance for large
 			Lists will be poor. If the list is known to only contain a small number of items, (3,4, etc) then it doesn't matter.
-			Otherwise, consider changing this fields implementation to a set based one. If order of
+			Otherwise, consider changing this fields implementation to a set-based one. If order of
 			iteration is important to maintain insert order, perhaps consider a LinkedHashSet.</p>
 			]]>
 		</Details>
@@ -1932,11 +1932,11 @@
 			of the floating point number at the top of the loop body.</p>
 			<p>Example:
 			<code>
-			for (float f = 1.0f; f <= 10.0f; f+= 0.1f) {
+			for (float f = 1.0f; f <= 10.0f; f += 0.1f) {
 				System.out.println(f);
 			}
 			</code>
-			The last value printed may not be 10.0, but instead might be 9.900001 or such
+			The last value printed may not be 10.0, but instead might be 9.900001 or such.
 			</p>
 			]]>
 		</Details>
@@ -2740,10 +2740,11 @@
 			that takes an initial cause parameter, use the initCause method to initialize it instead.</p>
 			<p>
 			<code>
-				catch (IOExcepion e) {
+				catch (IOException e) {
 					throw new MySpecialException("Failed to open configuration", e);
 				}
 			</code>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4100,13 +4101,13 @@
 			appear that the class that is being compared to this class knows about this class, and doesn't compare itself
 			to this.</p>
 			<p>
-			Here's an example of a BAD equals method, do NOT do this
+			Here's an example of a BAD equals method, do NOT do this:
 			<code>
 			class Person {
 			    public boolean equals(Object o) {
 			        if (o instanceof Person) {
-			            return name.equals((Person) o).name);
-			        } else if (o instanceof String) +
+			            return name.equals(((Person) o).name);
+			        } else if (o instanceof String) {
 			            return name.equals(o);
 			        }
 			        return false;
@@ -4727,7 +4728,7 @@
             <p>This class defines a field or local collection variable with a name that contains a different type
             of collection in its name. An example would be a Set<User> called userList. This is confusing to the reader,
             and likely caused by a previous refactor of type, without changing the name. This detector is obviously
-            only checking for english names.</p>
+            only checking for English names.</p>
             ]]> 
         </Details>
 	</BugPattern>
@@ -4749,7 +4750,7 @@
 	   <LongDescription>Static or private method {1} has unused parameters</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This method defines parameters that are never used. As this method is either static of private,
+	       <p>This method defines parameters that are never used. As this method is either static or private,
 	       and can't be derived from, it is safe to remove these parameters and simplify your method.
 	       You should consider, while unlikely, that this method may be used reflectively, and thus you will
 	       want to change that call as well. It is likely once you remove the parameter, there will be
@@ -5102,12 +5103,12 @@
     		<code>
     		int age = 0;
     		for (Person p : people) {
-    			if (p.getName.equals("Dave")) {
+    			if (p.getName().equals("Dave")) {
     				age = p.getAge();
     			}
     		}
     		</code>
-    		It is likely you wanted a break after getting the age for "Dave".
+    		It is likely you wanted a break after getting the age for "Dave".</p>
     		]]>
     	</Details>
     </BugPattern>
@@ -5160,8 +5161,8 @@
     		proper package structure, typically defined by the reverse of the domain name of the 
     		owner of the code base. Putting code in the default (no) package limits it usefulness, including
     		<ol>
-    		<li>Not able to import this class into classes with packages</li>
-    		<li>Leaves it open to name collisions with other packages.</li>
+    		<li>Not being able to import this class into classes with packages</li>
+    		<li>Leaving it open to name collisions with other packages.</li>
     		</ol>
     		</p>
     		]]>
@@ -5189,7 +5190,7 @@
     		<p>This method appears to have been generated from an interface or super class using an IDE.
     		As such the IDE generated generic names (arg0, arg1, arg2) for parameters for this method,
     		and the author of this method did not change them to be meaningful. For better understandability
-    		it is recommended that you name these parameters with regard to their function.
+    		it is recommended that you name these parameters with regard to their function.</p>
     		]]>
     	</Details>
     </BugPattern>
@@ -5201,7 +5202,7 @@
     		<![CDATA[
     		<p>This method prints a stack trace to the console. This is non configurable, and causes an 
     		application to look unprofessional. Switch to using loggers so that users can control what 
-    		is logged and where.
+    		is logged and where.</p>
     		]]>
     	</Details>
     </BugPattern>
@@ -5214,7 +5215,7 @@
     		<p>This JAX-RS endpoint is annotated to be used as @GET requests, but also documents that it
     		consumes JSON or XML data. Since a GET request pulls parameters from the URL, and not
     		the body of request, this pattern is problematic. If you wish to consume JSON or XML data,
-    		this request should be annotated with @POST.
+    		this request should be annotated with @POST.</p>
     		]]>
        	</Details>
     </BugPattern>
@@ -5261,7 +5262,7 @@
     		<![CDATA[
     		<p>This JAX-RS endpoint declares parameters without specifying where the value of this parameter comes from.
     		You can specify this by using one of several 'Param' annotations (@PathParam, @CookieParam, @FormParam @HeaderParam @MatrixParam @QueryParam),
-    		by adding a @Context parameter annotation, or you can declare that the method @Consumes an XML or JSON stream.
+    		by adding a @Context parameter annotation, or you can declare that the method @Consumes an XML or JSON stream.</p>
     		]]>
        	</Details>
     </BugPattern>
@@ -5271,9 +5272,9 @@
     	<LongDescription>Method {1} has a Spring @Transactional annotation on it, but is non-public</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method specifies a Spring @Transactional annotation but the method is defined as being non public.
-    		Spring only creates transactional boundaries on methods that are public, and so this annotation not doing 
-    		anything for this method. Make the method public, or place the annotation on a more appropriate method.
+    		<p>This method specifies a Spring @Transactional annotation but the method is defined as being non-public.
+    		Spring only creates transactional boundaries on methods that are public, and so this annotation is not doing
+    		anything for this method. Make the method public, or place the annotation on a more appropriate method.</p>
     		]]>
     	</Details>
     </BugPattern>
@@ -5287,7 +5288,7 @@
     		Since you do not control when that Id is created directly, it is risky to implement hashCode/equals for this
     		class, and especially for use with Collections, as the data behind the algorithms will not be immutable, and
     		thus cause problems when those fields change, and the object is in the collection. It is usually safer
-    		to not define hashCode and equals for entity objects, but treat them as objects for IdentityHashSet/Maps instead.
+    		to not define hashCode and equals for entity objects, but treat them as objects for IdentityHashSet/Maps instead.</p>
     		]]>
     	</Details>
     </BugPattern>
@@ -5309,10 +5310,10 @@
     	<LongDescription>OneToMany join specifies 1+n EAGER join</LongDescription>
     	<Details>
     	<![CDATA[
-    	<p>This JPA entity specifies a @OneToMany join with a fetch type of EAGER. By Default EAGER joins perform
+    	<p>This JPA entity specifies a @OneToMany join with a fetch type of EAGER. By default EAGER joins perform
     	select operations on each element returned from the original query in sequence, thus producing 1 + n queries.
     	If you are going to use EAGER joins, it is wise to specify a Join type by using @Fetch annotations in
-    	Hibernate or @JoinFetch/@BatchFetch annotations (or hints) in EclipseLink, for example. Even so, These
+    	Hibernate or @JoinFetch/@BatchFetch annotations (or hints) in EclipseLink, for example. Even so, these
     	annotations may only apply in limited cases, such as in the use of find.</p>
     	]]>
     	</Details>
@@ -5388,9 +5389,9 @@
     		<![CDATA[
     		<p>This method copies data from input to output using streams or reader/writers using a well known copy method, from java.nio, commons-io, 
     		springframework, guava or poi. These methods are efficient in that they copy these files using buffers. However this method is also 
-    		buffering the streams, causing a double buffering to occur. So data first goes to one buffer, then is copied too another buffer, before
-    		making it to the destination (or vice-versa). This just causes the copy operation to be inefficent both from a time perspective, as well
-    		as a memory allocation one. When using these copy methods, do not pass buffered streams/readers/writers.
+    		buffering the streams, causing a double buffering to occur. So data first goes to one buffer, then is copied to another buffer, before
+    		making it to the destination (or vice-versa). This just causes the copy operation to be inefficient both from a time perspective, as well
+    		as a memory allocation one. When using these copy methods, do not pass buffered streams/readers/writers.</p>
     		]]>
     	</Details>
     </BugPattern>
@@ -5402,7 +5403,7 @@
     		<![CDATA[
     		<p>This method copies data from a java.io.Reader derived class to an output class, using a bulk copy method
     		supplied by java.nio, commons-io, springframework, guava or poi. Since you are copying the entire stream, you
-    		don't care about it's contents, and thus using a Reader is wasteful as a reader has to do the hard work of
+    		don't care about its contents, and thus using a Reader is wasteful as a reader has to do the hard work of
     		converting byte data to characters, when there is no need to do this. Use stream based inputs for better performance.</p>
     		]]>
     	</Details>
