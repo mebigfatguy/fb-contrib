@@ -5368,6 +5368,15 @@
 			calls do not have side effects. If the method do have side effects, it is probably a better idea to pull these calls out of
 			the condition and execute them first, assigning a value to a local variable. In this way you give a hint that the call may have
 			side effects.</p>
+			<p>Example:
+			<code>
+			if ((calculateHaltingProbability() > 0) && shouldCalcHalting) { }
+			</code>
+			would be better as
+			<code>
+			if (shouldCalcHalting && (calculateHaltingProbability() > 0) { }
+			</code>
+			</p>
 			]]>
 		</Details>
     </BugPattern>
