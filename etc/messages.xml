@@ -4302,7 +4302,9 @@
 		<LongDescription>Method {1} attempts to manually schedule threads by calling method {2}</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>Manual thread scheduling with <code>Thread.sleep()</code> or <code>Thread.yield()</code> has no guaranteed semantics and is often used to mask race conditions.</p>
+			<p>Manual thread scheduling with <code>Thread.sleep()</code> or <code>Thread.yield()</code> has no guaranteed semantics and is often used to mask race conditions.
+			These methods exist for supporting early processors when java was first released, and are not advised for modern processors. The operating system will take care
+			of yielding threads for you.</p>
 			]]>
 		</Details>
 	</BugPattern>
