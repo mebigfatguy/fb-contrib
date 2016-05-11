@@ -3881,10 +3881,10 @@
 			However, SLF4J uses simple non numbered anchors such as {}, rather than anchors with digits in them as the
 			code uses. Thus no parameter replacement will occur.</p>
 			<p>This pattern is invalid:
-			<code>logger.error("%s is broken", theThing);</code>
+			<code>logger.error("{0} is broken", theThing);</code>
 			Use instead
 			<code>logger.error("{} is broken", theThing);</code>
-			</p>
+			</p>			
 			]]>
 		</Details>
 	</BugPattern>
