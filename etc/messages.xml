@@ -3888,6 +3888,23 @@
 			]]>
 		</Details>
 	</BugPattern>
+	
+		<BugPattern type="LO_INVALID_STRING_FORMAT_NOTATION">
+		<ShortDescription>Method attempts to log using String.format notation</ShortDescription>
+		<LongDescription>Method {1} attempts to log using String.format notation</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method attempts to use an SLF4J logger to log a parameterized expression using String.format notation.
+			However, SLF4J uses simple non numbered anchors such as {}, rather than anchors with percent signs in them as the
+			code uses. Thus no parameter replacement will occur.</p>
+			<p>This pattern is invalid:
+			<code>logger.error("%s is broken", theThing);</code>
+			Use instead
+			<code>logger.error("{} is broken", theThing);</code>
+			</p>			
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS">
 		<ShortDescription>Method passes an incorrect number of parameters to an SLF4J logging statement</ShortDescription>

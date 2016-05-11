@@ -69,8 +69,8 @@ public class LO_Sample {
     public void testInvalidSLF4jParm2() {
         // tag LO_INVALID_FORMATTING_ANCHOR
         l3.error("This is a problem %s", "hello");
-        l3.error("This is a problem %i", 1);
-        l3.error("This is a problem %d", 3.1);
+        l3.error("This is a problem %3$-2.3e", 1);
+        l3.error("This is a problem %5d", 3.1);
     }
 
     public void testLogAppending(String s) {

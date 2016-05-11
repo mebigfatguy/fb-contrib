@@ -48,10 +48,8 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for uses of log4j or slf4j where the class specified when creating the
- * logger is not the same as the class in which this logger is used. Also looks
- * for using concatenation with slf4j logging rather than using the
- * parameterized interface.
+ * looks for uses of log4j or slf4j where the class specified when creating the logger is not the same as the class in which this logger is used. Also looks for
+ * using concatenation with slf4j logging rather than using the parameterized interface.
  */
 @CustomUserValue
 public class LoggerOddities extends BytecodeScanningDetector {
@@ -65,16 +63,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
         }
     }
 
-    private static final Set<String> LOGGER_METHODS = UnmodifiableSet.create(
-        "trace",
-        "debug",
-        "info",
-        "warn",
-        "error",
-        "fatal"
-    );
+    private static final Set<String> LOGGER_METHODS = UnmodifiableSet.create("trace", "debug", "info", "warn", "error", "fatal");
 
     private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
+    private static final Pattern BAD_STRING_FORMAT_PATTERN = Pattern.compile("%([0-9]*\\$)?(-|#|\\+| |0|,|\\(|)?[0-9]*(\\.[0-9]+)?(b|h|s|c|d|o|x|e|f|g|a|t|%|n)");
     private static final Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
 
     private final BugReporter bugReporter;
@@ -92,8 +84,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to discover what the class name is if it is a
-     * normal class, or the owning class, if the class is an anonymous class.
+     * implements the visitor to discover what the class name is if it is a normal class, or the owning class, if the class is an anonymous class.
      *
      * @param classContext
      *            the context object of the currently parsed class
@@ -132,8 +123,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls to Logger.getLogger with the
-     * wrong class name
+     * implements the visitor to look for calls to Logger.getLogger with the wrong class name
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -235,7 +225,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * looks for a variety of logging issues with log statements
      *
-     * @throws ClassNotFoundException if the exception class, or a parent class can't be found
+     * @throws ClassNotFoundException
+     *             if the exception class, or a parent class can't be found
      */
     private void checkForProblemsWithLoggerMethods() throws ClassNotFoundException {
         String callingClsName = getClassConstantOperand();
@@ -248,8 +239,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
                     Object exReg = msgItem.getUserValue();
                     if (exReg instanceof Integer && (((Integer) exReg).intValue() == exItem.getRegisterNumber())) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
             } else if ("(Ljava/lang/Object;)V".equals(sig)) {
@@ -275,15 +266,22 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                 bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_FORMATTING_ANCHOR.name(), NORMAL_PRIORITY).addClass(this)
                                         .addMethod(this).addSourceLine(this));
                             } else {
-                                int actualParms = getSLF4JParmCount(signature);
-                                if (actualParms != -1) {
-                                    int expectedParms = countAnchors((String) con);
-                                    boolean hasEx = hasExceptionOnStack();
-                                    if ((!hasEx && (expectedParms != actualParms))
-                                            || (hasEx && ((expectedParms != (actualParms - 1)) && (expectedParms != actualParms)))) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY)
-                                                .addClass(this).addMethod(this).addSourceLine(this).addString("Expected: " + expectedParms)
-                                                .addString("Actual: " + actualParms));
+                                m = BAD_STRING_FORMAT_PATTERN.matcher((String) con);
+                                if (m.find()) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_STRING_FORMAT_NOTATION.name(), NORMAL_PRIORITY).addClass(this)
+                                            .addMethod(this).addSourceLine(this));
+                                } else {
+                                    int actualParms = getSLF4JParmCount(signature);
+                                    if (actualParms != -1) {
+                                        int expectedParms = countAnchors((String) con);
+                                        boolean hasEx = hasExceptionOnStack();
+                                        if ((!hasEx && (expectedParms != actualParms))
+                                                || (hasEx && ((expectedParms != (actualParms - 1)) && (expectedParms != actualParms)))) {
+                                            bugReporter
+                                                    .reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY)
+                                                            .addClass(this).addMethod(this).addSourceLine(this).addString("Expected: " + expectedParms)
+                                                            .addString("Actual: " + actualParms));
+                                        }
                                     }
                                 }
                             }
@@ -299,8 +297,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for slf4j calls where an exception is passed as a logger parameter, expecting to be substituted for a {}
-     * marker. As slf4j just passes the exception down to the message generation itself, the {} marker will go unpopulated.
+     * looks for slf4j calls where an exception is passed as a logger parameter, expecting to be substituted for a {} marker. As slf4j just passes the exception
+     * down to the message generation itself, the {} marker will go unpopulated.
      */
     private void checkForLoggerParam() {
         if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
@@ -326,9 +324,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for instantiation of a logger with what looks like a class name that isn't the same
-     * as the class in which it exists. There are some cases where a 'classname-like' string is
-     * presented purposely different than this class, and an attempt is made to ignore those.
+     * looks for instantiation of a logger with what looks like a class name that isn't the same as the class in which it exists. There are some cases where a
+     * 'classname-like' string is presented purposely different than this class, and an attempt is made to ignore those.
      */
     private void lookForSuspectClasses() {
         String callingClsName = getClassConstantOperand();
@@ -422,8 +419,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * returns the number of parameters slf4j is expecting to inject into the
-     * format string
+     * returns the number of parameters slf4j is expecting to inject into the format string
      *
      * @param signature
      *            the method signature of the error, warn, info, debug statement
@@ -444,8 +440,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether an exception object is on the stack slf4j will find this,
-     * and not include it in the parm list so i we find one, just don't report
+     * returns whether an exception object is on the stack slf4j will find this, and not include it in the parm list so i we find one, just don't report
      *
      * @return whether or not an exception i present
      */
