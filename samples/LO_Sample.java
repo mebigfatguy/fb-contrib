@@ -113,6 +113,10 @@ public class LO_Sample {
 
         l3.warn(sb.toString());
     }
+    
+    public void fpOKPattern() {
+        l3.error("Specify the path with %TEMP%");
+    }
 
     public class Inner {
         public void fpUseAnon() {
