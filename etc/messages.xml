@@ -4248,7 +4248,8 @@
 		<LongDescription>Method {1} triggers finalization when calling {2}</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>Manually triggering finalization can result in serious performance problems and may be masking resource cleanup bugs.</p>
+			<p>Manually triggering finalization can result in serious performance problems and may be masking resource cleanup bugs. 
+			Only the garbage collector should be concerned finalization and not application code.</p>
 			]]>
 		</Details>
 	</BugPattern>
