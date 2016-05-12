@@ -4258,7 +4258,10 @@
 		<LongDescription>Method {1} calls BigDecimal.equals(), which is normally a mistake</LongDescription>
 		<Details>
 			<![CDATA[
-			<p><code>equals()</code> being called to compare two <code>java.math.BigDecimal</code> numbers. This is normally a mistake, as two <code>BigDecimal</code> objects are only equal if they are equal in both value and scale, so that <i>2.0</i> is not equal to <i>2.00</i>. To compare <code>BigDecimal</code> objects for mathematical equality, use <code>compareTo()</code> instead.</p>
+			<p><code>equals()</code> being called to compare two <code>java.math.BigDecimal</code> numbers. 
+			This is normally a mistake, as two <code>BigDecimal</code> objects are only equal if they are 
+			equal in both value and scale, so that <i>2.0</i> is not equal to <i>2.00</i>. 
+			To compare <code>BigDecimal</code> objects for mathematical equality, use <code>compareTo()</code> instead.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4268,7 +4271,10 @@
 		<LongDescription>Method {1} calls InetAddress.getLocalHost(), which may be a security risk</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>Do not call <code>InetAddress.getLocalHost()</code> on multihomed servers. On a multihomed server, <code>InetAddress.getLocalHost()</code> simply returns the IP address associated with the server's internal hostname. This could be any of the network interfaces, which could expose the machine to security risks. Server applications that need to listen on sockets should add configurable properties to define which network interfaces the server should bind.</p>
+			<p>Do not call <code>InetAddress.getLocalHost()</code> on multihomed servers. On a multihomed server, 
+			<code>InetAddress.getLocalHost()</code> simply returns the IP address associated with the server's internal hostname. 
+			This could be any of the network interfaces, which could expose the machine to security risks. Server applications 
+			that need to listen on sockets should add configurable properties to define which network interfaces the server should bind.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4278,7 +4284,11 @@
 		<LongDescription>Method {1} creates a promiscuous ServerSocket, which may be a security risk</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>Do not use the <code>ServerSocket</code> constructor or <code>ServerSocketFactory.createServerSocket()</code> factory methods that accepts connections on any network interface. By default, an application that listens on a socket will listen for connection attempts on any network interface, which can be a security risk. Only the long form the <code>ServerSocket</code> constructor or <code>ServerSocketFactory.createServerSocket()</code> factory methods take a specific local address to define which network interface the socket should bind.</p>
+			<p>Do not use the <code>ServerSocket</code> constructor or <code>ServerSocketFactory.createServerSocket()</code> factory methods that 
+			accepts connections on any network interface. By default, an application that listens on a socket will listen for connection attempts 
+			on any network interface, which can be a security risk. Only the long form the <code>ServerSocket</code> constructor or 
+			<code>ServerSocketFactory.createServerSocket()</code> factory methods take a specific local address to define which network interface 
+			the socket should bind.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4288,7 +4298,9 @@
 		<LongDescription>Method {1} creates an insecure Random object, which may be a security risk</LongDescription>
 		<Details>
 			<![CDATA[
-			<p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: <code>System.currentTimeMillis()</code>. Initialize seed like <code>new Random(SecureRandom.getInstance("SHA1PRNG").nextLong())</code> or replace <code>Random()</code> with <code>SecureRandom.getInstance("SHA1PRNG")</code> instead.
+			<p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: 
+			<code>System.currentTimeMillis()</code>. Initialize seed like <code>new Random(SecureRandom.getInstance("SHA1PRNG").nextLong())</code> 
+			or replace <code>Random()</code> with <code>SecureRandom.getInstance("SHA1PRNG")</code> instead.
 			"SHA1PRNG" is the random algorithm supported on all platforms.
 		</p>
 
@@ -4304,7 +4316,8 @@
 		<LongDescription>Method {1} calls deprecated SecureRandom method {2}</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>In JDK 1.5 or less, the <code>SecureRandom()</code> constructors and <code>SecureRandom.getSeed()</code> method are recommended against using. Call <code>SecureRandom.getInstance()</code> and <code>SecureRandom.getInstance().generateSeed()</code> instead.</p>
+			<p>In JDK 1.5 or less, the <code>SecureRandom()</code> constructors and <code>SecureRandom.getSeed()</code> method are recommended against using. 
+			Call <code>SecureRandom.getInstance()</code> and <code>SecureRandom.getInstance().generateSeed()</code> instead.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4336,7 +4349,18 @@
 		<LongDescription>Method {1} sleeps without timeout when calling {2}</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>Calling one of the following methods without timeout could block forever. Consider using a timeout to detect deadlocks or performance problems. Methods: Thread.join(), Object.wait(), Condition.await(), Lock.lock(), Lock.lockInterruptibly(), ReentrantLock.lock(), ReentrantLock.lockInterruptibly()</p>
+			<p>Calling one of the following methods without timeout could block forever. Consider using a timeout to detect deadlocks or performance problems. 
+			Methods: 
+			<ul>
+			<li>Thread.join()</li>
+			<li>Object.wait()</li>
+			<li>Condition.await()</li>
+			<li>Lock.lock()</li> 
+			<li>Lock.lockInterruptibly()</li>
+			<li>ReentrantLock.lock()</li>
+			<li>ReentrantLock.lockInterruptibly()</li>
+			</ul>
+			</p>
 			]]>
 		</Details>
 	</BugPattern>
