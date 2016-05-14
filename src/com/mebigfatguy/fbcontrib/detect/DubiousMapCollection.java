@@ -106,38 +106,10 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         try {
 
             if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
-                String signature = getSigConstantOperand();
-                int numParms = Type.getArgumentTypes(signature).length;
-                if (stack.getStackDepth() <= numParms) {
-                    return;
-                }
-
-                OpcodeStack.Item item = stack.getStackItem(numParms);
-                XField xf = item.getXField();
-                if (xf == null) {
-                    return;
-                }
-
-                String fName = xf.getName();
-                if (!mapFields.containsKey(fName)) {
-                    return;
-                }
-
-                String mName = getNameConstantOperand();
-                if (MAP_METHODS.contains(mName)) {
-                    mapFields.remove(fName);
-                    return;
-                }
-
-                if (isInSpecial) {
-                    // TODO: Really we have to make sure that items are added to the map as 'constants'
-                    return;
-                }
-
-                if (MODIFYING_METHODS.contains(mName)) {
-                    mapFields.remove(fName);
-                    return;
-                }
+                processNormalInvoke();
+                processMethodCall();
+            } else if ((seen == INVOKESPECIAL) || (seen == INVOKESTATIC) || (seen == INVOKEDYNAMIC)) {
+                processMethodCall();
             } else if ((seen == ARETURN) || (OpcodeUtils.isAStore(seen))) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
@@ -155,6 +127,61 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
 
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    private void processNormalInvoke() {
+        String signature = getSigConstantOperand();
+        int numParms = Type.getArgumentTypes(signature).length;
+        if (stack.getStackDepth() <= numParms) {
+            return;
+        }
+
+        OpcodeStack.Item item = stack.getStackItem(numParms);
+        XField xf = item.getXField();
+        if (xf == null) {
+            return;
+        }
+
+        String fName = xf.getName();
+        if (!mapFields.containsKey(fName)) {
+            return;
+        }
+
+        String mName = getNameConstantOperand();
+        if (MAP_METHODS.contains(mName)) {
+            mapFields.remove(fName);
+            return;
+        }
+
+        if (isInSpecial) {
+            // TODO: Really we have to make sure that items are added to the map as 'constants'
+            return;
+        }
+
+        if (MODIFYING_METHODS.contains(mName)) {
+            mapFields.remove(fName);
+            return;
+        }
+    }
+
+    /**
+     * parses all the parameters of a called method and removes any of the parameters that are maps currently being looked at for this detector
+     */
+    private void processMethodCall() {
+        int numParams = Type.getArgumentTypes(getSigConstantOperand()).length;
+
+        int depth = stack.getStackDepth();
+        for (int i = 0; i < numParams; i++) {
+            if (depth > i) {
+                OpcodeStack.Item item = stack.getStackItem(i);
+                XField xf = item.getXField();
+                if (xf != null) {
+                    mapFields.remove(xf.getName());
+                }
+            } else {
+                return;
+            }
         }
     }
 
