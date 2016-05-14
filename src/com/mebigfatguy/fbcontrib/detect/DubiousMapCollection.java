@@ -118,10 +118,19 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                         mapFields.remove(xf.getName());
                     }
                 }
-            } else if ((!isInSpecial && (seen == PUTFIELD)) || (seen == PUTSTATIC)) {
+            } else if ((seen == PUTFIELD)) || (seen == PUTSTATIC)) {
                 XField xf = getXField();
                 if (xf != null) {
-                    mapFields.remove(xf.getName());
+                    if (!isInSpecial) {
+                        mapFields.remove(xf.getName());
+                    } else {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            if ((item.getRegisterNumber() >= 0) || (item.getXField() != null)) {
+                                mapFields.remove(xf.getName());
+                            }
+                        }
+                    }
                 }
             }
 
