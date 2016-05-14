@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
@@ -106,7 +105,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
 
         try {
 
-            if ((seen == Constants.INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
+            if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
                 String signature = getSigConstantOperand();
                 int numParms = Type.getArgumentTypes(signature).length;
                 if (stack.getStackDepth() <= numParms) {
@@ -146,6 +145,11 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                     if (xf != null) {
                         mapFields.remove(xf.getName());
                     }
+                }
+            } else if ((!isInSpecial && (seen == PUTFIELD)) || (seen == PUTSTATIC)) {
+                XField xf = getXField();
+                if (xf != null) {
+                    mapFields.remove(xf.getName());
                 }
             }
 
