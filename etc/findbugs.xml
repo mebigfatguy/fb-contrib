@@ -298,6 +298,9 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.IOIssues" speed="fast" reports="IOI_DOUBLE_BUFFER_COPY,IOI_COPY_WITH_READER"/>
     
     <!-- COMMENT OUT FOR POINT RELEASE --> 
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.DubiousMapCollection" speed="fast" reports="DMC_DUBIOUS_MAP_COLLECTION"/>
+    
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -551,15 +554,16 @@
 	<BugPattern abbrev="JXI" type="JXI_INVALID_CONTEXT_PARAMETER_TYPE" category="CORRECTNESS" />
 	<BugPattern abbrev="JXI" type="JXI_PARM_PARAM_NOT_FOUND_IN_PATH" category="CORRECTNESS" />
 	<BugPattern abbrev="JXI" type="JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" category="CORRECTNESS" />
-	<BugPattern abbrev="JPAI" type="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="JPAI" type="JPAI_HC_EQUALS_ON_MANAGED_ENTITY" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="JPAI" type="JPAI_NON_PROXIED_TRANSACTION_CALL" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="JPAI" type="JPAI_INEFFICIENT_EAGER_FETCH" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="JPAI" type="JPAI_IGNORED_MERGE_RESULT" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="JPAI" type="JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="JPAI" type="JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="SEO" type="SEO_SUBOPTIMAL_EXPRESSION_ORDER" category="PERFORMANCE" experimental="true"/>
-	<BugPattern abbrev="IOI" type="IOI_DOUBLE_BUFFER_COPY" category="PERFORMANCE" experimental="true"/>
-	<BugPattern abbrev="IOI" type="IOI_COPY_WITH_READER" category="PERFORMANCE" experimental="true"/>
+	<BugPattern abbrev="JPAI" type="JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD" category="CORRECTNESS"/>
+	<BugPattern abbrev="JPAI" type="JPAI_HC_EQUALS_ON_MANAGED_ENTITY" category="CORRECTNESS"/>
+	<BugPattern abbrev="JPAI" type="JPAI_NON_PROXIED_TRANSACTION_CALL" category="CORRECTNESS"/>
+	<BugPattern abbrev="JPAI" type="JPAI_INEFFICIENT_EAGER_FETCH" category="CORRECTNESS"/>
+	<BugPattern abbrev="JPAI" type="JPAI_IGNORED_MERGE_RESULT" category="CORRECTNESS"/>
+	<BugPattern abbrev="JPAI" type="JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING" category="CORRECTNESS"/>
+	<BugPattern abbrev="JPAI" type="JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING" category="CORRECTNESS"/>
+	<BugPattern abbrev="SEO" type="SEO_SUBOPTIMAL_EXPRESSION_ORDER" category="PERFORMANCE"/>
+	<BugPattern abbrev="IOI" type="IOI_DOUBLE_BUFFER_COPY" category="PERFORMANCE"/>
+	<BugPattern abbrev="IOI" type="IOI_COPY_WITH_READER" category="PERFORMANCE"/>
+	<BugPattern abbrev="DMC" type="DMC_DUBIOUS_MAP_COLLECTION" category="CORRECTNESS" experimental="true"/>
 	
 </FindbugsPlugin>

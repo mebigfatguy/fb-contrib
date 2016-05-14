@@ -1596,6 +1596,17 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.DubiousMapCollection">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for use of maps that are private fields in a List only way, that is, maps that are created in constructors
+    		or static initializers, and are only iterated over. Often this is done because the Map allows for two values, as opposed
+    		to a List. The Fix is to just create a List of some object that holds all the values.</p>
+    		<p>It is a fast detector.</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5457,6 +5468,20 @@
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="DMC_DUBIOUS_MAP_COLLECTION">
+    	<ShortDescription>Class holds a map-type field, but uses it as only a List</ShortDescription>
+    	<LongDescription>Class {0} holds a map-type field {1}, but uses it as only a List</LongDescription>
+    	<Details>
+	    	<![CDATA[
+	    	<p>This method instantiates a map-type field in a static initializer or constructor, but then only uses it through iteration.
+	    	This means that this data structure should really just be a List<SomeObject>, where the class held by the list contains the two 
+	    	fields held by the key and value of the Map. It was likely done this way to avoid having to create a class, but this just obfuscates
+	    	the purpose of the field.
+	    	</p>
+	    	]]>	
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5591,4 +5616,5 @@
 	<BugCode abbrev="JPAI">JPA Issues</BugCode>
 	<BugCode abbrev="SEO">Suboptimal Expression Order</BugCode>
 	<BugCode abbrev="IOI">IO Issues</BugCode>
+	<BugCode abbrev="DMC">Dubious Map Collection</BugCode>
 </MessageCollection>
