@@ -12,6 +12,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -105,7 +106,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
 
         try {
 
-            if (seen == Constants.INVOKEINTERFACE) {
+            if ((seen == Constants.INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
                 String signature = getSigConstantOperand();
                 int numParms = Type.getArgumentTypes(signature).length;
                 if (stack.getStackDepth() <= numParms) {
@@ -137,6 +138,14 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                 if (MODIFYING_METHODS.contains(mName)) {
                     mapFields.remove(fName);
                     return;
+                }
+            } else if ((seen == ARETURN) || (OpcodeUtils.isAStore(seen))) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    XField xf = item.getXField();
+                    if (xf != null) {
+                        mapFields.remove(xf.getName());
+                    }
                 }
             }
 
