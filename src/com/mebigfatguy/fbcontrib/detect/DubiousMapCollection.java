@@ -119,7 +119,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                     }
                 }
             } else if ((seen == PUTFIELD) || (seen == PUTSTATIC)) {
-                XField xf = getXField();
+                XField xf = getXFieldOperand();
                 if (xf != null) {
                     if (!isInSpecial) {
                         mapFields.remove(xf.getName());
