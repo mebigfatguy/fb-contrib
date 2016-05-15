@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<BugCollection version="3.0.2-dev-20150525-a8ecbcc" sequence="0" timestamp="1460502579474" analysisTimestamp="1460502579617" release="">
+<BugCollection version="3.0.2-dev-20150525-a8ecbcc" sequence="0" timestamp="1463337931483" analysisTimestamp="1463337931632" release="">
   <Project projectName="Samples">
     <Jar>/home/dave/dev/fb-contrib/target/classes/samples</Jar>
     <AuxClasspathEntry>/home/dave/dev/fb-contrib/lib/javax.servlet.jsp-api-2.3.1.jar</AuxClasspathEntry>
@@ -926,6 +926,25 @@
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.COPY_VALUE" value="true"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="x"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+  </BugInstance>
+  <BugInstance type="DMC_DUBIOUS_MAP_COLLECTION" priority="2" rank="7" abbrev="DMC" category="CORRECTNESS" instanceHash="668b859349104b4aa3cd8b18cc68b16d" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class holds a map-type field, but uses it as only a List</ShortMessage>
+    <LongMessage>Class BAS_Sample holds a map-type field BAS_Sample.m, but uses it as only a List</LongMessage>
+    <Class classname="BAS_Sample" primary="true">
+      <SourceLine classname="BAS_Sample" start="14" end="219" sourcefile="BAS_Sample.java" sourcepath="BAS_Sample.java">
+        <Message>At BAS_Sample.java:[lines 14-219]</Message>
+      </SourceLine>
+      <Message>In class BAS_Sample</Message>
+    </Class>
+    <Field classname="BAS_Sample" name="m" signature="Ljava/util/Map;" isStatic="false" primary="true">
+      <SourceLine classname="BAS_Sample" sourcefile="BAS_Sample.java" sourcepath="BAS_Sample.java">
+        <Message>In BAS_Sample.java</Message>
+      </SourceLine>
+      <Message>Field BAS_Sample.m</Message>
+    </Field>
+    <SourceLine classname="BAS_Sample" sourcefile="BAS_Sample.java" sourcepath="BAS_Sample.java" synthetic="true">
+      <Message>In BAS_Sample.java</Message>
+    </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="6023f3c8a003978ad4b3fe683b28e6aa" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class is defined in the default package</ShortMessage>
@@ -5532,6 +5551,55 @@
       <Message>At DLC_Sample.java:[line 13]</Message>
     </SourceLine>
   </BugInstance>
+  <BugInstance type="DMC_DUBIOUS_MAP_COLLECTION" priority="2" rank="7" abbrev="DMC" category="CORRECTNESS" instanceHash="884fbbb9171f361256feaf1c12aec950" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class holds a map-type field, but uses it as only a List</ShortMessage>
+    <LongMessage>Class DMC_Sample holds a map-type field DMC_Sample.STUFF, but uses it as only a List</LongMessage>
+    <Class classname="DMC_Sample" primary="true">
+      <SourceLine classname="DMC_Sample" start="4" end="26" sourcefile="DMC_Sample.java" sourcepath="DMC_Sample.java">
+        <Message>At DMC_Sample.java:[lines 4-26]</Message>
+      </SourceLine>
+      <Message>In class DMC_Sample</Message>
+    </Class>
+    <Field classname="DMC_Sample" name="STUFF" signature="Ljava/util/Map;" isStatic="true" primary="true">
+      <SourceLine classname="DMC_Sample" sourcefile="DMC_Sample.java" sourcepath="DMC_Sample.java">
+        <Message>In DMC_Sample.java</Message>
+      </SourceLine>
+      <Message>Field DMC_Sample.STUFF</Message>
+    </Field>
+    <SourceLine classname="DMC_Sample" sourcefile="DMC_Sample.java" sourcepath="DMC_Sample.java" synthetic="true">
+      <Message>In DMC_Sample.java</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="e5791fdd78d721bb2cd42747d1574d39" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class is defined in the default package</ShortMessage>
+    <LongMessage>Class DMC_Sample id defined in the default package</LongMessage>
+    <Class classname="DMC_Sample" primary="true">
+      <SourceLine classname="DMC_Sample" start="4" end="26" sourcefile="DMC_Sample.java" sourcepath="DMC_Sample.java">
+        <Message>At DMC_Sample.java:[lines 4-26]</Message>
+      </SourceLine>
+      <Message>In class DMC_Sample</Message>
+    </Class>
+    <SourceLine classname="DMC_Sample" start="4" end="26" sourcefile="DMC_Sample.java" sourcepath="DMC_Sample.java" synthetic="true">
+      <Message>At DMC_Sample.java:[lines 4-26]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="SBSC_USE_STRINGBUFFER_CONCATENATION" priority="2" rank="18" abbrev="SBSC" category="PERFORMANCE" instanceHash="bcda3dd4b22b7774abbafb2a4b59347c" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Method concatenates strings using + in a loop</ShortMessage>
+    <LongMessage>DMC_Sample.getInfo(boolean) concatenates strings using + in a loop</LongMessage>
+    <Class classname="DMC_Sample" primary="true">
+      <SourceLine classname="DMC_Sample" start="4" end="26" sourcefile="DMC_Sample.java" sourcepath="DMC_Sample.java">
+        <Message>At DMC_Sample.java:[lines 4-26]</Message>
+      </SourceLine>
+      <Message>In class DMC_Sample</Message>
+    </Class>
+    <Method classname="DMC_Sample" name="getInfo" signature="(Z)Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="DMC_Sample" start="18" end="26" startBytecode="0" endBytecode="219" sourcefile="DMC_Sample.java" sourcepath="DMC_Sample.java"/>
+      <Message>In method DMC_Sample.getInfo(boolean)</Message>
+    </Method>
+    <SourceLine classname="DMC_Sample" primary="true" start="22" end="22" startBytecode="54" endBytecode="54" sourcefile="DMC_Sample.java" sourcepath="DMC_Sample.java">
+      <Message>At DMC_Sample.java:[line 22]</Message>
+    </SourceLine>
+  </BugInstance>
   <BugInstance type="DRE_DECLARED_RUNTIME_EXCEPTION" priority="2" rank="17" abbrev="DRE" category="STYLE" instanceHash="725464e634399026efea5f00069e6640" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method declares RuntimeException in throws clause</ShortMessage>
     <LongMessage>Method DRE_Sample.test1(int) declares RuntimeException in throws clause</LongMessage>
@@ -8938,7 +9006,7 @@
       <Message>At ISB_Sample.java:[lines 5-127]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="ISB_EMPTY_STRING_APPENDING" priority="2" rank="18" abbrev="ISB" category="PERFORMANCE" instanceHash="efbc83a260f2cd0bfb8c929c8445fe8c" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+  <BugInstance type="ISB_EMPTY_STRING_APPENDING" priority="3" rank="20" abbrev="ISB" category="PERFORMANCE" instanceHash="efbc83a260f2cd0bfb8c929c8445fe8c" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method concatenates an empty string to effect type conversion</ShortMessage>
     <LongMessage>Method ISB_Sample.testISB6(int) concatenates an empty string to effect type conversion</LongMessage>
     <Class classname="ISB_Sample" primary="true">
@@ -10710,8 +10778,8 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to e in LO_Sample.testParmInExMessage()</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -10733,51 +10801,51 @@
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class LO_Sample id defined in the default package</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
-    <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java" synthetic="true">
-      <Message>At LO_Sample.java:[lines 15-108]</Message>
+    <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java" synthetic="true">
+      <Message>At LO_Sample.java:[lines 15-119]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_TOSTRING" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="6739cccfd775cef7a7ac8b4627a43d98" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class does not implement a toString method</ShortMessage>
     <LongMessage>Class LO_Sample does not implement a toString method</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
-    <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java" synthetic="true">
-      <Message>At LO_Sample.java:[lines 15-108]</Message>
+    <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java" synthetic="true">
+      <Message>At LO_Sample.java:[lines 15-119]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="LO_APPENDED_STRING_IN_FORMAT_STRING" priority="2" rank="18" abbrev="LO" category="PERFORMANCE" instanceHash="e89064dcc937196c01737dac2304f540" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method passes a concatenated string to SLF4J&apos;s format string</ShortMessage>
     <LongMessage>Method LO_Sample.testLogAppending(String) passes a concatenated string to SLF4J&apos;s format string</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
     <Method classname="LO_Sample" name="testLogAppending" signature="(Ljava/lang/String;)V" isStatic="false" primary="true">
-      <SourceLine classname="LO_Sample" start="72" end="76" startBytecode="0" endBytecode="158" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <SourceLine classname="LO_Sample" start="79" end="83" startBytecode="0" endBytecode="158" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
       <Message>In method LO_Sample.testLogAppending(String)</Message>
     </Method>
-    <SourceLine classname="LO_Sample" primary="true" start="72" end="72" startBytecode="22" endBytecode="22" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-      <Message>At LO_Sample.java:[line 72]</Message>
+    <SourceLine classname="LO_Sample" primary="true" start="79" end="79" startBytecode="22" endBytecode="22" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 79]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="LO_EXCEPTION_WITH_LOGGER_PARMS" priority="2" rank="7" abbrev="LO" category="CORRECTNESS" instanceHash="3f4cf49ddc8401a004b3019f4abe28b2" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method creates exception with logger parameter markers in message</ShortMessage>
     <LongMessage>Method LO_Sample.testParmInExMessage() creates exception with logger parameter markers in message</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -10793,17 +10861,17 @@
     <ShortMessage>Method passes an incorrect number of parameters to an SLF4J logging statement</ShortMessage>
     <LongMessage>Method LO_Sample.testWrongNumberOfParms() passes an incorrect number of parameters to an SLF4J logging statement</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
     <Method classname="LO_Sample" name="testWrongNumberOfParms" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="LO_Sample" start="80" end="90" startBytecode="0" endBytecode="165" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <SourceLine classname="LO_Sample" start="87" end="97" startBytecode="0" endBytecode="165" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
       <Message>In method LO_Sample.testWrongNumberOfParms()</Message>
     </Method>
-    <SourceLine classname="LO_Sample" primary="true" start="80" end="80" startBytecode="9" endBytecode="9" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-      <Message>At LO_Sample.java:[line 80]</Message>
+    <SourceLine classname="LO_Sample" primary="true" start="87" end="87" startBytecode="9" endBytecode="9" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 87]</Message>
     </SourceLine>
     <String value="Expected: 1">
       <Message>Value Expected: 1</Message>
@@ -10816,17 +10884,17 @@
     <ShortMessage>Method passes an incorrect number of parameters to an SLF4J logging statement</ShortMessage>
     <LongMessage>Method LO_Sample.testWrongNumberOfParms() passes an incorrect number of parameters to an SLF4J logging statement</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
     <Method classname="LO_Sample" name="testWrongNumberOfParms" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="LO_Sample" start="80" end="90" startBytecode="0" endBytecode="165" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <SourceLine classname="LO_Sample" start="87" end="97" startBytecode="0" endBytecode="165" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
       <Message>In method LO_Sample.testWrongNumberOfParms()</Message>
     </Method>
-    <SourceLine classname="LO_Sample" primary="true" start="82" end="82" startBytecode="21" endBytecode="21" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-      <Message>At LO_Sample.java:[line 82]</Message>
+    <SourceLine classname="LO_Sample" primary="true" start="89" end="89" startBytecode="21" endBytecode="21" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 89]</Message>
     </SourceLine>
     <String value="Expected: 2">
       <Message>Value Expected: 2</Message>
@@ -10839,17 +10907,17 @@
     <ShortMessage>Method passes an incorrect number of parameters to an SLF4J logging statement</ShortMessage>
     <LongMessage>Method LO_Sample.testWrongNumberOfParms() passes an incorrect number of parameters to an SLF4J logging statement</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
     <Method classname="LO_Sample" name="testWrongNumberOfParms" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="LO_Sample" start="80" end="90" startBytecode="0" endBytecode="165" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <SourceLine classname="LO_Sample" start="87" end="97" startBytecode="0" endBytecode="165" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
       <Message>In method LO_Sample.testWrongNumberOfParms()</Message>
     </Method>
-    <SourceLine classname="LO_Sample" primary="true" start="84" end="84" startBytecode="35" endBytecode="35" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-      <Message>At LO_Sample.java:[line 84]</Message>
+    <SourceLine classname="LO_Sample" primary="true" start="91" end="91" startBytecode="35" endBytecode="35" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 91]</Message>
     </SourceLine>
     <String value="Expected: 3">
       <Message>Value Expected: 3</Message>
@@ -10862,17 +10930,17 @@
     <ShortMessage>Method passes an incorrect number of parameters to an SLF4J logging statement</ShortMessage>
     <LongMessage>Method LO_Sample.testWrongNumberOfParms() passes an incorrect number of parameters to an SLF4J logging statement</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
     <Method classname="LO_Sample" name="testWrongNumberOfParms" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="LO_Sample" start="80" end="90" startBytecode="0" endBytecode="165" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <SourceLine classname="LO_Sample" start="87" end="97" startBytecode="0" endBytecode="165" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
       <Message>In method LO_Sample.testWrongNumberOfParms()</Message>
     </Method>
-    <SourceLine classname="LO_Sample" primary="true" start="86" end="86" startBytecode="64" endBytecode="64" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-      <Message>At LO_Sample.java:[line 86]</Message>
+    <SourceLine classname="LO_Sample" primary="true" start="93" end="93" startBytecode="64" endBytecode="64" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 93]</Message>
     </SourceLine>
     <String value="Expected: 4">
       <Message>Value Expected: 4</Message>
@@ -10885,8 +10953,8 @@
     <ShortMessage>Method attempts to log using numbered formatting anchors</ShortMessage>
     <LongMessage>Method LO_Sample.testInvalidSLF4jParm() attempts to log using numbered formatting anchors</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -10898,12 +10966,63 @@
       <Message>At LO_Sample.java:[line 66]</Message>
     </SourceLine>
   </BugInstance>
+  <BugInstance type="LO_INVALID_STRING_FORMAT_NOTATION" priority="2" rank="7" abbrev="LO" category="CORRECTNESS" instanceHash="15fa83dc5832aa4d1ed81881405868e6" instanceOccurrenceNum="0" instanceOccurrenceMax="2">
+    <ShortMessage>Method attempts to log using String.format notation</ShortMessage>
+    <LongMessage>Method LO_Sample.testInvalidSLF4jParm2() attempts to log using String.format notation</LongMessage>
+    <Class classname="LO_Sample" primary="true">
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
+      </SourceLine>
+      <Message>In class LO_Sample</Message>
+    </Class>
+    <Method classname="LO_Sample" name="testInvalidSLF4jParm2" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="LO_Sample" start="71" end="74" startBytecode="0" endBytecode="96" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <Message>In method LO_Sample.testInvalidSLF4jParm2()</Message>
+    </Method>
+    <SourceLine classname="LO_Sample" primary="true" start="71" end="71" startBytecode="7" endBytecode="7" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 71]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="LO_INVALID_STRING_FORMAT_NOTATION" priority="2" rank="7" abbrev="LO" category="CORRECTNESS" instanceHash="15fa83dc5832aa4d1ed81881405868e6" instanceOccurrenceNum="1" instanceOccurrenceMax="2">
+    <ShortMessage>Method attempts to log using String.format notation</ShortMessage>
+    <LongMessage>Method LO_Sample.testInvalidSLF4jParm2() attempts to log using String.format notation</LongMessage>
+    <Class classname="LO_Sample" primary="true">
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
+      </SourceLine>
+      <Message>In class LO_Sample</Message>
+    </Class>
+    <Method classname="LO_Sample" name="testInvalidSLF4jParm2" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="LO_Sample" start="71" end="74" startBytecode="0" endBytecode="96" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <Message>In method LO_Sample.testInvalidSLF4jParm2()</Message>
+    </Method>
+    <SourceLine classname="LO_Sample" primary="true" start="72" end="72" startBytecode="21" endBytecode="21" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 72]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="LO_INVALID_STRING_FORMAT_NOTATION" priority="2" rank="7" abbrev="LO" category="CORRECTNESS" instanceHash="15fa83dc5832aa4d1ed81881405868e6" instanceOccurrenceNum="2" instanceOccurrenceMax="2">
+    <ShortMessage>Method attempts to log using String.format notation</ShortMessage>
+    <LongMessage>Method LO_Sample.testInvalidSLF4jParm2() attempts to log using String.format notation</LongMessage>
+    <Class classname="LO_Sample" primary="true">
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
+      </SourceLine>
+      <Message>In class LO_Sample</Message>
+    </Class>
+    <Method classname="LO_Sample" name="testInvalidSLF4jParm2" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="LO_Sample" start="71" end="74" startBytecode="0" endBytecode="96" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <Message>In method LO_Sample.testInvalidSLF4jParm2()</Message>
+    </Method>
+    <SourceLine classname="LO_Sample" primary="true" start="73" end="73" startBytecode="37" endBytecode="37" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 73]</Message>
+    </SourceLine>
+  </BugInstance>
   <BugInstance type="LO_STUTTERED_MESSAGE" priority="2" rank="17" abbrev="LO" category="STYLE" instanceHash="3b03111da64f442c22408b465b01eaf0" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method stutters exception message in logger</ShortMessage>
     <LongMessage>Method LO_Sample.testStutter() stutters exception message in logger</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -10919,8 +11038,8 @@
     <ShortMessage>Method specifies an unrelated class when allocating a Logger</ShortMessage>
     <LongMessage>Method LO_Sample.&lt;static initializer for LO_Sample&gt;() specifies an unrelated class when allocating a Logger.  Saw &quot;java.lang.String&quot;, expected &quot;LO_Sample&quot;.</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -10942,8 +11061,8 @@
     <ShortMessage>Method specifies an unrelated class when allocating a Logger</ShortMessage>
     <LongMessage>Method LO_Sample.&lt;static initializer for LO_Sample&gt;() specifies an unrelated class when allocating a Logger.  Saw &quot;java.awt.event.ActionEvent&quot;, expected &quot;LO_Sample&quot;.</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -10965,8 +11084,8 @@
     <ShortMessage>Method specifies an unrelated class when allocating a Logger</ShortMessage>
     <LongMessage>Method LO_Sample.&lt;static initializer for LO_Sample&gt;() specifies an unrelated class when allocating a Logger.  Saw &quot;com.foo.LO_Sample&quot;, expected &quot;LO_Sample&quot;.</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -10988,8 +11107,8 @@
     <ShortMessage>Method specifies an unrelated class when allocating a Logger</ShortMessage>
     <LongMessage>Method LO_Sample.&lt;static initializer for LO_Sample&gt;() specifies an unrelated class when allocating a Logger.  Saw &quot;my.nasty.logger.LOGGER&quot;, expected &quot;LO_Sample&quot;.</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -11011,8 +11130,8 @@
     <ShortMessage>Constructor declares a Logger parameter</ShortMessage>
     <LongMessage>Constructor new LO_Sample(Logger) declares a Logger parameter</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -11028,8 +11147,8 @@
     <ShortMessage>Null pointer dereference in method on exception path</ShortMessage>
     <LongMessage>Null pointer dereference of is in LO_Sample.testStutter() on exception path</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -11052,8 +11171,8 @@
     <ShortMessage>Method may fail to clean up stream or resource</ShortMessage>
     <LongMessage>LO_Sample.testParmInExMessage() may fail to clean up java.io.InputStream</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -11087,8 +11206,8 @@
     <ShortMessage>This method is declared more permissively than is used in the code base</ShortMessage>
     <LongMessage>This method new LO_Sample(Logger) is declared more permissively than is used in the code base</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -11107,8 +11226,8 @@
     <ShortMessage>Method may fail to close stream</ShortMessage>
     <LongMessage>LO_Sample.testParmInExMessage() may fail to close stream</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -11130,25 +11249,25 @@
     <ShortMessage>Method passes constant String of length 1 to character overridden method</ShortMessage>
     <LongMessage>Method LO_Sample.testFPRealStringBuilderUser(List) passes constant String of length 1 to character overridden method</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
     <Method classname="LO_Sample" name="testFPRealStringBuilderUser" signature="(Ljava/util/List;)V" isStatic="false" primary="true">
-      <SourceLine classname="LO_Sample" start="102" end="108" startBytecode="0" endBytecode="192" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <SourceLine classname="LO_Sample" start="109" end="115" startBytecode="0" endBytecode="192" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
       <Message>In method LO_Sample.testFPRealStringBuilderUser(List)</Message>
     </Method>
-    <SourceLine classname="LO_Sample" primary="true" start="104" end="104" startBytecode="43" endBytecode="43" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-      <Message>At LO_Sample.java:[line 104]</Message>
+    <SourceLine classname="LO_Sample" primary="true" start="111" end="111" startBytecode="43" endBytecode="43" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 111]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="WEM_WEAK_EXCEPTION_MESSAGING" priority="3" rank="20" abbrev="WEM" category="STYLE" instanceHash="ffd4034ad43501380c88211a1c0f27c8" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method throws exception with static message string</ShortMessage>
     <LongMessage>Method LO_Sample.testParmInExMessage() throws exception with static message string</LongMessage>
     <Class classname="LO_Sample" primary="true">
-      <SourceLine classname="LO_Sample" start="15" end="108" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 15-108]</Message>
+      <SourceLine classname="LO_Sample" start="15" end="119" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 15-119]</Message>
       </SourceLine>
       <Message>In class LO_Sample</Message>
     </Class>
@@ -11164,20 +11283,20 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to l in LO_Sample$Inner.fpUseAnon()</LongMessage>
     <Class classname="LO_Sample$Inner" primary="true">
-      <SourceLine classname="LO_Sample$Inner" start="110" end="120" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 110-120]</Message>
+      <SourceLine classname="LO_Sample$Inner" start="121" end="131" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 121-131]</Message>
       </SourceLine>
       <Message>In class LO_Sample$Inner</Message>
     </Class>
     <Method classname="LO_Sample$Inner" name="fpUseAnon" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="LO_Sample$Inner" start="112" end="120" startBytecode="0" endBytecode="5" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <SourceLine classname="LO_Sample$Inner" start="123" end="131" startBytecode="0" endBytecode="5" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
       <Message>In method LO_Sample$Inner.fpUseAnon()</Message>
     </Method>
     <LocalVariable name="l" register="1" pc="9" role="LOCAL_VARIABLE_NAMED">
       <Message>Local variable named l</Message>
     </LocalVariable>
-    <SourceLine classname="LO_Sample$Inner" primary="true" start="112" end="112" startBytecode="8" endBytecode="8" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-      <Message>At LO_Sample.java:[line 112]</Message>
+    <SourceLine classname="LO_Sample$Inner" primary="true" start="123" end="123" startBytecode="8" endBytecode="8" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 123]</Message>
     </SourceLine>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.DEAD_OBJECT_STORE" value="true"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="l"/>
@@ -11187,60 +11306,60 @@
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class LO_Sample$Inner id defined in the default package</LongMessage>
     <Class classname="LO_Sample$Inner" primary="true">
-      <SourceLine classname="LO_Sample$Inner" start="110" end="120" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 110-120]</Message>
+      <SourceLine classname="LO_Sample$Inner" start="121" end="131" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 121-131]</Message>
       </SourceLine>
       <Message>In class LO_Sample$Inner</Message>
     </Class>
-    <SourceLine classname="LO_Sample$Inner" start="110" end="120" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java" synthetic="true">
-      <Message>At LO_Sample.java:[lines 110-120]</Message>
+    <SourceLine classname="LO_Sample$Inner" start="121" end="131" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java" synthetic="true">
+      <Message>At LO_Sample.java:[lines 121-131]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UC_USELESS_VOID_METHOD" priority="3" rank="20" abbrev="UC" category="STYLE" instanceHash="670d8169c12b22691838dfc415092b2d" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method LO_Sample$Inner.fpUseAnon() seems to be useless</LongMessage>
     <Class classname="LO_Sample$Inner" primary="true">
-      <SourceLine classname="LO_Sample$Inner" start="110" end="120" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 110-120]</Message>
+      <SourceLine classname="LO_Sample$Inner" start="121" end="131" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 121-131]</Message>
       </SourceLine>
       <Message>In class LO_Sample$Inner</Message>
     </Class>
     <Method classname="LO_Sample$Inner" name="fpUseAnon" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="LO_Sample$Inner" start="112" end="120" startBytecode="0" endBytecode="65" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <SourceLine classname="LO_Sample$Inner" start="123" end="131" startBytecode="0" endBytecode="65" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
       <Message>In method LO_Sample$Inner.fpUseAnon()</Message>
     </Method>
-    <SourceLine classname="LO_Sample$Inner" primary="true" start="120" end="120" startBytecode="9" endBytecode="9" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-      <Message>At LO_Sample.java:[line 120]</Message>
+    <SourceLine classname="LO_Sample$Inner" primary="true" start="131" end="131" startBytecode="9" endBytecode="9" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 131]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="8d9e579eb3c6b3a856015d2d2043301f" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class LO_Sample$Inner$1 id defined in the default package</LongMessage>
     <Class classname="LO_Sample$Inner$1" primary="true">
-      <SourceLine classname="LO_Sample$Inner$1" start="112" end="118" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 112-118]</Message>
+      <SourceLine classname="LO_Sample$Inner$1" start="123" end="129" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 123-129]</Message>
       </SourceLine>
       <Message>In class LO_Sample$Inner$1</Message>
     </Class>
-    <SourceLine classname="LO_Sample$Inner$1" start="112" end="118" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java" synthetic="true">
-      <Message>At LO_Sample.java:[lines 112-118]</Message>
+    <SourceLine classname="LO_Sample$Inner$1" start="123" end="129" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java" synthetic="true">
+      <Message>At LO_Sample.java:[lines 123-129]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="LO_SUSPECT_LOG_CLASS" priority="2" rank="7" abbrev="LO" category="CORRECTNESS" instanceHash="9a38f6e2585a52acb5d0b7b3b42cef89" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method specifies an unrelated class when allocating a Logger</ShortMessage>
     <LongMessage>Method LO_Sample$Inner$1.actionPerformed(ActionEvent) specifies an unrelated class when allocating a Logger.  Saw &quot;LO_Sample&quot;, expected &quot;LO_Sample$Inner&quot;.</LongMessage>
     <Class classname="LO_Sample$Inner$1" primary="true">
-      <SourceLine classname="LO_Sample$Inner$1" start="112" end="118" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-        <Message>At LO_Sample.java:[lines 112-118]</Message>
+      <SourceLine classname="LO_Sample$Inner$1" start="123" end="129" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+        <Message>At LO_Sample.java:[lines 123-129]</Message>
       </SourceLine>
       <Message>In class LO_Sample$Inner$1</Message>
     </Class>
     <Method classname="LO_Sample$Inner$1" name="actionPerformed" signature="(Ljava/awt/event/ActionEvent;)V" isStatic="false" primary="true">
-      <SourceLine classname="LO_Sample$Inner$1" start="115" end="118" startBytecode="0" endBytecode="80" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
+      <SourceLine classname="LO_Sample$Inner$1" start="126" end="129" startBytecode="0" endBytecode="80" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java"/>
       <Message>In method LO_Sample$Inner$1.actionPerformed(ActionEvent)</Message>
     </Method>
-    <SourceLine classname="LO_Sample$Inner$1" primary="true" start="117" end="117" startBytecode="12" endBytecode="12" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
-      <Message>At LO_Sample.java:[line 117]</Message>
+    <SourceLine classname="LO_Sample$Inner$1" primary="true" start="128" end="128" startBytecode="12" endBytecode="12" sourcefile="LO_Sample.java" sourcepath="LO_Sample.java">
+      <Message>At LO_Sample.java:[line 128]</Message>
     </SourceLine>
     <String value="LO_Sample">
       <Message>Value LO_Sample</Message>
@@ -26396,62 +26515,62 @@
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class SLS_Sample id defined in the default package</LongMessage>
     <Class classname="SLS_Sample" primary="true">
-      <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-        <Message>At SLS_Sample.java:[lines 4-52]</Message>
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
       </SourceLine>
       <Message>In class SLS_Sample</Message>
     </Class>
-    <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java" synthetic="true">
-      <Message>At SLS_Sample.java:[lines 4-52]</Message>
+    <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java" synthetic="true">
+      <Message>At SLS_Sample.java:[lines 4-72]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_TOSTRING" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="160d465966b745264a0897c4906a1211" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class does not implement a toString method</ShortMessage>
     <LongMessage>Class SLS_Sample does not implement a toString method</LongMessage>
     <Class classname="SLS_Sample" primary="true">
-      <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-        <Message>At SLS_Sample.java:[lines 4-52]</Message>
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
       </SourceLine>
       <Message>In class SLS_Sample</Message>
     </Class>
-    <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java" synthetic="true">
-      <Message>At SLS_Sample.java:[lines 4-52]</Message>
+    <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java" synthetic="true">
+      <Message>At SLS_Sample.java:[lines 4-72]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="NP_NULL_ON_SOME_PATH" priority="2" rank="8" abbrev="NP" category="CORRECTNESS" instanceHash="f64c1542d129a670ad4514f28893a793" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Possible null pointer dereference</ShortMessage>
     <LongMessage>Possible null pointer dereference of s in SLS_Sample.fpSetFlag(Map, String)</LongMessage>
     <Class classname="SLS_Sample" primary="true">
-      <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-        <Message>At SLS_Sample.java:[lines 4-52]</Message>
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
       </SourceLine>
       <Message>In class SLS_Sample</Message>
     </Class>
     <Method classname="SLS_Sample" name="fpSetFlag" signature="(Ljava/util/Map;Ljava/lang/String;)Z" isStatic="false" primary="true">
-      <SourceLine classname="SLS_Sample" start="33" end="41" startBytecode="0" endBytecode="217" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
+      <SourceLine classname="SLS_Sample" start="34" end="42" startBytecode="0" endBytecode="217" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
       <Message>In method SLS_Sample.fpSetFlag(Map, String)</Message>
     </Method>
     <LocalVariable name="s" register="5" pc="58" role="LOCAL_VARIABLE_VALUE_OF">
       <Message>Value loaded from s</Message>
     </LocalVariable>
-    <SourceLine classname="SLS_Sample" primary="true" start="37" end="37" startBytecode="59" endBytecode="59" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java" role="SOURCE_LINE_DEREF">
-      <Message>Dereferenced at SLS_Sample.java:[line 37]</Message>
+    <SourceLine classname="SLS_Sample" primary="true" start="38" end="38" startBytecode="59" endBytecode="59" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java" role="SOURCE_LINE_DEREF">
+      <Message>Dereferenced at SLS_Sample.java:[line 38]</Message>
     </SourceLine>
-    <SourceLine classname="SLS_Sample" start="35" end="35" startBytecode="39" endBytecode="39" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java" role="SOURCE_LINE_KNOWN_NULL">
-      <Message>Known null at SLS_Sample.java:[line 35]</Message>
+    <SourceLine classname="SLS_Sample" start="36" end="36" startBytecode="39" endBytecode="39" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java" role="SOURCE_LINE_KNOWN_NULL">
+      <Message>Known null at SLS_Sample.java:[line 36]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="NP_UNWRITTEN_FIELD" priority="2" rank="8" abbrev="NP" category="CORRECTNESS" instanceHash="4703c6a0fbbd760fa654664b13141d3d" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Read of unwritten field</ShortMessage>
     <LongMessage>Read of unwritten field name in SLS_Sample.fpCalcTotal(List, String)</LongMessage>
     <Class classname="SLS_Sample" primary="true">
-      <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-        <Message>At SLS_Sample.java:[lines 4-52]</Message>
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
       </SourceLine>
       <Message>In class SLS_Sample</Message>
     </Class>
     <Method classname="SLS_Sample" name="fpCalcTotal" signature="(Ljava/util/List;Ljava/lang/String;)I" isStatic="false" primary="true">
-      <SourceLine classname="SLS_Sample" start="45" end="52" startBytecode="0" endBytecode="195" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
+      <SourceLine classname="SLS_Sample" start="46" end="53" startBytecode="0" endBytecode="195" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
       <Message>In method SLS_Sample.fpCalcTotal(List, String)</Message>
     </Method>
     <Field classname="SLS_Sample" name="name" signature="Ljava/lang/String;" isStatic="false" primary="true">
@@ -26460,21 +26579,21 @@
       </SourceLine>
       <Message>Field SLS_Sample.name</Message>
     </Field>
-    <SourceLine classname="SLS_Sample" primary="true" start="47" end="47" startBytecode="38" endBytecode="38" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-      <Message>At SLS_Sample.java:[line 47]</Message>
+    <SourceLine classname="SLS_Sample" primary="true" start="48" end="48" startBytecode="38" endBytecode="38" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+      <Message>At SLS_Sample.java:[line 48]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="NP_UNWRITTEN_FIELD" priority="2" rank="8" abbrev="NP" category="CORRECTNESS" instanceHash="57414e3d0fac10d1dd39f04634f031f6" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Read of unwritten field</ShortMessage>
     <LongMessage>Read of unwritten field name in SLS_Sample.fpSetFlag(Map, String)</LongMessage>
     <Class classname="SLS_Sample" primary="true">
-      <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-        <Message>At SLS_Sample.java:[lines 4-52]</Message>
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
       </SourceLine>
       <Message>In class SLS_Sample</Message>
     </Class>
     <Method classname="SLS_Sample" name="fpSetFlag" signature="(Ljava/util/Map;Ljava/lang/String;)Z" isStatic="false" primary="true">
-      <SourceLine classname="SLS_Sample" start="33" end="41" startBytecode="0" endBytecode="217" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
+      <SourceLine classname="SLS_Sample" start="34" end="42" startBytecode="0" endBytecode="217" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
       <Message>In method SLS_Sample.fpSetFlag(Map, String)</Message>
     </Method>
     <Field classname="SLS_Sample" name="name" signature="Ljava/lang/String;" isStatic="false" primary="true">
@@ -26483,21 +26602,44 @@
       </SourceLine>
       <Message>Field SLS_Sample.name</Message>
     </Field>
-    <SourceLine classname="SLS_Sample" primary="true" start="35" end="35" startBytecode="48" endBytecode="48" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-      <Message>At SLS_Sample.java:[line 35]</Message>
+    <SourceLine classname="SLS_Sample" primary="true" start="36" end="36" startBytecode="48" endBytecode="48" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+      <Message>At SLS_Sample.java:[line 36]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="NP_UNWRITTEN_FIELD" priority="2" rank="8" abbrev="NP" category="CORRECTNESS" instanceHash="bdb923240f43fd54a24314ced6d805c" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
+    <ShortMessage>Read of unwritten field</ShortMessage>
+    <LongMessage>Read of unwritten field name in SLS_Sample.fpTwoSets(List, String, int, int)</LongMessage>
+    <Class classname="SLS_Sample" primary="true">
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
+      </SourceLine>
+      <Message>In class SLS_Sample</Message>
+    </Class>
+    <Method classname="SLS_Sample" name="fpTwoSets" signature="(Ljava/util/List;Ljava/lang/String;II)V" isStatic="false" primary="true">
+      <SourceLine classname="SLS_Sample" start="57" end="72" startBytecode="0" endBytecode="381" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
+      <Message>In method SLS_Sample.fpTwoSets(List, String, int, int)</Message>
+    </Method>
+    <Field classname="SLS_Sample" name="name" signature="Ljava/lang/String;" isStatic="false" primary="true">
+      <SourceLine classname="SLS_Sample" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>In SLS_Sample.java</Message>
+      </SourceLine>
+      <Message>Field SLS_Sample.name</Message>
+    </Field>
+    <SourceLine classname="SLS_Sample" primary="true" start="62" end="62" startBytecode="45" endBytecode="45" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+      <Message>At SLS_Sample.java:[line 62]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="NP_UNWRITTEN_FIELD" priority="2" rank="8" abbrev="NP" category="CORRECTNESS" instanceHash="c66c97df7c86892319bd439786403e81" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
     <ShortMessage>Read of unwritten field</ShortMessage>
     <LongMessage>Read of unwritten field name in SLS_Sample.hasIt(List, String)</LongMessage>
     <Class classname="SLS_Sample" primary="true">
-      <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-        <Message>At SLS_Sample.java:[lines 4-52]</Message>
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
       </SourceLine>
       <Message>In class SLS_Sample</Message>
     </Class>
     <Method classname="SLS_Sample" name="hasIt" signature="(Ljava/util/List;Ljava/lang/String;)LSLS_Sample;" isStatic="false" primary="true">
-      <SourceLine classname="SLS_Sample" start="10" end="17" startBytecode="0" endBytecode="192" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
+      <SourceLine classname="SLS_Sample" start="11" end="18" startBytecode="0" endBytecode="192" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
       <Message>In method SLS_Sample.hasIt(List, String)</Message>
     </Method>
     <Field classname="SLS_Sample" name="name" signature="Ljava/lang/String;" isStatic="false" primary="true">
@@ -26506,33 +26648,33 @@
       </SourceLine>
       <Message>Field SLS_Sample.name</Message>
     </Field>
-    <SourceLine classname="SLS_Sample" primary="true" start="12" end="12" startBytecode="38" endBytecode="38" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-      <Message>At SLS_Sample.java:[line 12]</Message>
+    <SourceLine classname="SLS_Sample" primary="true" start="13" end="13" startBytecode="38" endBytecode="38" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+      <Message>At SLS_Sample.java:[line 13]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="SLS_SUSPICIOUS_LOOP_SEARCH" priority="2" rank="7" abbrev="SLS" category="CORRECTNESS" instanceHash="ecc4e48cffdb6551cf8b48f21882cb27" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>This method continues a loop after finding an equality condition</ShortMessage>
     <LongMessage>This method SLS_Sample.hasIt(List, String) continues a loop after finding an equality condition</LongMessage>
     <Class classname="SLS_Sample" primary="true">
-      <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-        <Message>At SLS_Sample.java:[lines 4-52]</Message>
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
       </SourceLine>
       <Message>In class SLS_Sample</Message>
     </Class>
     <Method classname="SLS_Sample" name="hasIt" signature="(Ljava/util/List;Ljava/lang/String;)LSLS_Sample;" isStatic="false" primary="true">
-      <SourceLine classname="SLS_Sample" start="10" end="17" startBytecode="0" endBytecode="192" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
+      <SourceLine classname="SLS_Sample" start="11" end="18" startBytecode="0" endBytecode="192" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java"/>
       <Message>In method SLS_Sample.hasIt(List, String)</Message>
     </Method>
-    <SourceLine classname="SLS_Sample" primary="true" start="13" end="13" startBytecode="46" endBytecode="46" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-      <Message>At SLS_Sample.java:[line 13]</Message>
+    <SourceLine classname="SLS_Sample" primary="true" start="14" end="14" startBytecode="46" endBytecode="46" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+      <Message>At SLS_Sample.java:[line 14]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UWF_UNWRITTEN_FIELD" priority="2" rank="12" abbrev="UwF" category="CORRECTNESS" instanceHash="90494162f65da0a96a0016a171675a" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Unwritten field</ShortMessage>
     <LongMessage>Unwritten field: SLS_Sample.name</LongMessage>
     <Class classname="SLS_Sample" primary="true">
-      <SourceLine classname="SLS_Sample" start="4" end="52" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-        <Message>At SLS_Sample.java:[lines 4-52]</Message>
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
       </SourceLine>
       <Message>In class SLS_Sample</Message>
     </Class>
@@ -26542,8 +26684,27 @@
       </SourceLine>
       <Message>Field SLS_Sample.name</Message>
     </Field>
-    <SourceLine classname="SLS_Sample" primary="true" start="12" end="12" startBytecode="34" endBytecode="34" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
-      <Message>At SLS_Sample.java:[line 12]</Message>
+    <SourceLine classname="SLS_Sample" primary="true" start="13" end="13" startBytecode="34" endBytecode="34" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+      <Message>At SLS_Sample.java:[line 13]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="UWF_UNWRITTEN_FIELD" priority="3" rank="15" abbrev="UwF" category="CORRECTNESS" instanceHash="9f29b9fc255d6022acd8b5f72dce31ea" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unwritten field</ShortMessage>
+    <LongMessage>Unwritten field: SLS_Sample.height</LongMessage>
+    <Class classname="SLS_Sample" primary="true">
+      <SourceLine classname="SLS_Sample" start="4" end="72" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>At SLS_Sample.java:[lines 4-72]</Message>
+      </SourceLine>
+      <Message>In class SLS_Sample</Message>
+    </Class>
+    <Field classname="SLS_Sample" name="height" signature="I" isStatic="false" primary="true">
+      <SourceLine classname="SLS_Sample" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+        <Message>In SLS_Sample.java</Message>
+      </SourceLine>
+      <Message>Field SLS_Sample.height</Message>
+    </Field>
+    <SourceLine classname="SLS_Sample" primary="true" start="66" end="66" startBytecode="82" endBytecode="82" sourcefile="SLS_Sample.java" sourcepath="SLS_Sample.java">
+      <Message>At SLS_Sample.java:[line 66]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" rank="17" abbrev="DLS" category="STYLE" instanceHash="2fbab0182cb9a2a526a2d76a97ae0a9a" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
@@ -35652,7 +35813,7 @@
     		
     		<p>This method prints a stack trace to the console. This is non configurable, and causes an 
     		application to look unprofessional. Switch to using loggers so that users can control what 
-    		is logged and where.
+    		is logged and where.</p>
     		
     	]]></Details>
   </BugPattern>
@@ -35898,7 +36059,8 @@ the inner class so that it is a named inner class.</p>
     <ShortDescription>Method triggers finalization</ShortDescription>
     <Details><![CDATA[
 			
-			<p>Manually triggering finalization can result in serious performance problems and may be masking resource cleanup bugs.</p>
+			<p>Manually triggering finalization can result in serious performance problems and may be masking resource cleanup bugs. 
+			Only the garbage collector should be concerned finalization and not application code.</p>
 			
 		]]></Details>
   </BugPattern>
@@ -35987,6 +36149,14 @@ dereferencing this value will generate a null pointer exception.
 			<p>This method tests a local variable to make sure it's not null before executing a conditional block of
 			code. However in the conditional block it reassigns the local variable. It is likely that the guard
 			should have been a check to see if the local variable is null, not that the local variable was not null.</p>
+			<p>example:
+			<code>
+			if (name != null) {
+			    name = person.getName();
+			}
+			</code>
+			It is possible this is correct, but it seems likely the guard was meant to be <code>if (name == null)</code>
+			</p>
 			
 		]]></Details>
   </BugPattern>
@@ -36010,7 +36180,8 @@ dereferencing this value will generate a null pointer exception.
 			does not suffer the potential for <code>NullPointerException</code>s, and is easier to read.</p>
 			
 			<p>
-			Keep in mind that Java compiles simple <code>String</code> concatenation to use <code>StringBuilder</code>s, so you may see this bug even when you don't use <code>StringBuilder</code>s explicitly.
+			Keep in mind that Java compiles simple <code>String</code> concatenation to use <code>StringBuilder</code>s, 
+			so you may see this bug even when you don't use <code>StringBuilder</code>s explicitly.
 			</p>
 			
 			<p>
@@ -36058,7 +36229,7 @@ dereferencing this value will generate a null pointer exception.
     <ShortDescription>Method calls Runtime.exit() or Runtime.halt()</ShortDescription>
     <Details><![CDATA[
 			
-			<p>Calling <code>Runtime.exit()</code> or <code>Runtime.halt()</code> shuts down the entire Java virtual machine. This should only been done when it is appropriate. Such calls make it hard or impossible for your code to be invoked by other code. Consider throwing a RuntimeException instead.</p>
+			<p>Calling <code>Runtime.exit()</code> or <code>Runtime.halt()</code> shuts down the entire Java virtual machine. This should only been done in very rare circumstances. Such calls make it hard or impossible for your code to be invoked by other code. Consider throwing a RuntimeException instead.</p>
 			
 		]]></Details>
   </BugPattern>
@@ -36184,9 +36355,9 @@ is not a directory.</p>
     <ShortDescription>Method has a Spring @Transactional annotation on it, but is non-public</ShortDescription>
     <Details><![CDATA[
     		
-    		<p>This method specifies a Spring @Transactional annotation but the method is defined as being non public.
-    		Spring only creates transactional boundaries on methods that are public, and so this annotation not doing 
-    		anything for this method. Make the method public, or place the annotation on a more appropriate method.
+    		<p>This method specifies a Spring @Transactional annotation but the method is defined as being non-public.
+    		Spring only creates transactional boundaries on methods that are public, and so this annotation is not doing
+    		anything for this method. Make the method public, or place the annotation on a more appropriate method.</p>
     		
     	]]></Details>
   </BugPattern>
@@ -36319,10 +36490,10 @@ false if <code>o</code> is not the same type as <code>this</code>.
     <ShortDescription>OneToMany join specifies 1+n EAGER join</ShortDescription>
     <Details><![CDATA[
     	
-    	<p>This JPA entity specifies a @OneToMany join with a fetch type of EAGER. By Default EAGER joins perform
+    	<p>This JPA entity specifies a @OneToMany join with a fetch type of EAGER. By default EAGER joins perform
     	select operations on each element returned from the original query in sequence, thus producing 1 + n queries.
     	If you are going to use EAGER joins, it is wise to specify a Join type by using @Fetch annotations in
-    	Hibernate or @JoinFetch/@BatchFetch annotations (or hints) in EclipseLink, for example. Even so, These
+    	Hibernate or @JoinFetch/@BatchFetch annotations (or hints) in EclipseLink, for example. Even so, these
     	annotations may only apply in limited cases, such as in the use of find.</p>
     	
     	]]></Details>
@@ -36457,6 +36628,12 @@ false if <code>o</code> is not the same type as <code>this</code>.
 			of a design flaw in the Properties class by deriving from Hashtable instead of using aggregation.
 			If you want a collection that holds other types of objects, use a Hashtable, or better still newer collections
 			like HashMap or TreeMap.</p>
+			<p>
+			Don't use <code>properties.put("foo", bar);</code>
+			</p>
+			<p>
+			Do use <code>properties.setProperty("foo", "bar");</code>
+			</p>
 			
 		]]></Details>
   </BugPattern>
@@ -36509,7 +36686,7 @@ false if <code>o</code> is not the same type as <code>this</code>.
     		JDK. It's possible that this application will only be deployed on a JVM that does recognize this encoding, but
     		it seem dubious that this is the case.</p>
     		<p>
-    		The standard JDK encodings are "UTF-8", "US-ASCII", "ISO-8859-1", "UTF-16BE", "UTF-16LE", "UTF-16".  These are all case-sensitive.
+    		The standard JDK encodings (for Java 8) are "UTF-8", "US-ASCII", "ISO-8859-1", "UTF-16BE", "UTF-16LE", "UTF-16".  These are all case-sensitive.
     		</p>
     		
     	]]></Details>
@@ -36610,9 +36787,9 @@ consider removing it from the class.</p>
     		
     		<p>This method copies data from input to output using streams or reader/writers using a well known copy method, from java.nio, commons-io, 
     		springframework, guava or poi. These methods are efficient in that they copy these files using buffers. However this method is also 
-    		buffering the streams, causing a double buffering to occur. So data first goes to one buffer, then is copied too another buffer, before
-    		making it to the destination (or vice-versa). This just causes the copy operation to be inefficent both from a time perspective, as well
-    		as a memory allocation one. When using these copy methods, do not pass buffered streams/readers/writers.
+    		buffering the streams, causing a double buffering to occur. So data first goes to one buffer, then is copied to another buffer, before
+    		making it to the destination (or vice-versa). This just causes the copy operation to be inefficient both from a time perspective, as well
+    		as a memory allocation one. When using these copy methods, do not pass buffered streams/readers/writers.</p>
     		
     	]]></Details>
   </BugPattern>
@@ -36672,6 +36849,12 @@ value. Check for errors (should it have been initialized?), or remove it if it i
 			<p>This method uses the inherited method from Hashtable put(String key, Object value) in
 			a Properties object. Since the Properties object was intended to be only a String to String
 			map, use of the derived put method is discouraged. Use the Properties.setProperty method instead.</p>
+			<p>
+			Don't use <code>properties.put("foo", "bar");</code>
+			</p>
+			<p>
+			Do use <code>properties.setProperty("foo", "bar");</code>
+			</p>
 			
 		]]></Details>
   </BugPattern>
@@ -36679,7 +36862,18 @@ value. Check for errors (should it have been initialized?), or remove it if it i
     <ShortDescription>Method sleeps without timeout</ShortDescription>
     <Details><![CDATA[
 			
-			<p>Calling one of the following methods without timeout could block forever. Consider using a timeout to detect deadlocks or performance problems. Methods: Thread.join(), Object.wait(), Condition.await(), Lock.lock(), Lock.lockInterruptibly(), ReentrantLock.lock(), ReentrantLock.lockInterruptibly()</p>
+			<p>Calling one of the following methods without timeout could block forever. Consider using a timeout to detect deadlocks or performance problems. 
+			Methods: 
+			<ul>
+			<li>Thread.join()</li>
+			<li>Object.wait()</li>
+			<li>Condition.await()</li>
+			<li>Lock.lock()</li> 
+			<li>Lock.lockInterruptibly()</li>
+			<li>ReentrantLock.lock()</li>
+			<li>ReentrantLock.lockInterruptibly()</li>
+			</ul>
+			</p>
 			
 		]]></Details>
   </BugPattern>
@@ -36839,6 +37033,16 @@ closed.</p>
     		<p>This method continues with a loop, and does not break out of it, after finding an setting a variable in an if
     		condition based on equality. Since continuing on in the loop would seem to be unlikely to find the item again, breaking
     		at this point would seem to be the proper action.</p>
+    		<p>Example:
+    		<code>
+    		int age = 0;
+    		for (Person p : people) {
+    			if (p.getName().equals("Dave")) {
+    				age = p.getAge();
+    			}
+    		}
+    		</code>
+    		It is likely you wanted a break after getting the age for "Dave".</p>
     		
     	]]></Details>
   </BugPattern>
@@ -36904,7 +37108,7 @@ closed.</p>
     		Since you do not control when that Id is created directly, it is risky to implement hashCode/equals for this
     		class, and especially for use with Collections, as the data behind the algorithms will not be immutable, and
     		thus cause problems when those fields change, and the object is in the collection. It is usually safer
-    		to not define hashCode and equals for entity objects, but treat them as objects for IdentityHashSet/Maps instead.
+    		to not define hashCode and equals for entity objects, but treat them as objects for IdentityHashSet/Maps instead.</p>
     		
     	]]></Details>
   </BugPattern>
@@ -36992,10 +37196,12 @@ and generally bad practice.
     <ShortDescription>Static or private method has unused parameters</ShortDescription>
     <Details><![CDATA[
 	       
-	       <p>This method defines parameters that are never used. As this method is either static of private,
+	       <p>This method defines parameters that are never used. As this method is either static or private,
 	       and can't be derived from, it is safe to remove these parameters and simplify your method.
 	       You should consider, while unlikely, that this method may be used reflectively, and thus you will
-	       want to change that call as well.</p>
+	       want to change that call as well. It is likely once you remove the parameter, there will be
+	       a chain of method calls that have spent time creating this parameter and passing it down the line.
+	       All of this may be able to be removed.</p>
 	       
 	   ]]></Details>
   </BugPattern>
@@ -37073,6 +37279,14 @@ cases.
 			math is imprecise, rounding errors will accumulate over time each time the loop is
 			executed. It is usually better to use integer indexing, and calculate the new value
 			of the floating point number at the top of the loop body.</p>
+			<p>Example:
+			<code>
+			for (float f = 1.0f; f <= 10.0f; f += 0.1f) {
+				System.out.println(f);
+			}
+			</code>
+			The last value printed may not be 10.0, but instead might be 9.900001 or such.
+			</p>
 			
 		]]></Details>
   </BugPattern>
@@ -37083,7 +37297,7 @@ cases.
     		<p>This JAX-RS endpoint is annotated to be used as @GET requests, but also documents that it
     		consumes JSON or XML data. Since a GET request pulls parameters from the URL, and not
     		the body of request, this pattern is problematic. If you wish to consume JSON or XML data,
-    		this request should be annotated with @POST.
+    		this request should be annotated with @POST.</p>
     		
        	]]></Details>
   </BugPattern>
@@ -38043,6 +38257,11 @@ is generally easy and good defensive programming.
 			<p>This method attempts to use an SLF4J logger to log a parameterized expression using formatting anchors.
 			However, SLF4J uses simple non numbered anchors such as {}, rather than anchors with digits in them as the
 			code uses. Thus no parameter replacement will occur.</p>
+			<p>This pattern is invalid:
+			<code>logger.error("{0} is broken", theThing);</code>
+			Use instead
+			<code>logger.error("{} is broken", theThing);</code>
+			</p>			
 			
 		]]></Details>
   </BugPattern>
@@ -38189,6 +38408,18 @@ closed.</p>
 			
 		]]></Details>
   </BugPattern>
+  <BugPattern type="DMC_DUBIOUS_MAP_COLLECTION" abbrev="DMC" category="CORRECTNESS">
+    <ShortDescription>Class holds a map-type field, but uses it as only a List</ShortDescription>
+    <Details><![CDATA[
+	    	
+	    	<p>This method instantiates a map-type field in a static initializer or constructor, but then only uses it through iteration.
+	    	This means that this data structure should really just be a List<SomeObject>, where the class held by the list contains the two 
+	    	fields held by the key and value of the Map. It was likely done this way to avoid having to create a class, but this just obfuscates
+	    	the purpose of the field.
+	    	</p>
+	    		
+    	]]></Details>
+  </BugPattern>
   <BugPattern type="RV_RETURN_VALUE_IGNORED_NO_SIDE_EFFECT" abbrev="RV" category="STYLE">
     <ShortDescription>Return value of method without side effect is ignored</ShortDescription>
     <Details><![CDATA[
@@ -38274,6 +38505,14 @@ to instruct FindBugs that ignoring the return value of this method is acceptable
 			<p>This method tests a field to make sure it's not null before executing a conditional block of
 			code. However in the conditional block it reassigns the field. It is likely that the guard
 			should have been a check to see if the field is null, not that the field was not null.</p>
+			<p>example:
+			<code>
+			if (name != null) {
+			    name = person.getName();
+			}
+			</code>
+			It is possible this is correct, but it seems likely the guard was meant to be <code>if (name == null)</code>
+			</p>
 			
 		]]></Details>
   </BugPattern>
@@ -38348,7 +38587,11 @@ Either there is a mistake and object was intended to be used or it can be remove
     <ShortDescription>Method creates promiscuous ServerSocket object</ShortDescription>
     <Details><![CDATA[
 			
-			<p>Do not use the <code>ServerSocket</code> constructor or <code>ServerSocketFactory.createServerSocket()</code> factory methods that accepts connections on any network interface. By default, an application that listens on a socket will listen for connection attempts on any network interface, which can be a security risk. Only the long form the <code>ServerSocket</code> constructor or <code>ServerSocketFactory.createServerSocket()</code> factory methods take a specific local address to define which network interface the socket should bind.</p>
+			<p>Do not use the <code>ServerSocket</code> constructor or <code>ServerSocketFactory.createServerSocket()</code> factory methods that 
+			accepts connections on any network interface. By default, an application that listens on a socket will listen for connection attempts 
+			on any network interface, which can be a security risk. Only the long form the <code>ServerSocket</code> constructor or 
+			<code>ServerSocketFactory.createServerSocket()</code> factory methods take a specific local address to define which network interface 
+			the socket should bind.</p>
 			
 		]]></Details>
   </BugPattern>
@@ -38407,7 +38650,8 @@ is "Note: this class has a natural ordering that is inconsistent with equals."
             
             <p>This class defines a field or local collection variable with a name that contains a different type
             of collection in its name. An example would be a Set<User> called userList. This is confusing to the reader,
-            and likely caused by a previous refactor of type, without changing the name.</p>
+            and likely caused by a previous refactor of type, without changing the name. This detector is obviously
+            only checking for English names.</p>
              
         ]]></Details>
   </BugPattern>
@@ -38461,6 +38705,21 @@ problem.
 			</code>
 			</p>
 			
+			
+		]]></Details>
+  </BugPattern>
+  <BugPattern type="LO_INVALID_STRING_FORMAT_NOTATION" abbrev="LO" category="CORRECTNESS">
+    <ShortDescription>Method attempts to log using String.format notation</ShortDescription>
+    <Details><![CDATA[
+			
+			<p>This method attempts to use an SLF4J logger to log a parameterized expression using String.format notation.
+			However, SLF4J uses simple non numbered anchors such as {}, rather than anchors with percent signs in them as the
+			code uses. Thus no parameter replacement will occur.</p>
+			<p>This pattern is invalid:
+			<code>logger.error("%s is broken", theThing);</code>
+			Use instead
+			<code>logger.error("{} is broken", theThing);</code>
+			</p>			
 			
 		]]></Details>
   </BugPattern>
@@ -38524,7 +38783,7 @@ problem.
     		
     		<p>This JAX-RS endpoint declares parameters without specifying where the value of this parameter comes from.
     		You can specify this by using one of several 'Param' annotations (@PathParam, @CookieParam, @FormParam @HeaderParam @MatrixParam @QueryParam),
-    		by adding a @Context parameter annotation, or you can declare that the method @Consumes an XML or JSON stream.
+    		by adding a @Context parameter annotation, or you can declare that the method @Consumes an XML or JSON stream.</p>
     		
        	]]></Details>
   </BugPattern>
@@ -38734,7 +38993,7 @@ have problems communicating with the database.
     		<p>This method appears to have been generated from an interface or super class using an IDE.
     		As such the IDE generated generic names (arg0, arg1, arg2) for parameters for this method,
     		and the author of this method did not change them to be meaningful. For better understandability
-    		it is recommended that you name these parameters with regard to their function.
+    		it is recommended that you name these parameters with regard to their function.</p>
     		
     	]]></Details>
   </BugPattern>
@@ -38777,7 +39036,8 @@ deserialized instance of the class.
 			
 			<p>This class defines a field based on java.util.List, but uses it to some extent like a Set. Since
 			lookup type operations are performed using a linear search for Lists, the performance for large
-			Lists will be poor. Consider changing this fields implementation to a set based one. If order of
+			Lists will be poor. If the list is known to only contain a small number of items, (3,4, etc) then it doesn't matter.
+			Otherwise, consider changing this fields implementation to a set-based one. If order of
 			iteration is important to maintain insert order, perhaps consider a LinkedHashSet.</p>
 			
 		]]></Details>
@@ -38845,7 +39105,9 @@ dereferencing this value will generate a null pointer exception.
     <ShortDescription>Method attempts to manually schedule threads</ShortDescription>
     <Details><![CDATA[
 			
-			<p>Manual thread scheduling with <code>Thread.sleep()</code> or <code>Thread.yield()</code> has no guaranteed semantics and is often used to mask race conditions.</p>
+			<p>Manual thread scheduling with <code>Thread.sleep()</code> or <code>Thread.yield()</code> has no guaranteed semantics and is often used to mask race conditions.
+			These methods exist for supporting early processors when java was first released, and are not advised for modern processors. The operating system will take care
+			of yielding threads for you.</p>
 			
 		]]></Details>
   </BugPattern>
@@ -38934,6 +39196,15 @@ dereferencing this value will generate a null pointer exception.
 			calls do not have side effects. If the method do have side effects, it is probably a better idea to pull these calls out of
 			the condition and execute them first, assigning a value to a local variable. In this way you give a hint that the call may have
 			side effects.</p>
+			<p>Example:
+			<code>
+			if ((calculateHaltingProbability() > 0) && shouldCalcHalting) { }
+			</code>
+			would be better as
+			<code>
+			if (shouldCalcHalting && (calculateHaltingProbability() > 0) { }
+			</code>
+			</p>
 			
 		]]></Details>
   </BugPattern>
@@ -39100,7 +39371,7 @@ a logic error.  Make sure that you are comparing the right things.
     		
     		<p>This method copies data from a java.io.Reader derived class to an output class, using a bulk copy method
     		supplied by java.nio, commons-io, springframework, guava or poi. Since you are copying the entire stream, you
-    		don't care about it's contents, and thus using a Reader is wasteful as a reader has to do the hard work of
+    		don't care about its contents, and thus using a Reader is wasteful as a reader has to do the hard work of
     		converting byte data to characters, when there is no need to do this. Use stream based inputs for better performance.</p>
     		
     	]]></Details>
@@ -39109,7 +39380,10 @@ a logic error.  Make sure that you are comparing the right things.
     <ShortDescription>Method calls BigDecimal.equals()</ShortDescription>
     <Details><![CDATA[
 			
-			<p><code>equals()</code> being called to compare two <code>java.math.BigDecimal</code> numbers. This is normally a mistake, as two <code>BigDecimal</code> objects are only equal if they are equal in both value and scale, so that <i>2.0</i> is not equal to <i>2.00</i>. To compare <code>BigDecimal</code> objects for mathematical equality, use <code>compareTo()</code> instead.</p>
+			<p><code>equals()</code> being called to compare two <code>java.math.BigDecimal</code> numbers. 
+			This is normally a mistake, as two <code>BigDecimal</code> objects are only equal if they are 
+			equal in both value and scale, so that <i>2.0</i> is not equal to <i>2.00</i>. 
+			To compare <code>BigDecimal</code> objects for mathematical equality, use <code>compareTo()</code> instead.</p>
 			
 		]]></Details>
   </BugPattern>
@@ -39348,8 +39622,11 @@ cast will not fail.
     		
     		<p>This class has been created in the default package. Classes should be defined in a 
     		proper package structure, typically defined by the reverse of the domain name of the 
-    		owner of the code base. Putting code in the default (no) package limits it usefulness, and
-    		leaves it open to name collisions.
+    		owner of the code base. Putting code in the default (no) package limits it usefulness, including
+    		<ol>
+    		<li>Not being able to import this class into classes with packages</li>
+    		<li>Leaving it open to name collisions with other packages.</li>
+    		</ol>
     		</p>
     		
     	]]></Details>
@@ -39501,7 +39778,9 @@ the null pointer exception can't ever be executed; deciding that is beyond the a
     <ShortDescription>Method creates insecure Random object</ShortDescription>
     <Details><![CDATA[
 			
-			<p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: <code>System.currentTimeMillis()</code>. Initialize seed like <code>new Random(SecureRandom.getInstance("SHA1PRNG").nextLong())</code> or replace <code>Random()</code> with <code>SecureRandom.getInstance("SHA1PRNG")</code> instead.
+			<p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: 
+			<code>System.currentTimeMillis()</code>. Initialize seed like <code>new Random(SecureRandom.getInstance("SHA1PRNG").nextLong())</code> 
+			or replace <code>Random()</code> with <code>SecureRandom.getInstance("SHA1PRNG")</code> instead.
 			"SHA1PRNG" is the random algorithm supported on all platforms.
 		</p>
 
@@ -39520,6 +39799,21 @@ the null pointer exception can't ever be executed; deciding that is beyond the a
 			symmetry rule of equivalence is maintained, that being if a equals b, then b equals a. It does not
 			appear that the class that is being compared to this class knows about this class, and doesn't compare itself
 			to this.</p>
+			<p>
+			Here's an example of a BAD equals method, do NOT do this:
+			<code>
+			class Person {
+			    public boolean equals(Object o) {
+			        if (o instanceof Person) {
+			            return name.equals(((Person) o).name);
+			        } else if (o instanceof String) {
+			            return name.equals(o);
+			        }
+			        return false;
+			    }
+			}
+			</code>
+			</p>
 			
 		]]></Details>
   </BugPattern>
@@ -39563,7 +39857,15 @@ the caller.
 			<p>This method catches an exception, and throws a different exception, without incorporating the
 			original exception. Doing so hides the original source of the exception making debugging and fixing
 			these problems difficult. It is better to use the constructor of this new exception that takes an
-			original exception so that this detail can be passed along to the user.</p>
+			original exception so that this detail can be passed along to the user. If this exception has no constructor
+			that takes an initial cause parameter, use the initCause method to initialize it instead.</p>
+			<p>
+			<code>
+				catch (IOException e) {
+					throw new MySpecialException("Failed to open configuration", e);
+				}
+			</code>
+			</p>
 			
 		]]></Details>
   </BugPattern>
@@ -39571,7 +39873,10 @@ the caller.
     <ShortDescription>Method calls InetAddress.getLocalHost()</ShortDescription>
     <Details><![CDATA[
 			
-			<p>Do not call <code>InetAddress.getLocalHost()</code> on multihomed servers. On a multihomed server, <code>InetAddress.getLocalHost()</code> simply returns the IP address associated with the server's internal hostname. This could be any of the network interfaces, which could expose the machine to security risks. Server applications that need to listen on sockets should add configurable properties to define which network interfaces the server should bind.</p>
+			<p>Do not call <code>InetAddress.getLocalHost()</code> on multihomed servers. On a multihomed server, 
+			<code>InetAddress.getLocalHost()</code> simply returns the IP address associated with the server's internal hostname. 
+			This could be any of the network interfaces, which could expose the machine to security risks. Server applications 
+			that need to listen on sockets should add configurable properties to define which network interfaces the server should bind.</p>
 			
 		]]></Details>
   </BugPattern>
@@ -40146,6 +40451,9 @@ Common false-positive cases include:</p>
   <BugCode abbrev="PZLA">
     <Description>Prefer zero length arrays to null to indicate no results</Description>
   </BugCode>
+  <BugCode abbrev="DMC">
+    <Description>Dubious Map Collection</Description>
+  </BugCode>
   <BugCode abbrev="SMII">
     <Description>Static Method Instance Invocation</Description>
   </BugCode>
@@ -40239,14 +40547,14 @@ Common false-positive cases include:</p>
   <Errors errors="0" missingClasses="1">
     <MissingClass>org.objectweb.asm.AnnotationVisitor</MissingClass>
   </Errors>
-  <FindBugsSummary timestamp="Tue, 12 Apr 2016 19:09:39 -0400" total_classes="285" referenced_classes="899" total_bugs="1940" total_size="5683" num_packages="1" java_version="1.8.0_65" vm_version="25.65-b01" cpu_seconds="36.90" clock_seconds="82.01" peak_mbytes="139.35" alloc_mbytes="773.38" gc_seconds="5.34" priority_3="699" priority_2="1040" priority_1="201">
+  <FindBugsSummary timestamp="Sun, 15 May 2016 14:45:31 -0400" total_classes="286" referenced_classes="900" total_bugs="1949" total_size="5725" num_packages="1" java_version="1.8.0_65" vm_version="25.65-b01" cpu_seconds="35.58" clock_seconds="72.72" peak_mbytes="145.65" alloc_mbytes="773.38" gc_seconds="4.04" priority_3="702" priority_2="1046" priority_1="201">
     <FileStats path="ABC_Sample.java" bugCount="9" size="29" bugHash="8a811ce1354a6c3d7b584a84966816f1"/>
     <FileStats path="ACEM_Sample.java" bugCount="4" size="11" bugHash="07f3b584e55eacb88503f0c723e779ac"/>
     <FileStats path="AFBR_Sample.java" bugCount="1" size="30" bugHash="70dd49a5ba8cce9a516bfefdd14516d9"/>
     <FileStats path="AIOB_Sample.java" bugCount="13" size="45" bugHash="a2ed43b1346fc595ea93ad2639f1a2e3"/>
     <FileStats path="AOM_Sample.java" bugCount="3" size="15" bugHash="027f5759fc366d72393b3053e33c83e3"/>
     <FileStats path="AWCBR_Sample.java" bugCount="8" size="27" bugHash="a6ac92d1cc4dba6cd188add77f6520f6"/>
-    <FileStats path="BAS_Sample.java" bugCount="30" size="138" bugHash="35518c8d22e399406dfd6683d54845cd"/>
+    <FileStats path="BAS_Sample.java" bugCount="31" size="138" bugHash="0bd93fd79b400c929fa53f692249e53f"/>
     <FileStats path="BED_Sample.java" bugCount="32" size="65" bugHash="84d4826ed39354cf51111ef570756a82"/>
     <FileStats path="BRPI_Sample.java" bugCount="6" size="8" bugHash="43ae8172a4a56cbdfc90e5fc6fa454be"/>
     <FileStats path="BSB_Sample.java" bugCount="10" size="56" bugHash="0d90228403f3fc68e29df4c74b9e4e6a"/>
@@ -40271,6 +40579,7 @@ Common false-positive cases include:</p>
     <FileStats path="CVAA_Sample.java" bugCount="14" size="32" bugHash="ef50c09576b9b3027e650a752b556549"/>
     <FileStats path="DDC_Sample.java" bugCount="4" size="18" bugHash="88fdfd9a1dd1fcfe934cca6b089f28b2"/>
     <FileStats path="DLC_Sample.java" bugCount="4" size="27" bugHash="806fb3074d2970015f7e7c064857c049"/>
+    <FileStats path="DMC_Sample.java" bugCount="3" size="19" bugHash="3293640b51641d82e5d893f118773f74"/>
     <FileStats path="DRE_Sample.java" bugCount="11" size="28" bugHash="dfdc1f9c306cb7abb93ef5adb698813b"/>
     <FileStats path="DSOC_Sample.java" bugCount="11" size="18" bugHash="668cc446cb6826d3ece78ee863f60067"/>
     <FileStats path="DTEP_Sample.java" bugCount="2" size="9" bugHash="c21ed22133be485658652b3d22af43ff"/>
@@ -40296,7 +40605,7 @@ Common false-positive cases include:</p>
     <FileStats path="LEST_Sample.java" bugCount="21" size="80" bugHash="8844037ac45a84b231b7ce10e7541517"/>
     <FileStats path="LGO_Sample.java" bugCount="7" size="22" bugHash="0e98e42b4f14ce2e812b40a170e51edc"/>
     <FileStats path="LII_Sample.java" bugCount="11" size="40" bugHash="74b3b20ab3a8ed4adacba0cd761e348c"/>
-    <FileStats path="LO_Sample.java" bugCount="27" size="81" bugHash="8531ec77158f669af76797e5394d2eed"/>
+    <FileStats path="LO_Sample.java" bugCount="30" size="89" bugHash="700cbe8eda8d9f3313ff6024c5cc81fa"/>
     <FileStats path="LSC_Sample.java" bugCount="14" size="97" bugHash="b1b8a61b643485729fe37cf934277ed8"/>
     <FileStats path="LSYC_Sample.java" bugCount="7" size="46" bugHash="318849e07985dc1130b57caebace8bbd"/>
     <FileStats path="MAC_Sample.java" bugCount="10" size="15" bugHash="e913037ba2cdbde3380ddd26ba42df30"/>
@@ -40344,7 +40653,7 @@ Common false-positive cases include:</p>
     <FileStats path="SG_Sample.java" bugCount="9" size="37" bugHash="92aa32fc6847764aad87a729969c0384"/>
     <FileStats path="SIL_Sample.java" bugCount="3" size="12" bugHash="14a638c5546546cd1c41c0570824f2b0"/>
     <FileStats path="SJVU_Sample.java" bugCount="3" size="8" bugHash="d54ee310326eca6a4552a4b8fa891875"/>
-    <FileStats path="SLS_Sample.java" bugCount="8" size="34" bugHash="03ed51c5282c1079909bf464b2aa9f8c"/>
+    <FileStats path="SLS_Sample.java" bugCount="10" size="49" bugHash="8346515affb231ba9980fdd8dc654520"/>
     <FileStats path="SMII_Sample.java" bugCount="31" size="51" bugHash="ee8a2dd67a064322f8b6e64ffe9a8979"/>
     <FileStats path="SNG_Sample.java" bugCount="18" size="38" bugHash="33a30e55c7e160c1128eda8f3ef36e49"/>
     <FileStats path="SPP_Sample.java" bugCount="98" size="261" bugHash="17eb353601b083c55b587ba27f90314b"/>
@@ -40370,7 +40679,7 @@ Common false-positive cases include:</p>
     <FileStats path="UVA_Sample.java" bugCount="6" size="28" bugHash="9057950e5520453ce2f861cea1224c06"/>
     <FileStats path="WEM_Sample.java" bugCount="7" size="30" bugHash="846fa06bcc5a3865edf77cab0813f22d"/>
     <FileStats path="WOC_Sample.java" bugCount="23" size="135" bugHash="58b95ab671bc47ecfbadeaaf850b5c1a"/>
-    <PackageStats package="" total_bugs="1940" total_types="285" total_size="5683" priority_3="699" priority_2="1040" priority_1="201">
+    <PackageStats package="" total_bugs="1949" total_types="286" total_size="5725" priority_3="702" priority_2="1046" priority_1="201">
       <ClassStats class="A" sourceFile="SCR_Sample.java" interface="false" size="3" bugs="1" priority_3="1"/>
       <ClassStats class="ABC_Sample" sourceFile="ABC_Sample.java" interface="false" size="13" bugs="6" priority_3="3" priority_2="3"/>
       <ClassStats class="ABC_Sample$UseComparator" sourceFile="ABC_Sample.java" interface="false" size="9" bugs="1" priority_3="1"/>
@@ -40382,7 +40691,7 @@ Common false-positive cases include:</p>
       <ClassStats class="AOM_Super" sourceFile="AOM_Sample.java" interface="false" size="10" bugs="1" priority_3="1"/>
       <ClassStats class="AWCBR_Sample" sourceFile="AWCBR_Sample.java" interface="false" size="27" bugs="8" priority_3="3" priority_2="5"/>
       <ClassStats class="B" sourceFile="SCR_Sample.java" interface="false" size="3" bugs="1" priority_3="1"/>
-      <ClassStats class="BAS_Sample" sourceFile="BAS_Sample.java" interface="false" size="128" bugs="27" priority_3="8" priority_2="10" priority_1="9"/>
+      <ClassStats class="BAS_Sample" sourceFile="BAS_Sample.java" interface="false" size="128" bugs="28" priority_3="8" priority_2="11" priority_1="9"/>
       <ClassStats class="BAS_Sample$1" sourceFile="BAS_Sample.java" interface="false" size="6" bugs="2" priority_3="2"/>
       <ClassStats class="BAS_Sample$Holder" sourceFile="BAS_Sample.java" interface="false" size="4" bugs="1" priority_3="1"/>
       <ClassStats class="BED_Sample" sourceFile="BED_Sample.java" interface="false" size="59" bugs="30" priority_3="7" priority_2="20" priority_1="3"/>
@@ -40426,6 +40735,7 @@ Common false-positive cases include:</p>
       <ClassStats class="CustomRuntimeException" sourceFile="DRE_Sample.java" interface="false" size="3" bugs="1" priority_3="1"/>
       <ClassStats class="DDC_Sample" sourceFile="DDC_Sample.java" interface="false" size="18" bugs="4" priority_3="1" priority_2="3"/>
       <ClassStats class="DLC_Sample" sourceFile="DLC_Sample.java" interface="false" size="27" bugs="4" priority_3="2" priority_2="2"/>
+      <ClassStats class="DMC_Sample" sourceFile="DMC_Sample.java" interface="false" size="19" bugs="3" priority_3="1" priority_2="2"/>
       <ClassStats class="DRE_Sample" sourceFile="DRE_Sample.java" interface="false" size="17" bugs="6" priority_3="4" priority_2="2"/>
       <ClassStats class="DSOC_Sample" sourceFile="DSOC_Sample.java" interface="false" size="18" bugs="11" priority_3="1" priority_2="10"/>
       <ClassStats class="DTEP_Sample" sourceFile="DTEP_Sample.java" interface="false" size="9" bugs="2" priority_3="1" priority_2="1"/>
@@ -40460,7 +40770,7 @@ Common false-positive cases include:</p>
       <ClassStats class="IMC_Sample$FPFieldIMC" sourceFile="IMC_Sample.java" interface="false" size="5" bugs="3" priority_3="1" priority_2="2"/>
       <ClassStats class="IOI_Sample" sourceFile="IOI_Sample.java" interface="false" size="13" bugs="4" priority_3="1" priority_2="2" priority_1="1"/>
       <ClassStats class="IPU_Sample" sourceFile="IPU_Sample.java" interface="false" size="15" bugs="5" priority_3="2" priority_2="3"/>
-      <ClassStats class="ISB_Sample" sourceFile="ISB_Sample.java" interface="false" size="78" bugs="23" priority_3="3" priority_2="9" priority_1="11"/>
+      <ClassStats class="ISB_Sample" sourceFile="ISB_Sample.java" interface="false" size="78" bugs="23" priority_3="4" priority_2="8" priority_1="11"/>
       <ClassStats class="ISB_Sample$MonsterSpeak" sourceFile="ISB_Sample.java" interface="false" size="9" bugs="1" priority_3="1"/>
       <ClassStats class="ITC_Sample" sourceFile="ITC_Sample.java" interface="false" size="17" bugs="3" priority_3="2" priority_2="1"/>
       <ClassStats class="ITC_Sample$A" sourceFile="ITC_Sample.java" interface="false" size="4" bugs="1" priority_3="1"/>
@@ -40478,7 +40788,7 @@ Common false-positive cases include:</p>
       <ClassStats class="LEST_Sample" sourceFile="LEST_Sample.java" interface="false" size="80" bugs="22" priority_3="7" priority_2="10" priority_1="5"/>
       <ClassStats class="LGO_Sample" sourceFile="LGO_Sample.java" interface="false" size="22" bugs="7" priority_3="1" priority_2="6"/>
       <ClassStats class="LII_Sample" sourceFile="LII_Sample.java" interface="false" size="40" bugs="11" priority_3="1" priority_2="4" priority_1="6"/>
-      <ClassStats class="LO_Sample" sourceFile="LO_Sample.java" interface="false" size="66" bugs="22" priority_3="6" priority_2="14" priority_1="2"/>
+      <ClassStats class="LO_Sample" sourceFile="LO_Sample.java" interface="false" size="74" bugs="25" priority_3="6" priority_2="17" priority_1="2"/>
       <ClassStats class="LO_Sample$Inner" sourceFile="LO_Sample.java" interface="false" size="7" bugs="3" priority_3="2" priority_1="1"/>
       <ClassStats class="LO_Sample$Inner$1" sourceFile="LO_Sample.java" interface="false" size="8" bugs="2" priority_3="1" priority_2="1"/>
       <ClassStats class="LSC_Sample" sourceFile="LSC_Sample.java" interface="false" size="81" bugs="12" priority_3="1" priority_1="11"/>
@@ -40584,7 +40894,7 @@ Common false-positive cases include:</p>
       <ClassStats class="SG_Sample" sourceFile="SG_Sample.java" interface="false" size="37" bugs="9" priority_3="2" priority_2="4" priority_1="3"/>
       <ClassStats class="SIL_Sample" sourceFile="SIL_Sample.java" interface="false" size="12" bugs="3" priority_3="1" priority_2="2"/>
       <ClassStats class="SJVU_Sample" sourceFile="SJVU_Sample.java" interface="false" size="8" bugs="3" priority_3="1" priority_2="2"/>
-      <ClassStats class="SLS_Sample" sourceFile="SLS_Sample.java" interface="false" size="34" bugs="8" priority_3="2" priority_2="6"/>
+      <ClassStats class="SLS_Sample" sourceFile="SLS_Sample.java" interface="false" size="49" bugs="10" priority_3="3" priority_2="7"/>
       <ClassStats class="SMII_Sample" sourceFile="SMII_Sample.java" interface="false" size="46" bugs="28" priority_3="9" priority_2="16" priority_1="3"/>
       <ClassStats class="SMII_Sample$Inner" sourceFile="SMII_Sample.java" interface="false" size="5" bugs="3" priority_3="1" priority_2="2"/>
       <ClassStats class="SNG_Sample" sourceFile="SNG_Sample.java" interface="false" size="38" bugs="18" priority_3="10" priority_2="6" priority_1="2"/>
@@ -40658,82 +40968,77 @@ Common false-positive cases include:</p>
       <ClassStats class="s2" sourceFile="COM_Sample.java" interface="false" size="6" bugs="2" priority_3="2"/>
     </PackageStats>
     <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="5271" invocations="2914" avgMicrosecondsPerInvocation="1809" maxMicrosecondsPerInvocation="198746" standardDeviationMircosecondsPerInvocation="6719"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="4992" invocations="2883" avgMicrosecondsPerInvocation="1731" maxMicrosecondsPerInvocation="548614" standardDeviationMircosecondsPerInvocation="11912"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="3368" invocations="899" avgMicrosecondsPerInvocation="3747" maxMicrosecondsPerInvocation="118228" standardDeviationMircosecondsPerInvocation="9503"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="3313" invocations="899" avgMicrosecondsPerInvocation="3685" maxMicrosecondsPerInvocation="92303" standardDeviationMircosecondsPerInvocation="8983"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="3024" invocations="1226" avgMicrosecondsPerInvocation="2467" maxMicrosecondsPerInvocation="899846" standardDeviationMircosecondsPerInvocation="26066"/>
-      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="2283" invocations="2610" avgMicrosecondsPerInvocation="874" maxMicrosecondsPerInvocation="82934" standardDeviationMircosecondsPerInvocation="2543"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1756" invocations="1240" avgMicrosecondsPerInvocation="1416" maxMicrosecondsPerInvocation="98432" standardDeviationMircosecondsPerInvocation="4474"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="1745" invocations="1287" avgMicrosecondsPerInvocation="1356" maxMicrosecondsPerInvocation="84034" standardDeviationMircosecondsPerInvocation="4673"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="1689" invocations="1250" avgMicrosecondsPerInvocation="1351" maxMicrosecondsPerInvocation="52775" standardDeviationMircosecondsPerInvocation="3414"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="1318" invocations="1305" avgMicrosecondsPerInvocation="1010" maxMicrosecondsPerInvocation="54511" standardDeviationMircosecondsPerInvocation="2959"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="1151" invocations="1250" avgMicrosecondsPerInvocation="921" maxMicrosecondsPerInvocation="76546" standardDeviationMircosecondsPerInvocation="3014"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="1128" invocations="1028" avgMicrosecondsPerInvocation="1097" maxMicrosecondsPerInvocation="55189" standardDeviationMircosecondsPerInvocation="3214"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="1100" invocations="1492" avgMicrosecondsPerInvocation="737" maxMicrosecondsPerInvocation="112069" standardDeviationMircosecondsPerInvocation="4508"/>
-      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="1099" invocations="2790" avgMicrosecondsPerInvocation="394" maxMicrosecondsPerInvocation="389724" standardDeviationMircosecondsPerInvocation="7514"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="1089" invocations="899" avgMicrosecondsPerInvocation="1212" maxMicrosecondsPerInvocation="37329" standardDeviationMircosecondsPerInvocation="3073"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectStatistics" totalMilliseconds="840" invocations="899" avgMicrosecondsPerInvocation="934" maxMicrosecondsPerInvocation="31821" standardDeviationMircosecondsPerInvocation="2518"/>
-      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="789" invocations="72807" avgMicrosecondsPerInvocation="10" maxMicrosecondsPerInvocation="14784" standardDeviationMircosecondsPerInvocation="210"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="750" invocations="899" avgMicrosecondsPerInvocation="834" maxMicrosecondsPerInvocation="127187" standardDeviationMircosecondsPerInvocation="5155"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="695" invocations="899" avgMicrosecondsPerInvocation="773" maxMicrosecondsPerInvocation="87263" standardDeviationMircosecondsPerInvocation="5339"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="694" invocations="899" avgMicrosecondsPerInvocation="772" maxMicrosecondsPerInvocation="38335" standardDeviationMircosecondsPerInvocation="2297"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="670" invocations="899" avgMicrosecondsPerInvocation="746" maxMicrosecondsPerInvocation="34599" standardDeviationMircosecondsPerInvocation="2477"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="632" invocations="899" avgMicrosecondsPerInvocation="704" maxMicrosecondsPerInvocation="49999" standardDeviationMircosecondsPerInvocation="2720"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="600" invocations="1266" avgMicrosecondsPerInvocation="474" maxMicrosecondsPerInvocation="219122" standardDeviationMircosecondsPerInvocation="6303"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="561" invocations="899" avgMicrosecondsPerInvocation="625" maxMicrosecondsPerInvocation="26070" standardDeviationMircosecondsPerInvocation="1908"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="547" invocations="285" avgMicrosecondsPerInvocation="1919" maxMicrosecondsPerInvocation="141485" standardDeviationMircosecondsPerInvocation="9063"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="545" invocations="285" avgMicrosecondsPerInvocation="1912" maxMicrosecondsPerInvocation="63681" standardDeviationMircosecondsPerInvocation="5599"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" totalMilliseconds="531" invocations="899" avgMicrosecondsPerInvocation="591" maxMicrosecondsPerInvocation="17562" standardDeviationMircosecondsPerInvocation="1783"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="465" invocations="899" avgMicrosecondsPerInvocation="517" maxMicrosecondsPerInvocation="24638" standardDeviationMircosecondsPerInvocation="2015"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" totalMilliseconds="428" invocations="285" avgMicrosecondsPerInvocation="1502" maxMicrosecondsPerInvocation="21789" standardDeviationMircosecondsPerInvocation="3246"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="412" invocations="899" avgMicrosecondsPerInvocation="458" maxMicrosecondsPerInvocation="80979" standardDeviationMircosecondsPerInvocation="3192"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="410" invocations="1250" avgMicrosecondsPerInvocation="328" maxMicrosecondsPerInvocation="18957" standardDeviationMircosecondsPerInvocation="1402"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="408" invocations="285" avgMicrosecondsPerInvocation="1432" maxMicrosecondsPerInvocation="46841" standardDeviationMircosecondsPerInvocation="5077"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ModifyingUnmodifiableCollection" totalMilliseconds="384" invocations="285" avgMicrosecondsPerInvocation="1348" maxMicrosecondsPerInvocation="105084" standardDeviationMircosecondsPerInvocation="7308"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="358" invocations="16516" avgMicrosecondsPerInvocation="21" maxMicrosecondsPerInvocation="25149" standardDeviationMircosecondsPerInvocation="410"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="346" invocations="285" avgMicrosecondsPerInvocation="1217" maxMicrosecondsPerInvocation="20135" standardDeviationMircosecondsPerInvocation="2998"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="346" invocations="285" avgMicrosecondsPerInvocation="1215" maxMicrosecondsPerInvocation="23378" standardDeviationMircosecondsPerInvocation="2895"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InconsistentKeyNameCasing" totalMilliseconds="334" invocations="285" avgMicrosecondsPerInvocation="1172" maxMicrosecondsPerInvocation="99701" standardDeviationMircosecondsPerInvocation="7598"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" totalMilliseconds="330" invocations="285" avgMicrosecondsPerInvocation="1159" maxMicrosecondsPerInvocation="26758" standardDeviationMircosecondsPerInvocation="2961"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SuspiciousNullGuard" totalMilliseconds="325" invocations="285" avgMicrosecondsPerInvocation="1142" maxMicrosecondsPerInvocation="96732" standardDeviationMircosecondsPerInvocation="6100"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="310" invocations="218" avgMicrosecondsPerInvocation="1426" maxMicrosecondsPerInvocation="20016" standardDeviationMircosecondsPerInvocation="3326"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HangingExecutors" totalMilliseconds="309" invocations="285" avgMicrosecondsPerInvocation="1086" maxMicrosecondsPerInvocation="21480" standardDeviationMircosecondsPerInvocation="2539"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="309" invocations="285" avgMicrosecondsPerInvocation="1084" maxMicrosecondsPerInvocation="22238" standardDeviationMircosecondsPerInvocation="2693"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" totalMilliseconds="308" invocations="285" avgMicrosecondsPerInvocation="1083" maxMicrosecondsPerInvocation="22249" standardDeviationMircosecondsPerInvocation="2481"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="302" invocations="285" avgMicrosecondsPerInvocation="1060" maxMicrosecondsPerInvocation="29554" standardDeviationMircosecondsPerInvocation="2834"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" totalMilliseconds="300" invocations="285" avgMicrosecondsPerInvocation="1053" maxMicrosecondsPerInvocation="18752" standardDeviationMircosecondsPerInvocation="2496"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="298" invocations="285" avgMicrosecondsPerInvocation="1046" maxMicrosecondsPerInvocation="15294" standardDeviationMircosecondsPerInvocation="2246"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="294" invocations="285" avgMicrosecondsPerInvocation="1031" maxMicrosecondsPerInvocation="15965" standardDeviationMircosecondsPerInvocation="2381"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" totalMilliseconds="282" invocations="285" avgMicrosecondsPerInvocation="992" maxMicrosecondsPerInvocation="20597" standardDeviationMircosecondsPerInvocation="2627"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="273" invocations="1219" avgMicrosecondsPerInvocation="224" maxMicrosecondsPerInvocation="22475" standardDeviationMircosecondsPerInvocation="1203"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LoggerOddities" totalMilliseconds="271" invocations="285" avgMicrosecondsPerInvocation="954" maxMicrosecondsPerInvocation="19258" standardDeviationMircosecondsPerInvocation="2303"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ContraVariantArrayAssignment" totalMilliseconds="262" invocations="285" avgMicrosecondsPerInvocation="921" maxMicrosecondsPerInvocation="60735" standardDeviationMircosecondsPerInvocation="4101"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="262" invocations="285" avgMicrosecondsPerInvocation="920" maxMicrosecondsPerInvocation="22174" standardDeviationMircosecondsPerInvocation="2484"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="261" invocations="1226" avgMicrosecondsPerInvocation="213" maxMicrosecondsPerInvocation="14255" standardDeviationMircosecondsPerInvocation="884"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindHEmismatch" totalMilliseconds="259" invocations="285" avgMicrosecondsPerInvocation="910" maxMicrosecondsPerInvocation="18045" standardDeviationMircosecondsPerInvocation="2373"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueRangeAnalysisFactory" totalMilliseconds="256" invocations="1266" avgMicrosecondsPerInvocation="202" maxMicrosecondsPerInvocation="36823" standardDeviationMircosecondsPerInvocation="1412"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossibleUnsuspectedSerialization" totalMilliseconds="256" invocations="285" avgMicrosecondsPerInvocation="899" maxMicrosecondsPerInvocation="82065" standardDeviationMircosecondsPerInvocation="5127"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.Section508Compliance" totalMilliseconds="254" invocations="285" avgMicrosecondsPerInvocation="892" maxMicrosecondsPerInvocation="15815" standardDeviationMircosecondsPerInvocation="2249"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteLoop" totalMilliseconds="246" invocations="285" avgMicrosecondsPerInvocation="864" maxMicrosecondsPerInvocation="20747" standardDeviationMircosecondsPerInvocation="2496"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PresizeCollections" totalMilliseconds="244" invocations="285" avgMicrosecondsPerInvocation="858" maxMicrosecondsPerInvocation="18430" standardDeviationMircosecondsPerInvocation="2254"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InappropriateToStringUse" totalMilliseconds="241" invocations="285" avgMicrosecondsPerInvocation="848" maxMicrosecondsPerInvocation="25412" standardDeviationMircosecondsPerInvocation="2479"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="240" invocations="285" avgMicrosecondsPerInvocation="842" maxMicrosecondsPerInvocation="19677" standardDeviationMircosecondsPerInvocation="2728"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HttpClientProblems" totalMilliseconds="240" invocations="285" avgMicrosecondsPerInvocation="842" maxMicrosecondsPerInvocation="17363" standardDeviationMircosecondsPerInvocation="2267"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.CommonsStringBuilderToString" totalMilliseconds="240" invocations="285" avgMicrosecondsPerInvocation="842" maxMicrosecondsPerInvocation="62445" standardDeviationMircosecondsPerInvocation="3949"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison" totalMilliseconds="236" invocations="285" avgMicrosecondsPerInvocation="829" maxMicrosecondsPerInvocation="13917" standardDeviationMircosecondsPerInvocation="2054"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.Naming" totalMilliseconds="235" invocations="285" avgMicrosecondsPerInvocation="825" maxMicrosecondsPerInvocation="16517" standardDeviationMircosecondsPerInvocation="2406"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.SerializableIdiom" totalMilliseconds="233" invocations="285" avgMicrosecondsPerInvocation="820" maxMicrosecondsPerInvocation="23408" standardDeviationMircosecondsPerInvocation="2502"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" totalMilliseconds="233" invocations="285" avgMicrosecondsPerInvocation="820" maxMicrosecondsPerInvocation="41629" standardDeviationMircosecondsPerInvocation="3285"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="232" invocations="285" avgMicrosecondsPerInvocation="815" maxMicrosecondsPerInvocation="13643" standardDeviationMircosecondsPerInvocation="1915"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossiblyRedundantMethodCalls" totalMilliseconds="231" invocations="285" avgMicrosecondsPerInvocation="810" maxMicrosecondsPerInvocation="13614" standardDeviationMircosecondsPerInvocation="2060"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="230" invocations="285" avgMicrosecondsPerInvocation="810" maxMicrosecondsPerInvocation="14117" standardDeviationMircosecondsPerInvocation="1904"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUseOfNonSerializableValue" totalMilliseconds="230" invocations="285" avgMicrosecondsPerInvocation="808" maxMicrosecondsPerInvocation="22379" standardDeviationMircosecondsPerInvocation="2497"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UseSplit" totalMilliseconds="228" invocations="285" avgMicrosecondsPerInvocation="800" maxMicrosecondsPerInvocation="13904" standardDeviationMircosecondsPerInvocation="2125"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents" totalMilliseconds="227" invocations="285" avgMicrosecondsPerInvocation="798" maxMicrosecondsPerInvocation="15981" standardDeviationMircosecondsPerInvocation="2236"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossibleConstantAllocationInLoop" totalMilliseconds="224" invocations="285" avgMicrosecondsPerInvocation="787" maxMicrosecondsPerInvocation="13611" standardDeviationMircosecondsPerInvocation="2088"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.IOIssues" totalMilliseconds="221" invocations="285" avgMicrosecondsPerInvocation="775" maxMicrosecondsPerInvocation="24766" standardDeviationMircosecondsPerInvocation="2305"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SyncCollectionIterators" totalMilliseconds="220" invocations="285" avgMicrosecondsPerInvocation="774" maxMicrosecondsPerInvocation="23961" standardDeviationMircosecondsPerInvocation="2431"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="8438" invocations="2915" avgMicrosecondsPerInvocation="2894" maxMicrosecondsPerInvocation="355177" standardDeviationMircosecondsPerInvocation="13435"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="3600" invocations="2884" avgMicrosecondsPerInvocation="1248" maxMicrosecondsPerInvocation="108343" standardDeviationMircosecondsPerInvocation="5178"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="3264" invocations="900" avgMicrosecondsPerInvocation="3627" maxMicrosecondsPerInvocation="406195" standardDeviationMircosecondsPerInvocation="15608"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="3196" invocations="900" avgMicrosecondsPerInvocation="3551" maxMicrosecondsPerInvocation="489434" standardDeviationMircosecondsPerInvocation="17860"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="1900" invocations="2618" avgMicrosecondsPerInvocation="726" maxMicrosecondsPerInvocation="22266" standardDeviationMircosecondsPerInvocation="1938"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="1886" invocations="1232" avgMicrosecondsPerInvocation="1531" maxMicrosecondsPerInvocation="108600" standardDeviationMircosecondsPerInvocation="5216"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="1554" invocations="1256" avgMicrosecondsPerInvocation="1237" maxMicrosecondsPerInvocation="56169" standardDeviationMircosecondsPerInvocation="3841"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="1387" invocations="1293" avgMicrosecondsPerInvocation="1073" maxMicrosecondsPerInvocation="98740" standardDeviationMircosecondsPerInvocation="4255"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1309" invocations="1246" avgMicrosecondsPerInvocation="1051" maxMicrosecondsPerInvocation="38432" standardDeviationMircosecondsPerInvocation="3122"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="1180" invocations="2791" avgMicrosecondsPerInvocation="423" maxMicrosecondsPerInvocation="192265" standardDeviationMircosecondsPerInvocation="5519"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="1117" invocations="1311" avgMicrosecondsPerInvocation="852" maxMicrosecondsPerInvocation="35217" standardDeviationMircosecondsPerInvocation="2751"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="1060" invocations="1256" avgMicrosecondsPerInvocation="844" maxMicrosecondsPerInvocation="41315" standardDeviationMircosecondsPerInvocation="2940"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="971" invocations="900" avgMicrosecondsPerInvocation="1079" maxMicrosecondsPerInvocation="31138" standardDeviationMircosecondsPerInvocation="2752"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectStatistics" totalMilliseconds="921" invocations="900" avgMicrosecondsPerInvocation="1023" maxMicrosecondsPerInvocation="111238" standardDeviationMircosecondsPerInvocation="4595"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="914" invocations="1493" avgMicrosecondsPerInvocation="612" maxMicrosecondsPerInvocation="86482" standardDeviationMircosecondsPerInvocation="3404"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="786" invocations="1034" avgMicrosecondsPerInvocation="760" maxMicrosecondsPerInvocation="28805" standardDeviationMircosecondsPerInvocation="2395"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="595" invocations="900" avgMicrosecondsPerInvocation="661" maxMicrosecondsPerInvocation="153817" standardDeviationMircosecondsPerInvocation="5576"/>
+      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="594" invocations="73342" avgMicrosecondsPerInvocation="8" maxMicrosecondsPerInvocation="24713" standardDeviationMircosecondsPerInvocation="200"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" totalMilliseconds="586" invocations="286" avgMicrosecondsPerInvocation="2049" maxMicrosecondsPerInvocation="120518" standardDeviationMircosecondsPerInvocation="8666"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="575" invocations="1272" avgMicrosecondsPerInvocation="452" maxMicrosecondsPerInvocation="194998" standardDeviationMircosecondsPerInvocation="5690"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="574" invocations="900" avgMicrosecondsPerInvocation="637" maxMicrosecondsPerInvocation="26459" standardDeviationMircosecondsPerInvocation="2009"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="553" invocations="900" avgMicrosecondsPerInvocation="614" maxMicrosecondsPerInvocation="68913" standardDeviationMircosecondsPerInvocation="2765"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="532" invocations="900" avgMicrosecondsPerInvocation="591" maxMicrosecondsPerInvocation="17745" standardDeviationMircosecondsPerInvocation="1612"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="488" invocations="900" avgMicrosecondsPerInvocation="542" maxMicrosecondsPerInvocation="67261" standardDeviationMircosecondsPerInvocation="3929"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="487" invocations="900" avgMicrosecondsPerInvocation="541" maxMicrosecondsPerInvocation="17734" standardDeviationMircosecondsPerInvocation="1734"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="446" invocations="900" avgMicrosecondsPerInvocation="496" maxMicrosecondsPerInvocation="24459" standardDeviationMircosecondsPerInvocation="1906"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="432" invocations="1256" avgMicrosecondsPerInvocation="344" maxMicrosecondsPerInvocation="26841" standardDeviationMircosecondsPerInvocation="1755"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" totalMilliseconds="381" invocations="900" avgMicrosecondsPerInvocation="424" maxMicrosecondsPerInvocation="20764" standardDeviationMircosecondsPerInvocation="1451"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="356" invocations="16936" avgMicrosecondsPerInvocation="21" maxMicrosecondsPerInvocation="21941" standardDeviationMircosecondsPerInvocation="432"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="339" invocations="219" avgMicrosecondsPerInvocation="1549" maxMicrosecondsPerInvocation="84437" standardDeviationMircosecondsPerInvocation="6296"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="336" invocations="286" avgMicrosecondsPerInvocation="1176" maxMicrosecondsPerInvocation="35397" standardDeviationMircosecondsPerInvocation="3626"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="335" invocations="286" avgMicrosecondsPerInvocation="1173" maxMicrosecondsPerInvocation="20617" standardDeviationMircosecondsPerInvocation="2909"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" totalMilliseconds="321" invocations="286" avgMicrosecondsPerInvocation="1123" maxMicrosecondsPerInvocation="67417" standardDeviationMircosecondsPerInvocation="4774"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="320" invocations="1232" avgMicrosecondsPerInvocation="260" maxMicrosecondsPerInvocation="21699" standardDeviationMircosecondsPerInvocation="1202"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents" totalMilliseconds="290" invocations="286" avgMicrosecondsPerInvocation="1017" maxMicrosecondsPerInvocation="44220" standardDeviationMircosecondsPerInvocation="4136"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="289" invocations="900" avgMicrosecondsPerInvocation="321" maxMicrosecondsPerInvocation="12372" standardDeviationMircosecondsPerInvocation="1158"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="287" invocations="286" avgMicrosecondsPerInvocation="1006" maxMicrosecondsPerInvocation="61984" standardDeviationMircosecondsPerInvocation="4388"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="284" invocations="286" avgMicrosecondsPerInvocation="993" maxMicrosecondsPerInvocation="17131" standardDeviationMircosecondsPerInvocation="2296"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" totalMilliseconds="274" invocations="286" avgMicrosecondsPerInvocation="958" maxMicrosecondsPerInvocation="21557" standardDeviationMircosecondsPerInvocation="2655"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="268" invocations="286" avgMicrosecondsPerInvocation="937" maxMicrosecondsPerInvocation="19339" standardDeviationMircosecondsPerInvocation="2639"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="264" invocations="286" avgMicrosecondsPerInvocation="926" maxMicrosecondsPerInvocation="24604" standardDeviationMircosecondsPerInvocation="2702"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="261" invocations="286" avgMicrosecondsPerInvocation="913" maxMicrosecondsPerInvocation="22965" standardDeviationMircosecondsPerInvocation="2701"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="260" invocations="286" avgMicrosecondsPerInvocation="911" maxMicrosecondsPerInvocation="21492" standardDeviationMircosecondsPerInvocation="2523"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBadCast2" totalMilliseconds="251" invocations="286" avgMicrosecondsPerInvocation="877" maxMicrosecondsPerInvocation="48349" standardDeviationMircosecondsPerInvocation="4719"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="249" invocations="286" avgMicrosecondsPerInvocation="871" maxMicrosecondsPerInvocation="69122" standardDeviationMircosecondsPerInvocation="4584"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.OrphanedDOMNode" totalMilliseconds="248" invocations="286" avgMicrosecondsPerInvocation="869" maxMicrosecondsPerInvocation="33672" standardDeviationMircosecondsPerInvocation="3457"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.JDBCVendorReliance" totalMilliseconds="244" invocations="286" avgMicrosecondsPerInvocation="856" maxMicrosecondsPerInvocation="32359" standardDeviationMircosecondsPerInvocation="2992"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="237" invocations="286" avgMicrosecondsPerInvocation="831" maxMicrosecondsPerInvocation="22805" standardDeviationMircosecondsPerInvocation="2703"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="236" invocations="286" avgMicrosecondsPerInvocation="828" maxMicrosecondsPerInvocation="33548" standardDeviationMircosecondsPerInvocation="3179"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" totalMilliseconds="232" invocations="286" avgMicrosecondsPerInvocation="811" maxMicrosecondsPerInvocation="27650" standardDeviationMircosecondsPerInvocation="2369"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" totalMilliseconds="231" invocations="286" avgMicrosecondsPerInvocation="809" maxMicrosecondsPerInvocation="28226" standardDeviationMircosecondsPerInvocation="2611"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HangingExecutors" totalMilliseconds="228" invocations="286" avgMicrosecondsPerInvocation="797" maxMicrosecondsPerInvocation="17303" standardDeviationMircosecondsPerInvocation="2182"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="226" invocations="286" avgMicrosecondsPerInvocation="792" maxMicrosecondsPerInvocation="19691" standardDeviationMircosecondsPerInvocation="1989"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UseSplit" totalMilliseconds="222" invocations="286" avgMicrosecondsPerInvocation="777" maxMicrosecondsPerInvocation="29115" standardDeviationMircosecondsPerInvocation="2890"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison" totalMilliseconds="220" invocations="286" avgMicrosecondsPerInvocation="772" maxMicrosecondsPerInvocation="22193" standardDeviationMircosecondsPerInvocation="2523"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod" totalMilliseconds="216" invocations="286" avgMicrosecondsPerInvocation="756" maxMicrosecondsPerInvocation="21095" standardDeviationMircosecondsPerInvocation="2439"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.NeedlessAutoboxing" totalMilliseconds="214" invocations="286" avgMicrosecondsPerInvocation="748" maxMicrosecondsPerInvocation="25356" standardDeviationMircosecondsPerInvocation="2684"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindFloatEquality" totalMilliseconds="212" invocations="286" avgMicrosecondsPerInvocation="743" maxMicrosecondsPerInvocation="94361" standardDeviationMircosecondsPerInvocation="5752"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HttpClientProblems" totalMilliseconds="211" invocations="286" avgMicrosecondsPerInvocation="739" maxMicrosecondsPerInvocation="25846" standardDeviationMircosecondsPerInvocation="2486"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UseAddAll" totalMilliseconds="206" invocations="286" avgMicrosecondsPerInvocation="722" maxMicrosecondsPerInvocation="42049" standardDeviationMircosecondsPerInvocation="2887"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossibleConstantAllocationInLoop" totalMilliseconds="204" invocations="286" avgMicrosecondsPerInvocation="713" maxMicrosecondsPerInvocation="29626" standardDeviationMircosecondsPerInvocation="2668"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueRangeAnalysisFactory" totalMilliseconds="201" invocations="1272" avgMicrosecondsPerInvocation="158" maxMicrosecondsPerInvocation="48162" standardDeviationMircosecondsPerInvocation="1563"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ReflectionOnObjectMethods" totalMilliseconds="201" invocations="286" avgMicrosecondsPerInvocation="704" maxMicrosecondsPerInvocation="27042" standardDeviationMircosecondsPerInvocation="2383"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LingeringGraphicsObjects" totalMilliseconds="195" invocations="286" avgMicrosecondsPerInvocation="684" maxMicrosecondsPerInvocation="33878" standardDeviationMircosecondsPerInvocation="2918"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FormatStringChecker" totalMilliseconds="195" invocations="286" avgMicrosecondsPerInvocation="682" maxMicrosecondsPerInvocation="38898" standardDeviationMircosecondsPerInvocation="2977"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BackportReusePublicIdentifiers" totalMilliseconds="194" invocations="286" avgMicrosecondsPerInvocation="680" maxMicrosecondsPerInvocation="39101" standardDeviationMircosecondsPerInvocation="3260"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="193" invocations="1225" avgMicrosecondsPerInvocation="157" maxMicrosecondsPerInvocation="24105" standardDeviationMircosecondsPerInvocation="1097"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LoggerOddities" totalMilliseconds="193" invocations="286" avgMicrosecondsPerInvocation="675" maxMicrosecondsPerInvocation="23346" standardDeviationMircosecondsPerInvocation="2355"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ImmatureClass" totalMilliseconds="191" invocations="286" avgMicrosecondsPerInvocation="670" maxMicrosecondsPerInvocation="15415" standardDeviationMircosecondsPerInvocation="1882"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SerializableIdiom" totalMilliseconds="191" invocations="286" avgMicrosecondsPerInvocation="670" maxMicrosecondsPerInvocation="28294" standardDeviationMircosecondsPerInvocation="2728"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUnsatisfiedObligation" totalMilliseconds="190" invocations="286" avgMicrosecondsPerInvocation="665" maxMicrosecondsPerInvocation="42764" standardDeviationMircosecondsPerInvocation="3775"/>
     </FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>
