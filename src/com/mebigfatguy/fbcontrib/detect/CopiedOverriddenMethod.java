@@ -243,7 +243,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
      *
      * @param parentAccess
      * @param childAccess
-     * @return
+     * @return whether the access modifiers are the same
      */
     private static boolean sameAccess(int parentAccess, int childAccess) {
         return ((parentAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)) == (childAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)));

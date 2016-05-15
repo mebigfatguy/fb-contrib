@@ -255,7 +255,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * determines if the method is returns information that could be used by the caller
      *
-     * @param methodName,
+     * @param methodName
      *            collection method name
      * @return true if the caller could use the return value to learn something about the collection
      */

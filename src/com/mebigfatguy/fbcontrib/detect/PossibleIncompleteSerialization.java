@@ -89,7 +89,8 @@ public class PossibleIncompleteSerialization implements Detector {
     /**
      * looks for fields that are candidates for serialization
      *
-     * @arg class the class to look for fields
+     * @param cls
+     *            the class to look for fields
      * @return if their is a field that looks like it should be serialized
      */
     private static boolean hasSerializableFields(JavaClass cls) {

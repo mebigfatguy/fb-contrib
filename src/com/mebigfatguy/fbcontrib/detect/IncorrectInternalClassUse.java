@@ -109,7 +109,7 @@ public class IncorrectInternalClassUse implements Detector {
      *
      * @param clsName
      *            the name of the class to check
-     * @returns whether the class is internal
+     * @return whether the class is internal
      */
     private static boolean isInternal(String clsName) {
         boolean internal = false;
