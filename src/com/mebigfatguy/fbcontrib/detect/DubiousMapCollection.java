@@ -33,7 +33,8 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         "get",
         "getOrDefault",
         "remove",
-        "removeEldestEntry"
+        "removeEldestEntry",
+        "values"
     // @formatter:on
     );
 
