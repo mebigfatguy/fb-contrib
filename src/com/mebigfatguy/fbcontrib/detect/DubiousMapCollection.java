@@ -28,6 +28,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     private static final Set<String> SPECIAL_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR, Values.STATIC_INITIALIZER);
     private static final Set<String> MAP_METHODS = UnmodifiableSet.create(
     // @formatter:off
+        "computeIfAbsent",
         "containsKey",
         "get",
         "getOrDefault",
