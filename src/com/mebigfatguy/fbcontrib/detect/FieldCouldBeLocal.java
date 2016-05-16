@@ -410,8 +410,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
          *
          * @param bb
          *            the basic block to parse
-         * @param the
-         *            basic block to copy from
+         * @param parentBlockState
+         *            the basic block to copy from
          */
         public BlockState(final BasicBlock bb, BlockState parentBlockState) {
             basicBlock = bb;

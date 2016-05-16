@@ -735,7 +735,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         /**
          * returns a string representation of the scope block
          *
-         * @returns a string representation
+         * @return a string representation
          */
         @Override
         public String toString() {
@@ -812,7 +812,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         /**
          * returns whether this scope block is a loop
          *
-         * @returns whether this block is a loop
+         * @return whether this block is a loop
          */
         public boolean isLoop() {
             return isLoop;
@@ -828,7 +828,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         /**
          * returns whether this block was caused from a goto
          *
-         * @returns whether this block was caused by a goto
+         * @return whether this block was caused by a goto
          */
         public boolean isGoto() {
             return isGoto;
@@ -844,7 +844,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         /**
          * returns whether this block was caused from a synchronized block
          *
-         * @returns whether this block was caused by a synchronized block
+         * @return whether this block was caused by a synchronized block
          */
         public boolean isSync() {
             return isSync;
@@ -860,7 +860,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         /**
          * returns whether this block was caused from a try block
          *
-         * @returns whether this block was caused by a try block
+         * @return whether this block was caused by a try block
          */
         public boolean isTry() {
             return isTry;
@@ -876,7 +876,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         /**
          * returns whether this block was caused from a case block
          *
-         * @returns whether this block was caused by a case block
+         * @return whether this block was caused by a case block
          */
         public boolean isCase() {
             return isCase;
