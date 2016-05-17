@@ -3820,8 +3820,8 @@
 	</BugPattern>
 
 	<BugPattern type="SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT">
-		<ShortDescription>Method modifies http session attribute without calling setAttribute</ShortDescription>
-		<LongDescription>Method {1} modifies http session attribute without calling setAttribute</LongDescription>
+		<ShortDescription>Method modifies an http session attribute without calling setAttribute</ShortDescription>
+		<LongDescription>Method {1} modifies an http session attribute without calling setAttribute</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method fetches a complex object from an HttpSession object, modifies this object, but does
