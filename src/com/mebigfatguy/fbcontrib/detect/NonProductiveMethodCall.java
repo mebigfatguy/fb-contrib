@@ -35,20 +35,22 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for common methods that are believed to be non mutating, where the
- * value is discarded. Since the method makes no changes to the object, calling
- * this method is useless. The method call can be removed.
+ * looks for common methods that are believed to be non mutating, where the value is discarded. Since the method makes no changes to the object, calling this
+ * method is useless. The method call can be removed.
  */
 @CustomUserValue
 public class NonProductiveMethodCall extends BytecodeScanningDetector {
 
     private static final Set<Pattern> IMMUTABLE_METHODS = UnmodifiableSet.create(
-                Pattern.compile(".*@toString\\(\\)Ljava/lang/String;"),
-                Pattern.compile("java/lang/.+@.+Value\\(\\)[BCDFIJSZ]"),
-                Pattern.compile(".*@equals\\(Ljava/lang/Object;\\)Z"),
-                Pattern.compile(".*@hashCode\\(\\)I"),
-                Pattern.compile(".*@clone\\(\\).+"),
-                Pattern.compile("java/util/.+@toArray\\(\\)\\[.+")
+            // @formatter:off
+            Pattern.compile(".*@toString\\(\\)Ljava/lang/String;"),
+            Pattern.compile("java/lang/.+@.+Value\\(\\)[BCDFIJSZ]"),
+            Pattern.compile(".*@equals\\(Ljava/lang/Object;\\)Z"),
+            Pattern.compile(".*@hashCode\\(\\)I"),
+            Pattern.compile(".*@clone\\(\\).+"),
+            Pattern.compile("java/util/.+@toArray\\(\\)\\[.+"),
+            Pattern.compile("java/time/Local(Date)?(Time)?@(plus|minus|with).*")
+            // @formatter:on
     );
 
     private BugReporter bugReporter;
@@ -90,8 +92,7 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for return values of common immutable
-     * method calls, that are thrown away.
+     * implements the visitor to look for return values of common immutable method calls, that are thrown away.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -103,38 +104,38 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-            case INVOKEVIRTUAL:
-            case INVOKEINTERFACE:
-            case INVOKESTATIC:
-                String sig = getSigConstantOperand();
-                if (!sig.endsWith("V")) {
-                    methodInfo = getClassConstantOperand() + '@' + getNameConstantOperand() + getSigConstantOperand();
-                }
+                case INVOKEVIRTUAL:
+                case INVOKEINTERFACE:
+                case INVOKESTATIC:
+                    String sig = getSigConstantOperand();
+                    if (!sig.endsWith("V")) {
+                        methodInfo = getClassConstantOperand() + '@' + getNameConstantOperand() + getSigConstantOperand();
+                    }
                 break;
 
-            case POP:
-            case POP2:
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    String mInfo = (String) item.getUserValue();
-                    if (mInfo != null) {
-                        for (Pattern p : IMMUTABLE_METHODS) {
-                            Matcher m = p.matcher(mInfo);
+                case POP:
+                case POP2:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        String mInfo = (String) item.getUserValue();
+                        if (mInfo != null) {
+                            for (Pattern p : IMMUTABLE_METHODS) {
+                                Matcher m = p.matcher(mInfo);
 
-                            if (m.matches()) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.NPMC_NON_PRODUCTIVE_METHOD_CALL.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this).addString(mInfo));
-                                break;
+                                if (m.matches()) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.NPMC_NON_PRODUCTIVE_METHOD_CALL.name(), NORMAL_PRIORITY).addClass(this)
+                                            .addMethod(this).addSourceLine(this).addString(mInfo));
+                                    break;
+                                }
                             }
                         }
                     }
-                }
                 break;
             }
 
         } finally {
             stack.sawOpcode(this, seen);
-            if (methodInfo != null && (stack.getStackDepth() > 0)) {
+            if ((methodInfo != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 item.setUserValue(methodInfo);
             }
