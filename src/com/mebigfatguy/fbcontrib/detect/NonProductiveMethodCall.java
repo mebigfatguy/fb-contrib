@@ -49,7 +49,7 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
             Pattern.compile(".*@hashCode\\(\\)I"),
             Pattern.compile(".*@clone\\(\\).+"),
             Pattern.compile("java/util/.+@toArray\\(\\)\\[.+"),
-            Pattern.compile("java/time/Local(Date)?(Time)?@(plus|minus|with).*")
+            Pattern.compile("java/time/(?:Instant|((?:Local|Zoned)(?:Date)?(?:Time)?)@(?:plus|minus|with).*")
             // @formatter:on
     );
 
