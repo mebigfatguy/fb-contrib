@@ -102,6 +102,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
             case INVOKEINTERFACE:
             case INVOKESPECIAL:
             case INVOKESTATIC:
+            case INVOKEDYNAMIC:
                 numMethodCalls++;
             break;
 
