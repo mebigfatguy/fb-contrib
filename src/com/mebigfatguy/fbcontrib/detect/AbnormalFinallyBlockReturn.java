@@ -39,9 +39,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * find methods that return or throw exception from a finally block. Doing so
- * short-circuits the return or exception thrown from the try block, and masks
- * it.
+ * find methods that return or throw exception from a finally block. Doing so short-circuits the return or exception thrown from the try block, and masks it.
  */
 public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -59,8 +57,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to check for java class version being as good or
-     * better than 1.4
+     * overrides the visitor to check for java class version being as good or better than 1.4
      *
      * @param classContext
      *            the context object that holds the JavaClass parsed
@@ -98,14 +95,15 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
         CodeException[] exc = obj.getExceptionTable();
         if (exc != null) {
             for (CodeException ce : exc) {
-                if (ce.getCatchType() == 0 && ce.getStartPC() == ce.getHandlerPC()) {
+                if ((ce.getCatchType() == 0) && (ce.getStartPC() == ce.getHandlerPC())) {
                     fbInfo.add(new FinallyBlockInfo(ce.getStartPC()));
                 }
             }
         }
 
-        if (!fbInfo.isEmpty())
+        if (!fbInfo.isEmpty()) {
             super.visitCode(obj);
+        }
     }
 
     /**
@@ -116,13 +114,15 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (fbInfo.isEmpty())
+        if (fbInfo.isEmpty()) {
             return;
+        }
 
         FinallyBlockInfo fbi = fbInfo.get(0);
 
-        if (getPC() < fbi.startPC)
+        if (getPC() < fbi.startPC) {
             return;
+        }
 
         if (getPC() == fbi.startPC) {
             if (OpcodeUtils.isAStore(seen)) {
@@ -146,26 +146,27 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
             }
         }
 
-        if (seen == ATHROW && loadedReg == fbi.exReg) {
+        if ((seen == ATHROW) && (loadedReg == fbi.exReg)) {
             fbInfo.remove(0);
             sawOpcode(seen);
             return;
-        } else if (OpcodeUtils.isALoad(seen))
+        } else if (OpcodeUtils.isALoad(seen)) {
             loadedReg = RegisterUtils.getALoadReg(this, seen);
-        else
+        } else {
             loadedReg = -1;
+        }
 
-        if (seen >= IRETURN && seen <= RETURN || seen == ATHROW) {
+        if (((seen >= IRETURN) && (seen <= RETURN)) || (seen == ATHROW)) {
             bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLine(this));
             fbInfo.remove(0);
-        } else if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE || seen == INVOKESPECIAL || seen == INVOKESTATIC) {
+        } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC) || (seen == INVOKEVIRTUAL)) {
             try {
                 JavaClass cls = Repository.lookupClass(getClassConstantOperand());
                 Method m = findMethod(cls, getNameConstantOperand(), getSigConstantOperand());
                 if (m != null) {
                     ExceptionTable et = m.getExceptionTable();
-                    if (et != null && et.getLength() > 0 && !catchBlockInFinally(fbi)) {
+                    if ((et != null) && (et.getLength() > 0) && !catchBlockInFinally(fbi)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), LOW_PRIORITY).addClass(this)
                                 .addMethod(this).addSourceLine(this));
                         fbInfo.remove(0);
@@ -201,10 +202,8 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     }
 
     /**
-     * looks to see if any try/catch block exists inside this finally block,
-     * that wrap the current pc. This is a lax check as the try catch block may
-     * not catch exceptions that are thrown, but doing so would be prohibitively
-     * slow. But it should catch some problems.
+     * looks to see if any try/catch block exists inside this finally block, that wrap the current pc. This is a lax check as the try catch block may not catch
+     * exceptions that are thrown, but doing so would be prohibitively slow. But it should catch some problems.
      *
      * @param fBlockInfo
      *            the finally block the pc is currently in
@@ -214,15 +213,13 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     private boolean catchBlockInFinally(FinallyBlockInfo fBlockInfo) {
 
         CodeException[] catchExceptions = getCode().getExceptionTable();
-        if (catchExceptions == null || catchExceptions.length == 0) {
+        if ((catchExceptions == null) || (catchExceptions.length == 0)) {
             return false;
         }
 
         int pc = getPC();
         for (CodeException ex : catchExceptions) {
-            if (ex.getStartPC() <= pc
-                && ex.getEndPC() >= pc
-                && ex.getStartPC() >= fBlockInfo.startPC) {
+            if ((ex.getStartPC() <= pc) && (ex.getEndPC() >= pc) && (ex.getStartPC() >= fBlockInfo.startPC)) {
                 return true;
             }
         }
