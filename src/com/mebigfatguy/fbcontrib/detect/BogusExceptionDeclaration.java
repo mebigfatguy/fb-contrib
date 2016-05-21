@@ -221,7 +221,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
             stack.precomputation(this);
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC)) {
+            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC) || (seen == INVOKEDYNAMIC)) {
                 String clsName = getClassConstantOperand();
                 if (!safeClasses.contains(clsName)) {
                     try {
