@@ -34,6 +34,7 @@ public class MethodInfo {
     private byte immutabilityOrdinal;
     private byte declaredAccess;
     private byte isCalledType;
+    private boolean modifiesState;
 
     public int getNumBytes() {
         return 0x0000FFFF & numMethodBytes;
@@ -102,6 +103,14 @@ public class MethodInfo {
         immutabilityOrdinal = (byte) imType.ordinal();
     }
 
+    public boolean getModifiesState() {
+        return modifiesState;
+    }
+
+    public void setModifiesState(boolean modifiesState) {
+        this.modifiesState = modifiesState;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (!(o instanceof MethodInfo)) {
@@ -111,12 +120,12 @@ public class MethodInfo {
         MethodInfo mi = (MethodInfo) o;
 
         return (numMethodBytes == mi.numMethodBytes) && (numMethodCalls == mi.numMethodCalls) && (immutabilityOrdinal == mi.immutabilityOrdinal)
-                && (declaredAccess == mi.declaredAccess) && (isCalledType == mi.isCalledType);
+                && (declaredAccess == mi.declaredAccess) && (isCalledType == mi.isCalledType) && (modifiesState == mi.modifiesState);
     }
 
     @Override
     public int hashCode() {
-        return numMethodBytes ^ numMethodCalls ^ immutabilityOrdinal ^ declaredAccess ^ isCalledType;
+        return numMethodBytes ^ numMethodCalls ^ immutabilityOrdinal ^ declaredAccess ^ isCalledType ^ (modifiesState ? 1 : -1);
     }
 
     @Override

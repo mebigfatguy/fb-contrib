@@ -36,6 +36,8 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
+import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -215,14 +217,13 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 sawIINC(pc);
             } else if (OpcodeUtils.isLoad(seen)) {
                 sawLoad(seen, pc);
-            } else if (seen >= IFEQ && seen <= GOTO
-                    || seen == IFNULL || seen == IFNONNULL || seen == GOTO_W) {
+            } else if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W)) {
                 sawBranch(seen, pc);
-            } else if (seen == TABLESWITCH || seen == LOOKUPSWITCH) {
+            } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
                 sawSwitch(pc);
-            } else if (seen == INVOKEVIRTUAL || seen == INVOKEINTERFACE) {
+            } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
                 uo = sawInstanceCall(pc);
-            } else if (seen == INVOKESTATIC || seen == INVOKESPECIAL) {
+            } else if ((seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
                 uo = sawStaticCall();
             } else if (seen == MONITORENTER) {
                 sawMonitorEnter(pc);
@@ -236,7 +237,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (uo != null && stack.getStackDepth() > 0) {
+            if ((uo != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 item.setUserValue(uo);
             }
@@ -257,7 +258,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         if (catchHandlers.get(pc)) {
             ignoreRegs.set(reg);
             ScopeBlock catchSB = findScopeBlock(rootScopeBlock, pc + 1);
-            if (catchSB != null && catchSB.getStart() < pc) {
+            if ((catchSB != null) && (catchSB.getStart() < pc)) {
                 ScopeBlock sb = new ScopeBlock(pc, catchSB.getFinish());
                 catchSB.setFinish(getPC() - 1);
                 rootScopeBlock.addChild(sb);
@@ -278,7 +279,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                     assoc = (UserObject) stack.getStackItem(0).getUserValue();
                 }
 
-                if (assoc != null && assoc.isRisky) {
+                if ((assoc != null) && assoc.isRisky) {
                     ignoreRegs.set(reg);
                 } else {
                     sb.addStore(reg, pc, assoc);
@@ -360,7 +361,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     private void sawBranch(int seen, int pc) {
         int target = getBranchTarget();
         if (target > pc) {
-            if (seen == GOTO || seen == GOTO_W) {
+            if ((seen == GOTO) || (seen == GOTO_W)) {
                 int nextPC = getNextPC();
                 if (!switchTargets.get(nextPC)) {
                     ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, pc, nextPC);
@@ -377,7 +378,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 }
             } else {
                 ScopeBlock sb = findScopeBlockWithTarget(rootScopeBlock, pc, target);
-                if (sb != null && !sb.isLoop() && !sb.isCase() && !sb.hasChildren()) {
+                if ((sb != null) && !sb.isLoop() && !sb.isCase() && !sb.hasChildren()) {
                     if (sb.isGoto()) {
                         ScopeBlock parent = sb.getParent();
                         sb.pushUpLoadStores();
@@ -410,7 +411,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
                 if (sb.getStart() > target) {
                     ScopeBlock previous = findPreviousSiblingScopeBlock(sb);
-                    if (previous != null && previous.getStart() >= target) {
+                    if ((previous != null) && (previous.getStart() >= target)) {
                         sb = previous;
                     }
                 }
@@ -451,7 +452,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     }
 
     /**
-     * processes a instance method call to see if that call is 'risky', if so mark the variable(s) associated with the caller as not reportable
+     * processes a instance method call to see if that call is modifies state or is otherwise'risky', if so mark the variable(s) associated with the caller as
+     * not reportable
      *
      * @param pc
      *            the current program counter
@@ -460,6 +462,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      */
     private UserObject sawInstanceCall(int pc) {
         String signature = getSigConstantOperand();
+        String name = getNameConstantOperand();
 
         // this is kind of a wart. there should be a more seemless way to check this
         if ("wasNull".equals(getNameConstantOperand()) && "()Z".equals(signature)) {
@@ -471,7 +474,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         UserObject uo = new UserObject();
-        uo.isRisky = isRiskyMethodCall();
+        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassConstantOperand(), name, signature);
+
+        uo.isRisky = mi.getModifiesState() || isRiskyMethodCall();
         uo.caller = getCallingObject();
 
         if (uo.caller != null) {
@@ -549,9 +554,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         OpcodeStack.Item caller = stack.getStackItem(types.length);
         UserObject uo = (UserObject) caller.getUserValue();
         if ((uo != null) && (uo.caller != null)) {
-                return uo.caller;
+            return uo.caller;
         }
-        
+
         int reg = caller.getRegisterNumber();
         if (reg >= 0) {
             return Integer.valueOf(reg);
@@ -578,7 +583,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      */
     private ScopeBlock findScopeBlock(ScopeBlock sb, int pc) {
 
-        if (pc > sb.getStart() && pc < sb.getFinish()) {
+        if ((pc > sb.getStart()) && (pc < sb.getFinish())) {
             if (sb.children != null) {
                 for (ScopeBlock child : sb.children) {
                     ScopeBlock foundSb = findScopeBlock(child, pc);
@@ -604,8 +609,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      */
     private ScopeBlock findScopeBlockWithTarget(ScopeBlock sb, int start, int target) {
         ScopeBlock parentBlock = null;
-        if (sb.startLocation < start && sb.finishLocation >= start
-                && (sb.finishLocation <= target || sb.isGoto() && !sb.isLoop())) {
+        if ((sb.startLocation < start) && (sb.finishLocation >= start) && ((sb.finishLocation <= target) || (sb.isGoto() && !sb.isLoop()))) {
             parentBlock = sb;
         }
 
@@ -661,7 +665,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         if (sb.hasChildren()) {
             for (ScopeBlock child : sb.getChildren()) {
-                if (child.isSync() && child.getStart() > monitorBlock.getStart()) {
+                if (child.isSync() && (child.getStart() > monitorBlock.getStart())) {
                     monitorBlock = child;
                     monitorBlock = findSynchronizedScopeBlock(monitorBlock, monitorEnterPC);
                 }
@@ -949,7 +953,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
             if (children != null) {
                 for (ScopeBlock child : children) {
-                    if (newChild.startLocation > child.startLocation && newChild.startLocation < child.finishLocation) {
+                    if ((newChild.startLocation > child.startLocation) && (newChild.startLocation < child.finishLocation)) {
                         if (newChild.finishLocation > child.finishLocation) {
                             newChild.finishLocation = child.finishLocation;
                         }
@@ -1009,7 +1013,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                     stores.remove(Integer.valueOf(r));
                 }
 
-                if (children != null && stores.size() > 0) {
+                if ((children != null) && (stores.size() > 0)) {
                     for (Map.Entry<Integer, Integer> entry : stores.entrySet()) {
                         int childUseCount = 0;
                         boolean inIgnoreSB = false;
@@ -1023,7 +1027,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                                 childUseCount++;
                             }
                         }
-                        if (!inIgnoreSB && childUseCount == 1) {
+                        if (!inIgnoreSB && (childUseCount == 1)) {
                             bugReporter.reportBug(new BugInstance(BloatedAssignmentScope.this, BugType.BAS_BLOATED_ASSIGNMENT_SCOPE.name(), NORMAL_PRIORITY)
                                     .addClass(BloatedAssignmentScope.this).addMethod(BloatedAssignmentScope.this)
                                     .addSourceLine(BloatedAssignmentScope.this, entry.getValue().intValue()));
@@ -1048,10 +1052,10 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
          * @return whether the block uses the register
          */
         public boolean usesReg(Integer reg) {
-            if (loads != null && loads.containsKey(reg)) {
+            if ((loads != null) && loads.containsKey(reg)) {
                 return true;
             }
-            if (stores != null && stores.containsKey(reg)) {
+            if ((stores != null) && stores.containsKey(reg)) {
                 return true;
             }
 
@@ -1118,7 +1122,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         LocalVariableTable lvt = getMethod().getLocalVariableTable();
         if (lvt != null) {
             LocalVariable lv = lvt.getLocalVariable(reg, getNextPC());
-            if (lv != null && dangerousStoreClassSigs.contains(lv.getSignature())) {
+            if ((lv != null) && dangerousStoreClassSigs.contains(lv.getSignature())) {
                 return true;
             }
         }

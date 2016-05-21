@@ -46,6 +46,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     );
 
     private int numMethodCalls;
+    private boolean modifiesState;
     private boolean classHasAnnotation;
 
     public CollectStatistics(@SuppressWarnings("unused") BugReporter bugReporter) {
@@ -56,7 +57,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
         AnnotationEntry[] annotations = cls.getAnnotationEntries();
-        classHasAnnotation = annotations != null && annotations.length > 0;
+        classHasAnnotation = (annotations != null) && (annotations.length > 0);
         super.visitClassContext(classContext);
     }
 
@@ -64,6 +65,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     public void visitCode(Code obj) {
 
         numMethodCalls = 0;
+        modifiesState = false;
 
         byte[] code = obj.getCode();
         if (code != null) {
@@ -73,7 +75,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
             int accessFlags = method.getAccessFlags();
             MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(),
                     numMethodCalls);
-            if (clsName.contains("$") || (accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0) {
+            if (clsName.contains("$") || ((accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0)) {
                 mi.addCallingAccess(Constants.ACC_PUBLIC);
             } else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
                 if (isAssociationedWithAnnotations(method)) {
@@ -88,19 +90,27 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                     }
                 }
             }
+
+            mi.setModifiesState(modifiesState);
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
         switch (seen) {
-        case INVOKEVIRTUAL:
-        case INVOKEINTERFACE:
-        case INVOKESPECIAL:
-        case INVOKESTATIC:
-            numMethodCalls++;
+            case INVOKEVIRTUAL:
+            case INVOKEINTERFACE:
+            case INVOKESPECIAL:
+            case INVOKESTATIC:
+                numMethodCalls++;
             break;
-        default:
+
+            case PUTSTATIC:
+            case PUTFIELD:
+                modifiesState = true;
+            break;
+
+            default:
             break;
         }
     }
@@ -111,6 +121,6 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         }
 
         AnnotationEntry[] annotations = m.getAnnotationEntries();
-        return annotations != null && annotations.length > 0;
+        return (annotations != null) && (annotations.length > 0);
     }
 }
