@@ -27,6 +27,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
+import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -133,17 +135,23 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
 
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEDYNAMIC)) {
                 String methodSig = getSigConstantOperand();
-                Type returnType = Type.getReturnType(methodSig);
-                if (!(returnType.equals(Type.VOID))) {
-                    int parmCount = Type.getArgumentTypes(methodSig).length;
-                    if (stack.getStackDepth() > parmCount) {
-                        OpcodeStack.Item itm = stack.getStackItem(parmCount);
-                        unsafeCallOccurred = unsafeAliases.get(itm.getRegisterNumber());
+
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassConstantOperand(), getNameConstantOperand(), methodSig);
+                if (mi.getModifiesState()) {
+                    unsafeCallOccurred = true;
+                } else {
+                    Type returnType = Type.getReturnType(methodSig);
+                    if (!(returnType.equals(Type.VOID))) {
+                        int parmCount = Type.getArgumentTypes(methodSig).length;
+                        if (stack.getStackDepth() > parmCount) {
+                            OpcodeStack.Item itm = stack.getStackItem(parmCount);
+                            unsafeCallOccurred = unsafeAliases.get(itm.getRegisterNumber());
+                        } else {
+                            unsafeCallOccurred = false;
+                        }
                     } else {
                         unsafeCallOccurred = false;
                     }
-                } else {
-                    unsafeCallOccurred = false;
                 }
             } else if (seen == INVOKESTATIC) {
                 unsafeCallOccurred = getDottedClassConstantOperand().equals(this.getClassContext().getJavaClass().getClassName());
