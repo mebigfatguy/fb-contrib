@@ -37,9 +37,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * finds methods of abstract classes that do nothing, or just throw exceptions.
- * Since this is an abstract class, it may be more correct to just leave the
- * method abstract.
+ * finds methods of abstract classes that do nothing, or just throw exceptions. Since this is an abstract class, it may be more correct to just leave the method
+ * abstract.
  */
 public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     enum State {
@@ -50,7 +49,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
 
     static {
         try {
-            EXCEPTION_CLASS = Repository.lookupClass("java/lang/Exception");
+            EXCEPTION_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_LANG_EXCEPTION);
         } catch (ClassNotFoundException cnfe) {
             // ignore
         }
@@ -112,8 +111,9 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
-        if (Values.CONSTRUCTOR.equals(methodName) || Values.STATIC_INITIALIZER.equals(methodName))
+        if (Values.CONSTRUCTOR.equals(methodName) || Values.STATIC_INITIALIZER.equals(methodName)) {
             return;
+        }
 
         if (!interfaceMethods.contains(new QMethod(methodName, getMethod().getSignature()))) {
             super.visitCode(obj);
@@ -121,8 +121,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for empty methods or simple exception
-     * throwers.
+     * overrides the visitor to look for empty methods or simple exception throwers.
      *
      * @param seen
      *            the opcode currently being parsed
@@ -131,52 +130,57 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             switch (state) {
-            case SAW_NOTHING:
-                if (seen == RETURN) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this));
-                    state = State.SAW_DONE;
-                } else if (seen == NEW) {
-                    String newClass = getClassConstantOperand();
-                    JavaClass exCls = Repository.lookupClass(newClass);
-                    if (EXCEPTION_CLASS != null && exCls.instanceOf(EXCEPTION_CLASS))
-                        state = State.SAW_NEW;
-                    else
+                case SAW_NOTHING:
+                    if (seen == RETURN) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
                         state = State.SAW_DONE;
-                } else
+                    } else if (seen == NEW) {
+                        String newClass = getClassConstantOperand();
+                        JavaClass exCls = Repository.lookupClass(newClass);
+                        if ((EXCEPTION_CLASS != null) && exCls.instanceOf(EXCEPTION_CLASS)) {
+                            state = State.SAW_NEW;
+                        } else {
+                            state = State.SAW_DONE;
+                        }
+                    } else {
+                        state = State.SAW_DONE;
+                    }
+                break;
+
+                case SAW_NEW:
+                    if (seen == DUP) {
+                        state = State.SAW_DUP;
+                    } else {
+                        state = State.SAW_DONE;
+                    }
+                break;
+
+                case SAW_DUP:
+                    if (((seen == LDC) || (seen == LDC_W)) && (getConstantRefOperand() instanceof ConstantString)) {
+                        state = State.SAW_LDC;
+                    } else {
+                        state = State.SAW_DONE;
+                    }
+                break;
+
+                case SAW_LDC:
+                    if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+                        state = State.SAW_INVOKESPECIAL;
+                    } else {
+                        state = State.SAW_DONE;
+                    }
+                break;
+
+                case SAW_INVOKESPECIAL:
+                    if (seen == ATHROW) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
+                    }
                     state = State.SAW_DONE;
                 break;
 
-            case SAW_NEW:
-                if (seen == DUP)
-                    state = State.SAW_DUP;
-                else
-                    state = State.SAW_DONE;
-                break;
-
-            case SAW_DUP:
-                if ((seen == LDC || seen == LDC_W) && getConstantRefOperand() instanceof ConstantString)
-                    state = State.SAW_LDC;
-                else
-                    state = State.SAW_DONE;
-                break;
-
-            case SAW_LDC:
-                if (seen == INVOKESPECIAL && Values.CONSTRUCTOR.equals(getNameConstantOperand()))
-                    state = State.SAW_INVOKESPECIAL;
-                else
-                    state = State.SAW_DONE;
-                break;
-
-            case SAW_INVOKESPECIAL:
-                if (seen == ATHROW) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this));
-                }
-                state = State.SAW_DONE;
-                break;
-
-            case SAW_DONE:
+                case SAW_DONE:
                 break;
             }
         } catch (ClassNotFoundException cnfe) {

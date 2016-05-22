@@ -40,26 +40,14 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for method calls through reflection on methods found in
- * java.lang.Object. As these methods are always available, there's no reason to
- * do this.
+ * looks for method calls through reflection on methods found in java.lang.Object. As these methods are always available, there's no reason to do this.
  */
 @CustomUserValue
 public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 
     private static final Set<String> objectSigs = UnmodifiableSet.create(
-        // "clone()", // clone is declared protected
-        "equals(Ljava/lang/Object;)",
-        "finalize()",
-        "getClass()",
-        "hashCode()",
-        "notify()",
-        "notifyAll()",
-        "toString()",
-        "wait",
-        "wait(J)",
-        "wait(JI)"
-    );
+            // "clone()", // clone is declared protected
+            "equals(Ljava/lang/Object;)", "finalize()", "getClass()", "hashCode()", "notify()", "notifyAll()", "toString()", "wait", "wait(J)", "wait(JI)");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
@@ -77,8 +65,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to create the stack and local and field maps for
-     * Class arrays to be used for getting the reflection method
+     * implements the visitor to create the stack and local and field maps for Class arrays to be used for getting the reflection method
      *
      * @param classContext
      *            the context object of the currently parse class
@@ -105,8 +92,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the opcode stack and clear the local
-     * variable map@
+     * implements the visitor to reset the opcode stack and clear the local variable map@
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -119,8 +105,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls that invoke a method through
-     * reflection where the method is defined in java.lang.Object
+     * implements the visitor to look for calls that invoke a method through reflection where the method is defined in java.lang.Object
      *
      * @param seen
      *            the currently parsed opcode
@@ -134,119 +119,119 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-            case ANEWARRAY: {
-                if ("java/lang/Class".equals(getClassConstantOperand()) && (stack.getStackDepth() >= 1)) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    arraySize = (Integer) item.getConstant();
-                }
-            }
-                break;
-
-            case AASTORE: {
-                if (stack.getStackDepth() >= 3) {
-                    OpcodeStack.Item arrayItem = stack.getStackItem(2);
-                    String[] arrayTypes = (String[]) arrayItem.getUserValue();
-                    if (arrayTypes != null) {
-                        OpcodeStack.Item valueItem = stack.getStackItem(0);
-                        String type = (String) valueItem.getConstant();
-                        if (type != null) {
-                            OpcodeStack.Item indexItem = stack.getStackItem(1);
-                            Integer index = (Integer) indexItem.getConstant();
-                            if (index != null) {
-                                arrayTypes[index.intValue()] = type;
-                            }
-                        }
+                case ANEWARRAY: {
+                    if (Values.SLASHED_JAVA_LANG_CLASS.equals(getClassConstantOperand()) && (stack.getStackDepth() >= 1)) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        arraySize = (Integer) item.getConstant();
                     }
                 }
-            }
                 break;
 
-            case PUTFIELD:
-            case PUTSTATIC: {
-                String name = getNameConstantOperand();
-                if (stack.getStackDepth() >= 1) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    String[] arrayTypes = (String[]) item.getUserValue();
-                    if (arrayTypes != null) {
-                        fieldClassTypes.put(name, arrayTypes);
-                        return;
-                    }
-                }
-                fieldClassTypes.remove(name);
-            }
-                break;
-
-            case GETFIELD:
-            case GETSTATIC: {
-                String name = getNameConstantOperand();
-                loadedTypes = fieldClassTypes.get(name);
-            }
-                break;
-
-            case ASTORE_0:
-            case ASTORE_1:
-            case ASTORE_2:
-            case ASTORE_3:
-            case ASTORE: {
-                Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-                if (stack.getStackDepth() >= 1) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    String[] arrayTypes = (String[]) item.getUserValue();
-                    if (arrayTypes != null) {
-                        localClassTypes.put(reg, arrayTypes);
-                        return;
-                    }
-                }
-                localClassTypes.remove(reg);
-            }
-                break;
-
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3:
-            case ALOAD: {
-                int reg = RegisterUtils.getAStoreReg(this, seen);
-                loadedTypes = localClassTypes.get(Integer.valueOf(reg));
-            }
-                break;
-
-            case INVOKEVIRTUAL: {
-                String cls = getClassConstantOperand();
-                if ("java/lang/Class".equals(cls)) {
-                    String method = getNameConstantOperand();
-                    if ("getMethod".equals(method)) {
-                        String sig = getSigConstantOperand();
-                        if ("(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;".equals(sig) && (stack.getStackDepth() >= 2)) {
-                            OpcodeStack.Item clsArgs = stack.getStackItem(0);
-                            String[] arrayTypes = (String[]) clsArgs.getUserValue();
-                            if ((arrayTypes != null) || (clsArgs.isNull())) {
-                                OpcodeStack.Item methodItem = stack.getStackItem(1);
-                                String methodName = (String) methodItem.getConstant();
-                                if (methodName != null) {
-                                    String reflectionSig = buildReflectionSignature(methodName, arrayTypes);
-                                    if (objectSigs.contains(reflectionSig)) {
-                                        loadedTypes = (arrayTypes == null) ? new String[0] : arrayTypes;
-                                    }
+                case AASTORE: {
+                    if (stack.getStackDepth() >= 3) {
+                        OpcodeStack.Item arrayItem = stack.getStackItem(2);
+                        String[] arrayTypes = (String[]) arrayItem.getUserValue();
+                        if (arrayTypes != null) {
+                            OpcodeStack.Item valueItem = stack.getStackItem(0);
+                            String type = (String) valueItem.getConstant();
+                            if (type != null) {
+                                OpcodeStack.Item indexItem = stack.getStackItem(1);
+                                Integer index = (Integer) indexItem.getConstant();
+                                if (index != null) {
+                                    arrayTypes[index.intValue()] = type;
                                 }
                             }
                         }
                     }
-                } else if ("java/lang/reflect/Method".equals(cls)) {
-                    String method = getNameConstantOperand();
-                    if ("invoke".equals(method) && (stack.getStackDepth() >= 3)) {
-                        OpcodeStack.Item methodItem = stack.getStackItem(2);
-                        String[] arrayTypes = (String[]) methodItem.getUserValue();
+                }
+                break;
+
+                case PUTFIELD:
+                case PUTSTATIC: {
+                    String name = getNameConstantOperand();
+                    if (stack.getStackDepth() >= 1) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        String[] arrayTypes = (String[]) item.getUserValue();
                         if (arrayTypes != null) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.ROOM_REFLECTION_ON_OBJECT_METHODS.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            fieldClassTypes.put(name, arrayTypes);
+                            return;
+                        }
+                    }
+                    fieldClassTypes.remove(name);
+                }
+                break;
+
+                case GETFIELD:
+                case GETSTATIC: {
+                    String name = getNameConstantOperand();
+                    loadedTypes = fieldClassTypes.get(name);
+                }
+                break;
+
+                case ASTORE_0:
+                case ASTORE_1:
+                case ASTORE_2:
+                case ASTORE_3:
+                case ASTORE: {
+                    Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
+                    if (stack.getStackDepth() >= 1) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        String[] arrayTypes = (String[]) item.getUserValue();
+                        if (arrayTypes != null) {
+                            localClassTypes.put(reg, arrayTypes);
+                            return;
+                        }
+                    }
+                    localClassTypes.remove(reg);
+                }
+                break;
+
+                case ALOAD_0:
+                case ALOAD_1:
+                case ALOAD_2:
+                case ALOAD_3:
+                case ALOAD: {
+                    int reg = RegisterUtils.getAStoreReg(this, seen);
+                    loadedTypes = localClassTypes.get(Integer.valueOf(reg));
+                }
+                break;
+
+                case INVOKEVIRTUAL: {
+                    String cls = getClassConstantOperand();
+                    if (Values.SLASHED_JAVA_LANG_CLASS.equals(cls)) {
+                        String method = getNameConstantOperand();
+                        if ("getMethod".equals(method)) {
+                            String sig = getSigConstantOperand();
+                            if ("(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;".equals(sig) && (stack.getStackDepth() >= 2)) {
+                                OpcodeStack.Item clsArgs = stack.getStackItem(0);
+                                String[] arrayTypes = (String[]) clsArgs.getUserValue();
+                                if ((arrayTypes != null) || (clsArgs.isNull())) {
+                                    OpcodeStack.Item methodItem = stack.getStackItem(1);
+                                    String methodName = (String) methodItem.getConstant();
+                                    if (methodName != null) {
+                                        String reflectionSig = buildReflectionSignature(methodName, arrayTypes);
+                                        if (objectSigs.contains(reflectionSig)) {
+                                            loadedTypes = (arrayTypes == null) ? new String[0] : arrayTypes;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } else if ("java/lang/reflect/Method".equals(cls)) {
+                        String method = getNameConstantOperand();
+                        if ("invoke".equals(method) && (stack.getStackDepth() >= 3)) {
+                            OpcodeStack.Item methodItem = stack.getStackItem(2);
+                            String[] arrayTypes = (String[]) methodItem.getUserValue();
+                            if (arrayTypes != null) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.ROOM_REFLECTION_ON_OBJECT_METHODS.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                            }
                         }
                     }
                 }
-            }
                 break;
 
-            default:
+                default:
                 break;
             }
         } finally {
@@ -267,8 +252,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     }
 
     /**
-     * builds a string that represents the signature of the method call that is
-     * being executed though reflection.
+     * builds a string that represents the signature of the method call that is being executed though reflection.
      *
      * @param methodName
      *            the method name
@@ -303,8 +287,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
      * @param cls
      *            the class to find the initializer for
      *
-     * @return the Method of the static initializer or null if this class has
-     *         none
+     * @return the Method of the static initializer or null if this class has none
      */
     private static Method findStaticInitializer(JavaClass cls) {
         Method[] methods = cls.getMethods();

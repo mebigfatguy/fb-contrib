@@ -40,8 +40,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that return Object, and who's code body returns two or more
- * different types of objects that are unrelated (other than by Object).
+ * looks for methods that return Object, and who's code body returns two or more different types of objects that are unrelated (other than by Object).
  */
 public class UnrelatedReturnValues extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -80,8 +79,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to see if the method returns Object, and if the
-     * method is defined in a superclass, or interface.
+     * implements the visitor to see if the method returns Object, and if the method is defined in a superclass, or interface.
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -132,8 +130,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find return values where the types of objects
-     * returned from the method are related only by object.
+     * implements the visitor to find return values where the types of objects returned from the method are related only by object.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -160,10 +157,8 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
      * looks for a common superclass or interface for all the passed in types
      *
      * @param classes
-     *            the set of classes to look for a common super class or
-     *            interface
-     * @return the type that is the common interface or superclass (not Object,
-     *         tho).
+     *            the set of classes to look for a common super class or interface
+     * @return the type that is the common interface or superclass (not Object, tho).
      */
     private static JavaClass findCommonType(Set<JavaClass> classes) throws ClassNotFoundException {
         Set<JavaClass> possibleCommonTypes = new HashSet<JavaClass>();
@@ -174,7 +169,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
                 return null;
             }
 
-            if ("java/lang/Object".equals(cls.getClassName())) {
+            if (Values.SLASHED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
                 continue;
             }
 
@@ -183,7 +178,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
             if (populate) {
                 possibleCommonTypes.addAll(Arrays.asList(infs));
                 possibleCommonTypes.addAll(Arrays.asList(supers));
-                possibleCommonTypes.remove(Repository.lookupClass("java/lang/Object"));
+                possibleCommonTypes.remove(Repository.lookupClass(Values.SLASHED_JAVA_LANG_OBJECT));
                 populate = false;
             } else {
                 Set<JavaClass> retain = new HashSet<JavaClass>();

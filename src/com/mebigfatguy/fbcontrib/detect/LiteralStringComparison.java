@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -122,7 +123,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
 
             switch (seen) {
                 case INVOKEVIRTUAL:
-                    if ("java/lang/String".equals(getClassConstantOperand())) {
+                    if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand())) {
                         String calledMethodName = getNameConstantOperand();
                         String calledMethodSig = getSigConstantOperand();
 

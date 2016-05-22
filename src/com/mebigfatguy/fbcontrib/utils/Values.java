@@ -51,6 +51,8 @@ public class Values {
     public static final String DOTTED_JAVA_LANG_CLASS = "java.lang.Class";
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_EXCEPTION = "java.lang.Exception";
+    @DottedClassName
+    public static final String DOTTED_JAVA_LANG_INTEGER = "java.lang.Integer";
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
@@ -60,6 +62,8 @@ public class Values {
     public static final String SLASHED_JAVA_LANG_CLASS = "java/lang/Class";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_EXCEPTION = "java/lang/Exception";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_INTEGER = "java/lang/Integer";
 
     public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 

@@ -24,15 +24,15 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
- * looks for methods that call a method to retrieve a reference to an object, to
- * use to load a constant. It is simpler and more performant to access the
- * static variable directly from the class itself.
+ * looks for methods that call a method to retrieve a reference to an object, to use to load a constant. It is simpler and more performant to access the static
+ * variable directly from the class itself.
  */
 public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
     enum State {
@@ -77,8 +77,7 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the interface to find accesses of static variables off of an
-     * instance immediately fetched from a method call.
+     * overrides the interface to find accesses of static variables off of an instance immediately fetched from a method call.
      *
      * @param seen
      *            the opcode of the currently visited instruction
@@ -86,49 +85,49 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         switch (state) {
-        case SEEN_NOTHING:
-            if (seen == INVOKEINTERFACE || seen == INVOKEVIRTUAL) {
-                String sig = getSigConstantOperand();
-                Type retType = Type.getReturnType(sig);
-                if (retType.getSignature().startsWith("L")) {
-                    String clsName = getClassConstantOperand();
-                    if (!"java/lang/Object".equals(clsName) && !"java/lang/String".equals(clsName)) {
-                        returnType = SignatureUtils.trimSignature(retType.getSignature());
-                        invokePC = getPC();
-                        state = State.SEEN_INVOKE;
+            case SEEN_NOTHING:
+                if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
+                    String sig = getSigConstantOperand();
+                    Type retType = Type.getReturnType(sig);
+                    if (retType.getSignature().startsWith("L")) {
+                        String clsName = getClassConstantOperand();
+                        if (!Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName) && !Values.SLASHED_JAVA_LANG_CLASS.equals(clsName)) {
+                            returnType = SignatureUtils.trimSignature(retType.getSignature());
+                            invokePC = getPC();
+                            state = State.SEEN_INVOKE;
+                        }
                     }
                 }
-            }
             break;
 
-        case SEEN_INVOKE:
-            if (seen == POP)
-                state = State.SEEN_POP;
-            else {
-                state = State.SEEN_NOTHING;
-                returnType = null;
-            }
-            break;
-
-        case SEEN_POP:
-            if ((seen >= ACONST_NULL && seen <= DCONST_1) || (seen == GETFIELD)) {
-                state = State.SEEN_POP;
-            } else if ((seen == INVOKESTATIC) || (seen == GETSTATIC)) {
-                if (getClassConstantOperand().equals(returnType) && (lnTable.getSourceLine(invokePC) == lnTable.getSourceLine(getPC()))) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.NIR_NEEDLESS_INSTANCE_RETRIEVAL.name(), NORMAL_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this));
+            case SEEN_INVOKE:
+                if (seen == POP) {
+                    state = State.SEEN_POP;
+                } else {
+                    state = State.SEEN_NOTHING;
+                    returnType = null;
                 }
-                state = State.SEEN_NOTHING;
-                returnType = null;
-            } else {
-                state = State.SEEN_NOTHING;
-                returnType = null;
-            }
             break;
 
-        default:
-            state = State.SEEN_NOTHING;
-            returnType = null;
+            case SEEN_POP:
+                if (((seen >= ACONST_NULL) && (seen <= DCONST_1)) || (seen == GETFIELD)) {
+                    state = State.SEEN_POP;
+                } else if ((seen == INVOKESTATIC) || (seen == GETSTATIC)) {
+                    if (getClassConstantOperand().equals(returnType) && (lnTable.getSourceLine(invokePC) == lnTable.getSourceLine(getPC()))) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.NIR_NEEDLESS_INSTANCE_RETRIEVAL.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
+                    }
+                    state = State.SEEN_NOTHING;
+                    returnType = null;
+                } else {
+                    state = State.SEEN_NOTHING;
+                    returnType = null;
+                }
+            break;
+
+            default:
+                state = State.SEEN_NOTHING;
+                returnType = null;
             break;
         }
     }

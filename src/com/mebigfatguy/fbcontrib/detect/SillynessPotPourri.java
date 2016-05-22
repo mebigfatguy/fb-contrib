@@ -636,7 +636,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             bitSetSilliness(methodName);
         } else if ("java/lang/StringBuilder".equals(className) || "java/lang/StringBuffer".equals(className)) {
             return stringBufferSilliness(methodName);
-        } else if ("java/lang/String".equals(className)) {
+        } else if (Values.SLASHED_JAVA_LANG_STRING.equals(className)) {
             return stringSilliness(methodName, getSigConstantOperand());
         } else if ("equals(Ljava/lang/Object;)Z".equals(methodName + getSigConstantOperand())) {
             equalsSilliness(className);

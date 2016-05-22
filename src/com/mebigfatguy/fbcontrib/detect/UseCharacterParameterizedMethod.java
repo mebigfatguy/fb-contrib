@@ -63,10 +63,10 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         // example, a value of 0 means the String literal to check
         // was the last parameter, and a stack offset of 2 means it was the 3rd
         // to last.
-        methodsMap.put(new FQMethod("java/lang/String", "indexOf", "(Ljava/lang/String;)I"), Values.ZERO);
-        methodsMap.put(new FQMethod("java/lang/String", "indexOf", "(Ljava/lang/String;I)I"), Values.ONE);
-        methodsMap.put(new FQMethod("java/lang/String", "lastIndexOf", "(Ljava/lang/String;)I"), Values.ZERO);
-        methodsMap.put(new FQMethod("java/lang/String", "lastIndexOf", "(Ljava/lang/String;I)I"), Values.ONE);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", "(Ljava/lang/String;)I"), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", "(Ljava/lang/String;I)I"), Values.ONE);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", "(Ljava/lang/String;)I"), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", "(Ljava/lang/String;I)I"), Values.ONE);
         methodsMap.put(new FQMethod("java/io/PrintStream", "print", "(Ljava/lang/String;)V"), Values.ZERO);
         methodsMap.put(new FQMethod("java/io/PrintStream", "println", "(Ljava/lang/String;)V"), Values.ZERO);
         methodsMap.put(new FQMethod("java/io/StringWriter", "write", "(Ljava/lang/String;)V"), Values.ZERO);
@@ -167,7 +167,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                     if (checkSingleParamMethod(((Integer) posObject).intValue()) && !isInlineAppend(key)) {
                         reportBug();
                     }
-                } else if (posObject instanceof IntPair && checkDoubleParamMethod((IntPair) posObject)) {
+                } else if ((posObject instanceof IntPair) && checkDoubleParamMethod((IntPair) posObject)) {
                     reportBug();
                 }
 
@@ -179,7 +179,8 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                         itm.setUserValue(UCPMUserValue.INLINE);
                     }
                 }
-            } else if (((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == PUTSTATIC)) && (stack.getStackDepth() > 0)) {
+            } else if (((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == PUTSTATIC))
+                    && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(null);
             }

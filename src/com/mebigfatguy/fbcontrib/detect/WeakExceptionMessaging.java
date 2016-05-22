@@ -42,10 +42,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for exceptions that are thrown with static strings as messages. Using
- * static strings doesn't differentiate one use of this method versus another,
- * and so it may be difficult to determine how this exception occurred without
- * showing context.
+ * looks for exceptions that are thrown with static strings as messages. Using static strings doesn't differentiate one use of this method versus another, and
+ * so it may be difficult to determine how this exception occurred without showing context.
  */
 @CustomUserValue
 public class WeakExceptionMessaging extends BytecodeScanningDetector {
@@ -55,7 +53,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
 
     static {
         try {
-            exceptionClass = Repository.lookupClass("java/lang/Exception");
+            exceptionClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_EXCEPTION);
         } catch (ClassNotFoundException cnfe) {
             exceptionClass = null;
         }
@@ -93,8 +91,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for methods that contain a ATHROW opcodes, ignoring static
-     * initializers
+     * looks for methods that contain a ATHROW opcodes, ignoring static initializers
      *
      * @param method
      *            the context object of the current method
@@ -110,8 +107,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to prescreen the method to look for throws calls
-     * and only forward onto bytecode scanning if there
+     * overrides the visitor to prescreen the method to look for throws calls and only forward onto bytecode scanning if there
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -126,8 +122,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for throws instructions using exceptions
-     * with static messages
+     * overrides the visitor to look for throws instructions using exceptions with static messages
      *
      * @param seen
      *            the opcode of the currently visited instruction
@@ -174,7 +169,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
                                 }
                             }
                         }
-                        if ("java/lang/Exception".equals(clsName) && "(Ljava/lang/Throwable;)V".equals(getSigConstantOperand())) {
+                        if (Values.SLASHED_JAVA_LANG_EXCEPTION.equals(clsName) && "(Ljava/lang/Throwable;)V".equals(getSigConstantOperand())) {
                             bugReporter.reportBug(new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY).addClass(this).addMethod(this)
                                     .addSourceLine(this));
                         }

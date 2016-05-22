@@ -29,6 +29,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -38,8 +39,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for uses of jdbc vendor specific classes and methods making the
- * database access code non portable.
+ * looks for uses of jdbc vendor specific classes and methods making the database access code non portable.
  */
 @CustomUserValue
 public class JDBCVendorReliance extends BytecodeScanningDetector {
@@ -73,8 +73,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
     }
 
     /**
-     * implement the visitor to reset the opcode stack and set of locals that
-     * are jdbc objects
+     * implement the visitor to reset the opcode stack and set of locals that are jdbc objects
      *
      * @param obj
      *            the context param of the currently parsed method
@@ -113,7 +112,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
 
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
                 String clsName = getClassConstantOperand();
-                if (!"java/lang/Object".equals(clsName) && !isJDBCClass(clsName)) {
+                if (!Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName) && !isJDBCClass(clsName)) {
                     int parmCnt = Type.getArgumentTypes(getSigConstantOperand()).length;
                     if (stack.getStackDepth() > parmCnt) {
                         OpcodeStack.Item itm = stack.getStackItem(parmCnt);
@@ -132,8 +131,9 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
                     String sig = getSigConstantOperand();
                     Type retType = Type.getReturnType(sig);
                     infName = retType.getSignature();
-                    if (isJDBCClass(infName))
+                    if (isJDBCClass(infName)) {
                         tosIsJDBC = true;
+                    }
                 }
             } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
                 if (stack.getStackDepth() > 0) {
@@ -147,8 +147,9 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
 
             } else if (OpcodeUtils.isALoad(seen)) {
                 int reg = RegisterUtils.getALoadReg(this, seen);
-                if (jdbcLocals.containsKey(Integer.valueOf(reg)))
+                if (jdbcLocals.containsKey(Integer.valueOf(reg))) {
                     tosIsJDBC = true;
+                }
             }
         } finally {
             TernaryPatcher.pre(stack, seen);
@@ -170,12 +171,14 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
      * @return if the class name is a jdbc one
      */
     private static boolean isJDBCClass(String clsName) {
-        if (clsName.endsWith(";"))
+        if (clsName.endsWith(";")) {
             clsName = clsName.substring(1, clsName.length() - 1);
+        }
         clsName = clsName.replace('.', '/');
 
-        if (!clsName.startsWith("java/sql/") && !clsName.startsWith("javax/sql/"))
+        if (!clsName.startsWith("java/sql/") && !clsName.startsWith("javax/sql/")) {
             return false;
+        }
 
         return (!clsName.endsWith("Exception"));
     }

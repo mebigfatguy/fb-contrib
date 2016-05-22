@@ -49,10 +49,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for calls to classes and methods that do not exist in the JDK for which
- * this class is compiled. This can happen if you specify the -source and
- * -target options of the javac compiler, and specify a target that is less than
- * the jdk version of the javac compiler.
+ * looks for calls to classes and methods that do not exist in the JDK for which this class is compiled. This can happen if you specify the -source and -target
+ * options of the javac compiler, and specify a target that is less than the jdk version of the javac compiler.
  */
 public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     private static final Map<Integer, String> VER_REG_EX = new HashMap<Integer, String>();
@@ -108,16 +106,18 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
             jdkZip = jdkZips.get(clsMajorVersion);
             if (jdkZip == null) {
                 File rtJar = getRTJarFile();
-                if (rtJar == null)
+                if (rtJar == null) {
                     rtJar = getRTJarFromProperty(clsMajorVersion);
+                }
                 if (rtJar != null) {
                     jdkZip = new ZipFile(rtJar);
                     jdkZips.put(clsMajorVersion, jdkZip);
                 }
             }
 
-            if (jdkZip == null)
+            if (jdkZip == null) {
                 return;
+            }
 
             super.visitClassContext(classContext);
         } catch (IOException ioe) {
@@ -139,8 +139,9 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
                 clsName = getClassConstantOperand();
                 if ((clsName.startsWith("java/")) || (clsName.startsWith("javax/"))) {
                     Method m = findCalledMethod();
-                    if (m == null)
+                    if (m == null) {
                         return;
+                    }
 
                     Map<String, Set<String>> validMethods = validMethodsByVersion.get(clsMajorVersion);
                     if (validMethods == null) {
@@ -210,12 +211,13 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
 
             if (methodInfos != null) {
                 String wantedMethod = getNameConstantOperand() + getSigConstantOperand();
-                if (methodInfos.contains(wantedMethod))
+                if (methodInfos.contains(wantedMethod)) {
                     return true;
-                else if ("java/lang/Object".equals(clsName))
+                } else if (Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName)) {
                     return false;
-                else
+                } else {
                     return isValid(validMethods, superNames.get(clsName));
+                }
             }
 
             return true;
@@ -232,14 +234,17 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
 
     private File getRTJarFile() {
         String versionStr = VER_REG_EX.get(clsMajorVersion);
-        if (versionStr == null)
+        if (versionStr == null) {
             return null;
+        }
 
         File rtPath = versionPaths.get(versionStr);
-        if (rtPath != null)
+        if (rtPath != null) {
             return rtPath;
-        if (versionPaths.containsKey(versionStr))
+        }
+        if (versionPaths.containsKey(versionStr)) {
             return null;
+        }
 
         if (jdksRoot == null) {
             URL jdkUrl = SuspiciousJDKVersionUse.class.getResource("/java/lang/Object.class");
@@ -301,15 +306,18 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
 
     private static File getRTJarFromProperty(Integer requestedVersion) {
         String jdkHome = System.getProperty(SJVU_JDKHOME + '.' + HUMAN_VERSIONS.get(requestedVersion));
-        if (jdkHome == null)
+        if (jdkHome == null) {
             return null;
+        }
 
         File rtJar = new File(jdkHome, "lib/rt.jar");
-        if (rtJar.exists())
+        if (rtJar.exists()) {
             return rtJar;
+        }
         rtJar = new File(jdkHome, "jre/lib/rt.jar");
-        if (rtJar.exists())
+        if (rtJar.exists()) {
             return rtJar;
+        }
 
         return null;
     }

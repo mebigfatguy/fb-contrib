@@ -65,7 +65,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
         try {
             runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
-            exceptionClass = Repository.lookupClass("java/lang/Exception");
+            exceptionClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_EXCEPTION);
 
         } catch (ClassNotFoundException cnfe) {
             runtimeExceptionClass = null;

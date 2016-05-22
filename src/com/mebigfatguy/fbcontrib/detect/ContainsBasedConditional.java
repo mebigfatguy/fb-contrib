@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.ConstantString;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -36,11 +37,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for complex if conditions where multiple or clauses are joined together
- * where the same variable is compared against a number of static values. This
- * pattern is much more easy to read if you put those values in a static set,
- * and just use one contains(value) call. The set name adds self-documentation
- * as well.
+ * looks for complex if conditions where multiple or clauses are joined together where the same variable is compared against a number of static values. This
+ * pattern is much more easy to read if you put those values in a static set, and just use one contains(value) call. The set name adds self-documentation as
+ * well.
  */
 public class ContainsBasedConditional extends BytecodeScanningDetector {
 
@@ -95,10 +94,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
         super.visitCode(obj);
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        value = "SF_SWITCH_FALLTHROUGH",
-        justification = "This fall-through is deliberate and documented"
-    )
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH", justification = "This fall-through is deliberate and documented")
     @Override
     public void sawOpcode(int seen) {
         try {
@@ -118,100 +114,100 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
             }
 
             switch (state) {
-            case SAW_NOTHING:
-                conditionCount = 0;
-                //$FALL-THROUGH$
-            case SAW_PATTERN:
-                if (isLoad(seen)) {
-                    if (conditionCount > 0) {
-                        if (loadType == seen) {
-                            state = State.SAW_LOAD;
+                case SAW_NOTHING:
+                    conditionCount = 0;
+                    //$FALL-THROUGH$
+                case SAW_PATTERN:
+                    if (isLoad(seen)) {
+                        if (conditionCount > 0) {
+                            if (loadType == seen) {
+                                state = State.SAW_LOAD;
+                            } else {
+                                state = State.SAW_NOTHING;
+                            }
                         } else {
-                            state = State.SAW_NOTHING;
+                            loadType = seen;
+                            bugPC = getPC();
+                            state = State.SAW_LOAD;
                         }
                     } else {
-                        loadType = seen;
-                        bugPC = getPC();
-                        state = State.SAW_LOAD;
+                        if (conditionCount >= LOW_CONDITIONAL_COUNT) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
+                                    .addMethod(this).addSourceLine(this, bugPC));
+                        }
                     }
-                } else {
-                    if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
-                                .addMethod(this).addSourceLine(this, bugPC));
-                    }
-                }
                 break;
 
-            case SAW_LOAD:
-                if ((seen == LDC) || (seen == LDC_W)) {
-                    Constant c = getConstantRefOperand();
-                    String currConstType = null;
-                    if (c instanceof ConstantString) {
-                        currConstType = "java/lang/String";
-                    } else if (c instanceof ConstantClass) {
-                        currConstType = "java/lang/Class";
-                    }
-                    if (conditionCount > 0) {
-                        if ((constType != null) && constType.equals(currConstType)) {
+                case SAW_LOAD:
+                    if ((seen == LDC) || (seen == LDC_W)) {
+                        Constant c = getConstantRefOperand();
+                        String currConstType = null;
+                        if (c instanceof ConstantString) {
+                            currConstType = Values.SLASHED_JAVA_LANG_STRING;
+                        } else if (c instanceof ConstantClass) {
+                            currConstType = Values.SLASHED_JAVA_LANG_CLASS;
+                        }
+                        if (conditionCount > 0) {
+                            if ((constType != null) && constType.equals(currConstType)) {
+                                state = State.SAW_CONST;
+                            } else {
+                                state = State.SAW_NOTHING;
+                            }
+                        } else if (currConstType != null) {
                             state = State.SAW_CONST;
+                            constType = currConstType;
                         } else {
                             state = State.SAW_NOTHING;
                         }
-                    } else if (currConstType != null) {
+                    } else if (seen == GETSTATIC) {
                         state = State.SAW_CONST;
-                        constType = currConstType;
+
+                    } else if ((seen >= ICONST_M1) && (seen <= ICONST_5)) {
+                        state = State.SAW_CONST;
+
+                    } else if ((seen >= LCONST_0) && (seen <= LCONST_1)) {
+                        state = State.SAW_CONST;
+
                     } else {
                         state = State.SAW_NOTHING;
                     }
-                } else if (seen == GETSTATIC) {
-                    state = State.SAW_CONST;
-
-                } else if ((seen >= ICONST_M1) && (seen <= ICONST_5)) {
-                    state = State.SAW_CONST;
-
-                } else if ((seen >= LCONST_0) && (seen <= LCONST_1)) {
-                    state = State.SAW_CONST;
-
-                } else {
-                    state = State.SAW_NOTHING;
-                }
                 break;
 
-            case SAW_CONST:
-                if ((seen == INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())) {
-                    state = State.SAW_EQUALS;
-                } else if (seen == IF_ICMPEQ) {
-                    conditionCount++;
-                    state = State.SAW_PATTERN;
-                } else if (seen == IF_ICMPNE) {
-                    conditionCount++;
-                    if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
-                                .addMethod(this).addSourceLine(this, bugPC));
+                case SAW_CONST:
+                    if ((seen == INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())) {
+                        state = State.SAW_EQUALS;
+                    } else if (seen == IF_ICMPEQ) {
+                        conditionCount++;
+                        state = State.SAW_PATTERN;
+                    } else if (seen == IF_ICMPNE) {
+                        conditionCount++;
+                        if (conditionCount >= LOW_CONDITIONAL_COUNT) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
+                                    .addMethod(this).addSourceLine(this, bugPC));
+                        }
+                        state = State.SAW_NOTHING;
+                    } else {
+                        state = State.SAW_NOTHING;
                     }
-                    state = State.SAW_NOTHING;
-                } else {
-                    state = State.SAW_NOTHING;
-                }
                 break;
 
-            case SAW_EQUALS:
-                if (seen == IFNE) {
-                    conditionCount++;
-                    state = State.SAW_PATTERN;
-                } else if (seen == IFEQ) {
-                    conditionCount++;
-                    if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this).addMethod(this)
-                                                .addSourceLine(this, bugPC));
+                case SAW_EQUALS:
+                    if (seen == IFNE) {
+                        conditionCount++;
+                        state = State.SAW_PATTERN;
+                    } else if (seen == IFEQ) {
+                        conditionCount++;
+                        if (conditionCount >= LOW_CONDITIONAL_COUNT) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
+                                    .addMethod(this).addSourceLine(this, bugPC));
+                        }
+                        state = State.SAW_NOTHING;
+                    } else {
+                        state = State.SAW_NOTHING;
                     }
-                    state = State.SAW_NOTHING;
-                } else {
-                    state = State.SAW_NOTHING;
-                }
                 break;
-            default: // this indicates incompatible code change
-                throw new AssertionError("Unhandled state: " + state);
+                default: // this indicates incompatible code change
+                    throw new AssertionError("Unhandled state: " + state);
             }
         } finally {
             stack.sawOpcode(this, seen);

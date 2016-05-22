@@ -21,6 +21,8 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.Values;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -28,12 +30,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Looks for methods that call wait, notify or notifyAll on an instance of a
- * java.lang.Thread. Since the internal workings of the threads is to
- * synchronize on the thread itself, introducing client calls will confuse the
- * thread state of the object in question, and will cause spurious thread state
- * changes, either waking threads up when not intended, or removing the the
- * thread from the runnable state.
+ * Looks for methods that call wait, notify or notifyAll on an instance of a java.lang.Thread. Since the internal workings of the threads is to synchronize on
+ * the thread itself, introducing client calls will confuse the thread state of the object in question, and will cause spurious thread state changes, either
+ * waking threads up when not intended, or removing the the thread from the runnable state.
  */
 public class SpuriousThreadStates extends BytecodeScanningDetector {
     private BugReporter bugReporter;
@@ -74,7 +73,7 @@ public class SpuriousThreadStates extends BytecodeScanningDetector {
 
             if (seen == INVOKEVIRTUAL) {
                 String className = getClassConstantOperand();
-                if ("java/lang/Object".equals(className)) {
+                if (Values.SLASHED_JAVA_LANG_OBJECT.equals(className)) {
                     if (stack.getStackDepth() > 0) {
                         String methodName = getNameConstantOperand();
                         String signature = getSigConstantOperand();
@@ -93,9 +92,9 @@ public class SpuriousThreadStates extends BytecodeScanningDetector {
                         JavaClass cls = itm.getJavaClass();
                         boolean found = false;
                         if (cls != null) {
-                            if ("java.lang.Thread".equals(cls.getClassName()))
+                            if ("java.lang.Thread".equals(cls.getClassName())) {
                                 found = true;
-                            else {
+                            } else {
                                 JavaClass[] supers = cls.getSuperClasses();
                                 for (JavaClass jc : supers) {
                                     if ("java.lang.Thread".equals(jc.getClassName())) {

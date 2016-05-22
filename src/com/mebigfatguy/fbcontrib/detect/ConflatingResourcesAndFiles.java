@@ -105,7 +105,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
     private boolean processInvokeVirtual() {
         String clsName = getClassConstantOperand();
 
-        if ("java/lang/Class".equals(clsName)) {
+        if (Values.SLASHED_JAVA_LANG_CLASS.equals(clsName)) {
             String methodName = getNameConstantOperand();
             if ("getResource".equals(methodName)) {
                 return true;
