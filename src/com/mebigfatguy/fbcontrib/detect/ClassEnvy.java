@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -181,7 +182,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL) || (seen == INVOKEDYNAMIC)) {
+            if (OpcodeUtils.isInvoke(seen)) {
                 String calledClass = getClassConstantOperand().replace('/', '.');
 
                 if (seen == INVOKEINTERFACE) {
