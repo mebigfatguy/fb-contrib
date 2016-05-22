@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+
 @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
 /**
  * holds information about a method that called, including class, method and signature
@@ -27,12 +29,13 @@ public final class FQMethod {
     private String methodName;
     private String signature;
 
-    public FQMethod(String className, String methodName, String signature) {
+    public FQMethod(@SlashedClassName String className, String methodName, String signature) {
         this.className = className;
         this.methodName = methodName;
         this.signature = signature;
     }
 
+    @SlashedClassName
     public String getClassName() {
         return className;
     }

@@ -50,13 +50,13 @@ public class IOIssues extends BytecodeScanningDetector {
     private static final String ANY_PARMS = "(*)";
     private static Set<FQMethod> COPY_METHODS = UnmodifiableSet.create(
     //@formatter:off
-            new FQMethod("java.nio.file.Files", "copy", ANY_PARMS),
-            new FQMethod("org.apache.commons.io.IOUtils", "copy", ANY_PARMS),
-            new FQMethod("org.apache.commons.io.IOUtils", "copyLarge", ANY_PARMS),
-            new FQMethod("org.springframework.util.FileCopyUtils", "copy", ANY_PARMS),
-            new FQMethod("org.springframework.util.FileCopyUtils", "copyToByteArray", ANY_PARMS),
-            new FQMethod("com.google.common.io.Files", "copy", ANY_PARMS),
-            new FQMethod("org.apache.poi.openxml4j.opc.StreamHelper", "copyStream", ANY_PARMS)
+            new FQMethod("java/nio/file/Files", "copy", ANY_PARMS),
+            new FQMethod("org/apache/commons/io/IOUtils", "copy", ANY_PARMS),
+            new FQMethod("org/apache/commons/io/IOUtils", "copyLarge", ANY_PARMS),
+            new FQMethod("org/springframework/util/FileCopyUtils", "copy", ANY_PARMS),
+            new FQMethod("org/springframework/util/FileCopyUtils", "copyToByteArray", ANY_PARMS),
+            new FQMethod("com/google/common/io/Files", "copy", ANY_PARMS),
+            new FQMethod("org/apache/poi/openxml4j/opc/StreamHelper", "copyStream", ANY_PARMS)
     //@formatter:on
     );
 
@@ -176,7 +176,7 @@ public class IOIssues extends BytecodeScanningDetector {
     }
 
     private void processInvokeStatic() {
-        String clsName = getDottedClassConstantOperand();
+        String clsName = getClassConstantOperand();
         String methodName = getNameConstantOperand();
         FQMethod m = new FQMethod(clsName, methodName, ANY_PARMS);
         if (COPY_METHODS.contains(m)) {

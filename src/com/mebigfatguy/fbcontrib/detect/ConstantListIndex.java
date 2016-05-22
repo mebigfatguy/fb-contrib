@@ -41,10 +41,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for methods that access arrays or classes that implement java.util.List
- * using a constant integer for the index. This is often a typo intented to be a
- * loop variable, but if specific indices mean certain things, perhaps a first
- * class object would be a better choice for a container.
+ * looks for methods that access arrays or classes that implement java.util.List using a constant integer for the index. This is often a typo intented to be a
+ * loop variable, but if specific indices mean certain things, perhaps a first class object would be a better choice for a container.
  */
 public class ConstantListIndex extends BytecodeScanningDetector {
     enum State {
@@ -57,8 +55,8 @@ public class ConstantListIndex extends BytecodeScanningDetector {
 
     static {
         Set<FQMethod> um = new HashSet<FQMethod>();
-        um.add(new FQMethod(Values.DOTTED_JAVA_LANG_STRING, "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
-        um.add(new FQMethod(Values.DOTTED_JAVA_LANG_STRING, "split", "(Ljava/lang/String;I)[Ljava/lang/String;"));
+        um.add(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "split", "(Ljava/lang/String;I)[Ljava/lang/String;"));
         ubiquitousMethods = Collections.unmodifiableSet(um);
 
         try {
@@ -122,8 +120,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find accesses to lists or arrays using
-     * constants
+     * implements the visitor to find accesses to lists or arrays using constants
      *
      * @param seen
      *            the currently visitor opcode
@@ -134,62 +131,64 @@ public class ConstantListIndex extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (state) {
-            case SAW_NOTHING:
-                if (seen == ICONST_0) {
-                    state = State.SAW_CONSTANT_0;
-                } else if ((seen >= ICONST_1) && (seen <= ICONST_5)) {
-                    state = State.SAW_CONSTANT;
-                } else if ((seen == LDC) || (seen == LDC_W)) {
-                    Constant c = getConstantRefOperand();
-                    if (c instanceof ConstantInteger)
+                case SAW_NOTHING:
+                    if (seen == ICONST_0) {
+                        state = State.SAW_CONSTANT_0;
+                    } else if ((seen >= ICONST_1) && (seen <= ICONST_5)) {
                         state = State.SAW_CONSTANT;
-                }
+                    } else if ((seen == LDC) || (seen == LDC_W)) {
+                        Constant c = getConstantRefOperand();
+                        if (c instanceof ConstantInteger) {
+                            state = State.SAW_CONSTANT;
+                        }
+                    }
                 break;
 
-            case SAW_CONSTANT_0:
-            case SAW_CONSTANT:
-                switch (seen) {
-                case AALOAD:
-                    if ("main".equals(this.getMethodName()))
+                case SAW_CONSTANT_0:
+                case SAW_CONSTANT:
+                    switch (seen) {
+                        case AALOAD:
+                            if ("main".equals(this.getMethodName())) {
+                                break;
+                            }
+                            //$FALL-THROUGH$
+                        case IALOAD:
+                        case LALOAD:
+                        case FALOAD:
+                        case DALOAD:
+                            // case BALOAD: byte and char indexing seems prevalent, and
+                            // case CALOAD: usually harmless so ignore
+                        case SALOAD:
+                            if (stack.getStackDepth() > 1) {
+                                OpcodeStack.Item item = stack.getStackItem(1);
+                                if (!isArrayFromUbiquitousMethod(item)) {
+                                    if (state == State.SAW_CONSTANT_0) {
+                                        iConst0Looped.set(getPC());
+                                    } else {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this));
+                                    }
+                                }
+                            }
                         break;
-                    //$FALL-THROUGH$
-                case IALOAD:
-                case LALOAD:
-                case FALOAD:
-                case DALOAD:
-                    // case BALOAD: byte and char indexing seems prevalent, and
-                    // case CALOAD: usually harmless so ignore
-                case SALOAD:
-                    if (stack.getStackDepth() > 1) {
-                        OpcodeStack.Item item = stack.getStackItem(1);
-                        if (!isArrayFromUbiquitousMethod(item)) {
-                            if (state == State.SAW_CONSTANT_0)
-                                iConst0Looped.set(getPC());
-                            else {
-                                bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            }
-                        }
-                    }
-                    break;
 
-                case INVOKEVIRTUAL:
-                    if ("java/util/List".equals(getClassConstantOperand())) {
-                        String methodName = getNameConstantOperand();
-                        if ("get".equals(methodName)) {
-                            if (state == State.SAW_CONSTANT_0)
-                                iConst0Looped.set(getPC());
-                            else {
-                                bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
+                        case INVOKEVIRTUAL:
+                            if ("java/util/List".equals(getClassConstantOperand())) {
+                                String methodName = getNameConstantOperand();
+                                if ("get".equals(methodName)) {
+                                    if (state == State.SAW_CONSTANT_0) {
+                                        iConst0Looped.set(getPC());
+                                    } else {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this));
+                                    }
+                                }
                             }
-                        }
+                        break;
+                        default:
+                        break;
                     }
-                    break;
-                default:
-                    break;
-                }
-                state = State.SAW_NOTHING;
+                    state = State.SAW_NOTHING;
                 break;
             }
 
@@ -211,8 +210,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the array item was returned from a common method that the
-     * user can't do anything about and so don't report CLI in this case.
+     * returns whether the array item was returned from a common method that the user can't do anything about and so don't report CLI in this case.
      *
      * @param item
      *            the stack item representing the array
@@ -220,10 +218,11 @@ public class ConstantListIndex extends BytecodeScanningDetector {
      */
     private static boolean isArrayFromUbiquitousMethod(OpcodeStack.Item item) {
         XMethod method = item.getReturnValueOf();
-        if (method == null)
+        if (method == null) {
             return false;
+        }
 
-        FQMethod methodDesc = new FQMethod(method.getClassName(), method.getName(), method.getSignature());
+        FQMethod methodDesc = new FQMethod(method.getClassName().replace('.', '/'), method.getName(), method.getSignature());
         return ubiquitousMethods.contains(methodDesc);
     }
 }

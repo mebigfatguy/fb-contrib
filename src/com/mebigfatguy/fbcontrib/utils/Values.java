@@ -21,6 +21,8 @@ package com.mebigfatguy.fbcontrib.utils;
 import org.apache.bcel.Constants;
 
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * a class holding common constants used throughout fb-contrib
@@ -41,10 +43,23 @@ public class Values {
     public static final String CONSTRUCTOR = "<init>";
     public static final String STATIC_INITIALIZER = "<clinit>";
 
+    @DottedClassName
     public static final String DOTTED_JAVA_LANG_OBJECT = "java.lang.Object";
+    @DottedClassName
     public static final String DOTTED_JAVA_LANG_STRING = "java.lang.String";
+    @DottedClassName
     public static final String DOTTED_JAVA_LANG_CLASS = "java.lang.Class";
+    @DottedClassName
     public static final String DOTTED_JAVA_LANG_EXCEPTION = "java.lang.Exception";
+
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_STRING = "java/lang/String";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_CLASS = "java/lang/Class";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_EXCEPTION = "java/lang/Exception";
 
     public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 
