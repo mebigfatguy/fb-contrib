@@ -88,7 +88,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     @Override
     public void visitField(Field obj) {
         if (obj.isPrivate() && isMap(obj)) {
-            mapFields.put(obj.getName(), new FieldAnnotation(getClassName(), obj.getName(), obj.getSignature(), obj.isStatic()));
+            mapFields.put(obj.getName(), new FieldAnnotation(getDottedClassName(), obj.getName(), obj.getSignature(), obj.isStatic()));
         }
     }
 
