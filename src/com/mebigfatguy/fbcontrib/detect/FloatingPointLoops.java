@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -33,10 +33,8 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
- * looks for methods that use floating point indexes for loops. Since floating
- * point math is inprecise, rounding errors will occur each time through the
- * loop causing hard to find problems. It is usually better to use integer
- * indexing, and calculating the correct floating point value from the index.
+ * looks for methods that use floating point indexes for loops. Since floating point math is inprecise, rounding errors will occur each time through the loop
+ * causing hard to find problems. It is usually better to use integer indexing, and calculating the correct floating point value from the index.
  */
 public class FloatingPointLoops extends BytecodeScanningDetector {
     enum State {
@@ -48,7 +46,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
 
     /**
      * constructs a FPL detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -58,7 +56,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to clear the forLoops set
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed code block
      */
@@ -71,7 +69,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to find for loops using floating point indexes
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -80,8 +78,9 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
         if (forLoops.size() > 0) {
             Iterator<FloatForLoop> ffl = forLoops.iterator();
             while (ffl.hasNext()) {
-                if (!ffl.next().sawOpcode(seen))
+                if (!ffl.next().sawOpcode(seen)) {
                     ffl.remove();
+                }
             }
         }
 
@@ -108,50 +107,51 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
 
         public boolean sawOpcode(final int seen) {
             switch (state) {
-            case SAW_LOAD:
-                if ((seen == FCMPG) || (seen == FCMPL) || (seen == DCMPG) || (seen == DCMPL)) {
-                    state = State.SAW_CMPX;
-                    return true;
-                } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL)) {
-                    String methodSig = FloatingPointLoops.this.getSigConstantOperand();
-                    Type t = Type.getReturnType(methodSig);
-                    return !"V".equals(t.getSignature());
-                } else if ((seen < ISTORE) || (seen > SASTORE)) {
-                    return true;
-                }
+                case SAW_LOAD:
+                    if ((seen == FCMPG) || (seen == FCMPL) || (seen == DCMPG) || (seen == DCMPL)) {
+                        state = State.SAW_CMPX;
+                        return true;
+                    } else if (OpcodeUtils.isInvoke(seen)) {
+                        String methodSig = FloatingPointLoops.this.getSigConstantOperand();
+                        Type t = Type.getReturnType(methodSig);
+                        return !"V".equals(t.getSignature());
+                    } else if ((seen < ISTORE) || (seen > SASTORE)) {
+                        return true;
+                    }
                 break;
 
-            case SAW_CMPX:
-                if ((seen >= IFEQ) && (seen <= IFLE)) {
-                    state = State.SAW_IFX;
-                    gotoPC = getBranchTarget() - 3;
-                    return (gotoPC > getPC());
-                }
+                case SAW_CMPX:
+                    if ((seen >= IFEQ) && (seen <= IFLE)) {
+                        state = State.SAW_IFX;
+                        gotoPC = getBranchTarget() - 3;
+                        return (gotoPC > getPC());
+                    }
                 break;
 
-            case SAW_IFX:
-                if (getPC() < (gotoPC - 1))
-                    return true;
-                else if (getPC() == (gotoPC - 1)) {
-                    int storeReg;
-                    if ((seen == FSTORE) || (seen == DSTORE))
-                        storeReg = getRegisterOperand();
-                    else if ((seen >= FSTORE_0) && (seen <= FSTORE_3))
-                        storeReg = seen - FSTORE_0;
-                    else if ((seen >= DSTORE_0) && (seen <= DSTORE_3))
-                        storeReg = seen - DSTORE_0;
-                    else
-                        return false;
-                    state = State.SAW_STORE;
-                    return storeReg == loopReg;
-                }
-                return false;
+                case SAW_IFX:
+                    if (getPC() < (gotoPC - 1)) {
+                        return true;
+                    } else if (getPC() == (gotoPC - 1)) {
+                        int storeReg;
+                        if ((seen == FSTORE) || (seen == DSTORE)) {
+                            storeReg = getRegisterOperand();
+                        } else if ((seen >= FSTORE_0) && (seen <= FSTORE_3)) {
+                            storeReg = seen - FSTORE_0;
+                        } else if ((seen >= DSTORE_0) && (seen <= DSTORE_3)) {
+                            storeReg = seen - DSTORE_0;
+                        } else {
+                            return false;
+                        }
+                        state = State.SAW_STORE;
+                        return storeReg == loopReg;
+                    }
+                    return false;
 
-            case SAW_STORE:
-                if (((seen == GOTO) || (seen == GOTO_W)) && (getBranchTarget() == loopPC)) {
-                    bugReporter.reportBug(new BugInstance(FloatingPointLoops.this, "FPL_FLOATING_POINT_LOOPS", NORMAL_PRIORITY)
-                            .addClass(FloatingPointLoops.this).addMethod(FloatingPointLoops.this).addSourceLine(FloatingPointLoops.this, loopPC));
-                }
+                case SAW_STORE:
+                    if (((seen == GOTO) || (seen == GOTO_W)) && (getBranchTarget() == loopPC)) {
+                        bugReporter.reportBug(new BugInstance(FloatingPointLoops.this, "FPL_FLOATING_POINT_LOOPS", NORMAL_PRIORITY)
+                                .addClass(FloatingPointLoops.this).addMethod(FloatingPointLoops.this).addSourceLine(FloatingPointLoops.this, loopPC));
+                    }
                 break;
             }
             return false;

@@ -181,7 +181,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
+            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL) || (seen == INVOKEDYNAMIC)) {
                 String calledClass = getClassConstantOperand().replace('/', '.');
 
                 if (seen == INVOKEINTERFACE) {

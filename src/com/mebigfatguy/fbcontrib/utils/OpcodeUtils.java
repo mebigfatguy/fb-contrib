@@ -2,17 +2,17 @@
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Kevin Lubick
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -29,6 +29,7 @@ import org.apache.bcel.Constants;
 public class OpcodeUtils implements Constants {
 
     private static final BitSet BRANCH_OPS = new BitSet();
+    private static final BitSet INVOKE_OPS = new BitSet();
 
     static {
         BRANCH_OPS.set(GOTO);
@@ -49,6 +50,12 @@ public class OpcodeUtils implements Constants {
         BRANCH_OPS.set(IFNE);
         BRANCH_OPS.set(IFNONNULL);
         BRANCH_OPS.set(IFNULL);
+
+        INVOKE_OPS.set(INVOKEVIRTUAL);
+        INVOKE_OPS.set(INVOKESTATIC);
+        INVOKE_OPS.set(INVOKEINTERFACE);
+        INVOKE_OPS.set(INVOKESPECIAL);
+        INVOKE_OPS.set(INVOKEDYNAMIC);
     }
 
     private OpcodeUtils() {
@@ -100,6 +107,10 @@ public class OpcodeUtils implements Constants {
 
     public static boolean isStore(int seen) {
         return isAStore(seen) || isIStore(seen) || isLStore(seen) || isFStore(seen) || isDStore(seen);
+    }
+
+    public static boolean isInvoke(int seen) {
+        return INVOKE_OPS.get(seen);
     }
 
     public static boolean isInvokeInterfaceSpecialStaticOrVirtual(int seen) {
