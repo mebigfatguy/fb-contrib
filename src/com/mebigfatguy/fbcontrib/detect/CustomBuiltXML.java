@@ -18,14 +18,14 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -35,30 +35,24 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that build xml based strings by concatenation strings and
- * custom values together. Doing so makes brittle code, that is difficult to
- * modify, validate and understand. It is cleaner to create external xml files
- * that are transformed at runtime, using parameters set through
- * Transformer.setParameter.
+ * looks for methods that build xml based strings by concatenation strings and custom values together. Doing so makes brittle code, that is difficult to modify,
+ * validate and understand. It is cleaner to create external xml files that are transformed at runtime, using parameters set through Transformer.setParameter.
  */
 public class CustomBuiltXML extends BytecodeScanningDetector {
-    private static final Map<Pattern, Boolean> xmlPatterns;
-
-    static {
-        Map<Pattern, Boolean> xp = new HashMap<Pattern, Boolean>();
-        xp.put(Pattern.compile(".*<[a-zA-Z_](\\w)*>[^=]?.*"), Boolean.TRUE);
-        xp.put(Pattern.compile(".*</[a-zA-Z_](\\w)*>[^=]?.*"), Boolean.TRUE);
-        xp.put(Pattern.compile(".*<[a-zA-Z_](\\w)*/>[^=]?.*"), Boolean.TRUE);
-        xp.put(Pattern.compile(".*<[^=]?(/)?$"), Boolean.TRUE);
-        xp.put(Pattern.compile("^(/)?>.*"), Boolean.TRUE);
-        xp.put(Pattern.compile(".*=(\\s)*[\"'].*"), Boolean.FALSE);
-        xp.put(Pattern.compile("^[\"']>.*"), Boolean.TRUE);
-        xp.put(Pattern.compile(".*<!\\[CDATA\\[.*", Pattern.CASE_INSENSITIVE), Boolean.TRUE);
-        xp.put(Pattern.compile(".*\\]\\]>.*"), Boolean.TRUE);
-        xp.put(Pattern.compile(".*xmlns:.*"), Boolean.TRUE);
-
-        xmlPatterns = Collections.<Pattern, Boolean> unmodifiableMap(xp);
-    }
+    private static final List<XMLPattern> xmlPatterns = UnmodifiableList.create(
+        // @formatter:off
+        new XMLPattern(Pattern.compile(".*<[a-zA-Z_](\\w)*>[^=]?.*"), true),
+        new XMLPattern(Pattern.compile(".*</[a-zA-Z_](\\w)*>[^=]?.*"), true),
+        new XMLPattern(Pattern.compile(".*<[a-zA-Z_](\\w)*/>[^=]?.*"), true),
+        new XMLPattern(Pattern.compile(".*<[^=]?(/)?$"), true),
+        new XMLPattern(Pattern.compile("^(/)?>.*"), true),
+        new XMLPattern(Pattern.compile(".*=(\\s)*[\"'].*"), false),
+        new XMLPattern(Pattern.compile("^[\"']>.*"), true),
+        new XMLPattern(Pattern.compile(".*<!\\[CDATA\\[.*", Pattern.CASE_INSENSITIVE), true),
+        new XMLPattern(Pattern.compile(".*\\]\\]>.*"), true),
+        new XMLPattern(Pattern.compile(".*xmlns:.*"), true)
+        // @formatter:on
+    );
 
     private static final String CBX_MIN_REPORTABLE_ITEMS = "fb-contrib.cbx.minxmlitems";
     private BugReporter bugReporter;
@@ -165,11 +159,11 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                     return;
                 }
 
-                for (Map.Entry<Pattern, Boolean> entry : xmlPatterns.entrySet()) {
-                    Matcher m = entry.getKey().matcher(strCon);
+                for (XMLPattern pattern : xmlPatterns) {
+                    Matcher m = pattern.getPattern().matcher(strCon);
                     if (m.matches()) {
                         xmlItemCount++;
-                        if (entry.getValue().booleanValue()) {
+                        if (pattern.isConfident()) {
                             xmlConfidentCount++;
                         }
                         if ((firstPC < 0) && (xmlConfidentCount > 0)) {
@@ -181,6 +175,29 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    private static class XMLPattern {
+        private Pattern pattern;
+        private boolean confident;
+
+        public XMLPattern(Pattern p, boolean isConfident) {
+            pattern = p;
+            confident = isConfident;
+        }
+
+        public Pattern getPattern() {
+            return pattern;
+        }
+
+        public boolean isConfident() {
+            return confident;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
         }
     }
 }
