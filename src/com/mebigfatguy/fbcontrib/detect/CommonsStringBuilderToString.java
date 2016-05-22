@@ -58,7 +58,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
     );
 
     private final BugReporter bugReporter;
-    private final Stack<Pair> stackTracker = new Stack<Pair>();
+    private final Stack<StringBuilderInvokedStatus> stackTracker = new Stack<StringBuilderInvokedStatus>();
     private final Map<Integer, Boolean> registerTracker = new HashMap<Integer, Boolean>(10);
 
     /**
@@ -99,7 +99,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
                     Integer loadReg = Integer.valueOf(getRegisterOperand());
                     Boolean appendInvoked = registerTracker.get(loadReg);
                     if (appendInvoked != null) {
-                        stackTracker.add(new Pair(loadReg.intValue(), appendInvoked.booleanValue()));
+                        stackTracker.add(new StringBuilderInvokedStatus(loadReg.intValue(), appendInvoked.booleanValue()));
                     }
                 }
             }
@@ -113,7 +113,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
             String signature = si.getSignature();
             if (isToStringBuilder(signature)) {
                 int storeReg = getRegisterOperand();
-                Pair p = stackTracker.pop();
+                StringBuilderInvokedStatus p = stackTracker.pop();
                 registerTracker.put(Integer.valueOf(storeReg), p.register == -1 ? Boolean.FALSE : registerTracker.get(Integer.valueOf(p.register)));
             }
             break;
@@ -121,7 +121,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
             si = stack.getStackItem(0);
             signature = si.getSignature();
             if (isToStringBuilder(signature) && !stackTracker.isEmpty()) {
-                Pair p = stackTracker.pop();
+                StringBuilderInvokedStatus p = stackTracker.pop();
                 registerTracker.put(Integer.valueOf(p.register), Boolean.valueOf(p.appendInvoked));
             }
             break;
@@ -134,12 +134,12 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
                     || "org/apache/commons/lang/builder/ToStringBuilder".equals(loadClassName)) {
                 String calledMethodSig = getSigConstantOperand();
                 if (Values.CONSTRUCTOR.equals(calledMethodName) && TOSTRINGBUILDER_CTOR_SIGS.contains(calledMethodSig)) {
-                    stackTracker.add(new Pair(-1, false));
+                    stackTracker.add(new StringBuilderInvokedStatus(-1, false));
                 } else if ("append".equals(calledMethodName)) {
-                    Pair p = stackTracker.pop();
-                    stackTracker.add(new Pair(p.register, true));
+                    StringBuilderInvokedStatus p = stackTracker.pop();
+                    stackTracker.add(new StringBuilderInvokedStatus(p.register, true));
                 } else if ("toString".equals(calledMethodName) && "()Ljava/lang/String;".equals(calledMethodSig)) {
-                    Pair p = stackTracker.pop();
+                    StringBuilderInvokedStatus p = stackTracker.pop();
                     if (p.appendInvoked == false) {
                         bugReporter.reportBug(new BugInstance(this, "CSBTS_COMMONS_STRING_BUILDER_TOSTRING", HIGH_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
@@ -157,11 +157,11 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
         return "Lorg/apache/commons/lang3/builder/ToStringBuilder;".equals(signature) || "Lorg/apache/commons/lang/builder/ToStringBuilder;".equals(signature);
     }
 
-    static final class Pair {
+    static final class StringBuilderInvokedStatus {
         public final int register;
         public final boolean appendInvoked;
 
-        Pair(int register, boolean appendInvoked) {
+        StringBuilderInvokedStatus(int register, boolean appendInvoked) {
             this.register = register;
             this.appendInvoked = appendInvoked;
         }
