@@ -83,7 +83,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                 ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE,
                         ResultSet.TYPE_SCROLL_SENSITIVE),
                 ParameterInfo.createIntegerParameterInfo(2, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE));
-        PATTERNS = Collections.<Pattern, List<ParameterInfo<?>>>unmodifiableMap(patterns);
+        PATTERNS = Collections.<Pattern, List<ParameterInfo<?>>> unmodifiableMap(patterns);
     }
 
     private static void addPattern(Map<Pattern, List<ParameterInfo<?>>> patterns, String pattern, ParameterInfo<?>... info) {
@@ -106,7 +106,8 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     /**
      * overrides the visitor to initialize the opcode stack
      *
-     * @param classContext the context of the currently parsed class
+     * @param classContext
+     *            the context of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -121,7 +122,8 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the opcode stack
      *
-     * @param obj the currently parsed method
+     * @param obj
+     *            the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -133,32 +135,33 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             switch (seen) {
-            case INVOKESPECIAL:
-            case INVOKESTATIC:
-            case INVOKEINTERFACE:
-            case INVOKEVIRTUAL:
-                String sig = getSigConstantOperand();
-                String mInfo = getClassConstantOperand() + '#' + getNameConstantOperand() + sig;
-                for (Map.Entry<Pattern, List<ParameterInfo<?>>> entry : PATTERNS.entrySet()) {
-                    Matcher m = entry.getKey().matcher(mInfo);
-                    if (m.matches()) {
-                        for (ParameterInfo<?> info : entry.getValue()) {
-                            int parmOffset = info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1 : info.parameterOffset;
-                            if (stack.getStackDepth() > parmOffset) {
-                                OpcodeStack.Item item = stack.getStackItem(parmOffset);
+                case INVOKESPECIAL:
+                case INVOKESTATIC:
+                case INVOKEINTERFACE:
+                case INVOKEVIRTUAL:
+                    String sig = getSigConstantOperand();
+                    String mInfo = getClassConstantOperand() + '#' + getNameConstantOperand() + sig;
+                    for (Map.Entry<Pattern, List<ParameterInfo<?>>> entry : PATTERNS.entrySet()) {
+                        Matcher m = entry.getKey().matcher(mInfo);
+                        if (m.matches()) {
+                            for (ParameterInfo<?> info : entry.getValue()) {
+                                int parmOffset = info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1 : info.parameterOffset;
+                                if (stack.getStackDepth() > parmOffset) {
+                                    OpcodeStack.Item item = stack.getStackItem(parmOffset);
 
-                                Comparable cons = (Comparable) item.getConstant();
-                                if (!info.isValid(cons)) {
-                                    int badParm = 1 + (info.fromStart ? info.parameterOffset : Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
-                                    bugReporter.reportBug(new BugInstance(this, BugType.ICA_INVALID_CONSTANT_ARGUMENT.name(), NORMAL_PRIORITY).addClass(this)
-                                            .addMethod(this).addSourceLine(this).addString("Parameter " + badParm));
-                                    break;
+                                    Comparable cons = (Comparable) item.getConstant();
+                                    if (!info.isValid(cons)) {
+                                        int badParm = 1
+                                                + (info.fromStart ? info.parameterOffset : Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
+                                        bugReporter.reportBug(new BugInstance(this, BugType.ICA_INVALID_CONSTANT_ARGUMENT.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this).addString("Parameter " + badParm));
+                                        break;
+                                    }
                                 }
                             }
+                            break;
                         }
-                        break;
                     }
-                }
                 break;
             }
         } finally {
@@ -167,10 +170,8 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     }
 
     /**
-     * holds information about parameters that expect constant values that
-     * should have been enums but were created pre enums.  It specifies the
-     * legal values, and what offset from the start or end of the method the parm
-     * is
+     * holds information about parameters that expect constant values that should have been enums but were created pre enums. It specifies the legal values, and
+     * what offset from the start or end of the method the parm is
      */
     static class ParameterInfo<T extends Comparable<T>> {
         private int parameterOffset;
@@ -178,6 +179,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         private Set<T> validValues;
         private Range<T> range;
 
+        @SafeVarargs
         public ParameterInfo(int offset, boolean start, T... values) {
             parameterOffset = offset;
             fromStart = start;
