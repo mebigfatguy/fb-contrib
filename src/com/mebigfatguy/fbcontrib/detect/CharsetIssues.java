@@ -62,9 +62,9 @@ public class CharsetIssues extends BytecodeScanningDetector {
         Map<FQMethod, Integer> replaceable = new HashMap<FQMethod, Integer>(8);
         replaceable.put(new FQMethod("java/io/InputStreamReader", "<init>", "(Ljava/io/InputStream;Ljava/lang/String;)V"), Values.ZERO);
         replaceable.put(new FQMethod("java/io/OutputStreamWriter", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;)V"), Values.ZERO);
-        replaceable.put(new FQMethod("java/lang/String", "<init>", "([BLjava/lang/String;)V"), Values.ZERO);
-        replaceable.put(new FQMethod("java/lang/String", "<init>", "([BIILjava/lang/String;)V"), Values.ZERO);
-        replaceable.put(new FQMethod("java/lang/String", "getBytes", "(Ljava/lang/String;)[B"), Values.ZERO);
+        replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "<init>", "([BLjava/lang/String;)V"), Values.ZERO);
+        replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "<init>", "([BIILjava/lang/String;)V"), Values.ZERO);
+        replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "getBytes", "(Ljava/lang/String;)[B"), Values.ZERO);
         replaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V"), Values.ONE);
 
         REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replaceable);

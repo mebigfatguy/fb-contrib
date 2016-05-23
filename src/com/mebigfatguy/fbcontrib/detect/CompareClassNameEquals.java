@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -31,12 +32,10 @@ import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 /**
- * In a JVM, Two classes are the same class (and consequently the same type) if
- * they are loaded by the same class loader, and they have the same fully
- * qualified name [JVMSpec 1999].
+ * In a JVM, Two classes are the same class (and consequently the same type) if they are loaded by the same class loader, and they have the same fully qualified
+ * name [JVMSpec 1999].
  *
- * Two classes with the same name but different package names are distinct, as
- * are two classes with the same fully qualified name loaded by different class
+ * Two classes with the same name but different package names are distinct, as are two classes with the same fully qualified name loaded by different class
  * loaders.
  *
  * Find usage involving comparison of class names, rather than the class itself.
@@ -71,10 +70,10 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
     public void sawOpcode(int seen) {
         if (seen == INVOKEVIRTUAL) {
             if ("getName".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())
-                    && "java/lang/Class".equals(getClassConstantOperand())) {
+                    && Values.SLASHED_JAVA_LANG_CLASS.equals(getClassConstantOperand())) {
                 flag = true;
             } else if ("equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())
-                    && "java/lang/String".equals(getClassConstantOperand())) {
+                    && Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand())) {
                 Item item = stack.getItemMethodInvokedOn(this);
                 Object srcValue = item.getUserValue();
                 item = stack.getStackItem(0);
