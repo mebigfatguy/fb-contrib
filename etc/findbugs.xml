@@ -301,6 +301,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.DubiousMapCollection" speed="fast" reports="DMC_DUBIOUS_MAP_COLLECTION"/>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.BuryingLogic" speed="fast reports="BL_BURYING_LOGIC"/>
+    
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -565,5 +567,6 @@
 	<BugPattern abbrev="IOI" type="IOI_DOUBLE_BUFFER_COPY" category="PERFORMANCE"/>
 	<BugPattern abbrev="IOI" type="IOI_COPY_WITH_READER" category="PERFORMANCE"/>
 	<BugPattern abbrev="DMC" type="DMC_DUBIOUS_MAP_COLLECTION" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="BL" type="BL_BURYING_LOGIC" category="STYLE" experimental="true" />
 	
 </FindbugsPlugin>

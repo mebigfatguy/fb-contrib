@@ -1607,6 +1607,18 @@
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.BuryingLogic">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for methods that needlessly push a large chunk of code to the right through indenting with braces.
+    		The code is basically an if/else-then-return structure. The if true test does the bulk of the logic, and the else
+    		just returns. It is more readable if the bulk of the logic is move as far to the left in the method as is possible.
+    		</p>
+    		<p>It is a fast detector.</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5480,6 +5492,18 @@
 	    	the purpose of the field.
 	    	</p>
 	    	]]>	
+    	</Details>
+    </BugPattern>
+    
+    <BugPattern type="BL_BURYING_LOGIC">
+    	<ShortDescription>Method buries logic to the right (indented) more than it needs to be</ShortDescription>
+    	<LongDescription>Method {1} buries logic to the right (indented) more than it needs to be</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method has an if statement where if the condition is false, merely returns. The bulk of the logic is found
+    		in the if brace code. This unnecessarily obfuscates the logic of the method. It would be more readable if you inverted
+    		the logic of the if statement, and just returned if true.</p>
+    		]]>
     	</Details>
     </BugPattern>
 
