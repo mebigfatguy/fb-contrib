@@ -92,41 +92,46 @@ public class BuryingLogic extends BytecodeScanningDetector {
             return;
         }
 
-        if (!ifBlocks.isEmpty()) {
-            IfBlock block = ifBlocks.getFirst();
-            if ((getPC() >= block.getEnd()) && (!block.isUnconditionalReturn())) {
-                ifBlocks.removeFirst();
-            }
-        }
+        try {
 
-        if (isBranch(seen)) {
-            if (activeUnconditional) {
-                activeUnconditional = false;
-                ifBlocks.removeFirst();
-                return;
-            }
-
-            if (getBranchOffset() > 0) {
-                ifBlocks.addLast(new IfBlock(getNextPC(), getBranchTarget()));
-            }
-        }
-
-        if (isReturn(seen)) {
-            if (activeUnconditional) {
+            if (!ifBlocks.isEmpty()) {
                 IfBlock block = ifBlocks.getFirst();
-                int ifSize = block.getEnd() - block.getStart();
-                int elseSize = getPC() - block.getEnd();
-
-                double ratio = (double) ifSize / (double) elseSize;
-                if (ratio > bugRatioLimit) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLineRange(this, block.getStart(), block.getEnd()));
-                    isReported = true;
+                if ((getPC() >= block.getEnd()) && (!block.isUnconditionalReturn())) {
+                    ifBlocks.removeFirst();
                 }
-            } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd())) {
-                ifBlocks.getFirst().setUnconditionalReturn(true);
-                activeUnconditional = true;
             }
+
+            if (isBranch(seen)) {
+                if (activeUnconditional) {
+                    activeUnconditional = false;
+                    ifBlocks.removeFirst();
+                    return;
+                }
+
+                if (getBranchOffset() > 0) {
+                    ifBlocks.addLast(new IfBlock(getNextPC(), getBranchTarget()));
+                }
+            }
+
+            if (isReturn(seen)) {
+                if (activeUnconditional) {
+                    IfBlock block = ifBlocks.getFirst();
+                    int ifSize = block.getEnd() - block.getStart();
+                    int elseSize = getPC() - block.getEnd();
+
+                    double ratio = (double) ifSize / (double) elseSize;
+                    if (ratio > bugRatioLimit) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                .addSourceLineRange(this, block.getStart(), block.getEnd()));
+                        isReported = true;
+                    }
+                } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd())) {
+                    ifBlocks.getFirst().setUnconditionalReturn(true);
+                    activeUnconditional = true;
+                }
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
         }
     }
 
