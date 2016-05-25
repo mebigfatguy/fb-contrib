@@ -25,6 +25,10 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
+
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -32,10 +36,13 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class BuryingLogic extends BytecodeScanningDetector {
 
+    private static final double BUG_RATIO_LIMIT = 10.0;
+
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private Deque<Integer> ifLocations;
-    private Deque<Integer> elseLocations;
+    private Deque<IfBlock> ifBlocks;
+    private boolean activeUnconditional;
+    private boolean isReported;
 
     public BuryingLogic(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -45,13 +52,11 @@ public class BuryingLogic extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            ifLocations = new ArrayDeque<>();
-            elseLocations = new ArrayDeque<>();
+            ifBlocks = new ArrayDeque<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
-            ifLocations = null;
-            elseLocations = null;
+            ifBlocks = null;
         }
     }
 
@@ -63,24 +68,85 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
 
         stack.resetForMethodEntry(this);
-        ifLocations.clear();
-        elseLocations.clear();
+        ifBlocks.clear();
+        activeUnconditional = false;
+        isReported = false;
         super.visitCode(obj);
     }
 
     @Override
     public void sawOpcode(int seen) {
+        if (isReported) {
+            return;
+        }
 
-        if (!elseLocations.isEmpty() && (getPC() >= elseLocations.getFirst())) {
-            ifLocations.removeFirst();
-            elseLocations.removeFirst();
+        if (!ifBlocks.isEmpty()) {
+            IfBlock block = ifBlocks.getFirst();
+            if ((getPC() >= block.getEnd()) && (!block.isUnconditionalReturn())) {
+                ifBlocks.removeFirst();
+            }
         }
 
         if (isBranch(seen)) {
-            if (getBranchOffset() > 0) {
-                ifLocations.addLast(getNextPC());
-                elseLocations.addLast(getBranchTarget());
+            if (activeUnconditional) {
+                activeUnconditional = false;
+                ifBlocks.removeFirst();
+                return;
             }
+
+            if (getBranchOffset() > 0) {
+                ifBlocks.addLast(new IfBlock(getNextPC(), getBranchTarget()));
+            }
+        }
+
+        if (isReturn(seen)) {
+            if (activeUnconditional) {
+                IfBlock block = ifBlocks.getFirst();
+                int ifSize = block.getEnd() - block.getStart();
+                int elseSize = getPC() - block.getEnd();
+
+                double ratio = (double) ifSize / (double) elseSize;
+                if (ratio > BUG_RATIO_LIMIT) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLineRange(this, block.getStart(), block.getEnd()));
+                    isReported = true;
+                }
+            } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd())) {
+                ifBlocks.getFirst().setUnconditionalReturn(true);
+                activeUnconditional = true;
+            }
+        }
+    }
+
+    static class IfBlock {
+        private int start;
+        private int end;
+        private boolean unconditinalReturn;
+
+        public IfBlock(int s, int e) {
+            start = s;
+            end = e;
+        }
+
+        public int getStart() {
+            return start;
+        }
+
+        public int getEnd() {
+            return end;
+        }
+
+        public boolean isUnconditionalReturn() {
+            return unconditinalReturn;
+        }
+
+        public void setUnconditionalReturn(boolean unconditinalReturn) {
+            this.unconditinalReturn = unconditinalReturn;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
         }
     }
 }
