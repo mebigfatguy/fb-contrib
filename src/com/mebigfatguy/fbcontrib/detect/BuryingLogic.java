@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayDeque;
 import java.util.Deque;
+import java.util.Iterator;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
@@ -110,10 +111,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
                 if (getBranchOffset() > 0) {
                     ifBlocks.addLast(new IfBlock(getNextPC(), getBranchTarget()));
+                } else {
+                    removeLoopBlocks(getBranchTarget());
                 }
-            }
-
-            if (isReturn(seen)) {
+            } else if (isReturn(seen)) {
                 if (activeUnconditional) {
                     IfBlock block = ifBlocks.getFirst();
                     int ifSize = block.getEnd() - block.getStart();
@@ -132,6 +133,17 @@ public class BuryingLogic extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    private void removeLoopBlocks(int target) {
+        Iterator<IfBlock> it = ifBlocks.descendingIterator();
+        while (it.hasNext()) {
+            if (it.next().getStart() >= target) {
+                it.remove();
+            } else {
+                return;
+            }
         }
     }
 
