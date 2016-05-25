@@ -5641,4 +5641,5 @@
 	<BugCode abbrev="SEO">Suboptimal Expression Order</BugCode>
 	<BugCode abbrev="IOI">IO Issues</BugCode>
 	<BugCode abbrev="DMC">Dubious Map Collection</BugCode>
+	<BugCode abbrev="BL">Burying Logic</BugCode>
 </MessageCollection>
