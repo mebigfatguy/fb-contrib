@@ -36,16 +36,28 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class BuryingLogic extends BytecodeScanningDetector {
 
-    private static final double BUG_RATIO_LIMIT = 10.0;
+    private static final String BURY_LOGIC_RATIO_PROPERTY = "fb-contrib.bl.ratio";
+    private static final double DEFAULT_BUG_RATIO_LIMIT = 12.0;
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Deque<IfBlock> ifBlocks;
     private boolean activeUnconditional;
     private boolean isReported;
+    private double bugRatioLimit;
 
     public BuryingLogic(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        String ratio = System.getProperty(BURY_LOGIC_RATIO_PROPERTY);
+        try {
+            bugRatioLimit = Double.parseDouble(ratio);
+            if (bugRatioLimit <= 0) {
+                bugRatioLimit = DEFAULT_BUG_RATIO_LIMIT;
+            }
+        } catch (Exception e) {
+            bugRatioLimit = DEFAULT_BUG_RATIO_LIMIT;
+        }
     }
 
     @Override
@@ -106,7 +118,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 int elseSize = getPC() - block.getEnd();
 
                 double ratio = (double) ifSize / (double) elseSize;
-                if (ratio > BUG_RATIO_LIMIT) {
+                if (ratio > bugRatioLimit) {
                     bugReporter.reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                             .addSourceLineRange(this, block.getStart(), block.getEnd()));
                     isReported = true;
