@@ -301,7 +301,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.DubiousMapCollection" speed="fast" reports="DMC_DUBIOUS_MAP_COLLECTION"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.BuryingLogic" speed="fast reports="BL_BURYING_LOGIC"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.BuryingLogic" speed="fast" reports="BL_BURYING_LOGIC"/>
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     

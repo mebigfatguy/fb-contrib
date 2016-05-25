@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -31,6 +34,8 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
+    private Deque<Integer> ifLocations;
+    private Deque<Integer> elseLocations;
 
     public BuryingLogic(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -40,25 +45,42 @@ public class BuryingLogic extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
+            ifLocations = new ArrayDeque<>();
+            elseLocations = new ArrayDeque<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
+            ifLocations = null;
+            elseLocations = null;
         }
     }
 
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        if (m.getReturnType() != Type.VOID) {
+        if (m.getReturnType() == Type.VOID) {
             return;
         }
 
         stack.resetForMethodEntry(this);
+        ifLocations.clear();
+        elseLocations.clear();
         super.visitCode(obj);
     }
 
     @Override
     public void sawOpcode(int seen) {
 
+        if (!elseLocations.isEmpty() && (getPC() >= elseLocations.getFirst())) {
+            ifLocations.removeFirst();
+            elseLocations.removeFirst();
+        }
+
+        if (isBranch(seen)) {
+            if (getBranchOffset() > 0) {
+                ifLocations.addLast(getNextPC());
+                elseLocations.addLast(getBranchTarget());
+            }
+        }
     }
 }
