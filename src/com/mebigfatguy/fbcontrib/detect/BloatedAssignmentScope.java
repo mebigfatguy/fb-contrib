@@ -583,18 +583,19 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      */
     private ScopeBlock findScopeBlock(ScopeBlock sb, int pc) {
 
-        if ((pc > sb.getStart()) && (pc < sb.getFinish())) {
-            if (sb.children != null) {
-                for (ScopeBlock child : sb.children) {
-                    ScopeBlock foundSb = findScopeBlock(child, pc);
-                    if (foundSb != null) {
-                        return foundSb;
-                    }
+        if ((pc <= sb.getStart()) || (pc >= sb.getFinish())) {
+            return null;
+        }
+
+        if (sb.children != null) {
+            for (ScopeBlock child : sb.children) {
+                ScopeBlock foundSb = findScopeBlock(child, pc);
+                if (foundSb != null) {
+                    return foundSb;
                 }
             }
-            return sb;
         }
-        return null;
+        return sb;
     }
 
     /**

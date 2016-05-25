@@ -38,20 +38,15 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Looks for methods that create DOM Nodes but do not add them to any DOM
- * Document.
+ * Looks for methods that create DOM Nodes but do not add them to any DOM Document.
  */
 public class OrphanedDOMNode extends BytecodeScanningDetector {
-    private static final Set<String> domCreationMethods = UnmodifiableSet.create(
-            "createAttribute:(Ljava/lang/String;)Lorg/w3c/dom/Attr;",
-            "createAttributeNS:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/Attr;",
-            "createCDATASection:(Ljava/lang/String;)Lorg/w3c/dom/CDATASection;",
-            "createComment:(Ljava/lang/String;)Lorg/w3c/dom/Comment;",
-            "createElement:(Ljava/lang/String;)Lorg/w3c/dom/Element;",
+    private static final Set<String> domCreationMethods = UnmodifiableSet.create("createAttribute:(Ljava/lang/String;)Lorg/w3c/dom/Attr;",
+            "createAttributeNS:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/Attr;", "createCDATASection:(Ljava/lang/String;)Lorg/w3c/dom/CDATASection;",
+            "createComment:(Ljava/lang/String;)Lorg/w3c/dom/Comment;", "createElement:(Ljava/lang/String;)Lorg/w3c/dom/Element;",
             "createElementNS:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/Element;",
             "createProcessingInstruction:(Ljava/lang/String;Ljava/lang/String;)Lorg/w3c/dom/ProcessingInstruction;",
-            "createTextNode:(Ljava/lang/String;)Lorg/w3c/dom/Text;"
-    );
+            "createTextNode:(Ljava/lang/String;)Lorg/w3c/dom/Text;");
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -69,8 +64,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to create and clear the stack, node creations and
-     * store maps
+     * implements the visitor to create and clear the stack, node creations and store maps
      *
      * @param classContext
      *            the context object for the currently parsed class
@@ -120,8 +114,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find DOM based nodes that are allocated but not
-     * appended to an existing node (or returned).
+     * implements the visitor to find DOM based nodes that are allocated but not appended to an existing node (or returned).
      *
      * @param seen
      *            the currently parsed opcode
@@ -141,21 +134,23 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
                     sawCreate = true;
                     itemPC = Integer.valueOf(getPC());
                 }
-            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && seen <= ASTORE_3)) {
+            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
                 Integer pc = findDOMNodeCreationPoint(0);
                 int reg = RegisterUtils.getAStoreReg(this, seen);
-                if (pc != null)
+                if (pc != null) {
                     nodeStores.put(Integer.valueOf(reg), pc);
-                else
+                } else {
                     nodeStores.remove(Integer.valueOf(reg));
+                }
             } else if (seen == PUTFIELD) {
                 // Stores to member variables are assumed ok
                 findDOMNodeCreationPoint(0);
             } else if (OpcodeUtils.isALoad(seen)) {
                 int reg = RegisterUtils.getALoadReg(this, seen);
                 itemPC = nodeStores.get(Integer.valueOf(reg));
-                if (itemPC != null)
+                if (itemPC != null) {
                     sawCreate = true;
+                }
             } else if ((seen == ARETURN) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 int reg = itm.getRegisterNumber();
@@ -163,8 +158,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
                 nodeStores.remove(Integer.valueOf(reg));
             }
 
-            if (!sawCreate
-                    && ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL))) {
+            if (!sawCreate && ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL))) {
                 String methodSig = getSigConstantOperand();
                 int argCount = Type.getArgumentTypes(methodSig).length;
                 if (stack.getStackDepth() >= argCount) {
@@ -190,8 +184,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
     }
 
     /**
-     * returns the pc where this DOM Node was created, or null if this isn't a
-     * DOM node that was created
+     * returns the pc where this DOM Node was created, or null if this isn't a DOM node that was created
      *
      * @param index
      *            the index into the stack of the item to be checked
@@ -199,9 +192,10 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
      * @return the pc where this NODE was created, or null
      */
     private Integer findDOMNodeCreationPoint(int index) {
-        if (stack.getStackDepth() > index)
-            return nodeCreations.remove(stack.getStackItem(index));
+        if (stack.getStackDepth() <= index) {
+            return null;
+        }
 
-        return null;
+        return nodeCreations.remove(stack.getStackItem(index));
     }
 }

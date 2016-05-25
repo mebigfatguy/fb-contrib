@@ -393,17 +393,18 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
         {
             // Next look at the superclass
             JavaClass superCls = cls.getSuperClass();
-            if (superCls != null) {
-                Method superMethod = findMethod(superCls, methodName, methodSig);
-                if (superMethod != null) {
-                    return buildConstrainingInfo(superCls, superMethod);
-                }
-
-                // Otherwise recursively call this on the super class
-                return getConstrainingInfo(superCls, m);
+            if (superCls == null) {
+                return null;
             }
 
-            return null;
+            Method superMethod = findMethod(superCls, methodName, methodSig);
+            if (superMethod != null) {
+                return buildConstrainingInfo(superCls, superMethod);
+            }
+
+            // Otherwise recursively call this on the super class
+            return getConstrainingInfo(superCls, m);
+
         }
     }
 

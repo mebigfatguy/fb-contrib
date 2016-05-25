@@ -443,24 +443,25 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
          * @return whether the object was removed.
          */
         public boolean removeUncheckedField(String field) {
-            if ((uncheckedFields != null) && uncheckedFields.contains(field)) {
-                if (uncheckedFields.size() == 1) {
-                    uncheckedFields = null;
-                    fieldsAreSharedWithParent = false;
-                    return true;
-                }
+            if ((uncheckedFields == null) || !uncheckedFields.contains(field)) {
+                return false;
+            }
 
-                if (fieldsAreSharedWithParent) {
-                    uncheckedFields = new HashSet<String>(uncheckedFields);
-                    fieldsAreSharedWithParent = false;
-                    uncheckedFields.remove(field);
-                } else {
-                    uncheckedFields.remove(field);
-                }
-
+            if (uncheckedFields.size() == 1) {
+                uncheckedFields = null;
+                fieldsAreSharedWithParent = false;
                 return true;
             }
-            return false;
+
+            if (fieldsAreSharedWithParent) {
+                uncheckedFields = new HashSet<String>(uncheckedFields);
+                fieldsAreSharedWithParent = false;
+                uncheckedFields.remove(field);
+            } else {
+                uncheckedFields.remove(field);
+            }
+
+            return true;
         }
 
         @Override
