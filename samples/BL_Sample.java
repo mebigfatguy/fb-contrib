@@ -18,6 +18,16 @@ public class BL_Sample {
         return null;
     }
 
+    public boolean fpNonAbsoluteReturn(Throwable t) {
+        if ((t != null) && (t.getCause() != null)) {
+            Throwable cause = t.getCause();
+            if (cause instanceof java.lang.Error) {
+                return t instanceof OutOfMemoryError;
+            }
+        }
+        return false;
+    }
+
     private List<String> getDetails() {
         return null;
     }
