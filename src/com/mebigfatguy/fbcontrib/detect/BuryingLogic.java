@@ -19,10 +19,12 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayDeque;
+import java.util.BitSet;
 import java.util.Deque;
 import java.util.Iterator;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
@@ -46,6 +48,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
     private IfBlock activeUnconditional;
     private boolean isReported;
     private double bugRatioLimit;
+    private BitSet catchPCs;
 
     public BuryingLogic(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -70,6 +73,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
         } finally {
             stack = null;
             ifBlocks = null;
+            catchPCs = null;
         }
     }
 
@@ -84,6 +88,16 @@ public class BuryingLogic extends BytecodeScanningDetector {
         ifBlocks.clear();
         activeUnconditional = null;
         isReported = false;
+
+        CodeException[] ces = obj.getExceptionTable();
+        if ((ces == null) || (ces.length == 0)) {
+            catchPCs = null;
+        } else {
+            catchPCs = new BitSet();
+            for (CodeException ce : ces) {
+                catchPCs.set(ce.getHandlerPC());
+            }
+        }
         super.visitCode(obj);
     }
 
@@ -115,7 +129,9 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 }
 
                 if (getBranchOffset() > 0) {
-                    ifBlocks.addLast(new IfBlock(getNextPC(), getBranchTarget()));
+                    if ((catchPCs == null) || !catchPCs.get(getNextPC())) {
+                        ifBlocks.addLast(new IfBlock(getNextPC(), getBranchTarget()));
+                    }
                 } else {
                     removeLoopBlocks(getBranchTarget());
                 }
