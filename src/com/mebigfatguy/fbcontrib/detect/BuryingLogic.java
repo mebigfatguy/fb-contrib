@@ -43,7 +43,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Deque<IfBlock> ifBlocks;
-    private boolean activeUnconditional;
+    private IfBlock activeUnconditional;
     private boolean isReported;
     private double bugRatioLimit;
 
@@ -82,7 +82,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
         stack.resetForMethodEntry(this);
         ifBlocks.clear();
-        activeUnconditional = false;
+        activeUnconditional = null;
         isReported = false;
         super.visitCode(obj);
     }
@@ -95,17 +95,22 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
         try {
 
-            if (!ifBlocks.isEmpty()) {
+            int removed = 0;
+            while (!ifBlocks.isEmpty()) {
                 IfBlock block = ifBlocks.getFirst();
-                if ((getPC() >= block.getEnd()) && (!block.isUnconditionalReturn())) {
-                    ifBlocks.removeFirst();
+                if ((getPC() < block.getEnd())) {
+                    break;
                 }
+                ifBlocks.removeFirst();
+                removed++;
+            }
+            if (removed > 1) {
+                activeUnconditional = null;
             }
 
             if (isBranch(seen)) {
-                if (activeUnconditional) {
-                    activeUnconditional = false;
-                    ifBlocks.removeFirst();
+                if (activeUnconditional != null) {
+                    activeUnconditional = null;
                     return;
                 }
 
@@ -115,20 +120,19 @@ public class BuryingLogic extends BytecodeScanningDetector {
                     removeLoopBlocks(getBranchTarget());
                 }
             } else if (isReturn(seen)) {
-                if (activeUnconditional) {
-                    IfBlock block = ifBlocks.getFirst();
-                    int ifSize = block.getEnd() - block.getStart();
-                    int elseSize = getPC() - block.getEnd();
+                if (activeUnconditional != null) {
+
+                    int ifSize = activeUnconditional.getEnd() - activeUnconditional.getStart();
+                    int elseSize = getPC() - activeUnconditional.getEnd();
 
                     double ratio = (double) ifSize / (double) elseSize;
                     if (ratio > bugRatioLimit) {
                         bugReporter.reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLineRange(this, block.getStart(), block.getEnd()));
+                                .addSourceLineRange(this, activeUnconditional.getStart(), activeUnconditional.getEnd()));
                         isReported = true;
                     }
                 } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd())) {
-                    ifBlocks.getFirst().setUnconditionalReturn(true);
-                    activeUnconditional = true;
+                    activeUnconditional = ifBlocks.getFirst();
                 }
             }
         } finally {
@@ -150,7 +154,6 @@ public class BuryingLogic extends BytecodeScanningDetector {
     static class IfBlock {
         private int start;
         private int end;
-        private boolean unconditinalReturn;
 
         public IfBlock(int s, int e) {
             start = s;
@@ -163,14 +166,6 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
         public int getEnd() {
             return end;
-        }
-
-        public boolean isUnconditionalReturn() {
-            return unconditinalReturn;
-        }
-
-        public void setUnconditionalReturn(boolean unconditinalReturn) {
-            this.unconditinalReturn = unconditinalReturn;
         }
 
         @Override
