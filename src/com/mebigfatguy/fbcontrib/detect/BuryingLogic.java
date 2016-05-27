@@ -110,13 +110,15 @@ public class BuryingLogic extends BytecodeScanningDetector {
         try {
 
             int removed = 0;
-            while (!ifBlocks.isEmpty()) {
-                IfBlock block = ifBlocks.getFirst();
-                if ((getPC() < block.getEnd())) {
-                    break;
+            if (!ifBlocks.isEmpty()) {
+                Iterator<IfBlock> it = ifBlocks.iterator();
+                while (it.hasNext()) {
+                    IfBlock block = it.next();
+                    if ((getPC() >= block.getEnd())) {
+                        it.remove();
+                        removed++;
+                    }
                 }
-                ifBlocks.removeFirst();
-                removed++;
             }
             if (removed > 1) {
                 activeUnconditional = null;
