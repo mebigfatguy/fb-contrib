@@ -124,21 +124,21 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     private static TemplateSignature parseSignatureAttribute(Signature signatureAttribute) {
 
         Matcher m = TEMPLATED_SIGNATURE.matcher(signatureAttribute.getSignature());
-        if (m.matches()) {
-            TemplateSignature ts = new TemplateSignature();
-            ts.signature = m.group(2);
-
-            m = TEMPLATE.matcher(m.group(1));
-            List<TemplateItem> templates = new ArrayList<TemplateItem>(4);
-            while (m.find()) {
-                templates.add(new TemplateItem(m.group(1), m.group(2)));
-            }
-            ts.templateParameters = templates.toArray(new TemplateItem[templates.size()]);
-
-            return ts;
+        if (!m.matches()) {
+            return null;
         }
 
-        return null;
+        TemplateSignature ts = new TemplateSignature();
+        ts.signature = m.group(2);
+
+        m = TEMPLATE.matcher(m.group(1));
+        List<TemplateItem> templates = new ArrayList<TemplateItem>(4);
+        while (m.find()) {
+            templates.add(new TemplateItem(m.group(1), m.group(2)));
+        }
+        ts.templateParameters = templates.toArray(new TemplateItem[templates.size()]);
+
+        return ts;
     }
 
     /**

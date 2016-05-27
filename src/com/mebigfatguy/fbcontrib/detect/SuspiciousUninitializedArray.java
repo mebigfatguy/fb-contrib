@@ -127,8 +127,8 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
     /**
      * overrides the visitor to annotate new array creation with a user value that denotes it as being uninitialized, and then if the array is populated to
-     * remove that user value. It then finds return values that have uninitialized arrays. byte arrays are not collected as creating a blank byte array
-     * is probably a reasonably normal occurance.
+     * remove that user value. It then finds return values that have uninitialized arrays. byte arrays are not collected as creating a blank byte array is
+     * probably a reasonably normal occurance.
      *
      * @param seen
      *            the context parameter of the currently parsed op code
@@ -308,11 +308,11 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     }
 
     private boolean isTOS0() {
-        if (stack.getStackDepth() > 0) {
-            OpcodeStack.Item item = stack.getStackItem(0);
-            return item.mustBeZero();
+        if (stack.getStackDepth() == 0) {
+            return false;
         }
 
-        return false;
+        OpcodeStack.Item item = stack.getStackItem(0);
+        return item.mustBeZero();
     }
 }

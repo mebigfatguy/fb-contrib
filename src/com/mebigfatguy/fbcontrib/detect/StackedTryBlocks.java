@@ -127,8 +127,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                         for (int i = 1; i < blocks.size(); i++) {
                             TryBlock secondBlock = blocks.get(i);
 
-                            if (!blocksSplitAcrossTransitions(firstBlock, secondBlock)
-                                    && (firstBlock.getCatchType() == secondBlock.getCatchType())
+                            if (!blocksSplitAcrossTransitions(firstBlock, secondBlock) && (firstBlock.getCatchType() == secondBlock.getCatchType())
                                     && firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
                                     && firstBlock.getMessage().equals(secondBlock.getMessage())
                                     && firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature())) {
@@ -338,12 +337,13 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
         }
 
         boolean catchIsThrown(ConstantPool pool, Set<String> thrownExceptions) {
-            if (thrownExceptions.size() > 0) {
-                int exIndex = catchTypes.nextSetBit(0);
-                String exName = ((ConstantClass) pool.getConstant(exIndex)).getBytes(pool);
-                return thrownExceptions.contains(exName);
+            if (thrownExceptions.size() == 0) {
+                return false;
             }
-            return false;
+
+            int exIndex = catchTypes.nextSetBit(0);
+            String exName = ((ConstantClass) pool.getConstant(exIndex)).getBytes(pool);
+            return thrownExceptions.contains(exName);
         }
 
         void setEndHandlerPC(int end) {
