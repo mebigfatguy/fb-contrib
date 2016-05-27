@@ -405,12 +405,12 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
         @Override
         public boolean equals(Object o) {
-            if (o instanceof TryBlock) {
-                TryBlock that = (TryBlock) o;
-                return (startPC == that.startPC) && (endPC == that.endPC);
+            if (!(o instanceof TryBlock)) {
+                return false;
             }
 
-            return false;
+            TryBlock that = (TryBlock) o;
+            return (startPC == that.startPC) && (endPC == that.endPC);
         }
 
         @Override

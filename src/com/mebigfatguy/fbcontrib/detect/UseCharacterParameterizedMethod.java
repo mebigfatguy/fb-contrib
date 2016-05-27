@@ -231,12 +231,12 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
             return false;
         }
 
-        if (stack.getStackDepth() > 1) {
-            OpcodeStack.Item itm = stack.getStackItem(1);
-            return itm.getUserValue() == UCPMUserValue.INLINE;
+        if (stack.getStackDepth() == 1) {
+            return true;
         }
 
-        return true;
+        OpcodeStack.Item itm = stack.getStackItem(1);
+        return itm.getUserValue() == UCPMUserValue.INLINE;
     }
 
     /**
