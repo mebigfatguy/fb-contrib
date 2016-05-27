@@ -231,7 +231,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
             return false;
         }
 
-        if (stack.getStackDepth() == 1) {
+        if (stack.getStackDepth() <= 1) {
             return true;
         }
 
