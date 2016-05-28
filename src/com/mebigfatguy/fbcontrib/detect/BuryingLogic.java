@@ -127,7 +127,6 @@ public class BuryingLogic extends BytecodeScanningDetector {
             if (isBranch(seen)) {
                 if (activeUnconditional != null) {
                     activeUnconditional = null;
-                    return;
                 }
 
                 if (getBranchOffset() > 0) {
