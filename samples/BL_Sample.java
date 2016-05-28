@@ -27,6 +27,19 @@ public class BL_Sample {
         }
         return false;
     }
+    
+    public String fpNonReturnedIfChain(String name) {
+        if ("<clinit>".equals(name))
+        {
+            System.out.println("static initializer declared");
+        }
+        else
+        {
+            System.out.println("not allowed method declared: " + name);
+            return "wow: " + name;
+        }
+        return null;
+    }
 
     private List<String> getDetails() {
         return null;
