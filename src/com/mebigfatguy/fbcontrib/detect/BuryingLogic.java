@@ -49,6 +49,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
     private boolean isReported;
     private double bugRatioLimit;
     private BitSet catchPCs;
+    private BitSet gotoBranchPCs;
 
     public BuryingLogic(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -69,11 +70,13 @@ public class BuryingLogic extends BytecodeScanningDetector {
         try {
             stack = new OpcodeStack();
             ifBlocks = new ArrayDeque<>();
+            gotoBranchPCs = new BitSet();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
             ifBlocks = null;
             catchPCs = null;
+            gotoBranchPCs = null;
         }
     }
 
@@ -98,6 +101,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 catchPCs.set(ce.getHandlerPC());
             }
         }
+        gotoBranchPCs.clear();
         super.visitCode(obj);
     }
 
@@ -129,15 +133,19 @@ public class BuryingLogic extends BytecodeScanningDetector {
                     activeUnconditional = null;
                 }
 
+                int target = getBranchTarget();
+
                 if (getBranchOffset() > 0) {
-                    if ((catchPCs == null) || !catchPCs.get(getNextPC())) {
-                        ifBlocks.addLast(new IfBlock(getNextPC(), getBranchTarget()));
+                    if ((seen == GOTO) || (seen == GOTO_W)) {
+                        gotoBranchPCs.set(target);
+                    } else if ((catchPCs == null) || !catchPCs.get(getNextPC())) {
+                        ifBlocks.addLast(new IfBlock(getNextPC(), target));
                     }
                 } else {
-                    removeLoopBlocks(getBranchTarget());
+                    removeLoopBlocks(target);
                 }
             } else if (isReturn(seen)) {
-                if (activeUnconditional != null) {
+                if ((activeUnconditional != null) && !gotoBranchPCs.get(activeUnconditional.getEnd())) {
 
                     int ifSize = activeUnconditional.getEnd() - activeUnconditional.getStart();
                     int elseSize = getPC() - activeUnconditional.getEnd();
