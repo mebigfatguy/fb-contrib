@@ -52,6 +52,8 @@ public class Values {
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_EXCEPTION = "java.lang.Exception";
     @DottedClassName
+    public static final String DOTTED_JAVA_LANG_ERROR = "java.lang.Error";
+    @DottedClassName
     public static final String DOTTED_JAVA_LANG_INTEGER = "java.lang.Integer";
 
     @SlashedClassName
@@ -62,6 +64,8 @@ public class Values {
     public static final String SLASHED_JAVA_LANG_CLASS = "java/lang/Class";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_EXCEPTION = "java/lang/Exception";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_ERROR = "java/lang/Error";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_INTEGER = "java/lang/Integer";
 

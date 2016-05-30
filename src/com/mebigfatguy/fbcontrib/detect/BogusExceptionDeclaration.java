@@ -281,14 +281,17 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
         try {
             declaredCheckedExceptions.remove(thrownException);
             JavaClass exCls = Repository.lookupClass(thrownException);
+            String clsName;
+
             do {
                 exCls = exCls.getSuperClass();
                 if (exCls == null) {
                     break;
                 }
-                declaredCheckedExceptions.remove(exCls.getClassName());
-            } while (!declaredCheckedExceptions.isEmpty() && !Values.DOTTED_JAVA_LANG_EXCEPTION.equals(exCls.getClassName())
-                    && !"java.lang.Error".equals(exCls.getClassName()));
+                clsName = exCls.getClassName();
+                declaredCheckedExceptions.remove(clsName);
+            } while (!declaredCheckedExceptions.isEmpty() && !Values.DOTTED_JAVA_LANG_EXCEPTION.equals(clsName)
+                    && !Values.DOTTED_JAVA_LANG_ERROR.equals(clsName));
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
             declaredCheckedExceptions.clear();
