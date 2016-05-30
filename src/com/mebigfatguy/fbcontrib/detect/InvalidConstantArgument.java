@@ -226,6 +226,11 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
 
             return (o.compareTo(range.getFrom()) >= 0) && (o.compareTo(range.getTo()) <= 0);
         }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
     }
 
     static class Range<T extends Comparable<T>> {
