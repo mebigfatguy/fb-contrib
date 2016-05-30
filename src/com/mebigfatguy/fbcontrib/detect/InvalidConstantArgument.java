@@ -22,11 +22,8 @@ import java.awt.Adjustable;
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -40,6 +37,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -53,42 +51,33 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class InvalidConstantArgument extends BytecodeScanningDetector {
 
-    private static final Map<Pattern, List<ParameterInfo<?>>> PATTERNS;
+    private static final List<InvalidPattern> PATTERNS = UnmodifiableList.create(
+    // @formatter:off
+            new InvalidPattern("javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V",
+                    ParameterInfo.createIntegerParameterInfo(0, false, JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE)),
+            new InvalidPattern("javax/swing/BorderFactory#createBevelBorder\\(I.*\\)Ljavax/swing/border/Border;",
+                    ParameterInfo.createIntegerParameterInfo(0, true, BevelBorder.LOWERED, BevelBorder.RAISED)),
+            new InvalidPattern("javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;",
+                    ParameterInfo.createIntegerParameterInfo(0, true, EtchedBorder.LOWERED, EtchedBorder.RAISED)),
+            new InvalidPattern("javax/swing/JScrollBar#\\<init\\>\\(I.*\\)V",
+                    ParameterInfo.createIntegerParameterInfo(0, true, Adjustable.HORIZONTAL, Adjustable.VERTICAL)),
+            new InvalidPattern("java/lang/Thread#setPriority\\(I\\)V",
+                    new ParameterInfo<Integer>(0, true, Range.createIntegerRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY))),
+            new InvalidPattern("java/math/BigDecimal#divide\\(Ljava/math/BigDecimal;.*I\\)Ljava/math/BigDecimal;",
+                    new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
+            new InvalidPattern("java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;",
+                    new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
+            new InvalidPattern("java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;", ParameterInfo.createIntegerParameterInfo(0, true,
+                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE)),
+            new InvalidPattern("java/sql/Connection#createStatement\\(III?\\)Ljava/sql/Statement;",
+                    ParameterInfo.createIntegerParameterInfo(0, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE),
+                    ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE)),
 
-    static {
-        Map<Pattern, List<ParameterInfo<?>>> patterns = new HashMap<Pattern, List<ParameterInfo<?>>>(10);
-        addPattern(patterns, "javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V",
-                ParameterInfo.createIntegerParameterInfo(0, false, JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE,
-                        JOptionPane.WARNING_MESSAGE));
-        addPattern(patterns, "javax/swing/BorderFactory#createBevelBorder\\(I.*\\)Ljavax/swing/border/Border;",
-                ParameterInfo.createIntegerParameterInfo(0, true, BevelBorder.LOWERED, BevelBorder.RAISED));
-        addPattern(patterns, "javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;",
-                ParameterInfo.createIntegerParameterInfo(0, true, EtchedBorder.LOWERED, EtchedBorder.RAISED));
-        addPattern(patterns, "javax/swing/JScrollBar#\\<init\\>\\(I.*\\)V",
-                ParameterInfo.createIntegerParameterInfo(0, true, Adjustable.HORIZONTAL, Adjustable.VERTICAL));
-        addPattern(patterns, "java/lang/Thread#setPriority\\(I\\)V",
-                new ParameterInfo<Integer>(0, true, Range.createIntegerRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY)));
-        addPattern(patterns, "java/math/BigDecimal#divide\\(Ljava/math/BigDecimal;.*I\\)Ljava/math/BigDecimal;",
-                new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
-        addPattern(patterns, "java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;",
-                new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY)));
-        addPattern(patterns, "java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;", ParameterInfo.createIntegerParameterInfo(0, true,
-                ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE));
-        addPattern(patterns, "java/sql/Connection#createStatement\\(III?\\)Ljava/sql/Statement;",
-                ParameterInfo.createIntegerParameterInfo(0, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.TYPE_SCROLL_SENSITIVE),
-                ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE));
-
-        addPattern(patterns, "java/sql/Connection#prepare[^\\(]+\\(Ljava/lang/String;III?\\)Ljava/sql/PreparedStatement;",
-                ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE,
-                        ResultSet.TYPE_SCROLL_SENSITIVE),
-                ParameterInfo.createIntegerParameterInfo(2, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE));
-        PATTERNS = Collections.<Pattern, List<ParameterInfo<?>>> unmodifiableMap(patterns);
-    }
-
-    private static void addPattern(Map<Pattern, List<ParameterInfo<?>>> patterns, String pattern, ParameterInfo<?>... info) {
-        patterns.put(Pattern.compile(pattern), Arrays.asList(info));
-    }
+            new InvalidPattern("java/sql/Connection#prepare[^\\(]+\\(Ljava/lang/String;III?\\)Ljava/sql/PreparedStatement;",
+                    ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE),
+                    ParameterInfo.createIntegerParameterInfo(2, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE))
+    // @formatter:on
+    );
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -141,10 +130,10 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                 case INVOKEVIRTUAL:
                     String sig = getSigConstantOperand();
                     String mInfo = getClassConstantOperand() + '#' + getNameConstantOperand() + sig;
-                    for (Map.Entry<Pattern, List<ParameterInfo<?>>> entry : PATTERNS.entrySet()) {
-                        Matcher m = entry.getKey().matcher(mInfo);
+                    for (InvalidPattern entry : PATTERNS) {
+                        Matcher m = entry.getPattern().matcher(mInfo);
                         if (m.matches()) {
-                            for (ParameterInfo<?> info : entry.getValue()) {
+                            for (ParameterInfo<?> info : entry.getParmInfo()) {
                                 int parmOffset = info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1 : info.parameterOffset;
                                 if (stack.getStackDepth() > parmOffset) {
                                     OpcodeStack.Item item = stack.getStackItem(parmOffset);
@@ -166,6 +155,29 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    static class InvalidPattern {
+        private Pattern pattern;
+        List<ParameterInfo<?>> parmInfo;
+
+        public InvalidPattern(String invalidPattern, ParameterInfo<?>... parameterInfo) {
+            pattern = Pattern.compile(invalidPattern);
+            parmInfo = Arrays.asList(parameterInfo);
+        }
+
+        public Pattern getPattern() {
+            return pattern;
+        }
+
+        public List<ParameterInfo<?>> getParmInfo() {
+            return parmInfo;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
         }
     }
 
