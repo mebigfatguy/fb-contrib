@@ -337,7 +337,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
         }
 
         boolean catchIsThrown(ConstantPool pool, Set<String> thrownExceptions) {
-            if (thrownExceptions.size() == 0) {
+            if (thrownExceptions.isEmpty()) {
                 return false;
             }
 
