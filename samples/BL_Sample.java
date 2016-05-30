@@ -27,18 +27,29 @@ public class BL_Sample {
         }
         return false;
     }
-    
+
     public String fpNonReturnedIfChain(String name) {
-        if ("<clinit>".equals(name))
-        {
+        if ("<clinit>".equals(name)) {
             System.out.println("static initializer declared");
-        }
-        else
-        {
+        } else {
             System.out.println("not allowed method declared: " + name);
             return "wow: " + name;
         }
         return null;
+    }
+
+    public String fpBuryingSwitch(String data) {
+        switch (data) {
+            case "a":
+                return fpBuryingSwitch(data + "fe") + data;
+            case "b":
+                return fpBuryingSwitch(data + "fi") + data;
+            case "c":
+                return fpBuryingSwitch(data + "fo") + data;
+            case "d":
+                return fpBuryingSwitch(data + "fum") + data;
+        }
+        return "";
     }
 
     private List<String> getDetails() {
