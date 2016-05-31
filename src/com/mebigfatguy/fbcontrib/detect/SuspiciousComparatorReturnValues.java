@@ -18,8 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -28,6 +27,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -35,6 +35,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * looks for class that implement Comparator or Comparable, and whose compare or compareTo methods return constant values only, but that don't represent the
@@ -42,14 +43,18 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 @CustomUserValue
 public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
-    private static Map<JavaClass, MethodInfo> compareClasses = new HashMap<JavaClass, MethodInfo>();
+    private static List<CompareSpec> compareClasses;
 
     static {
         try {
-            compareClasses.put(Repository.lookupClass("java/lang/Comparable"), new MethodInfo("compareTo", 1, "I"));
-            compareClasses.put(Repository.lookupClass("java/util/Comparator"), new MethodInfo("compare", 2, "I"));
-        } catch (ClassNotFoundException cnfe) {
-            // don't have a bugReporter yet, so do nothing
+            compareClasses = UnmodifiableList.create(
+                // @formatter:off
+                new CompareSpec("java/lang/Comparable", new MethodInfo("compareTo", 1, "I")),
+                new CompareSpec("java/util/Comparator", new MethodInfo("compare", 2, "I"))
+                // @formatter:on
+            );
+        } catch (ClassNotFoundException e) {
+            // ignore no bug reporter yet
         }
     }
 
@@ -84,9 +89,9 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             JavaClass cls = classContext.getJavaClass();
-            for (Map.Entry<JavaClass, MethodInfo> entry : compareClasses.entrySet()) {
-                if (cls.implementationOf(entry.getKey())) {
-                    methodInfo = entry.getValue();
+            for (CompareSpec entry : compareClasses) {
+                if (cls.implementationOf(entry.getCompareClass())) {
+                    methodInfo = entry.getMethodInfo();
                     stack = new OpcodeStack();
                     super.visitClassContext(classContext);
                     break;
@@ -282,6 +287,30 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
         }
 
         sawConstant = null;
+    }
+}
+
+class CompareSpec {
+
+    private final JavaClass compareClass;
+    private final MethodInfo methodInfo;
+
+    public CompareSpec(@SlashedClassName String compareClassName, MethodInfo mInfo) throws ClassNotFoundException {
+        compareClass = Repository.lookupClass(compareClassName);
+        methodInfo = mInfo;
+    }
+
+    public JavaClass getCompareClass() {
+        return compareClass;
+    }
+
+    public MethodInfo getMethodInfo() {
+        return methodInfo;
+    }
+
+    @Override
+    public String toString() {
+        return ToString.build(this);
     }
 }
 
