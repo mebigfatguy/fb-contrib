@@ -52,10 +52,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that catch exceptions, and rethrow another exception
- * without encapsulating the original exception within it. Doing this loses the
- * stack history, and where the original problem occurred. This makes finding
- * and fixing errors difficult.
+ * looks for methods that catch exceptions, and rethrow another exception without encapsulating the original exception within it. Doing this loses the stack
+ * history, and where the original problem occurred. This makes finding and fixing errors difficult.
  */
 @CustomUserValue
 public class LostExceptionStackTrace extends BytecodeScanningDetector {
@@ -98,7 +96,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            if (throwableClass != null && !isPre14Class(classContext.getJavaClass())) {
+            if ((throwableClass != null) && !isPre14Class(classContext.getJavaClass())) {
                 stack = new OpcodeStack();
                 catchInfos = new HashSet<CatchInfo>();
                 exReg = new HashMap<Integer, Boolean>();
@@ -127,12 +125,12 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
         }
 
         CodeException[] ce = code.getExceptionTable();
-        if (ce == null || ce.length == 0) {
+        if ((ce == null) || (ce.length == 0)) {
             return false;
         }
 
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return bytecodeSet != null && bytecodeSet.get(Constants.ATHROW);
+        return (bytecodeSet != null) && bytecodeSet.get(Constants.ATHROW);
     }
 
     /**
@@ -154,8 +152,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * collects all the valid exception objects (ones where start and finish are
-     * before the target
+     * collects all the valid exception objects (ones where start and finish are before the target
      *
      * @param exs
      *            the exceptions from the class file
@@ -164,7 +161,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     public CodeException[] collectExceptions(CodeException... exs) {
         List<CodeException> filteredEx = new ArrayList<CodeException>();
         for (CodeException ce : exs) {
-            if (ce.getCatchType() != 0 && ce.getStartPC() < ce.getEndPC() && ce.getEndPC() <= ce.getHandlerPC()) {
+            if ((ce.getCatchType() != 0) && (ce.getStartPC() < ce.getEndPC()) && (ce.getEndPC() <= ce.getHandlerPC())) {
                 filteredEx.add(ce);
             }
         }
@@ -172,8 +169,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find throwing alternative exceptions from a
-     * catch block, without forwarding along the original exception
+     * implements the visitor to find throwing alternative exceptions from a catch block, without forwarding along the original exception
      */
     @Override
     public void sawOpcode(int seen) {
@@ -185,9 +181,9 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
             int pc = getPC();
             for (CodeException ex : exceptions) {
                 if (pc == ex.getEndPC()) {
-                    if (seen >= IRETURN && seen <= RETURN) {
+                    if (OpcodeUtils.isReturn(seen)) {
                         addCatchBlock(ex.getHandlerPC(), Integer.MAX_VALUE);
-                    } else if (seen == GOTO || seen == GOTO_W) {
+                    } else if ((seen == GOTO) || (seen == GOTO_W)) {
                         addCatchBlock(ex.getHandlerPC(), this.getBranchTarget());
                     } else {
                         addCatchBlock(ex.getHandlerPC(), Integer.MAX_VALUE);
@@ -209,14 +205,14 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                     } else if (pc > catchInfo.getFinish()) {
                         it.remove();
                         break;
-                    } else if (pc > catchInfo.getStart() && pc <= catchInfo.getFinish()) {
+                    } else if ((pc > catchInfo.getStart()) && (pc <= catchInfo.getFinish())) {
                         if (seen == INVOKESPECIAL) {
                             if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
                                 String className = getClassConstantOperand();
                                 JavaClass exClass = Repository.lookupClass(className);
                                 if (exClass.instanceOf(throwableClass)) {
                                     String sig = getSigConstantOperand();
-                                    if (sig.indexOf("Exception") >= 0 || sig.indexOf("Throwable") >= 0 || sig.indexOf("Error") >= 0) {
+                                    if ((sig.indexOf("Exception") >= 0) || (sig.indexOf("Throwable") >= 0) || (sig.indexOf("Error") >= 0)) {
                                         markAsValid = true;
                                         break;
                                     }
@@ -247,14 +243,14 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                             } else if (isPossibleExBuilder(catchInfo.getRegister())) {
                                 markAsValid = true;
                             }
-                        } else if (seen == INVOKEINTERFACE || seen == INVOKESTATIC) {
+                        } else if ((seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
                             if (isPossibleExBuilder(catchInfo.getRegister())) {
                                 markAsValid = true;
                             }
                         } else if (seen == ATHROW) {
                             if (stack.getStackDepth() > 0) {
                                 OpcodeStack.Item itm = stack.getStackItem(0);
-                                if (itm.getRegisterNumber() != catchInfo.getRegister() && itm.getUserValue() == null) {
+                                if ((itm.getRegisterNumber() != catchInfo.getRegister()) && (itm.getUserValue() == null)) {
                                     if (!isPre14Class(itm.getJavaClass())) {
                                         int priority = getPrevOpcode(1) == MONITOREXIT ? LOW_PRIORITY : NORMAL_PRIORITY;
                                         bugReporter.reportBug(new BugInstance(this, BugType.LEST_LOST_EXCEPTION_STACK_TRACE.name(), priority).addClass(this)
@@ -264,7 +260,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                                     break;
                                 }
                             }
-                        } else if (seen == ASTORE || seen >= ASTORE_0 && seen <= ASTORE_3) {
+                        } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
                             if (lastWasExitPoint) {
                                 // crazy jdk6 finally block injection -- shut
                                 // off detection
@@ -276,7 +272,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                                 OpcodeStack.Item itm = stack.getStackItem(0);
                                 int reg = RegisterUtils.getAStoreReg(this, seen);
                                 exReg.put(Integer.valueOf(reg), (Boolean) itm.getUserValue());
-                                if (reg == catchInfo.getRegister() && catchInfo.getFinish() == Integer.MAX_VALUE) {
+                                if ((reg == catchInfo.getRegister()) && (catchInfo.getFinish() == Integer.MAX_VALUE)) {
                                     it.remove();
                                 }
                             }
@@ -285,7 +281,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                             if (valid != null) {
                                 markAsValid = valid.booleanValue();
                             }
-                        } else if (seen >= IRETURN && seen <= RETURN) {
+                        } else if (OpcodeUtils.isReturn(seen)) {
                             removeIndeterminateHandlers(pc);
                             break;
                         }
@@ -296,7 +292,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                 }
             }
 
-            lastWasExitPoint = seen >= IRETURN && seen <= RETURN || seen == GOTO || seen == GOTO_W || seen == ATHROW;
+            lastWasExitPoint = (seen == GOTO) || (seen == GOTO_W) || (seen == ATHROW) || OpcodeUtils.isReturn(seen);
         } finally {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
@@ -309,10 +305,8 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the method called might be a method that builds an
-     * exception using the original exception. It does so by looking to see if
-     * the method returns an exception, and if one of the parameters is the
-     * original exception
+     * returns whether the method called might be a method that builds an exception using the original exception. It does so by looking to see if the method
+     * returns an exception, and if one of the parameters is the original exception
      *
      * @param excReg
      *            the register of the original exception caught
@@ -344,15 +338,14 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the class in question was compiled with a jdk less than
-     * 1.4
+     * returns whether the class in question was compiled with a jdk less than 1.4
      *
      * @param cls
      *            the class to check
      * @return whether the class is compiled with a jdk less than 1.4
      */
     private static boolean isPre14Class(JavaClass cls) {
-        return cls != null && cls.getMajor() < Constants.MAJOR_1_4;
+        return (cls != null) && (cls.getMajor() < Constants.MAJOR_1_4);
     }
 
     private void removePreviousHandlers(int pc) {
@@ -371,16 +364,15 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
         Iterator<CatchInfo> it = catchInfos.iterator();
         while (it.hasNext()) {
             CatchInfo ci = it.next();
-            if (ci.getStart() < pc && ci.getFinish() == Integer.MAX_VALUE) {
+            if ((ci.getStart() < pc) && (ci.getFinish() == Integer.MAX_VALUE)) {
                 it.remove();
             }
         }
     }
 
     /**
-     * looks to update the catchinfo block with the register used for the
-     * exception variable. If their is a local variable table, but the local
-     * variable can't be found return false, signifying an empty catch block.
+     * looks to update the catchinfo block with the register used for the exception variable. If their is a local variable table, but the local variable can't
+     * be found return false, signifying an empty catch block.
      *
      * @param ci
      *            the catchinfo record for the catch starting at this pc
@@ -392,7 +384,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
      * @return whether the catch block is empty
      */
     private boolean updateExceptionRegister(CatchInfo ci, int seen, int pc) {
-        if (seen == ASTORE || seen >= ASTORE_0 && seen <= ASTORE_3) {
+        if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
             int reg = RegisterUtils.getAStoreReg(this, seen);
             ci.setReg(reg);
             exReg.put(Integer.valueOf(reg), Boolean.TRUE);
@@ -413,8 +405,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * add a catch block info record for the catch block that is guessed to be
-     * in the range of start to finish
+     * add a catch block info record for the catch block that is guessed to be in the range of start to finish
      *
      * @param start
      *            the handler pc
