@@ -19,6 +19,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -206,8 +207,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                 }
 
                 if (innerBlock.inCatch()) {
-                    if (((seen >= Constants.IFEQ) && ((seen <= Constants.RET))) || ((seen >= Constants.IRETURN) && (seen <= Constants.RETURN))
-                            || (seen == GOTO_W)) {
+                    if (((seen >= Constants.IFEQ) && ((seen <= Constants.RET))) || (seen == GOTO_W) || OpcodeUtils.isReturn(seen)) {
                         blocks.remove(innerBlock);
                         inBlocks.remove(inBlocks.size() - 1);
                     } else if (seen == ATHROW) {
