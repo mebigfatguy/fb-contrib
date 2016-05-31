@@ -122,7 +122,7 @@ public class OpcodeUtils implements Constants {
     }
 
     public static boolean isReturn(int seen) {
-        return ((seen == ARETURN) || (seen == IRETURN) || (seen == LRETURN) || (seen == FRETURN) || (seen == DRETURN));
+        return ((seen == ARETURN) || (seen == IRETURN) || (seen == LRETURN) || (seen == FRETURN) || (seen == DRETURN) || (seen == RETURN));
     }
 
 }
