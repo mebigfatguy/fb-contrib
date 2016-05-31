@@ -156,7 +156,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
             loadedReg = -1;
         }
 
-        if (((seen >= IRETURN) && (seen <= RETURN)) || (seen == ATHROW)) {
+        if (OpcodeUtils.isReturn(seen) || (seen == ATHROW)) {
             bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLine(this));
             fbInfo.remove(0);
