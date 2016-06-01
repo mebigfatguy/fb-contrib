@@ -37,6 +37,11 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for relatively large if blocks of code, where you unconditionally return from them, and then follow that with an unconditional return of a small block.
+ * This places the bulk of the logic to the right indentation-wise, making it more difficult to read than needed. It would be better to invert the logic of the
+ * if block, and immediately return, allowing the bulk of the logic to be move to the left, for easier reading.
+ */
 public class BuryingLogic extends BytecodeScanningDetector {
 
     private static final String BURY_LOGIC_RATIO_PROPERTY = "fb-contrib.bl.ratio";

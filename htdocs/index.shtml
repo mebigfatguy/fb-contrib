@@ -81,6 +81,17 @@ function toggleBlock(divId, imgId)
         Detectors added in git<br/>
         <div id="git" style="display:none;">
             <ul>
+            	<li><b>[DMC] Dubious Map Collection</b><br/>
+            	Looks for fields that are implementations of java.util.Map, but that are only ever iterated over. This probably means that this
+				data structure should be a List of some class that holds two values, or at the least Pair. Map was probably choosen as it was the
+				easiest thing to use, but obfuscates the reason for the data structure.
+            	</li>
+            	</li><b>[BL] Burying Logic</b><br/>
+            	Looks for relatively large if blocks of code, where you unconditionally return from them, and then follow that with an
+				unconditional return of a small block. This places the bulk of the logic to the right indentation-wise, making it more 
+				difficult to read than needed. It would be better to invert the logic of the if block, and immediately return, allowing
+				the bulk of the logic to be move to the left, for easier reading.
+            	</li>
             </ul>
         </div>  
         <hr/>

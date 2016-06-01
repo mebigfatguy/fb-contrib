@@ -41,6 +41,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
+/**
+ * looks for fields that are implementations of java.util.Map, but that are only ever iterated over. This probably means that this data structure should be a
+ * List of some class that holds two values, or at the least Pair. Map was probably choosen as it was the easiest thing to use, but belies the point of the data
+ * structure.
+ */
 public class DubiousMapCollection extends BytecodeScanningDetector {
 
     private static final Set<String> SPECIAL_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR, Values.STATIC_INITIALIZER);
