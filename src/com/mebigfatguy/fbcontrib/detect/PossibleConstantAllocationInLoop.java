@@ -44,19 +44,14 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for allocations of objects using the default constructor in a loop,
- * where the object allocated is never assigned to any object that is used
- * outside the loop. It is possible that this allocation can be done outside the
- * loop to avoid excessive garbage.
+ * looks for allocations of objects using the default constructor in a loop, where the object allocated is never assigned to any object that is used outside the
+ * loop. It is possible that this allocation can be done outside the loop to avoid excessive garbage.
  */
 @CustomUserValue
 public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 
-    private static final Set<String> SYNTHETIC_ALLOCATION_CLASSES = UnmodifiableSet.create(
-            "java/lang/StringBuffer",
-            "java/lang/StringBuilder",
-            "java/lang/AssertionError"
-    );
+    private static final Set<String> SYNTHETIC_ALLOCATION_CLASSES = UnmodifiableSet.create("java/lang/StringBuffer", "java/lang/StringBuilder",
+            "java/lang/AssertionError");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
@@ -103,10 +98,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
         }
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        value = "SF_SWITCH_FALLTHROUGH",
-        justification = "This fall-through is deliberate and documented"
-    )
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH", justification = "This fall-through is deliberate and documented")
     @Override
     public void sawOpcode(int seen) {
         boolean sawAllocation = false;
@@ -116,173 +108,137 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-            case IFEQ:
-            case IFNE:
-            case IFLT:
-            case IFGE:
-            case IFGT:
-            case IFLE:
-            case IF_ICMPEQ:
-            case IF_ICMPNE:
-            case IF_ICMPLT:
-            case IF_ICMPGE:
-            case IF_ICMPGT:
-            case IF_ICMPLE:
-            case IF_ACMPEQ:
-            case IF_ACMPNE:
-            case IFNULL:
-            case IFNONNULL:
-            case GOTO:
-            case GOTO_W:
-                if (getBranchOffset() < 0) {
-                    int branchLoc = getBranchTarget();
-                    int pc = getPC();
-                    for (AllocationInfo info : allocations.values()) {
-                        if ((info.loopTop == -1) && (branchLoc < info.allocationPC)) {
-                            info.loopTop = branchLoc;
-                            info.loopBottom = pc;
-                        }
-                    }
-                } else if (!switchInfos.isEmpty()) {
-                    int target = getBranchTarget();
-                    SwitchInfo innerSwitch = switchInfos.get(switchInfos.size() - 1);
-                    if (target > innerSwitch.switchBottom) {
-                        innerSwitch.switchBottom = target;
-                    }
-                }
+                case IFEQ:
+                case IFNE:
+                case IFLT:
+                case IFGE:
+                case IFGT:
+                case IFLE:
+                case IF_ICMPEQ:
+                case IF_ICMPNE:
+                case IF_ICMPLT:
+                case IF_ICMPGE:
+                case IF_ICMPGT:
+                case IF_ICMPLE:
+                case IF_ACMPEQ:
+                case IF_ACMPNE:
+                case IFNULL:
+                case IFNONNULL:
+                case GOTO:
+                case GOTO_W:
+                    processBranch();
                 break;
 
-            case INVOKESPECIAL:
-                if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
-                    String clsName = getClassConstantOperand();
-                    if (!SYNTHETIC_ALLOCATION_CLASSES.contains(clsName) && switchInfos.isEmpty()) {
-                        sawAllocationNumber = Integer.valueOf(nextAllocationNumber);
-                        allocations.put(sawAllocationNumber, new AllocationInfo(getPC()));
-                        sawAllocation = true;
+                case INVOKESPECIAL:
+                    if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+                        String clsName = getClassConstantOperand();
+                        if (!SYNTHETIC_ALLOCATION_CLASSES.contains(clsName) && switchInfos.isEmpty()) {
+                            sawAllocationNumber = Integer.valueOf(nextAllocationNumber);
+                            allocations.put(sawAllocationNumber, new AllocationInfo(getPC()));
+                            sawAllocation = true;
+                        }
                     }
-                }
-                //$FALL-THROUGH$
+                    //$FALL-THROUGH$
 
-            case INVOKEINTERFACE:
-            case INVOKEVIRTUAL:
-            case INVOKESTATIC:
-                String signature = getSigConstantOperand();
-                Type[] types = Type.getArgumentTypes(signature);
-                if (stack.getStackDepth() >= types.length) {
-                    for (int i = 0; i < types.length; i++) {
-                        OpcodeStack.Item item = stack.getStackItem(i);
+                case INVOKEINTERFACE:
+                case INVOKEVIRTUAL:
+                case INVOKESTATIC:
+                    String signature = getSigConstantOperand();
+                    Type[] types = Type.getArgumentTypes(signature);
+                    if (stack.getStackDepth() >= types.length) {
+                        for (int i = 0; i < types.length; i++) {
+                            OpcodeStack.Item item = stack.getStackItem(i);
+                            Integer allocation = (Integer) item.getUserValue();
+                            if (allocation != null) {
+                                allocations.remove(allocation);
+                            }
+                        }
+                        if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL))
+                                // ignore possible method chaining
+                                && (stack.getStackDepth() > types.length)) {
+                            OpcodeStack.Item item = stack.getStackItem(types.length);
+                            Integer allocation = (Integer) item.getUserValue();
+                            if (allocation != null) {
+                                String retType = Type.getReturnType(signature).getSignature();
+                                if (!"V".equals(retType) && retType.equals(item.getSignature())) {
+                                    sawAllocationNumber = allocation;
+                                    sawAllocation = true;
+                                }
+                            }
+                        }
+                    }
+                break;
+
+                case ASTORE:
+                case ASTORE_0:
+                case ASTORE_1:
+                case ASTORE_2:
+                case ASTORE_3:
+                    processAStore(seen);
+                break;
+
+                case AASTORE:
+                    if (stack.getStackDepth() >= 2) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
                         Integer allocation = (Integer) item.getUserValue();
                         if (allocation != null) {
                             allocations.remove(allocation);
                         }
                     }
-                    if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL))
-                            // ignore possible method chaining
-                            && (stack.getStackDepth() > types.length)) {
-                        OpcodeStack.Item item = stack.getStackItem(types.length);
-                        Integer allocation = (Integer) item.getUserValue();
-                        if (allocation != null) {
-                            String retType = Type.getReturnType(signature).getSignature();
-                            if (!"V".equals(retType) && retType.equals(item.getSignature())) {
-                                sawAllocationNumber = allocation;
-                                sawAllocation = true;
-                            }
+                break;
+
+                case ALOAD:
+                case ALOAD_0:
+                case ALOAD_1:
+                case ALOAD_2:
+                case ALOAD_3: {
+                    Integer reg = Integer.valueOf(RegisterUtils.getALoadReg(this, seen));
+                    Integer allocation = storedAllocations.get(reg);
+                    if (allocation != null) {
+                        AllocationInfo info = allocations.get(allocation);
+                        if ((info != null) && (info.loopBottom != -1)) {
+                            allocations.remove(allocation);
+                            storedAllocations.remove(reg);
+                        } else {
+                            sawAllocationNumber = allocation;
+                            sawAllocation = true;
                         }
                     }
                 }
                 break;
 
-            case ASTORE:
-            case ASTORE_0:
-            case ASTORE_1:
-            case ASTORE_2:
-            case ASTORE_3:
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    Integer allocation = (Integer) item.getUserValue();
-                    if (allocation != null) {
-                        Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-                        if (isFirstUse(reg.intValue())) {
-                            if (storedAllocations.values().contains(allocation)) {
-                                allocations.remove(allocation);
-                                storedAllocations.remove(reg);
-                            } else if (storedAllocations.containsKey(reg)) {
-                                allocations.remove(allocation);
-                                allocation = storedAllocations.remove(reg);
-                                allocations.remove(allocation);
-                            } else {
-                                storedAllocations.put(reg, allocation);
-                            }
-                        } else {
+                case PUTFIELD:
+                    if (stack.getStackDepth() > 1) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        Integer allocation = (Integer) item.getUserValue();
+                        allocations.remove(allocation);
+                    }
+                break;
+
+                case ARETURN:
+                case ATHROW:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        Integer allocation = (Integer) item.getUserValue();
+                        if (allocation != null) {
                             item.setUserValue(null);
                             allocations.remove(allocation);
                         }
                     }
-                }
                 break;
 
-            case AASTORE:
-                if (stack.getStackDepth() >= 2) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    Integer allocation = (Integer) item.getUserValue();
-                    if (allocation != null) {
-                        allocations.remove(allocation);
+                case LOOKUPSWITCH:
+                case TABLESWITCH:
+                    int[] offsets = getSwitchOffsets();
+                    if (offsets.length > 0) {
+                        int top = getPC();
+                        int bottom = top + offsets[offsets.length - 1];
+                        SwitchInfo switchInfo = new SwitchInfo(bottom);
+                        switchInfos.add(switchInfo);
                     }
-                }
                 break;
 
-            case ALOAD:
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3: {
-                Integer reg = Integer.valueOf(RegisterUtils.getALoadReg(this, seen));
-                Integer allocation = storedAllocations.get(reg);
-                if (allocation != null) {
-                    AllocationInfo info = allocations.get(allocation);
-                    if ((info != null) && (info.loopBottom != -1)) {
-                        allocations.remove(allocation);
-                        storedAllocations.remove(reg);
-                    } else {
-                        sawAllocationNumber = allocation;
-                        sawAllocation = true;
-                    }
-                }
-            }
-                break;
-
-            case PUTFIELD:
-                if (stack.getStackDepth() > 1) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    Integer allocation = (Integer) item.getUserValue();
-                    allocations.remove(allocation);
-                }
-                break;
-
-            case ARETURN:
-            case ATHROW:
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    Integer allocation = (Integer) item.getUserValue();
-                    if (allocation != null) {
-                        item.setUserValue(null);
-                        allocations.remove(allocation);
-                    }
-                }
-                break;
-
-            case LOOKUPSWITCH:
-            case TABLESWITCH:
-                int[] offsets = getSwitchOffsets();
-                if (offsets.length > 0) {
-                    int top = getPC();
-                    int bottom = top + offsets[offsets.length - 1];
-                    SwitchInfo switchInfo = new SwitchInfo(bottom);
-                    switchInfos.add(switchInfo);
-                }
-                break;
-
-            default:
+                default:
                 break;
             }
         } finally {
@@ -295,8 +251,9 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                     item.setUserValue(sawAllocationNumber);
                 }
 
-                if (seen == INVOKESPECIAL)
+                if (seen == INVOKESPECIAL) {
                     nextAllocationNumber++;
+                }
             }
 
             if (!switchInfos.isEmpty() && (getPC() >= switchInfos.get(switchInfos.size() - 1).switchBottom)) {
@@ -305,10 +262,53 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
         }
     }
 
+    private void processBranch() {
+        if (getBranchOffset() < 0) {
+            int branchLoc = getBranchTarget();
+            int pc = getPC();
+            for (AllocationInfo info : allocations.values()) {
+                if ((info.loopTop == -1) && (branchLoc < info.allocationPC)) {
+                    info.loopTop = branchLoc;
+                    info.loopBottom = pc;
+                }
+            }
+        } else if (!switchInfos.isEmpty()) {
+            int target = getBranchTarget();
+            SwitchInfo innerSwitch = switchInfos.get(switchInfos.size() - 1);
+            if (target > innerSwitch.switchBottom) {
+                innerSwitch.switchBottom = target;
+            }
+        }
+    }
+
+    private void processAStore(int seen) {
+        if (stack.getStackDepth() > 0) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            Integer allocation = (Integer) item.getUserValue();
+            if (allocation != null) {
+                Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
+                if (isFirstUse(reg.intValue())) {
+                    if (storedAllocations.values().contains(allocation)) {
+                        allocations.remove(allocation);
+                        storedAllocations.remove(reg);
+                    } else if (storedAllocations.containsKey(reg)) {
+                        allocations.remove(allocation);
+                        allocation = storedAllocations.remove(reg);
+                        allocations.remove(allocation);
+                    } else {
+                        storedAllocations.put(reg, allocation);
+                    }
+                } else {
+                    item.setUserValue(null);
+                    allocations.remove(allocation);
+                }
+            }
+        }
+    }
+
     /**
-     * looks to see if this register has already in scope or whether is a new
-     * assignment. return true if it's a new assignment. If you can't tell,
-     * return true anyway. might want to change.
+     * looks to see if this register has already in scope or whether is a new assignment. return true if it's a new assignment. If you can't tell, return true
+     * anyway. might want to change.
      *
      * @param reg
      *            the store register
@@ -316,8 +316,9 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
      */
     private boolean isFirstUse(int reg) {
         LocalVariableTable lvt = getMethod().getLocalVariableTable();
-        if (lvt == null)
+        if (lvt == null) {
             return true;
+        }
 
         LocalVariable lv = lvt.getLocalVariable(reg, getPC());
         return lv == null;
