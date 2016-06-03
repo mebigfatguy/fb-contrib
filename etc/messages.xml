@@ -4833,7 +4833,7 @@
 	</BugPattern>
 	
 	<BugPattern type="CD_CIRCULAR_DEPENDENCY">
-        <ShortDescription>Test for circular dependencies among classes</ShortDescription>
+        <ShortDescription>Class has a circular dependency with other classes</ShortDescription>
         <LongDescription>Class {0} has a circular dependency with other classes</LongDescription>
         <Details>
 		   <![CDATA[
