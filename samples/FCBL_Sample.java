@@ -30,6 +30,8 @@ public final class FCBL_Sample {
     private String fooS = "Foo"; // warning
     private String[] fooSS = { fooS }; // no warning (read in testInArray)
 
+    private boolean checkMethodCall;
+
     public FCBL_Sample() {
         foo = 0;
         moo = 1;
@@ -67,11 +69,11 @@ public final class FCBL_Sample {
 
     public void test3(String in) {
         boolean found = false;
-        if ("boo".equals(in))
+        if ("boo".equals(in)) {
             test = "boo";
-        else if ("hoo".equals(in))
+        } else if ("hoo".equals(in)) {
             test = "hoo";
-        else if ("moo".equals(in)) {
+        } else if ("moo".equals(in)) {
             if ("loo".equals(in) && !found) {
                 found = true;
             }
@@ -88,11 +90,11 @@ public final class FCBL_Sample {
 
     public void testNestedIfs(String in) {
         boolean found = false;
-        if ("boo".equals(in))
+        if ("boo".equals(in)) {
             testNestedIfs = "boo";
-        else if ("hoo".equals(in))
+        } else if ("hoo".equals(in)) {
             testNestedIfs = "hoo";
-        else if ("moo".equals(in)) {
+        } else if ("moo".equals(in)) {
             if ("loo".equals(in) && !found) {
                 System.out.println(in + testNestedIfs);
             }
@@ -120,6 +122,21 @@ public final class FCBL_Sample {
         multiMethodFP = i;
     }
 
+    public void baseMethod() {
+        checkMethodCall = false;
+        setCheckMethod();
+
+        if (checkMethodCall) {
+            System.out.println("It changed");
+        }
+    }
+
+    public void setCheckMethod() {
+        if (Math.random() < 0.05) {
+            checkMethodCall = true;
+        }
+    }
+
     static class Foo {
         boolean ret;
 
@@ -127,6 +144,7 @@ public final class FCBL_Sample {
             ret = false;
 
             SwingUtilities.invokeLater(new Runnable() {
+                @Override
                 public void run() {
                     ret = false;
                 }
