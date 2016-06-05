@@ -44,29 +44,42 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class BuryingLogic extends BytecodeScanningDetector {
 
-    private static final String BURY_LOGIC_RATIO_PROPERTY = "fb-contrib.bl.ratio";
-    private static final double DEFAULT_BUG_RATIO_LIMIT = 12.0;
+    private static final String BURY_LOGIC_LOW_RATIO_PROPERTY = "fb-contrib.bl.low_ratio";
+    private static final String BURY_LOGIC_NORMAL_RATIO_PROPERTY = "fb-contrib.bl.normal_ratio";
+    private static final double LOW_BUG_RATIO_LIMIT = 12.0;
+    private static final double NORMAL_BUG_RATIO_LIMIT = 20.0;
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Deque<IfBlock> ifBlocks;
     private IfBlock activeUnconditional;
     private boolean isReported;
-    private double bugRatioLimit;
+    private double lowBugRatioLimit;
+    private double normalBugRatioLimit;
     private BitSet catchPCs;
     private BitSet gotoBranchPCs;
 
     public BuryingLogic(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
 
-        String ratio = System.getProperty(BURY_LOGIC_RATIO_PROPERTY);
+        String lowRatio = System.getProperty(BURY_LOGIC_LOW_RATIO_PROPERTY);
         try {
-            bugRatioLimit = Double.parseDouble(ratio);
-            if (bugRatioLimit <= 0) {
-                bugRatioLimit = DEFAULT_BUG_RATIO_LIMIT;
+            lowBugRatioLimit = Double.parseDouble(lowRatio);
+            if (lowBugRatioLimit <= 0) {
+                lowBugRatioLimit = LOW_BUG_RATIO_LIMIT;
             }
         } catch (Exception e) {
-            bugRatioLimit = DEFAULT_BUG_RATIO_LIMIT;
+            lowBugRatioLimit = LOW_BUG_RATIO_LIMIT;
+        }
+
+        String normalRatio = System.getProperty(BURY_LOGIC_NORMAL_RATIO_PROPERTY);
+        try {
+            normalBugRatioLimit = Double.parseDouble(normalRatio);
+            if (normalBugRatioLimit <= 0) {
+                normalBugRatioLimit = NORMAL_BUG_RATIO_LIMIT;
+            }
+        } catch (Exception e) {
+            normalBugRatioLimit = NORMAL_BUG_RATIO_LIMIT;
         }
     }
 
@@ -156,9 +169,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
                     int elseSize = getPC() - activeUnconditional.getEnd();
 
                     double ratio = (double) ifSize / (double) elseSize;
-                    if (ratio > bugRatioLimit) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLineRange(this, activeUnconditional.getStart(), activeUnconditional.getEnd()));
+                    if (ratio > lowBugRatioLimit) {
+                        bugReporter
+                                .reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(), ratio > normalBugRatioLimit ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLineRange(this, activeUnconditional.getStart(), activeUnconditional.getEnd()));
                         isReported = true;
                     }
                 } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd())) {
