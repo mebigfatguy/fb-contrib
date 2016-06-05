@@ -279,19 +279,24 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
      */
     private void removeThrownExceptionHierarchy(String thrownException) {
         try {
-            declaredCheckedExceptions.remove(thrownException);
-            JavaClass exCls = Repository.lookupClass(thrownException);
-            String clsName;
+            if (Values.DOTTED_JAVA_LANG_EXCEPTION.equals(thrownException)) {
+                // Exception can be thrown even tho the method isn't declared to throw Exception in the case of templated Exceptions
+                declaredCheckedExceptions.clear();
+            } else {
+                declaredCheckedExceptions.remove(thrownException);
+                JavaClass exCls = Repository.lookupClass(thrownException);
+                String clsName;
 
-            do {
-                exCls = exCls.getSuperClass();
-                if (exCls == null) {
-                    break;
-                }
-                clsName = exCls.getClassName();
-                declaredCheckedExceptions.remove(clsName);
-            } while (!declaredCheckedExceptions.isEmpty() && !Values.DOTTED_JAVA_LANG_EXCEPTION.equals(clsName)
-                    && !Values.DOTTED_JAVA_LANG_ERROR.equals(clsName));
+                do {
+                    exCls = exCls.getSuperClass();
+                    if (exCls == null) {
+                        break;
+                    }
+                    clsName = exCls.getClassName();
+                    declaredCheckedExceptions.remove(clsName);
+                } while (!declaredCheckedExceptions.isEmpty() && !Values.DOTTED_JAVA_LANG_EXCEPTION.equals(clsName)
+                        && !Values.DOTTED_JAVA_LANG_ERROR.equals(clsName));
+            }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
             declaredCheckedExceptions.clear();
