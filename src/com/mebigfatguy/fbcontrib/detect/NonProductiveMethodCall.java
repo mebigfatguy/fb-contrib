@@ -50,7 +50,7 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
             Pattern.compile(".*@clone\\(\\).+"),
             Pattern.compile("java/util/.+@toArray\\(\\)\\[.+"),
             Pattern.compile("java/time/(?:Instant|((?:Local|Zoned)(?:Date)?(?:Time)?))@(?:plus|minus|with).*"),
-            Pattern.compile("java/nio/file/Path@.*"),
+            Pattern.compile("java/nio/file/Path@.*\\)((?!Ljava/nio/file/WatchKey;).)*"),
             Pattern.compile("java/lang/Enum@.*")
             // @formatter:on
     );
