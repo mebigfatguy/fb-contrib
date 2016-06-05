@@ -126,7 +126,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     @Override
     public void visitMethod(final Method obj) {
         methodName = obj.getName();
-        methodIsStatic = (obj.getAccessFlags() & ACC_STATIC) != 0;
+        methodIsStatic = obj.isStatic();
     }
 
     /**
