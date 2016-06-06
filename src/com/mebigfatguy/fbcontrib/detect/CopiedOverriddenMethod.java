@@ -93,8 +93,8 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
                 Method[] methods = superCls.getMethods();
                 for (Method m : methods) {
                     String methodName = m.getName();
-                    if ((m.isPublic() || m.isProtected()) && !m.isAbstract() && !m.isSynthetic()
-                            && !Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName)) {
+                    if ((m.isPublic() || m.isProtected()) && !m.isAbstract() && !m.isSynthetic() && !Values.CONSTRUCTOR.equals(methodName)
+                            && !Values.STATIC_INITIALIZER.equals(methodName)) {
                         String methodInfo = methodName + ':' + m.getSignature();
                         superclassCode.put(methodInfo, new CodeInfo(m.getCode(), m.getAccessFlags()));
                     }
@@ -146,7 +146,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
             parmTypes = getMethod().getArgumentTypes();
             ignore = false;
             nextParmIndex = 0;
-            nextParmOffset = (getMethod().getAccessFlags() & Constants.ACC_STATIC) != 0 ? 0 : 1;
+            nextParmOffset = getMethod().isStatic() ? 0 : 1;
             sawAload0 = nextParmOffset == 0;
             sawParentCall = false;
             super.visitCode(obj);
