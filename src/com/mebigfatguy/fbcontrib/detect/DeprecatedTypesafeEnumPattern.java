@@ -73,7 +73,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
             if (!cls.isEnum() && (cls.getMajor() >= Constants.MAJOR_1_5)) {
                 Method[] methods = cls.getMethods();
                 for (Method m : methods) {
-                    if (Values.CONSTRUCTOR.equals(m.getName()) && ((m.getAccessFlags() & Constants.ACC_PRIVATE) == 0)) {
+                    if (Values.CONSTRUCTOR.equals(m.getName()) && !m.isPrivate()) {
                         return;
                     }
                 }
