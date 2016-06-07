@@ -21,7 +21,6 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.BitSet;
 import java.util.Iterator;
 
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -39,8 +38,7 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * Calculates the McCabe Cyclomatic Complexity measure and reports methods that
- * have an excessive value. This report value can be set with system property
+ * Calculates the McCabe Cyclomatic Complexity measure and reports methods that have an excessive value. This report value can be set with system property
  * 'fb-contrib.cc.limit'.
  */
 public class CyclomaticComplexity extends PreorderVisitor implements Detector {
@@ -97,7 +95,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
     public void visitMethod(final Method obj) {
         try {
 
-            if ((obj.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
+            if (obj.isSynthetic()) {
                 return;
             }
 
