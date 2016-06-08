@@ -26,7 +26,6 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -48,9 +47,8 @@ import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 
 /**
- * looks for methods that correctly do not write to a parameter. To help
- * document this, and to perhaps help the jvm optimize the invocation of this
- * method, you should consider defining these parameters as final.
+ * looks for methods that correctly do not write to a parameter. To help document this, and to perhaps help the jvm optimize the invocation of this method, you
+ * should consider defining these parameters as final.
  */
 public class FinalParameters extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -64,7 +62,7 @@ public class FinalParameters extends BytecodeScanningDetector {
 
     /**
      * constructs a FP detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -100,8 +98,8 @@ public class FinalParameters extends BytecodeScanningDetector {
         Type[] parms = Type.getArgumentTypes(obj.getSignature());
 
         if (parms.length > 0) {
-            boolean isStatic = (obj.getAccessFlags() & Constants.ACC_STATIC) != 0;
-            isAbstract = (obj.getAccessFlags() & Constants.ACC_ABSTRACT) != 0;
+            boolean isStatic = obj.isStatic();
+            isAbstract = obj.isAbstract();
 
             firstLocalReg = isStatic ? 0 : 1;
             for (Type p : parms) {
@@ -145,14 +143,13 @@ public class FinalParameters extends BytecodeScanningDetector {
         } catch (IOException ioe) {
             // noop
         }
-        
+
         srcInited = true;
         return sourceLines;
     }
 
     /**
-     * overrides the visitor to find the source lines for the method header, to
-     * find non final parameters
+     * overrides the visitor to find the source lines for the method header, to find non final parameters
      *
      * @param obj
      *            the code object for the currently parsed method
@@ -217,8 +214,7 @@ public class FinalParameters extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to find local variable reference stores to store
-     * them as changed
+     * overrides the visitor to find local variable reference stores to store them as changed
      *
      * @param seen
      *            the currently parsed opcode
