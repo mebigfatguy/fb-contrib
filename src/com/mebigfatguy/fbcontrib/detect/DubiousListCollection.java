@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -240,7 +239,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
         Field[] fields = cls.getFields();
         for (Field f : fields) {
             if (f.getName().equals(fieldName)) {
-                return new FieldAnnotation(cls.getClassName(), fieldName, f.getSignature(), (f.getAccessFlags() & Constants.ACC_STATIC) != 0);
+                return new FieldAnnotation(cls.getClassName(), fieldName, f.getSignature(), f.isStatic());
             }
         }
         return null; // shouldn't happen
