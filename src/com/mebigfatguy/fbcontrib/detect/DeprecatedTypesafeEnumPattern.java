@@ -96,8 +96,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
      */
     @Override
     public void visitField(Field obj) {
-        int accessFlags = obj.getAccessFlags();
-        if (((accessFlags & Constants.ACC_STATIC) != 0) && ((accessFlags & Constants.ACC_PUBLIC) != 0) && ((accessFlags & Constants.ACC_FINAL) != 0)) {
+        if (obj.isStatic() && obj.isPublic() && obj.isFinal()) {
             JavaClass cls = getClassContext().getJavaClass();
             if (!obj.isEnum()) {
                 String fieldClass = obj.getSignature();
