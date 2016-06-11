@@ -153,8 +153,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     @Override
     public void visitMethod(Method obj) {
 
-        int access = getMethod().getAccessFlags();
-        if ((access & Constants.ACC_SYNTHETIC) != 0) {
+        if (getMethod().isSynthetic()) {
             return;
         }
         methodTransType = getTransactionalType(obj);
