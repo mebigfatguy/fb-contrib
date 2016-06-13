@@ -35,29 +35,37 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for classes that use objects from com.sun.xxx packages. As these are
- * internal to sun and subject to change, this should not be done.
+ * looks for classes that use objects from com.sun.xxx packages. As these are internal to sun and subject to change, this should not be done.
  */
 public class IncorrectInternalClassUse implements Detector {
     private final BugReporter bugReporter;
 
     private static final Set<String> internalPackages = UnmodifiableSet.create(
+        // @formatter:off
         "sun/",
         "org/apache/commons/digester/annotations/internal",
         "org/apache/xerces/",
         "org/apache/xalan/",
+        "org/easymock/internal/",
+        "org/ehcache/internal",
+        "org/glassfish/internal",
+        "org/hibernate/cache/internal",
         "org/mockito/internal/",
         "org/springframework/asm/",
         "org/springframework/cglib/",
-        "org/springframework/objenesis/"
+        "org/springframework/objenesis/",
+        "dagger/internal"
+        // @formatter:on
     );
-    
+
     private static final Set<String> externalPackages = UnmodifiableSet.create(
+         // @formatter:off
         "org/apache/xerces/xni/",
         "org/apache/xerces/xs/",
         "org/apache/xalan/extensions"
+        // @formatter:on
     );
-    
+
     /**
      * constructs a IICU detector given the reporter to report bugs on
      *
@@ -69,9 +77,8 @@ public class IncorrectInternalClassUse implements Detector {
     }
 
     /**
-     * implements the visitor to look for classes that reference com.sun.xxx, or
-     * org.apache.xerces.xxx classes by looking for class constants in the
-     * constant pool
+     * implements the visitor to look for classes that reference com.sun.xxx, or org.apache.xerces.xxx classes by looking for class constants in the constant
+     * pool
      *
      * @param context
      *            the context object of the currently parsed class
@@ -104,8 +111,7 @@ public class IncorrectInternalClassUse implements Detector {
     }
 
     /**
-     * determines if the class in question is an internal class by looking at
-     * package prefixes
+     * determines if the class in question is an internal class by looking at package prefixes
      *
      * @param clsName
      *            the name of the class to check
@@ -131,7 +137,7 @@ public class IncorrectInternalClassUse implements Detector {
 
         return internal;
     }
-    
+
     @Override
     public String toString() {
         return ToString.build(this);
