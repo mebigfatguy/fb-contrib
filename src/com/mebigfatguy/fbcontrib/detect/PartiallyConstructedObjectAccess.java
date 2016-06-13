@@ -42,10 +42,8 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for constructors of non final classes that make method calls to non
- * final methods. As these methods could be overridden, the overridden method
- * will be accessing an object that is only partially constructed, perhaps
- * causing problems.
+ * looks for constructors of non final classes that make method calls to non final methods. As these methods could be overridden, the overridden method will be
+ * accessing an object that is only partially constructed, perhaps causing problems.
  */
 public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -65,9 +63,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to set up the stack and methodToCalledmethods map
-     * reports calls to public non final methods from methods called from
-     * constructors.
+     * implements the visitor to set up the stack and methodToCalledmethods map reports calls to public non final methods from methods called from constructors.
      *
      * @param classContext
      *            the context object of the currently parsed class
@@ -76,13 +72,14 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
     public void visitClassContext(final ClassContext classContext) {
         try {
             JavaClass cls = classContext.getJavaClass();
-            if ((cls.getAccessFlags() & Constants.ACC_FINAL) == 0) {
+            if (!cls.isFinal()) {
                 stack = new OpcodeStack();
                 methodToCalledMethods = new HashMap<Method, Map<Method, SourceLineAnnotation>>();
                 super.visitClassContext(classContext);
 
-                if (methodToCalledMethods.size() > 0)
+                if (methodToCalledMethods.size() > 0) {
                     reportChainedMethods();
+                }
             }
         } finally {
             stack = null;
@@ -102,15 +99,17 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
             reportedCtor = false;
 
             super.visitCode(obj);
-            if (reportedCtor || (methodToCalledMethods.get(m).isEmpty()))
+            if (reportedCtor || (methodToCalledMethods.get(m).isEmpty())) {
                 methodToCalledMethods.remove(getMethod());
+            }
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (reportedCtor)
+        if (reportedCtor) {
             return;
+        }
 
         try {
             stack.precomputation(this);
@@ -123,7 +122,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                         JavaClass cls = itm.getJavaClass();
                         if (cls != null) {
                             Method m = findMethod(cls, getNameConstantOperand(), getSigConstantOperand());
-                            if ((m != null) && ((m.getAccessFlags() & Constants.ACC_FINAL) == 0)) {
+                            if ((m != null) && (!m.isFinal())) {
                                 if (isCtor && (seen != INVOKESPECIAL)) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this, getPC()));
@@ -169,8 +168,9 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                 if (slas != null) {
                     BugInstance bi = new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), LOW_PRIORITY).addClass(cls).addMethod(cls,
                             m);
-                    for (SourceLineAnnotation sla : slas)
+                    for (SourceLineAnnotation sla : slas) {
                         bi.addSourceLine(sla);
+                    }
                     bugReporter.reportBug(bi);
                 }
             }
@@ -182,10 +182,11 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
         if (calledMethods != null) {
             for (Map.Entry<Method, SourceLineAnnotation> entry : calledMethods.entrySet()) {
                 Method cm = entry.getKey();
-                if (checkedMethods.contains(cm))
+                if (checkedMethods.contains(cm)) {
                     continue;
+                }
 
-                if (!cm.isPrivate() && (cm.getAccessFlags() & Constants.ACC_FINAL) == 0) {
+                if (!cm.isPrivate() && ((cm.getAccessFlags() & Constants.ACC_FINAL) == 0)) {
                     List<SourceLineAnnotation> slas = new LinkedList<SourceLineAnnotation>();
                     slas.add(entry.getValue());
                     return slas;
