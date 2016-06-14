@@ -445,7 +445,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         boolean hasPossiblyOverlyConcreteParm = false;
 
         for (int i = 0; i < parms.length; i++) {
-            if ((annotations.length <= i) || (annotations[i] == null) || (annotations[i].getNumAnnotations() == 0)) {
+            if ((annotations.length <= i) || (annotations[i] == null) || (annotations[i].getAnnotationEntries().length == 0)) {
                 String parm = parms[i].getSignature();
                 if (parm.startsWith("L")) {
                     String clsName = SignatureUtils.stripSignature(parm);
