@@ -100,7 +100,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
 
         Method m = getMethod();
-        if ((m.getAccessFlags() & Constants.ACC_SYNTHETIC) != 0) {
+        if (m.isSynthetic()) {
             return;
         }
 
