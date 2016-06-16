@@ -18,10 +18,10 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -163,7 +163,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
             Method m = entry.getKey();
             if (Values.CONSTRUCTOR.equals(m.getName())) {
                 checkedMethods.clear();
-                List<SourceLineAnnotation> slas = foundPrivateInChain(m, checkedMethods);
+                Deque<SourceLineAnnotation> slas = foundPrivateInChain(m, checkedMethods);
                 if (slas != null) {
                     BugInstance bi = new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), LOW_PRIORITY).addClass(cls).addMethod(cls,
                             m);
@@ -176,7 +176,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
         }
     }
 
-    private List<SourceLineAnnotation> foundPrivateInChain(Method m, Set<Method> checkedMethods) {
+    private Deque<SourceLineAnnotation> foundPrivateInChain(Method m, Set<Method> checkedMethods) {
         Map<Method, SourceLineAnnotation> calledMethods = methodToCalledMethods.get(m);
         if (calledMethods != null) {
             for (Map.Entry<Method, SourceLineAnnotation> entry : calledMethods.entrySet()) {
@@ -186,15 +186,15 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                 }
 
                 if (!cm.isPrivate() && !cm.isFinal()) {
-                    List<SourceLineAnnotation> slas = new LinkedList<SourceLineAnnotation>();
-                    slas.add(entry.getValue());
+                    Deque<SourceLineAnnotation> slas = new ArrayDeque<SourceLineAnnotation>();
+                    slas.addLast(entry.getValue());
                     return slas;
                 }
 
                 checkedMethods.add(cm);
-                List<SourceLineAnnotation> slas = foundPrivateInChain(cm, checkedMethods);
+                Deque<SourceLineAnnotation> slas = foundPrivateInChain(cm, checkedMethods);
                 if (slas != null) {
-                    slas.add(0, entry.getValue());
+                    slas.addFirst(entry.getValue());
                     return slas;
                 }
             }
