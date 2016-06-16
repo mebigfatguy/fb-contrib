@@ -18,11 +18,12 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.ArrayDeque;
 import java.util.BitSet;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.LinkedList;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -227,8 +228,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
      *            the list of fields to look for
      */
     private void checkBlock(BasicBlock bb, Set<String> uncheckedFields) {
-        LinkedList<BlockState> toBeProcessed = new LinkedList<BlockState>();
-        toBeProcessed.add(new BlockState(bb, uncheckedFields));
+        Deque<BlockState> toBeProcessed = new ArrayDeque<BlockState>();
+        toBeProcessed.addLast(new BlockState(bb, uncheckedFields));
         visitedBlocks.set(bb.getLabel());
 
         while (!toBeProcessed.isEmpty()) {
