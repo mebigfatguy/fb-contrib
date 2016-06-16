@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -186,7 +185,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                     continue;
                 }
 
-                if (!cm.isPrivate() && ((cm.getAccessFlags() & Constants.ACC_FINAL) == 0)) {
+                if (!cm.isPrivate() && !cm.isFinal()) {
                     List<SourceLineAnnotation> slas = new LinkedList<SourceLineAnnotation>();
                     slas.add(entry.getValue());
                     return slas;
