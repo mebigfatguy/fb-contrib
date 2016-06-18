@@ -36,11 +36,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for methods that declare Runtime exceptions in their throws clause.
- * While doing so is not illegal, it may represent a misunderstanding as to the
- * exception in question. If a RuntimeException is declared, it implies that
- * this exception type is expected to happen, which if true, should be handled
- * in code, and not propagated.
+ * looks for methods that declare Runtime exceptions in their throws clause. While doing so is not illegal, it may represent a misunderstanding as to the
+ * exception in question. If a RuntimeException is declared, it implies that this exception type is expected to happen, which if true, should be handled in
+ * code, and not propagated.
  */
 public class RuntimeExceptionDeclared extends PreorderVisitor implements Detector {
     private final BugReporter bugReporter;
@@ -88,7 +86,7 @@ public class RuntimeExceptionDeclared extends PreorderVisitor implements Detecto
      */
     @Override
     public void visitMethod(final Method obj) {
-        if ((obj.getAccessFlags() & ACC_SYNTHETIC) != 0) {
+        if (obj.isSynthetic()) {
             return;
         }
         ExceptionTable et = obj.getExceptionTable();
