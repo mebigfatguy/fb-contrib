@@ -130,7 +130,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     @Override
     public void visitField(Field field) {
-        if ("serialVersionUID".equals(field.getName()) && ((field.getAccessFlags() & ACC_STATIC) != 0) && ((field.getAccessFlags() & ACC_PRIVATE) == 0)) {
+        if ("serialVersionUID".equals(field.getName()) && (field.isStatic()) && (!field.isPrivate())) {
             bugReporter.reportBug(new BugInstance(this, BugType.SPP_SERIALVER_SHOULD_BE_PRIVATE.name(), LOW_PRIORITY).addClass(this).addField(this));
         }
     }
