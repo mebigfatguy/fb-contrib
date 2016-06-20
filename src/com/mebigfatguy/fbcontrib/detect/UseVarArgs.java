@@ -65,7 +65,8 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
      * overrides the visitor to look for methods that has an array as a last parameter of an array type, where the base type is not like the previous parameter
      * nor something like a char or byte array.
      *
-     * @param obj the currently parse method
+     * @param obj
+     *            the currently parse method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -117,6 +118,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
      */
     @Override
     public void report() {
+        // needed by Detector interface but not used
     }
 
     /**
