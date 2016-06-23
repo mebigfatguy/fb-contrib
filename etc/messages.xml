@@ -1376,7 +1376,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 	       <p>Looks for fields or local variables that are collections but the names have a different type
 	       of collection in the name. This is confusing, and is probably a left over from a type change, such as
 	       </p>
-	       <p>List<String> mySet;</p>
+	       <p>List&lt;String&gt; mySet;</p>
 	       <p>It is a fast detector.</p>
 	       ]]>
 	   </Details>
@@ -1754,8 +1754,8 @@ System.out.println("Problem with the object :" + someObj);
 
 			<p>Take the following example:<br/>
 <pre><code>
-private void appendToList(ArrayList<String> list) {
-    if (list.size() < 100) {
+private void appendToList(ArrayList&lt;String&gt; list) {
+    if (list.size() &lt; 100) {
         list.add("Foo");
     }
 }
@@ -1765,7 +1765,7 @@ private void appendToList(ArrayList<String> list) {
 				Specifying <code>ArrayList</code> is unnecessary here, because we aren't using any <code>ArrayList</code>-specific methods (like <code>ensureCapacity()</code> or <code>trimToSize()</code>).
 				Instead of using the concrete definition, it is better to do something like:<br/>
 <pre><code>
-private void appendToList(List<String> list) {
+private void appendToList(List&lt;String&gt; list) {
     ...
 </code></pre>
 				If the design ever changes, e.g. a <code>LinkedList</code> is used instead, this code won't have to change.
@@ -1886,8 +1886,8 @@ str.compareTo("someOtherString");</code></pre>
 			<p>This class appears to maintain two or more lists or arrays whose contents are related in a parallel way.  That is,
 			you have something like:<br/>
 <pre><code>
-List<String> words = new ArrayList<String>();
-List<Integer> wordCounts = new ArrayList<String>();
+List&lt;String&gt; words = new ArrayList&lt;String&gt;();
+List&lt;Integer&gt; wordCounts = new ArrayList&lt;String&gt;();
 </code></pre>
 			where the elements of the list at index 0 are related, the elements at index 1 are related and so on. </p>
 			<p>
@@ -2244,7 +2244,7 @@ public Boolean someMethod() {
 <pre><code>
 public float average(int[] arr) {
     float sum = 0;
-    for (int i = 0; i < arr.length; i++) {
+    for (int i = 0; i &lt; arr.length; i++) {
         sum += arr[i];
     }
     float ave = sum / arr.length;
@@ -2257,7 +2257,7 @@ public float average(int[] arr) {
 <pre><code>
 public float average(int[] arr) {
     float sum = 0;
-    for (int i = 0; i < arr.length; i++) {
+    for (int i = 0; i &lt; arr.length; i++) {
         sum += arr[i];
     }
     <b>return sum / arr.length;</b> //Change
@@ -2499,10 +2499,10 @@ if (!date1.equals( date2 ))
 			a potential cause of memory bloat.</p>
 			
 			<p>
-			If this collection is a list, set or otherwise of static things (e.g. a List<String> for month names), consider
+			If this collection is a list, set or otherwise of static things (e.g. a List&gt;String&gt; for month names), consider
 			adding all of the elements in a static initializer, which can only be called once:<br/>
 <pre><code>
-private static List<String> monthNames = new ArrayList<String>();
+private static List&lt;String&gt; monthNames = new ArrayList&lt;String&gt;();
 static {
     monthNames.add("January");
     monthNames.add("February");
@@ -3072,12 +3072,12 @@ if ({{FLAWED_TEST_LOGIC}}) {
 			and so this test may be flawed.</p>
 			<p>Pattern found is one of the following:
 			<ul>
-				<li><code>if ((s == null) || (s.length() > 0))</code> --- did you mean 
+				<li><code>if ((s == null) || (s.length() &gt; 0))</code> --- did you mean
 				<code>((s == null) || (s.length() == 0))</code>?</li>
 				<li><code>if ((s == null) || (s.length() != 0))</code> -- did you mean 
 				<code>((s == null) || (s.length() == 0))</code>? </li>
 				<li><code>if ((s != null) && (s.length() == 0))</code> -- did you mean 
-				<code>((s != null) && (s.length() > 0))</code> or perhaps 
+				<code>((s != null) && (s.length() &gt; 0))</code> or perhaps
 				<code>((s == null) || (s.length() == 0))</code>? </li>
 			</ul>
 			</p>
@@ -5461,11 +5461,11 @@ for (Person p : people) {
 			side effects.</p>
 			<p>Example:
 <pre><code>
-if ((calculateHaltingProbability() > 0) && shouldCalcHalting) { }
+if ((calculateHaltingProbability() &gt; 0) && shouldCalcHalting) { }
 </code></pre>
 			would be better as
 <pre><code>
-if (shouldCalcHalting && (calculateHaltingProbability() > 0) { }
+if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 </code></pre>
 			</p>
 			]]>
@@ -5505,7 +5505,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() > 0) { }
     	<Details>
 	    	<![CDATA[
 	    	<p>This method instantiates a map-type field in a static initializer or constructor, but then only uses it through iteration.
-	    	This means that this data structure should really just be a List<SomeObject>, where the class held by the list contains the two 
+	    	This means that this data structure should really just be a List&lt;SomeObject&gt;, where the class held by the list contains the two
 	    	fields held by the key and value of the Map. It was likely done this way to avoid having to create a class, but this just obfuscates
 	    	the purpose of the field.
 	    	</p>
