@@ -1,4 +1,3 @@
-
 target
 classes
 .svn
@@ -18,3 +17,5 @@ version.properties
 .~lock.yank.*
 /classes
 user.properties
+.idea/
+*.iml

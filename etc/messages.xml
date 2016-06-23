@@ -261,17 +261,17 @@
 			<p>Looks for methods that have the same signature, except where one uses a
 			Character parameter, and the other uses an int, long, float, double parameter.
 			Since autoboxing is available in 1.5 one might assume that
-			<pre>
-				test('a')
-			</pre>
+<pre><code>
+test('a')
+</code></pre>
 			would map to
-			<pre>
-				public void test(Character c)
-			</pre>
+<pre><code>
+public void test(Character c)
+</code></pre>
 			but instead maps to one that takes an int, long, float or double, such as
-			<pre>
-				public void test(int i)
-			</pre>
+<pre><code>
+public void test(int i)
+</code></pre>
 			</p>
 			<p>It is a fast detector.</p>
 			]]>
@@ -771,9 +771,9 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for calls to classes and methods that do not exist in the JDK for which this class is
-			compiled. This can happen if you specify the -source and -target options of the javac compiler, and
+			compiled. This can happen if you specify the <code>-source</code> and <code>-target</code> options of the javac compiler, and
 			specify a target that is less than the JDK version of the javac compiler.</p>
-			<p>It relies on the system property -Dfb-contrib.sjvu.jdkhome=/path/to/older/jdk/to/check" to specify
+			<p>It relies on the system property <code>-Dfb-contrib.sjvu.jdkhome=/path/to/older/jdk/to/check"</code> to specify
 			what JDK to compare against. If this property is not set, this detector does nothing.</p>
 			<p>It is a slow detector.</p>
 			]]>
@@ -1068,14 +1068,14 @@
 			<p>Finds contravariant array assignments. Since arrays are mutable data structures, their use
 			must be restricted to covariant or invariant usage.</p>
 
-			<pre>
-				class A {}
-				class B extends A {}
+<pre><code>
+class A {}
+class B extends A {}
 
-				B[] b = new B[2];
-				A[] a = b;
-				a[0] = new A(); // results in ArrayStoreException (Runtime)
-			</pre>
+B[] b = new B[2];
+A[] a = b;
+a[0] = new A(); // results in ArrayStoreException (Runtime)
+</code></pre>
 			<p>It is a fast detector.</p>
 			]]>
 		</Details>
@@ -1197,9 +1197,9 @@
 			<![CDATA[
 			<p>This detector looks for Java bean getter-setter use where the value of a property is set
 			with the value retrieved from the same bean's correllary getter, like this:</p>
-			<pre>
-				person.setAge(person.getAge());
-			</pre>
+<pre><code>
+	person.setAge(person.getAge());
+</code></pre>
 			<p>Typically this is a copy paste typo.</p>
 			<p>It is a fast detector.</p>
 			]]>
@@ -1210,7 +1210,7 @@
 		<Details>
 			<![CDATA[
 			<p>This detector looks for creation of java.awt.Graphics object that do not have the
-			.dispose() method called on them when finished. These objects will be cleaned up by
+			<code>.dispose()</code> method called on them when finished. These objects will be cleaned up by
 			the Garbage collector, bug given the likelihood that large numbers of these objects can
 			be created in a short period of time, it is better to dispose them as soon as possible.</p>
 			<p>It is a fast detector.</p>
@@ -1243,8 +1243,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsHashcodeBuilderToHashcode">
 		<Details>
 			<![CDATA[
-			<p>This detector looks for uses for Commons-lang HashCodeBuilder where the
-			result of hashCode() is returned instead of calling the method toHashCode().</p>
+			<p>This detector looks for uses for Commons-lang <code>HashCodeBuilder</code> where the
+			result of <code>hashCode()</code> is returned instead of calling the method <code>toHashCode()</code>.</p>
 			<p>It is a fast detector.</p>
 			]]>
 		</Details>
@@ -1253,8 +1253,8 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsStringBuilderToString">
 		<Details>
 			<![CDATA[
-			<p>This detector looks for uses for Commons-lang ToStringBuilder where the
-			result of toString() is returned without an intermediate invocation of toString().</p>
+			<p>This detector looks for uses for Commons-lang <code>ToStringBuilder</code> where the
+			result of <code>toString()</code> is returned without an intermediate invocation of toString().</p>
 			<p>It is a fast detector.</p>
 			]]>
 		</Details>
@@ -1637,33 +1637,33 @@
 			
 			<p>
 			Java will implicitly use StringBuilders, which can make this hard to detect or fix.  For example, <br/>
-			<code>
-			StringBuilder sb = new StringBuilder();<br/>
-			for (Map.Entry<Integer, String> e : map.entrySet()) {<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(e.getKey() + e.getValue());		//bug detected here<br/>
-			}<br/>
-			</code><br/>
+<pre><code>
+StringBuilder sb = new StringBuilder();
+for (Map.Entry<Integer, String> e : map.entrySet()) {
+    sb.append(e.getKey() + e.getValue());		//bug detected here
+}
+</code></pre><br/>
 			
 			gets automatically turned into something like: <br/>
-			<code>
-			StringBuilder sb = new StringBuilder();<br/>
-			for (Map.Entry<Integer, String> e : map.entrySet()) {<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;StringBuilder tempBuilder = new StringBuilder();<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;tempBuilder.append(e.getKey());<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;tempBuilder.append(e.getValue());<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(tempBuilder.toString());		//this isn't too efficient<br/>
-			}<br/>
-			</code><br/>
+<pre><code>
+StringBuilder sb = new StringBuilder();
+for (Map.Entry<Integer, String> e : map.entrySet()) {
+    StringBuilder tempBuilder = new StringBuilder();
+    tempBuilder.append(e.getKey());
+    tempBuilder.append(e.getValue());
+    <b>sb.append(tempBuilder.toString());</b>		//this isn't too efficient
+}
+</code></pre><br/>
 			
 			which involves a temporary <code>StringBuilder</code>, which is completely unnecessary.  To prevent this from happening, simply do:<br/>
 			
-			<code>
-			StringBuilder sb = new StringBuilder();<br/>
-			for (Map.Entry<Integer, String> e : map.entrySet()) {<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(e.getKey()); <br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;sb.append(e.getValue());<br/>
-			}<br/>
-			</code>
+<pre><code>
+StringBuilder sb = new StringBuilder();
+for (Map.Entry<Integer, String> e : map.entrySet()) {
+    sb.append(e.getKey());
+    sb.append(e.getValue());
+}
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -1698,19 +1698,21 @@
 			
 			<p>
 			Instead of: <br/>
-			<code>
-			StringBuilder builder = ... <br/>
-			builder.append(someObj.toString());<br/>
-			... <br/>
-			System.out.println("Problem with the object :" + someObj.toString());<br/>
-			</code>
-			just do: <br/>
-			<code>
-			StringBuilder builder = ... <br/>
-			builder.append(someObj);<br/>
-			... <br/>
-			System.out.println("Problem with the object :" + someObj);<br/>
-			</code>
+<pre><code>
+StringBuilder builder = ...;
+builder.append(someObj.toString());
+...
+System.out.println("Problem with the object :" + someObj.toString());
+</code></pre>
+
+just do: <br/>
+
+<pre><code>
+StringBuilder builder = ...
+builder.append(someObj);
+...
+System.out.println("Problem with the object :" + someObj);
+</code></pre>
 			to avoid the possibility of <code>NullPointerException</code>s when someObj is <code>null</code>.
 			</p>
 			]]>
@@ -1751,21 +1753,21 @@
 			make low impact changes easier to accomplish in the future.</p>
 
 			<p>Take the following example:<br/>
-				<code>
-					private void appendToList(ArrayList<String> list) {<br/>
-					&nbsp;&nbsp;&nbsp;&nbsp;if (list.size() < 100) {<br/>
-					&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;list.add("Foo");<br/>
-					&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-					}<br/>
-				</code>
+<pre><code>
+private void appendToList(ArrayList<String> list) {
+    if (list.size() < 100) {
+        list.add("Foo");
+    }
+}
+</code></pre>
 
 				The parameter list is currently defined as an <code>ArrayList</code>, which is a concrete implementation of the <code>List</code> interface.  
 				Specifying <code>ArrayList</code> is unnecessary here, because we aren't using any <code>ArrayList</code>-specific methods (like <code>ensureCapacity()</code> or <code>trimToSize()</code>).
 				Instead of using the concrete definition, it is better to do something like:<br/>
-				<code>
-					private void appendToList(List<String> list) {<br/>
-					...<br/>
-				</code>
+<pre><code>
+private void appendToList(List<String> list) {
+    ...
+</code></pre>
 				If the design ever changes, e.g. a <code>LinkedList</code> is used instead, this code won't have to change.
 
 			</p>
@@ -1833,15 +1835,16 @@
 		<Details>
 			<![CDATA[
 			<p>This line is in the form of <br/>
-			<code>String str = ...<br/>
-			str.equals("someOtherString");<br/>
-			//or<br/>
-			str.compareTo("someOtherString");</code></p>
+<pre><code>String str = ...
+str.equals("someOtherString");
+//or
+str.compareTo("someOtherString");</code></pre>
+		    </p>
 			<p>A <code>NullPointerException</code> may occur if the String variable <code>str</code> is <code>null</code>. If instead the code was restructured to<br/>
-			<code>String str = ...<br/>
-			"someOtherString".equals(str);<br/>
-			//or<br/>
-			"someOtherString".compareTo(str);</code><br/>
+<pre><code>String str = ...
+"someOtherString".equals(str);
+//or
+"someOtherString".compareTo(str);</code></pre><br/>
 			that is, call <code>equals()</code> or <code>compareTo()</code> on the string literal, passing the 
 			variable as an argument, this exception could never happen as both <code>equals()</code> and 
 			<code>compareTo()</code> check for <code>null</code>.</p>
@@ -1882,22 +1885,22 @@
 			<![CDATA[
 			<p>This class appears to maintain two or more lists or arrays whose contents are related in a parallel way.  That is,
 			you have something like:<br/>
-			<code> 
-			List<String> words = new ArrayList<String>();<br/>
-			List<Integer> wordCounts = new ArrayList<String>();<br/>
-			</code>
+<pre><code>
+List<String> words = new ArrayList<String>();
+List<Integer> wordCounts = new ArrayList<String>();
+</code></pre>
 			where the elements of the list at index 0 are related, the elements at index 1 are related and so on. </p>
 			<p>
 			Consider creating a separate class to hold all the related
 			pieces of information, and adding instances of this class to just one list or array, or if just two values, use
 			a Map to associate one value with the other like:<br/>
-			<code> 
-			private class WordAndCount{public String word;  public int count}
-			List<WordAndCount> wordsAndCounts = new ArrayList<WordAndCount>();<br/>
-			<br/>
-			//or, for just two elements<br/>
-			Map<String,Integer> wordCounts = new HashMap<String,Integer>();<br/>
-			</code>
+<pre><code>
+private class WordAndCount{public String word;  public int count}
+
+List&lt;WordAndCount&gt; wordsAndCounts = new ArrayList&lt;WordAndCount&gt;();
+//or, for just two elements
+Map<String,Integer> wordCounts = new HashMap<String,Integer>();
+</code></pre>
 			
 			</p>
 			]]>
@@ -1954,11 +1957,11 @@
 			executed. It is usually better to use integer indexing, and calculate the new value
 			of the floating point number at the top of the loop body.</p>
 			<p>Example:
-			<code>
-			for (float f = 1.0f; f <= 10.0f; f += 0.1f) {
-				System.out.println(f);
-			}
-			</code>
+<pre><code>
+for (float f = 1.0f; f &lt;= 10.0f; f += 0.1f) {
+    System.out.println(f);
+}
+</code></pre>
 			The last value printed may not be 10.0, but instead might be 9.900001 or such.
 			</p>
 			]]>
@@ -2046,20 +2049,20 @@
 			<p>This method passes a primitive value retrieved from a <code>BoxedPrimitive.parseBoxedPrimitive("1")</code> call to
 			the same class's constructor. It is simpler to just pass the string to the BoxedPrimitives constructor or, better yet, use the static valueOf.</p>
 			<p>Instead of something like:<br/>
-			<code>
-			Boolean bo = new Boolean(Boolean.parseBoolean("true")); <br/>
-			Float f = new Float(Float.parseFloat("1.234"));<br/>
-			</code>
+<pre><code>
+Boolean bo = new Boolean(Boolean.parseBoolean("true"));
+Float f = new Float(Float.parseFloat("1.234"));
+</code></pre>
 			Simply do: <br/>
-			<code>
-			Boolean bo = new Boolean("true"); <br/>
-			Float f = new Float("1.234");<br/>
-			</code>
+<pre><code>
+Boolean bo = new Boolean("true");
+Float f = new Float("1.234");
+</code></pre>
 			or, to be more memory efficient: <br/>
-			<code>
-			Boolean bo = Boolean.valueOf("true"); <br/>
-			Float f = Float.valueOf("1.234");<br/>
-			</code>
+<pre><code>
+Boolean bo = Boolean.valueOf("true");
+Float f = Float.valueOf("1.234");
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -2088,21 +2091,21 @@
 			method. </p>
 			
 			<p>Instead of something like:<br/>
-			<code>
-			public int someMethod(String data) {<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;long l = Long.valueOf(data).longValue(); <br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;float f = Float.valueOf(data).floatValue(); <br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;return Integer.valueOf(data); &nbsp;&nbsp;// There is an implicit .intValue() call<br/>
-			}<br/>
-			</code>
+<pre><code>
+public int someMethod(String data) {
+long l = Long.valueOf(data).longValue();
+float f = Float.valueOf(data).floatValue();
+return Integer.valueOf(data); // There is an implicit .intValue() call
+}
+</code></pre>
 			Simply do: <br/>
-			<code>
-			public int someMethod(String data) {<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;long l = Long.parseLong(data); <br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;float f = Float.parseFloat(data); <br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;return Integer.parseInt(data); <br/>
-			}<br/>
-			</code>
+<pre><code>
+public int someMethod(String data) {
+	long l = Long.parseLong(data);
+	float f = Float.parseFloat(data);
+	return Integer.parseInt(data);
+}
+</code></pre>
 			</p>
 			
 			]]>
@@ -2119,15 +2122,15 @@
 			to a boxed primitive object, it is simpler to use the BoxedPrimitive.valueOf(String) method.</p>
 			
 			<p>Instead of something like:<br/>
-			<code>
-			Boolean bo = Boolean.valueOf(Boolean.parseBoolean("true")); <br/>
-			Float f = Float.valueOf(Float.parseFloat("1.234"));<br/>
-			</code>
+<pre><code>
+Boolean bo = Boolean.valueOf(Boolean.parseBoolean("true"));
+Float f = Float.valueOf(Float.parseFloat("1.234"));
+</code></pre>
 			Simply do: <br/>
-			<code>
-			Boolean bo = Boolean.valueOf("true"); <br/>
-			Float f = Float.valueOf("1.234");<br/>
-			</code>
+<pre><code>
+Boolean bo = Boolean.valueOf("true");
+Float f = Float.valueOf("1.234");
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -2141,15 +2144,15 @@
 			<p>This method constructs a Boxed Primitive from a primitive only to call the primitiveValue() method to
 			convert it back to a primitive. Just use the primitive value instead.</p>
 			<p>Instead of something like:<br/>
-			<code>
-			boolean bo = new Boolean(true).booleanValue(); <br/>
-			float f = new Float(1.234f).floatValue();<br/>
-			</code>
+<pre><code>
+boolean bo = new Boolean(true).booleanValue();
+float f = new Float(1.234f).floatValue();
+</code></pre>
 			Simply do: <br/>
-			<code>
-			boolean bo = true; <br/>
-			float f = 1.234f;<br/>
-			</code>
+<pre><code>
+boolean bo = true;
+float f = 1.234f;
+</code></pre>
 			</p>
 			
 			]]>
@@ -2164,21 +2167,21 @@
 			<p>This method constructs a Boxed Primitive from a primitive only to call the primitiveValue() method to
 			cast the value to another primitive type. It is simpler to just use casting.</p>
 			<p>Instead of something like:<br/>
-			<code>
-			double someDouble = ...<br/>
-			float f = new Double(someDouble).floatValue();<br/>
-			<br/>
-			int someInt = ...<br/>
-			byte b = new Integer(someInt).byteValue();<br/>
-			</code>
+<pre><code>
+double someDouble = ...
+float f = new Double(someDouble).floatValue();
+
+int someInt = ...
+byte b = new Integer(someInt).byteValue();
+</code></pre>
 			Simply do: <br/>
-			<code>
-			double someDouble = ...<br/>
-			float f = (float) someDouble;<br/>
-			<br/>
-			int someInt = ...<br/>
-			byte b = (byte)someInt;<br/>
-			</code>
+<pre><code>
+double someDouble = ...
+float f = (float) someDouble;
+
+int someInt = ...
+byte b = (byte)someInt;
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -2191,37 +2194,37 @@
 			<![CDATA[
 			<p>This method assigns a Boxed boolean constant to a primitive boolean variable, or assigns a primitive boolean
 			constant to a Boxed boolean variable. Use the correct constant for the variable desired. Use <br/>
-			<code>
-				boolean b = true;<br/>
-				boolean b = false;<br/>
-			</code>
+<pre><code>
+boolean b = true;
+boolean b = false;
+</code></pre>
 			or <br/>
-			<code>
-				Boolean b = Boolean.TRUE;<br/>
-				Boolean b = Boolean.FALSE;
-			</code>
+<pre><code>
+Boolean b = Boolean.TRUE;
+Boolean b = Boolean.FALSE;
+</code></pre>
 			</p>
 			
 			<p>Be aware that this boxing happens automatically when you might not expect it.  For example, <br/>
-			<code>
-			Map<String, Boolean> statusMap = ... <br/>
-			<br/>
-			public Boolean someMethod() {<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;statusMap.put("foo", true);  //the "true" here is boxed<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;return false;  //the "false" here is boxed<br/>
-			}<br/>
-			</code>
+<pre><code>
+Map<String, Boolean> statusMap = ...
+
+public Boolean someMethod() {
+    statusMap.put("foo", true);  //the "true" here is boxed
+    return false;  //the "false" here is boxed
+}
+</code></pre>
 			has two cases of this needless autoboxing.  This can be made more efficient by simply substituting 
 			in the constant values: <br/>
 			
-			<code>
-			Map<String, Boolean> statusMap = ... <br/>
-			<br/>
-			public Boolean someMethod() {<br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;statusMap.put("foo", Boolean.TRUE);  <br/>
-			&nbsp;&nbsp;&nbsp;&nbsp;return Boolean.FALSE; <br/>
-			}<br/>
-			</code>
+<pre><code>
+Map<String, Boolean> statusMap = ...
+
+public Boolean someMethod() {
+    statusMap.put("foo", Boolean.TRUE);
+    return Boolean.FALSE;
+}
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -2237,26 +2240,29 @@
 			assigned to the local variable, directly.</p>
 			<p>
 				Instead of the following: <br/>
-				<code>
-				public float average(int[] arr) { <br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;float sum = 0;<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < arr.length; i++) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum += arr[i];<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;float ave = sum / arr.length;<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;return ave;<br/>
-				}<br/>
-				</code>
-				simply change the method to return the result of the division: <br/>		
-				<code>
-				public float average(int[] arr) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;float sum = 0;<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;for (int i = 0; i < arr.length; i++) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;sum += arr[i];<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;<b>return sum / arr.length;</b><br/>
-				}
-				</code>
+
+<pre><code>
+public float average(int[] arr) {
+    float sum = 0;
+    for (int i = 0; i < arr.length; i++) {
+        sum += arr[i];
+    }
+    float ave = sum / arr.length;
+    return ave;
+}
+</code></pre>
+
+				Simply change the method to return the result of the division: <br/>
+
+<pre><code>
+public float average(int[] arr) {
+    float sum = 0;
+    for (int i = 0; i < arr.length; i++) {
+        sum += arr[i];
+    }
+    <b>return sum / arr.length;</b> //Change
+}
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -2417,31 +2423,40 @@
 			<![CDATA[
 			<p>This method compares dates with two comparisons, rather than using the reverse comparison.
 			So this pattern</p>
-			<code>
-				if ((date1.equals( date2 )) || (date1.after( date2 )))<br/>
-			</code>
+
+<pre><code>
+if ((date1.equals( date2 )) || (date1.after( date2 )))
+</code></pre>
+
 			could become:<br/>
-			<code>
-				if (date1.compareTo( date2 ) >= 0) <br/>
-			</code>
-			<br/>
+
+<pre><code>
+if (date1.compareTo( date2 ) >= 0)
+</code></pre><br/>
+
 			and<br/>
-			<code>
-				if ((date1.equals( date2 )) || (date1.before( date2 ))) <br/>
-			</code>
+
+<pre><code>
+if ((date1.equals( date2 )) || (date1.before( date2 )))
+</code></pre>
+
 			could become <br/>
-			<code>
-				if (date1.compareTo( date2 ) <= 0) <br/>
-			</code>
-			<br/>
+
+<pre><code>
+if (date1.compareTo( date2 ) <= 0)
+</code></pre><br/>
+
 			and<br/>
-			<code>
-				if ((date1.before( date2 )) || (date1.after( date2 ))) <br/>
-			</code>
+
+<pre><code>
+if ((date1.before( date2 )) || (date1.after( date2 )))
+</code></pre>
+
 			could become<br/>
-			<code>
-				if (!date1.equals( date2 ))<br/>
-			</code>
+
+<pre><code>
+if (!date1.equals( date2 ))
+</code></pre>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2486,15 +2501,15 @@
 			<p>
 			If this collection is a list, set or otherwise of static things (e.g. a List<String> for month names), consider
 			adding all of the elements in a static initializer, which can only be called once:<br/>
-			<code>
-			private static List<String> monthNames = new ArrayList<String>();<br/>
-			static {<br/>
-				&nbsp;&nbsp;&nbsp;monthNames.add("January");<br/>
-				&nbsp;&nbsp;&nbsp;monthNames.add("February");<br/>
-				&nbsp;&nbsp;&nbsp;monthNames.add("March");<br/>
-				&nbsp;&nbsp;&nbsp;...<br/>
-			}
-			</code>
+<pre><code>
+private static List<String> monthNames = new ArrayList<String>();
+static {
+    monthNames.add("January");
+    monthNames.add("February");
+    monthNames.add("March");
+    ...
+}
+</code></pre>
 			</p>
 			
 			]]>
@@ -2762,11 +2777,11 @@
 			original exception so that this detail can be passed along to the user. If this exception has no constructor
 			that takes an initial cause parameter, use the initCause method to initialize it instead.</p>
 			<p>
-			<code>
-				catch (IOException e) {
-					throw new MySpecialException("Failed to open configuration", e);
-				}
-			</code>
+<pre><code>
+catch (IOException e) {
+    throw new MySpecialException("Failed to open configuration", e);
+}
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -2783,26 +2798,26 @@
 			
 			<p>
 			Instead of making calls like: <br/>
-			<code>
-			String myString = ... <br/>
-			if (myString.indexOf("e") != -1) {<br/>
-			int i = myString.lastIndexOf("e");<br/>
-			System.out.println(myString + ":" + i);  //the Java compiler will use a StringBuilder internally here [builder.append(":")]<br/>
-			...<br/>
-			return myString.replace("m","z");<br/>
-			}<br/>
-			</code>
+<pre><code>
+String myString = ...
+if (myString.indexOf("e") != -1) {
+    int i = myString.lastIndexOf("e");
+    System.out.println(myString + ":" + i);  //the Java compiler will use a StringBuilder internally here [builder.append(":")]
+    ...
+    return myString.replace("m","z");
+}
+</code></pre>
 			Replace the single letter <code>String</code>s with their <code>char</code> equivalents like so:<br/>
 			
-			<code>
-			String myString = ... <br/>
-			if (myString.indexOf('e') != -1) {<br/>
-			int i = myString.lastIndexOf('e');<br/>
-			System.out.println(myString + ':' + i);  //the Java compiler will use a StringBuilder internally here [builder.append(':')]<br/>
-			...<br/>
-			return myString.replace('m','z');<br/>
-			}<br/>
-			</code>
+<pre><code>
+String myString = ...
+if (myString.indexOf('e') != -1) {
+    int i = myString.lastIndexOf('e');
+    System.out.println(myString + ':' + i);  //the Java compiler will use a StringBuilder internally here [builder.append(':')]
+    ...
+    return myString.replace('m','z');
+}
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -3000,13 +3015,13 @@
 			<p>This method attempts to check for null by just referring to the variable name
 			as would be done in C++. This ordinarily would be considered a compile error, except the
 			variable in question is a Boolean, which does an auto unbox to boolean.
-			<code><br/>
-				if (b && b.booleanValue())<br/>
-			</code>
+<pre><code>
+if (b && b.booleanValue())
+</code></pre>
 			should be<br/>
-			<code>
-				if ((b != null) && b.booleanValue())<br/>
-			</code>
+<pre><code>
+if ((b != null) && b.booleanValue())
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -3042,16 +3057,16 @@
 			<![CDATA[
 			<p>This method tests a string, and groups null values with real strings, leaving empty strings as another
 			case. That is, FindBugs has detected a structure like: <br/>
-			<code>
-			String a = null, b = "", c = "someString"; <br/>
-			...<br/>
-			String testStr = ...;  //one of a, b or c<br/>
-			if (<b>FLAWED_TEST_LOGIC</b>) { <br/>
-			// Strings a and c fall into this branch... which is not typical.  <br/>
-			} else { <br/>
-			// String b falls into this branch. <br/>
-			} <br/>
-			</code>
+<pre><code>
+String a = null, b = "", c = "someString";
+
+String testStr = ...;  //one of a, b or c
+if ({{FLAWED_TEST_LOGIC}}) {
+    // Strings a and c fall into this branch... which is not typical.
+} else {
+    // String b falls into this branch.
+}
+</code></pre>
 			
 			This might be perfectly valid, but normally, null strings and empty strings are logically handled the same way,
 			and so this test may be flawed.</p>
@@ -3223,24 +3238,24 @@
 			<![CDATA[
 			<p>This method appends two literal strings to a <code>StringBuilder</code> back to back. 
 			Modern compilers will optimize something like:<br/>
-			<code>
-				public static final string CONST_VAL = "there";<br/>
-				...<br/>
-				String str = "Hello" + " "+ CONST_VAL + " " +"world!";<br/>
-			</code>
+<pre><code>
+public static final string CONST_VAL = "there";
+...
+String str = "Hello" + " "+ CONST_VAL + " " +"world!";
+</code></pre>
 			to: <br/>
-			<code>
-				public static final string CONST_VAL = "there";<br/>
-				...<br/>
-				String str = "Hello there world!";<br/>
-			</code>
+<pre><code>
+public static final string CONST_VAL = "there";
+...
+String str = "Hello there world!";
+</code></pre>
 			This means the concatenation is done during compile time, not at runtime, so there's <b>no need</b> to do: <br/>
-			<code>
-			public static final string CONST_VAL = "there";<br/>
-			...<br/>
-			StringBuilder sb = new StringBuilder("Hello").append(" ").append(CONST_VAL).append(" ").append("world!");<br/>
-			String str = sb.toString();<br/>
-			</code>
+<pre><code>
+public static final string CONST_VAL = "there";
+...
+StringBuilder sb = new StringBuilder("Hello").append(" ").append(CONST_VAL).append(" ").append("world!");
+String str = sb.toString();
+</code></pre>
 			which is harder to read and will result in more complex bytecode.
 			</p>
 			
@@ -3294,14 +3309,15 @@
 		   
 		   <p>
 		   For example, instead of :<br/>
-		   <code>
-		   return "ThisIsAConstantString ".toLowerCase().trim(); <br/>
-		   </code>
+<pre><code>
+return "ThisIsAConstantString".toLowerCase().trim();
+</code></pre>
 		   just do <br/>
-		   <code>
-		   return "thisisaconstantstring"; <br/>
-		   </code>
-		   for shorter and easier to read code.  An exception might be made when locale-specific transformations need to be done (in the case of <code>toUpperCase()</code> and <code>toLowerCase()</code>.
+<pre><code>
+return "thisisaconstantstring";
+</code></pre>
+		   for shorter and easier to read code.  An exception might be made when locale-specific transformations need
+		   to be done (in the case of <code>toUpperCase()</code> and <code>toLowerCase()</code>.
 		   </p>
 	       ]]>
 	   </Details>
@@ -3413,11 +3429,11 @@
 			<p>PLEASE NOTE: String.split will return an array of 1 element when passed the
 			empty string, as opposed to using StringTokenizer which returns false on the first
 			hasMoreElements/hasMoreTokens call. So you may need to use:</p>
-			<code>
-				if (s.length() > 0) <br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;return s.split(";");<br/>
-				return new String[0];<br/>
-			</code>
+<pre><code>
+if (s.length() &gt; 0) <br/>
+    return s.split(";");<br/>
+return new String[0];<br/>
+</code></pre>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4147,18 +4163,18 @@
 			to this.</p>
 			<p>
 			Here's an example of a BAD equals method, do NOT do this:
-			<code>
-			class Person {
-			    public boolean equals(Object o) {
-			        if (o instanceof Person) {
-			            return name.equals(((Person) o).name);
-			        } else if (o instanceof String) {
-			            return name.equals(o);
-			        }
-			        return false;
-			    }
-			}
-			</code>
+<pre><code>
+class Person {
+    public boolean equals(Object o) {
+        if (o instanceof Person) {
+            return name.equals(((Person) o).name);
+        } else if (o instanceof String) {
+            return name.equals(o);
+        }
+        return false;
+    }
+}
+</code></pre>
 			</p>
 			]]>
 		</Details>
@@ -4172,13 +4188,13 @@
 			<p>This method contains a contravariant array assignment. Since arrays are mutable data structures, their use
 			must be restricted to covariant or invariant usage.</p>
 
-			<code>
-				class A {}<br/>
-				class B extends A {}<br/>
-				<br/>
-				B[] b = new B[2];<br/>
-				A[] a = b;<br/>
-			</code>
+<pre><code>
+class A {}
+class B extends A {}
+
+B[] b = new B[2];
+A[] a = b;
+</code></pre>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4191,14 +4207,14 @@
 			<p>This method contains a contravariant array element assignment. Since arrays are mutable
 			data structures, their use must be restricted to covariant or invariant usage.</p>
 
-			<code>
-				class A {}<br/>
-				class B extends A {}<br/>
-				<br/>
-				B[] b = new B[2];<br/>
-				A[] a = b;<br/>
-				a[0] = new A(); // results in ArrayStoreException (Runtime)<br/>
-			</code>
+<pre><code>
+class A {}
+class B extends A {}
+
+B[] b = new B[2];
+A[] a = b;
+a[0] = new A(); // results in ArrayStoreException (Runtime)
+</code></pre>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4225,11 +4241,11 @@
 			code. However in the conditional block it reassigns the field. It is likely that the guard
 			should have been a check to see if the field is null, not that the field was not null.</p>
 			<p>example:
-			<code>
-			if (name != null) {
-			    name = person.getName();
-			}
-			</code>
+<pre><code>
+if (name != null) {
+    name = person.getName();
+}
+</code></pre>
 			It is possible this is correct, but it seems likely the guard was meant to be <code>if (name == null)</code>
 			</p>
 			]]>
@@ -4245,11 +4261,11 @@
 			code. However in the conditional block it reassigns the local variable. It is likely that the guard
 			should have been a check to see if the local variable is null, not that the local variable was not null.</p>
 			<p>example:
-			<code>
-			if (name != null) {
-			    name = person.getName();
-			}
-			</code>
+<pre><code>
+if (name != null) {
+    name = person.getName();
+}
+</code></pre>
 			It is possible this is correct, but it seems likely the guard was meant to be <code>if (name == null)</code>
 			</p>
 			]]>
@@ -4261,7 +4277,9 @@
 		<LongDescription>Method {1} calls {2}</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>Calling <code>Runtime.exit()</code> or <code>Runtime.halt()</code> shuts down the entire Java virtual machine. This should only been done in very rare circumstances. Such calls make it hard or impossible for your code to be invoked by other code. Consider throwing a RuntimeException instead.</p>
+			<p>Calling <code>Runtime.exit()</code> or <code>Runtime.halt()</code> shuts down the entire Java virtual machine.
+			This should only been done in very rare circumstances. Such calls make it hard or impossible for your code to be
+			invoked by other code. Consider throwing a RuntimeException instead.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4901,27 +4919,27 @@
             <p>Most <code>ExecutorService</code> objects must be explicitly shutdown, otherwise, their internal threads can prevent the JVM from ever shutting down, even when everything else has stopped.</p>
             
             <p>FindBugs has detected that something like the following is happening:<br/>
-            <code>
-            ExecutorService executor = ... //e.g. Executors.newCachedThreadPool();<br/>
-            ...<br/>
-            public void reset() {<br/>
-            &nbsp;&nbsp;&nbsp;this.executor = Executors.newCachedThreadPool(); <br/>
-            &nbsp;&nbsp;&nbsp;this.executor.execute(new SampleExecutable()); <br/>
-            }<br/>
-            </code>
+<pre><code>
+ExecutorService executor = ... //e.g. Executors.newCachedThreadPool();
+...
+public void reset() {
+    this.executor = Executors.newCachedThreadPool();
+    this.executor.execute(new SampleExecutable());
+}<br/>
+</code></pre>
             For normal objects, losing the last reference to them like this would trigger the object to be cleaned up
             in garbage collection.  For <code>ExecutorService</code>s, this isn't enough to terminate the internal threads in the 
             thread pool, and the <code>ExecutorService</code> isn't guaranteed to shutdown, causing the JVM to never stop. <br/>
             To fix this, simply add a call to <code>shutdown()</code> like this:<br/>
-            <code>
-            ExecutorService executor = ... //e.g. Executors.newCachedThreadPool();<br/>
-            ...<br/>
-            public void reset() {<br/>
-            <b>&nbsp;&nbsp;&nbsp;this.executor.shutDown();</b> <br/>
-            &nbsp;&nbsp;&nbsp;this.executor = Executors.newCachedThreadPool(); <br/>
-            &nbsp;&nbsp;&nbsp;this.executor.execute(new SampleExecutable()); <br/>
-            }
-            </code>
+<pre><code>
+ExecutorService executor = ... //e.g. Executors.newCachedThreadPool();
+...
+public void reset() {
+    this.executor.shutDown(); //Fix
+    this.executor = Executors.newCachedThreadPool();
+    this.executor.execute(new SampleExecutable());
+}
+</code></pre>
             </p>
             			
 			<p>Even though there are some exceptions to this, particularly when a custom <code>ThreadFactory</code> is 
@@ -4943,42 +4961,42 @@
             <![CDATA[
             <p>FindBugs has detected an <code>org.apache.http.HttpRequest</code> (e.g. <code>HttpGet</code>, <code>HttpPost</code>, etc)
 				that didn't release its associated resources.  Code like the following: <br/>
-				<code>
-				private HttpGet httpGet; <br/>
-				...<br/>
-				public String requestInfo(URI u) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
-				}<br/>
-				</code>
+<pre><code>
+private HttpGet httpGet;
+
+public String requestInfo(URI u) {
+    this.httpGet = new HttpGet(u);
+    try(CloseableHttpResponse response = client.execute(httpGet);) {
+        return getResponseAsString(response);
+    }
+    catch (IOException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+</code></pre>
 				will freeze after a few requests, usually with no indication as to why.  </p>
 				
 			<p>
 				The reason this code freezes is because <code>org.apache.http.HttpRequest</code>s need explicitly release their connection
 				with a call to either <code>reset()</code> or <code>releaseConnection()</code>.  The above example can be easily fixed:<br/>
-				<code>
-				private HttpGet httpGet; <br/>
-				...<br/>
-				public String requestInfo(URI u) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet = new HttpGet(u);<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;this.httpGet.reset();<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</b><br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
-				}<br/>
-				</code>
+<code>
+private HttpGet httpGet;
+...
+public String requestInfo(URI u) {
+    this.httpGet = new HttpGet(u);
+    try(CloseableHttpResponse response = client.execute(httpGet);) {
+        return getResponseAsString(response);
+    }
+    catch (IOException e) {
+        e.printStackTrace();
+    }
+    <b>finally {
+        this.httpGet.reset();
+    }</b>
+    return null;
+}<br/>
+</code>
 			</p>
             ]]>
         </Details>
@@ -4991,18 +5009,18 @@
             <![CDATA[
             <p>FindBugs has detected an <code>org.apache.http.HttpRequest</code> (e.g. <code>HttpGet</code>, <code>HttpPost</code>, etc)
 				that didn't release its associated resources.  Code like the following: <br/>
-				<code>
-				public String requestInfo(URI u) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
-				}<br/>
-				</code>
+<pre><code>
+public String requestInfo(URI u) {
+    HttpGet httpGet = new HttpGet(u);
+    try(CloseableHttpResponse response = client.execute(httpGet);) {
+        return getResponseAsString(response);
+    }
+    catch (IOException e) {
+        e.printStackTrace();
+    }
+    return null;
+}
+</code></pre>
 				will freeze after a few requests, usually with no indication as to why. </p>
 				
 			<p>
@@ -5011,21 +5029,21 @@
 				The garbage collector will not release these resources, leading to the frustrating freezing scenario described above.
 				
 				<br/>The above example can be easily fixed:<br/>
-				<code>
-				public String requestInfo(URI u) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;HttpGet httpGet = new HttpGet(u);<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;try(CloseableHttpResponse response = client.execute(httpGet);) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return getResponseAsString(response);<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;catch (IOException e) {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e.printStackTrace();<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;<b>finally {<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;httpGet.reset();<br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;}</b><br/>
-				&nbsp;&nbsp;&nbsp;&nbsp;return null;<br/>
-				}<br/>
-				</code>
+<pre><code>
+public String requestInfo(URI u) {
+    HttpGet httpGet = new HttpGet(u);
+    try(CloseableHttpResponse response = client.execute(httpGet);) {
+        return getResponseAsString(response);
+    }
+    catch (IOException e) {
+        e.printStackTrace();
+    }
+    <b>finally {
+        httpGet.reset();
+    }</b>
+    return null;
+}
+</code></pre>
 			</p>
             ]]>
         </Details>
@@ -5172,14 +5190,14 @@
     		condition based on equality. Since continuing on in the loop would seem to be unlikely to find the item again, breaking
     		at this point would seem to be the proper action.</p>
     		<p>Example:
-    		<code>
-    		int age = 0;
-    		for (Person p : people) {
-    			if (p.getName().equals("Dave")) {
-    				age = p.getAge();
-    			}
-    		}
-    		</code>
+<pre><code>
+int age = 0;
+for (Person p : people) {
+    if (p.getName().equals("Dave")) {
+        age = p.getAge();
+    }
+}
+</code></pre>
     		It is likely you wanted a break after getting the age for "Dave".</p>
     		]]>
     	</Details>
@@ -5442,13 +5460,13 @@
 			the condition and execute them first, assigning a value to a local variable. In this way you give a hint that the call may have
 			side effects.</p>
 			<p>Example:
-			<code>
-			if ((calculateHaltingProbability() > 0) && shouldCalcHalting) { }
-			</code>
+<pre><code>
+if ((calculateHaltingProbability() > 0) && shouldCalcHalting) { }
+</code></pre>
 			would be better as
-			<code>
-			if (shouldCalcHalting && (calculateHaltingProbability() > 0) { }
-			</code>
+<pre><code>
+if (shouldCalcHalting && (calculateHaltingProbability() > 0) { }
+</code></pre>
 			</p>
 			]]>
 		</Details>
