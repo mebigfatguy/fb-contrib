@@ -1,6 +1,8 @@
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -129,6 +131,14 @@ public class LEST_Sample {
             InputStream is = new FileInputStream("foo");
         } catch (IOException e) {
             throw Throwables.propagate(e);
+        }
+    }
+
+    public void fpUseCause(Method method, Object target, Object... args) throws Throwable {
+        try {
+            method.invoke(target, args);
+        } catch (InvocationTargetException e) {
+            throw e.getCause();
         }
     }
 
