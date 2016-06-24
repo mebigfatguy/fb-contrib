@@ -226,7 +226,8 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                                 markAsValid = true;
                             }
                         } else if (seen == INVOKEVIRTUAL) {
-                            if ("initCause".equals(getNameConstantOperand())) {
+                            String methodName = getNameConstantOperand();
+                            if ("initCause".equals(methodName)) {
                                 String className = getClassConstantOperand();
                                 JavaClass exClass = Repository.lookupClass(className);
                                 if (exClass.instanceOf(throwableClass) && (stack.getStackDepth() > 1)) {
@@ -237,7 +238,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                                     }
                                     markAsValid = true; // Fixes javac generated code
                                 }
-                            } else if ("getTargetException".equals(getNameConstantOperand())
+                            } else if (("getTargetException".equals(methodName) || "getCause".equals(methodName))
                                     && "java/lang/reflect/InvocationTargetException".equals(getClassConstantOperand())) {
                                 markAsValid = true;
                             } else if (isPossibleExBuilder(catchInfo.getRegister())) {
