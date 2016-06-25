@@ -70,4 +70,4 @@ In your pull request, give an overview of your changes along with the related co
 > If you are not up for contributing code but notice a common problem with some third party library, or general purpose pattern, please add an issue too. We always like new ideas.
 
 
-Often available on #fb-contrib on freenode.net for convorsation.
+Often available on #fb-contrib on freenode.net for conversation.
