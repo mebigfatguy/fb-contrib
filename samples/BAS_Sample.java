@@ -12,7 +12,9 @@ import java.util.concurrent.Future;
 
 @SuppressWarnings("all")
 public class BAS_Sample {
-    private final Map<String, String> m = new HashMap<String, String>();
+    private final Map<String, String> m = new HashMap<>();
+
+    private long value = 0;
 
     public void testIfScope(String s) {
         Object o = new Object();
@@ -70,20 +72,20 @@ public class BAS_Sample {
         String v = "Test";
 
         switch (a) {
-        case 1:
-            v = "Testa";
+            case 1:
+                v = "Testa";
             break;
 
-        case 2:
-            v = "Tesseract";
+            case 2:
+                v = "Tesseract";
             break;
 
-        case 3:
-            v = "Testy";
+            case 3:
+                v = "Testy";
             break;
 
-        default:
-            v = "Rossa";
+            default:
+                v = "Rossa";
             break;
         }
 
@@ -114,6 +116,17 @@ public class BAS_Sample {
         return 0;
     }
 
+    public void tstFPThisRefChange(long v, boolean b) {
+        long oldValue = this.value;
+        this.value = v;
+
+        if (b) {
+            if (oldValue < 0) {
+                System.out.println("Negative");
+            }
+        }
+    }
+
     public void tstFPRefChange(Holder h1, Holder h2, boolean b) {
 
         int h = h1.member;
@@ -123,7 +136,7 @@ public class BAS_Sample {
             System.out.println(h);
         }
     }
-    
+
     public void tstFPRefChangeThruMethodChain(Holder h1, Holder h2, boolean b) {
 
         String h = h1.toString().trim();
@@ -167,7 +180,7 @@ public class BAS_Sample {
     }
 
     public List<String> testFPSynchronized(String s, String p) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         String x = s;
         synchronized (s) {
             if (p != null) {
@@ -197,6 +210,7 @@ public class BAS_Sample {
     public boolean testFPFuture(boolean b) {
         ExecutorService s = new ForkJoinPool();
         Future f = s.submit(new Runnable() {
+            @Override
             public void run() {
             }
         });
