@@ -131,7 +131,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             tryBlocks = new BitSet();
             catchHandlers = new BitSet();
             switchTargets = new BitSet();
-            monitorSyncPCs = new ArrayList<Integer>(5);
+            monitorSyncPCs = new ArrayList<>(5);
             stack = new OpcodeStack();
             super.visitClassContext(classContext);
         } finally {
@@ -225,6 +225,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 uo = sawInstanceCall(pc);
             } else if ((seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
                 uo = sawStaticCall();
+            } else if (seen == GETFIELD) {
+                uo = sawGetField();
             } else if (seen == MONITORENTER) {
                 sawMonitorEnter(pc);
             } else if (seen == MONITOREXIT) {
@@ -290,6 +292,11 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             } else {
                 ignoreRegs.set(reg);
             }
+        }
+
+        ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
+        if (sb != null) {
+            sb.markFieldAssociatedWrites(reg);
         }
     }
 
@@ -428,7 +435,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      */
     private void sawSwitch(int pc) {
         int[] offsets = getSwitchOffsets();
-        List<Integer> targets = new ArrayList<Integer>(offsets.length);
+        List<Integer> targets = new ArrayList<>(offsets.length);
         for (int offset : offsets) {
             targets.add(Integer.valueOf(offset + pc));
         }
@@ -503,6 +510,21 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         UserObject uo = new UserObject();
         uo.isRisky = isRiskyMethodCall();
         return uo;
+    }
+
+    private UserObject sawGetField() {
+        if (stack.getStackDepth() > 0) {
+            OpcodeStack.Item itm = stack.getStackItem(0);
+            int reg = itm.getRegisterNumber();
+
+            if (reg >= 0) {
+                UserObject uo = new UserObject();
+                uo.fieldFromReg = reg;
+                return uo;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -897,12 +919,12 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
          */
         public void addStore(int reg, int pc, UserObject assocObject) {
             if (stores == null) {
-                stores = new HashMap<Integer, Integer>(6);
+                stores = new HashMap<>(6);
             }
 
             stores.put(Integer.valueOf(reg), Integer.valueOf(pc));
             if (assocs == null) {
-                assocs = new HashMap<UserObject, Integer>(6);
+                assocs = new HashMap<>(6);
             }
             assocs.put(assocObject, Integer.valueOf(reg));
         }
@@ -937,7 +959,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
          */
         public void addLoad(int reg, int pc) {
             if (loads == null) {
-                loads = new HashMap<Integer, Integer>(10);
+                loads = new HashMap<>(10);
             }
 
             loads.put(Integer.valueOf(reg), Integer.valueOf(pc));
@@ -973,7 +995,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 children.add(newChild);
                 return;
             }
-            children = new ArrayList<ScopeBlock>();
+            children = new ArrayList<>();
             children.add(newChild);
         }
 
@@ -989,6 +1011,19 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             }
         }
 
+        public void markFieldAssociatedWrites(int fieldFromReg) {
+            if (assocs != null) {
+                UserObject uo = new UserObject();
+                uo.fieldFromReg = fieldFromReg;
+                Integer preWrittenFromField = assocs.get(uo);
+                if (preWrittenFromField != null) {
+                    if (stores != null) {
+                        stores.remove(preWrittenFromField);
+                    }
+                }
+            }
+        }
+
         /**
          * report stores that occur at scopes higher than associated loads that are not involved with loops
          */
@@ -997,7 +1032,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 return;
             }
 
-            Set<Integer> usedRegs = new HashSet<Integer>(parentUsedRegs);
+            Set<Integer> usedRegs = new HashSet<>(parentUsedRegs);
             if (stores != null) {
                 usedRegs.addAll(stores.keySet());
             }
@@ -1134,6 +1169,34 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     static class UserObject {
         Comparable<?> caller;
         boolean isRisky;
+        int fieldFromReg = -1;
+
+        @Override
+        public int hashCode() {
+            return ((caller == null) ? 0 : caller.hashCode()) | (isRisky ? 1 : 0) | fieldFromReg;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof UserObject)) {
+                return false;
+            }
+
+            UserObject that = (UserObject) o;
+
+            if (caller == null) {
+                if (that.caller != null) {
+                    return false;
+                }
+            } else {
+                boolean eq = caller.equals(that.caller);
+                if (!eq) {
+                    return false;
+                }
+            }
+
+            return (isRisky == that.isRisky) && (fieldFromReg == that.fieldFromReg);
+        }
 
         @Override
         public String toString() {
