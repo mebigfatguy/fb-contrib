@@ -923,10 +923,13 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             }
 
             stores.put(Integer.valueOf(reg), Integer.valueOf(pc));
-            if (assocs == null) {
-                assocs = new HashMap<>(6);
+
+            if (assocObject != null) {
+                if (assocs == null) {
+                    assocs = new HashMap<>(6);
+                }
+                assocs.put(assocObject, Integer.valueOf(reg));
             }
-            assocs.put(assocObject, Integer.valueOf(reg));
         }
 
         /**
@@ -1013,12 +1016,15 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         public void markFieldAssociatedWrites(int fieldFromReg) {
             if (assocs != null) {
-                UserObject uo = new UserObject();
-                uo.fieldFromReg = fieldFromReg;
-                Integer preWrittenFromField = assocs.get(uo);
-                if (preWrittenFromField != null) {
-                    if (stores != null) {
-                        stores.remove(preWrittenFromField);
+                for (Map.Entry<UserObject, Integer> entry : assocs.entrySet()) {
+                    UserObject uo = entry.getKey();
+                    if ((uo.fieldFromReg == fieldFromReg) || ((uo.caller instanceof Integer) && (((Integer) uo.caller) == fieldFromReg))) {
+                        Integer preWrittenFromField = entry.getValue();
+                        if (preWrittenFromField != null) {
+                            if (stores != null) {
+                                stores.remove(preWrittenFromField);
+                            }
+                        }
                     }
                 }
             }
