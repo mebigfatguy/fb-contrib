@@ -213,20 +213,20 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
             if (OpcodeUtils.isStore(seen)) {
                 sawStore(seen, pc);
-            } else if (seen == IINC) {
-                sawIINC(pc);
             } else if (OpcodeUtils.isLoad(seen)) {
                 sawLoad(seen, pc);
-            } else if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W)) {
-                sawBranch(seen, pc);
-            } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
-                sawSwitch(pc);
             } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
                 uo = sawInstanceCall(pc);
             } else if ((seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
                 uo = sawStaticCall();
+            } else if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL) || (seen == GOTO_W)) {
+                sawBranch(seen, pc);
             } else if (seen == GETFIELD) {
                 uo = sawGetField();
+            } else if (seen == IINC) {
+                sawIINC(pc);
+            } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+                sawSwitch(pc);
             } else if (seen == MONITORENTER) {
                 sawMonitorEnter(pc);
             } else if (seen == MONITOREXIT) {
