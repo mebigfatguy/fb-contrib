@@ -64,9 +64,13 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
         String lowRatio = System.getProperty(BURY_LOGIC_LOW_RATIO_PROPERTY);
         try {
-            lowBugRatioLimit = Double.parseDouble(lowRatio);
-            if (lowBugRatioLimit <= 0) {
+            if (lowRatio == null) {
                 lowBugRatioLimit = LOW_BUG_RATIO_LIMIT;
+            } else {
+                lowBugRatioLimit = Double.parseDouble(lowRatio);
+                if (lowBugRatioLimit <= 0) {
+                    lowBugRatioLimit = LOW_BUG_RATIO_LIMIT;
+                }
             }
         } catch (Exception e) {
             lowBugRatioLimit = LOW_BUG_RATIO_LIMIT;
@@ -74,9 +78,13 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
         String normalRatio = System.getProperty(BURY_LOGIC_NORMAL_RATIO_PROPERTY);
         try {
-            normalBugRatioLimit = Double.parseDouble(normalRatio);
-            if (normalBugRatioLimit <= 0) {
+            if (normalRatio == null) {
                 normalBugRatioLimit = NORMAL_BUG_RATIO_LIMIT;
+            } else {
+                normalBugRatioLimit = Double.parseDouble(normalRatio);
+                if (normalBugRatioLimit <= 0) {
+                    normalBugRatioLimit = NORMAL_BUG_RATIO_LIMIT;
+                }
             }
         } catch (Exception e) {
             normalBugRatioLimit = NORMAL_BUG_RATIO_LIMIT;
