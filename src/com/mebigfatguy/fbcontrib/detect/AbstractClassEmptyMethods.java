@@ -45,17 +45,8 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
         SAW_NOTHING, SAW_NEW, SAW_DUP, SAW_LDC, SAW_INVOKESPECIAL, SAW_DONE
     }
 
-    private static JavaClass EXCEPTION_CLASS;
-
-    static {
-        try {
-            EXCEPTION_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_LANG_EXCEPTION);
-        } catch (ClassNotFoundException cnfe) {
-            // ignore
-        }
-    }
-
     private final BugReporter bugReporter;
+    private JavaClass exceptionClass;
     private Set<QMethod> interfaceMethods;
     private String methodName;
     private State state;
@@ -68,6 +59,12 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
      */
     public AbstractClassEmptyMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            exceptionClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_EXCEPTION);
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
     }
 
     /**
@@ -138,7 +135,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
                     } else if (seen == NEW) {
                         String newClass = getClassConstantOperand();
                         JavaClass exCls = Repository.lookupClass(newClass);
-                        if ((EXCEPTION_CLASS != null) && exCls.instanceOf(EXCEPTION_CLASS)) {
+                        if ((exceptionClass != null) && exCls.instanceOf(exceptionClass)) {
                             state = State.SAW_NEW;
                         } else {
                             state = State.SAW_DONE;
@@ -190,7 +187,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     }
 
     private Set<QMethod> collectInterfaceMethods(JavaClass cls) throws ClassNotFoundException {
-        Set<QMethod> methods = new HashSet<QMethod>();
+        Set<QMethod> methods = new HashSet<>();
         for (JavaClass inf : cls.getAllInterfaces()) {
             for (Method m : inf.getMethods()) {
                 methods.add(new QMethod(m.getName(), m.getSignature()));
