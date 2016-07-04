@@ -46,8 +46,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
-    private static JavaClass runtimeExceptionClass;
-    private static JavaClass exceptionClass;
     private static final Set<String> safeClasses = UnmodifiableSet.create(
             //@formatter:off
             "java/lang/Object",
@@ -61,19 +59,10 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
             //@formatter:on
     );
 
-    static {
-
-        try {
-            runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
-            exceptionClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_EXCEPTION);
-
-        } catch (ClassNotFoundException cnfe) {
-            runtimeExceptionClass = null;
-            exceptionClass = null;
-        }
-    }
-
     private final BugReporter bugReporter;
+    private JavaClass runtimeExceptionClass;
+    private JavaClass exceptionClass;
+
     private OpcodeStack stack;
     private Set<String> declaredCheckedExceptions;
     private boolean classIsFinal;
@@ -81,6 +70,16 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
     public BogusExceptionDeclaration(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
+            exceptionClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_EXCEPTION);
+
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+            runtimeExceptionClass = null;
+            exceptionClass = null;
+        }
     }
 
     /**
@@ -95,7 +94,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
         try {
             if ((runtimeExceptionClass != null) && (exceptionClass != null)) {
                 stack = new OpcodeStack();
-                declaredCheckedExceptions = new HashSet<String>(6);
+                declaredCheckedExceptions = new HashSet<>(6);
                 JavaClass cls = classContext.getJavaClass();
                 classIsFinal = cls.isFinal();
                 classIsAnonymous = cls.isAnonymous();
