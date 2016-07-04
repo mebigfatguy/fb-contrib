@@ -54,9 +54,25 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     private static JavaClass INVOCATIONHANDLER_CLASS;
 
     static {
-        Set<FQMethod> um = new HashSet<FQMethod>();
+        Set<FQMethod> um = new HashSet<>();
         um.add(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
         um.add(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "split", "(Ljava/lang/String;I)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", "(Ljava/lang/String;C)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", "(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", "(Ljava/lang/String;Ljava/lang/String;I)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparator", "(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparator", "(Ljava/lang/String;Ljava/lang/String;I)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparatorPreserveAllTokens",
+                "(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", "(Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", "(Ljava/lang/String;C)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", "(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", "(Ljava/lang/String;Ljava/lang/String;I)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparator", "(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparator", "(Ljava/lang/String;Ljava/lang/String;I)[Ljava/lang/String;"));
+        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparatorPreserveAllTokens",
+                "(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;"));
         ubiquitousMethods = Collections.unmodifiableSet(um);
 
         try {
