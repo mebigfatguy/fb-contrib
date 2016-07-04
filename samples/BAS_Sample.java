@@ -15,6 +15,7 @@ public class BAS_Sample {
     private final Map<String, String> m = new HashMap<>();
 
     private long value = 0;
+    private Long stash = Long.valueOf(0);
 
     public void testIfScope(String s) {
         Object o = new Object();
@@ -145,6 +146,19 @@ public class BAS_Sample {
         if (b) {
             System.out.println(h);
         }
+    }
+
+    public Long testFPRefNull(boolean b) {
+
+        Long save = stash;
+        stash = null;
+
+        if (b) {
+            return save;
+        }
+
+        return null;
+
     }
 
     public void testFPSrcOverwrite(int src, boolean b) {
