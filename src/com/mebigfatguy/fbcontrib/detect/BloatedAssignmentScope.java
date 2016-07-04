@@ -223,6 +223,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 sawBranch(seen, pc);
             } else if (seen == GETFIELD) {
                 uo = sawGetField();
+            } else if (seen == PUTFIELD) {
+                sawPutField(pc);
             } else if (seen == IINC) {
                 sawIINC(pc);
             } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
@@ -525,6 +527,21 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         return null;
+    }
+
+    private void sawPutField(int pc) {
+        if (stack.getStackDepth() > 1) {
+            OpcodeStack.Item itm = stack.getStackItem(1);
+            int reg = itm.getRegisterNumber();
+
+            if (reg >= 0) {
+
+                ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
+                if (sb != null) {
+                    sb.markFieldAssociatedWrites(reg);
+                }
+            }
+        }
     }
 
     /**
