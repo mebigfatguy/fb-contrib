@@ -38,23 +38,13 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * finds classes that implement clone() that do not specialize the return value,
- * and do not swallow CloneNotFoundException. Not doing so makes the clone
- * method not as simple to use, and should be harmless to do.
+ * finds classes that implement clone() that do not specialize the return value, and do not swallow CloneNotFoundException. Not doing so makes the clone method
+ * not as simple to use, and should be harmless to do.
  */
 public class CloneUsability extends BytecodeScanningDetector {
 
-    private static JavaClass CLONE_CLASS;
-
-    static {
-        try {
-            CLONE_CLASS = Repository.lookupClass("java/lang/Cloneable");
-        } catch (ClassNotFoundException cnfe) {
-            CLONE_CLASS = null;
-        }
-    }
-
     private BugReporter bugReporter;
+    private JavaClass cloneClass;
     private JavaClass cls;
     private String clsName;
     private OpcodeStack stack;
@@ -68,6 +58,12 @@ public class CloneUsability extends BytecodeScanningDetector {
      */
     public CloneUsability(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            cloneClass = Repository.lookupClass("java/lang/Cloneable");
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
     }
 
     /**
@@ -80,7 +76,7 @@ public class CloneUsability extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             cls = classContext.getJavaClass();
-            if (cls.implementationOf(CLONE_CLASS)) {
+            if (cls.implementationOf(cloneClass)) {
                 clsName = cls.getClassName();
                 stack = new OpcodeStack();
                 super.visitClassContext(classContext);
@@ -144,7 +140,8 @@ public class CloneUsability extends BytecodeScanningDetector {
     /**
      * overrides the visitor to look for a CloneNotSupported being thrown
      *
-     * @param seen the currently parsed opcode
+     * @param seen
+     *            the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
