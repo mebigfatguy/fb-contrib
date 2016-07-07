@@ -60,17 +60,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * by interface or super class contracts and throw other types of checked exceptions. Lastly are method not constrained by any interface or superclass contract.
  */
 public class ExceptionSoftening extends BytecodeScanningDetector {
-    private static JavaClass runtimeClass;
-
-    static {
-        try {
-            runtimeClass = Repository.lookupClass("java/lang/RuntimeException");
-        } catch (ClassNotFoundException cnfe) {
-            runtimeClass = null;
-        }
-    }
 
     private final BugReporter bugReporter;
+    private JavaClass runtimeClass;
     private OpcodeStack stack;
     private Map<Integer, CodeException> catchHandlerPCs;
     private List<CatchInfo> catchInfos;
@@ -88,6 +80,12 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
      */
     public ExceptionSoftening(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            runtimeClass = Repository.lookupClass("java/lang/RuntimeException");
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
     }
 
     /**
@@ -127,7 +125,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
                 catchHandlerPCs = collectExceptions(obj.getExceptionTable());
                 if (!catchHandlerPCs.isEmpty()) {
                     stack.resetForMethodEntry(this);
-                    catchInfos = new ArrayList<CatchInfo>();
+                    catchInfos = new ArrayList<>();
                     lvt = method.getLocalVariableTable();
                     constrainingInfo = null;
                     hasValidFalseReturn = false;
@@ -282,14 +280,14 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
      * @return the filtered exceptions keyed by catch end pc
      */
     private static LinkedHashMap<Integer, CodeException> collectExceptions(CodeException... exceptions) {
-        List<CodeException> filteredEx = new ArrayList<CodeException>();
+        List<CodeException> filteredEx = new ArrayList<>();
         for (CodeException ce : exceptions) {
             if ((ce.getCatchType() != 0) && (ce.getStartPC() < ce.getEndPC()) && (ce.getEndPC() <= ce.getHandlerPC())) {
                 filteredEx.add(ce);
             }
         }
 
-        LinkedHashMap<Integer, CodeException> handlers = new LinkedHashMap<Integer, CodeException>();
+        LinkedHashMap<Integer, CodeException> handlers = new LinkedHashMap<>();
 
         for (CodeException ex : filteredEx) {
             handlers.put(Integer.valueOf(ex.getEndPC()), ex);
@@ -348,7 +346,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
      * @return an set of catch exception types that the pc is currently in
      */
     private static Set<String> findPossibleCatchSignatures(List<CatchInfo> infos, int pc) {
-        Set<String> catchTypes = new HashSet<String>(6);
+        Set<String> catchTypes = new HashSet<>(6);
         ListIterator<CatchInfo> it = infos.listIterator(infos.size());
         while (it.hasPrevious()) {
             CatchInfo ci = it.previous();
@@ -440,8 +438,8 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
      * @return a map with one entry of a class name to a set of exceptions that constrain what can be thrown.
      */
     private static Map<String, Set<String>> buildConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
-        Map<String, Set<String>> constraintInfo = new HashMap<String, Set<String>>();
-        Set<String> exs = new HashSet<String>();
+        Map<String, Set<String>> constraintInfo = new HashMap<>();
+        Set<String> exs = new HashSet<>();
         ExceptionTable et = m.getExceptionTable();
         if (et != null) {
             int[] indexTable = et.getExceptionIndexTable();
