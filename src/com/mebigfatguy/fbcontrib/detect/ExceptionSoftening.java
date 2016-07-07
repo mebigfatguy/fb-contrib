@@ -437,7 +437,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
      *            the method to add exceptions from
      * @return a map with one entry of a class name to a set of exceptions that constrain what can be thrown.
      */
-    private static Map<String, Set<String>> buildConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
+    private Map<String, Set<String>> buildConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
         Map<String, Set<String>> constraintInfo = new HashMap<>();
         Set<String> exs = new HashSet<>();
         ExceptionTable et = m.getExceptionTable();
