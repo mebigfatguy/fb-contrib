@@ -51,7 +51,6 @@ public class ConstantListIndex extends BytecodeScanningDetector {
 
     private static final String MAX_ICONST0_LOOP_DISTANCE_PROPERTY = "fb-contrib.cli.maxloopdistance";
     private static final Set<FQMethod> ubiquitousMethods;
-    private static JavaClass INVOCATIONHANDLER_CLASS;
 
     static {
         Set<FQMethod> um = new HashSet<>();
@@ -74,15 +73,10 @@ public class ConstantListIndex extends BytecodeScanningDetector {
         um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparatorPreserveAllTokens",
                 "(Ljava/lang/String;Ljava/lang/String;)[Ljava/lang/String;"));
         ubiquitousMethods = Collections.unmodifiableSet(um);
-
-        try {
-            INVOCATIONHANDLER_CLASS = Repository.lookupClass("java/lang/reflect/InvocationHandler");
-        } catch (ClassNotFoundException cnfe) {
-            INVOCATIONHANDLER_CLASS = null;
-        }
     }
 
     private final BugReporter bugReporter;
+    private JavaClass invocationHandlerClass;
     private State state;
     private BitSet iConst0Looped;
     private final int max_iConst0LoopDistance;
@@ -97,6 +91,12 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     public ConstantListIndex(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         max_iConst0LoopDistance = Integer.getInteger(MAX_ICONST0_LOOP_DISTANCE_PROPERTY, 30).intValue();
+
+        try {
+            invocationHandlerClass = Repository.lookupClass("java/lang/reflect/InvocationHandler");
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
     }
 
     /**
@@ -108,7 +108,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            if ((INVOCATIONHANDLER_CLASS != null) && classContext.getJavaClass().implementationOf(INVOCATIONHANDLER_CLASS)) {
+            if ((invocationHandlerClass != null) && classContext.getJavaClass().implementationOf(invocationHandlerClass)) {
                 return;
             }
             iConst0Looped = new BitSet();
