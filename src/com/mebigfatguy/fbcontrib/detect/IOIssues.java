@@ -69,15 +69,7 @@ public class IOIssues extends BytecodeScanningDetector {
     //@formatter:on
     );
 
-    private static JavaClass READER_CLASS;
-
-    static {
-        try {
-            READER_CLASS = Repository.lookupClass("java.io.Reader");
-        } catch (ClassNotFoundException cnfe) {
-            READER_CLASS = null;
-        }
-    }
+    private JavaClass readerClass;
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -90,6 +82,13 @@ public class IOIssues extends BytecodeScanningDetector {
      */
     public IOIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            readerClass = Repository.lookupClass("java.io.Reader");
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+
     }
 
     /**
@@ -166,7 +165,7 @@ public class IOIssues extends BytecodeScanningDetector {
                 return IOIUserValue.BUFFER;
             } else {
                 JavaClass cls = Repository.lookupClass(clsName);
-                if (cls.instanceOf(READER_CLASS)) {
+                if (cls.instanceOf(readerClass)) {
                     return IOIUserValue.READER;
                 }
             }
