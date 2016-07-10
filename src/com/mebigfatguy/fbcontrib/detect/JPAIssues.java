@@ -73,20 +73,10 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
     }
 
-    private static JavaClass runtimeExceptionClass;
-
-    static {
-        try {
-            runtimeExceptionClass = Repository.lookupClass("java.lang.RuntimeException");
-        } catch (Exception e) {
-            // can't log, have no bugReporter
-        }
-    }
-
     private static final Pattern annotationClassPattern = Pattern.compile("(L[^;]+;)");
 
     private BugReporter bugReporter;
-
+    private JavaClass runtimeExceptionClass;
     private JavaClass cls;
     private OpcodeStack stack;
     private Map<FQMethod, TransactionalType> transactionalMethods;
@@ -108,6 +98,13 @@ public class JPAIssues extends BytecodeScanningDetector {
 
     public JPAIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            runtimeExceptionClass = Repository.lookupClass("java.lang.RuntimeException");
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
+
     }
 
     /**
@@ -271,7 +268,7 @@ public class JPAIssues extends BytecodeScanningDetector {
      *            the currently parsed class
      */
     private void catalogClass(JavaClass cls) {
-        transactionalMethods = new HashMap<FQMethod, TransactionalType>();
+        transactionalMethods = new HashMap<>();
         isEntity = false;
         hasId = false;
         hasGeneratedValue = false;
@@ -407,7 +404,7 @@ public class JPAIssues extends BytecodeScanningDetector {
                 if (annotation.getNumElementValuePairs() == 0) {
                     return Collections.<JavaClass> emptySet();
                 }
-                Set<JavaClass> rollbackExceptions = new HashSet<JavaClass>();
+                Set<JavaClass> rollbackExceptions = new HashSet<>();
                 for (ElementValuePair pair : annotation.getElementValuePairs()) {
                     if ("rollbackFor".equals(pair.getNameString()) || "noRollbackFor".equals(pair.getNameString())) {
 
@@ -446,7 +443,7 @@ public class JPAIssues extends BytecodeScanningDetector {
             return Collections.<JavaClass> emptySet();
         }
 
-        Set<JavaClass> exceptions = new HashSet<JavaClass>();
+        Set<JavaClass> exceptions = new HashSet<>();
         for (String en : et.getExceptionNames()) {
             JavaClass exCls = Repository.lookupClass(en);
             if (!exCls.instanceOf(runtimeExceptionClass)) {
