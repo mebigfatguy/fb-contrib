@@ -54,22 +54,15 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class LoggerOddities extends BytecodeScanningDetector {
 
-    private static JavaClass THROWABLE_CLASS;
-    static {
-        try {
-            THROWABLE_CLASS = Repository.lookupClass("java/lang/Throwable");
-        } catch (ClassNotFoundException cnfe) {
-            THROWABLE_CLASS = null;
-        }
-    }
-
     private static final Set<String> LOGGER_METHODS = UnmodifiableSet.create("trace", "debug", "info", "warn", "error", "fatal");
 
     private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
-    private static final Pattern BAD_STRING_FORMAT_PATTERN = Pattern.compile("%([0-9]*\\$)?(-|#|\\+| |0|,|\\(|)?[0-9]*(\\.[0-9]+)?(b|h|s|c|d|o|x|e|f|g|a|t|%|n)");
+    private static final Pattern BAD_STRING_FORMAT_PATTERN = Pattern
+            .compile("%([0-9]*\\$)?(-|#|\\+| |0|,|\\(|)?[0-9]*(\\.[0-9]+)?(b|h|s|c|d|o|x|e|f|g|a|t|%|n)");
     private static final Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
 
     private final BugReporter bugReporter;
+    private JavaClass throwableClass;
     private OpcodeStack stack;
     private String nameOfThisClass;
 
@@ -81,6 +74,13 @@ public class LoggerOddities extends BytecodeScanningDetector {
      */
     public LoggerOddities(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            throwableClass = Repository.lookupClass("java/lang/Throwable");
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+
     }
 
     /**
@@ -146,7 +146,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 }
             } else if (seen == INVOKESTATIC) {
                 lookForSuspectClasses();
-            } else if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (THROWABLE_CLASS != null)) {
+            } else if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (throwableClass != null)) {
                 String mthName = getNameConstantOperand();
                 if ("getName".equals(mthName)) {
                     if (stack.getStackDepth() >= 1) {
@@ -160,7 +160,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 } else if ("getMessage".equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
                     JavaClass cls = Repository.lookupClass(callingClsName);
-                    if (cls.instanceOf(THROWABLE_CLASS) && (stack.getStackDepth() > 0)) {
+                    if (cls.instanceOf(throwableClass) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item exItem = stack.getStackItem(0);
                         exMessageReg = exItem.getRegisterNumber();
                     }
@@ -238,7 +238,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     OpcodeStack.Item msgItem = stack.getStackItem(1);
 
                     Object exReg = msgItem.getUserValue();
-                    if (exReg instanceof Integer && (((Integer) exReg).intValue() == exItem.getRegisterNumber())) {
+                    if ((exReg instanceof Integer) && (((Integer) exReg).intValue() == exItem.getRegisterNumber())) {
                         bugReporter.reportBug(
                                 new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
@@ -246,7 +246,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
             } else if ("(Ljava/lang/Object;)V".equals(sig)) {
                 if (stack.getStackDepth() > 0) {
                     final JavaClass clazz = stack.getStackItem(0).getJavaClass();
-                    if ((clazz != null) && clazz.instanceOf(THROWABLE_CLASS)) {
+                    if ((clazz != null) && clazz.instanceOf(throwableClass)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.LO_LOGGER_LOST_EXCEPTION_STACK_TRACE.name(), NORMAL_PRIORITY).addClass(this)
                                 .addMethod(this).addSourceLine(this));
                     }
@@ -268,8 +268,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             } else {
                                 m = BAD_STRING_FORMAT_PATTERN.matcher((String) con);
                                 if (m.find()) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_STRING_FORMAT_NOTATION.name(), NORMAL_PRIORITY).addClass(this)
-                                            .addMethod(this).addSourceLine(this));
+                                    bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_STRING_FORMAT_NOTATION.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
                                 } else {
                                     int actualParms = getSLF4JParmCount(signature);
                                     if (actualParms != -1) {
@@ -426,10 +426,12 @@ public class LoggerOddities extends BytecodeScanningDetector {
      * @return the number of expected parameters
      */
     private int getSLF4JParmCount(String signature) {
-        if ("(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature))
+        if ("(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature)) {
             return 1;
-        if ("(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V".equals(signature))
+        }
+        if ("(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V".equals(signature)) {
             return 2;
+        }
 
         OpcodeStack.Item item = stack.getStackItem(0);
         Integer size = (Integer) item.getUserValue();
@@ -446,18 +448,20 @@ public class LoggerOddities extends BytecodeScanningDetector {
      */
     private boolean hasExceptionOnStack() {
         try {
-            for (int i = 0; i < stack.getStackDepth() - 1; i++) {
+            for (int i = 0; i < (stack.getStackDepth() - 1); i++) {
                 OpcodeStack.Item item = stack.getStackItem(i);
                 String sig = item.getSignature();
                 if (sig.startsWith("L")) {
                     String name = SignatureUtils.stripSignature(sig);
                     JavaClass cls = Repository.lookupClass(name);
-                    if (cls.instanceOf(THROWABLE_CLASS))
+                    if (cls.instanceOf(throwableClass)) {
                         return true;
+                    }
                 } else if (sig.startsWith("[")) {
                     Integer sz = (Integer) item.getUserValue();
-                    if ((sz != null) && (sz.intValue() < 0))
+                    if ((sz != null) && (sz.intValue() < 0)) {
                         return true;
+                    }
                 }
             }
             return false;
