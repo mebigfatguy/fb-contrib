@@ -37,17 +37,8 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  */
 public class NonFunctionalField extends PreorderVisitor implements Detector {
 
-    private static JavaClass serializableClass;
-
-    static {
-        try {
-            serializableClass = Repository.lookupClass("java/io/Serializable");
-        } catch (ClassNotFoundException cnfe) {
-            serializableClass = null;
-        }
-    }
-
     private BugReporter bugReporter;
+    private JavaClass serializableClass;
 
     /**
      * constructs a NFF detector given the reporter to report bugs on
@@ -57,6 +48,12 @@ public class NonFunctionalField extends PreorderVisitor implements Detector {
      */
     public NonFunctionalField(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            serializableClass = Repository.lookupClass("java/io/Serializable");
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
     }
 
     /**
