@@ -1,4 +1,5 @@
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
@@ -85,7 +86,7 @@ public class PRMC_Sample {
     }
 
     public void fpEnumToString(FPEnum e) {
-        Set<String> s = new HashSet<String>();
+        Set<String> s = new HashSet<>();
 
         s.add(FPEnum.fee.toString());
         s.add(FPEnum.fi.toString());
@@ -127,7 +128,7 @@ public class PRMC_Sample {
         System.out.println(Arrays.asList("foo"));
         System.out.println(Arrays.asList("bar"));
     }
-    
+
     public void fpWithFinally() {
         Object foo = new Object();
         try {
@@ -137,7 +138,7 @@ public class PRMC_Sample {
             System.out.println(foo.toString());
         }
     }
-    
+
     void willThrow() {
         throw new RuntimeException("kaboom!");
     }
@@ -165,13 +166,36 @@ public class PRMC_Sample {
             return sb.toString();
         }
     }
-    
+
     class SFIssue71 {
         protected String[] inc = new String[0];
         protected String[] dec = new String[0];
-        
+
         public void fplog() {
             System.out.println(Arrays.toString(inc));
             System.out.println(Arrays.toString(dec));
         }
-    }}
+    }
+}
+
+class PRMCPar {
+    List<String> c = new ArrayList<>();
+
+    public void fpSuperCall() {
+        c.add("FP");
+    }
+}
+
+class PRMCChild extends PRMCPar {
+
+    @Override
+    public void fpSuperCall() {
+
+        if (c.isEmpty()) {
+            super.fpSuperCall();
+            if (c.isEmpty()) {
+                System.out.println("False Positive");
+            }
+        }
+    }
+}
