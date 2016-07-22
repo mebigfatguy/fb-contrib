@@ -58,7 +58,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     public static final String PRMC_NORMAL_BYTECOUNT = "fbcontrib.PRMC.normalbytecount";
     public static final String PRMC_NORMAL_METHODCALLS = "fbcontrib.PRMC.normalmethodcalls";
 
-    private static Set<String> riskyMethodNameContents = new HashSet<String>();
+    private static Set<String> riskyMethodNameContents = new HashSet<>();
     private static int highByteCountLimit = 200;
     private static int highMethodCallLimit = 10;
     private static int normalByteCountLimit = 50;
@@ -117,7 +117,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         }
     }
 
-    private static Set<String> riskyClassNames = new HashSet<String>();
+    private static Set<String> riskyClassNames = new HashSet<>();
 
     static {
         riskyClassNames.add("java/nio/ByteBuffer");
@@ -165,9 +165,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            localMethodCalls = new HashMap<Integer, MethodCall>();
-            fieldMethodCalls = new HashMap<String, MethodCall>();
-            staticMethodCalls = new HashMap<String, MethodCall>();
+            localMethodCalls = new HashMap<>();
+            fieldMethodCalls = new HashMap<>();
+            staticMethodCalls = new HashMap<>();
             branchTargets = new BitSet();
             super.visitClassContext(classContext);
         } finally {
@@ -180,11 +180,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the stack, and method call maps for new method
-     * Note: that when collecting branch targets, it's unfortunately not good enough to just
-     * collect the handler pcs, as javac plays fast and loose, and will sometimes jam code below the
-     * end pc and before the first handler pc, which gets executed. So we need to clear our
-     * maps if we go past the end pc as well.
+     * implements the visitor to reset the stack, and method call maps for new method Note: that when collecting branch targets, it's unfortunately not good
+     * enough to just collect the handler pcs, as javac plays fast and loose, and will sometimes jam code below the end pc and before the first handler pc,
+     * which gets executed. So we need to clear our maps if we go past the end pc as well.
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -198,8 +196,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         branchTargets.clear();
         CodeException[] codeExceptions = obj.getExceptionTable();
         for (CodeException codeEx : codeExceptions) {
-            //adding the end pc seems silly, but it is need because javac may repeat
-            //part of the finally block in the try block, at times.
+            // adding the end pc seems silly, but it is need because javac may repeat
+            // part of the finally block in the try block, at times.
             branchTargets.set(codeEx.getEndPC());
             branchTargets.set(codeEx.getHandlerPC());
         }
@@ -266,8 +264,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
             } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
                 String signature = getSigConstantOperand();
                 int parmCount = Type.getArgumentTypes(signature).length;
-                int neededStackSize = parmCount - ((seen == INVOKESTATIC) ? 0 : 1);
-                if (stack.getStackDepth() > neededStackSize) {
+                int neededStackSize = parmCount + ((seen == INVOKESTATIC) ? 0 : 1);
+                if (stack.getStackDepth() >= neededStackSize) {
                     Object[] parmConstants = new Object[parmCount];
                     for (int i = 0; i < parmCount; i++) {
                         OpcodeStack.Item parm = stack.getStackItem(i);
@@ -278,10 +276,10 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                             }
                             XField f = parm.getXField();
                             if (f != null) {
-                                //Two different fields holding a 0 length array should be considered different
+                                // Two different fields holding a 0 length array should be considered different
                                 parmConstants[i] = f.getName() + ':' + parmConstants[i];
                             }
-                         }
+                        }
 
                         if (parmConstants[i] == null) {
                             return;
