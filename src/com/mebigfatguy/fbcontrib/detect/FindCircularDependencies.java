@@ -48,14 +48,14 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
     private String clsName;
 
     /**
-     * constructs a CD detector given the reporter to report bugs on
+     * constructs a FCD detector given the reporter to report bugs on
      *
      * @param bugReporter
      *            the sync of bug reports
      */
     public FindCircularDependencies(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        this.dependencyGraph = new HashMap<String, Set<String>>();
+        this.dependencyGraph = new HashMap<>();
     }
 
     @Override
@@ -117,7 +117,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
     private Set<String> getDependenciesForClass(String clsName) {
         Set<String> dependencies = dependencyGraph.get(clsName);
         if (dependencies == null) {
-            dependencies = new HashSet<String>();
+            dependencies = new HashSet<>();
             dependencyGraph.put(clsName, dependencies);
         }
 
@@ -226,8 +226,8 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
         public Set<String> findLoop(Map<String, Set<String>> dependencyGraph, String startCls) {
             dGraph = dependencyGraph;
             startClass = startCls;
-            visited = new HashSet<String>();
-            loop = new LinkedHashSet<String>();
+            visited = new HashSet<>();
+            loop = new LinkedHashSet<>();
             if (findLoop(startClass)) {
                 return loop;
             }
