@@ -1403,7 +1403,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 	   </Details>
 	</Detector>
 	
-	<Detector class="com.mebigfatguy.fbcontrib.detect.CircularDependencies">
+	<Detector class="com.mebigfatguy.fbcontrib.detect.FindCircularDependencies">
         <Details>
             <![CDATA[
             <p>This detector looks circular dependencies among classes. </p>
@@ -4850,7 +4850,7 @@ if (name != null) {
 	   </Details>
 	</BugPattern>
 	
-	<BugPattern type="CD_CIRCULAR_DEPENDENCY">
+	<BugPattern type="FCD_FIND_CIRCULAR_DEPENDENCY">
         <ShortDescription>Class has a circular dependency with other classes</ShortDescription>
         <LongDescription>Class {0} has a circular dependency with other classes</LongDescription>
         <Details>
@@ -5641,7 +5641,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="CNC">Collection Naming Confusion</BugCode>
 	<BugCode abbrev="PME">Poor Mans Enum</BugCode>
 	<BugCode abbrev="UP">Unused Parameter</BugCode>
-	<BugCode abbrev="CD">Circular Dependencies</BugCode>
+	<BugCode abbrev="FCD">Find Circular Dependencies</BugCode>
 	<BugCode abbrev="MUC">Modifying Unmodifiable Collection</BugCode>
 	<BugCode abbrev="UJM">Unjitable method</BugCode>
 	<BugCode abbrev="HES">Hanging ExecutorService</BugCode>

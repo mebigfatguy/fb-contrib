@@ -222,7 +222,7 @@ function toggleBlock(divId, imgId)
                 Looks for private or static methods that have parameters that aren't used. These parameters
                 can be removed.
                 </li>
-                <li><b>[CD] Circular Dependencies</b><br/>
+                <li><b>[FCD] Find Circular Dependencies</b><br/>
                 Looks for class dependencies that where two or more classes rely on each other, either directly or indirectly.
                 This often signifies an improper data model. Consider using interfaces to break this closed loop.
                 </li>

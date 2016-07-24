@@ -255,7 +255,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.UnusedParameter" speed="fast" reports="UP_UNUSED_PARAMETER" />
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.CircularDependencies" speed="moderate" reports="CD_CIRCULAR_DEPENDENCY"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.FindCircularDependencies" speed="moderate" reports="FCD_FIND_CIRCULAR_DEPENDENCY"/>
 
     <Detector class="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" speed="fast" reports="" hidden="true" />
     
@@ -528,7 +528,7 @@
     <BugPattern abbrev="CNC" type="CNC_COLLECTION_NAMING_CONFUSION" category="STYLE"  />
     <BugPattern abbrev="PME" type="PME_POOR_MANS_ENUM" category="STYLE"  />
     <BugPattern abbrev="UP" type="UP_UNUSED_PARAMETER" category="STYLE"  />
-    <BugPattern abbrev="CD" type="CD_CIRCULAR_DEPENDENCY" category="CORRECTNESS" />
+    <BugPattern abbrev="FCD" type="FCD_FIND_CIRCULAR_DEPENDENCY" category="CORRECTNESS" />
     <BugPattern abbrev="MUC" type="MUC_MODIFYING_UNMODIFIABLE_COLLECTION" category="CORRECTNESS" />
     <BugPattern abbrev="UJM" type="UJM_UNJITABLE_METHOD" category="PERFORMANCE" />
 	<BugPattern abbrev="HES" type="HES_EXECUTOR_NEVER_SHUTDOWN" category="CORRECTNESS" />
