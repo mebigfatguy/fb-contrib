@@ -44,27 +44,27 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     private static final Set<String> METHOD_ANNOTATIONS = UnmodifiableSet.create(
             //@formatter:off
             "Ljavax/ws/rs/HEAD;",
-            "Ljavax/ws/rs/GET;", 
-            "Ljavax/ws/rs/PUT;", 
-            "Ljavax/ws/rs/POST;", 
+            "Ljavax/ws/rs/GET;",
+            "Ljavax/ws/rs/PUT;",
+            "Ljavax/ws/rs/POST;",
             "Ljavax/ws/rs/DELETE;",
             "Ljavax/ws/rs/POST;"
             //@formatter:on
     );
-    
+
     private static final Set<String> PARAM_ANNOTATIONS = UnmodifiableSet.create(
             //@formatter:off
             "Ljavax/ws/rs/PathParam;",
             "Ljavax/ws/rs/CookieParam;",
-            "Ljavax/ws/rs/FormParam;", 
-            "Ljavax/ws/rs/HeaderParam;", 
+            "Ljavax/ws/rs/FormParam;",
+            "Ljavax/ws/rs/HeaderParam;",
             "Ljavax/ws/rs/MatrixParam;",
             "Ljavax/ws/rs/QueryParam;",
             "Ljavax/ws/rs/core/Context;",
             "Lcom/wordnik/swagger/annotations/ApiParam;"
             //@formatter:on
     );
-    
+
     private static final Set<String> NATIVE_JAXRS_TYPES = UnmodifiableSet.create(
             //@formatter:off
             "Ljava/lang/String;",
@@ -78,7 +78,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             "Ljavax/ws/rc/core/MultivaluedMap;"
             //@formatter:on
     );
-    
+
     private static final Set<String> VALID_CONTEXT_TYPES = UnmodifiableSet.create(
             //@formatter:off
             "Ljavax/ws/rs/core/Application;",
@@ -93,15 +93,15 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             "Ljavax/servlet/http/HttpServletResponse;"
             //@formatter:on
     );
-   
+
     private BugReporter bugReporter;
     private boolean hasClassConsumes;
     private String pathOnClass;
-    
+
     public JAXRSIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
-    
+
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
@@ -114,65 +114,63 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                 pathOnClass = getDefaultAnnotationValue(entry);
             }
         }
-        
+
         cls.accept(this);
     }
-    
+
     @Override
     public void visitMethod(Method obj) {
-        
+
         if (obj.isSynthetic()) {
             return;
         }
-        
+
         String path = null;
         boolean isJAXRS = false;
         boolean hasGet = false;
         boolean hasConsumes = false;
-        
+
         for (AnnotationEntry entry : obj.getAnnotationEntries()) {
             String annotationType = entry.getAnnotationType();
             switch (annotationType) {
-            case "Ljavax/ws/rs/GET;":
-                hasGet = true;
-                isJAXRS = true;
-                break;
-                
-            case "Ljavax/ws/rs/Consumes;":
-                hasConsumes = true;
-                break;
-                
-            case "Ljavax/ws/rs/Path;":
-                path = getDefaultAnnotationValue(entry);
-                break;
-                
-            default:
-                // it is fine that GET is not captured here
-                if (METHOD_ANNOTATIONS.contains(annotationType)) {
+                case "Ljavax/ws/rs/GET;":
+                    hasGet = true;
                     isJAXRS = true;
-                }
+                break;
+
+                case "Ljavax/ws/rs/Consumes;":
+                    hasConsumes = true;
+                break;
+
+                case "Ljavax/ws/rs/Path;":
+                    path = getDefaultAnnotationValue(entry);
+                break;
+
+                default:
+                    // it is fine that GET is not captured here
+                    if (METHOD_ANNOTATIONS.contains(annotationType)) {
+                        isJAXRS = true;
+                    }
                 break;
             }
-            
+
             if (hasGet && hasConsumes) {
-                bugReporter.reportBug(new BugInstance(this, BugType.JXI_GET_ENDPOINT_CONSUMES_CONTENT.name(), NORMAL_PRIORITY)
-                                .addClass(this)
-                                .addMethod(this));
+                bugReporter.reportBug(new BugInstance(this, BugType.JXI_GET_ENDPOINT_CONSUMES_CONTENT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                 break;
-            } 
+            }
         }
-        
+
         if (isJAXRS) {
             processJAXRSMethod(obj, pathOnClass + path, hasConsumes || hasClassConsumes);
         }
     }
-    
+
     private void processJAXRSMethod(Method m, String path, boolean hasConsumes) {
         Type[] parmTypes = m.getArgumentTypes();
         int numParms = parmTypes.length;
         if (numParms > 0) {
             boolean sawBareParm = false;
-            
+
             ParameterAnnotationEntry[] pes = m.getParameterAnnotationEntries();
             int parmIndex = 0;
             for (ParameterAnnotationEntry pe : pes) {
@@ -181,47 +179,41 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                     String annotationType = a.getAnnotationType();
                     if (PARAM_ANNOTATIONS.contains(annotationType)) {
                         foundParamAnnotation = true;
-                        
+
                         if ((path != null) && "Ljavax/ws/rs/PathParam;".equals(annotationType)) {
                             String parmPath = getDefaultAnnotationValue(a);
-                            if ((parmPath != null) && (!path.matches(".*\\{" + parmPath + "\\b.*" ))) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY)
-                                        .addClass(this)
-                                        .addMethod(this)
-                                        .addString(parmPath));
+                            if ((parmPath != null) && (!path.matches(".*\\{" + parmPath + "\\b.*"))) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addString(parmPath));
                             }
                         } else if ("Ljavax/ws/rs/core/Context;".equals(annotationType)) {
                             String parmSig = parmTypes[parmIndex].getSignature();
                             if (!VALID_CONTEXT_TYPES.contains(parmSig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_INVALID_CONTEXT_PARAMETER_TYPE.name(), NORMAL_PRIORITY)
-                                        .addClass(this)
-                                        .addMethod(this)
-                                        .addString(parmSig));
+                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_INVALID_CONTEXT_PARAMETER_TYPE.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addString(parmSig));
                             }
                         }
                     }
                 }
-                
+
                 if (!foundParamAnnotation) {
-                    
+
                     if ((!sawBareParm) && (hasConsumes || NATIVE_JAXRS_TYPES.contains(parmTypes[parmIndex].getSignature()))) {
                         sawBareParm = true;
                     } else {
-                        bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
-                                .addClass(this)
-                                .addMethod(this)
-                                .addString("Parameter " + parmIndex + 1));
+                        bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addString("Parameter " + parmIndex + 1));
                         break;
                     }
-                   
+
                 }
-                
+
                 parmIndex++;
             }
-             
+
         }
     }
-    
+
     private String getDefaultAnnotationValue(AnnotationEntry entry) {
         int numPairs = entry.getNumElementValuePairs();
         if (numPairs > 0) {
@@ -232,11 +224,12 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                 }
             }
         }
-        
+
         return null;
     }
 
     @Override
     public void report() {
+        // required by the interface, but not used
     }
 }
