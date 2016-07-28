@@ -58,6 +58,14 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     public static final String PRMC_NORMAL_BYTECOUNT = "fbcontrib.PRMC.normalbytecount";
     public static final String PRMC_NORMAL_METHODCALLS = "fbcontrib.PRMC.normalmethodcalls";
 
+    /**
+     * a collection of names that are to be checked against a currently parsed method, to see if that method is risky to be called redundant. The contents are
+     * either
+     * <ul>
+     * <li>a simple name that can be found as <em>part</em> of the methodName, like "destroy" which would match destroy(), or destroyAll()</li>
+     * <li>a fully qualified method name that exactly matches a method, like "java/lang/String.valueOf"</li>
+     * </ul>
+     */
     private static Set<String> riskyMethodNameContents = new HashSet<>();
     private static int highByteCountLimit = 200;
     private static int highMethodCallLimit = 10;
@@ -421,6 +429,11 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
      */
     private static boolean isRiskyName(String className, String methodName) {
         if (riskyClassNames.contains(className)) {
+            return true;
+        }
+
+        String qualifiedMethodName = className + '.' + methodName;
+        if (riskyMethodNameContents.contains(qualifiedMethodName)) {
             return true;
         }
 
