@@ -124,6 +124,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         riskyClassNames.add("java/io/DataInputStream");
         riskyClassNames.add("java/io/ObjectInputStream");
         riskyClassNames.add("java/util/Calendar");
+        riskyClassNames.add("java/util/stream/Collectors");
         riskyClassNames.add("com/google/common/collect/Lists");
         riskyClassNames.add("com/google/common/collect/Sets");
         riskyClassNames.add("com/google/common/collect/Maps");
