@@ -642,6 +642,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      *
      * @param sb
      *            the scope block to start with
+     * @param start
+     *            the current pc
      * @param target
      *            the target to look for
      *
@@ -697,6 +699,10 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     /**
      * finds the scope block that is the active synchronized block
      *
+     * @param sb
+     *            the parent scope block to start with
+     * @param monitorEnterPC
+     *            the pc where the current synchronized block starts
      * @return the scope block
      */
     private ScopeBlock findSynchronizedScopeBlock(ScopeBlock sb, int monitorEnterPC) {
@@ -933,6 +939,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
          *            the register that was stored
          * @param pc
          *            the instruction that did the store
+         * @param assocObject
+         *            the the object that is associated with this store, usually the field from which this came
          */
         public void addStore(int reg, int pc, UserObject assocObject) {
             if (stores == null) {
@@ -1049,6 +1057,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
         /**
          * report stores that occur at scopes higher than associated loads that are not involved with loops
+         *
+         * @param parentUsedRegs
+         *            the set of registers that where used by the parent scope block
          */
         public void findBugs(Set<Integer> parentUsedRegs) {
             if (isLoop) {
