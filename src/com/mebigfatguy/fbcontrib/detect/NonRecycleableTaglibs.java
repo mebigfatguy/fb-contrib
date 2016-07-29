@@ -50,11 +50,11 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
     /**
-     * methodname:methodsig -> type of setter methods
+     * methodname:methodsig to type of setter methods
      */
     private Map<String, String> attributes;
     /**
-     * methodname:methodsig -> (fieldname:fieldtype)s
+     * methodname:methodsig to (fieldname:fieldtype)s
      */
     private Map<String, Map<String, SourceLineAnnotation>> methodWrites;
     private Map<String, FieldAnnotation> fieldAnnotations;
@@ -85,8 +85,8 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
                     attributes = getAttributes(cls);
 
                     if (attributes.size() > 0) {
-                        methodWrites = new HashMap<String, Map<String, SourceLineAnnotation>>();
-                        fieldAnnotations = new HashMap<String, FieldAnnotation>();
+                        methodWrites = new HashMap<>();
+                        fieldAnnotations = new HashMap<>();
                         super.visitClassContext(classContext);
                         reportBugs();
                     }
@@ -109,7 +109,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
      * @return the map of possible attributes/types
      */
     private static Map<String, String> getAttributes(JavaClass cls) {
-        Map<String, String> atts = new HashMap<String, String>();
+        Map<String, String> atts = new HashMap<>();
         Method[] methods = cls.getMethods();
         for (Method m : methods) {
             String name = m.getName();
@@ -157,7 +157,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
             String methodInfo = getMethodName() + ':' + getMethodSig();
             Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
             if (fields == null) {
-                fields = new HashMap<String, SourceLineAnnotation>();
+                fields = new HashMap<>();
                 methodWrites.put(methodInfo, fields);
             }
             String fieldName = getNameConstantOperand();
