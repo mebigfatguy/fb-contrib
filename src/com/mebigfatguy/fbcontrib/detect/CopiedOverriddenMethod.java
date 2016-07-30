@@ -86,7 +86,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
             String superName = cls.getSuperclassName();
             if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(superName)) {
                 this.classContext = clsContext;
-                superclassCode = new HashMap<String, CodeInfo>();
+                superclassCode = new HashMap<>();
                 JavaClass superCls = cls.getSuperClass();
                 childPoolGen = new ConstantPoolGen(cls.getConstantPool());
                 parentPoolGen = new ConstantPoolGen(superCls.getConstantPool());
@@ -242,7 +242,9 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
      * determines if two access flags contain the same access modifiers
      *
      * @param parentAccess
+     *            the access flags of the parent method
      * @param childAccess
+     *            the access flats of the child method
      * @return whether the access modifiers are the same
      */
     private static boolean sameAccess(int parentAccess, int childAccess) {
