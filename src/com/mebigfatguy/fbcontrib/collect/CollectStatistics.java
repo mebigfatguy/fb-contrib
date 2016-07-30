@@ -73,6 +73,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
             super.visitClassContext(classContext);
 
             boolean foundNewCall = true;
+            Statistics statistics = Statistics.getStatistics();
 
             String clsName = classContext.getJavaClass().getClassName();
             while (foundNewCall && !selfCallTree.isEmpty()) {
@@ -81,7 +82,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                 for (Map.Entry<QMethod, Set<CalledMethod>> callerEntry : selfCallTree.entrySet()) {
                     QMethod caller = callerEntry.getKey();
 
-                    MethodInfo callerMi = Statistics.getStatistics().getMethodStatistics(clsName, caller.getMethodName(), caller.getSignature());
+                    MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(), caller.getSignature());
                     if (callerMi == null) {
                         // odd, shouldn't happen
                         continue;
@@ -96,7 +97,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                         if (calledMethod.isSuper) {
                             callerMi.setModifiesState(true);
                         } else {
-                            MethodInfo calleeMi = Statistics.getStatistics().getMethodStatistics(clsName, calledMethod.callee.getMethodName(),
+                            MethodInfo calleeMi = statistics.getMethodStatistics(clsName, calledMethod.callee.getMethodName(),
                                     calledMethod.callee.getSignature());
                             if (calleeMi == null) {
                                 // a super or sub class probably implements this method so just assume it modifies state
