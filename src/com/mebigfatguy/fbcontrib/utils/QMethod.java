@@ -30,6 +30,14 @@ public final class QMethod {
         this.signature = signature;
     }
 
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
     @Override
     public int hashCode() {
         return methodName.hashCode() ^ signature.hashCode();

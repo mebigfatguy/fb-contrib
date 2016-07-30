@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -25,12 +28,15 @@ import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.objectweb.asm.Type;
 
+import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
@@ -48,6 +54,9 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     private int numMethodCalls;
     private boolean modifiesState;
     private boolean classHasAnnotation;
+    private OpcodeStack stack;
+    private Map<QMethod, Set<CalledMethod>> selfCallTree;
+    private QMethod curMethod;
 
     public CollectStatistics(@SuppressWarnings("unused") BugReporter bugReporter) {
         Statistics.getStatistics().clear();
@@ -55,10 +64,60 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        JavaClass cls = classContext.getJavaClass();
-        AnnotationEntry[] annotations = cls.getAnnotationEntries();
-        classHasAnnotation = (annotations != null) && (annotations.length > 0);
-        super.visitClassContext(classContext);
+        try {
+            JavaClass cls = classContext.getJavaClass();
+            AnnotationEntry[] annotations = cls.getAnnotationEntries();
+            classHasAnnotation = (annotations != null) && (annotations.length > 0);
+            stack = new OpcodeStack();
+            selfCallTree = new HashMap<>();
+            super.visitClassContext(classContext);
+
+            boolean foundNewCall = true;
+
+            String clsName = classContext.getJavaClass().getClassName();
+            while (foundNewCall && !selfCallTree.isEmpty()) {
+                foundNewCall = false;
+
+                for (Map.Entry<QMethod, Set<CalledMethod>> callerEntry : selfCallTree.entrySet()) {
+                    QMethod caller = callerEntry.getKey();
+
+                    MethodInfo callerMi = Statistics.getStatistics().getMethodStatistics(clsName, caller.getMethodName(), caller.getSignature());
+                    if (callerMi == null) {
+                        // odd, shouldn't happen
+                        continue;
+                    }
+
+                    if (callerMi.getModifiesState()) {
+                        continue;
+                    }
+
+                    for (CalledMethod calledMethod : callerEntry.getValue()) {
+
+                        if (calledMethod.isSuper) {
+                            callerMi.setModifiesState(true);
+                        } else {
+                            MethodInfo calleeMi = Statistics.getStatistics().getMethodStatistics(clsName, calledMethod.callee.getMethodName(),
+                                    calledMethod.callee.getSignature());
+                            if (calleeMi == null) {
+                                // a super or sub class probably implements this method so just assume it modifies state
+                                callerMi.setModifiesState(true);
+                                continue;
+                            }
+
+                            if (calleeMi.getModifiesState()) {
+                                callerMi.setModifiesState(true);
+                                foundNewCall = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        } finally {
+            stack = null;
+            selfCallTree = null;
+            curMethod = null;
+        }
     }
 
     @Override
@@ -69,6 +128,8 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
         byte[] code = obj.getCode();
         if (code != null) {
+            stack.resetForMethodEntry(this);
+            curMethod = null;
             super.visitCode(obj);
             String clsName = getClassName();
             Method method = getMethod();
@@ -97,22 +158,46 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
     @Override
     public void sawOpcode(int seen) {
-        switch (seen) {
-            case INVOKEVIRTUAL:
-            case INVOKEINTERFACE:
-            case INVOKESPECIAL:
-            case INVOKESTATIC:
-            case INVOKEDYNAMIC:
-                numMethodCalls++;
-            break;
+        try {
+            switch (seen) {
+                case INVOKEVIRTUAL:
+                case INVOKEINTERFACE:
+                case INVOKESPECIAL:
+                case INVOKESTATIC:
+                case INVOKEDYNAMIC:
+                    numMethodCalls++;
 
-            case PUTSTATIC:
-            case PUTFIELD:
-                modifiesState = true;
-            break;
+                    if (seen != INVOKESTATIC) {
+                        int numParms = Type.getArgumentTypes(getSigConstantOperand()).length;
+                        if (stack.getStackDepth() > numParms) {
+                            OpcodeStack.Item itm = stack.getStackItem(numParms);
+                            if (itm.getRegisterNumber() == 0) {
+                                Set<CalledMethod> calledMethods;
 
-            default:
-            break;
+                                if (curMethod == null) {
+                                    curMethod = new QMethod(getMethodName(), getMethodSig());
+                                    calledMethods = new HashSet<>();
+                                    selfCallTree.put(curMethod, calledMethods);
+                                } else {
+                                    calledMethods = selfCallTree.get(curMethod);
+                                }
+
+                                calledMethods.add(new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()), seen == INVOKESPECIAL));
+                            }
+                        }
+                    }
+                break;
+
+                case PUTSTATIC:
+                case PUTFIELD:
+                    modifiesState = true;
+                break;
+
+                default:
+                break;
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
         }
     }
 
@@ -123,5 +208,31 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
         AnnotationEntry[] annotations = m.getAnnotationEntries();
         return (annotations != null) && (annotations.length > 0);
+    }
+
+    static class CalledMethod {
+        private QMethod callee;
+        private boolean isSuper;
+
+        public CalledMethod(QMethod c, boolean s) {
+            callee = c;
+            isSuper = s;
+        }
+
+        @Override
+        public int hashCode() {
+            return callee.hashCode() & (isSuper ? 0 : 1);
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof CalledMethod)) {
+                return false;
+            }
+
+            CalledMethod that = (CalledMethod) obj;
+
+            return (isSuper == that.isSuper) && callee.equals(that.callee);
+        }
     }
 }
