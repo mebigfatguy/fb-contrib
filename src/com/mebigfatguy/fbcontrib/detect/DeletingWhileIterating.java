@@ -76,7 +76,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         }
 
         try {
-            exceptionClasses = new HashSet<JavaClass>(2);
+            exceptionClasses = new HashSet<>(2);
             exceptionClasses.add(Repository.lookupClass("java/util/concurrent/CopyOnWriteArrayList"));
             exceptionClasses.add(Repository.lookupClass("java/util/concurrent/CopyOnWriteArraySet"));
         } catch (ClassNotFoundException cnfe) {
@@ -90,7 +90,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
     private static final Map<QMethod, Integer> modifyingMethods;
 
     static {
-        Map<QMethod, Integer> mm = new HashMap<QMethod, Integer>();
+        Map<QMethod, Integer> mm = new HashMap<>();
         mm.put(new QMethod("add", "(Ljava/lang/Object;)Z"), Values.ONE);
         mm.put(new QMethod("addAll", "(Ljava/util/Collection;)Z"), Values.ONE);
         mm.put(new QMethod("addAll", "(ILjava/util/Collection;)Z"), Values.TWO);
@@ -136,9 +136,9 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
 
         try {
             stack = new OpcodeStack();
-            collectionGroups = new ArrayList<GroupPair>();
-            groupToIterator = new HashMap<Integer, Integer>();
-            loops = new HashMap<Integer, Loop>(10);
+            collectionGroups = new ArrayList<>();
+            groupToIterator = new HashMap<>();
+            loops = new HashMap<>(10);
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -383,6 +383,8 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
      *
      * @param couldSeePop
      *            if the preceding instruction returns a value, and thus might need to be popped
+     * 
+     * @return when a following instruction issues some sort of return
      */
     private boolean returnFollows(boolean couldSeePop) {
 
@@ -491,7 +493,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
     }
 
     private void buildVariableEndScopeMap() {
-        endOfScopes = new HashMap<Integer, BitSet>();
+        endOfScopes = new HashMap<>();
 
         LocalVariableTable lvt = getMethod().getLocalVariableTable();
         if (lvt != null) {
@@ -570,7 +572,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         private final String colClass;
 
         public GroupPair(Comparable<?> member, String cls) {
-            groupMembers = new HashSet<Comparable<?>>();
+            groupMembers = new HashSet<>();
             groupMembers.add(member);
             colClass = cls;
         }
