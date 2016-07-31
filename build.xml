@@ -198,6 +198,7 @@
                 <include name="**/*.txt" />
                 <include name="**/*.md" />
                 <include name="**/*.xls" />
+                <include name="**/*.example" />
 			</fileset>
 		</zip>
 	</target>
