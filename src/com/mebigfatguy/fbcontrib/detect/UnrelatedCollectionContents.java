@@ -77,8 +77,8 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
     public void visitClassContext(final ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            memberCollections = new HashMap<String, Set<String>>();
-            memberSourceLineAnnotations = new HashMap<String, Set<SourceLineAnnotation>>();
+            memberCollections = new HashMap<>();
+            memberSourceLineAnnotations = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -96,9 +96,9 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
     @Override
     public void visitCode(final Code obj) {
         try {
-            localCollections = new HashMap<Integer, Set<String>>();
-            localScopeEnds = new HashMap<Integer, Set<Integer>>();
-            localSourceLineAnnotations = new HashMap<Integer, Set<SourceLineAnnotation>>();
+            localCollections = new HashMap<>();
+            localScopeEnds = new HashMap<>();
+            localSourceLineAnnotations = new HashMap<>();
             stack.resetForMethodEntry(this);
             super.visitCode(obj);
         } finally {
@@ -178,7 +178,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         if (reg != -1) {
             Set<SourceLineAnnotation> pcs = localSourceLineAnnotations.get(Integer.valueOf(reg));
             if (pcs == null) {
-                pcs = new HashSet<SourceLineAnnotation>();
+                pcs = new HashSet<>();
                 localSourceLineAnnotations.put(Integer.valueOf(reg), pcs);
             }
             pcs.add(SourceLineAnnotation.fromVisitedInstruction(this, getPC()));
@@ -186,13 +186,13 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
             if (commonSupers != null) {
                 mergeItem(commonSupers, pcs, addItm);
             } else {
-                commonSupers = new HashSet<String>();
+                commonSupers = new HashSet<>();
                 localCollections.put(Integer.valueOf(reg), commonSupers);
                 addNewItem(commonSupers, addItm);
                 Integer scopeEnd = Integer.valueOf(RegisterUtils.getLocalVariableEndRange(getMethod().getLocalVariableTable(), reg, getNextPC()));
                 Set<Integer> regs = localScopeEnds.get(scopeEnd);
                 if (regs == null) {
-                    regs = new HashSet<Integer>();
+                    regs = new HashSet<>();
                     localScopeEnds.put(scopeEnd, regs);
                 }
                 regs.add(Integer.valueOf(reg));
@@ -205,7 +205,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
 
             Set<SourceLineAnnotation> sla = memberSourceLineAnnotations.get(field.getName());
             if (sla == null) {
-                sla = new HashSet<SourceLineAnnotation>();
+                sla = new HashSet<>();
                 memberSourceLineAnnotations.put(field.getName(), sla);
             }
             sla.add(SourceLineAnnotation.fromVisitedInstruction(this));
@@ -213,7 +213,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
             if (commonSupers != null) {
                 mergeItem(commonSupers, sla, addItm);
             } else {
-                commonSupers = new HashSet<String>();
+                commonSupers = new HashSet<>();
                 memberCollections.put(field.getName(), commonSupers);
                 addNewItem(commonSupers, addItm);
             }
@@ -239,7 +239,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
             return;
         }
 
-        Set<String> s = new HashSet<String>();
+        Set<String> s = new HashSet<>();
         addNewItem(s, addItm);
 
         if (s.isEmpty()) {
@@ -296,7 +296,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         for (JavaClass inf : infs) {
             String infName = inf.getClassName();
             if (!"java.io.Serializable".equals(infName) && !"java.lang.Cloneable".equals(infName)) {
-                supers.add(inf.getClassName());
+                supers.add(infName);
             }
         }
 
