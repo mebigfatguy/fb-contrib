@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -77,7 +78,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             unusedParms = new BitSet();
-            regToParm = new HashMap<Integer, Integer>();
+            regToParm = new HashMap<>();
             stack = new OpcodeStack();
             super.visitClassContext(classContext);
         } finally {
@@ -158,76 +159,18 @@ public class UnusedParameter extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            switch (seen) {
-                case ASTORE:
-                case ASTORE_0:
-                case ASTORE_1:
-                case ASTORE_2:
-                case ASTORE_3:
-                case ISTORE:
-                case ISTORE_0:
-                case ISTORE_1:
-                case ISTORE_2:
-                case ISTORE_3:
-                case LSTORE:
-                case LSTORE_1:
-                case LSTORE_2:
-                case LSTORE_3:
-                case FSTORE:
-                case FSTORE_0:
-                case FSTORE_1:
-                case FSTORE_2:
-                case FSTORE_3:
-                case DSTORE:
-                case DSTORE_1:
-                case DSTORE_2:
-                case DSTORE_3:
-                case ALOAD:
-                case ALOAD_0:
-                case ALOAD_1:
-                case ALOAD_2:
-                case ALOAD_3:
-                case ILOAD:
-                case ILOAD_0:
-                case ILOAD_1:
-                case ILOAD_2:
-                case ILOAD_3:
-                case LLOAD:
-                case LLOAD_0:
-                case LLOAD_1:
-                case LLOAD_2:
-                case LLOAD_3:
-                case FLOAD:
-                case FLOAD_0:
-                case FLOAD_1:
-                case FLOAD_2:
-                case FLOAD_3:
-                case DLOAD:
-                case DLOAD_0:
-                case DLOAD_1:
-                case DLOAD_2:
-                case DLOAD_3: {
-                    int reg = getRegisterOperand();
-                    unusedParms.clear(reg);
-                }
-                break;
+            if (OpcodeUtils.isStore(seen) || OpcodeUtils.isLoad(seen)) {
+                int reg = getRegisterOperand();
+                unusedParms.clear(reg);
+            } else if (OpcodeUtils.isReturn(seen)) {
 
-                case ARETURN:
-                case IRETURN:
-                case LRETURN:
-                case FRETURN:
-                case DRETURN: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        int reg = item.getRegisterNumber();
-                        if (reg >= 0) {
-                            unusedParms.clear(reg);
-                        }
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    int reg = item.getRegisterNumber();
+                    if (reg >= 0) {
+                        unusedParms.clear(reg);
                     }
                 }
-                break;
-                default:
-                break;
             }
         } finally {
             stack.sawOpcode(this, seen);
