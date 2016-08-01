@@ -72,48 +72,8 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
             selfCallTree = new HashMap<>();
             super.visitClassContext(classContext);
 
-            boolean foundNewCall = true;
-            Statistics statistics = Statistics.getStatistics();
+            performModifyStateClosure(classContext.getJavaClass());
 
-            String clsName = classContext.getJavaClass().getClassName();
-            while (foundNewCall && !selfCallTree.isEmpty()) {
-                foundNewCall = false;
-
-                for (Map.Entry<QMethod, Set<CalledMethod>> callerEntry : selfCallTree.entrySet()) {
-                    QMethod caller = callerEntry.getKey();
-
-                    MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(), caller.getSignature());
-                    if (callerMi == null) {
-                        // odd, shouldn't happen
-                        continue;
-                    }
-
-                    if (callerMi.getModifiesState()) {
-                        continue;
-                    }
-
-                    for (CalledMethod calledMethod : callerEntry.getValue()) {
-
-                        if (calledMethod.isSuper) {
-                            callerMi.setModifiesState(true);
-                        } else {
-                            MethodInfo calleeMi = statistics.getMethodStatistics(clsName, calledMethod.callee.getMethodName(),
-                                    calledMethod.callee.getSignature());
-                            if (calleeMi == null) {
-                                // a super or sub class probably implements this method so just assume it modifies state
-                                callerMi.setModifiesState(true);
-                                continue;
-                            }
-
-                            if (calleeMi.getModifiesState()) {
-                                callerMi.setModifiesState(true);
-                                foundNewCall = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-            }
         } finally {
             stack = null;
             selfCallTree = null;
@@ -199,6 +159,50 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
             }
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    private void performModifyStateClosure(JavaClass cls) {
+        boolean foundNewCall = true;
+        Statistics statistics = Statistics.getStatistics();
+
+        String clsName = cls.getClassName();
+        while (foundNewCall && !selfCallTree.isEmpty()) {
+            foundNewCall = false;
+
+            for (Map.Entry<QMethod, Set<CalledMethod>> callerEntry : selfCallTree.entrySet()) {
+                QMethod caller = callerEntry.getKey();
+
+                MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(), caller.getSignature());
+                if (callerMi == null) {
+                    // odd, shouldn't happen
+                    continue;
+                }
+
+                if (callerMi.getModifiesState()) {
+                    continue;
+                }
+
+                for (CalledMethod calledMethod : callerEntry.getValue()) {
+
+                    if (calledMethod.isSuper) {
+                        callerMi.setModifiesState(true);
+                    } else {
+                        MethodInfo calleeMi = statistics.getMethodStatistics(clsName, calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
+                        if (calleeMi == null) {
+                            // a super or sub class probably implements this method so just assume it modifies state
+                            callerMi.setModifiesState(true);
+                            continue;
+                        }
+
+                        if (calleeMi.getModifiesState()) {
+                            callerMi.setModifiesState(true);
+                            foundNewCall = true;
+                            break;
+                        }
+                    }
+                }
+            }
         }
     }
 
