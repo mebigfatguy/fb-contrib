@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.collect;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -170,40 +171,51 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         while (foundNewCall && !selfCallTree.isEmpty()) {
             foundNewCall = false;
 
-            for (Map.Entry<QMethod, Set<CalledMethod>> callerEntry : selfCallTree.entrySet()) {
+            Iterator<Map.Entry<QMethod, Set<CalledMethod>>> callerIt = selfCallTree.entrySet().iterator();
+            while (callerIt.hasNext()) {
+                Map.Entry<QMethod, Set<CalledMethod>> callerEntry = callerIt.next();
                 QMethod caller = callerEntry.getKey();
 
                 MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(), caller.getSignature());
                 if (callerMi == null) {
                     // odd, shouldn't happen
-                    continue;
-                }
+                    foundNewCall = true;
+                } else if (callerMi.getModifiesState()) {
+                    foundNewCall = true;
+                } else {
 
-                if (callerMi.getModifiesState()) {
-                    continue;
-                }
+                    for (CalledMethod calledMethod : callerEntry.getValue()) {
 
-                for (CalledMethod calledMethod : callerEntry.getValue()) {
-
-                    if (calledMethod.isSuper) {
-                        callerMi.setModifiesState(true);
-                    } else {
-                        MethodInfo calleeMi = statistics.getMethodStatistics(clsName, calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
-                        if (calleeMi == null) {
-                            // a super or sub class probably implements this method so just assume it modifies state
-                            callerMi.setModifiesState(true);
-                            continue;
-                        }
-
-                        if (calleeMi.getModifiesState()) {
+                        if (calledMethod.isSuper) {
                             callerMi.setModifiesState(true);
                             foundNewCall = true;
                             break;
+                        } else {
+                            MethodInfo calleeMi = statistics.getMethodStatistics(clsName, calledMethod.callee.getMethodName(),
+                                    calledMethod.callee.getSignature());
+                            if (calleeMi == null) {
+                                // a super or sub class probably implements this method so just assume it modifies state
+                                callerMi.setModifiesState(true);
+                                foundNewCall = true;
+                                break;
+                            }
+
+                            if (calleeMi.getModifiesState()) {
+                                callerMi.setModifiesState(true);
+                                foundNewCall = true;
+                                break;
+                            }
                         }
                     }
                 }
+
+                if (foundNewCall) {
+                    callerIt.remove();
+                }
             }
         }
+
+        selfCallTree.clear();
     }
 
     private boolean isAssociationedWithAnnotations(Method m) {
