@@ -350,7 +350,7 @@ class MethodInfo {
         }
 
         MethodInfo that = (MethodInfo) o;
-        return methodName.equals(that.methodName) && (argumentCount == that.argumentCount) && signatureEnding.equals(that.signatureEnding);
+        return (argumentCount == that.argumentCount) && methodName.equals(that.methodName) && signatureEnding.equals(that.signatureEnding);
     }
 
     @Override
