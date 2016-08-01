@@ -42,7 +42,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
     }
 
     BugReporter bugReporter;
-    private Set<FloatForLoop> forLoops = new HashSet<FloatForLoop>(5);
+    private Set<FloatForLoop> forLoops = new HashSet<>(5);
 
     /**
      * constructs a FPL detector given the reporter to report bugs on
@@ -62,7 +62,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
-        forLoops = new HashSet<FloatForLoop>();
+        forLoops = new HashSet<>();
         super.visitCode(obj);
         forLoops = null;
     }
@@ -133,12 +133,8 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
                         return true;
                     } else if (getPC() == (gotoPC - 1)) {
                         int storeReg;
-                        if ((seen == FSTORE) || (seen == DSTORE)) {
-                            storeReg = getRegisterOperand();
-                        } else if ((seen >= FSTORE_0) && (seen <= FSTORE_3)) {
-                            storeReg = seen - FSTORE_0;
-                        } else if ((seen >= DSTORE_0) && (seen <= DSTORE_3)) {
-                            storeReg = seen - DSTORE_0;
+                        if (OpcodeUtils.isFStore(seen) || OpcodeUtils.isDStore(seen)) {
+                            storeReg = RegisterUtils.getStoreReg(FloatingPointLoops.this, seen);
                         } else {
                             return false;
                         }
