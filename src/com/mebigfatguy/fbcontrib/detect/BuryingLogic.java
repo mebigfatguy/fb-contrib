@@ -72,7 +72,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                     lowBugRatioLimit = LOW_BUG_RATIO_LIMIT;
                 }
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             lowBugRatioLimit = LOW_BUG_RATIO_LIMIT;
         }
 
@@ -86,7 +86,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                     normalBugRatioLimit = NORMAL_BUG_RATIO_LIMIT;
                 }
             }
-        } catch (Exception e) {
+        } catch (NumberFormatException e) {
             normalBugRatioLimit = NORMAL_BUG_RATIO_LIMIT;
         }
     }
