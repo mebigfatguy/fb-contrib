@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
@@ -271,8 +272,44 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                     }
                 }
             } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
+
+                String className = getClassConstantOperand();
                 String signature = getSigConstantOperand();
                 int parmCount = Type.getArgumentTypes(signature).length;
+
+                int reg = -1;
+                XField field = null;
+                MethodCall mc = null;
+                String fieldSource = null;
+
+                if (seen != INVOKESTATIC) {
+                    if (stack.getStackDepth() > parmCount) {
+                        OpcodeStack.Item obj = stack.getStackItem(parmCount);
+                        reg = obj.getRegisterNumber();
+                        field = obj.getXField();
+
+                        if (reg >= 0) {
+                            mc = localMethodCalls.get(Integer.valueOf(reg));
+                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, getNameConstantOperand(), signature);
+                            if ((mi != null) && mi.getModifiesState()) {
+                                clearFieldMethods(String.valueOf(reg));
+                                return;
+                            }
+                        } else if (field != null) {
+                            fieldSource = (String) obj.getUserValue();
+                            if (fieldSource == null) {
+                                fieldSource = "";
+                            }
+                            mc = fieldMethodCalls.get(fieldSource + ':' + field.getName());
+                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, getNameConstantOperand(), signature);
+                            if ((mi != null) && mi.getModifiesState()) {
+                                clearFieldMethods(fieldSource);
+                                return;
+                            }
+                        }
+                    }
+                }
+
                 int neededStackSize = parmCount + ((seen == INVOKESTATIC) ? 0 : 1);
                 if (stack.getStackDepth() >= neededStackSize) {
                     Object[] parmConstants = new Object[parmCount];
@@ -295,31 +332,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         }
                     }
 
-                    String className = getClassConstantOperand();
-
-                    MethodCall mc;
-                    int reg = -1;
-                    XField field = null;
-
                     if (seen == INVOKESTATIC) {
                         mc = staticMethodCalls.get(className);
-                    } else if (stack.getStackDepth() > parmCount) {
-                        OpcodeStack.Item obj = stack.getStackItem(parmCount);
-                        reg = obj.getRegisterNumber();
-                        field = obj.getXField();
-
-                        if (reg >= 0) {
-                            mc = localMethodCalls.get(Integer.valueOf(reg));
-                        } else if (field != null) {
-                            String fieldSource = (String) obj.getUserValue();
-                            if (fieldSource == null) {
-                                fieldSource = "";
-                            }
-                            mc = fieldMethodCalls.get(fieldSource + ':' + field.getName());
-                        } else {
-                            return;
-                        }
-                    } else {
+                    } else if ((reg < 0) && (field == null)) {
                         return;
                     }
 
@@ -347,17 +362,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         } else {
                             if (reg >= 0) {
                                 localMethodCalls.remove(Integer.valueOf(reg));
-                            } else if (field != null) {
-                                String fieldSource = "";
-
-                                if (stack.getStackDepth() > 0) {
-                                    OpcodeStack.Item item = stack.getStackItem(0);
-                                    fieldSource = (String) item.getUserValue();
-                                    if (fieldSource == null) {
-                                        fieldSource = "";
-                                    }
-                                }
-
+                            } else if (fieldSource != null) {
                                 fieldMethodCalls.remove(fieldSource + ':' + field.getName());
                             }
                         }
@@ -370,7 +375,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                                 localMethodCalls.put(Integer.valueOf(reg), new MethodCall(methodName, signature, parmConstants, pc, ln));
                             } else if (field != null) {
                                 OpcodeStack.Item obj = stack.getStackItem(parmCount);
-                                String fieldSource = (String) obj.getUserValue();
+                                fieldSource = (String) obj.getUserValue();
                                 if (fieldSource == null) {
                                     fieldSource = "";
                                 }
@@ -385,6 +390,16 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
             if ((userValue != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 item.setUserValue(userValue);
+            }
+        }
+    }
+
+    private void clearFieldMethods(String fieldSource) {
+        String prefix = fieldSource + ":";
+        Iterator<String> it = fieldMethodCalls.keySet().iterator();
+        while (it.hasNext()) {
+            if (it.next().startsWith(prefix)) {
+                it.remove();
             }
         }
     }
