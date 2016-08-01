@@ -339,6 +339,21 @@ class MethodInfo {
     }
 
     @Override
+    public int hashCode() {
+        return methodName.hashCode() ^ argumentCount ^ signatureEnding.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (!(o instanceof MethodInfo)) {
+            return false;
+        }
+
+        MethodInfo that = (MethodInfo) o;
+        return methodName.equals(that.methodName) && (argumentCount == that.argumentCount) && signatureEnding.equals(that.signatureEnding);
+    }
+
+    @Override
     public String toString() {
         return ToString.build(this);
     }
