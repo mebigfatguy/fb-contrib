@@ -40,11 +40,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for loops that transfers the contents of one collection to another.
- * These collection sources might be local variables or member fields, including
- * sets, maps key/values, lists, or arrays. It is simpler to just use the addAll
- * method of the collection class. In the case where the source is an array, you
- * can use Arrays.asList(array), and use that as the source to addAll.
+ * looks for loops that transfers the contents of one collection to another. These collection sources might be local variables or member fields, including sets,
+ * maps key/values, lists, or arrays. It is simpler to just use the addAll method of the collection class. In the case where the source is an array, you can use
+ * Arrays.asList(array), and use that as the source to addAll.
  */
 @CustomUserValue
 public class UseAddAll extends BytecodeScanningDetector {
@@ -75,8 +73,7 @@ public class UseAddAll extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to create and clear the stack, and report missing
-     * class errors
+     * implements the visitor to create and clear the stack, and report missing class errors
      *
      * @param classContext
      *            the context object of the currently parsed class
@@ -109,8 +106,8 @@ public class UseAddAll extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         try {
             stack.resetForMethodEntry(this);
-            userValues = new HashMap<Comparable<?>, Comparable<?>>();
-            loops = new HashMap<Comparable<?>, LoopInfo>();
+            userValues = new HashMap<>();
+            loops = new HashMap<>();
             isInstanceMethod = !getMethod().isStatic();
             super.visitCode(obj);
         } finally {
@@ -120,8 +117,7 @@ public class UseAddAll extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for manually copying of collections to
-     * collections
+     * implements the visitor to look for manually copying of collections to collections
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -298,37 +294,39 @@ public class UseAddAll extends BytecodeScanningDetector {
     }
 
     /**
-     * determines if the stack item refers to a collection that is stored in a
-     * local variable
+     * determines if the stack item refers to a collection that is stored in a local variable
      *
-     * param item the stack item to check
+     * @param item
+     *            the stack item to check
      *
-     * @return the register number of the local variable that this collection
-     *         refers to, or -1
+     * @return the register number of the local variable that this collection refers to, or -1
      * @throws ClassNotFoundException
      *             if the items class cannot be found
      */
     private int isLocalCollection(OpcodeStack.Item item) throws ClassNotFoundException {
         Comparable<?> aliasReg = (Comparable<?>) item.getUserValue();
-        if (aliasReg instanceof Integer)
+        if (aliasReg instanceof Integer) {
             return ((Integer) aliasReg).intValue();
+        }
 
         int reg = item.getRegisterNumber();
-        if (reg < 0)
+        if (reg < 0) {
             return -1;
+        }
 
         JavaClass cls = item.getJavaClass();
-        if ((cls != null) && cls.implementationOf(collectionClass))
+        if ((cls != null) && cls.implementationOf(collectionClass)) {
             return reg;
+        }
 
         return -1;
     }
 
     /**
-     * determines if the stack item refers to a collection that is stored in a
-     * field
+     * determines if the stack item refers to a collection that is stored in a field
      *
-     * param item the stack item to check
+     * @param item
+     *            the stack item to check
      *
      * @return the field name of the collection, or null
      * @throws ClassNotFoundException
@@ -336,16 +334,19 @@ public class UseAddAll extends BytecodeScanningDetector {
      */
     private String isFieldCollection(OpcodeStack.Item item) throws ClassNotFoundException {
         Comparable<?> aliasReg = (Comparable<?>) item.getUserValue();
-        if (aliasReg instanceof String)
+        if (aliasReg instanceof String) {
             return (String) aliasReg;
+        }
 
         XField field = item.getXField();
-        if (field == null)
+        if (field == null) {
             return null;
+        }
 
         JavaClass cls = item.getJavaClass();
-        if ((cls != null) && cls.implementationOf(collectionClass))
+        if ((cls != null) && cls.implementationOf(collectionClass)) {
             return field.getName();
+        }
 
         return null;
     }
@@ -375,10 +376,11 @@ public class UseAddAll extends BytecodeScanningDetector {
         }
 
         void foundAdd(int pc) {
-            if (addPC == 0)
+            if (addPC == 0) {
                 addPC = pc;
-            else
+            } else {
                 addPC = -1;
+            }
         }
 
         int getStartPC() {
