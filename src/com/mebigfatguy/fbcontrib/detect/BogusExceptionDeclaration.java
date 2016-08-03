@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -139,14 +140,18 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                     }
                 }
                 if (!declaredCheckedExceptions.isEmpty()) {
-                    super.visitCode(obj);
-                    if (!declaredCheckedExceptions.isEmpty()) {
-                        BugInstance bi = new BugInstance(this, BugType.BED_BOGUS_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this, 0);
-                        for (String ex : declaredCheckedExceptions) {
-                            bi.addString(ex.replaceAll("/", "."));
+                    try {
+                        super.visitCode(obj);
+                        if (!declaredCheckedExceptions.isEmpty()) {
+                            BugInstance bi = new BugInstance(this, BugType.BED_BOGUS_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this, 0);
+                            for (String ex : declaredCheckedExceptions) {
+                                bi.addString(ex.replaceAll("/", "."));
+                            }
+                            bugReporter.reportBug(bi);
                         }
-                        bugReporter.reportBug(bi);
+                    } catch (StopOpcodeParsingException e) {
+                        // no exceptions left
                     }
                 }
             }
@@ -245,14 +250,17 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                         }
 
                         if (!found) {
-                            declaredCheckedExceptions.clear();
+                            clearExceptions();
                         }
                     } catch (ClassNotFoundException cnfe) {
                         bugReporter.reportMissingClass(cnfe);
-                        declaredCheckedExceptions.clear();
+                        clearExceptions();
                     }
                 } else if ("wait".equals(getNameConstantOperand())) {
                     declaredCheckedExceptions.remove("java.lang.InterruptedException");
+                    if (declaredCheckedExceptions.isEmpty()) {
+                        throw new StopOpcodeParsingException();
+                    }
                 }
             } else if (seen == ATHROW) {
                 if (stack.getStackDepth() > 0) {
@@ -261,7 +269,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                     String thrownException = SignatureUtils.stripSignature(exSig);
                     removeThrownExceptionHierarchy(thrownException);
                 } else {
-                    declaredCheckedExceptions.clear();
+                    clearExceptions();
                 }
             }
         } finally {
@@ -280,7 +288,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
         try {
             if (Values.DOTTED_JAVA_LANG_EXCEPTION.equals(thrownException)) {
                 // Exception can be thrown even tho the method isn't declared to throw Exception in the case of templated Exceptions
-                declaredCheckedExceptions.clear();
+                clearExceptions();
             } else {
                 declaredCheckedExceptions.remove(thrownException);
                 JavaClass exCls = Repository.lookupClass(thrownException);
@@ -296,9 +304,18 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                 } while (!declaredCheckedExceptions.isEmpty() && !Values.DOTTED_JAVA_LANG_EXCEPTION.equals(clsName)
                         && !Values.DOTTED_JAVA_LANG_ERROR.equals(clsName));
             }
+
+            if (declaredCheckedExceptions.isEmpty()) {
+                throw new StopOpcodeParsingException();
+            }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
-            declaredCheckedExceptions.clear();
+            clearExceptions();
         }
+    }
+
+    private void clearExceptions() {
+        declaredCheckedExceptions.clear();
+        throw new StopOpcodeParsingException();
     }
 }
