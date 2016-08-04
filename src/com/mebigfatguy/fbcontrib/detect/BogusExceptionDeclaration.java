@@ -218,10 +218,6 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (declaredCheckedExceptions.isEmpty()) {
-            return;
-        }
-
         try {
 
             stack.precomputation(this);
