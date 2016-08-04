@@ -106,6 +106,8 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     /**
      * collect all possible attributes given the name of methods available.
      *
+     * @param cls
+     *            the class to look for setter methods to infer properties
      * @return the map of possible attributes/types
      */
     private static Map<String, String> getAttributes(JavaClass cls) {
