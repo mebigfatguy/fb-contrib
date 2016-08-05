@@ -34,6 +34,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -51,7 +52,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
     private static final Set<String> knownImmutables;
 
     static {
-        Set<String> ki = new HashSet<String>();
+        Set<String> ki = new HashSet<>();
         ki.add("Ljava/lang/String;");
         ki.add("Ljava/lang/Byte;");
         ki.add("Ljava/lang/Character;");
@@ -89,7 +90,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            possibleParmRegs = new HashMap<Integer, ParmUsage>(10);
+            possibleParmRegs = new HashMap<>(10);
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -130,14 +131,18 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
                     }
                 }
 
-                if (possibleParmRegs.size() > 0) {
-                    stack.resetForMethodEntry(this);
-                    super.visitCode(obj);
-                    for (ParmUsage pu : possibleParmRegs.values()) {
-                        if ((pu.returnPC >= 0) && (pu.alteredPC >= 0)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CFS_CONFUSING_FUNCTION_SEMANTICS.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this, pu.returnPC).addSourceLine(this, pu.alteredPC));
+                if (!possibleParmRegs.isEmpty()) {
+                    try {
+                        stack.resetForMethodEntry(this);
+                        super.visitCode(obj);
+                        for (ParmUsage pu : possibleParmRegs.values()) {
+                            if ((pu.returnPC >= 0) && (pu.alteredPC >= 0)) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.CFS_CONFUSING_FUNCTION_SEMANTICS.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this, pu.returnPC).addSourceLine(this, pu.alteredPC));
+                            }
                         }
+                    } catch (StopOpcodeParsingException e) {
+                        // no parm regs left
                     }
                 }
             }
@@ -148,10 +153,6 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (possibleParmRegs.isEmpty()) {
-            return;
-        }
-
         try {
             stack.precomputation(this);
 
@@ -176,6 +177,9 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
             } else if (OpcodeUtils.isAStore(seen)) {
                 int reg = RegisterUtils.getAStoreReg(this, seen);
                 possibleParmRegs.remove(Integer.valueOf(reg));
+                if (possibleParmRegs.isEmpty()) {
+                    throw new StopOpcodeParsingException();
+                }
             } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
                 processInvoke();
             }
