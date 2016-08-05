@@ -108,7 +108,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                 constrainingClasses = new JavaClass[infs.length + sups.length];
                 System.arraycopy(infs, 0, constrainingClasses, 0, infs.length);
                 System.arraycopy(sups, 0, constrainingClasses, infs.length, sups.length);
-                parameterDefiners = new HashMap<Integer, Map<JavaClass, List<MethodInfo>>>();
+                parameterDefiners = new HashMap<>();
                 usedParameters = new BitSet();
                 stack = new OpcodeStack();
                 super.visitClassContext(classContext);
@@ -353,7 +353,9 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
      * found.
      *
      * @param methodName
+     *            the method name to look for a synthetic twin of
      * @param methodSig
+     *            the method signature to lookfor a synthetic twin of
      * @return if a synthetic twin is found
      */
     private boolean methodHasSyntheticTwin(String methodName, String methodSig) {
@@ -480,7 +482,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
      *             if unable to load the class
      */
     private static Map<JavaClass, List<MethodInfo>> getClassDefiners(final JavaClass cls) throws ClassNotFoundException {
-        Map<JavaClass, List<MethodInfo>> definers = new HashMap<JavaClass, List<MethodInfo>>();
+        Map<JavaClass, List<MethodInfo>> definers = new HashMap<>();
 
         for (JavaClass ci : cls.getAllInterfaces()) {
             if ("java.lang.Comparable".equals(ci.getClassName())) {
@@ -502,7 +504,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
      * @return a map of (method name)(method signature)
      */
     private static List<MethodInfo> getPublicMethodInfos(final JavaClass cls) {
-        List<MethodInfo> methodInfos = new ArrayList<MethodInfo>();
+        List<MethodInfo> methodInfos = new ArrayList<>();
         Method[] methods = cls.getMethods();
         for (Method m : methods) {
             if ((m.getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)) != 0) {
