@@ -38,6 +38,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -61,7 +62,6 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     private int nextParmOffset;
     private boolean sawAload0;
     private boolean sawParentCall;
-    private boolean ignore;
 
     /**
      * constructs a COM detector given the reporter to report bugs on
@@ -130,26 +130,29 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
-        Method m = getMethod();
-        if ((!m.isPublic() && !m.isProtected()) || m.isAbstract() || m.isSynthetic()) {
-            return;
-        }
-
-        CodeInfo superCode = superclassCode.remove(curMethodInfo);
-        if (superCode != null) {
-            if (sameAccess(getMethod().getAccessFlags(), superCode.getAccess()) && codeEquals(obj, superCode.getCode())) {
-                bugReporter.reportBug(new BugInstance(this, BugType.COM_COPIED_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(classContext, this, getPC()));
+        try {
+            Method m = getMethod();
+            if ((!m.isPublic() && !m.isProtected()) || m.isAbstract() || m.isSynthetic()) {
                 return;
             }
 
-            parmTypes = getMethod().getArgumentTypes();
-            ignore = false;
-            nextParmIndex = 0;
-            nextParmOffset = getMethod().isStatic() ? 0 : 1;
-            sawAload0 = nextParmOffset == 0;
-            sawParentCall = false;
-            super.visitCode(obj);
+            CodeInfo superCode = superclassCode.remove(curMethodInfo);
+            if (superCode != null) {
+                if (sameAccess(getMethod().getAccessFlags(), superCode.getAccess()) && codeEquals(obj, superCode.getCode())) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.COM_COPIED_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(classContext, this, getPC()));
+                    return;
+                }
+
+                parmTypes = getMethod().getArgumentTypes();
+                nextParmIndex = 0;
+                nextParmOffset = getMethod().isStatic() ? 0 : 1;
+                sawAload0 = nextParmOffset == 0;
+                sawParentCall = false;
+                super.visitCode(obj);
+            }
+        } catch (StopOpcodeParsingException e) {
+            // method is unique
         }
 
     }
@@ -163,22 +166,19 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (ignore) {
-            return;
-        }
 
         if (!sawAload0) {
             if (seen == ALOAD_0) {
                 sawAload0 = true;
             } else {
-                ignore = true;
+                throw new StopOpcodeParsingException();
             }
         } else if (nextParmIndex < parmTypes.length) {
             if (isExpectedParmInstruction(seen, nextParmOffset, parmTypes[nextParmIndex])) {
                 nextParmOffset += SignatureUtils.getSignatureSize(parmTypes[nextParmIndex].getSignature());
                 nextParmIndex++;
             } else {
-                ignore = true;
+                throw new StopOpcodeParsingException();
             }
 
         } else if (!sawParentCall) {
@@ -187,7 +187,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
                     && getSigConstantOperand().equals(getMethod().getSignature())) {
                 sawParentCall = true;
             } else {
-                ignore = true;
+                throw new StopOpcodeParsingException();
             }
         } else {
             int expectedInstruction = getExpectedReturnInstruction(getMethod().getReturnType());
@@ -195,7 +195,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
                 bugReporter.reportBug(
                         new BugInstance(this, BugType.COM_PARENT_DELEGATED_CALL.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
             } else {
-                ignore = true;
+                throw new StopOpcodeParsingException();
             }
         }
     }
