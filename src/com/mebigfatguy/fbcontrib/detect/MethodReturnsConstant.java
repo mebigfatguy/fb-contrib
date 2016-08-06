@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -47,7 +48,6 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     private Integer returnRegister;
     private Map<Integer, Object> registerConstants;
     private Object returnConstant;
-    private boolean methodSuspect;
     private int returnPC;
 
     /**
@@ -64,7 +64,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            registerConstants = new HashMap<Integer, Object>();
+            registerConstants = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -89,18 +89,22 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
             returnRegister = Values.NEGATIVE_ONE;
             returnConstant = null;
             registerConstants.clear();
-            methodSuspect = true;
             returnPC = -1;
-            super.visitCode(obj);
-            if (methodSuspect && (returnConstant != null)) {
-                BugInstance bi = new BugInstance(this, BugType.MRC_METHOD_RETURNS_CONSTANT.name(),
-                        ((aFlags & Constants.ACC_PRIVATE) != 0) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this);
-                if (returnPC >= 0) {
-                    bi.addSourceLine(this, returnPC);
-                }
 
-                bi.addString(returnConstant.toString());
-                bugReporter.reportBug(bi);
+            try {
+                super.visitCode(obj);
+                if ((returnConstant != null)) {
+                    BugInstance bi = new BugInstance(this, BugType.MRC_METHOD_RETURNS_CONSTANT.name(),
+                            ((aFlags & Constants.ACC_PRIVATE) != 0) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this);
+                    if (returnPC >= 0) {
+                        bi.addSourceLine(this, returnPC);
+                    }
+
+                    bi.addString(returnConstant.toString());
+                    bugReporter.reportBug(bi);
+                }
+            } catch (StopOpcodeParsingException e) {
+                // method was not suspect
             }
         }
     }
@@ -115,9 +119,6 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         boolean sawSBToString = false;
         try {
-            if (!methodSuspect) {
-                return;
-            }
 
             stack.precomputation(this);
             if ((seen >= IRETURN) && (seen <= ARETURN)) {
@@ -126,31 +127,26 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
 
                     Integer register = Integer.valueOf(item.getRegisterNumber());
                     if (registerConstants.containsKey(register) && (registerConstants.get(register) == null)) {
-                        methodSuspect = false;
-                        return;
+                        throw new StopOpcodeParsingException();
                     }
 
                     String returnSig = item.getSignature();
                     if ((returnSig != null) && returnSig.startsWith("[")) {
                         XField f = item.getXField();
                         if ((f == null) || (!f.isStatic())) {
-                            methodSuspect = false;
-                            return;
+                            throw new StopOpcodeParsingException();
                         }
                     }
 
                     Object constant = item.getConstant();
                     if (constant == null) {
-                        methodSuspect = false;
-                        return;
+                        throw new StopOpcodeParsingException();
                     }
                     if (Boolean.TRUE.equals(item.getUserValue()) && ("".equals(constant))) {
-                        methodSuspect = false;
-                        return;
+                        throw new StopOpcodeParsingException();
                     }
                     if ((returnConstant != null) && (!returnConstant.equals(constant))) {
-                        methodSuspect = false;
-                        return;
+                        throw new StopOpcodeParsingException();
                     }
 
                     returnRegister = Integer.valueOf(item.getRegisterNumber());
@@ -159,9 +155,8 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 }
             } else if ((seen == GOTO) || (seen == GOTO_W)) {
                 if (stack.getStackDepth() > 0) {
-                    methodSuspect = false; // Trinaries confuse us too much, if
-                                           // the code has a ternary well - oh
-                                           // well
+                    // Trinaries confuse us too much, if the code has a ternary well - oh well
+                    throw new StopOpcodeParsingException();
                 }
             } else if (seen == INVOKEVIRTUAL) {
                 String clsName = getClassConstantOperand();
@@ -171,7 +166,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
             } else if (((seen >= ISTORE) && (seen <= ASTORE_3)) || (seen == IINC)) {
                 Integer register = Integer.valueOf(getRegisterOperand());
                 if ((returnRegister.intValue() != -1) && (register.equals(returnRegister))) {
-                    methodSuspect = false;
+                    throw new StopOpcodeParsingException();
                 }
 
                 if (stack.getStackDepth() > 0) {
@@ -195,7 +190,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 if (returnRegister.equals(register)) {
                     Object constant = registerConstants.get(returnRegister);
                     if (constant != null) {
-                        methodSuspect = false;
+                        throw new StopOpcodeParsingException();
                     }
                 }
             }
