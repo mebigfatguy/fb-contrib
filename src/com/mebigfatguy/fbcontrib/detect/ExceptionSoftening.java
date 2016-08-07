@@ -320,6 +320,8 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
      *            the list of active catch blocks
      * @param pc
      *            the current pc
+     * @param seen
+     *            the currently parsed opcode
      */
     private void updateEndPCsOnCatchRegScope(List<CatchInfo> infos, int pc, int seen) {
         if (lvt != null) {
@@ -363,9 +365,14 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
     /**
      * finds the super class or interface that constrains the types of exceptions that can be thrown from the given method
      *
+     * @param cls
+     *            the currently parsed class
      * @param m
      *            the method to check
      * @return a map containing the class name to a set of exceptions that constrain this method
+     *
+     * @throws ClassNotFoundException
+     *             if a super class or super interface can't be loaded from the repository
      */
     private Map<String, Set<String>> getConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
         String methodName = m.getName();
@@ -436,6 +443,9 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
      * @param m
      *            the method to add exceptions from
      * @return a map with one entry of a class name to a set of exceptions that constrain what can be thrown.
+     *
+     * @throws ClassNotFoundException
+     *             if an exception class can't be loaded from the repository
      */
     private Map<String, Set<String>> buildConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
         Map<String, Set<String>> constraintInfo = new HashMap<>();
