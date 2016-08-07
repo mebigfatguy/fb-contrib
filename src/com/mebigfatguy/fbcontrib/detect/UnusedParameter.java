@@ -33,6 +33,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -124,21 +125,25 @@ public class UnusedParameter extends BytecodeScanningDetector {
                     reg += SignatureUtils.getSignatureSize(parmSig);
                 }
 
-                super.visitCode(obj);
+                try {
+                    super.visitCode(obj);
 
-                if (!unusedParms.isEmpty()) {
-                    LocalVariableTable lvt = m.getLocalVariableTable();
+                    if (!unusedParms.isEmpty()) {
+                        LocalVariableTable lvt = m.getLocalVariableTable();
 
-                    reg = unusedParms.nextSetBit(firstReg);
-                    while (reg >= 0) {
-                        LocalVariable lv = (lvt != null) ? lvt.getLocalVariable(reg, 0) : null;
-                        if (lv != null) {
-                            String parmName = lv.getName();
-                            bugReporter.reportBug(new BugInstance(this, BugType.UP_UNUSED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                    .addString("Parameter " + regToParm.get(Integer.valueOf(reg)) + ": " + parmName));
+                        reg = unusedParms.nextSetBit(firstReg);
+                        while (reg >= 0) {
+                            LocalVariable lv = (lvt != null) ? lvt.getLocalVariable(reg, 0) : null;
+                            if (lv != null) {
+                                String parmName = lv.getName();
+                                bugReporter.reportBug(new BugInstance(this, BugType.UP_UNUSED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                        .addString("Parameter " + regToParm.get(Integer.valueOf(reg)) + ": " + parmName));
+                            }
+                            reg = unusedParms.nextSetBit(reg + 1);
                         }
-                        reg = unusedParms.nextSetBit(reg + 1);
                     }
+                } catch (StopOpcodeParsingException e) {
+                    // no unusedParms left
                 }
             }
         }
@@ -152,10 +157,6 @@ public class UnusedParameter extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (unusedParms.isEmpty()) {
-            return;
-        }
-
         try {
             stack.precomputation(this);
 
@@ -173,6 +174,10 @@ public class UnusedParameter extends BytecodeScanningDetector {
                 }
             }
         } finally {
+            if (unusedParms.isEmpty()) {
+                throw new StopOpcodeParsingException();
+            }
+
             stack.sawOpcode(this, seen);
         }
     }
