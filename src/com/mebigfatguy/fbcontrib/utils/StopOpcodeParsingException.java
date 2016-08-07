@@ -23,4 +23,6 @@ package com.mebigfatguy.fbcontrib.utils;
  */
 public class StopOpcodeParsingException extends RuntimeException {
 
+    private static final long serialVersionUID = 1909725969115878218L;
+
 }
