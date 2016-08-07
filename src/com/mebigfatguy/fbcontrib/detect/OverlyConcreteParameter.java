@@ -43,6 +43,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -204,8 +205,12 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
             stack.resetForMethodEntry(this);
 
             if (buildParameterDefiners()) {
-                super.visitCode(obj);
-                reportBugs();
+                try {
+                    super.visitCode(obj);
+                    reportBugs();
+                } catch (StopOpcodeParsingException e) {
+                    // no more possible parameter definers
+                }
             }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
@@ -221,9 +226,6 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(final int seen) {
-        if (parameterDefiners.isEmpty()) {
-            return;
-        }
 
         try {
             stack.precomputation(this);
@@ -330,6 +332,10 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                 }
             }
         } finally {
+            if (parameterDefiners.isEmpty()) {
+                throw new StopOpcodeParsingException();
+            }
+
             stack.sawOpcode(this, seen);
         }
     }
