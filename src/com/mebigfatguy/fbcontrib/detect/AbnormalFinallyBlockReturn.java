@@ -130,10 +130,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
             if (OpcodeUtils.isAStore(seen)) {
                 fbi.exReg = RegisterUtils.getAStoreReg(this, seen);
             } else {
-                fbInfo.remove(0);
-                if (fbInfo.isEmpty()) {
-                    throw new StopOpcodeParsingException();
-                }
+                removeEarliestFinallyBlock();
                 sawOpcode(seen);
                 return;
             }
@@ -145,20 +142,14 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
         } else if (seen == MONITOREXIT) {
             fbi.monitorCount--;
             if (fbi.monitorCount < 0) {
-                fbInfo.remove(0);
-                if (fbInfo.isEmpty()) {
-                    throw new StopOpcodeParsingException();
-                }
+                removeEarliestFinallyBlock();
                 sawOpcode(seen);
                 return;
             }
         }
 
         if ((seen == ATHROW) && (loadedReg == fbi.exReg)) {
-            fbInfo.remove(0);
-            if (fbInfo.isEmpty()) {
-                throw new StopOpcodeParsingException();
-            }
+            removeEarliestFinallyBlock();
             sawOpcode(seen);
             return;
         } else if (OpcodeUtils.isALoad(seen)) {
@@ -170,10 +161,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
         if (OpcodeUtils.isReturn(seen) || (seen == ATHROW)) {
             bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLine(this));
-            fbInfo.remove(0);
-            if (fbInfo.isEmpty()) {
-                throw new StopOpcodeParsingException();
-            }
+            removeEarliestFinallyBlock();
         } else if (OpcodeUtils.isInvoke(seen)) {
             try {
                 JavaClass cls = Repository.lookupClass(getClassConstantOperand());
@@ -183,15 +171,22 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
                     if ((et != null) && (et.getLength() > 0) && !catchBlockInFinally(fbi)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), LOW_PRIORITY).addClass(this)
                                 .addMethod(this).addSourceLine(this));
-                        fbInfo.remove(0);
-                        if (fbInfo.isEmpty()) {
-                            throw new StopOpcodeParsingException();
-                        }
+                        removeEarliestFinallyBlock();
                     }
                 }
             } catch (ClassNotFoundException cnfe) {
                 bugReporter.reportMissingClass(cnfe);
             }
+        }
+    }
+
+    /**
+     * removes the earliest finally block, as we've just concluded checking it, and if it's the last one then throw back to visitCode
+     */
+    private void removeEarliestFinallyBlock() {
+        fbInfo.remove(0);
+        if (fbInfo.isEmpty()) {
+            throw new StopOpcodeParsingException();
         }
     }
 
