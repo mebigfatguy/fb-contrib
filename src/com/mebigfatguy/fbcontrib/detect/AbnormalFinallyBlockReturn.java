@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -73,7 +74,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
         try {
             int majorVersion = classContext.getJavaClass().getMajor();
             if (majorVersion >= MAJOR_1_4) {
-                fbInfo = new ArrayList<FinallyBlockInfo>();
+                fbInfo = new ArrayList<>();
                 super.visitClassContext(classContext);
             }
         } finally {
@@ -102,7 +103,11 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
         }
 
         if (!fbInfo.isEmpty()) {
-            super.visitCode(obj);
+            try {
+                super.visitCode(obj);
+            } catch (StopOpcodeParsingException e) {
+                // no more finally blocks to check
+            }
         }
     }
 
@@ -114,9 +119,6 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (fbInfo.isEmpty()) {
-            return;
-        }
 
         FinallyBlockInfo fbi = fbInfo.get(0);
 
@@ -129,6 +131,9 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
                 fbi.exReg = RegisterUtils.getAStoreReg(this, seen);
             } else {
                 fbInfo.remove(0);
+                if (fbInfo.isEmpty()) {
+                    throw new StopOpcodeParsingException();
+                }
                 sawOpcode(seen);
                 return;
             }
@@ -141,6 +146,9 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
             fbi.monitorCount--;
             if (fbi.monitorCount < 0) {
                 fbInfo.remove(0);
+                if (fbInfo.isEmpty()) {
+                    throw new StopOpcodeParsingException();
+                }
                 sawOpcode(seen);
                 return;
             }
@@ -148,6 +156,9 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
 
         if ((seen == ATHROW) && (loadedReg == fbi.exReg)) {
             fbInfo.remove(0);
+            if (fbInfo.isEmpty()) {
+                throw new StopOpcodeParsingException();
+            }
             sawOpcode(seen);
             return;
         } else if (OpcodeUtils.isALoad(seen)) {
@@ -160,6 +171,9 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
             bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLine(this));
             fbInfo.remove(0);
+            if (fbInfo.isEmpty()) {
+                throw new StopOpcodeParsingException();
+            }
         } else if (OpcodeUtils.isInvoke(seen)) {
             try {
                 JavaClass cls = Repository.lookupClass(getClassConstantOperand());
@@ -170,6 +184,9 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
                         bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), LOW_PRIORITY).addClass(this)
                                 .addMethod(this).addSourceLine(this));
                         fbInfo.remove(0);
+                        if (fbInfo.isEmpty()) {
+                            throw new StopOpcodeParsingException();
+                        }
                     }
                 }
             } catch (ClassNotFoundException cnfe) {
