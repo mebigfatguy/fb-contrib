@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -53,7 +54,6 @@ public class BuryingLogic extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private Deque<IfBlock> ifBlocks;
     private IfBlock activeUnconditional;
-    private boolean isReported;
     private double lowBugRatioLimit;
     private double normalBugRatioLimit;
     private BitSet catchPCs;
@@ -116,7 +116,6 @@ public class BuryingLogic extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
         ifBlocks.clear();
         activeUnconditional = null;
-        isReported = false;
 
         CodeException[] ces = obj.getExceptionTable();
         if ((ces == null) || (ces.length == 0)) {
@@ -128,14 +127,15 @@ public class BuryingLogic extends BytecodeScanningDetector {
             }
         }
         gotoBranchPCs.clear();
-        super.visitCode(obj);
+        try {
+            super.visitCode(obj);
+        } catch (StopOpcodeParsingException e) {
+            // reported an issue, so get out
+        }
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (isReported) {
-            return;
-        }
 
         try {
 
@@ -181,7 +181,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                         bugReporter
                                 .reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(), ratio > normalBugRatioLimit ? NORMAL_PRIORITY : LOW_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLineRange(this, activeUnconditional.getStart(), activeUnconditional.getEnd()));
-                        isReported = true;
+                        throw new StopOpcodeParsingException();
                     }
                 } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd())) {
                     activeUnconditional = ifBlocks.getFirst();
