@@ -30,6 +30,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -69,7 +70,6 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         "remove"
     // @formatter:on
     );
-
 
     private BugReporter bugReporter;
     private JavaClass mapClass;
@@ -114,15 +114,15 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         isInSpecial = SPECIAL_METHODS.contains(getMethod().getName());
         stack.resetForMethodEntry(this);
-        super.visitCode(obj);
+        try {
+            super.visitCode(obj);
+        } catch (StopOpcodeParsingException e) {
+            // no more unaccounted for map fields
+        }
     }
 
     @Override
     public void sawOpcode(int seen) {
-        if (mapFields.isEmpty()) {
-            return;
-        }
-
         try {
 
             if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
@@ -136,6 +136,9 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                     XField xf = item.getXField();
                     if (xf != null) {
                         mapFields.remove(xf.getName());
+                        if (mapFields.isEmpty()) {
+                            throw new StopOpcodeParsingException();
+                        }
                     }
                 }
             } else if ((seen == PUTFIELD) || (seen == PUTSTATIC)) {
@@ -143,6 +146,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                 if (xf != null) {
                     if (!isInSpecial) {
                         mapFields.remove(xf.getName());
+
                     } else {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item item = stack.getStackItem(0);
@@ -151,6 +155,10 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                             }
                         }
                     }
+                    if (mapFields.isEmpty()) {
+                        throw new StopOpcodeParsingException();
+                    }
+
                 }
             }
 
@@ -180,6 +188,10 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         String mName = getNameConstantOperand();
         if (MAP_METHODS.contains(mName)) {
             mapFields.remove(fName);
+            if (mapFields.isEmpty()) {
+                throw new StopOpcodeParsingException();
+            }
+
             return;
         }
 
@@ -190,6 +202,10 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
 
         if (MODIFYING_METHODS.contains(mName)) {
             mapFields.remove(fName);
+            if (mapFields.isEmpty()) {
+                throw new StopOpcodeParsingException();
+            }
+
             return;
         }
     }
@@ -207,6 +223,10 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                 XField xf = item.getXField();
                 if (xf != null) {
                     mapFields.remove(xf.getName());
+                    if (mapFields.isEmpty()) {
+                        throw new StopOpcodeParsingException();
+                    }
+
                 }
             } else {
                 return;
