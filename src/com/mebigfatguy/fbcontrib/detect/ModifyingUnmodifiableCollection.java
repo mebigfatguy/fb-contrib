@@ -30,6 +30,7 @@ import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -48,7 +49,7 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     private static final Map<QMethod, Integer> MODIFYING_METHODS;
 
     static {
-        Map<QMethod, Integer> mm = new HashMap<QMethod, Integer>();
+        Map<QMethod, Integer> mm = new HashMap<>();
         mm.put(new QMethod("add", "(Ljava/lang/Object;)Z"), Values.ONE);
         mm.put(new QMethod("remove", "(Ljava/lang/Object;)Z"), Values.ONE);
         mm.put(new QMethod("addAll", "(Ljava/util/Collection;)Z"), Values.ONE);
@@ -98,9 +99,13 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
-        stack.resetForMethodEntry(this);
-        reportedType = ImmutabilityType.UNKNOWN;
-        super.visitCode(obj);
+        try {
+            stack.resetForMethodEntry(this);
+            reportedType = ImmutabilityType.UNKNOWN;
+            super.visitCode(obj);
+        } catch (StopOpcodeParsingException e) {
+            // report type is immutable
+        }
     }
 
     /**
@@ -111,10 +116,6 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-
-        if (reportedType == ImmutabilityType.IMMUTABLE) {
-            return;
-        }
         ImmutabilityType imType = null;
 
         try {
@@ -143,6 +144,10 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
                                 bugReporter.reportBug(new BugInstance(this, BugType.MUC_MODIFYING_UNMODIFIABLE_COLLECTION.name(),
                                         (type == ImmutabilityType.IMMUTABLE) ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
                                                 .addSourceLine(this));
+                                if (type == ImmutabilityType.IMMUTABLE) {
+                                    throw new StopOpcodeParsingException();
+                                }
+
                                 reportedType = type;
                             }
                         }
