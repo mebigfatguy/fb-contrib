@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -48,7 +49,6 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private Map<Method, Map<Method, SourceLineAnnotation>> methodToCalledMethods;
-    private boolean reportedCtor;
     private boolean isCtor;
 
     /**
@@ -73,7 +73,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
             JavaClass cls = classContext.getJavaClass();
             if (!cls.isFinal()) {
                 stack = new OpcodeStack();
-                methodToCalledMethods = new HashMap<Method, Map<Method, SourceLineAnnotation>>();
+                methodToCalledMethods = new HashMap<>();
                 super.visitClassContext(classContext);
 
                 if (methodToCalledMethods.size() > 0) {
@@ -95,10 +95,13 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
         if (!Values.STATIC_INITIALIZER.equals(methodName)) {
             Method m = getMethod();
             methodToCalledMethods.put(m, new HashMap<Method, SourceLineAnnotation>());
-            reportedCtor = false;
 
-            super.visitCode(obj);
-            if (reportedCtor || (methodToCalledMethods.get(m).isEmpty())) {
+            try {
+                super.visitCode(obj);
+                if (methodToCalledMethods.get(m).isEmpty()) {
+                    methodToCalledMethods.remove(getMethod());
+                }
+            } catch (StopOpcodeParsingException e) {
                 methodToCalledMethods.remove(getMethod());
             }
         }
@@ -106,10 +109,6 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (reportedCtor) {
-            return;
-        }
-
         try {
             stack.precomputation(this);
 
@@ -125,7 +124,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                                 if (isCtor && (seen != INVOKESPECIAL)) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this, getPC()));
-                                    reportedCtor = true;
+                                    throw new StopOpcodeParsingException();
                                 } else {
                                     if (!Values.CONSTRUCTOR.equals(m.getName())) {
                                         Map<Method, SourceLineAnnotation> calledMethods = methodToCalledMethods.get(getMethod());
@@ -156,7 +155,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
     }
 
     private void reportChainedMethods() {
-        Set<Method> checkedMethods = new HashSet<Method>();
+        Set<Method> checkedMethods = new HashSet<>();
 
         JavaClass cls = getClassContext().getJavaClass();
         for (Map.Entry<Method, Map<Method, SourceLineAnnotation>> entry : methodToCalledMethods.entrySet()) {
@@ -186,7 +185,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                 }
 
                 if (!cm.isPrivate() && !cm.isFinal()) {
-                    Deque<SourceLineAnnotation> slas = new ArrayDeque<SourceLineAnnotation>();
+                    Deque<SourceLineAnnotation> slas = new ArrayDeque<>();
                     slas.addLast(entry.getValue());
                     return slas;
                 }
