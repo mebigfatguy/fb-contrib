@@ -96,7 +96,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            localizableFields = new HashMap<String, FieldInfo>();
+            localizableFields = new HashMap<>();
             visitedBlocks = new BitSet();
             clsContext = classContext;
             clsName = clsContext.getJavaClass().getClassName();
@@ -158,7 +158,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
             cfg = clsContext.getCFG(obj);
             cpg = cfg.getMethodGen().getConstantPool();
             BasicBlock bb = cfg.getEntry();
-            Set<String> uncheckedFields = new HashSet<String>(localizableFields.keySet());
+            Set<String> uncheckedFields = new HashSet<>(localizableFields.keySet());
             visitedBlocks.clear();
             checkBlock(bb, uncheckedFields);
         } catch (CFGBuilderException cbe) {
@@ -228,7 +228,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
      *            the list of fields to look for
      */
     private void checkBlock(BasicBlock bb, Set<String> uncheckedFields) {
-        Deque<BlockState> toBeProcessed = new ArrayDeque<BlockState>();
+        Deque<BlockState> toBeProcessed = new ArrayDeque<>();
         toBeProcessed.addLast(new BlockState(bb, uncheckedFields));
         visitedBlocks.set(bb.getLabel());
 
@@ -441,6 +441,9 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         /**
          * return the field from the set of unchecked fields if this occurs make a copy of the set on write to reduce memory usage
          *
+         * @param field
+         *            the field to be removed
+         *
          * @return whether the object was removed.
          */
         public boolean removeUncheckedField(String field) {
@@ -455,7 +458,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
             }
 
             if (fieldsAreSharedWithParent) {
-                uncheckedFields = new HashSet<String>(uncheckedFields);
+                uncheckedFields = new HashSet<>(uncheckedFields);
                 fieldsAreSharedWithParent = false;
                 uncheckedFields.remove(field);
             } else {
@@ -473,15 +476,15 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
     private static class FieldModifier extends BytecodeScanningDetector {
 
-        private final Map<String, Set<String>> methodCallChain = new HashMap<String, Set<String>>();
-        private final Map<String, Set<String>> mfModifiers = new HashMap<String, Set<String>>();
+        private final Map<String, Set<String>> methodCallChain = new HashMap<>();
+        private final Map<String, Set<String>> mfModifiers = new HashMap<>();
         private String clsName;
 
         public Map<String, Set<String>> getMethodFieldModifiers() {
-            Map<String, Set<String>> modifiers = new HashMap<String, Set<String>>(mfModifiers.size());
+            Map<String, Set<String>> modifiers = new HashMap<>(mfModifiers.size());
             modifiers.putAll(mfModifiers);
             for (Entry<String, Set<String>> method : modifiers.entrySet()) {
-                modifiers.put(method.getKey(), new HashSet<String>(method.getValue()));
+                modifiers.put(method.getKey(), new HashSet<>(method.getValue()));
             }
 
             boolean modified = true;
@@ -496,7 +499,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                         if (fields != null) {
                             Set<String> flds = modifiers.get(methodDesc);
                             if (flds == null) {
-                                flds = new HashSet<String>();
+                                flds = new HashSet<>();
                                 modifiers.put(methodDesc, flds);
                             }
                             if (flds.addAll(fields)) {
@@ -523,7 +526,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                     String methodDesc = getMethodName() + getMethodSig();
                     Set<String> fields = mfModifiers.get(methodDesc);
                     if (fields == null) {
-                        fields = new HashSet<String>();
+                        fields = new HashSet<>();
                         mfModifiers.put(methodDesc, fields);
                     }
                     fields.add(getNameConstantOperand());
@@ -532,7 +535,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                 String methodDesc = getMethodName() + getMethodSig();
                 Set<String> methods = methodCallChain.get(methodDesc);
                 if (methods == null) {
-                    methods = new HashSet<String>();
+                    methods = new HashSet<>();
                     methodCallChain.put(methodDesc, methods);
                 }
                 methods.add(getNameConstantOperand() + getSigConstantOperand());
