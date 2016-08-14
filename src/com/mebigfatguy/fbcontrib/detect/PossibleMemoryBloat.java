@@ -44,80 +44,28 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for classes that maintain collections or StringBuffer/StringBuilders in
- * static member variables, and that do not appear to provide a way to clear or
- * remove items from these members. Such class fields are likely causes of
- * memory bloat.
+ * looks for classes that maintain collections or StringBuffer/StringBuilders in static member variables, and that do not appear to provide a way to clear or
+ * remove items from these members. Such class fields are likely causes of memory bloat.
  *
  */
 public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
-    private static final Set<String> bloatableSigs = UnmodifiableSet.create(
-        "Ljava/util/concurrent/ArrayBlockingQueue;",
-        "Ljava/util/ArrayList;",
-        "Ljava/util/concurrent/BlockingQueue;",
-        "Ljava/util/Collection;",
-        "Ljava/util/concurrent/ConcurrentHashMap;",
-        "Ljava/util/concurrent/ConcurrentSkipListMap;",
-        "Ljava/util/concurrent/ConcurrentSkipListSet;",
-        "Ljava/util/concurrent/CopyOnWriteArraySet;",
-        "Ljava/util/EnumSet;",
-        "Ljava/util/EnumMap;",
-        "Ljava/util/HashMap;",
-        "Ljava/util/HashSet;",
-        "Ljava/util/Hashtable;",
-        "Ljava/util/IdentityHashMap;",
-        "Ljava/util/concurrent/LinkedBlockingQueue;",
-        "Ljava/util/LinkedHashMap;",
-        "Ljava/util/LinkedHashSet;",
-        "Ljava/util/LinkedList;",
-        "Ljava/util/List;",
-        "Ljava/util/concurrent/PriorityBlockingQueue;",
-        "Ljava/util/PriorityQueue;",
-        "Ljava/util/Map;",
-        "Ljava/util/Queue;",
-        "Ljava/util/Set;",
-        "Ljava/util/SortedSet;",
-        "Ljava/util/SortedMap;",
-        "Ljava/util/Stack;",
-        "Ljava/lang/StringBuffer;",
-        "Ljava/lang/StringBuilder;",
-        "Ljava/util/TreeMap;",
-        "Ljava/util/TreeSet;",
-        "Ljava/util/Vector;"
-    );
+    private static final Set<String> bloatableSigs = UnmodifiableSet.create("Ljava/util/concurrent/ArrayBlockingQueue;", "Ljava/util/ArrayList;",
+            "Ljava/util/concurrent/BlockingQueue;", "Ljava/util/Collection;", "Ljava/util/concurrent/ConcurrentHashMap;",
+            "Ljava/util/concurrent/ConcurrentSkipListMap;", "Ljava/util/concurrent/ConcurrentSkipListSet;", "Ljava/util/concurrent/CopyOnWriteArraySet;",
+            "Ljava/util/EnumSet;", "Ljava/util/EnumMap;", "Ljava/util/HashMap;", "Ljava/util/HashSet;", "Ljava/util/Hashtable;", "Ljava/util/IdentityHashMap;",
+            "Ljava/util/concurrent/LinkedBlockingQueue;", "Ljava/util/LinkedHashMap;", "Ljava/util/LinkedHashSet;", "Ljava/util/LinkedList;",
+            "Ljava/util/List;", "Ljava/util/concurrent/PriorityBlockingQueue;", "Ljava/util/PriorityQueue;", "Ljava/util/Map;", "Ljava/util/Queue;",
+            "Ljava/util/Set;", "Ljava/util/SortedSet;", "Ljava/util/SortedMap;", "Ljava/util/Stack;", "Ljava/lang/StringBuffer;", "Ljava/lang/StringBuilder;",
+            "Ljava/util/TreeMap;", "Ljava/util/TreeSet;", "Ljava/util/Vector;");
 
     private static final Set<String> nonBloatableSigs = UnmodifiableSet.create("Ljava/util/WeakHashMap;");
 
-    private static final Set<String> decreasingMethods = UnmodifiableSet.create(
-        "clear",
-        "delete",
-        "deleteCharAt",
-        "drainTo",
-        "poll",
-        "pollFirst",
-        "pollLast",
-        "pop",
-        "remove",
-        "removeAll",
-        "removeAllElements",
-        "removeElementAt",
-        "removeRange",
-        "setLength",
-        "take"
-    );
+    private static final Set<String> decreasingMethods = UnmodifiableSet.create("clear", "delete", "deleteCharAt", "drainTo", "poll", "pollFirst", "pollLast",
+            "pop", "remove", "removeAll", "removeAllElements", "removeElementAt", "removeRange", "setLength", "take");
 
-    private static final Set<String> increasingMethods = UnmodifiableSet.create(
-        "add",
-        "addAll",
-        "addElement",
-        "addFirst",
-        "addLast",
-        "append",
-        "insertElementAt",
-        "offer",
-        "put"
-    );
+    private static final Set<String> increasingMethods = UnmodifiableSet.create("add", "addAll", "addElement", "addFirst", "addLast", "append",
+            "insertElementAt", "offer", "put");
 
     private final BugReporter bugReporter;
     private Map<XField, FieldAnnotation> bloatableCandidates;
@@ -137,8 +85,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     }
 
     /**
-     * collects static fields that are likely bloatable objects and if found
-     * allows the visitor to proceed, at the end report all leftover fields
+     * collects static fields that are likely bloatable objects and if found allows the visitor to proceed, at the end report all leftover fields
      *
      * @param classContext
      *            the class context object of the currently parsed java class
@@ -146,9 +93,9 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            bloatableCandidates = new HashMap<XField, FieldAnnotation>();
-            bloatableFields = new HashMap<XField, FieldAnnotation>();
-            threadLocalNonStaticFields = new HashSet<FieldAnnotation>();
+            bloatableCandidates = new HashMap<>();
+            bloatableFields = new HashMap<>();
+            threadLocalNonStaticFields = new HashSet<>();
             parseFields(classContext);
 
             if (bloatableCandidates.size() > 0) {
@@ -219,16 +166,17 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
 
-        if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName))
+        if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName)) {
             return;
+        }
 
-        if (bloatableCandidates.size() > 0)
+        if (bloatableCandidates.size() > 0) {
             super.visitCode(obj);
+        }
     }
 
     /**
-     * implements the visitor to look for methods that empty a bloatable field
-     * if found, remove these fields from the current list
+     * implements the visitor to look for methods that empty a bloatable field if found, remove these fields from the current list
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -236,12 +184,13 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
-            if (bloatableCandidates.isEmpty())
+            if (bloatableCandidates.isEmpty()) {
                 return;
+            }
 
             stack.precomputation(this);
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEDYNAMIC)) {
                 String sig = getSigConstantOperand();
                 int argCount = Type.getArgumentTypes(sig).length;
                 if (stack.getStackDepth() > argCount) {
