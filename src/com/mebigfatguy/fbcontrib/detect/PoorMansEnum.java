@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -58,8 +59,8 @@ public class PoorMansEnum extends BytecodeScanningDetector {
         try {
             JavaClass cls = classContext.getJavaClass();
             if (cls.getMajor() >= Constants.MAJOR_1_5) {
-                fieldValues = new HashMap<String, Set<Object>>();
-                nameToField = new HashMap<String, Field>();
+                fieldValues = new HashMap<>();
+                nameToField = new HashMap<>();
                 for (Field f : cls.getFields()) {
                     if (f.isPrivate() && !f.isSynthetic()) {
                         String fieldName = f.getName();
@@ -69,16 +70,21 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                 }
                 if (!fieldValues.isEmpty()) {
                     stack = new OpcodeStack();
-                    firstFieldUse = new HashMap<String, SourceLineAnnotation>();
-                    super.visitClassContext(classContext);
+                    firstFieldUse = new HashMap<>();
 
-                    for (Map.Entry<String, Set<Object>> fieldInfo : fieldValues.entrySet()) {
-                        Set<Object> values = fieldInfo.getValue();
-                        if ((values != null) && (values.size() >= 3)) {
-                            String fieldName = fieldInfo.getKey();
-                            bugReporter.reportBug(new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addField(XFactory.createXField(cls, nameToField.get(fieldName))).addSourceLine(firstFieldUse.get(fieldName)));
+                    try {
+                        super.visitClassContext(classContext);
+
+                        for (Map.Entry<String, Set<Object>> fieldInfo : fieldValues.entrySet()) {
+                            Set<Object> values = fieldInfo.getValue();
+                            if ((values != null) && (values.size() >= 3)) {
+                                String fieldName = fieldInfo.getKey();
+                                bugReporter.reportBug(new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addField(XFactory.createXField(cls, nameToField.get(fieldName))).addSourceLine(firstFieldUse.get(fieldName)));
+                            }
                         }
+                    } catch (StopOpcodeParsingException e) {
+                        // no fields left
                     }
                 }
             }
@@ -102,9 +108,6 @@ public class PoorMansEnum extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             stack.precomputation(this);
-            if (fieldValues.isEmpty()) {
-                return;
-            }
 
             if (seen == PUTFIELD) {
                 String fieldName = getNameConstantOperand();
@@ -115,10 +118,14 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                         fieldValues.remove(fieldName);
                         nameToField.remove(fieldName);
                         firstFieldUse.remove(fieldName);
+
+                        if (fieldValues.isEmpty()) {
+                            throw new StopOpcodeParsingException();
+                        }
                     } else {
                         Set<Object> values = fieldValues.get(fieldName);
                         if (values == null) {
-                            values = new HashSet<Object>();
+                            values = new HashSet<>();
                             fieldValues.put(fieldName, values);
                             if (firstFieldUse.get(fieldName) == null) {
                                 firstFieldUse.put(fieldName, SourceLineAnnotation.fromVisitedInstruction(this));
