@@ -120,6 +120,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
             while (bbi.hasNext()) {
                 BasicBlock bb = bbi.next();
                 Iterator<Edge> iei = cfg.outgoingEdgeIterator(bb);
+                int lastSwitchTargetBlockLabel = Integer.MIN_VALUE;
                 while (iei.hasNext()) {
                     Edge e = iei.next();
                     int edgeType = e.getType();
@@ -130,6 +131,12 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
                                 exceptionNodeTargets.set(nodeTarget);
                                 branches++;
                             }
+                        } else if ((edgeType == EdgeTypes.SWITCH_EDGE) || (edgeType == EdgeTypes.SWITCH_DEFAULT_EDGE)) {
+                            int nodeTarget = e.getTarget().getLabel();
+                            if (nodeTarget != lastSwitchTargetBlockLabel) {
+                                branches++;
+                            }
+                            lastSwitchTargetBlockLabel = nodeTarget;
                         } else {
                             branches++;
                         }
