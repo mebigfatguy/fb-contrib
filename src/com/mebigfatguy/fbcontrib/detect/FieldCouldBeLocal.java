@@ -270,8 +270,11 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                     INVOKESPECIAL is = (INVOKESPECIAL) ins;
 
                     ReferenceType rt = is.getReferenceType(cpg);
-                    if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg))
-                            && ((rt instanceof ObjectType) && ((ObjectType) rt).getClassName().startsWith(clsContext.getJavaClass().getClassName() + '$'))) {
+                    if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg))) {
+                        if ((rt instanceof ObjectType) && ((ObjectType) rt).getClassName().startsWith(clsContext.getJavaClass().getClassName() + '$')) {
+                            localizableFields.clear();
+                        }
+                    } else {
                         localizableFields.clear();
                     }
                 } else if (ins instanceof INVOKEVIRTUAL) {

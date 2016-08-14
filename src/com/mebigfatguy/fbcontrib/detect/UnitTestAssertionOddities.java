@@ -136,7 +136,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             isAnnotationCapable = (cls.getMajor() >= 5) && ((testAnnotationClass != null) || (testNGAnnotationClass != null));
             if (isTestCaseDerived || isAnnotationCapable) {
                 stack = new OpcodeStack();
-                fieldsWithAnnotations = new HashSet<FieldDescriptor>();
+                fieldsWithAnnotations = new HashSet<>();
                 super.visitClassContext(classContext);
             }
         } catch (ClassNotFoundException cnfe) {
@@ -147,7 +147,6 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
         }
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL", justification = "False positives occur when state is maintained across callbacks")
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();

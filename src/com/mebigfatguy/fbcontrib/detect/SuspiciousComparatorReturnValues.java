@@ -113,7 +113,6 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
      * @param obj
      *            the currently parsed code block
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL", justification = "False positives occur when state is maintained across callbacks")
     @Override
     public void visitCode(Code obj) {
         if (getMethod().isSynthetic()) {
