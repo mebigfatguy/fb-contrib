@@ -253,10 +253,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                         clearExceptions();
                     }
                 } else if ("wait".equals(getNameConstantOperand())) {
-                    declaredCheckedExceptions.remove("java.lang.InterruptedException");
-                    if (declaredCheckedExceptions.isEmpty()) {
-                        throw new StopOpcodeParsingException();
-                    }
+                    removeException("java.lang.InterruptedException");
                 }
             } else if (seen == ATHROW) {
                 if (stack.getStackDepth() > 0) {
@@ -286,7 +283,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                 // Exception can be thrown even tho the method isn't declared to throw Exception in the case of templated Exceptions
                 clearExceptions();
             } else {
-                declaredCheckedExceptions.remove(thrownException);
+                removeException(thrownException);
                 JavaClass exCls = Repository.lookupClass(thrownException);
                 String clsName;
 
@@ -296,20 +293,33 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                         break;
                     }
                     clsName = exCls.getClassName();
-                    declaredCheckedExceptions.remove(clsName);
+                    removeException(clsName);
                 } while (!declaredCheckedExceptions.isEmpty() && !Values.DOTTED_JAVA_LANG_EXCEPTION.equals(clsName)
                         && !Values.DOTTED_JAVA_LANG_ERROR.equals(clsName));
             }
 
-            if (declaredCheckedExceptions.isEmpty()) {
-                throw new StopOpcodeParsingException();
-            }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
             clearExceptions();
         }
     }
 
+    /**
+     * removes the declared checked exception, and if that was the last declared exception, stops opcode parsing by throwing exception
+     *
+     * @param clsName
+     *            the name of the exception to remove
+     */
+    private void removeException(String clsName) {
+        declaredCheckedExceptions.remove(clsName);
+        if (declaredCheckedExceptions.isEmpty()) {
+            throw new StopOpcodeParsingException();
+        }
+    }
+
+    /**
+     * clears all declared checked exceptions and throws an exception to stop opcode parsing
+     */
     private void clearExceptions() {
         declaredCheckedExceptions.clear();
         throw new StopOpcodeParsingException();
