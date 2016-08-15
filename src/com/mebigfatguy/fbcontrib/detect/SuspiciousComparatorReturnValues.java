@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 
@@ -61,7 +62,6 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private final BugReporter bugReporter;
     private MethodInfo methodInfo;
-    private boolean indeterminate;
     private boolean seenNegative;
     private boolean seenPositive;
     private boolean seenZero;
@@ -124,21 +124,24 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
         if (methodName.equals(methodInfo.methodName) && methodSig.endsWith(methodInfo.signatureEnding)
                 && (Type.getArgumentTypes(methodSig).length == methodInfo.argumentCount)) {
             stack.resetForMethodEntry(this);
-            indeterminate = false;
             seenNegative = false;
             seenPositive = false;
             seenZero = false;
             seenUnconditionalNonZero = false;
             furthestBranchTarget = -1;
             sawConstant = null;
-            super.visitCode(obj);
-            if (!indeterminate && (!seenZero || seenUnconditionalNonZero || (obj.getCode().length > 2))) {
-                boolean seenAll = seenNegative & seenPositive & seenZero;
-                if (!seenAll || seenUnconditionalNonZero) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), (!seenAll) ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this, 0));
+            try {
+                super.visitCode(obj);
+                if (!seenZero || seenUnconditionalNonZero || (obj.getCode().length > 2)) {
+                    boolean seenAll = seenNegative & seenPositive & seenZero;
+                    if (!seenAll || seenUnconditionalNonZero) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), (!seenAll) ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this, 0));
+                    }
                 }
+            } catch (StopOpcodeParsingException e) {
+                // indeterminate
             }
         }
     }
@@ -153,10 +156,6 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
-            if (indeterminate) {
-                return;
-            }
-
             stack.precomputation(this);
 
             switch (seen) {
@@ -168,7 +167,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                 case GOTO:
                 case GOTO_W: {
                     if (stack.getStackDepth() > 0) {
-                        indeterminate = true;
+                        throw new StopOpcodeParsingException();
                     }
                     if (furthestBranchTarget < getBranchTarget()) {
                         furthestBranchTarget = getBranchTarget();
@@ -212,7 +211,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         String exSig = item.getSignature();
                         if ("Ljava/lang/UnsupportedOperationException;".equals(exSig)) {
-                            indeterminate = true;
+                            throw new StopOpcodeParsingException();
                         }
                     }
                 }
@@ -264,7 +263,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
             }
 
             if (returnValue == null) {
-                indeterminate = true;
+                throw new StopOpcodeParsingException();
             } else {
                 int v = returnValue.intValue();
                 if (v < 0) {
@@ -282,7 +281,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                 }
             }
         } else {
-            indeterminate = true;
+            throw new StopOpcodeParsingException();
         }
 
         sawConstant = null;
