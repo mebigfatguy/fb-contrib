@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -98,13 +99,15 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             threadLocalNonStaticFields = new HashSet<>();
             parseFields(classContext);
 
-            if (bloatableCandidates.size() > 0) {
+            if (!bloatableCandidates.isEmpty()) {
                 stack = new OpcodeStack();
                 super.visitClassContext(classContext);
 
                 reportMemoryBloatBugs();
                 reportThreadLocalBugs();
             }
+        } catch (StopOpcodeParsingException e) {
+            // no more bloatable candidates
         } finally {
             stack = null;
             bloatableCandidates = null;
@@ -170,7 +173,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             return;
         }
 
-        if (bloatableCandidates.size() > 0) {
+        if (!bloatableCandidates.isEmpty()) {
             super.visitCode(obj);
         }
     }
@@ -184,10 +187,6 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
-            if (bloatableCandidates.isEmpty()) {
-                return;
-            }
-
             stack.precomputation(this);
 
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEDYNAMIC)) {
@@ -225,6 +224,9 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             if (field != null) {
                 bloatableCandidates.remove(field);
                 bloatableFields.remove(field);
+                if (bloatableCandidates.isEmpty()) {
+                    throw new StopOpcodeParsingException();
+                }
             }
         }
     }
@@ -234,6 +236,9 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         if (decreasingMethods.contains(mName)) {
             bloatableCandidates.remove(field);
             bloatableFields.remove(field);
+            if (bloatableCandidates.isEmpty()) {
+                throw new StopOpcodeParsingException();
+            }
         } else if (increasingMethods.contains(mName) && bloatableCandidates.containsKey(field)) {
             bloatableFields.put(field, bloatableCandidates.get(field));
         }
