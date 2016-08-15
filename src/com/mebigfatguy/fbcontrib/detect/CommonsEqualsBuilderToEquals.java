@@ -30,8 +30,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 
 /**
- * Find usage of EqualsBuilder from Apache commons, where the code invoke
- * equals() on the constructed object rather than isEquals()
+ * Find usage of EqualsBuilder from Apache commons, where the code invoke equals() on the constructed object rather than isEquals()
  *
  * <pre>
  * new EqualsBuilder().append(this.name, other.name).equals(other);
@@ -56,10 +55,8 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to pass through constructors and static
-     * initializers to the byte code scanning code. These methods are not
-     * reported, but are used to build SourceLineAnnotations for fields, if
-     * accessed.
+     * implements the visitor to pass through constructors and static initializers to the byte code scanning code. These methods are not reported, but are used
+     * to build SourceLineAnnotations for fields, if accessed.
      *
      * @param obj
      *            the context object of the currently parsed code attribute
@@ -75,17 +72,20 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL) {
-            String methodName = getNameConstantOperand();
-            if ("equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand()) && (stack.getStackDepth() > 1)) {
-                String calledClass = stack.getStackItem(1).getSignature();
-                if (LANG3_EQUALS_BUILDER.equals(calledClass) || LANG_EQUALS_BUILDER.equals(calledClass)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS.name(), HIGH_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this));
+        try {
+            if (seen == INVOKEVIRTUAL) {
+                String methodName = getNameConstantOperand();
+                if ("equals".equals(methodName) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand()) && (stack.getStackDepth() > 1)) {
+                    String calledClass = stack.getStackItem(1).getSignature();
+                    if (LANG3_EQUALS_BUILDER.equals(calledClass) || LANG_EQUALS_BUILDER.equals(calledClass)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS.name(), HIGH_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
+                    }
                 }
             }
+        } finally {
+            super.sawOpcode(seen);
+            stack.sawOpcode(this, seen);
         }
-        super.sawOpcode(seen);
-        stack.sawOpcode(this, seen);
     }
 }
