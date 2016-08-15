@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -102,6 +103,15 @@ public class UseEnumCollections extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
         enumRegs.clear();
         super.visitMethod(obj);
+    }
+
+    @Override
+    public void visitCode(Code obj) {
+        try {
+            super.visitCode(obj);
+        } catch (StopOpcodeParsingException e) {
+            // method is already reported
+        }
     }
 
     @Override
