@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -36,45 +37,21 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that implement awt or swing listeners and perform time
- * consuming operations. Doing these operations in the gui thread will cause the
- * interface to appear sluggish and non-responsive to the user. It is better to
- * use a separate thread to do the time consuming work so that the user has a
+ * looks for methods that implement awt or swing listeners and perform time consuming operations. Doing these operations in the gui thread will cause the
+ * interface to appear sluggish and non-responsive to the user. It is better to use a separate thread to do the time consuming work so that the user has a
  * better experience.
  */
 public class SluggishGui extends BytecodeScanningDetector {
 
-    private static final Set<String> expensiveCalls = UnmodifiableSet.create(
-        "java/io/BufferedOutputStream:<init>",
-        "java/io/DataOutputStream:<init>",
-        "java/io/FileOutputStream:<init>",
-        "java/io/ObjectOutputStream:<init>",
-        "java/io/PipedOutputStream:<init>",
-        "java/io/BufferedInputStream:<init>",
-        "java/io/DataInputStream:<init>",
-        "java/io/FileInputStream:<init>",
-        "java/io/ObjectInputStream:<init>",
-        "java/io/PipedInputStream:<init>",
-        "java/io/BufferedWriter:<init>",
-        "java/io/FileWriter:<init>",
-        "java/io/OutpuStreamWriter:<init>",
-        "java/io/BufferedReader:<init>",
-        "java/io/FileReader:<init>",
-        "java/io/InputStreamReader:<init>",
-        "java/io/RandomAccessFile:<init>",
-        "java/lang/Class:getResourceAsStream",
-        "java/lang/ClassLoader:getResourceAsStream",
-        "java/lang/ClassLoader:loadClass",
-        "java/sql/DriverManager:getConnection",
-        "java/sql/Connection:createStatement",
-        "java/sql/Connection:prepareStatement",
-        "java/sql/Connection:prepareCall",
-        "javax/sql/DataSource:getConnection",
-        "javax/xml/parsers/DocumentBuilder:parse",
-        "javax/xml/parsers/DocumentBuilder:parse",
-        "javax/xml/parsers/SAXParser:parse",
-        "javax/xml/transform/Transformer:transform"
-    );
+    private static final Set<String> expensiveCalls = UnmodifiableSet.create("java/io/BufferedOutputStream:<init>", "java/io/DataOutputStream:<init>",
+            "java/io/FileOutputStream:<init>", "java/io/ObjectOutputStream:<init>", "java/io/PipedOutputStream:<init>", "java/io/BufferedInputStream:<init>",
+            "java/io/DataInputStream:<init>", "java/io/FileInputStream:<init>", "java/io/ObjectInputStream:<init>", "java/io/PipedInputStream:<init>",
+            "java/io/BufferedWriter:<init>", "java/io/FileWriter:<init>", "java/io/OutpuStreamWriter:<init>", "java/io/BufferedReader:<init>",
+            "java/io/FileReader:<init>", "java/io/InputStreamReader:<init>", "java/io/RandomAccessFile:<init>", "java/lang/Class:getResourceAsStream",
+            "java/lang/ClassLoader:getResourceAsStream", "java/lang/ClassLoader:loadClass", "java/sql/DriverManager:getConnection",
+            "java/sql/Connection:createStatement", "java/sql/Connection:prepareStatement", "java/sql/Connection:prepareCall",
+            "javax/sql/DataSource:getConnection", "javax/xml/parsers/DocumentBuilder:parse", "javax/xml/parsers/DocumentBuilder:parse",
+            "javax/xml/parsers/SAXParser:parse", "javax/xml/transform/Transformer:transform");
 
     private BugReporter bugReporter;
     private Set<String> expensiveThisCalls;
@@ -83,7 +60,6 @@ public class SluggishGui extends BytecodeScanningDetector {
     private String methodName;
     private String methodSig;
     private boolean isListenerMethod = false;
-    private boolean methodReported = false;
 
     /**
      * constructs a SG detector given the reporter to report bugs on
@@ -104,7 +80,7 @@ public class SluggishGui extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            guiInterfaces = new HashSet<JavaClass>();
+            guiInterfaces = new HashSet<>();
             JavaClass cls = classContext.getJavaClass();
             JavaClass[] infs = cls.getAllInterfaces();
             for (JavaClass inf : infs) {
@@ -115,8 +91,8 @@ public class SluggishGui extends BytecodeScanningDetector {
             }
 
             if (guiInterfaces.size() > 0) {
-                listenerCode = new LinkedHashMap<Code, Method>();
-                expensiveThisCalls = new HashSet<String>();
+                listenerCode = new LinkedHashMap<>();
+                expensiveThisCalls = new HashSet<>();
                 super.visitClassContext(classContext);
             }
         } catch (ClassNotFoundException cnfe) {
@@ -138,8 +114,11 @@ public class SluggishGui extends BytecodeScanningDetector {
     public void visitAfter(JavaClass obj) {
         isListenerMethod = true;
         for (Code l : listenerCode.keySet()) {
-            methodReported = false;
-            super.visitCode(l);
+            try {
+                super.visitCode(l);
+            } catch (StopOpcodeParsingException e) {
+                // method already reported
+            }
         }
         super.visitAfter(obj);
     }
@@ -157,8 +136,7 @@ public class SluggishGui extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to segregate method into two, those that implement
-     * listeners, and those that don't. The ones that don't are processed first.
+     * overrides the visitor to segregate method into two, those that implement listeners, and those that don't. The ones that don't are processed first.
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -175,7 +153,6 @@ public class SluggishGui extends BytecodeScanningDetector {
             }
         }
         isListenerMethod = false;
-        methodReported = false;
         super.visitCode(obj);
     }
 
@@ -187,8 +164,6 @@ public class SluggishGui extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (methodReported)
-            return;
 
         if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC)) {
             String clsName = getClassConstantOperand();
@@ -203,7 +178,7 @@ public class SluggishGui extends BytecodeScanningDetector {
                 } else {
                     expensiveThisCalls.add(getMethodName() + ':' + getMethodSig());
                 }
-                methodReported = true;
+                throw new StopOpcodeParsingException();
             }
         }
     }
