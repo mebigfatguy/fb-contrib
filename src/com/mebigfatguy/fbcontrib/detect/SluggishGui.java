@@ -95,8 +95,6 @@ public class SluggishGui extends BytecodeScanningDetector {
                 expensiveThisCalls = new HashSet<>();
                 super.visitClassContext(classContext);
             }
-        } catch (StopOpcodeParsingException e) {
-            // method already reported
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         } finally {
@@ -116,7 +114,11 @@ public class SluggishGui extends BytecodeScanningDetector {
     public void visitAfter(JavaClass obj) {
         isListenerMethod = true;
         for (Code l : listenerCode.keySet()) {
-            super.visitCode(l);
+            try {
+                super.visitCode(l);
+            } catch (StopOpcodeParsingException e) {
+                // method already reported
+            }
         }
         super.visitAfter(obj);
     }
@@ -141,17 +143,21 @@ public class SluggishGui extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
-        for (JavaClass inf : guiInterfaces) {
-            Method[] methods = inf.getMethods();
-            for (Method m : methods) {
-                if (m.getName().equals(methodName) && m.getSignature().equals(methodSig)) {
-                    listenerCode.put(obj, this.getMethod());
-                    return;
+        try {
+            for (JavaClass inf : guiInterfaces) {
+                Method[] methods = inf.getMethods();
+                for (Method m : methods) {
+                    if (m.getName().equals(methodName) && m.getSignature().equals(methodSig)) {
+                        listenerCode.put(obj, this.getMethod());
+                        return;
+                    }
                 }
             }
+            isListenerMethod = false;
+            super.visitCode(obj);
+        } catch (StopOpcodeParsingException e) {
+            // method already reported
         }
-        isListenerMethod = false;
-        super.visitCode(obj);
     }
 
     /**
