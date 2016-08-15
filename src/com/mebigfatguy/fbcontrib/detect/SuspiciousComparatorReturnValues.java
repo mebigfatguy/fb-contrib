@@ -250,6 +250,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
 
     /**
      * processes an IRETURN looking for constants and categorizes them as negative, zero or positive. it also records a unconditional return of a non zero value
+     * Throws StopOpcodeParsingException if a return value (constant) is indeterminate
      *
      */
     private void processIntegerReturn() {
