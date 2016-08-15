@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -42,26 +43,18 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for uses of sets or maps where the key is an enum. In these cases, it
- * is more efficient to use EnumSet or EnumMap. It is a jdk1.5 only detector.
+ * looks for uses of sets or maps where the key is an enum. In these cases, it is more efficient to use EnumSet or EnumMap. It is a jdk1.5 only detector.
  */
 @CustomUserValue
 public class UseEnumCollections extends BytecodeScanningDetector {
-    private static final Set<String> nonEnumCollections = UnmodifiableSet.create(
-            "Ljava/util/HashSet;",
-            "Ljava/util/HashMap;",
-            "Ljava/util/TreeMap;",
-            "Ljava/util/ConcurrentHashMap;",
-            "Ljava/util/IdentityHashMap;",
-            "Ljava/util/WeakHashMap;"
-    );
+    private static final Set<String> nonEnumCollections = UnmodifiableSet.create("Ljava/util/HashSet;", "Ljava/util/HashMap;", "Ljava/util/TreeMap;",
+            "Ljava/util/ConcurrentHashMap;", "Ljava/util/IdentityHashMap;", "Ljava/util/WeakHashMap;");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private Set<String> checkedFields;
     private Map<Integer, Boolean> enumRegs;
     private Map<String, Boolean> enumFields;
-    private boolean methodReported;
 
     /**
      * constructs a UEC detector given the reporter to report bugs on
@@ -74,8 +67,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to check that the class is greater or equal than
-     * 1.5, and set and clear the stack
+     * implements the visitor to check that the class is greater or equal than 1.5, and set and clear the stack
      *
      * @param classContext
      *            the context object for the currently parsed class
@@ -86,9 +78,9 @@ public class UseEnumCollections extends BytecodeScanningDetector {
             JavaClass cls = classContext.getJavaClass();
             if (cls.getMajor() >= Constants.MAJOR_1_5) {
                 stack = new OpcodeStack();
-                checkedFields = new HashSet<String>();
-                enumRegs = new HashMap<Integer, Boolean>();
-                enumFields = new HashMap<String, Boolean>();
+                checkedFields = new HashSet<>();
+                enumRegs = new HashMap<>();
+                enumFields = new HashMap<>();
                 super.visitClassContext(classContext);
             }
         } finally {
@@ -108,7 +100,6 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     @Override
     public void visitMethod(Method obj) {
         stack.resetForMethodEntry(this);
-        methodReported = false;
         enumRegs.clear();
         super.visitMethod(obj);
     }
@@ -120,10 +111,6 @@ public class UseEnumCollections extends BytecodeScanningDetector {
         try {
 
             stack.precomputation(this);
-
-            if (methodReported) {
-                return;
-            }
 
             if (seen == INVOKESTATIC) {
                 String clsName = getClassConstantOperand();
@@ -180,7 +167,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 if (bug) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.UEC_USE_ENUM_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                    methodReported = true;
+                    throw new StopOpcodeParsingException();
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -197,8 +184,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the item at the stackPos location on the stack is an
-     * enum, and doesn't implement any interfaces
+     * returns whether the item at the stackPos location on the stack is an enum, and doesn't implement any interfaces
      *
      * @param stackPos
      *            the position on the opstack to check
@@ -230,8 +216,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the item at the stackpos location is an instance of an
-     * EnumSet or EnumMap
+     * returns whether the item at the stackpos location is an instance of an EnumSet or EnumMap
      *
      * @param stackPos
      *            the position on the opstack to check
