@@ -60,7 +60,7 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
     @Override
     public void afterOpcode(int seen) {
         super.afterOpcode(seen);
-        if (flag == true) {
+        if (flag) {
             stack.getStackItem(0).setUserValue(Boolean.TRUE);
             flag = false;
         }
@@ -84,6 +84,5 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
                 }
             }
         }
-        // stack.sawOpcode(this, seen);
     }
 }
