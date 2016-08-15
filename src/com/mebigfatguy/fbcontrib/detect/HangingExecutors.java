@@ -65,6 +65,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
     private Map<XField, Integer> exemptExecutors;
     private OpcodeStack stack;
     private String methodName;
+    private boolean isInitializer;
 
     private final LocalHangingExecutor localHEDetector;
 
@@ -84,8 +85,8 @@ public class HangingExecutors extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         localHEDetector.visitClassContext(classContext);
         try {
-            hangingFieldCandidates = new HashMap<XField, AnnotationPriority>();
-            exemptExecutors = new HashMap<XField, Integer>();
+            hangingFieldCandidates = new HashMap<>();
+            exemptExecutors = new HashMap<>();
             parseFieldsForHangingCandidates(classContext);
 
             if (!hangingFieldCandidates.isEmpty()) {
@@ -136,6 +137,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
         exemptExecutors.clear();
 
         if (!hangingFieldCandidates.isEmpty()) {
+            isInitializer = (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName));
             super.visitCode(obj);
         }
     }
@@ -159,10 +161,11 @@ public class HangingExecutors extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName)) {
+        if (isInitializer) {
             lookForCustomThreadFactoriesInConstructors(seen);
             return;
         }
+
         try {
             stack.precomputation(this);
 
@@ -307,17 +310,17 @@ class LocalHangingExecutor extends LocalTypeDetector {
     private static final Map<String, Integer> syncCtors;
 
     static {
-        Set<String> forExecutors = new HashSet<String>();
+        Set<String> forExecutors = new HashSet<>();
         forExecutors.add("newCachedThreadPool");
         forExecutors.add("newFixedThreadPool");
         forExecutors.add("newScheduledThreadPool");
         forExecutors.add("newSingleThreadExecutor");
 
-        Map<String, Set<String>> wcm = new HashMap<String, Set<String>>();
+        Map<String, Set<String>> wcm = new HashMap<>();
         wcm.put("java/util/concurrent/Executors", forExecutors);
         watchedClassMethods = Collections.unmodifiableMap(wcm);
 
-        Map<String, Integer> sc = new HashMap<String, Integer>();
+        Map<String, Integer> sc = new HashMap<>();
         sc.put("java/util/concurrent/ThreadPoolExecutor", Values.JAVA_5);
         sc.put("java/util/concurrent/ScheduledThreadPoolExecutor", Values.JAVA_5);
         syncCtors = Collections.unmodifiableMap(sc);
