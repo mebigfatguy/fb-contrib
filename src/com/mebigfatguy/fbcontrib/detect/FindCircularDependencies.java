@@ -139,7 +139,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
             Set<String> loop = lf.findLoop(dependencyGraph, className);
             boolean pruneLeaves;
             if (loop != null) {
-                BugInstance bug = new BugInstance(this, BugType.CD_CIRCULAR_DEPENDENCY.name(), NORMAL_PRIORITY);
+                BugInstance bug = new BugInstance(this, BugType.FCD_FIND_CIRCULAR_DEPENDENCY.name(), NORMAL_PRIORITY);
                 for (String loopCls : loop) {
                     bug.addClass(loopCls);
                 }
