@@ -95,6 +95,8 @@ public class SluggishGui extends BytecodeScanningDetector {
                 expensiveThisCalls = new HashSet<>();
                 super.visitClassContext(classContext);
             }
+        } catch (StopOpcodeParsingException e) {
+            // method already reported
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         } finally {
@@ -114,11 +116,7 @@ public class SluggishGui extends BytecodeScanningDetector {
     public void visitAfter(JavaClass obj) {
         isListenerMethod = true;
         for (Code l : listenerCode.keySet()) {
-            try {
-                super.visitCode(l);
-            } catch (StopOpcodeParsingException e) {
-                // method already reported
-            }
+            super.visitCode(l);
         }
         super.visitAfter(obj);
     }
