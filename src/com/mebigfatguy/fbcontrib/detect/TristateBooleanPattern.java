@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -31,15 +32,12 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that are defined to return Boolean, but return null. This
- * thus allows three return values, Boolean.FALSE, Boolean.TRUE and null. If
- * three values intended, it would be more clear to just create an enumeration
- * with three values and return that type.
+ * looks for methods that are defined to return Boolean, but return null. This thus allows three return values, Boolean.FALSE, Boolean.TRUE and null. If three
+ * values intended, it would be more clear to just create an enumeration with three values and return that type.
  */
 public class TristateBooleanPattern extends BytecodeScanningDetector {
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private boolean methodReported;
 
     /**
      * constructs a TBP detector given the reporter to report bugs on
@@ -69,19 +67,22 @@ public class TristateBooleanPattern extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to filter out methods that don't return Boolean,
-     * and to reset the methodReported flag
+     *
      *
      * @param obj
      *            the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
-        Method m = getMethod();
-        Type retType = m.getReturnType();
-        if ("Ljava/lang/Boolean;".equals(retType.getSignature())) {
-            stack.resetForMethodEntry(this);
-            methodReported = false;
-            super.visitCode(obj);
+        try {
+            Method m = getMethod();
+            Type retType = m.getReturnType();
+            if ("Ljava/lang/Boolean;".equals(retType.getSignature())) {
+                stack.resetForMethodEntry(this);
+                super.visitCode(obj);
+            }
+        } catch (StopOpcodeParsingException e) {
+            // if the method was already reported
         }
     }
 
@@ -91,8 +92,6 @@ public class TristateBooleanPattern extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
-            if (methodReported)
-                return;
 
             stack.precomputation(this);
 
@@ -101,7 +100,7 @@ public class TristateBooleanPattern extends BytecodeScanningDetector {
                 if (item.isNull()) {
                     bugReporter.reportBug(new BugInstance(this, BugType.TBP_TRISTATE_BOOLEAN_PATTERN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                             .addSourceLine(this));
-                    methodReported = true;
+                    throw new StopOpcodeParsingException();
                 }
             }
         } finally {
