@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -132,7 +133,7 @@ public class FinalParameters extends BytecodeScanningDetector {
                 SourceFile sourceFile = sourceFinder.findSourceFile(srcLineAnnotation.getPackageName(), srcLineAnnotation.getSourceFile());
                 try (BufferedReader sourceReader = new BufferedReader(new InputStreamReader(sourceFile.getInputStream(), StandardCharsets.UTF_8))) {
 
-                    List<String> lines = new ArrayList<String>(100);
+                    List<String> lines = new ArrayList<>(100);
                     String line;
                     while ((line = sourceReader.readLine()) != null) {
                         lines.add(line);
@@ -221,7 +222,7 @@ public class FinalParameters extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(final int seen) {
-        if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+        if (OpcodeUtils.isAStore(seen)) {
             changedParms.set(RegisterUtils.getAStoreReg(this, seen));
         }
     }
