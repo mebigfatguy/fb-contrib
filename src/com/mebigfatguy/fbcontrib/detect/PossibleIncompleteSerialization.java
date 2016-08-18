@@ -31,8 +31,7 @@ import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for classes that don't handle serialization of parent class member
- * fields when the class in question is serializable but is derived from non
+ * looks for classes that don't handle serialization of parent class member fields when the class in question is serializable but is derived from non
  * serializable classes.
  */
 public class PossibleIncompleteSerialization implements Detector {
@@ -49,9 +48,8 @@ public class PossibleIncompleteSerialization implements Detector {
     }
 
     /**
-     * implements the visitor to look for classes that are serializable, and are
-     * derived from non serializable classes and don't either implement methods
-     * in Externalizable or Serializable to save parent class fields.
+     * implements the visitor to look for classes that are serializable, and are derived from non serializable classes and don't either implement methods in
+     * Externalizable or Serializable to save parent class fields.
      *
      * @param classContext
      *            the context object of the currently parsed class
@@ -74,14 +72,21 @@ public class PossibleIncompleteSerialization implements Detector {
     /**
      * returns if the class implements Serializable or Externalizable
      *
+     * @param cls
+     *            the class to check for interfaces
+     * 
      * @return if the class implements Serializable or Externalizable
+     *
+     * @throws ClassNotFoundException
+     *             if a super class or super interfaces can't be found
      */
     private static boolean isSerializable(JavaClass cls) throws ClassNotFoundException {
         JavaClass[] infs = cls.getAllInterfaces();
         for (JavaClass inf : infs) {
             String clsName = inf.getClassName();
-            if ("java.io.Serializable".equals(clsName) || "java.io.Externalizable".equals(clsName))
+            if ("java.io.Serializable".equals(clsName) || "java.io.Externalizable".equals(clsName)) {
                 return true;
+            }
         }
         return false;
     }
@@ -96,15 +101,15 @@ public class PossibleIncompleteSerialization implements Detector {
     private static boolean hasSerializableFields(JavaClass cls) {
         Field[] fields = cls.getFields();
         for (Field f : fields) {
-            if (!f.isStatic() && !f.isTransient() && !f.isSynthetic())
+            if (!f.isStatic() && !f.isTransient() && !f.isSynthetic()) {
                 return true;
+            }
         }
         return false;
     }
 
     /**
-     * looks to see if this class implements method described by Serializable or
-     * Externalizable
+     * looks to see if this class implements method described by Serializable or Externalizable
      *
      * @param cls
      *            the class to examine for serializing methods
@@ -116,10 +121,12 @@ public class PossibleIncompleteSerialization implements Detector {
             if (!m.isStatic()) {
                 String methodName = m.getName();
                 String methodSig = m.getSignature();
-                if ("writeObject".equals(methodName) && "(Ljava/io/ObjectOutputStream;)V".equals(methodSig))
+                if ("writeObject".equals(methodName) && "(Ljava/io/ObjectOutputStream;)V".equals(methodSig)) {
                     return true;
-                if ("writeExternal".equals(methodName) && "(Ljava/io/ObjectOutput;)V".equals(methodSig))
+                }
+                if ("writeExternal".equals(methodName) && "(Ljava/io/ObjectOutput;)V".equals(methodSig)) {
                     return true;
+                }
             }
         }
         return false;
