@@ -18,7 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -29,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -38,9 +38,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for methods that have the same signature, except where one uses a
- * Character parameter, and the other uses an int, long, float, double
- * parameter. Since autoboxing is available in 1.5 one might assume that
+ * looks for methods that have the same signature, except where one uses a Character parameter, and the other uses an int, long, float, double parameter. Since
+ * autoboxing is available in 1.5 one might assume that
  *
  * <pre>
  * test('a')
@@ -57,16 +56,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class ConfusingAutoboxedOverloading extends PreorderVisitor implements Detector {
     private static final int JDK15_MAJOR = 49;
 
-    private static final Set<String> primitiveSigs;
-
-    static {
-        Set<String> ps = new HashSet<String>();
-        ps.add("I");
-        ps.add("J");
-        ps.add("D");
-        ps.add("F");
-        primitiveSigs = Collections.unmodifiableSet(ps);
-    }
+    private static final Set<String> primitiveSigs = UnmodifiableSet.create("I", "J", "D", "F");
 
     private final BugReporter bugReporter;
 
@@ -84,8 +74,7 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
      * overrides the visitor to look for confusing signatures
      *
      * @param classContext
-     *            the context object that holds the JavaClass currently being
-     *            parsed
+     *            the context object that holds the JavaClass currently being parsed
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -93,7 +82,7 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
 
         if (cls.isClass() && (cls.getMajor() >= JDK15_MAJOR)) {
 
-            Map<String, Set<String>> methodInfo = new HashMap<String, Set<String>>();
+            Map<String, Set<String>> methodInfo = new HashMap<>();
             populateMethodInfo(cls, methodInfo);
 
             Method[] methods = cls.getMethods();
@@ -161,8 +150,7 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
     }
 
     /**
-     * fills out a set of method details for possibly confusing method
-     * signatures
+     * fills out a set of method details for possibly confusing method signatures
      *
      * @param cls
      *            the current class being parsed
@@ -178,17 +166,16 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
             Method[] methods = cls.getMethods();
             for (Method m : methods) {
                 String sig = m.getSignature();
-                if (!isPossiblyConfusingSignature(sig)) {
-                    continue;
-                }
+                if (isPossiblyConfusingSignature(sig)) {
 
-                String name = m.getName();
-                Set<String> sigs = methodInfo.get(name);
-                if (sigs == null) {
-                    sigs = new HashSet<String>(3);
-                    methodInfo.put(name, sigs);
+                    String name = m.getName();
+                    Set<String> sigs = methodInfo.get(name);
+                    if (sigs == null) {
+                        sigs = new HashSet<>(3);
+                        methodInfo.put(name, sigs);
+                    }
+                    sigs.add(m.getSignature());
                 }
-                sigs.add(m.getSignature());
             }
 
             populateMethodInfo(cls.getSuperClass(), methodInfo);
