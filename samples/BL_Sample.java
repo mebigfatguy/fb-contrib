@@ -52,6 +52,18 @@ public class BL_Sample {
         return "";
     }
 
+    public String fpIfElseReturnChain(Object c) {
+        if (c instanceof String) {
+            return "S" + c.getClass().getName();
+        } else if (c instanceof Integer) {
+            return "I" + c.getClass().getName();
+        } else if (c instanceof Double) {
+            return "D" + c.getClass().getName();
+        }
+
+        return null;
+    }
+
     private List<String> getDetails() {
         return null;
     }
