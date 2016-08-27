@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
@@ -58,6 +59,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
     private double normalBugRatioLimit;
     private BitSet catchPCs;
     private BitSet gotoBranchPCs;
+    private boolean lookingForResetOp;
 
     public BuryingLogic(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -127,6 +129,9 @@ public class BuryingLogic extends BytecodeScanningDetector {
             }
         }
         gotoBranchPCs.clear();
+
+        lookingForResetOp = false;
+
         try {
             super.visitCode(obj);
         } catch (StopOpcodeParsingException e) {
@@ -154,9 +159,21 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 activeUnconditional = null;
             }
 
+            if (lookingForResetOp) {
+                if (isResetOp(seen)) {
+                    lookingForResetOp = false;
+                } else {
+                    return;
+                }
+            }
+
             if (isBranch(seen)) {
                 if (activeUnconditional != null) {
                     activeUnconditional = null;
+                    if (!ifBlocks.isEmpty()) {
+                        ifBlocks.removeLast();
+                    }
+                    lookingForResetOp = true;
                 }
 
                 int target = getBranchTarget();
@@ -190,6 +207,27 @@ public class BuryingLogic extends BytecodeScanningDetector {
         } finally {
             stack.sawOpcode(this, seen);
         }
+    }
+
+    /**
+     * determines if this opcode couldn't be part of a conditional expression or at least is very unlikely to be so.
+     *
+     * @param seen
+     *            the currently parse opcode
+     * @return if this operation resets the looking for conditionals
+     */
+    private boolean isResetOp(int seen) {
+        if (OpcodeUtils.isStore(seen) || (seen == PUTFIELD) || (seen == PUTSTATIC) || (seen == POP) || (seen == POP2)) {
+            return true;
+        }
+
+        if (OpcodeUtils.isInvoke(seen)) {
+            if (getSigConstantOperand().endsWith(")Z")) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     private void removeLoopBlocks(int target) {
