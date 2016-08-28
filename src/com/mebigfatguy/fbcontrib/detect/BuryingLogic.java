@@ -232,7 +232,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
      * @return if this operation resets the looking for conditionals
      */
     private boolean isResetOp(int seen) {
-        if (OpcodeUtils.isStore(seen) || (seen == PUTFIELD) || (seen == PUTSTATIC) || (seen == POP) || (seen == POP2)) {
+        if ((seen == PUTFIELD) || (seen == PUTSTATIC) || (seen == POP) || (seen == POP2) || OpcodeUtils.isStore(seen)) {
             return true;
         }
 
