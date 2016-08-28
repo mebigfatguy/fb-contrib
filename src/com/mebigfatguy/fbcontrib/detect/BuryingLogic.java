@@ -55,6 +55,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private Deque<IfBlock> ifBlocks;
     private IfBlock activeUnconditional;
+    private Deque<Integer> casePositions;
     private double lowBugRatioLimit;
     private double normalBugRatioLimit;
     private BitSet catchPCs;
@@ -99,12 +100,14 @@ public class BuryingLogic extends BytecodeScanningDetector {
             stack = new OpcodeStack();
             ifBlocks = new ArrayDeque<>();
             gotoBranchPCs = new BitSet();
+            casePositions = new ArrayDeque<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
             ifBlocks = null;
             catchPCs = null;
             gotoBranchPCs = null;
+            casePositions = null;
         }
     }
 
@@ -129,7 +132,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
             }
         }
         gotoBranchPCs.clear();
-
+        casePositions.clear();
         lookingForResetOp = false;
 
         try {
@@ -157,6 +160,12 @@ public class BuryingLogic extends BytecodeScanningDetector {
             }
             if (removed > 1) {
                 activeUnconditional = null;
+            }
+
+            if (!casePositions.isEmpty() && (casePositions.getFirst().intValue() == getPC())) {
+                casePositions.removeFirst();
+                activeUnconditional = null;
+                lookingForResetOp = true;
             }
 
             if (lookingForResetOp) {
@@ -202,6 +211,12 @@ public class BuryingLogic extends BytecodeScanningDetector {
                     }
                 } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd())) {
                     activeUnconditional = ifBlocks.getFirst();
+                }
+            } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+                int[] offsets = getSwitchOffsets();
+                int pc = getPC();
+                for (int offset : offsets) {
+                    casePositions.addFirst(Integer.valueOf(pc + offset));
                 }
             }
         } finally {
