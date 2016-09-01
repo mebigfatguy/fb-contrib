@@ -32,5 +32,6 @@
 	<classpathentry kind="lib" path="lib/commons-io-1.3.2.jar" sourcepath="lib/sources/commons-io-1.3.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-all-2.0.2-beta.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
+	<classpathentry kind="lib" path="lib/spring-beans-4.3.2.RELEASE.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
