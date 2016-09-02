@@ -163,14 +163,11 @@ public class UnusedParameter extends BytecodeScanningDetector {
             if (OpcodeUtils.isStore(seen) || OpcodeUtils.isLoad(seen)) {
                 int reg = getRegisterOperand();
                 unusedParms.clear(reg);
-            } else if (OpcodeUtils.isReturn(seen)) {
-
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    int reg = item.getRegisterNumber();
-                    if (reg >= 0) {
-                        unusedParms.clear(reg);
-                    }
+            } else if (OpcodeUtils.isReturn(seen) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                int reg = item.getRegisterNumber();
+                if (reg >= 0) {
+                    unusedParms.clear(reg);
                 }
             }
             if (unusedParms.isEmpty()) {
