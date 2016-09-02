@@ -1619,6 +1619,15 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.WiringIssues">
+    	<Details>
+	    	<![CDATA[
+	    	<p>Looks for various issues around @Autowired/@Inject fields in DI classes>/p>
+	    	<p>It is a fast detector.</p>
+	    	]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5524,6 +5533,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="WI_DUPLICATE_WIRED_TYPES">
+    	<ShortDescription>Class auto wires the same object into two separate fields in a class hierarchy</ShortDescription>
+    	<LongDescription>Class {0} auto wires the samne object into two separate fields in a class hierarchy</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>this class has two fields in either itself or a parent class which autowire (without specialization, the same object
+    		for both fields. This is likely caused by a developer just not being aware that the field already is available for you use, 
+    		and just causes wasted space, and confusing code access the same object through two different pathways.</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5660,4 +5681,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="IOI">IO Issues</BugCode>
 	<BugCode abbrev="DMC">Dubious Map Collection</BugCode>
 	<BugCode abbrev="BL">Burying Logic</BugCode>
+	<BugCode abbrev="WI">Wiring issues</BugCode>
 </MessageCollection>

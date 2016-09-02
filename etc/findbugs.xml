@@ -303,6 +303,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BuryingLogic" speed="fast" reports="BL_BURYING_LOGIC"/>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.WiringIssues" speed="fast" reports="WI_DUPLICATE_WIRED_TYPES"/>
+    
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -568,5 +570,6 @@
 	<BugPattern abbrev="IOI" type="IOI_COPY_WITH_READER" category="PERFORMANCE"/>
 	<BugPattern abbrev="DMC" type="DMC_DUBIOUS_MAP_COLLECTION" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="BL" type="BL_BURYING_LOGIC" category="STYLE" experimental="true" />
+	<BugPattern abbrev="WI" type="WI_DUPLICATE_WIRED_TYPES" category="CORRECTNESS" experimental="true"/>
 	
 </FindbugsPlugin>
