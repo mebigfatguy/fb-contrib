@@ -33,5 +33,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="lib" path="lib/spring-beans-4.3.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-tx-4.3.2.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-context-4.3.2.RELEASE.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
