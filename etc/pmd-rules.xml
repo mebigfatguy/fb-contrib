@@ -9,6 +9,6 @@
   <rule ref="rulesets/java/unnecessary.xml">
     <!-- these are used for readability -->
     <exclude name="UselessParentheses"/>
-    <exclude name=CollapsibleIfStatements/> 
+    <exclude name="CollapsibleIfStatements"/> 
   </rule>
 </ruleset>
