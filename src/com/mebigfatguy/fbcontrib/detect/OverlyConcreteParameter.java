@@ -331,11 +331,11 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     parameterDefiners.clear();
                 }
             }
-        } finally {
+
             if (parameterDefiners.isEmpty()) {
                 throw new StopOpcodeParsingException();
             }
-
+        } finally {
             stack.sawOpcode(this, seen);
         }
     }

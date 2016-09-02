@@ -173,11 +173,10 @@ public class UnusedParameter extends BytecodeScanningDetector {
                     }
                 }
             }
-        } finally {
             if (unusedParms.isEmpty()) {
                 throw new StopOpcodeParsingException();
             }
-
+        } finally {
             stack.sawOpcode(this, seen);
         }
     }
