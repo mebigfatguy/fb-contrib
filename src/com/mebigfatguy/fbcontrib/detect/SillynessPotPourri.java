@@ -687,8 +687,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             String literal = argIsLiteralString ? LITERAL : "";
 
             SPPUserValue userValue = null;
-            if (sbItem.getRegisterNumber() > -1) {
-                userValue = new SPPUserValue(SPPMethod.APPEND, sbItem.getRegisterNumber() + ':' + literal);
+            int registerNumber = sbItem.getRegisterNumber();
+            if (registerNumber > -1) {
+                userValue = new SPPUserValue(SPPMethod.APPEND, registerNumber + ':' + literal);
             } else {
                 userValue = (SPPUserValue) sbItem.getUserValue();
                 if ((userValue != null) && (userValue.getMethod() == SPPMethod.APPEND)) {
@@ -706,8 +707,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private SPPUserValue stringSilliness(String methodName, String signature) {
 
         Integer stackOffset = methodsThatAreSillyOnStringLiterals.get(new QMethod(methodName, signature));
-        if ((stackOffset != null) && (stack.getStackDepth() > stackOffset.intValue())) {
-            OpcodeStack.Item itm = stack.getStackItem(stackOffset.intValue());
+        int offset;
+        if ((stackOffset != null) && (stack.getStackDepth() > (offset = stackOffset.intValue()))) {
+            OpcodeStack.Item itm = stack.getStackItem(offset);
             Object constant = itm.getConstant();
             if ((constant != null) && constant.getClass().equals(String.class) && (itm.getXField() == null)) {
                 int priority = NORMAL_PRIORITY;
@@ -756,35 +758,29 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             userValue = getTrimUserValue();
         } else if ("length".equals(methodName)) {
             if (stack.getStackDepth() > 0) {
-                OpcodeStack.Item item = stack.getStackItem(0);
-                SPPUserValue uv = (SPPUserValue) item.getUserValue();
-                if ((uv != null) && (uv.getMethod() == SPPMethod.TRIM)) {
-                    if (uv.getDetails() == null) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                    } else {
-                        trimLocations.put(uv, Integer.valueOf(getPC()));
-                    }
-                }
+                checkForTrim(stack.getStackItem(0));
             }
         } else if ("equals".equals(methodName)) {
             if (stack.getStackDepth() > 1) {
-                OpcodeStack.Item item = stack.getStackItem(1);
-                SPPUserValue uv = (SPPUserValue) item.getUserValue();
-                if ((uv != null) && (uv.getMethod() == SPPMethod.TRIM)) {
-                    if (uv.getDetails() == null) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                    } else {
-                        trimLocations.put(uv, Integer.valueOf(getPC()));
-                    }
-                }
+                checkForTrim(stack.getStackItem(1));
             }
         } else if ("toString".equals(methodName)) {
             bugReporter.reportBug(
                     new BugInstance(this, BugType.SPP_TOSTRING_ON_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
         return userValue;
+    }
+
+    private void checkForTrim(OpcodeStack.Item item) {
+        SPPUserValue uv = (SPPUserValue) item.getUserValue();
+        if ((uv != null) && (uv.getMethod() == SPPMethod.TRIM)) {
+            if (uv.getDetails() == null) {
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.SPP_TEMPORARY_TRIM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+            } else {
+                trimLocations.put(uv, Integer.valueOf(getPC()));
+            }
+        }
     }
 
     private void equalsSilliness(String className) {
