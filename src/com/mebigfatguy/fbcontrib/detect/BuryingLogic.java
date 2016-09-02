@@ -236,10 +236,8 @@ public class BuryingLogic extends BytecodeScanningDetector {
             return true;
         }
 
-        if (OpcodeUtils.isInvoke(seen)) {
-            if (getSigConstantOperand().endsWith(")Z")) {
-                return true;
-            }
+        if (OpcodeUtils.isInvoke(seen) && (getSigConstantOperand().endsWith(")Z"))) {
+            return true;
         }
 
         return false;

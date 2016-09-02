@@ -1045,10 +1045,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                     UserObject uo = entry.getKey();
                     if ((uo.fieldFromReg == fieldFromReg) || ((uo.caller instanceof Integer) && (((Integer) uo.caller).intValue() == fieldFromReg))) {
                         Integer preWrittenFromField = entry.getValue();
-                        if (preWrittenFromField != null) {
-                            if (stores != null) {
-                                stores.remove(preWrittenFromField);
-                            }
+                        if ((preWrittenFromField != null) && (stores != null)) {
+                            stores.remove(preWrittenFromField);
                         }
                     }
                 }
