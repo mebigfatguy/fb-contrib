@@ -227,50 +227,53 @@ public class ImmatureClass extends BytecodeScanningDetector {
      *            the class to check
      */
     private void checkIDEGeneratedParmNames(JavaClass cls) {
-
-        methods: for (Method m : cls.getMethods()) {
-            if (!m.isPublic()) {
-                continue;
+        for (Method m : cls.getMethods()) {
+            if (isIDEGeneratedMethodWithCode(m)) {
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES.name(), NORMAL_PRIORITY).addClass(cls).addMethod(cls, m));
+                return;
             }
-
-            String name = m.getName();
-            if (Values.CONSTRUCTOR.equals(name) || Values.STATIC_INITIALIZER.equals(name)) {
-                continue;
-            }
-
-            LocalVariableTable lvt = m.getLocalVariableTable();
-            if (lvt == null) {
-                continue;
-            }
-
-            if (m.getCode().getCode().length <= MAX_EMPTY_METHOD_SIZE) {
-                continue;
-            }
-
-            int numArgs = m.getArgumentTypes().length;
-            if (numArgs == 0) {
-                continue;
-            }
-
-            int offset = m.isStatic() ? 0 : 1;
-
-            for (int i = 0; i < numArgs; i++) {
-                LocalVariable lv = lvt.getLocalVariable(offset + i, 0);
-                if ((lv == null) || (lv.getName() == null)) {
-                    continue methods;
-                }
-
-                Matcher ma = ARG_PATTERN.matcher(lv.getName());
-                if (!ma.matches()) {
-                    continue methods;
-                }
-            }
-
-            bugReporter.reportBug(
-                    new BugInstance(this, BugType.IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES.name(), NORMAL_PRIORITY).addClass(cls).addMethod(cls, m));
-            return;
-
         }
+    }
+
+    private boolean isIDEGeneratedMethodWithCode(Method m) {
+        if (!m.isPublic()) {
+            return false;
+        }
+
+        String name = m.getName();
+        if (Values.CONSTRUCTOR.equals(name) || Values.STATIC_INITIALIZER.equals(name)) {
+            return false;
+        }
+
+        LocalVariableTable lvt = m.getLocalVariableTable();
+        if (lvt == null) {
+            return false;
+        }
+
+        if (m.getCode().getCode().length <= MAX_EMPTY_METHOD_SIZE) {
+            return false;
+        }
+
+        int numArgs = m.getArgumentTypes().length;
+        if (numArgs == 0) {
+            return false;
+        }
+
+        int offset = m.isStatic() ? 0 : 1;
+
+        for (int i = 0; i < numArgs; i++) {
+            LocalVariable lv = lvt.getLocalVariable(offset + i, 0);
+            if ((lv == null) || (lv.getName() == null)) {
+                return false;
+            }
+
+            Matcher ma = ARG_PATTERN.matcher(lv.getName());
+            if (!ma.matches()) {
+                return false;
+            }
+        }
+        return true;
     }
 
 }
