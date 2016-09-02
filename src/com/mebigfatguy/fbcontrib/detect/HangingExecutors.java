@@ -357,20 +357,4 @@ class LocalHangingExecutor extends LocalTypeDetector {
                 .addSourceLine(cri.getSourceLineAnnotation()));
 
     }
-
-    @Override
-    public void visitClassContext(ClassContext classContext) {
-        super.visitClassContext(classContext);
-    }
-
-    @Override
-    public void visitCode(Code obj) {
-        super.visitCode(obj);
-    }
-
-    @Override
-    public void visitMethod(Method obj) {
-        super.visitMethod(obj);
-    }
-
 }
