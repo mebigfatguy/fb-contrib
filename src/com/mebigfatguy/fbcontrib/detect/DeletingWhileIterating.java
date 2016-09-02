@@ -231,7 +231,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
                                         if (loop.hasPC(pc)) {
                                             boolean needPop = !"V".equals(Type.getReturnType(signature).getSignature());
                                             boolean breakFollows = breakFollows(loop, needPop);
-                                            boolean returnFollows = breakFollows ? false : returnFollows(needPop);
+                                            boolean returnFollows = !breakFollows && returnFollows(needPop);
 
                                             if (!breakFollows && !returnFollows) {
                                                 bugReporter.reportBug(new BugInstance(this, BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
@@ -383,7 +383,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
      *
      * @param couldSeePop
      *            if the preceding instruction returns a value, and thus might need to be popped
-     * 
+     *
      * @return when a following instruction issues some sort of return
      */
     private boolean returnFollows(boolean couldSeePop) {
