@@ -67,6 +67,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
  * no use, and most probably can be removed. It is similar to a dead local store.
  */
 @CustomUserValue
+@SuppressWarnings({"PMD.ReplaceHashtableWithMap", "PMD.ReplaceVectorWithList"})
 public class WriteOnlyCollection extends MissingMethodsDetector {
 
     private static final Set<String> collectionClasses;
