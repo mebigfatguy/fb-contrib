@@ -140,8 +140,9 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-                    if (itm.getUserValue() != null) {
-                        enumRegs.put(reg, (Boolean) itm.getUserValue());
+                    Boolean uv = (Boolean) itm.getUserValue();
+                    if (uv != null) {
+                        enumRegs.put(reg, uv);
                     } else {
                         enumRegs.remove(reg);
                     }
@@ -153,8 +154,9 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     String fieldName = getNameConstantOperand();
                     OpcodeStack.Item itm = stack.getStackItem(0);
-                    if (itm.getUserValue() != null) {
-                        enumFields.put(fieldName, (Boolean) itm.getUserValue());
+                    Boolean uv = (Boolean) itm.getUserValue();
+                    if (uv != null) {
+                        enumFields.put(fieldName, uv);
                     } else {
                         enumFields.remove(fieldName);
                     }
