@@ -159,8 +159,20 @@
         <dependency><scope>test</scope><groupId>org.apache.httpcomponents</groupId><artifactId>httpcore</artifactId><version>4.3.2</version></dependency>
         <dependency><scope>test</scope><groupId>org.mockito</groupId><artifactId>mockito-all</artifactId><version>1.10.19</version></dependency>
         <dependency><scope>test</scope><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>1.7.7</version></dependency>
-        <dependency><scope>test</scope><groupId>org.springframework</groupId><artifactId>spring-tx</artifactId><version>4.2.4.RELEASE</version></dependency>
+        <dependency><scope>test</scope><groupId>org.springframework</groupId><artifactId>spring-tx</artifactId><version>4.3.2.RELEASE</version></dependency>
         <dependency><scope>test</scope><groupId>org.testng</groupId><artifactId>testng</artifactId><version>6.9.10</version></dependency>
+        <dependency>
+        	<groupId>org.springframework</groupId>
+        	<artifactId>spring-context</artifactId>
+        	<version>4.3.2.RELEASE</version>
+        	<scope>test</scope>
+        </dependency>
+        <dependency>
+        	<groupId>org.springframework</groupId>
+        	<artifactId>spring-beans</artifactId>
+        	<version>4.3.2.RELEASE</version>
+        	<scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
