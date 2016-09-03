@@ -3,7 +3,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.context.annotation.ScopedProxyMode;
 import org.springframework.stereotype.Component;
 
-public class WI_Sample {
+public class WI_Sample extends Parent {
     @Autowired
     SingletonBean mySBean;
 
