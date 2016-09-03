@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -31,9 +31,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that make a recursive call to itself as the last statement
- * in the method. This tail recursion could be converted into a simple loop
- * which would improve the performance and stack requirements.
+ * looks for methods that make a recursive call to itself as the last statement in the method. This tail recursion could be converted into a simple loop which
+ * would improve the performance and stack requirements.
  */
 public class TailRecursion extends BytecodeScanningDetector {
     public static final int TAILRECURSIONFUDGE = 6;
@@ -46,7 +45,7 @@ public class TailRecursion extends BytecodeScanningDetector {
 
     /**
      * constructs a TR detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -56,7 +55,7 @@ public class TailRecursion extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to create and clear the stack
-     * 
+     *
      * @param classContext
      *            the context object of the currently parsed class
      */
@@ -71,9 +70,8 @@ public class TailRecursion extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to figure the pc where the method call must occur
-     * depending on whether the method returns a value, or not.
-     * 
+     * implements the visitor to figure the pc where the method call must occur depending on whether the method returns a value, or not.
+     *
      * @param obj
      *            the context object of the currently parsed method
      */
@@ -83,7 +81,7 @@ public class TailRecursion extends BytecodeScanningDetector {
         if (c != null) {
             byte[] opcodes = c.getCode();
             if (opcodes != null) {
-                trPCPos = c.getCode().length - 1;
+                trPCPos = opcodes.length - 1;
                 if (!obj.getSignature().endsWith("V")) {
                     trPCPos -= 1;
                 }
@@ -98,7 +96,7 @@ public class TailRecursion extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to find methods that employ tail recursion
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -122,8 +120,9 @@ public class TailRecursion extends BytecodeScanningDetector {
                 if (isRecursion && possibleTailRecursion && (getPC() >= trPCPos)) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.TR_TAIL_RECURSION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                } else
+                } else {
                     possibleTailRecursion = false;
+                }
             }
         } finally {
             stack.sawOpcode(this, seen);
