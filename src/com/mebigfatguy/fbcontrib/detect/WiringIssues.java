@@ -25,9 +25,11 @@ import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
@@ -66,9 +68,12 @@ public class WiringIssues extends PreorderVisitor implements Detector {
                             WiringType wt = new WiringType(field.getSignature(), false, null);
                             FieldAnnotation existingAnnotation = wiredFields.get(wt);
                             if (existingAnnotation != null) {
-                                // bugReporter...
+                                bugReporter.reportBug(new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addField(existingAnnotation));
+                                wiredFields.remove(wt);
+                            } else {
+                                wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
                             }
-                            wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
                         }
                     }
                 }

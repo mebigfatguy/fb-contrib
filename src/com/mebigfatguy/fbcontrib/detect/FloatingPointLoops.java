@@ -137,14 +137,14 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
                         return false;
                     }
 
-                    if (OpcodeUtils.isFStore(seen) || OpcodeUtils.isDStore(seen)) {
-                        int storeReg = RegisterUtils.getStoreReg(FloatingPointLoops.this, seen);
-
-                        state = State.SAW_STORE;
-                        return storeReg == loopReg;
-                    } else {
+                    if (!OpcodeUtils.isFStore(seen) && !OpcodeUtils.isDStore(seen)) {
                         return false;
                     }
+
+                    int storeReg = RegisterUtils.getStoreReg(FloatingPointLoops.this, seen);
+
+                    state = State.SAW_STORE;
+                    return storeReg == loopReg;
 
                 case SAW_STORE:
                     if (((seen == GOTO) || (seen == GOTO_W)) && (getBranchTarget() == loopPC)) {
