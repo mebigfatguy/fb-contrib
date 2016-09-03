@@ -36,7 +36,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 public class WiringIssues extends PreorderVisitor implements Detector {
 
-    private static final String SPRING_AUTOWIRED = "Lorg/springframework/beans/factory/annotation/Autowired";
+    private static final String SPRING_AUTOWIRED = "Lorg/springframework/beans/factory/annotation/Autowired;";
     private BugReporter bugReporter;
 
     public WiringIssues(BugReporter bugReporter) {
