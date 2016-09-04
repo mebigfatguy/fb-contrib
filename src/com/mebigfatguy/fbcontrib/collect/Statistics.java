@@ -26,8 +26,7 @@ import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 /**
- * holds statistics about classes collected in the first pass. To cut down on the size of the database, class, method, signature is not stored as a key only a
- * hash of that data is stored. This will allow some false positives, but hopefully not enough to cause issues.
+ * holds statistics about classes and methods collected in the first pass.
  */
 public class Statistics implements Iterable<Map.Entry<FQMethod, MethodInfo>> {
 
