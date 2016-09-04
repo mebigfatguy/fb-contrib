@@ -31,8 +31,8 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
-import com.mebigfatguy.fbcontrib.collect.StatisticsKey;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -49,7 +49,7 @@ import edu.umd.cs.findbugs.classfile.ClassDescriptor;
  */
 public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
-    private static Map<Integer, String> DECLARED_ACCESS = new HashMap<Integer, String>();
+    private static Map<Integer, String> DECLARED_ACCESS = new HashMap<>();
 
     static {
         DECLARED_ACCESS.put(Integer.valueOf(Constants.ACC_PRIVATE), "private");
@@ -94,7 +94,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
         Method m = getMethod();
         String methodName = m.getName();
         String sig = m.getSignature();
-        
+
         if (isAssumedPublic(methodName)) {
             MethodInfo mi = Statistics.getStatistics().getMethodStatistics(cls.getClassName(), methodName, sig);
             mi.addCallingAccess(Constants.ACC_PUBLIC);
@@ -110,45 +110,45 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-            case INVOKEVIRTUAL:
-            case INVOKEINTERFACE:
-            case INVOKESTATIC:
-            case INVOKESPECIAL:
-                String calledClass = getClassConstantOperand();
-                String sig = getSigConstantOperand();
-                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(calledClass, getNameConstantOperand(), sig);
-                if (mi != null) {
-                    if (seen == INVOKEINTERFACE) {
-                        mi.addCallingAccess(Constants.ACC_PUBLIC);
-                    } else {
-                        String calledPackage;
-                        int slashPos = calledClass.lastIndexOf('/');
-                        if (slashPos >= 0) {
-                            calledPackage = calledClass.substring(0, slashPos);
+                case INVOKEVIRTUAL:
+                case INVOKEINTERFACE:
+                case INVOKESTATIC:
+                case INVOKESPECIAL:
+                    String calledClass = getClassConstantOperand();
+                    String sig = getSigConstantOperand();
+                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(calledClass, getNameConstantOperand(), sig);
+                    if (mi != null) {
+                        if (seen == INVOKEINTERFACE) {
+                            mi.addCallingAccess(Constants.ACC_PUBLIC);
                         } else {
-                            calledPackage = "";
-                        }
-                        boolean sameClass = calledClass.equals(callingClass);
-                        boolean samePackage = calledPackage.equals(callingPackage);
-
-                        if (sameClass) {
-                            mi.addCallingAccess(Constants.ACC_PRIVATE);
-                        } else if (samePackage) {
-                            mi.addCallingAccess(0);
-                        } else {
-                            if (seen == INVOKESTATIC) {
-                                mi.addCallingAccess(Constants.ACC_PUBLIC);
-                            } else if (isCallingOnThis(sig)) {
-                                mi.addCallingAccess(Constants.ACC_PROTECTED);
+                            String calledPackage;
+                            int slashPos = calledClass.lastIndexOf('/');
+                            if (slashPos >= 0) {
+                                calledPackage = calledClass.substring(0, slashPos);
                             } else {
-                                mi.addCallingAccess(Constants.ACC_PUBLIC);
+                                calledPackage = "";
+                            }
+                            boolean sameClass = calledClass.equals(callingClass);
+                            boolean samePackage = calledPackage.equals(callingPackage);
+
+                            if (sameClass) {
+                                mi.addCallingAccess(Constants.ACC_PRIVATE);
+                            } else if (samePackage) {
+                                mi.addCallingAccess(0);
+                            } else {
+                                if (seen == INVOKESTATIC) {
+                                    mi.addCallingAccess(Constants.ACC_PUBLIC);
+                                } else if (isCallingOnThis(sig)) {
+                                    mi.addCallingAccess(Constants.ACC_PROTECTED);
+                                } else {
+                                    mi.addCallingAccess(Constants.ACC_PUBLIC);
+                                }
                             }
                         }
                     }
-                }
                 break;
 
-            default:
+                default:
                 break;
             }
         } finally {
@@ -168,25 +168,25 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
         return false;
     }
-    
+
     private boolean isAssumedPublic(String methodName) {
         return (cls.isEnum() && "valueOf".equals(methodName));
     }
-    
+
     private boolean isGetterSetter(String methodName, String methodSignature) {
         if (methodName.startsWith("get") || methodName.startsWith("set")) {
             Type[] parmTypes = Type.getArgumentTypes(methodSignature);
             boolean voidReturn = "V".equals(Type.getReturnType(methodSignature).getSignature());
-            
+
             if ((parmTypes.length == 0) && !voidReturn && (methodName.charAt(0) == 'g')) {
                 return true;
             }
-            
+
             if ((parmTypes.length == 1) && voidReturn && (methodName.charAt(0) == 's')) {
                 return true;
             }
         }
-        
+
         return false;
     }
 
@@ -201,7 +201,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
         if (getMethod().isStatic()) {
             return false;
         }
-        
+
         Type[] argTypes = Type.getArgumentTypes(sig);
         if (stack.getStackDepth() <= argTypes.length) {
             return false;
@@ -216,7 +216,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
      */
     @Override
     public void report() {
-        for (Map.Entry<StatisticsKey, MethodInfo> entry : Statistics.getStatistics()) {
+        for (Map.Entry<FQMethod, MethodInfo> entry : Statistics.getStatistics()) {
             MethodInfo mi = entry.getValue();
 
             int declaredAccess = mi.getDeclaredAccess();
@@ -227,8 +227,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             if (mi.wasCalledPublicly() || !mi.wasCalled()) {
                 continue;
             }
-            
-            StatisticsKey key = entry.getKey();
+
+            FQMethod key = entry.getKey();
 
             String methodName = key.getMethodName();
             if (isGetterSetter(methodName, key.getSignature())) {
@@ -272,7 +272,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
      *            the information about the method
      * @return whether this method derives from something or not
      */
-    private boolean isDerived(JavaClass cls, StatisticsKey key) {
+    private boolean isDerived(JavaClass cls, FQMethod key) {
         try {
             for (JavaClass infCls : cls.getInterfaces()) {
                 for (Method infMethod : infCls.getMethods()) {

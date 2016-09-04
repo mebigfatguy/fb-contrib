@@ -40,6 +40,14 @@ public final class FQMethod {
         return className;
     }
 
+    public String getMethodName() {
+        return methodName;
+    }
+
+    public String getSignature() {
+        return signature;
+    }
+
     @Override
     public int hashCode() {
         return className.hashCode() ^ methodName.hashCode() ^ signature.hashCode();
