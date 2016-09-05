@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -33,10 +32,8 @@ import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
-import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
@@ -45,11 +42,8 @@ import edu.umd.cs.findbugs.ba.XField;
  * Arrays.asList(array), and use that as the source to addAll.
  */
 @CustomUserValue
-public class UseAddAll extends BytecodeScanningDetector {
-    private JavaClass collectionClass;
-    private ClassNotFoundException ex;
-    private final BugReporter bugReporter;
-    private OpcodeStack stack;
+public class UseAddAll extends AbstractCollectionScanningDetector {
+
     /** register/field to alias register/field */
     private Map<Comparable<?>, Comparable<?>> userValues;
     /** alias register to loop info */
@@ -63,41 +57,11 @@ public class UseAddAll extends BytecodeScanningDetector {
      *            the sync of bug reports
      */
     public UseAddAll(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
-        try {
-            collectionClass = Repository.lookupClass("java/util/Collection");
-        } catch (ClassNotFoundException cnfe) {
-            collectionClass = null;
-            ex = cnfe;
-        }
+        super(bugReporter, "java/util/Collection");
     }
 
     /**
-     * implements the visitor to create and clear the stack, and report missing class errors
-     *
-     * @param classContext
-     *            the context object of the currently parsed class
-     */
-    @Override
-    public void visitClassContext(ClassContext classContext) {
-        if (collectionClass == null) {
-            if (ex != null) {
-                bugReporter.reportMissingClass(ex);
-                ex = null;
-            }
-            return;
-        }
-
-        try {
-            stack = new OpcodeStack();
-            super.visitClassContext(classContext);
-        } finally {
-            stack = null;
-        }
-    }
-
-    /**
-     * implements the visitor to reset the stack and userValues and loops
+     * implements the visitor to reset the userValues and loops
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -105,7 +69,6 @@ public class UseAddAll extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         try {
-            stack.resetForMethodEntry(this);
             userValues = new HashMap<>();
             loops = new HashMap<>();
             isInstanceMethod = !getMethod().isStatic();
@@ -291,35 +254,6 @@ public class UseAddAll extends BytecodeScanningDetector {
                 }
             }
         }
-    }
-
-    /**
-     * determines if the stack item refers to a collection that is stored in a local variable
-     *
-     * @param item
-     *            the stack item to check
-     *
-     * @return the register number of the local variable that this collection refers to, or -1
-     * @throws ClassNotFoundException
-     *             if the items class cannot be found
-     */
-    private int isLocalCollection(OpcodeStack.Item item) throws ClassNotFoundException {
-        Comparable<?> aliasReg = (Comparable<?>) item.getUserValue();
-        if (aliasReg instanceof Integer) {
-            return ((Integer) aliasReg).intValue();
-        }
-
-        int reg = item.getRegisterNumber();
-        if (reg < 0) {
-            return -1;
-        }
-
-        JavaClass cls = item.getJavaClass();
-        if ((cls != null) && cls.implementationOf(collectionClass)) {
-            return reg;
-        }
-
-        return -1;
     }
 
     /**

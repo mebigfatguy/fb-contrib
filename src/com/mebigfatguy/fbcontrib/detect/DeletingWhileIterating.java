@@ -48,7 +48,6 @@ import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
@@ -61,17 +60,14 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
  * occurs the iterator will become invalid and throw a ConcurrentModificationException. Instead, the remove should be called on the iterator itself.
  */
 @CustomUserValue
-public class DeletingWhileIterating extends BytecodeScanningDetector {
-    private static JavaClass collectionClass;
+public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     private static JavaClass iteratorClass;
     private static Set<JavaClass> exceptionClasses;
 
     static {
         try {
-            collectionClass = Repository.lookupClass("java/util/Collection");
             iteratorClass = Repository.lookupClass("java/util/Iterator");
         } catch (ClassNotFoundException cnfe) {
-            collectionClass = null;
             iteratorClass = null;
         }
 
@@ -105,8 +101,6 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
     private static final QMethod REMOVE = new QMethod("remove", "(Ljava/lang/Object;)Z");
     private static final QMethod HASNEXT = new QMethod("hasNext", "()Z");
 
-    private final BugReporter bugReporter;
-    private OpcodeStack stack;
     private List<GroupPair> collectionGroups;
     private Map<Integer, Integer> groupToIterator;
     private Map<Integer, Loop> loops;
@@ -119,7 +113,7 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
      *            the sync of bug reports
      */
     public DeletingWhileIterating(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
+        super(bugReporter, "java/util/Collection");
     }
 
     /**
@@ -135,13 +129,11 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
         }
 
         try {
-            stack = new OpcodeStack();
             collectionGroups = new ArrayList<>();
             groupToIterator = new HashMap<>();
             loops = new HashMap<>(10);
             super.visitClassContext(classContext);
         } finally {
-            stack = null;
             collectionGroups = null;
             groupToIterator = null;
             loops = null;
@@ -157,7 +149,6 @@ public class DeletingWhileIterating extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
-        stack.resetForMethodEntry(this);
         collectionGroups.clear();
         groupToIterator.clear();
         loops.clear();
