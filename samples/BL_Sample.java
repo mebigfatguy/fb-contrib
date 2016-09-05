@@ -64,6 +64,19 @@ public class BL_Sample {
         return null;
     }
 
+    public String fpIfElseTailReturnChain(Object c) {
+        String s;
+        if (c instanceof String) {
+            s = "S" + c.getClass().getName();
+        } else if (c instanceof Integer) {
+            s = "I" + c.getClass().getName();
+        } else if (c instanceof Double) {
+            return "D" + c.getClass().getName();
+        }
+
+        return null;
+    }
+
     private List<String> getDetails() {
         return null;
     }
