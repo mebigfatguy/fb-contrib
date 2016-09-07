@@ -92,6 +92,11 @@ function toggleBlock(divId, imgId)
 				difficult to read than needed. It would be better to invert the logic of the if block, and immediately return, allowing
 				the bulk of the logic to be move to the left, for easier reading.
             	</li>
+            	<li><b>[WI] Wiring Issues</b><br/>
+            	Looks for various issues around @Autowired/@Inject fields in DI classes
+            	<ul>
+            	<li>Injecting the same bean twice into the same class hierarchy, even with different field names</li>
+            	</li>
             </ul>
         </div>  
         <hr/>
