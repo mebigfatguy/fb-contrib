@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class WiringIssues extends PreorderVisitor implements Detector {
 
     private static final String SPRING_AUTOWIRED = "Lorg/springframework/beans/factory/annotation/Autowired;";
+    private static final String SPRING_QUALIFIER = "Lorg/springframework/beans/factory/annotation/Qualifier;";
     private BugReporter bugReporter;
 
     public WiringIssues(BugReporter bugReporter) {
@@ -59,21 +60,33 @@ public class WiringIssues extends PreorderVisitor implements Detector {
                 boolean loadedParents = false;
 
                 for (Field field : fields) {
+                    boolean hasAutowired = false;
+                    String qualifier = "";
                     for (AnnotationEntry entry : field.getAnnotationEntries()) {
-                        if (SPRING_AUTOWIRED.equals(entry.getAnnotationType())) {
-                            if (!loadedParents) {
-                                loadParentAutowireds(cls.getSuperClass(), wiredFields);
-                                loadedParents = true;
-                            }
-                            WiringType wt = new WiringType(field.getSignature(), false, null);
-                            FieldAnnotation existingAnnotation = wiredFields.get(wt);
-                            if (existingAnnotation != null) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addField(existingAnnotation));
-                                wiredFields.remove(wt);
-                            } else {
-                                wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
-                            }
+                        switch (entry.getAnnotationType()) {
+                            case SPRING_AUTOWIRED:
+                                if (!loadedParents) {
+                                    loadParentAutowireds(cls.getSuperClass(), wiredFields);
+                                    loadedParents = true;
+                                    hasAutowired = true;
+                                }
+                            break;
+
+                            case SPRING_QUALIFIER:
+                                qualifier = entry.getElementValuePairs()[0].getValue().stringifyValue();
+                            break;
+                        }
+                    }
+
+                    if (hasAutowired) {
+                        WiringType wt = new WiringType(field.getSignature(), qualifier);
+                        FieldAnnotation existingAnnotation = wiredFields.get(wt);
+                        if (existingAnnotation != null) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addField(existingAnnotation));
+                            wiredFields.remove(wt);
+                        } else {
+                            wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
                         }
                     }
                 }
@@ -100,11 +113,23 @@ public class WiringIssues extends PreorderVisitor implements Detector {
         if (fields.length > 0) {
 
             for (Field field : fields) {
+                boolean hasAutowired = false;
+                String qualifier = "";
                 for (AnnotationEntry entry : field.getAnnotationEntries()) {
-                    if (SPRING_AUTOWIRED.equals(entry.getAnnotationType())) {
-                        WiringType wt = new WiringType(field.getSignature(), false, null);
-                        wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
+                    switch (entry.getAnnotationType()) {
+                        case SPRING_AUTOWIRED:
+                            hasAutowired = true;
+                        break;
+
+                        case SPRING_QUALIFIER:
+                            qualifier = entry.getElementValuePairs()[0].getValue().stringifyValue();
+                        break;
                     }
+                }
+
+                if (hasAutowired) {
+                    WiringType wt = new WiringType(field.getSignature(), qualifier);
+                    wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
                 }
             }
         }
@@ -112,12 +137,10 @@ public class WiringIssues extends PreorderVisitor implements Detector {
 
     static class WiringType {
         String signature;
-        boolean singleton;
         String qualifier;
 
-        public WiringType(String fieldSignature, boolean isSingleton, String qualifierName) {
+        public WiringType(String fieldSignature, String qualifierName) {
             signature = fieldSignature;
-            singleton = isSingleton;
             qualifier = qualifierName;
         }
 
@@ -128,12 +151,12 @@ public class WiringIssues extends PreorderVisitor implements Detector {
             }
 
             WiringType that = (WiringType) o;
-            return signature.equals(that.signature);
+            return signature.equals(that.signature) && qualifier.equals(that.qualifier);
         }
 
         @Override
         public int hashCode() {
-            return signature.hashCode();
+            return signature.hashCode() ^ qualifier.hashCode();
         }
 
         @Override
