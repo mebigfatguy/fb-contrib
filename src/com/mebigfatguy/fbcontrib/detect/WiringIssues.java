@@ -82,8 +82,8 @@ public class WiringIssues extends PreorderVisitor implements Detector {
                         WiringType wt = new WiringType(field.getSignature(), qualifier);
                         FieldAnnotation existingAnnotation = wiredFields.get(wt);
                         if (existingAnnotation != null) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY).addClass(cls).addField(existingAnnotation));
+                            bugReporter.reportBug(new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY).addClass(cls)
+                                    .addField(existingAnnotation).addField(FieldAnnotation.fromBCELField(cls, field)));
                             wiredFields.remove(wt);
                         } else {
                             wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
