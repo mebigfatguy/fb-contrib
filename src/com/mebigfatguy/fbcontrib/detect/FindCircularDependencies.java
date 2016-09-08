@@ -77,16 +77,10 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
 
     private void processInvoke() {
         String refClsName = getClassConstantOperand();
-        refClsName = refClsName.replace('/', '.');
+        refClsName = normalizeArrayClass(refClsName.replace('/', '.'));
+
         if (refClsName.startsWith("java")) {
             return;
-        }
-
-        if (refClsName.startsWith("[")) {
-            Matcher m = ARRAY_PATTERN.matcher(refClsName);
-            if (m.matches()) {
-                refClsName = m.group(1);
-            }
         }
 
         if (clsName.equals(refClsName)) {
@@ -108,12 +102,25 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
     private void processLoadConstant() {
         Constant c = getConstantRefOperand();
         if (c instanceof ConstantClass) {
-            String refClsName = getClassConstantOperand();
+            String refClsName = normalizeArrayClass(getClassConstantOperand().replace('/', '.'));
             if (!refClsName.equals(clsName)) {
                 Set<String> dependencies = getDependenciesForClass(clsName);
                 dependencies.add(refClsName);
             }
         }
+    }
+
+    private String normalizeArrayClass(String clsName) {
+        if (!clsName.startsWith("[")) {
+            return clsName;
+        }
+
+        Matcher m = ARRAY_PATTERN.matcher(clsName);
+        if (!m.matches()) {
+            return clsName;
+        }
+
+        return m.group(1);
     }
 
     /**
