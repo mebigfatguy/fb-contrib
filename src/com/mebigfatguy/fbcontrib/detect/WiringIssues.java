@@ -68,8 +68,8 @@ public class WiringIssues extends PreorderVisitor implements Detector {
                                 if (!loadedParents) {
                                     loadParentAutowireds(cls.getSuperClass(), wiredFields);
                                     loadedParents = true;
-                                    hasAutowired = true;
                                 }
+                                hasAutowired = true;
                             break;
 
                             case SPRING_QUALIFIER:
