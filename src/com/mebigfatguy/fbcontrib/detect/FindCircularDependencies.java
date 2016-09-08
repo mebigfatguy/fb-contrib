@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -41,10 +43,10 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
  * bad data model. Consider using interfaces to break this hard circular dependency.
  */
 public class FindCircularDependencies extends BytecodeScanningDetector {
+
+    private static final Pattern ARRAY_PATTERN = Pattern.compile("\\[+(L.*)");
     private Map<String, Set<String>> dependencyGraph = null;
-
     private BugReporter bugReporter;
-
     private String clsName;
 
     /**
@@ -78,6 +80,13 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
         refClsName = refClsName.replace('/', '.');
         if (refClsName.startsWith("java")) {
             return;
+        }
+
+        if (refClsName.startsWith("[")) {
+            Matcher m = ARRAY_PATTERN.matcher(refClsName);
+            if (m.matches()) {
+                refClsName = m.group(1);
+            }
         }
 
         if (clsName.equals(refClsName)) {
