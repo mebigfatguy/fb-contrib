@@ -1,20 +1,13 @@
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Scope;
-import org.springframework.context.annotation.ScopedProxyMode;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 public class WI_Sample extends Parent {
     @Autowired
     SingletonBean mySBean;
 
     @Autowired
+    @Qualifier("special")
     SingletonBean myOtherSBean;
-
-    @Autowired
-    PrototypeBean myPBean;
-
-    @Autowired
-    PrototypeBean myOtherPBean;
 }
 
 class Parent {
@@ -22,24 +15,10 @@ class Parent {
     SingletonBean sbean;
 
     @Autowired
+    @Qualifier("special")
     SingletonBean pbean;
 }
 
 interface SingletonBean {
-
-}
-
-@Component
-class SingletonBeanImpl implements SingletonBean {
-
-}
-
-interface PrototypeBean {
-
-}
-
-@Component
-@Scope(proxyMode = ScopedProxyMode.TARGET_CLASS, value = "prototype")
-class PrototypeBeanImpl implements PrototypeBean {
 
 }
