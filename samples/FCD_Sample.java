@@ -100,3 +100,11 @@ class ClassUsingInnerInterface {
     public void setInner(ClassWithInnerInterface.InnerInterface ii) {
     }
 }
+
+class Me {
+    Myself m = new Myself();
+}
+
+class Myself {
+    Me m = new Me();
+}
