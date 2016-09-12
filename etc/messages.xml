@@ -75,7 +75,7 @@
 		<Details>
 			<![CDATA[
 			<p>Looks for parameters that are defined by classes, but where the method only use methods defined by an
-			implemented interface or super class of that class. Relying on concrete classes in public signatures causes cohesion,
+			implemented interface or superclass of that class. Relying on concrete classes in public signatures causes cohesion,
 			and makes low impact changes more difficult.</p>
 			<p>It is a slow detector.</p>
 			]]>
@@ -353,7 +353,7 @@ public void test(int i)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CopiedOverriddenMethod">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that are direct copies of the implementation in the super class.</p>
+			<p>Looks for methods that are direct copies of the implementation in the superclass.</p>
 			<p>It is a fast detector.</p>
 			]]>
 		</Details>
@@ -386,7 +386,7 @@ public void test(int i)
 		<Details>
 			<![CDATA[
 			<p>Looks for methods that are declared as abstract that override concrete methods in a
-			super class. Doing this casts away the implementation of the super class, and breaks
+			superclass. Doing this casts away the implementation of the superclass, and breaks
 			the contract as set forth by the parent class.</p>
 			<p>It is a fast detector.</p>
 			]]>
@@ -831,9 +831,9 @@ public void test(int i)
 			<![CDATA[
 			<p>Looks for methods that catch checked exceptions, and throw unchecked
 			exceptions in their place. There are several levels of concern. Least
-			concerning are methods constrained by interface or super class contracts
+			concerning are methods constrained by interface or superclass contracts
 			not to throw checked exceptions but appear owned by the same author. Next
-			are methods constrained by interface or super class contracts and throw other
+			are methods constrained by interface or superclass contracts and throw other
 			types of checked exceptions. Most egregious are methods not constrained by any interface
 			or superclass contract.</p>
 			<p>It is a moderately fast detector.</p>
@@ -1276,7 +1276,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.BackportReusePublicIdentifiers">
 		<Details>
 			<![CDATA[
-			<p>Detects use of Backport Utils concurrent classes. Updated/Efficient version of these
+			<p>Detects use of Backport Utils concurrent classes. Updated/efficient versions of these
 			classes are available in versions of the JDK 5.0 and higher, and these
 			classes should only be used if you are targeting JDK 1.4 and lower.</p>
 			<p>It is a fast detector.</p>
@@ -1734,7 +1734,7 @@ System.out.println("Problem with the object :" + someObj);
 		<Details>
 			<![CDATA[
 			<p>This method uses a synchronized collection, built from Collections.synchronizedXXXX, but accesses it
-			through an iterator. Since an iterator is by definition, multithreaded unsafe, this is a conflict in
+			through an iterator. Since an iterator is, by definition, multithreaded unsafe, this is a conflict in
 			concept. When using iterators, you should do the synchronization manually.</p>
 			]]>
 		</Details>
@@ -1758,7 +1758,7 @@ System.out.println("Problem with the object :" + someObj);
 		<Details>
 			<![CDATA[
 			<p>This method uses concrete classes for parameters when only methods defined in an implemented
-			interface or super class are used. Consider increasing the abstraction of the interface to
+			interface or superclass are used. Consider increasing the abstraction of the interface to
 			make low impact changes easier to accomplish in the future.</p>
 
 			<p>Take the following example:<br/>
@@ -1880,8 +1880,8 @@ str.compareTo("someOtherString");</code></pre>
 			<![CDATA[
 			<p>This class defines a field based on java.util.List, but uses it to some extent like a Set. Since
 			lookup type operations are performed using a linear search for Lists, the performance for large
-			Lists will be poor. If the list is known to only contain a small number of items, (3,4, etc) then it doesn't matter.
-			Otherwise, consider changing this fields implementation to a set-based one. If order of
+			Lists will be poor. If the list is known to only contain a small number of items, (3, 4, etc) then it
+			doesn't matter. Otherwise, consider changing this field's implementation to a set-based one. If order of
 			iteration is important to maintain insert order, perhaps consider a LinkedHashSet.</p>
 			]]>
 		</Details>
@@ -1926,7 +1926,7 @@ Map<String,Integer> wordCounts = new HashMap<String,Integer>();
 			as final.</p>
 			
 			<p>Performance gains are debatable as "the final keyword does not appear in the class file for 
-			local variables and parameters, thus it cannot impact the runtime performance. It's only use 
+			local variables and parameters, thus it cannot impact the runtime performance. Its only use 
 			is to clarify the coders intent that the variable not be changed (which many consider dubious 
 			reason for its usage), and dealing with anonymous inner classes." - http://stackoverflow.com/a/266981/1447621 </p>
 			]]>
@@ -1996,7 +1996,7 @@ for (float f = 1.0f; f &lt;= 10.0f; f += 0.1f) {
 			<![CDATA[
 			<p>This class defines two methods that differ only by a parameter being defined
 			as Character vs. int, long, float or double. As autoboxing is present, it may be
-			assumed that a parameter of 'a' would map to the Character version, but does not.</p>
+			assumed that a parameter of 'a' would map to the Character version, but it does not.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2282,7 +2282,7 @@ public float average(int[] arr) {
 		<LongDescription>Method {1} is implemented with an exact copy of its superclass's method</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method is implemented using an exact copy of its super class method's
+			<p>This method is implemented using an exact copy of its superclass method's
 			implementation, which usually means that this method can just be removed.</p>
 			]]>
 		</Details>
@@ -2305,7 +2305,7 @@ public float average(int[] arr) {
 		<Details>
 			<![CDATA[
 			<p>This method passes an array as the key to a Map, element in a Set, or item in a List when
-			the contains method is used on the List. Since arrays do not, and cannot override the equals
+			the contains method is used on the List. Since arrays do not and cannot override the equals
 			method, collection inclusion is based on the reference's address, which is probably not desired.
 			In the case that this is a TreeMap or TreeSet, consider passing a Comparator to the map's
 			constructor.</p>
@@ -2329,7 +2329,7 @@ public float average(int[] arr) {
 		<Details>
 			<![CDATA[
 			<p>This abstract method is derived from a concrete method implementation. It is highly
-			suspect that the super class method's implementation would be cast away.</p>
+			suspect that the superclass method's implementation would be cast away.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2341,7 +2341,7 @@ public float average(int[] arr) {
 			<![CDATA[
 			<p>This method generates an XML based string by concatenating together various
 			XML fragments, and variable values. Doing so makes the code difficult to read, modify
-			and validate. It is much more clean to built XML structures in external files that are
+			and validate. It is much more clean to build XML structures in external files that are
 			read in and transformed into the final product, through modification by Transformer.setParameter.</p>
 			]]>
 		</Details>
@@ -2354,7 +2354,7 @@ public float average(int[] arr) {
 			<![CDATA[
 			<p>This method implements a synchronized block, but the code found at the beginning
 			of this block only accesses local variables, and not member variables, or this.
-			To be better performance move the code that access local variables only, above the
+			For better performance, move the code that accesses local variables only, above the
 			synchronized block, and leave the synchronized block only for field accesses, or access
 			to this object.</p>
 			]]>
@@ -2392,7 +2392,7 @@ public float average(int[] arr) {
 		<LongDescription>Method {1} uses 1 element array to simulate call by reference</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method uses a one element array to wrap an object that is to be passed to a method as an argument
+			<p>This method uses a one-element array to wrap an object that is to be passed to a method as an argument
 			to simulate call by pointer ala C++. It is better to define a proper return class type that holds all
 			the relevant information retrieved from the called method.</p>
 			]]>
@@ -2545,7 +2545,7 @@ static {
 		<LongDescription>Method {1} creates local variable-based synchronized collection</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method creates a synchronized collection and store the reference to it
+			<p>This method creates a synchronized collection and stores the reference to it
 			in a local variable. As local variables are by definition thread-safe, it seems
 			questionable that this collection needs to be synchronized.</p>
 			<p>
@@ -2580,7 +2580,7 @@ static {
 			<![CDATA[
 			<p>This method uses a synchronize block where the object that is being synchronized on,
 			is not owned by this current instance. This means that other instances may use this same
-			object for synchronization for its own purposes causing synchronization confusion. It is
+			object for synchronization for their own purposes, causing synchronization confusion. It is
 			always cleaner and safer to only synchronize on private fields of this class. Note that 'this'
 			is not owned by the current instance, but is owned by whomever assigns it to a field of its
 			class. Synchronizing on 'this' is also not a good idea.</p>
@@ -2593,8 +2593,8 @@ static {
 		<LongDescription>Tag library {0} is not recycleable</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This tag library class implements an attribute who's associated backing store field
-			is modified at another point in the tag library. In order for a taglibrary to be
+			<p>This tag library class implements an attribute whose associated backing store field
+			is modified at another point in the tag library. In order for a tag library to be
 			recycleable, only the container is allowed to change this attribute, through the use
 			of the setXXX method of the taglib. By modifying the value programmatically, the
 			container will not initialize the attribute correctly on reuse.</p>
@@ -2631,8 +2631,8 @@ static {
 		<LongDescription>Window {0} sets size manually, and doesn't use pack</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This class creates a window, and sizes the window using setSize. It is better
-			to handle font size changes to use the pack method.</p>
+			<p>This class creates a window, and sizes the window using setSize. It is better,
+			for handling font size changes, to use the pack method.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2678,7 +2678,7 @@ static {
 		<LongDescription>Method {1} passes appended string to title/label of component</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method creates a component and passes a string that was build up from a number of
+			<p>This method creates a component and passes a string that was built up from a number of
 			strings through appending multiple strings together. As foreign languages may order phrases
 			differently, this will make translations difficult.</p>
 			]]>
@@ -2716,7 +2716,7 @@ static {
 		<Details>
 			<![CDATA[
 			<p>This class defines a private collection member as synchronized. It appears however
-			that this collection isn't only modified in a static initializer, or constructor. As these
+			that this collection is only modified in a static initializer, or constructor. As these
 			two areas are guaranteed to be thread safe, defining this collection as synchronized is
 			unnecessary and a potential performance bottleneck.</p>
 			]]>
@@ -2757,7 +2757,7 @@ static {
 			parameters, on the same instance without any intervening changes to the objects. If this
 			method does not make changes to the object, which it appears it doesn't, then making
 			two calls is just a waste. These method calls could be combined by assigning the
-			result into a temporary, and using the temporary the second time.</p>
+			result into a temporary variable, and using the variable the second time.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2770,7 +2770,7 @@ static {
 			<p>This method manually loops over a collection, pulling each element out and storing
 			it in an array to build an array from the collection. It is easier, and clearer to use
 			the built in collections method toArray. Given a collection 'mycollection' of type T, use
-			mycollection.toArray(new T[mycollection.size()]);</p>
+			<code>mycollection.toArray(new T[mycollection.size()]);</code></p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -2887,7 +2887,7 @@ if (myString.indexOf('e') != -1) {
 		<Details>
 			<![CDATA[
 			<p>This method implements Serializable but is derived from a
-			class that does not. The super class has fields that are not serialized
+			class that does not. The superclass has fields that are not serialized
 			because this class does not take the responsibility of writing these fields out
 			either using Serializable's writeObject method, or Externalizable's writeExternal
 			method. Therefore when this class is read from a stream, the superclass fields
@@ -2903,8 +2903,8 @@ if (myString.indexOf('e') != -1) {
 		<LongDescription>Comparator method {1} doesn't seem to return all ordering values</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This compareTo or compare method returns constant values for to represent less than,
-			equals and greater than. However it does not return each type, or it unconditionally returns a non zero value. 
+			<p>This compareTo or compare method returns constant values to represent less than,
+			equals, and greater than. However, it does not return each type, or it unconditionally returns a non zero value. 
 			Given that comparators are transitive, this seems incorrect.</p>
 			]]>
 		</Details>
@@ -3041,7 +3041,7 @@ if ((b != null) && b.booleanValue())
 		<LongDescription>Method {1} fetches character array just to do the equivalent of the charAt method</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method calls the toCharArray method on a String the fetch an array of characters, only
+			<p>This method calls the toCharArray method on a String to fetch an array of characters, only
 			to retrieve one of those characters by index. It is more performant to just use the charAt method.</p>
 			]]>
 		</Details>
@@ -3161,7 +3161,7 @@ if ({{FLAWED_TEST_LOGIC}}) {
 			<![CDATA[
 			<p>This class defines a static field 'serialVersionUID' to define the serialization
 			version for this class. This field is marked as non private. As the serialVersionUID only
-			controls the current class, and doesn't effect any derived classes, defining it as non
+			controls the current class, and doesn't affect any derived classes, defining it as non
 			private is confusing. It is suggested you change this variable to be private.</p>
 			]]>
 		</Details>
@@ -3196,8 +3196,8 @@ if ({{FLAWED_TEST_LOGIC}}) {
 		<LongDescription>Method {1} passes an empty string to equalsIgnoreCase or compareToIgnoreCase</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method passes the empty string "" to equalsIgnoreCase or compareToIgnoreCase, as the empty string
-			is not case-sensitive using equals is simpler. It would be even simpler to do a length() == 0 test.</p>
+			<p>This method passes the empty string "" to equalsIgnoreCase or compareToIgnoreCase. As the empty string
+			is not case-sensitive, using equals is simpler. It would be even simpler to do a length() == 0 test.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3223,7 +3223,7 @@ if ({{FLAWED_TEST_LOGIC}}) {
 			<![CDATA[
 			<p>This method calls StringBuilder.append and assigns the results to the same StringBuilder like:</p>
 			<code>sb = sb.append("foo")</code>
-			<p>StringBuilder is mutable this is not necessary.
+			<p>StringBuilder is mutable, so this is not necessary.
 			This is also true of StringBuffer.</p>
 			]]>
 		</Details>
@@ -3352,7 +3352,7 @@ return "thisisaconstantstring";
 			<![CDATA[
 			<p>This method calls String.format passing a static string as the format string that has no replacement markers
 			(starting with %). Thus no replacement will happen, and the format method is superfluous. If parameters were intended,
-			add the appropriate format markers as needed, otherwise, just remove the call to String.format and use the static
+			add the appropriate format markers as needed; otherwise, just remove the call to String.format and use the static
 			string as is.</p>
 			]]>
 		</Details>
@@ -3381,9 +3381,9 @@ return "thisisaconstantstring";
 			<p>This method assigns a value to a variable in an outer scope compared to where the variable is actually used.
 			Assuming this evaluation does not have side effects, the assignment can be moved into the inner scope (if block)
 			so that its execution time isn't taken up if the if guard is false. Care should be
-			taken however that the right hand side of the assignment does not contain side
-			effects that are required to happen, or that changes are not made further down that
-			will effect the execution of the assignment when done later on.</p>
+			taken, however, that the right hand side of the assignment does not contain side
+			effects that are required to happen, and that changes are not made further down that
+			will affect the execution of the assignment when done later on.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3409,7 +3409,7 @@ return "thisisaconstantstring";
 			<![CDATA[
 			<p>This method removes items from a collection using the remove method of the collection, while
 			at the same time iterating across the collection. Doing this will invalidate the iterator, and further
-			use of it, will cause ConcurrentModificationExceptions to be thrown. To avoid this, the remove
+			use of it will cause ConcurrentModificationExceptions to be thrown. To avoid this, the remove
 			method of the iterator should be used.</p>
 			]]>
 		</Details>
@@ -3422,7 +3422,7 @@ return "thisisaconstantstring";
 			<![CDATA[
 			<p>This method modifies the contents of a collection using the collection API methods, while
 			at the same time iterating across the collection. Doing this will invalidate the iterator, and further
-			use of it, will cause ConcurrentModificationExceptions to be thrown.</p>
+			use of it will cause ConcurrentModificationExceptions to be thrown.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3513,7 +3513,7 @@ return new String[0];<br/>
 		<Details>
 			<![CDATA[
 			<p>This method is not constrained by an interface or superclass, but converts a caught checked exception
-			to unchecked exception and thrown. It would be more appropriate just throw the checked exception, adding
+			to unchecked exception and thrown. It would be more appropriate just to throw the checked exception, adding
 			the exception to the throws clause of the method.</p>
 			]]>
 		</Details>
@@ -3524,7 +3524,7 @@ return new String[0];<br/>
 		<LongDescription>Constrained method {1} converts checked exception to unchecked instead of another allowable checked exception</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method's exception signature is constrained by an interface of super class to not throw a
+			<p>This method's exception signature is constrained by an interface of superclass not to throw a
 			checked exception that was caught. Therefore this exception was converted to an unchecked exception and
 			thrown. It would probably be better to throw the closest checked exception allowed, and to annotate
 			the new exception with the original exception using the initial cause field.</p>
@@ -3537,10 +3537,10 @@ return new String[0];<br/>
 		<LongDescription>Constrained method {1} converts checked exception to unchecked</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method's exception signature is constrained by an interface or super class to not throw
+			<p>This method's exception signature is constrained by an interface or superclass not to throw
 			any checked exceptions. Therefore a caught checked exception was converted to an unchecked exception
-			and thrown. However it appears that the class in question is owned by the same author as the constraining
-			interface or superclass. Consider changes the signature of this method to include the checked exception.</p>
+			and thrown. However, it appears that the class in question is owned by the same author as the constraining
+			interface or superclass. Consider changing the signature of this method to include the checked exception.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3550,7 +3550,7 @@ return new String[0];<br/>
 	   <LongDescription>method {1} converts an exception into a boolean 'error code' value</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This method catches and exception and returns a boolean that represents whether an exception occurred or not.
+	       <p>This method catches an exception and returns a boolean that represents whether an exception occurred or not.
 	       This throws away the value of exception handling and lets code ignore the resultant 'error code' return value.
 	       You should just throw the exception to the caller instead.</p>
 	       ]]>
@@ -3563,7 +3563,7 @@ return new String[0];<br/>
 		<Details>
 			<![CDATA[
 			<p>This method appears to modify a parameter, and then return this parameter as the
-			methods return value. This will be confusing to callers of this method, as it won't be
+			method's return value. This will be confusing to callers of this method, as it won't be
 			apparent that the 'original' passed in parameter will be changed as well. If the purpose
 			of this method is to change the parameter, it would be more clear to change the method to
 			a have a void return value. If a return type is required due to interface or superclass contract,
@@ -3659,7 +3659,7 @@ return new String[0];<br/>
 			<![CDATA[
 			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse / Assert.assertTrue.
 			It is better to pass the two values that are being equated to the Assert.assertEquals method so that the
-			JUnit failure method is more meaningful of the intended test.</p>
+			JUnit failure method is more descriptive of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3671,7 +3671,7 @@ return new String[0];<br/>
 			<![CDATA[
 			<p>This method evaluates a boolean expression and passes that to Assert.assertFalse / Assert.assertTrue.
 			It is better to pass the two values that are being equated to the Assert.assertNotEquals method so that the
-			JUnit failure method is more meaningful of the intended test.</p>
+			JUnit failure method is more descriptive of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3764,7 +3764,7 @@ return new String[0];<br/>
 		<Details>
 			<![CDATA[
 			<p>This method compares an object's equality to null. It is better to use the Assert.assertNull
-			method so that the TestNG failure method is more meaningful of the intended test.</p>
+			method so that the TestNG failure method is more descriptive of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3775,7 +3775,7 @@ return new String[0];<br/>
 		<Details>
 			<![CDATA[
 			<p>This method compares an object's inequality to null. It is better to use the Assert.assertNotNull
-			method so that the TestNG failure method is more meaningful of the intended test.</p>
+			method so that the TestNG failure method is more descriptive of the intended test.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -3847,10 +3847,11 @@ return new String[0];<br/>
 		<LongDescription>Method {1} throws a java.lang.Exception that wraps a more useful exception</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method catches an exception and generates a new exception of type java.lang.Exception, passing the
-			original exception as the new Exception's cause.  If the original Exception was actually an java.lang.Error, this
-			is dubious as you should not be handling errors. If the original exception is a more specific exception, there is no
-			reason to wrap it in an exception of the java.lang.Exception class, and just obfuscates the type of error that is occurring.
+			<p>This method catches an exception and generates a new exception of type java.lang.Exception,
+			passing the original exception as the new Exception's cause.  If the original Exception was actually
+			a java.lang.Error, this is dubious as you should not be handling errors. If the original exception
+			is a more specific exception, there is no reason to wrap it in a java.lang.Exception;
+			this just obfuscates the type of error that is occurring.
 			</p>
 			]]>
 		</Details>
@@ -3929,9 +3930,9 @@ return new String[0];<br/>
 			However, SLF4J uses simple non numbered anchors such as {}, rather than anchors with digits in them as the
 			code uses. Thus no parameter replacement will occur.</p>
 			<p>This pattern is invalid:
-			<code>logger.error("{0} is broken", theThing);</code>
+			<code>LOGGER.error("{0} is broken", theThing);</code>
 			Use instead
-			<code>logger.error("{} is broken", theThing);</code>
+			<code>LOGGER.error("{} is broken", theThing);</code>
 			</p>			
 			]]>
 		</Details>
@@ -3946,9 +3947,9 @@ return new String[0];<br/>
 			However, SLF4J uses simple non numbered anchors such as {}, rather than anchors with percent signs in them as the
 			code uses. Thus no parameter replacement will occur.</p>
 			<p>This pattern is invalid:
-			<code>logger.error("%s is broken", theThing);</code>
+			<code>LOGGER.error("%s is broken", theThing);</code>
 			Use instead
-			<code>logger.error("{} is broken", theThing);</code>
+			<code>LOGGER.error("{} is broken", theThing);</code>
 			</p>			
 			]]>
 		</Details>
@@ -3959,7 +3960,7 @@ return new String[0];<br/>
 		<LongDescription>Method {1} passes an incorrect number of parameters to an SLF4J logging statement</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method passes the wrong number of parameters to a SLF4J logging method (error, warn, info, debug) based on the number of anchors {} in the
+			<p>This method passes the wrong number of parameters to an SLF4J logging method (error, warn, info, debug) based on the number of anchors {} in the
 			format string. An additional exception argument is allowed if found.</p>
 			]]>
 		</Details>
@@ -3971,8 +3972,8 @@ return new String[0];<br/>
 	   <Details>
 	       <![CDATA[
 	       <p>This method passes a standard exception as a logger parameter, and expects this exception to be substituted in
-	        an SLF4J style parameter marker '{}'. This marker will not be translated as SLF4J doesn't process the Exception class
-	        for markers.
+	        an SLF4J style parameter marker '{}'. This marker will not be translated as SLF4J doesn't process the Exception
+	        class for markers.
 	       </p>
 	       ]]>
 	   </Details>
@@ -4046,8 +4047,9 @@ return new String[0];<br/>
 		<LongDescription>Method {1} declares throwing two or more exceptions related by inheritance</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method declares that it throws an exception that is the child of another exception that is also declared to be thrown.
-			Given that the parent exception is declared, there is no need for the child exception to also be declared, and just adds confusion.</p>
+			<p>This method declares that it throws an exception that is the child of another exception that is
+			also declared to be thrown. Given that the parent exception is declared, there is no need for the child
+			exception to also be declared; it just adds confusion.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4081,7 +4083,7 @@ return new String[0];<br/>
 		<LongDescription>Method {1} returns null for Boolean type</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method declares that it returns a Boolean value. However the code
+			<p>This method declares that it returns a Boolean value. However, the code
 			can return a null value. As this is now three values that can be returned;
 			Boolean.TRUE, Boolean.FALSE, null; you have changed what a Boolean means.
 			It would be clearer to just create a new Enum that has the three values
@@ -4235,7 +4237,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 			<![CDATA[
 			<p>This serializable class defines a field as both transient and final. As transient fields
 			are not serialized across the stream, it is required that some piece of code reinitialize that field
-			when it is deserialized. But since constructors aren't called when deserialization, the field is not initialized.
+			when it is deserialized. But since constructors aren't called when deserializing, the field is not initialized.
 			And since the field is final, no other method can initialize it as well.</p>
 			]]>
 		</Details>
@@ -4247,7 +4249,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 		<Details>
 			<![CDATA[
 			<p>This method tests a field to make sure it's not null before executing a conditional block of
-			code. However in the conditional block it reassigns the field. It is likely that the guard
+			code. However, in the conditional block it reassigns the field. It is likely that the guard
 			should have been a check to see if the field is null, not that the field was not null.</p>
 			<p>example:
 <pre><code>
@@ -4267,7 +4269,7 @@ if (name != null) {
 		<Details>
 			<![CDATA[
 			<p>This method tests a local variable to make sure it's not null before executing a conditional block of
-			code. However in the conditional block it reassigns the local variable. It is likely that the guard
+			code. However, in the conditional block it reassigns the local variable. It is likely that the guard
 			should have been a check to see if the local variable is null, not that the local variable was not null.</p>
 			<p>example:
 <pre><code>
@@ -4287,7 +4289,7 @@ if (name != null) {
 		<Details>
 			<![CDATA[
 			<p>Calling <code>Runtime.exit()</code> or <code>Runtime.halt()</code> shuts down the entire Java virtual machine.
-			This should only been done in very rare circumstances. Such calls make it hard or impossible for your code to be
+			This should only be done in very rare circumstances. Such calls make it hard or impossible for your code to be
 			invoked by other code. Consider throwing a RuntimeException instead.</p>
 			]]>
 		</Details>
@@ -4299,7 +4301,7 @@ if (name != null) {
 		<Details>
 			<![CDATA[
 			<p>Manually triggering finalization can result in serious performance problems and may be masking resource cleanup bugs. 
-			Only the garbage collector should be concerned finalization and not application code.</p>
+			Only the garbage collector, not application code, should be concerned with finalization.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4309,7 +4311,7 @@ if (name != null) {
 		<LongDescription>Method {1} calls BigDecimal.equals(), which is normally a mistake</LongDescription>
 		<Details>
 			<![CDATA[
-			<p><code>equals()</code> being called to compare two <code>java.math.BigDecimal</code> numbers. 
+			<p>This method calls <code>equals()</code> to compare two <code>java.math.BigDecimal</code> numbers. 
 			This is normally a mistake, as two <code>BigDecimal</code> objects are only equal if they are 
 			equal in both value and scale, so that <i>2.0</i> is not equal to <i>2.00</i>. 
 			To compare <code>BigDecimal</code> objects for mathematical equality, use <code>compareTo()</code> instead.</p>
@@ -4336,8 +4338,8 @@ if (name != null) {
 		<Details>
 			<![CDATA[
 			<p>Do not use the <code>ServerSocket</code> constructor or <code>ServerSocketFactory.createServerSocket()</code> factory methods that 
-			accepts connections on any network interface. By default, an application that listens on a socket will listen for connection attempts 
-			on any network interface, which can be a security risk. Only the long form the <code>ServerSocket</code> constructor or 
+			accept connections on any network interface. By default, an application that listens on a socket will listen for connection attempts 
+			on any network interface, which can be a security risk. Only the long form of the <code>ServerSocket</code> constructor or 
 			<code>ServerSocketFactory.createServerSocket()</code> factory methods take a specific local address to define which network interface 
 			the socket should bind.</p>
 			]]>
@@ -4349,8 +4351,8 @@ if (name != null) {
 		<LongDescription>Method {1} creates an insecure Random object, which may be a security risk</LongDescription>
 		<Details>
 			<![CDATA[
-			<p><code>Random()</code> constructor without a seed is insecure because it defaults to easily guessable seed: 
-			<code>System.currentTimeMillis()</code>. Initialize seed like <code>new Random(SecureRandom.getInstance("SHA1PRNG").nextLong())</code> 
+			<p><code>Random()</code> constructor without a seed is insecure because it defaults to an easily guessable seed: 
+			<code>System.currentTimeMillis()</code>. Initialize a seed like <code>new Random(SecureRandom.getInstance("SHA1PRNG").nextLong())</code> 
 			or replace <code>Random()</code> with <code>SecureRandom.getInstance("SHA1PRNG")</code> instead.
 			"SHA1PRNG" is the random algorithm supported on all platforms.
 		</p>
@@ -4660,7 +4662,7 @@ if (name != null) {
 		<LongDescription>Method {1} returns the result of invoking toString() without intermediate invocation of append() in ToStringBuilder</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method returns the result of toString() on ToStringBuilder without an
+			<p>This method returns the result of toString() on a ToStringBuilder without an
 			intermediate invocation of append().</p>
 			]]>
 		</Details>
@@ -4722,9 +4724,9 @@ if (name != null) {
 			<![CDATA[
 			<p>This class implements the Cloneable interface but defines its clone method to still return
 			a CloneNotSupportedException. Since you are implementing clone() it would make sense that the method
-			in question will <em>not</em> throw that exception, so annotating your method with it just makes client use
-			of your more painful as they have to handle an exception that will never happen. Just remove the
-			throws clause from your method.</p>
+			in question will <em>not</em> throw that exception, so annotating your method with it just makes clients'
+			use of your class more painful as they have to handle an exception that will never happen.
+			Just remove the throws clause from your method.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4736,7 +4738,7 @@ if (name != null) {
 			<![CDATA[
 			<p>This method passes an array of primitive values to the Array.asList call. As primitive
 			values in arrays aren't automatically promoted to boxed primitives in arrays, the asList call
-			cannot convert this array in a list of boxed primitives. It therefore just creates an array
+			cannot convert this array to a list of boxed primitives. It therefore just creates an array
 			with one item in it, the array itself. This is rarely what is desired.</p>
 			]]>
 		</Details>
@@ -4748,7 +4750,7 @@ if (name != null) {
 		<Details>
 			<![CDATA[
 			<p>This method allocates a collection using the default constructor even though it is known
-			a priori how many items are going to be placed in the collection (or at least a reasonable guess)
+			a priori how many items are going to be placed in the collection (or at least can be reasonably guessed)
 			and thus needlessly causes intermediate reallocations of the collection.</p>
 			<p>You can use the constructor that takes an initial size and that will be much better, but
 			due to the loadFactor of Maps and Sets, even this will not be a correct estimate.</p>
@@ -4780,7 +4782,7 @@ if (name != null) {
 		<LongDescription>Method {1} ignores return value of a non mutating method</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method ignores the return value of a common method that is assumed to be none mutating.
+			<p>This method ignores the return value of a common method that is assumed to be non-mutating.
 			If this method does in fact not modify the object it is called on, there is no reason to call
 			this method, and it can be removed.</p>
 			]]>
@@ -4792,8 +4794,8 @@ if (name != null) {
 		<LongDescription>Method {1} attempts to access an array element outside the array's size</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method access an array element using a literal index that is know to be outside the size of the specified
-			array. This will cause an ArrayIndexOutOfBoundsException at runtime.</p>
+			<p>This method accesses an array element using a literal index that is known to be outside the size
+			of the specified array. This will cause an ArrayIndexOutOfBoundsException at runtime.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4803,7 +4805,7 @@ if (name != null) {
 		<LongDescription>Method {1} attempts to store an array element to an array that does not appear to be allocated</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method attempts to store an array element into an array that appears to not have been allocated.</p>
+			<p>This method attempts to store an array element into an array that appears not to have been allocated.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -4852,9 +4854,9 @@ if (name != null) {
 	       <p>This method defines parameters that are never used. As this method is either static or private,
 	       and can't be derived from, it is safe to remove these parameters and simplify your method.
 	       You should consider, while unlikely, that this method may be used reflectively, and thus you will
-	       want to change that call as well. It is likely once you remove the parameter, there will be
-	       a chain of method calls that have spent time creating this parameter and passing it down the line.
-	       All of this may be able to be removed.</p>
+	       want to change that call as well. In this case, it is likely that once you remove the parameter,
+	       there will be a chain of method calls that have spent time creating this parameter and passing it
+	       down the line. All of this may be able to be removed.</p>
 	       ]]>
 	   </Details>
 	</BugPattern>
@@ -4970,7 +4972,7 @@ public void reset() {
             <![CDATA[
             <p>FindBugs has detected an <code>org.apache.http.HttpRequest</code> (e.g. <code>HttpGet</code>, <code>HttpPost</code>, etc)
 				that didn't release its associated resources.  Code like the following: <br/>
-<pre><code>
+<pre>code>
 private HttpGet httpGet;
 
 public String requestInfo(URI u) {
@@ -4987,9 +4989,9 @@ public String requestInfo(URI u) {
 				will freeze after a few requests, usually with no indication as to why.  </p>
 				
 			<p>
-				The reason this code freezes is because <code>org.apache.http.HttpRequest</code>s need explicitly release their connection
+				The reason this code freezes is because <code>org.apache.http.HttpRequest</code>s need to explicitly release their connection
 				with a call to either <code>reset()</code> or <code>releaseConnection()</code>.  The above example can be easily fixed:<br/>
-<code>
+<pre><code>
 private HttpGet httpGet;
 ...
 public String requestInfo(URI u) {
@@ -5005,7 +5007,7 @@ public String requestInfo(URI u) {
     }</b>
     return null;
 }<br/>
-</code>
+</code></pre>
 			</p>
             ]]>
         </Details>
@@ -5033,7 +5035,7 @@ public String requestInfo(URI u) {
 				will freeze after a few requests, usually with no indication as to why. </p>
 				
 			<p>
-				The reason this code freezes is because <code>org.apache.http.HttpRequest</code>s need explicitly release their connection
+				The reason this code freezes is because <code>org.apache.http.HttpRequest</code>s need to explicitly release their connection
 				with a call to either <code>reset()</code> or <code>releaseConnection()</code>, <b>even if the request is a local</b>. 
 				The garbage collector will not release these resources, leading to the frustrating freezing scenario described above.
 				
@@ -5065,7 +5067,7 @@ public String requestInfo(URI u) {
     		<![CDATA[
     		<p>This method is longer than 8000 bytes. By default the JIT will not attempt to compile this method no matter
     		how hot it is, and so this method will always be interpreted. If performance is important, you should consider
-    		breaking this method up in smaller chunks. (And probably a good idea for readability too!).</p>
+    		breaking this method up into smaller chunks. (And probably a good idea for readability too!)</p>
     		]]>
     	</Details>
     </BugPattern>
@@ -5075,7 +5077,7 @@ public String requestInfo(URI u) {
     	<LongDescription>This method {1} performs arithmetic operations on time values with different units</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method takes two values that appear to be representing time, and performs arithmetic operations on this 
+    		<p>This method takes two values that appear to be representing time, and performs arithmetic operations on these 
     		two values directly, even though it appears that the two values are representing different time units, such as 
     		adding a millisecond value to a nanosecond value. You should convert the two values to the same time unit before
     		performing this calculation in order for it to be meaningful.</p>
@@ -5088,7 +5090,7 @@ public String requestInfo(URI u) {
     	<LongDescription>This method "{3}" needlessly uses a String literal to define an encoding.  A built-in Charset could be used instead like: {4}</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method uses a string literal to specify a <code>Charset</code> encoding. However the method invoked has an 
+    		<p>This method uses a string literal to specify a <code>Charset</code> encoding. However, the method invoked has an 
     		alternative signature that takes a <code>Charset</code> object. You should use this signature, as this class is compiled
     		with JDK 7 (or better), and the <code>Charset</code> in question is available as a constant from the 
     		<code>java.nio.charset.StandardCharsets</code> class.</p>
@@ -5122,7 +5124,7 @@ public String requestInfo(URI u) {
     		<![CDATA[
     		<p>This method specifies a <code>Charset</code> encoding with a String literal that is not recognized by the current
     		JDK. It's possible that this application will only be deployed on a JVM that does recognize this encoding, but
-    		it seem dubious that this is the case.</p>
+    		it seems dubious that this is the case.</p>
     		<p>
     		The standard JDK encodings (for Java 8) are "UTF-8", "US-ASCII", "ISO-8859-1", "UTF-16BE", "UTF-16LE", "UTF-16".  These are all case-sensitive.
     		</p>
@@ -5136,7 +5138,7 @@ public String requestInfo(URI u) {
     	<Details>
     		<![CDATA[
     		<p>This method uses an overly complex if expression made up of multiple conditions joined by OR, where the same
-    		local variable is compared to a static value. When the number of conditions grow it is much cleaner
+    		local variable is compared to a static value. When the number of conditions grows, it is much cleaner
     		to build a static set of the possible values, and use the contains method on that set. This will
     		shorten the code, and make it more self documenting.</p>
     		]]>
@@ -5195,7 +5197,7 @@ public String requestInfo(URI u) {
     	<LongDescription>This method {1} continues a loop after finding an equality condition</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method continues with a loop, and does not break out of it, after finding an setting a variable in an if
+    		<p>This method continues with a loop, and does not break out of it, after finding and setting a variable in an if
     		condition based on equality. Since continuing on in the loop would seem to be unlikely to find the item again, breaking
     		at this point would seem to be the proper action.</p>
     		<p>Example:
@@ -5218,7 +5220,7 @@ for (Person p : people) {
     	<Details>
     		<![CDATA[
     		<p>This method fetches a resource from a URL, and uses the File API to manipulate it. If this resource is a
-    		classpath resource, it will work if the resource is a file in a directory. If however the file is inside a JAR file
+    		classpath resource, it will work if the resource is a file in a directory. If, however, the file is inside a JAR file
     		this will fail. To avoid this confusing inconsistency, use the URL.openStream API instead to access the data of the classpath resource.
     		</p>
     		]]>
@@ -5231,7 +5233,7 @@ for (Person p : people) {
     	<Details>
     		<![CDATA[
     		<p>This class which has instance fields has no equals(Object o) method. It is possible that this
-    		class is never used in a context where this is required, it is often assumed, however, from clients 
+    		class is never used in a context where this is required; it is often assumed, however, from clients 
     		of this class that it is, so it is good to add such methods when you create them.
     		</p>
     		]]>
@@ -5244,7 +5246,7 @@ for (Person p : people) {
     	<Details>
     		<![CDATA[
     		<p>This class which has instance fields has no hashCode() method. It is possible that this
-    		class is never used in a context where this is required, it is often assumed, however, from clients 
+    		class is never used in a context where this is required; it is often assumed, however, from clients 
     		of this class that it is, so it is good to add such methods when you create them.
     		</p>
     		]]>
@@ -5258,7 +5260,7 @@ for (Person p : people) {
     		<![CDATA[
     		<p>This class has been created in the default package. Classes should be defined in a 
     		proper package structure, typically defined by the reverse of the domain name of the 
-    		owner of the code base. Putting code in the default (no) package limits it usefulness, including
+    		owner of the code base. Putting code in the default (no) package limits its usefulness, including:
     		<ol>
     		<li>Not being able to import this class into classes with packages</li>
     		<li>Leaving it open to name collisions with other packages.</li>
@@ -5286,7 +5288,7 @@ for (Person p : people) {
     	<LongDescription>Method {1} uses IDE generated parameter names</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method appears to have been generated from an interface or super class using an IDE.
+    		<p>This method appears to have been generated from an interface or superclass using an IDE.
     		As such the IDE generated generic names (arg0, arg1, arg2) for parameters for this method,
     		and the author of this method did not change them to be meaningful. For better understandability
     		it is recommended that you name these parameters with regard to their function.</p>
@@ -5397,7 +5399,7 @@ for (Person p : people) {
     	<LongDescription>Method {1} annotated with @Transactional is called from a non Spring proxy</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method call is to a method that has a @Transactional annotation on it. However since this call is from the
+    		<p>This method call is to a method that has a @Transactional annotation on it. However, since this call is from the
     		same class, it is not going through any Spring proxy, and thus the transactional quality of this method is completely
     		lost. @Transactional method must always be called through a Spring bean that is autowired.</p>
     		]]>
@@ -5437,7 +5439,7 @@ for (Person p : people) {
     		<![CDATA[
     		<p>This method declares that it throws one or more non-runtime exceptions. It also is annotated with a
     		@Transactional annotation but fails to describe whether to rollback the transaction or not based on this
-    		thrown exception. use 'rollbackFor' or 'noRollbackFor' attributes of the Transactional annotation to 
+    		thrown exception. Use 'rollbackFor' or 'noRollbackFor' attributes of the Transactional annotation to 
     		document this.</p>
     		]]> 
     	</Details>
@@ -5449,8 +5451,8 @@ for (Person p : people) {
     	<Details>
     		<![CDATA[
     		<p>This method declares that it either rolls back or does not rollback a transaction based on an
-    		expected exception being thrown. However this exception, nor any derived exceptions can not be thrown from this method, and so the
-    		annotation is useless.</p>
+    		expected exception being thrown. However, neither this exception, nor any derived exceptions can be thrown
+    		from this method, and so the annotation is useless.</p>
     		]]> 
     	</Details>
     </BugPattern>
@@ -5487,7 +5489,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<Details>
     		<![CDATA[
     		<p>This method copies data from input to output using streams or reader/writers using a well known copy method, from java.nio, commons-io, 
-    		springframework, guava or poi. These methods are efficient in that they copy these files using buffers. However this method is also 
+    		springframework, guava or poi. These methods are efficient in that they copy these files using buffers. However, this method is also 
     		buffering the streams, causing a double buffering to occur. So data first goes to one buffer, then is copied to another buffer, before
     		making it to the destination (or vice-versa). This just causes the copy operation to be inefficient both from a time perspective, as well
     		as a memory allocation one. When using these copy methods, do not pass buffered streams/readers/writers.</p>
@@ -5512,13 +5514,13 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<ShortDescription>Class holds a map-type field, but uses it as only a List</ShortDescription>
     	<LongDescription>Class {0} holds a map-type field {1}, but uses it as only a List</LongDescription>
     	<Details>
-	    	<![CDATA[
-	    	<p>This method instantiates a map-type field in a static initializer or constructor, but then only uses it through iteration.
-	    	This means that this data structure should really just be a List&lt;SomeObject&gt;, where the class held by the list contains the two
-	    	fields held by the key and value of the Map. It was likely done this way to avoid having to create a class, but this just obfuscates
-	    	the purpose of the field.
-	    	</p>
-	    	]]>	
+			<![CDATA[
+			<p>This method instantiates a map-type field in a static initializer or constructor, but then only uses it
+			through iteration. This means that this data structure should really just be a List&lt;SomeObject&gt;,
+			where the class held by the list contains the two fields held by the key and value of the Map.
+			It was likely done this way to avoid having to create a class, but this just obfuscates the purpose of the field.
+			</p>
+			]]>	
     	</Details>
     </BugPattern>
     
@@ -5527,9 +5529,9 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<LongDescription>Method {1} buries logic to the right (indented) more than it needs to be</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method has an if statement where if the condition is false, merely returns. The bulk of the logic is found
-    		in the if brace code. This unnecessarily obfuscates the logic of the method. It would be more readable if you inverted
-    		the logic of the if statement, and just returned if true.</p>
+    		<p>This method has an if statement where if the condition is false, it merely returns. The bulk of the logic
+    		is found in the if brace code. This unnecessarily obfuscates the logic of the method. It would be more readable
+    		if you inverted the logic of the if statement, and just returned if true.</p>
     		]]>
     	</Details>
     </BugPattern>
