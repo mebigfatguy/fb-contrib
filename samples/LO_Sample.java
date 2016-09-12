@@ -65,7 +65,7 @@ public class LO_Sample {
         // tag LO_INVALID_FORMATTING_ANCHOR
         l3.error("This is a problem {0}", "hello");
     }
-    
+
     public void testInvalidSLF4jParm2() {
         // tag LO_INVALID_FORMATTING_ANCHOR
         l3.error("This is a problem %s", "hello");
@@ -96,6 +96,10 @@ public class LO_Sample {
         l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello", "hello");
     }
 
+    public void testSimpleFormatInLogger(String poo) {
+        l3.error(String.format("The error was %s", poo));
+    }
+
     public void testFPWrongNumberOfParms() {
         // no tag An additional exception argument is allowed if found
         l3.error("This is a problem {}", "hello", new IOException("Yikes"));
@@ -113,7 +117,7 @@ public class LO_Sample {
 
         l3.warn(sb.toString());
     }
-    
+
     public void fpOKPattern() {
         l3.error("Specify the path with %TEMP%");
     }
@@ -121,6 +125,7 @@ public class LO_Sample {
     public class Inner {
         public void fpUseAnon() {
             ActionListener l = new ActionListener() {
+                @Override
                 public void actionPerformed(ActionEvent ae) {
                     // no tag
                     Logger.getLogger(Inner.class).error("fp");
