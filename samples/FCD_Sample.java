@@ -79,3 +79,32 @@ class Intent {
     Intent(Class c) {
     }
 }
+
+class ClassWithInnerInterface {
+    public interface InnerInterface {
+        void doIt();
+    }
+
+    private ClassUsingInnerInterface o;
+
+    public void m() {
+        o.setInner(new InnerInterface() {
+            @Override
+            public void doIt() {
+            }
+        });
+    }
+}
+
+class ClassUsingInnerInterface {
+    public void setInner(ClassWithInnerInterface.InnerInterface ii) {
+    }
+}
+
+class Me {
+    Myself m = new Myself();
+}
+
+class Myself {
+    Me m = new Me();
+}

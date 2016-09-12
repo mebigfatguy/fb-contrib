@@ -24,6 +24,8 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -41,10 +43,10 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
  * bad data model. Consider using interfaces to break this hard circular dependency.
  */
 public class FindCircularDependencies extends BytecodeScanningDetector {
+
+    private static final Pattern ARRAY_PATTERN = Pattern.compile("\\[+(L.*)");
     private Map<String, Set<String>> dependencyGraph = null;
-
     private BugReporter bugReporter;
-
     private String clsName;
 
     /**
@@ -75,7 +77,8 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
 
     private void processInvoke() {
         String refClsName = getClassConstantOperand();
-        refClsName = refClsName.replace('/', '.');
+        refClsName = normalizeArrayClass(refClsName.replace('/', '.'));
+
         if (refClsName.startsWith("java")) {
             return;
         }
@@ -99,12 +102,25 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
     private void processLoadConstant() {
         Constant c = getConstantRefOperand();
         if (c instanceof ConstantClass) {
-            String refClsName = getClassConstantOperand();
+            String refClsName = normalizeArrayClass(getClassConstantOperand().replace('/', '.'));
             if (!refClsName.equals(clsName)) {
                 Set<String> dependencies = getDependenciesForClass(clsName);
                 dependencies.add(refClsName);
             }
         }
+    }
+
+    private String normalizeArrayClass(String clsName) {
+        if (!clsName.startsWith("[")) {
+            return clsName;
+        }
+
+        Matcher m = ARRAY_PATTERN.matcher(clsName);
+        if (!m.matches()) {
+            return clsName;
+        }
+
+        return m.group(1);
     }
 
     /**
