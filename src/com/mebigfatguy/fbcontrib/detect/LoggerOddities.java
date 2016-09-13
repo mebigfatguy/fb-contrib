@@ -153,9 +153,11 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand()) && "format".equals(getNameConstantOperand())) {
                     if (stack.getStackDepth() >= 2) {
                         String format = (String) stack.getStackItem(1).getConstant();
-                        Matcher m = NON_SIMPLE_FORMAT.matcher(format);
-                        if (!m.matches()) {
-                            simpleFormat = Boolean.TRUE;
+                        if (format != null) {
+                            Matcher m = NON_SIMPLE_FORMAT.matcher(format);
+                            if (!m.matches()) {
+                                simpleFormat = Boolean.TRUE;
+                            }
                         }
                     }
                 }
