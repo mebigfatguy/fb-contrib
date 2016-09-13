@@ -3990,8 +3990,29 @@ return new String[0];<br/>
 	       will never be executed.</p>
 	       ]]>
 	   </Details>
-	</BugPattern>'
-
+	</BugPattern>
+	
+	
+	<BugPattern type="LO_EMBEDDED_SIMPLE_STRING_FORMAT_IN_FORMAT_STRING">
+	   <ShortDescription>Method passes a simple String.format result to an SLF4J's format string</ShortDescription>
+	   <LongDescription>Method {1} passes a simple String.format result to an SLF4J's format string</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This method uses an SLF4J logger to log a string, which was produced through a call to String.format, where
+	       the format string passed was a constant string containing only simple format markers that could be directly handled
+	       by slf4j. Rather than doing
+	       <pre>
+	          logger.error("String.format("This %s is an error", s));
+	       <pre>
+	       do
+	       <pre>
+	          logger.error(This {} is an error", s);
+	       </pre>
+	       </p>
+	       ]]>
+	   </Details>
+	</BugPattern>
+	
 	<BugPattern type="IICU_INCORRECT_INTERNAL_CLASS_USE">
 		<ShortDescription>Class relies on internal API classes</ShortDescription>
 		<LongDescription>Class {0} relies on internal API classes</LongDescription>

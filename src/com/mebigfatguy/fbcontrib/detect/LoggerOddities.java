@@ -36,6 +36,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -60,6 +61,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     private static final Pattern BAD_STRING_FORMAT_PATTERN = Pattern
             .compile("%([0-9]*\\$)?(-|#|\\+| |0|,|\\(|)?[0-9]*(\\.[0-9]+)?(b|h|s|c|d|o|x|e|f|g|a|t|%|n)");
     private static final Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
+    private static final Pattern NON_SIMPLE_FORMAT = Pattern.compile(".*\\%[^sdf].*", Pattern.CASE_INSENSITIVE);
 
     private final BugReporter bugReporter;
     private JavaClass throwableClass;
@@ -134,6 +136,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
         String seenMethodName = null;
         int exMessageReg = -1;
         Integer arraySize = null;
+        Boolean simpleFormat = null;
 
         try {
             stack.precomputation(this);
@@ -146,6 +149,16 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 }
             } else if (seen == INVOKESTATIC) {
                 lookForSuspectClasses();
+
+                if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand()) && "format".equals(getNameConstantOperand())) {
+                    if (stack.getStackDepth() >= 2) {
+                        String format = (String) stack.getStackItem(1).getConstant();
+                        Matcher m = NON_SIMPLE_FORMAT.matcher(format);
+                        if (!m.matches()) {
+                            simpleFormat = Boolean.TRUE;
+                        }
+                    }
+                }
             } else if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && (throwableClass != null)) {
                 String mthName = getNameConstantOperand();
                 if ("getName".equals(mthName)) {
@@ -155,7 +168,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         // (the name of the class is currently on the top of the
                         // stack, but won't be on the stack at all next opcode)
                         Item stackItem = stack.getStackItem(0);
-                        ldcClassName = (String) stackItem.getUserValue();
+                        LOUserValue<String> uv = (LOUserValue<String>) stackItem.getUserValue();
+                        if ((uv != null) && (uv.getType() == LOUserValue.LOType.CLASS_NAME)) {
+                            ldcClassName = uv.getValue();
+                        }
                     }
                 } else if ("getMessage".equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
@@ -189,15 +205,19 @@ public class LoggerOddities extends BytecodeScanningDetector {
             } else if (seen == AASTORE) {
                 if (stack.getStackDepth() >= 3) {
                     OpcodeStack.Item arrayItem = stack.getStackItem(2);
-                    Integer size = (Integer) arrayItem.getUserValue();
-                    if ((size != null) && (size.intValue() > 0) && hasExceptionOnStack()) {
-                        arrayItem.setUserValue(Integer.valueOf(-size.intValue()));
+                    LOUserValue<Integer> uv = (LOUserValue<Integer>) arrayItem.getUserValue();
+                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.ARRAY_SIZE)) {
+                        Integer size = uv.getValue();
+                        if ((size != null) && (size.intValue() > 0) && hasExceptionOnStack()) {
+                            arrayItem.setUserValue(new LOUserValue<>(LOUserValue.LOType.ARRAY_SIZE, Integer.valueOf(-size.intValue())));
+                        }
                     }
                 }
             } else if (OpcodeUtils.isAStore(seen) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
-                if ("toString".equals(item.getUserValue())) {
-                    item.setUserValue(null);
+                LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
+                if ((uv != null) && (uv.getType() == LOUserValue.LOType.METHOD_NAME) && "toString".equals(uv.getValue())) {
+                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.NULL, null));
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -210,13 +230,15 @@ public class LoggerOddities extends BytecodeScanningDetector {
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (ldcClassName != null) {
-                    item.setUserValue(ldcClassName);
+                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.CLASS_NAME, ldcClassName));
                 } else if (seenMethodName != null) {
-                    item.setUserValue(seenMethodName);
+                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.METHOD_NAME, seenMethodName));
                 } else if (exMessageReg >= 0) {
-                    item.setUserValue(Integer.valueOf(exMessageReg));
+                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.MESSAGE_REG, Integer.valueOf(exMessageReg)));
                 } else if (arraySize != null) {
-                    item.setUserValue(arraySize);
+                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.ARRAY_SIZE, arraySize));
+                } else if (simpleFormat != null) {
+                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.SIMPLE_FORMAT, simpleFormat));
                 }
             }
         }
@@ -237,8 +259,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     OpcodeStack.Item exItem = stack.getStackItem(0);
                     OpcodeStack.Item msgItem = stack.getStackItem(1);
 
-                    Object exReg = msgItem.getUserValue();
-                    if ((exReg instanceof Integer) && (((Integer) exReg).intValue() == exItem.getRegisterNumber())) {
+                    LOUserValue uv = (LOUserValue) msgItem.getUserValue();
+                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.MESSAGE_REG)
+                            && (((Integer) uv.getValue()).intValue() == exItem.getRegisterNumber())) {
                         bugReporter.reportBug(
                                 new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
@@ -285,9 +308,20 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                     }
                                 }
                             }
-                        } else if ("toString".equals(formatItem.getUserValue())) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.LO_APPENDED_STRING_IN_FORMAT_STRING.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                        } else {
+                            LOUserValue<?> uv = (LOUserValue<?>) formatItem.getUserValue();
+                            if ((uv != null) && (uv.getType() == LOUserValue.LOType.METHOD_NAME) && "toString".equals(uv.getValue())) {
+
+                                bugReporter.reportBug(new BugInstance(this, BugType.LO_APPENDED_STRING_IN_FORMAT_STRING.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                            } else {
+
+                                if ((uv != null) && (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT)) {
+                                    bugReporter
+                                            .reportBug(new BugInstance(this, BugType.LO_EMBEDDED_SIMPLE_STRING_FORMAT_IN_FORMAT_STRING.name(), NORMAL_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                }
+                            }
                         }
                     }
                 }
@@ -340,7 +374,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
             if ("(Ljava/lang/Class;)Lorg/slf4j/Logger;".equals(signature)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    loggingClassName = (String) item.getUserValue();
+                    LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
+                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.CLASS_NAME)) {
+                        loggingClassName = uv.getValue();
+                    }
                 }
             } else if ("(Ljava/lang/String;)Lorg/slf4j/Logger;".equals(signature) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
@@ -353,21 +390,27 @@ public class LoggerOddities extends BytecodeScanningDetector {
             if ("(Ljava/lang/Class;)Lorg/apache/log4j/Logger;".equals(signature)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    loggingClassName = (String) item.getUserValue();
+                    LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
+                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.CLASS_NAME)) {
+                        loggingClassName = uv.getValue();
+                    }
                 }
             } else if ("(Ljava/lang/String;)Lorg/apache/log4j/Logger;".equals(signature)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     loggingClassName = (String) item.getConstant();
-                    Object userValue = item.getUserValue();
+                    LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
+                    if (uv != null) {
+                        Object userValue = uv.getValue();
 
-                    if (loggingClassName != null) {
-                        // first look at the constant passed in
-                        loggingPriority = LOW_PRIORITY;
-                    } else if (userValue instanceof String) {
-                        // try the user value, which may have been set by a call
-                        // to Foo.class.getName()
-                        loggingClassName = (String) userValue;
+                        if (loggingClassName != null) {
+                            // first look at the constant passed in
+                            loggingPriority = LOW_PRIORITY;
+                        } else if (userValue instanceof String) {
+                            // try the user value, which may have been set by a call
+                            // to Foo.class.getName()
+                            loggingClassName = (String) userValue;
+                        }
                     }
                 }
             } else if ("(Ljava/lang/String;Lorg/apache/log4j/spi/LoggerFactory;)Lorg/apache/log4j/Logger;".equals(signature) && (stack.getStackDepth() > 1)) {
@@ -381,7 +424,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
             if ("(Ljava/lang/Class;)Lorg/apache/commons/logging/Log;".equals(signature)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    loggingClassName = (String) item.getUserValue();
+                    LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
+                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.CLASS_NAME)) {
+                        loggingClassName = uv.getValue();
+                    }
                 }
             } else if ("(Ljava/lang/String;)Lorg/apache/commons/logging/Log;".equals(signature) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
@@ -434,9 +480,12 @@ public class LoggerOddities extends BytecodeScanningDetector {
         }
 
         OpcodeStack.Item item = stack.getStackItem(0);
-        Integer size = (Integer) item.getUserValue();
-        if (size != null) {
-            return Math.abs(size.intValue());
+        LOUserValue<Integer> uv = (LOUserValue<Integer>) item.getUserValue();
+        if ((uv != null) && (uv.getType() == LOUserValue.LOType.ARRAY_SIZE)) {
+            Integer size = uv.getValue();
+            if (size != null) {
+                return Math.abs(size.intValue());
+            }
         }
         return -1;
     }
@@ -458,9 +507,12 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         return true;
                     }
                 } else if (sig.startsWith("[")) {
-                    Integer sz = (Integer) item.getUserValue();
-                    if ((sz != null) && (sz.intValue() < 0)) {
-                        return true;
+                    LOUserValue<Integer> uv = (LOUserValue<Integer>) item.getUserValue();
+                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.ARRAY_SIZE)) {
+                        Integer sz = uv.getValue();
+                        if ((sz != null) && (sz.intValue() < 0)) {
+                            return true;
+                        }
                     }
                 }
             }
@@ -469,5 +521,33 @@ public class LoggerOddities extends BytecodeScanningDetector {
             bugReporter.reportMissingClass(cnfe);
             return true;
         }
+    }
+
+    static class LOUserValue<T> {
+        enum LOType {
+            CLASS_NAME, METHOD_NAME, MESSAGE_REG, ARRAY_SIZE, NULL, SIMPLE_FORMAT
+        };
+
+        LOType type;
+        T value;
+
+        public LOUserValue(LOType type, T value) {
+            this.type = type;
+            this.value = value;
+        }
+
+        public LOType getType() {
+            return type;
+        }
+
+        public T getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+
     }
 }
