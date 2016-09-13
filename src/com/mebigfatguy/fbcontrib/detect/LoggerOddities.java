@@ -131,6 +131,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
      *            the opcode of the currently parsed instruction
      */
     @Override
+    @SuppressWarnings("unchecked")
     public void sawOpcode(int seen) {
         String ldcClassName = null;
         String seenMethodName = null;
@@ -252,6 +253,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
      * @throws ClassNotFoundException
      *             if the exception class, or a parent class can't be found
      */
+    @SuppressWarnings("unchecked")
     private void checkForProblemsWithLoggerMethods() throws ClassNotFoundException {
         String callingClsName = getClassConstantOperand();
         if (callingClsName.endsWith("Log") || (callingClsName.endsWith("Logger"))) {
@@ -261,9 +263,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     OpcodeStack.Item exItem = stack.getStackItem(0);
                     OpcodeStack.Item msgItem = stack.getStackItem(1);
 
-                    LOUserValue uv = (LOUserValue) msgItem.getUserValue();
-                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.MESSAGE_REG)
-                            && (((Integer) uv.getValue()).intValue() == exItem.getRegisterNumber())) {
+                    LOUserValue<Integer> uv = (LOUserValue<Integer>) msgItem.getUserValue();
+                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.MESSAGE_REG) && (uv.getValue().intValue() == exItem.getRegisterNumber())) {
                         bugReporter.reportBug(
                                 new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
@@ -363,6 +364,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
      * looks for instantiation of a logger with what looks like a class name that isn't the same as the class in which it exists. There are some cases where a
      * 'classname-like' string is presented purposely different than this class, and an attempt is made to ignore those.
      */
+    @SuppressWarnings("unchecked")
     private void lookForSuspectClasses() {
         String callingClsName = getClassConstantOperand();
         String mthName = getNameConstantOperand();
@@ -473,6 +475,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
      *            the method signature of the error, warn, info, debug statement
      * @return the number of expected parameters
      */
+    @SuppressWarnings("unchecked")
     private int getSLF4JParmCount(String signature) {
         if ("(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature)) {
             return 1;
@@ -497,6 +500,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
      *
      * @return whether or not an exception i present
      */
+    @SuppressWarnings("unchecked")
     private boolean hasExceptionOnStack() {
         try {
             for (int i = 0; i < (stack.getStackDepth() - 1); i++) {
