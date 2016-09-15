@@ -42,7 +42,17 @@ public class IncorrectInternalClassUse implements Detector {
 
     private static final Set<String> internalPackages = UnmodifiableSet.create(
         // @formatter:off
+        "com/apple/eawt/",
+        "com/sun/org/apache/xml/internal/",
+        "com/sun/net/ssl/",
+        "com/sun/crypto/provider/",
+        "com/sun/image/codec/jpeg/",
+        "com/sun/rowset/",
+        "com/sun/tools/javac/",
         "sun/",
+        "java/awt/peer/",
+        "java/awt/dnd/peer/",
+        "jdk/nashorn/internal/",
         "org/apache/commons/digester/annotations/internal",
         "org/apache/xerces/",
         "org/apache/xalan/",
@@ -51,6 +61,7 @@ public class IncorrectInternalClassUse implements Detector {
         "org/glassfish/internal",
         "org/hibernate/cache/internal",
         "org/mockito/internal/",
+        "org/relaxng/datatype/",
         "org/springframework/asm/",
         "org/springframework/cglib/",
         "org/springframework/objenesis/",
