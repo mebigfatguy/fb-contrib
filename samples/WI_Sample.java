@@ -8,6 +8,12 @@ public class WI_Sample extends Parent {
     @Autowired
     @Qualifier("special")
     SingletonBean myOtherSBean;
+
+    @Autowired
+    GenerifiedBean<String> stringBean;
+
+    @Autowired
+    GenerifiedBean<Integer> intBean;
 }
 
 class Parent {
@@ -21,4 +27,7 @@ class Parent {
 
 interface SingletonBean {
 
+}
+
+interface GenerifiedBean<T> {
 }
