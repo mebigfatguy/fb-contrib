@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
@@ -79,7 +80,7 @@ public class WiringIssues extends PreorderVisitor implements Detector {
                     }
 
                     if (hasAutowired) {
-                        WiringType wt = new WiringType(field.getSignature(), qualifier);
+                        WiringType wt = new WiringType(field.getSignature(), field.getGenericSignature(), qualifier);
                         FieldAnnotation existingAnnotation = wiredFields.get(wt);
                         if (existingAnnotation != null) {
                             bugReporter.reportBug(new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY).addClass(cls)
@@ -128,7 +129,7 @@ public class WiringIssues extends PreorderVisitor implements Detector {
                 }
 
                 if (hasAutowired) {
-                    WiringType wt = new WiringType(field.getSignature(), qualifier);
+                    WiringType wt = new WiringType(field.getSignature(), field.getGenericSignature(), qualifier);
                     wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
                 }
             }
@@ -137,10 +138,12 @@ public class WiringIssues extends PreorderVisitor implements Detector {
 
     static class WiringType {
         String signature;
+        String genericSignature;
         String qualifier;
 
-        public WiringType(String fieldSignature, String qualifierName) {
+        public WiringType(String fieldSignature, String genSignature, String qualifierName) {
             signature = fieldSignature;
+            genericSignature = genSignature;
             qualifier = qualifierName;
         }
 
@@ -151,12 +154,12 @@ public class WiringIssues extends PreorderVisitor implements Detector {
             }
 
             WiringType that = (WiringType) o;
-            return signature.equals(that.signature) && qualifier.equals(that.qualifier);
+            return signature.equals(that.signature) && Objects.equals(genericSignature, that.genericSignature) && qualifier.equals(that.qualifier);
         }
 
         @Override
         public int hashCode() {
-            return signature.hashCode() ^ qualifier.hashCode();
+            return signature.hashCode() ^ qualifier.hashCode() ^ ((genericSignature != null) ? genericSignature.hashCode() : 0);
         }
 
         @Override
