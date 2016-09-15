@@ -10,10 +10,10 @@ public class WI_Sample extends Parent {
     SingletonBean myOtherSBean;
 
     @Autowired
-    GenerifiedBean<String> stringBean;
+    GenerifiedBean<String> fpStringBean;
 
     @Autowired
-    GenerifiedBean<Integer> intBean;
+    GenerifiedBean<Integer> fpIntBean;
 }
 
 class Parent {
