@@ -47,6 +47,7 @@ public class WiringIssues extends PreorderVisitor implements Detector {
         this.bugReporter = bugReporter;
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Only a few cases need special handling")
     @Override
     public void visitClassContext(ClassContext classContext) {
 
@@ -101,6 +102,7 @@ public class WiringIssues extends PreorderVisitor implements Detector {
     public void report() {
     }
 
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Only a few cases need special handling")
     private void loadParentAutowireds(JavaClass cls, Map<WiringType, FieldAnnotation> wiredFields) throws ClassNotFoundException {
 
         if (Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
