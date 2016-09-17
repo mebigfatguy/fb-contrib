@@ -20,7 +20,7 @@ public class BED_Sample {
     }
 
     public BED_Sample(String name) throws NamingException {
-        Hashtable<String, String> env = new Hashtable<String, String>();
+        Hashtable<String, String> env = new Hashtable<>();
         env.put("name", name);
         DirContext context = new InitialDirContext(env);
     }
@@ -103,6 +103,18 @@ public class BED_Sample {
         }
 
         return p;
+    }
+
+    static class FPAnonBase {
+
+        FPAnonBase(InputStream is) throws IOException {
+            int i = is.read();
+        }
+
+        public static FPAnonBase makeAnon(InputStream is) throws IOException {
+            return new FPAnonBase(is) {
+            };
+        }
     }
 
 }

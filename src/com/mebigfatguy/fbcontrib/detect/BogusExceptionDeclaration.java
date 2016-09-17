@@ -189,8 +189,8 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     }
 
     /**
-     * checks to see if this method is constructor of an instance based inner class, as jdk1.5 compiler has a bug where it attaches bogus exception declarations
-     * to this constructors in some cases.
+     * checks to see if this method is a constructor of an instance based inner class, the handling of the Exception table for this method is odd, -- doesn't
+     * seem correct, in some cases. So just ignore these cases
      *
      * @param m
      *            the method to check
@@ -209,8 +209,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
             return false;
         }
 
-        String signature = m.getSignature();
-        return ("(L" + clsName.substring(0, dollarPos).replace('.', '/') + ";)V").equals(signature);
+        return true;
     }
 
     /**
@@ -233,6 +232,12 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                         boolean found = false;
                         for (Method m : methods) {
                             if (m.getName().equals(methodName) && m.getSignature().equals(signature)) {
+
+                                if (isAnonymousInnerCtor(m, cls)) {
+                                    // The java compiler doesn't properly attached an Exception Table to anonymous constructors, so just clear if so
+                                    break;
+                                }
+
                                 ExceptionTable et = m.getExceptionTable();
                                 if (et != null) {
                                     String[] thrownExceptions = et.getExceptionNames();
