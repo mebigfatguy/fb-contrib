@@ -100,6 +100,7 @@ public class WiringIssues extends PreorderVisitor implements Detector {
 
     @Override
     public void report() {
+        // required by the interface, but not used
     }
 
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Only a few cases need special handling")
