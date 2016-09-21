@@ -1,5 +1,5 @@
 
-public class FCD_Sample {
+public class FCCD_Sample {
     Child c = new Child();;
 
     public void cdTest() {
@@ -16,7 +16,7 @@ class Child {
 }
 
 class SubChild {
-    FCD_Sample cds = new FCD_Sample();
+    FCCD_Sample cds = new FCCD_Sample();
 
     public void subChildTest() {
         cds.toString();

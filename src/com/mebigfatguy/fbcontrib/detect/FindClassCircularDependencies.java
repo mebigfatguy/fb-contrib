@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
  * looks for classes that have dependencies on each other in a circular way. Class initialization can be compromised in this scenario, and usually points to a
  * bad data model. Consider using interfaces to break this hard circular dependency.
  */
-public class FindCircularDependencies extends BytecodeScanningDetector {
+public class FindClassCircularDependencies extends BytecodeScanningDetector {
 
     private static final Pattern ARRAY_PATTERN = Pattern.compile("\\[+(L.*)");
     private Map<String, Set<String>> dependencyGraph = null;
@@ -50,12 +50,12 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
     private String clsName;
 
     /**
-     * constructs a FCD detector given the reporter to report bugs on
+     * constructs a FCCD detector given the reporter to report bugs on
      *
      * @param bugReporter
      *            the sync of bug reports
      */
-    public FindCircularDependencies(BugReporter bugReporter) {
+    public FindClassCircularDependencies(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         this.dependencyGraph = new HashMap<>();
     }
@@ -155,7 +155,7 @@ public class FindCircularDependencies extends BytecodeScanningDetector {
             Set<String> loop = lf.findLoop(dependencyGraph, className);
             boolean pruneLeaves;
             if (loop != null) {
-                BugInstance bug = new BugInstance(this, BugType.FCD_FIND_CIRCULAR_DEPENDENCY.name(), NORMAL_PRIORITY);
+                BugInstance bug = new BugInstance(this, BugType.FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY.name(), NORMAL_PRIORITY);
                 for (String loopCls : loop) {
                     bug.addClass(loopCls);
                 }
