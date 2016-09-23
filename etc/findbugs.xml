@@ -20,7 +20,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -30,7 +30,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-<!-- COMMENT OUT FOR RELEASE -->
+ COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -297,7 +297,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.IOIssues" speed="fast" reports="IOI_DOUBLE_BUFFER_COPY,IOI_COPY_WITH_READER"/>
     
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+    <!-- COMMENT OUT FOR POINT RELEASE 
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.DubiousMapCollection" speed="fast" reports="DMC_DUBIOUS_MAP_COLLECTION"/>
     
@@ -305,7 +305,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.WiringIssues" speed="fast" reports="WI_DUPLICATE_WIRED_TYPES"/>
     
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+     COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
