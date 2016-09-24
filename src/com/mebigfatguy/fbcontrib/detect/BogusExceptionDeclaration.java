@@ -221,7 +221,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
             stack.precomputation(this);
 
-            if (OpcodeUtils.isInvoke(seen)) {
+            if (OpcodeUtils.isInvoke(seen) && (seen != INVOKEDYNAMIC)) {
                 String clsName = getClassConstantOperand();
                 if (!safeClasses.contains(clsName)) {
                     try {
