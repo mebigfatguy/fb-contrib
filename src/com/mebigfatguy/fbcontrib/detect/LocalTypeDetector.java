@@ -21,7 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import static com.mebigfatguy.fbcontrib.utils.OpcodeUtils.isALoad;
 import static com.mebigfatguy.fbcontrib.utils.OpcodeUtils.isAStore;
-import static com.mebigfatguy.fbcontrib.utils.OpcodeUtils.isInvokeInterfaceSpecialStaticOrVirtual;
+import static com.mebigfatguy.fbcontrib.utils.OpcodeUtils.isStandardInvoke;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -176,7 +176,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
             }
 
             if (suspectLocals.size() > 0) {
-                if (isInvokeInterfaceSpecialStaticOrVirtual(seen)) {
+                if (isStandardInvoke(seen)) {
                     String sig = getSigConstantOperand();
                     int argCount = Type.getArgumentTypes(sig).length;
                     if (stack.getStackDepth() >= argCount) {

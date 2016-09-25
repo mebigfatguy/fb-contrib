@@ -113,7 +113,7 @@ public class OpcodeUtils implements Constants {
         return INVOKE_OPS.get(seen);
     }
 
-    public static boolean isInvokeInterfaceSpecialStaticOrVirtual(int seen) {
+    public static boolean isStandardInvoke(int seen) {
         return (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC);
     }
 

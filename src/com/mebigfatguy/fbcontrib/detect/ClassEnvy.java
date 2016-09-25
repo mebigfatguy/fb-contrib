@@ -144,7 +144,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
             return;
         }
 
-        clsAccessCount = new HashMap<String, BitSet>();
+        clsAccessCount = new HashMap<>();
         super.visitCode(obj);
 
         if (clsAccessCount.size() > 0) {
@@ -182,7 +182,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (OpcodeUtils.isInvoke(seen)) {
+            if (OpcodeUtils.isStandardInvoke(seen)) {
                 String calledClass = getClassConstantOperand().replace('/', '.');
 
                 if (seen == INVOKEINTERFACE) {
