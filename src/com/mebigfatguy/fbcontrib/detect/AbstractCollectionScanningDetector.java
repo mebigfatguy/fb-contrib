@@ -52,6 +52,7 @@ public class AbstractCollectionScanningDetector extends BytecodeScanningDetector
      * @param classContext
      *            the context object of the currently parsed class
      */
+    @Override
     public void visitClassContext(ClassContext classContext) {
         if (collectionClass == null) {
             if (ex != null) {
