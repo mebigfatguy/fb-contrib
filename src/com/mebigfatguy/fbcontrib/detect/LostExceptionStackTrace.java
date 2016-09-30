@@ -98,8 +98,8 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
         try {
             if ((throwableClass != null) && !isPre14Class(classContext.getJavaClass())) {
                 stack = new OpcodeStack();
-                catchInfos = new HashSet<CatchInfo>();
-                exReg = new HashMap<Integer, Boolean>();
+                catchInfos = new HashSet<>();
+                exReg = new HashMap<>();
                 super.visitClassContext(classContext);
             }
         } finally {
@@ -159,7 +159,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
      * @return the filtered exceptions
      */
     public CodeException[] collectExceptions(CodeException... exs) {
-        List<CodeException> filteredEx = new ArrayList<CodeException>();
+        List<CodeException> filteredEx = new ArrayList<>();
         for (CodeException ce : exs) {
             if ((ce.getCatchType() != 0) && (ce.getStartPC() < ce.getEndPC()) && (ce.getEndPC() <= ce.getHandlerPC())) {
                 filteredEx.add(ce);
@@ -227,7 +227,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                             }
                         } else if (seen == INVOKEVIRTUAL) {
                             String methodName = getNameConstantOperand();
-                            if ("initCause".equals(methodName)) {
+                            if ("initCause".equals(methodName) || "addSuppressed".equals(methodName)) {
                                 String className = getClassConstantOperand();
                                 JavaClass exClass = Repository.lookupClass(className);
                                 if (exClass.instanceOf(throwableClass) && (stack.getStackDepth() > 1)) {
