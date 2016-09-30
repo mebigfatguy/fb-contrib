@@ -149,4 +149,14 @@ public class LEST_Sample {
     private static Exception wrapStatic(Exception e) {
         return new Exception(e);
     }
+
+    public void testFPSuppressedLest(String s) {
+        try {
+            double d = Double.parseDouble(s);
+        } catch (NumberFormatException e) {
+            RuntimeException r = new RuntimeException();
+            r.addSuppressed(e);
+            throw r;
+        }
+    }
 }
