@@ -305,6 +305,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.WiringIssues" speed="fast" reports="WI_DUPLICATE_WIRED_TYPES"/>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ConcurrentCollectionIssues" speed="fast" reports="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY"/>
+    
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -572,5 +574,5 @@
 	<BugPattern abbrev="DMC" type="DMC_DUBIOUS_MAP_COLLECTION" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="BL" type="BL_BURYING_LOGIC" category="STYLE" experimental="true" />
 	<BugPattern abbrev="WI" type="WI_DUPLICATE_WIRED_TYPES" category="CORRECTNESS" experimental="true"/>
-	
+	<BugPattern abbrev="CCI" type="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY" category="CORRECTNESS" experimental="true"/>
 </FindbugsPlugin>

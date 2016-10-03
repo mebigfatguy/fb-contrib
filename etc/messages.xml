@@ -1628,6 +1628,15 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 	    	]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ConcurrentCollectionIssues">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for problems with using concurrent collecctions</p>
+    		<p>It is a fast detector.</p>
+    		]]>	
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5568,6 +5577,22 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY">
+    	<ShortDescription>Method gets and sets a value of a ConcurrentHashMap in a racy manner</ShortDescription>
+    	<LongDescription>Method {1} gets and sets a value of a ConcurrentHashMap in a racy manner </LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method retrieves the value of a key from a ConcurrentHashMap, where the value is itself a collection. It checks this
+    		value for null, and if it is so, creates a new collection and places in the map. This may cause thread race conditions
+    		where two threads overwrite each other's values. You should be using
+    		<code>
+    			ConcurrentHashMap.putIfAbsent(K, V)
+    		</code>
+    		instead.
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5705,4 +5730,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="DMC">Dubious Map Collection</BugCode>
 	<BugCode abbrev="BL">Burying Logic</BugCode>
 	<BugCode abbrev="WI">Wiring issues</BugCode>
+	<BugCode abbrev="CCI">Concurrent Collection Issues</BugCode>
 </MessageCollection>
