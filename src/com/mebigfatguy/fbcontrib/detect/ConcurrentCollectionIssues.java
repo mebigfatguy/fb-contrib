@@ -22,7 +22,9 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 
@@ -37,8 +39,11 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
+    private JavaClass collectionClass;
+    private JavaClass mapClass;
     private OpcodeStack stack;
     private Map<String, CCIUserValue> fieldUserValues;
+    private int endNullCheckPC;
 
     private enum CCIUserValue {
         CONCURRENT_HASHMAP, CONCURRENT_HASHMAP_VALUE;
@@ -52,6 +57,13 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
      */
     public ConcurrentCollectionIssues(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            collectionClass = Repository.lookupClass("java/util/Collection");
+            mapClass = Repository.lookupClass("java/util/Map");
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
     }
 
     /**
@@ -62,7 +74,11 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
+
         try {
+            if ((collectionClass == null) || (mapClass == null)) {
+                return;
+            }
             stack = new OpcodeStack();
             fieldUserValues = new HashMap<>();
             classContext.getJavaClass().accept(this);
@@ -81,6 +97,8 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
+        endNullCheckPC = -1;
+
         super.visitCode(obj);
     }
 
@@ -110,13 +128,18 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
                             }
                         }
                     } else if ("put".equals(getNameConstantOperand())) {
-                        if (stack.getStackDepth() >= 3) {
+                        if ((endNullCheckPC > getPC()) && (stack.getStackDepth() >= 3)) {
                             OpcodeStack.Item mapItem = stack.getStackItem(2);
-                            OpcodeStack.Item valueItem = stack.getStackItem(0);
 
                             if (mapItem.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
+                                OpcodeStack.Item valueItem = stack.getStackItem(0);
+                                JavaClass valueClass = valueItem.getJavaClass();
+                                if (valueClass.instanceOf(collectionClass) || valueClass.instanceOf(mapClass)) {
+
+                                    bugReporter
+                                            .reportBug(new BugInstance(this, BugType.CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY.name(), NORMAL_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                }
                             }
                         }
                     }
@@ -135,13 +158,28 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
                 case GETSTATIC:
                     userValue = fieldUserValues.get(getNameConstantOperand());
                 break;
+
+                case IFNONNULL:
+                    if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (itm.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP_VALUE) {
+                            endNullCheckPC = getBranchTarget();
+                        }
+                    }
+                break;
             }
 
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
         } finally {
             stack.sawOpcode(this, seen);
             if ((userValue != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(userValue);
+            }
+
+            if (getPC() >= endNullCheckPC) {
+                endNullCheckPC = -1;
             }
         }
     }
