@@ -150,7 +150,11 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
                     if (stack.getStackDepth() >= 1) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         CCIUserValue uv = (CCIUserValue) itm.getUserValue();
-                        fieldUserValues.put(getNameConstantOperand(), uv);
+                        if (uv != null) {
+                            fieldUserValues.put(getNameConstantOperand(), uv);
+                        } else {
+                            fieldUserValues.remove(getNameConstantOperand());
+                        }
                     }
                 break;
 
