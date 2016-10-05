@@ -282,30 +282,28 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                 MethodCall mc = null;
                 String fieldSource = null;
 
-                if (seen != INVOKESTATIC) {
-                    if (stack.getStackDepth() > parmCount) {
-                        OpcodeStack.Item obj = stack.getStackItem(parmCount);
-                        reg = obj.getRegisterNumber();
-                        field = obj.getXField();
+                if ((seen != INVOKESTATIC) && (stack.getStackDepth() > parmCount)) {
+                    OpcodeStack.Item obj = stack.getStackItem(parmCount);
+                    reg = obj.getRegisterNumber();
+                    field = obj.getXField();
 
-                        if (reg >= 0) {
-                            mc = localMethodCalls.get(Integer.valueOf(reg));
-                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, getNameConstantOperand(), signature);
-                            if ((mi != null) && mi.getModifiesState()) {
-                                clearFieldMethods(String.valueOf(reg));
-                                return;
-                            }
-                        } else if (field != null) {
-                            fieldSource = (String) obj.getUserValue();
-                            if (fieldSource == null) {
-                                fieldSource = "";
-                            }
-                            mc = fieldMethodCalls.get(fieldSource + ':' + field.getName());
-                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, getNameConstantOperand(), signature);
-                            if ((mi != null) && mi.getModifiesState()) {
-                                clearFieldMethods(fieldSource);
-                                return;
-                            }
+                    if (reg >= 0) {
+                        mc = localMethodCalls.get(Integer.valueOf(reg));
+                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, getNameConstantOperand(), signature);
+                        if ((mi != null) && mi.getModifiesState()) {
+                            clearFieldMethods(String.valueOf(reg));
+                            return;
+                        }
+                    } else if (field != null) {
+                        fieldSource = (String) obj.getUserValue();
+                        if (fieldSource == null) {
+                            fieldSource = "";
+                        }
+                        mc = fieldMethodCalls.get(fieldSource + ':' + field.getName());
+                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, getNameConstantOperand(), signature);
+                        if ((mi != null) && mi.getModifiesState()) {
+                            clearFieldMethods(fieldSource);
+                            return;
                         }
                     }
                 }

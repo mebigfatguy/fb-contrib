@@ -151,14 +151,12 @@ public class LoggerOddities extends BytecodeScanningDetector {
             } else if (seen == INVOKESTATIC) {
                 lookForSuspectClasses();
 
-                if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand()) && "format".equals(getNameConstantOperand())) {
-                    if (stack.getStackDepth() >= 2) {
-                        String format = (String) stack.getStackItem(1).getConstant();
-                        if (format != null) {
-                            Matcher m = NON_SIMPLE_FORMAT.matcher(format);
-                            if (!m.matches()) {
-                                simpleFormat = Boolean.TRUE;
-                            }
+                if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand()) && "format".equals(getNameConstantOperand()) && (stack.getStackDepth() >= 2)) {
+                    String format = (String) stack.getStackItem(1).getConstant();
+                    if (format != null) {
+                        Matcher m = NON_SIMPLE_FORMAT.matcher(format);
+                        if (!m.matches()) {
+                            simpleFormat = Boolean.TRUE;
                         }
                     }
                 }
