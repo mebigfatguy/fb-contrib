@@ -119,11 +119,9 @@ public class ImmatureClass extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL) {
-            if ("printStackTrace".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
-                bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this));
-            }
+        if ((seen == INVOKEVIRTUAL) && "printStackTrace".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+            bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                    .addSourceLine(this));
         }
     }
 
