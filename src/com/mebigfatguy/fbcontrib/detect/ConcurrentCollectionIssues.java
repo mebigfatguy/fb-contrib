@@ -105,6 +105,7 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for concurrent collection issue
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "We don't need or want to handle every opcode")
     @Override
     public void sawOpcode(int seen) {
         CCIUserValue userValue = null;
@@ -127,19 +128,17 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
                                 userValue = CCIUserValue.CONCURRENT_HASHMAP_VALUE;
                             }
                         }
-                    } else if ("put".equals(getNameConstantOperand())) {
-                        if ((endNullCheckPC > getPC()) && (stack.getStackDepth() >= 3)) {
-                            OpcodeStack.Item mapItem = stack.getStackItem(2);
+                    } else if ("put".equals(getNameConstantOperand()) && (endNullCheckPC > getPC()) && (stack.getStackDepth() >= 3)) {
+                        OpcodeStack.Item mapItem = stack.getStackItem(2);
 
-                            if (mapItem.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP) {
-                                OpcodeStack.Item valueItem = stack.getStackItem(0);
-                                JavaClass valueClass = valueItem.getJavaClass();
-                                if (valueClass.instanceOf(collectionClass) || valueClass.instanceOf(mapClass)) {
+                        if (mapItem.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP) {
+                            OpcodeStack.Item valueItem = stack.getStackItem(0);
+                            JavaClass valueClass = valueItem.getJavaClass();
+                            if (valueClass != null && (valueClass.instanceOf(collectionClass) || valueClass.instanceOf(mapClass))) {
 
-                                    bugReporter
-                                            .reportBug(new BugInstance(this, BugType.CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY.name(), NORMAL_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
-                                }
+                                bugReporter
+                                        .reportBug(new BugInstance(this, BugType.CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
                     }
