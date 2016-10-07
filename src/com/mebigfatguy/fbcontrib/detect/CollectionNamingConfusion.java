@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -50,7 +51,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
         try {
             MAP_CLASS = Repository.lookupClass("java/util/Map");
             SET_CLASS = Repository.lookupClass("java/util/Set");
-            LIST_CLASS = Repository.lookupClass("java/util/List");
+            LIST_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_LIST);
             QUEUE_CLASS = Repository.lookupClass("java/util/Queue");
         } catch (ClassNotFoundException cnfe) {
             MAP_CLASS = null;

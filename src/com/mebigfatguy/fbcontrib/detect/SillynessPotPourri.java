@@ -72,7 +72,7 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
 @CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector {
 
-    private static final Set<String> collectionInterfaces = UnmodifiableSet.create("java/util/Collection", "java/util/List", "java/util/Set",
+    private static final Set<String> collectionInterfaces = UnmodifiableSet.create("java/util/Collection", Values.SLASHED_JAVA_UTIL_LIST, "java/util/Set",
             "java/util/SortedSet", "java/util/Map", "java/util/SortedMap");
 
     private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create("java.lang.StringBuffer", "java.lang.StringBuilder");
@@ -93,7 +93,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         }
     }
 
-    private static Map<QMethod, Integer> methodsThatAreSillyOnStringLiterals = new HashMap<QMethod, Integer>();
+    private static Map<QMethod, Integer> methodsThatAreSillyOnStringLiterals = new HashMap<>();
 
     static {
         methodsThatAreSillyOnStringLiterals.put(new QMethod("toLowerCase", "()Ljava/lang/String;"), Values.ZERO);
@@ -125,7 +125,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
      */
     public SillynessPotPourri(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        toStringClasses = new HashSet<String>();
+        toStringClasses = new HashSet<>();
     }
 
     @Override
@@ -140,8 +140,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         try {
             stack = new OpcodeStack();
             lastPCs = new int[4];
-            branchTargets = new HashMap<Integer, BitSet>();
-            trimLocations = new HashMap<SPPUserValue, Integer>();
+            branchTargets = new HashMap<>();
+            trimLocations = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -906,7 +906,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                             new BugInstance(this, BugType.SPP_USE_CONTAINSKEY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
-        } else if ("java/util/List".equals(className)) {
+        } else if (Values.SLASHED_JAVA_UTIL_LIST.equals(className)) {
             String method = getNameConstantOperand();
             if ("iterator".equals(method)) {
                 userValue = new SPPUserValue(SPPMethod.ITERATOR);
@@ -974,7 +974,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     private boolean looksLikeStaticFieldValue(String constant) {
         if (staticConstants == null) {
-            staticConstants = new HashSet<String>();
+            staticConstants = new HashSet<>();
 
             Field[] fields = getClassContext().getJavaClass().getFields();
             for (Field f : fields) {

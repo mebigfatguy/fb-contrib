@@ -189,7 +189,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
                         break;
 
                         case INVOKEVIRTUAL:
-                            if ("java/util/List".equals(getClassConstantOperand())) {
+                            if (Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())) {
                                 String methodName = getNameConstantOperand();
                                 if ("get".equals(methodName)) {
                                     if (state == State.SAW_CONSTANT_0) {

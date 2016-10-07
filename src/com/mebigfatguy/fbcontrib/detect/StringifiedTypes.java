@@ -43,20 +43,20 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class StringifiedTypes extends BytecodeScanningDetector {
 
-    private static Map<FQMethod, int[]> COLLECTION_PARMS = new HashMap<FQMethod, int[]>();
+    private static Map<FQMethod, int[]> COLLECTION_PARMS = new HashMap<>();
 
     static {
         int[] parm0 = new int[] { 0 };
         int[] parm0N1 = new int[] { -1, 0 };
         int[] parm01N1 = new int[] { -1, 0, 1 };
 
-        COLLECTION_PARMS.put(new FQMethod("java/util/List", "contains", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod("java/util/List", "add", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod("java/util/List", "remove", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod("java/util/List", "set", "(ILjava/lang/Object;)Ljava/lang/Object;"), parm0N1);
-        COLLECTION_PARMS.put(new FQMethod("java/util/List", "add", "(ILjava/lang/Object;)V"), parm0);
-        COLLECTION_PARMS.put(new FQMethod("java/util/List", "indexOf", "(Ljava/lang/Object;)I"), parm0);
-        COLLECTION_PARMS.put(new FQMethod("java/util/List", "lastIndexOf", "(Ljava/lang/Object;)I"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "contains", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "add", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "remove", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "set", "(ILjava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "add", "(ILjava/lang/Object;)V"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "indexOf", "(Ljava/lang/Object;)I"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "lastIndexOf", "(Ljava/lang/Object;)I"), parm0);
 
         COLLECTION_PARMS.put(new FQMethod("java/util/Set", "contains", "(Ljava/lang/Object;)Z"), parm0);
         COLLECTION_PARMS.put(new FQMethod("java/util/Set", "add", "(Ljava/lang/Object;)Z"), parm0);
@@ -70,7 +70,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         COLLECTION_PARMS.put(new FQMethod("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
     }
 
-    private static final Map<String, Integer> STRING_PARSE_METHODS = new HashMap<String, Integer>();
+    private static final Map<String, Integer> STRING_PARSE_METHODS = new HashMap<>();
 
     static {
         STRING_PARSE_METHODS.put("indexOf", Values.NORMAL_BUG_PRIORITY);
@@ -150,7 +150,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                                     }
                                 }
                             }
-                        } else if (stackDepth > 1 && "setLength".equals(methodName)) {
+                        } else if ((stackDepth > 1) && "setLength".equals(methodName)) {
                             OpcodeStack.Item item = stack.getStackItem(1);
                             item.setUserValue(null);
                             int reg = item.getRegisterNumber();

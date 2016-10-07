@@ -65,8 +65,8 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            mapBugs = new ArrayList<BugInstance>();
-            setBugs = new ArrayList<BugInstance>();
+            mapBugs = new ArrayList<>();
+            setBugs = new ArrayList<>();
             hasMapComparator = false;
             hasSetComparator = false;
             super.visitClassContext(classContext);
@@ -147,7 +147,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
                     found = true;
                 }
             }
-        } else if ("java/util/List".equals(className) && "contains".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)
+        } else if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "contains".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)
                 && (stack.getStackDepth() > 0)) {
             OpcodeStack.Item itm = stack.getStackItem(0);
             String pushedSig = itm.getSignature();

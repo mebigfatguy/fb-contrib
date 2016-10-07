@@ -46,8 +46,8 @@ import edu.umd.cs.findbugs.ba.XField;
  * creating a separate class, which defines the different types required, and add an instance of that class to the collection, or array.
  */
 public class UnrelatedCollectionContents extends BytecodeScanningDetector {
-    private static final Set<String> COLLECTION_CLASSES = UnmodifiableSet.create("java/util/Collection", "java/util/List", "java/util/Map", "java/util/Set",
-            "java/util/SortedMap", "java/util/SortedSet");
+    private static final Set<String> COLLECTION_CLASSES = UnmodifiableSet.create("java/util/Collection", Values.SLASHED_JAVA_UTIL_LIST, "java/util/Map",
+            "java/util/Set", "java/util/SortedMap", "java/util/SortedSet");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;

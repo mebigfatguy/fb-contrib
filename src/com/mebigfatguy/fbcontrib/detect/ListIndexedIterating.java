@@ -27,6 +27,8 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.Values;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -35,10 +37,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for for loops that iterate over a java.util.List using an integer
- * index, and get, rather than using an Iterator. An iterator may perform better
- * depending List implementation, but more importantly will allow the code to be
- * converted to other collections type.
+ * looks for for loops that iterate over a java.util.List using an integer index, and get, rather than using an Iterator. An iterator may perform better
+ * depending List implementation, but more importantly will allow the code to be converted to other collections type.
  */
 public class ListIndexedIterating extends BytecodeScanningDetector {
     enum State {
@@ -81,7 +81,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            possibleForLoops = new HashSet<ForLoop>();
+            possibleForLoops = new HashSet<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -135,10 +135,11 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(final int seen) {
-        if (stage == Stage.FIND_LOOP_STAGE)
+        if (stage == Stage.FIND_LOOP_STAGE) {
             sawOpcodeLoop(seen);
-        else
+        } else {
             sawOpcodeBug(seen);
+        }
     }
 
     /**
@@ -152,26 +153,26 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
             stack.mergeJumps(this);
 
             switch (state) {
-            case SAW_NOTHING:
-                if ((seen == IINC) && (getIntConstant() == 1)) {
-                    loopReg = getRegisterOperand();
-                    state = State.SAW_IINC;
-                }
+                case SAW_NOTHING:
+                    if ((seen == IINC) && (getIntConstant() == 1)) {
+                        loopReg = getRegisterOperand();
+                        state = State.SAW_IINC;
+                    }
                 break;
 
-            case SAW_IINC:
-                if ((seen == GOTO) || (seen == GOTO_W)) {
-                    int branchTarget = getBranchTarget();
-                    int pc = getPC();
-                    if (branchTarget < pc) {
-                        possibleForLoops.add(new ForLoop(branchTarget, pc, loopReg));
+                case SAW_IINC:
+                    if ((seen == GOTO) || (seen == GOTO_W)) {
+                        int branchTarget = getBranchTarget();
+                        int pc = getPC();
+                        if (branchTarget < pc) {
+                            possibleForLoops.add(new ForLoop(branchTarget, pc, loopReg));
+                        }
                     }
-                }
-                state = State.SAW_NOTHING;
+                    state = State.SAW_NOTHING;
                 break;
             }
 
-            if ((seen == INVOKEINTERFACE) && "java/util/List".equals(getClassConstantOperand()) && "size".equals(getNameConstantOperand())
+            if ((seen == INVOKEINTERFACE) && Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand()) && "size".equals(getNameConstantOperand())
                     && "()I".equals(getSigConstantOperand())) {
                 sawListSize = true;
             }
@@ -194,73 +195,74 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
             while (it.hasNext()) {
                 ForLoop fl = it.next();
                 switch (fl.getLoopState()) {
-                case LOOP_NOT_STARTED:
-                    if (getPC() == fl.getLoopStart()) {
-                        if ((seen == ILOAD) || ((seen >= ILOAD_0) && (seen <= ILOAD_3))
-                                && (getReg(seen, ILOAD, ILOAD_0) == fl.getLoopReg())) {
-                            fl.setLoopState(LoopState.LOOP_INDEX_LOADED_FOR_TEST);
-                            continue;
+                    case LOOP_NOT_STARTED:
+                        if (getPC() == fl.getLoopStart()) {
+                            if ((seen == ILOAD) || (((seen >= ILOAD_0) && (seen <= ILOAD_3)) && (getReg(seen, ILOAD, ILOAD_0) == fl.getLoopReg()))) {
+                                fl.setLoopState(LoopState.LOOP_INDEX_LOADED_FOR_TEST);
+                                continue;
+                            }
+                            it.remove();
                         }
-                        it.remove();
-                    }
                     break;
 
-                case LOOP_INDEX_LOADED_FOR_TEST:
-                    if (getPC() >= fl.getLoopEnd()) {
-                        it.remove();
-                        continue;
-                    }
-                    if (seen == IF_ICMPGE) {
-                        if (stack.getStackDepth() > 1) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            if (itm.getConstant() != null) {
-                                it.remove();
+                    case LOOP_INDEX_LOADED_FOR_TEST:
+                        if (getPC() >= fl.getLoopEnd()) {
+                            it.remove();
+                            continue;
+                        }
+                        if (seen == IF_ICMPGE) {
+                            if (stack.getStackDepth() > 1) {
+                                OpcodeStack.Item itm = stack.getStackItem(0);
+                                if (itm.getConstant() != null) {
+                                    it.remove();
+                                    continue;
+                                }
+                            }
+                            int branchTarget = getBranchTarget();
+                            if ((branchTarget >= (fl.getLoopEnd() + 3)) && (branchTarget <= (fl.getLoopEnd() + 5))) {
+                                fl.setLoopState(LoopState.LOOP_IN_BODY);
                                 continue;
                             }
                         }
-                        int branchTarget = getBranchTarget();
-                        if ((branchTarget >= (fl.getLoopEnd() + 3)) && (branchTarget <= (fl.getLoopEnd() + 5))) {
-                            fl.setLoopState(LoopState.LOOP_IN_BODY);
-                            continue;
-                        }
-                    }
                     break;
 
-                case LOOP_IN_BODY:
-                case LOOP_IN_BODY_WITH_GET:
-                    if ((getPC() == fl.getLoopEnd()) && (fl.getLoopState() == LoopState.LOOP_IN_BODY_WITH_GET)) {
-                        bugReporter.reportBug(new BugInstance(this, "LII_LIST_INDEXED_ITERATING", NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLineRange(this, fl.getLoopStart(), fl.getLoopEnd()));
-                        it.remove();
-                    }
-                    if (getPC() > fl.getLoopEnd()) {
-                        it.remove();
-                    }
-
-                    if ((seen == ILOAD) || ((seen >= ILOAD_0) && (seen <= ILOAD_3))) {
-                        loopReg = getReg(seen, ILOAD, ILOAD_0);
-                        if (loopReg == fl.getLoopReg())
-                            fl.setLoopRegLoaded(true);
-                    } else if (fl.getLoopRegLoaded()) {
-                        boolean sawGet = ((seen == INVOKEINTERFACE) && "java/util/List".equals(getClassConstantOperand())
-                                && "get".equals(getNameConstantOperand()) && "(I)Ljava/lang/Object;".equals(getSigConstantOperand()));
-                        if (!sawGet) {
+                    case LOOP_IN_BODY:
+                    case LOOP_IN_BODY_WITH_GET:
+                        if ((getPC() == fl.getLoopEnd()) && (fl.getLoopState() == LoopState.LOOP_IN_BODY_WITH_GET)) {
+                            bugReporter.reportBug(new BugInstance(this, "LII_LIST_INDEXED_ITERATING", NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                    .addSourceLineRange(this, fl.getLoopStart(), fl.getLoopEnd()));
                             it.remove();
-                        } else {
-                            fl.setLoopState(LoopState.LOOP_IN_BODY_WITH_GET);
-                            if (stack.getStackDepth() > 1) {
-                                OpcodeStack.Item itm = stack.getStackItem(0);
-                                if (!itm.couldBeZero())
-                                    it.remove();
-                                else {
-                                    itm = stack.getStackItem(1);
-                                    if (fl.isSecondItem(itm))
-                                        it.remove();
-                                }
-                            }
-                            fl.setLoopRegLoaded(false);
                         }
-                    }
+                        if (getPC() > fl.getLoopEnd()) {
+                            it.remove();
+                        }
+
+                        if ((seen == ILOAD) || ((seen >= ILOAD_0) && (seen <= ILOAD_3))) {
+                            loopReg = getReg(seen, ILOAD, ILOAD_0);
+                            if (loopReg == fl.getLoopReg()) {
+                                fl.setLoopRegLoaded(true);
+                            }
+                        } else if (fl.getLoopRegLoaded()) {
+                            boolean sawGet = ((seen == INVOKEINTERFACE) && Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())
+                                    && "get".equals(getNameConstantOperand()) && "(I)Ljava/lang/Object;".equals(getSigConstantOperand()));
+                            if (!sawGet) {
+                                it.remove();
+                            } else {
+                                fl.setLoopState(LoopState.LOOP_IN_BODY_WITH_GET);
+                                if (stack.getStackDepth() > 1) {
+                                    OpcodeStack.Item itm = stack.getStackItem(0);
+                                    if (!itm.couldBeZero()) {
+                                        it.remove();
+                                    } else {
+                                        itm = stack.getStackItem(1);
+                                        if (fl.isSecondItem(itm)) {
+                                            it.remove();
+                                        }
+                                    }
+                                }
+                                fl.setLoopRegLoaded(false);
+                            }
+                        }
                     break;
                 }
             }
@@ -283,8 +285,9 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
      * @return the register operand for the instruction
      */
     private int getReg(final int seen, final int generalOp, final int zeroOp) {
-        if (seen == generalOp)
+        if (seen == generalOp) {
             return getRegisterOperand();
+        }
         return seen - zeroOp;
     }
 
@@ -399,19 +402,23 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
 
             int seenReg = loopCollectionItem.getRegisterNumber();
             if (seenReg >= 0) {
-                if (itm.getXField() != null)
+                if (itm.getXField() != null) {
                     return true;
+                }
                 int newReg = itm.getRegisterNumber();
-                if ((newReg >= 0) && (seenReg != newReg))
+                if ((newReg >= 0) && (seenReg != newReg)) {
                     return true;
+                }
             } else {
                 XField seenField = loopCollectionItem.getXField();
                 if (seenField != null) {
-                    if (itm.getRegisterNumber() >= 0)
+                    if (itm.getRegisterNumber() >= 0) {
                         return true;
+                    }
                     XField newField = itm.getXField();
-                    if ((newField != null) && (!newField.getName().equals(seenField.getName())))
+                    if ((newField != null) && (!newField.getName().equals(seenField.getName()))) {
                         return true;
+                    }
                 }
             }
 

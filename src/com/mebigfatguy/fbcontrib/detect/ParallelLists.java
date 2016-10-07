@@ -27,6 +27,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.Values;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -59,7 +61,7 @@ public class ParallelLists extends BytecodeScanningDetector {
         try {
             JavaClass cls = classContext.getJavaClass();
 
-            listFields = new HashSet<String>();
+            listFields = new HashSet<>();
             Field[] flds = cls.getFields();
             for (Field f : flds) {
                 String sig = f.getSignature();
@@ -75,7 +77,7 @@ public class ParallelLists extends BytecodeScanningDetector {
 
             if (listFields.size() > 0) {
                 stack = new OpcodeStack();
-                indexToFieldMap = new HashMap<Integer, String>();
+                indexToFieldMap = new HashMap<>();
                 super.visitClassContext(classContext);
             }
         } finally {
@@ -107,7 +109,7 @@ public class ParallelLists extends BytecodeScanningDetector {
                 String methodName = getNameConstantOperand();
                 String methodSig = getSigConstantOperand();
 
-                if ("java/util/List".equals(className) && "get".equals(methodName) && "(I)Ljava/lang/Object;".equals(methodSig)) {
+                if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "get".equals(methodName) && "(I)Ljava/lang/Object;".equals(methodSig)) {
                     checkParms();
                 }
             } else if ((seen >= IFEQ) && (seen <= RETURN)) {
@@ -149,8 +151,8 @@ public class ParallelLists extends BytecodeScanningDetector {
             if ((indexReg >= 0) && (field != null) && listFields.contains(field.getName())) {
                 String f = indexToFieldMap.get(Integer.valueOf(indexReg));
                 if ((f != null) && !f.equals(field.getName())) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, "PL_PARALLEL_LISTS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, getPC()));
+                    bugReporter
+                            .reportBug(new BugInstance(this, "PL_PARALLEL_LISTS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, getPC()));
                     listFields.remove(field.getName());
                     indexToFieldMap.clear();
                 } else {
