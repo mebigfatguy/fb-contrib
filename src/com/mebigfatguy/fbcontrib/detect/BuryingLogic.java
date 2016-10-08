@@ -209,7 +209,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLineRange(this, activeUnconditional.getStart(), activeUnconditional.getEnd()));
                         throw new StopOpcodeParsingException();
                     }
-                } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd())) {
+                } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd()) && !gotoAcrossPC(getNextPC())) {
                     activeUnconditional = ifBlocks.getFirst();
                 }
             } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
@@ -222,6 +222,12 @@ public class BuryingLogic extends BytecodeScanningDetector {
         } finally {
             stack.sawOpcode(this, seen);
         }
+    }
+
+    private boolean gotoAcrossPC(int pc) {
+
+        int target = gotoBranchPCs.previousSetBit(Integer.MAX_VALUE);
+        return (target > pc);
     }
 
     /**
