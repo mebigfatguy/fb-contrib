@@ -1276,9 +1276,9 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.BackportReusePublicIdentifiers">
 		<Details>
 			<![CDATA[
-			<p>Detects use of Backport Utils concurrent classes. Updated/efficient versions of these
-			classes are available in versions of the JDK 5.0 and higher, and these
-			classes should only be used if you are targeting JDK 1.4 and lower.</p>
+			<p>Detects use of Backport Utils concurrent classes from Emory, or Time classes from ThreeTen. Updated/efficient versions of
+			classes from emory are available in versions of the JDK 5.0 and higher, and in JDK 8.0 and higher for ThreeTen, and these
+			classes should only be used if you are targeting a JDK lower than this.</p>
 			<p>It is a fast detector.</p>
 			]]>
 		</Details>
@@ -4713,13 +4713,14 @@ if (name != null) {
 	</BugPattern>
 
 	<BugPattern type="BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS">
-		<ShortDescription>Method uses backport concurrency utils</ShortDescription>
-		<LongDescription>Method {1} backport concurrency utils</LongDescription>
+		<ShortDescription>Method uses backported libraries that are now built in</ShortDescription>
+		<LongDescription>Method {1} uses backported libraries that are now built in</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This class uses Backport Utils concurrent classes. Updated/Efficient version of these
-			classes are available in versions of the JDK 5.0 and higher, and these
-			classes should only be used if you are targeting JDK 1.4 and lower.</p>
+			<p>This class uses either Backport Utils concurrent classes from Emory, or Time classes from ThreeTen Backport. 
+			Updated/Efficient version of these classes are available in the version of the JDK that this code is compiled against; 
+			JDK 1.5 for the concurrent classes, and JDK 1.8 for the time classes, and these
+			classes should only be used if you are targeting a JDK lower than this.</p>
 			]]>
 		</Details>
 	</BugPattern>

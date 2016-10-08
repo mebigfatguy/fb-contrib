@@ -31,14 +31,24 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 
 /**
- * Detects use of Backport concurrent classes. Updated/Efficient version of these classes are available in versions of the JDK 5.0 and higher, and these classes
- * should only be used if you are targeting JDK 1.4 and lower.
+ * Detects use of backport libraries, when the code in question is compiled in a jdk that has the functionality available. Libraries include:
+ * <ul>
+ * <li>Use of Backport concurrent classes. Updated/Efficient version of these classes are available in versions of the JDK 5.0 and higher, and these classes
+ * should only be used if you are targeting JDK 1.4 and lower.</li>
+ * <li>Use of ThreeTen time backport classes, instead of java.time packages which are now available in JDK 8.0 and higher, and these classes should only be used
+ * if you are targeting JDK1.7 and lower
  *
- * Finds usage of classes from backport utils package.
  */
 public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
 
+    enum Library {
+        EMORY, THREETEN
+    };
+
+    private static final String EMORY_BACKPORT_PACKAGE = "edu/emory/mathcs/backport/";
+    private static final String THREETEN_BACKPORT_PACKAGE = "org/threeten/bp/";
     private final BugReporter bugReporter;
+    private int clsVersion;
 
     /**
      * constructs a BRPI detector given the reporter to report bugs on
@@ -59,13 +69,13 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
-        if (cls.getMajor() >= Constants.MAJOR_1_5) {
-            super.visitClassContext(classContext);
-        }
+        clsVersion = cls.getMajor();
+        super.visitClassContext(classContext);
     }
 
     /**
-     * overrides the visitor to look for method calls to the emory backport concurrent library when the now built in versions are available
+     * overrides the visitor to look for method calls to the emory backport concurrent library, or threeten bp library when the now built-in versions are
+     * available
      *
      * @param seen
      *            the currently parsed opcode
@@ -75,10 +85,18 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
         stack.precomputation(this);
 
         switch (seen) {
-            case INVOKESTATIC: {
+            case INVOKESTATIC:
+            case INVOKEVIRTUAL:
+            case INVOKEINTERFACE: {
                 String className = getClassConstantOperand();
-                if (className.startsWith("edu/emory/mathcs/backport/")) {
-                    reportBug();
+                if (className.startsWith(EMORY_BACKPORT_PACKAGE)) {
+                    if (clsVersion >= Constants.MAJOR_1_5) {
+                        reportBug(Library.EMORY);
+                    }
+                } else if (className.startsWith(THREETEN_BACKPORT_PACKAGE)) {
+                    if (clsVersion >= Constants.MAJOR_1_8) {
+                        reportBug(Library.THREETEN);
+                    }
                 }
             }
             break;
@@ -86,8 +104,16 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
             case INVOKESPECIAL: {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
-                if (className.startsWith("edu/emory/mathcs/backport/") && Values.CONSTRUCTOR.equals(methodName)) {
-                    reportBug();
+                if (Values.CONSTRUCTOR.equals(methodName)) {
+                    if (className.startsWith(EMORY_BACKPORT_PACKAGE)) {
+                        if (clsVersion >= Constants.MAJOR_1_5) {
+                            reportBug(Library.EMORY);
+                        }
+                    } else if (className.startsWith(THREETEN_BACKPORT_PACKAGE)) {
+                        if (clsVersion >= Constants.MAJOR_1_8) {
+                            reportBug(Library.THREETEN);
+                        }
+                    }
                 }
             }
             break;
@@ -99,8 +125,8 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
     /**
      * issues a new bug at this location
      */
-    private void reportBug() {
+    private void reportBug(Library library) {
         bugReporter.reportBug(new BugInstance(this, BugType.BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                .addSourceLine(this));
+                .addSourceLine(this).addString(library.name()));
     }
 }
