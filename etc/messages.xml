@@ -5559,9 +5559,10 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<LongDescription>Method {1} buries logic to the right (indented) more than it needs to be</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>This method has an if statement where if the condition is false, it merely returns. The bulk of the logic
-    		is found in the if brace code. This unnecessarily obfuscates the logic of the method. It would be more readable
-    		if you inverted the logic of the if statement, and just returned if true.</p>
+    		<p>Looks for relatively large if blocks of code, where you unconditionally return from them, and then follow that with an unconditional 
+    		return of a small block. This places the bulk of the logic to the right indentation-wise, making it more difficult to read than needed. 
+    		It would be better to invert the logic of the if block, and immediately return, allowing the bulk of the logic to be move to the left, 
+    		for easier reading.</p>
     		]]>
     	</Details>
     </BugPattern>
