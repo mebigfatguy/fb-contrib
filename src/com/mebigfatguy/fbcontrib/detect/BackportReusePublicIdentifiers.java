@@ -127,6 +127,9 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
 
     /**
      * issues a new bug at this location
+     *
+     * @param library
+     *            the type of backport library that is in use
      */
     private void reportBug(Library library) {
         bugReporter.reportBug(new BugInstance(this, BugType.BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
