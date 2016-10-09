@@ -27,6 +27,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * a base detector class for when you need to precess collections, provides methods for checking collection attributes
+ */
 public class AbstractCollectionScanningDetector extends BytecodeScanningDetector {
     protected final JavaClass collectionClass;
     protected final BugReporter bugReporter;
