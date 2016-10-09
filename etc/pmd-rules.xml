@@ -6,6 +6,10 @@
   <description>
   Selected PMD rules for fb-contrib
   </description>
+    <rule ref="rulesets/java/Basic.xml">
+    <!-- these are used for readability -->
+    <exclude name="CollapsibleIfStatements"/>
+  </rule>
   <rule ref="rulesets/java/unnecessary.xml">
     <!-- these are used for readability -->
     <exclude name="UselessParentheses"/>
