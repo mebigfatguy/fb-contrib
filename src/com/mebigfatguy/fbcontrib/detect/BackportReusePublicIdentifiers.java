@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
  * should only be used if you are targeting JDK 1.4 and lower.</li>
  * <li>Use of ThreeTen time backport classes, instead of java.time packages which are now available in JDK 1.8 and higher, and these classes should only be used
  * if you are targeting JDK 1.7 and lower
- *
+ * </ul>
  */
 public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
 
