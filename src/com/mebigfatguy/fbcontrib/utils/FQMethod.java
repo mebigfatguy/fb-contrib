@@ -20,10 +20,10 @@ package com.mebigfatguy.fbcontrib.utils;
 
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
-@PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
 /**
  * holds information about a method that called, including class, method and signature
  */
+@PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
 public final class FQMethod {
     private String className;
     private String methodName;
