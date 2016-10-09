@@ -85,9 +85,7 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
         stack.precomputation(this);
 
         switch (seen) {
-            case INVOKESTATIC:
-            case INVOKEVIRTUAL:
-            case INVOKEINTERFACE: {
+            case INVOKESTATIC: {
                 String className = getClassConstantOperand();
                 if (className.startsWith(EMORY_BACKPORT_PACKAGE)) {
                     if (clsVersion >= Constants.MAJOR_1_5) {
