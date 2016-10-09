@@ -29,8 +29,11 @@ import java.util.Set;
  */
 public class ToString {
 
+    /**
+     * holds objects that have already been converted to string to avoid infinite loops in the toString generation
+     */
     private static class VisitedInfo {
-        Set<Integer> visited = new HashSet<Integer>();
+        Set<Integer> visited = new HashSet<>();
         int count = 0;
     }
 
