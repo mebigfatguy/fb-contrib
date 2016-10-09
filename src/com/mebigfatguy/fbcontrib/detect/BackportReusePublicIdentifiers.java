@@ -136,6 +136,9 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
                 .addSourceLine(this).addString(library.name()));
     }
 
+    /**
+     * describes a library that is a backport of a package that is now included in the jdk by default
+     */
     static class Backports {
 
         enum Library {
