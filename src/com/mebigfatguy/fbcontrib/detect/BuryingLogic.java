@@ -260,6 +260,9 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * represents the byte offset code range of code that is executed inside an if block
+     */
     static class IfBlock {
         private int start;
         private int end;

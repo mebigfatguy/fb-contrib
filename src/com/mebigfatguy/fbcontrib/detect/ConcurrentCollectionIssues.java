@@ -35,6 +35,12 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for various issues with concurrent collections including
+ * <ul>
+ * <li>calls to checking and inserting a collection into a key on null, instead of using putIfAbsent</li>
+ * </ul>
+ */
 @CustomUserValue
 public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
 
@@ -134,11 +140,10 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
                         if (mapItem.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP) {
                             OpcodeStack.Item valueItem = stack.getStackItem(0);
                             JavaClass valueClass = valueItem.getJavaClass();
-                            if (valueClass != null && (valueClass.instanceOf(collectionClass) || valueClass.instanceOf(mapClass))) {
+                            if ((valueClass != null) && (valueClass.instanceOf(collectionClass) || valueClass.instanceOf(mapClass))) {
 
-                                bugReporter
-                                        .reportBug(new BugInstance(this, BugType.CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY.name(), NORMAL_PRIORITY)
-                                                .addClass(this).addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
                     }
