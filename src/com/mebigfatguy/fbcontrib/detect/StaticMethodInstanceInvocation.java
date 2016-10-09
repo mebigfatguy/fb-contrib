@@ -64,7 +64,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            popStack = new ArrayList<PopInfo>();
+            popStack = new ArrayList<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -125,16 +125,15 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                 if (method.indexOf('$') < 0) {
                     PopInfo pInfo = popStack.get(0);
                     Type[] args = Type.getArgumentTypes(getSigConstantOperand());
-                    if (((args.length > 0) || (pInfo.popPC == (getPC() - 1)))
-                            && (args.length == (stack.getStackDepth() - pInfo.popDepth))
+                    if (((args.length > 0) || (pInfo.popPC == (getPC() - 1))) && (args.length == (stack.getStackDepth() - pInfo.popDepth))
                             && classDefinesStaticMethod(SignatureUtils.stripSignature(pInfo.popSignature))) {
                         int lineNumber = -1;
                         if (lineNumberTable != null) {
                             lineNumber = lineNumberTable.getSourceLine(getPC());
                         }
                         if (pInfo.popLineNum == lineNumber) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SMII_STATIC_METHOD_INSTANCE_INVOCATION.name(), NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.SMII_STATIC_METHOD_INSTANCE_INVOCATION.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
                         }
                         popStack.clear();
                     }
@@ -186,6 +185,9 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
         return classDefinesStaticMethod(cls.getSuperclassName());
     }
 
+    /**
+     * holds information about a POP instruction, what was popped, where it occurred, etc.
+     */
     static class PopInfo {
         int popPC;
         int popLineNum;
