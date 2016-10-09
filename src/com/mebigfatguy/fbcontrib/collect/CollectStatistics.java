@@ -40,6 +40,9 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * a first pass detector to collect various statistics used in second pass detectors.
+ */
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
     private static final Set<String> COMMON_METHOD_SIGS = UnmodifiableSet.create(
             //@formatter:off
@@ -59,10 +62,22 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     private Map<QMethod, Set<CalledMethod>> selfCallTree;
     private QMethod curMethod;
 
+    /**
+     * constructs a CollectStatistics detector which clears the singleton that holds the statistics for all classes parsed in the first pass.
+     *
+     * @param bugReporter
+     *            unused, but required by reflection contract
+     */
     public CollectStatistics(@SuppressWarnings("unused") BugReporter bugReporter) {
         Statistics.getStatistics().clear();
     }
 
+    /**
+     * implements the visitor to collect statistics on this class
+     *
+     * @param classContext
+     *            the currently class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -227,6 +242,9 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         return (annotations != null) && (annotations.length > 0);
     }
 
+    /**
+     * represents a method that is called, and whether it is in the super class
+     */
     static class CalledMethod {
         private QMethod callee;
         private boolean isSuper;

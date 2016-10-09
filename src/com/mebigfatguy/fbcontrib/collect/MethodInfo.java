@@ -22,6 +22,9 @@ import org.apache.bcel.Constants;
 
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
+/**
+ * represents statistics including attributes, mutability and sizes of a method
+ */
 public class MethodInfo {
 
     public static final int PUBLIC_USE = 1;
