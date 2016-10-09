@@ -19,10 +19,15 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.List;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.detect.BackportReusePublicIdentifiers.Backports.Library;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -33,20 +38,21 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 /**
  * Detects use of backport libraries, when the code in question is compiled in a jdk that has the functionality available. Libraries include:
  * <ul>
- * <li>Use of Backport concurrent classes. Updated/Efficient version of these classes are available in versions of the JDK 5.0 and higher, and these classes
+ * <li>Use of Backport concurrent classes. Updated/Efficient version of these classes are available in versions of the JDK 1.5 and higher, and these classes
  * should only be used if you are targeting JDK 1.4 and lower.</li>
- * <li>Use of ThreeTen time backport classes, instead of java.time packages which are now available in JDK 8.0 and higher, and these classes should only be used
- * if you are targeting JDK1.7 and lower
+ * <li>Use of ThreeTen time backport classes, instead of java.time packages which are now available in JDK 1.8 and higher, and these classes should only be used
+ * if you are targeting JDK 1.7 and lower
  *
  */
 public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
 
-    enum Library {
-        EMORY, THREETEN
-    };
+    private static final List<Backports> BACKPORTS = UnmodifiableList.create(
+    // @formatter:off
+        new Backports("edu/emory/mathcs/backport/", Constants.MAJOR_1_5, Library.EMORY),
+        new Backports("org/threeten/bp/", Constants.MAJOR_1_8, Library.THREETEN)
+    // @formatter:on
+    );
 
-    private static final String EMORY_BACKPORT_PACKAGE = "edu/emory/mathcs/backport/";
-    private static final String THREETEN_BACKPORT_PACKAGE = "org/threeten/bp/";
     private final BugReporter bugReporter;
     private int clsVersion;
 
@@ -87,13 +93,12 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
         switch (seen) {
             case INVOKESTATIC: {
                 String className = getClassConstantOperand();
-                if (className.startsWith(EMORY_BACKPORT_PACKAGE)) {
-                    if (clsVersion >= Constants.MAJOR_1_5) {
-                        reportBug(Library.EMORY);
-                    }
-                } else if (className.startsWith(THREETEN_BACKPORT_PACKAGE)) {
-                    if (clsVersion >= Constants.MAJOR_1_8) {
-                        reportBug(Library.THREETEN);
+                for (Backports backport : BACKPORTS) {
+                    if (className.startsWith(backport.getPathPrefix())) {
+                        if (clsVersion >= backport.getMinimumJDK()) {
+                            reportBug(backport.getLibrary());
+                            break;
+                        }
                     }
                 }
             }
@@ -102,19 +107,19 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
             case INVOKESPECIAL: {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
-                if (Values.CONSTRUCTOR.equals(methodName)) {
-                    if (className.startsWith(EMORY_BACKPORT_PACKAGE)) {
-                        if (clsVersion >= Constants.MAJOR_1_5) {
-                            reportBug(Library.EMORY);
-                        }
-                    } else if (className.startsWith(THREETEN_BACKPORT_PACKAGE)) {
-                        if (clsVersion >= Constants.MAJOR_1_8) {
-                            reportBug(Library.THREETEN);
+                for (Backports backport : BACKPORTS) {
+                    if (Values.CONSTRUCTOR.equals(methodName)) {
+                        if (className.startsWith(backport.getPathPrefix())) {
+                            if (clsVersion >= backport.getMinimumJDK()) {
+                                reportBug(backport.getLibrary());
+                                break;
+                            }
                         }
                     }
                 }
             }
             break;
+
             default:
             break;
         }
@@ -126,5 +131,41 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
     private void reportBug(Library library) {
         bugReporter.reportBug(new BugInstance(this, BugType.BRPI_BACKPORT_REUSE_PUBLIC_IDENTIFIERS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                 .addSourceLine(this).addString(library.name()));
+    }
+
+    static class Backports {
+
+        enum Library {
+            EMORY, THREETEN
+        };
+
+        private String pathPrefix;
+        private int minimumJDK;
+        private Library library;
+
+        public Backports(String pathPrefix, int minimumJDK, Library library) {
+            super();
+            this.pathPrefix = pathPrefix;
+            this.minimumJDK = minimumJDK;
+            this.library = library;
+        }
+
+        public String getPathPrefix() {
+            return pathPrefix;
+        }
+
+        public int getMinimumJDK() {
+            return minimumJDK;
+        }
+
+        public Library getLibrary() {
+            return library;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+
     }
 }
