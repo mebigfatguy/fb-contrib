@@ -94,7 +94,9 @@ function toggleBlock(divId, imgId)
             	</li>
             	<li><b>[WI] Wiring Issues</b><br/>
             	Looks for various issues around @Autowired/@Inject fields in DI classes
-            	<li>Injecting the same bean twice into the same class hierarchy, even with different field names</li>
+            	<ul>
+            		<li>Injecting the same bean twice into the same class hierarchy, even with different field names</li>
+            	</ul>
             	</li>
             	<li><b>[CCI] Concurrent Collection Issues</b><br/>
             	Looks for various issues around using concurrent collections including
