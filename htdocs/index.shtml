@@ -153,7 +153,7 @@ function toggleBlock(divId, imgId)
         	</ul>
         </div>
         <hr/>
-        <img id="v6_2_0_image" src="flip2.gif" onClick="toggleBlock('v6_2_0', 'v6_2_0_image');" align="top"/>
+        <img id="v6_2_0_image" src="flip1.gif" onClick="toggleBlock('v6_2_0', 'v6_2_0_image');" align="top"/>
         Detectors added in v6.2.0<br/>
         <div id="v6_2_0" style="display:none;">
         	<ul>
