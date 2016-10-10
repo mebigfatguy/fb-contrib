@@ -77,6 +77,14 @@ function toggleBlock(divId, imgId)
 		</div>
 
 		<hr/>
+        <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
+        Detectors added in git<br/>
+        <div id="git" style="display:none;">
+            <ul>
+            	<li>--none yet--</li>
+            </ul>
+        </div>  
+        <hr/>        
         <img id="git_image" src="flip2.gif" onClick="toggleBlock('v6_8_0', 'v6_8_0_image');" align="top"/>
         Detectors added in v6.8.0<br/>
         <div id="v6_8_0" style="display:block;">
