@@ -20,7 +20,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -30,7 +30,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-<!-- COMMENT OUT FOR RELEASE -->
+     COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -296,9 +296,7 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.SuboptimalExpressionOrder" speed="fast" reports="SEO_SUBOPTIMAL_EXPRESSION_ORDER"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.IOIssues" speed="fast" reports="IOI_DOUBLE_BUFFER_COPY,IOI_COPY_WITH_READER"/>
-    
-    <!-- COMMENT OUT FOR POINT RELEASE -->
-    
+        
     <Detector class="com.mebigfatguy.fbcontrib.detect.DubiousMapCollection" speed="fast" reports="DMC_DUBIOUS_MAP_COLLECTION"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BuryingLogic" speed="fast" reports="BL_BURYING_LOGIC"/>
@@ -307,6 +305,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConcurrentCollectionIssues" speed="fast" reports="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY"/>
     
+    <!-- COMMENT OUT FOR POINT RELEASE -->
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -571,8 +570,8 @@
 	<BugPattern abbrev="SEO" type="SEO_SUBOPTIMAL_EXPRESSION_ORDER" category="PERFORMANCE"/>
 	<BugPattern abbrev="IOI" type="IOI_DOUBLE_BUFFER_COPY" category="PERFORMANCE"/>
 	<BugPattern abbrev="IOI" type="IOI_COPY_WITH_READER" category="PERFORMANCE"/>
-	<BugPattern abbrev="DMC" type="DMC_DUBIOUS_MAP_COLLECTION" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="BL" type="BL_BURYING_LOGIC" category="STYLE" experimental="true" />
-	<BugPattern abbrev="WI" type="WI_DUPLICATE_WIRED_TYPES" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="CCI" type="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="DMC" type="DMC_DUBIOUS_MAP_COLLECTION" category="CORRECTNESS"/>
+	<BugPattern abbrev="BL" type="BL_BURYING_LOGIC" category="STYLE"/>
+	<BugPattern abbrev="WI" type="WI_DUPLICATE_WIRED_TYPES" category="CORRECTNESS"/>
+	<BugPattern abbrev="CCI" type="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY" category="CORRECTNESS"/>
 </FindbugsPlugin>

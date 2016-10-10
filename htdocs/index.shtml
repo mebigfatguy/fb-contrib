@@ -68,7 +68,7 @@ function toggleBlock(divId, imgId)
 			</li>
 			</ul>
 		</p>
-		<p style="font-weight: bold;">The latest version of fb-contrib is 6.6.3 available for download 
+		<p style="font-weight: bold;">The latest version of fb-contrib is 6.8.0 available for download 
 		<a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22fb-contrib%22">here</a>.</p>
 		<p style="font-weight: bold;">This version requires FindBugs 3.0.1 or better</p>
 		<p style="font-weight: bold;">Please note that active development for this project is now done on 
@@ -77,9 +77,9 @@ function toggleBlock(divId, imgId)
 		</div>
 
 		<hr/>
-        <img id="git_image" src="flip2.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
-        Detectors added in git<br/>
-        <div id="git" style="display:block;">
+        <img id="git_image" src="flip2.gif" onClick="toggleBlock('v6_8_0', 'v6_8_0_image');" align="top"/>
+        Detectors added in v6.8.0<br/>
+        <div id="v6_8_0" style="display:block;">
             <ul>
             	<li><b>[DMC] Dubious Map Collection</b><br/>
             	Looks for fields that are implementations of java.util.Map, but that are only ever iterated over. This probably means that this
