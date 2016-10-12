@@ -108,12 +108,9 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
         firstPC = -1;
         super.visitCode(obj);
         if ((xmlItemCount >= lowReportingThreshold) && (xmlConfidentCount > (lowReportingThreshold >> 1))) {
-            bugReporter
-                    .reportBug(
-                            new BugInstance(this, "CBX_CUSTOM_BUILT_XML",
-                                    (xmlItemCount >= highReportingThreshold) ? HIGH_PRIORITY
-                                            : (xmlItemCount >= midReportingThreshold) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this)
-                                                    .addSourceLine(this, firstPC));
+            bugReporter.reportBug(new BugInstance(this, "CBX_CUSTOM_BUILT_XML",
+                    (xmlItemCount >= highReportingThreshold) ? HIGH_PRIORITY : (xmlItemCount >= midReportingThreshold) ? NORMAL_PRIORITY : LOW_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this, firstPC));
 
         }
     }
@@ -178,6 +175,9 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * represents a text pattern that is likely to be an xml snippet, as well as how much confidence that the pattern is infact xml, versus something else.
+     */
     private static class XMLPattern {
         private Pattern pattern;
         private boolean confident;
