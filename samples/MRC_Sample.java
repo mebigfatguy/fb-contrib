@@ -20,22 +20,23 @@ public class MRC_Sample {
     }
 
     private double getTwoValuesFP(boolean b) {
-        if (b)
+        if (b) {
             return 1.0;
-        else
+        } else {
             return 0.0;
+        }
     }
 
     private String getTwoDupsBySwitch(int i) {
         switch (i) {
-        case 1:
-            return "Hello";
+            case 1:
+                return "Hello";
 
-        case 2:
-            return "Hello";
+            case 2:
+                return "Hello";
 
-        default:
-            return "Hello";
+            default:
+                return "Hello";
         }
     }
 
@@ -113,5 +114,13 @@ public class MRC_Sample {
     class QueryParam {
         QueryParam(String key, Object value) {
         }
+    }
+
+    private int fpOverload(int i) {
+        return 4;
+    }
+
+    private int fpOverload(short s) {
+        return 2;
     }
 }
