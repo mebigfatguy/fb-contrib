@@ -47,6 +47,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 
+    /**
+     * represents a local array that is stored, for wrapping a value
+     */
     static class WrapperInfo {
         int wrappedReg;
         boolean wasArg;
@@ -86,7 +89,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            wrappers = new HashMap<Integer, WrapperInfo>(10);
+            wrappers = new HashMap<>(10);
             super.visitClassContext(classContext);
         } finally {
             stack = null;
