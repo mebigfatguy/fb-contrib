@@ -19,10 +19,13 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -47,6 +50,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private Integer returnRegister;
     private Map<Integer, Object> registerConstants;
+    private Set<Method> overloadedMethods;
     private Object returnConstant;
     private int returnPC;
 
@@ -60,15 +64,24 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * implements the visitor to collect all methods that are overloads. These methods should be ignored, as you may differentiate constants based on parameter
+     * type, or value.
+     *
+     * @param classContext
+     *            the currently parsed class object
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
             registerConstants = new HashMap<>();
+            overloadedMethods = collectOverloadedMethods(classContext.getJavaClass());
             super.visitClassContext(classContext);
         } finally {
             stack = null;
             registerConstants = null;
+            overloadedMethods = null;
         }
     }
 
@@ -81,6 +94,11 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
+
+        if (overloadedMethods.contains(m)) {
+            return;
+        }
+
         int aFlags = m.getAccessFlags();
         if ((((aFlags & Constants.ACC_PRIVATE) != 0) || ((aFlags & Constants.ACC_STATIC) != 0)) && ((aFlags & Constants.ACC_SYNTHETIC) == 0)
                 && (!m.getSignature().endsWith(")Z"))) {
@@ -203,5 +221,39 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 item.setUserValue(Boolean.TRUE);
             }
         }
+    }
+
+    /**
+     * adds all methods of a class that are overloaded to a set. This method is O(nlogn) so for large classes might be slow. Assuming on average it's better
+     * than other choices. When a match is found in the j index, it is removed from the array, so it is not scanned with the i index
+     *
+     * @param cls
+     *            the class to look for overloaded methods
+     * @return the set of methods that are overloaded
+     */
+    private Set<Method> collectOverloadedMethods(JavaClass cls) {
+
+        Set<Method> overloads = new HashSet<>();
+
+        Method[] methods = cls.getMethods();
+        int numMethods = methods.length;
+
+        for (int i = 0; i < numMethods; i++) {
+            boolean foundOverload = false;
+
+            for (int j = i + 1; j < numMethods; j++) {
+
+                if (methods[i].getName().equals(methods[j].getName())) {
+                    overloads.add(methods[j]);
+                    methods[j--] = methods[--numMethods];
+                    foundOverload = true;
+                }
+            }
+            if (foundOverload) {
+                overloads.add(methods[i]);
+            }
+        }
+
+        return overloads;
     }
 }
