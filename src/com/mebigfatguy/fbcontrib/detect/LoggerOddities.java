@@ -151,7 +151,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
             } else if (seen == INVOKESTATIC) {
                 lookForSuspectClasses();
 
-                if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand()) && "format".equals(getNameConstantOperand()) && (stack.getStackDepth() >= 2)) {
+                if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand()) && "format".equals(getNameConstantOperand())
+                        && (stack.getStackDepth() >= 2)) {
                     String format = (String) stack.getStackItem(1).getConstant();
                     if (format != null) {
                         Matcher m = NON_SIMPLE_FORMAT.matcher(format);
@@ -217,8 +218,11 @@ public class LoggerOddities extends BytecodeScanningDetector {
             } else if (OpcodeUtils.isAStore(seen) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
-                if ((uv != null) && (uv.getType() == LOUserValue.LOType.METHOD_NAME) && "toString".equals(uv.getValue())) {
-                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.NULL, null));
+                if (uv != null) {
+                    if (((uv.getType() == LOUserValue.LOType.METHOD_NAME) && "toString".equals(uv.getValue()))
+                            || (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT)) {
+                        item.setUserValue(new LOUserValue<>(LOUserValue.LOType.NULL, null));
+                    }
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -529,7 +533,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
     static class LOUserValue<T> {
         enum LOType {
-            CLASS_NAME, METHOD_NAME, MESSAGE_REG, ARRAY_SIZE, NULL, SIMPLE_FORMAT
+            CLASS_NAME, METHOD_NAME, MESSAGE_REG, ARRAY_SIZE, SIMPLE_FORMAT, NULL
         };
 
         LOType type;
