@@ -264,6 +264,10 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     @SuppressWarnings("deprecation")
     private boolean codeEquals(Code child, Code parent) {
 
+        if (parent == null) {
+            return false;
+        }
+
         byte[] childBytes = child.getCode();
         byte[] parentBytes = parent.getCode();
 
