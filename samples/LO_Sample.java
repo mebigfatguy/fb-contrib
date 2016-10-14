@@ -100,6 +100,12 @@ public class LO_Sample {
         l3.error(String.format("The error was %s", poo));
     }
 
+    public void testFPReuseofSimpleFormatter(String poo) {
+        String s = String.format("The error was %s", poo);
+        l3.error(s);
+        throw new RuntimeException(s);
+    }
+
     public void testFPWrongNumberOfParms() {
         // no tag An additional exception argument is allowed if found
         l3.error("This is a problem {}", "hello", new IOException("Yikes"));
