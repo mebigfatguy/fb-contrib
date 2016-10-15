@@ -37,12 +37,25 @@ import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
+/**
+ * looks for various issues around @Autowired/@Inject fields in DI classes
+ * <ul>
+ * <li>Injecting the same bean twice into the same class hierarchy, even with different field names</li>
+ * </ul>
+ * </li>
+ */
 public class WiringIssues extends PreorderVisitor implements Detector {
 
     private static final String SPRING_AUTOWIRED = "Lorg/springframework/beans/factory/annotation/Autowired;";
     private static final String SPRING_QUALIFIER = "Lorg/springframework/beans/factory/annotation/Qualifier;";
     private BugReporter bugReporter;
 
+    /**
+     * constructs a WI detector given the reporter to report bugs on
+     *
+     * @param bugReporter
+     *            the sync of bug reports
+     */
     public WiringIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
@@ -103,6 +116,16 @@ public class WiringIssues extends PreorderVisitor implements Detector {
         // required by the interface, but not used
     }
 
+    /**
+     * loads all the types that are injected by @Autowired annotations in super classes
+     *
+     * @param cls
+     *            the class who's parents you want to load
+     * @param wiredFields
+     *            the collected map of autowired types
+     * @throws ClassNotFoundException
+     *             if a parent class can't be loaded
+     */
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Only a few cases need special handling")
     private void loadParentAutowireds(JavaClass cls, Map<WiringType, FieldAnnotation> wiredFields) throws ClassNotFoundException {
 
