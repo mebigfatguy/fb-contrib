@@ -33,7 +33,7 @@ public class CollectionUtils {
     static {
         try {
             LIST_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_LIST);
-            SET_CLASS = Repository.lookupClass("java/util/Set");
+            SET_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_SET);
             MAP_CLASS = Repository.lookupClass("java/util/Map");
         } catch (ClassNotFoundException cnfe) {
             // no bugReporter at present, so nothing to do

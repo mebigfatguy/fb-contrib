@@ -172,7 +172,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 if (("java/util/Map".equals(clsName)) && ("put".equals(methodName))
                         && ("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(signature))) {
                     bug = isEnum(1) && !isEnumCollection(2) && !alreadyReported(2);
-                } else if (("java/util/Set".equals(clsName)) && ("add".equals(methodName)) && ("(Ljava/lang/Object;)Z".equals(signature))) {
+                } else if ((Values.SLASHED_JAVA_UTIL_SET.equals(clsName)) && ("add".equals(methodName)) && ("(Ljava/lang/Object;)Z".equals(signature))) {
                     bug = isEnum(0) && !isEnumCollection(1) && !alreadyReported(1);
                 }
 

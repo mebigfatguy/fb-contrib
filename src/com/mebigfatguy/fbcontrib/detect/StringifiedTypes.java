@@ -58,9 +58,9 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "indexOf", "(Ljava/lang/Object;)I"), parm0);
         COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "lastIndexOf", "(Ljava/lang/Object;)I"), parm0);
 
-        COLLECTION_PARMS.put(new FQMethod("java/util/Set", "contains", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod("java/util/Set", "add", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod("java/util/Set", "remove", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "contains", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "add", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "remove", "(Ljava/lang/Object;)Z"), parm0);
 
         COLLECTION_PARMS.put(new FQMethod("java/util/Map", "containsKey", "(Ljava/lang/Object;)Z"), parm0);
         COLLECTION_PARMS.put(new FQMethod("java/util/Map", "containsValue", "(Ljava/lang/Object;)Z"), parm0);

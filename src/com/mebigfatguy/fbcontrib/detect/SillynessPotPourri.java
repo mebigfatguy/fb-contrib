@@ -72,8 +72,8 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
 @CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector {
 
-    private static final Set<String> collectionInterfaces = UnmodifiableSet.create("java/util/Collection", Values.SLASHED_JAVA_UTIL_LIST, "java/util/Set",
-            "java/util/SortedSet", "java/util/Map", "java/util/SortedMap");
+    private static final Set<String> collectionInterfaces = UnmodifiableSet.create("java/util/Collection", Values.SLASHED_JAVA_UTIL_LIST,
+            Values.SLASHED_JAVA_UTIL_SET, "java/util/SortedSet", "java/util/Map", "java/util/SortedMap");
 
     private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create("java.lang.StringBuffer", "java.lang.StringBuilder");
 
@@ -896,7 +896,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             if ("keySet".equals(method)) {
                 userValue = new SPPUserValue(SPPMethod.KEYSET);
             }
-        } else if ("java/util/Set".equals(className)) {
+        } else if (Values.SLASHED_JAVA_UTIL_SET.equals(className)) {
             String method = getNameConstantOperand();
             if ("contains".equals(method) && (stack.getStackDepth() >= 2)) {
                 OpcodeStack.Item item = stack.getStackItem(1);

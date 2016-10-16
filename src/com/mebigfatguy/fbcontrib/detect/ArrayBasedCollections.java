@@ -138,7 +138,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
                     found = true;
                 }
             }
-        } else if ("java/util/Set".equals(className) && "add".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)) {
+        } else if (Values.SLASHED_JAVA_UTIL_SET.equals(className) && "add".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)) {
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 String pushedSig = itm.getSignature();

@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -31,10 +32,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for uses of sets or keySets of maps that contain other collections. As
- * collection typically implement hashCode, equals and compareTo by iterating
- * the contents of the collection this can be costly from a performance point of
- * view.
+ * looks for uses of sets or keySets of maps that contain other collections. As collection typically implement hashCode, equals and compareTo by iterating the
+ * contents of the collection this can be costly from a performance point of view.
  */
 public class DubiousSetOfCollections extends BytecodeScanningDetector {
 
@@ -45,7 +44,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     static {
         try {
             collectionCls = Repository.lookupClass("java/util/Collection");
-            setCls = Repository.lookupClass("java/util/Set");
+            setCls = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_SET);
             mapCls = Repository.lookupClass("java/util/Map");
         } catch (ClassNotFoundException cnfe) {
             // np bugReporter yet, so ignore
@@ -66,8 +65,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     }
 
     /**
-     * implement the visitor to set up the opcode stack, and make sure that
-     * collection, set and map classes could be loaded.
+     * implement the visitor to set up the opcode stack, and make sure that collection, set and map classes could be loaded.
      *
      * @param clsContext
      *            the context object of the currently parsed class
@@ -75,8 +73,9 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext clsContext) {
         try {
-            if ((collectionCls == null) || (setCls == null) || (mapCls == null))
+            if ((collectionCls == null) || (setCls == null) || (mapCls == null)) {
                 return;
+            }
 
             stack = new OpcodeStack();
             super.visitClassContext(clsContext);
@@ -98,8 +97,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor look for adds to sets or puts to maps where the
-     * element to be added is a collection.
+     * implements the visitor look for adds to sets or puts to maps where the element to be added is a collection.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -123,10 +121,8 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
                                     .addMethod(this).addSourceLine(this));
                         }
                     }
-                } else if ("put".equals(methodName)
-                        && "(Ljava/lang/Object;LJava/lang/Object;)Ljava/lang/Object;".equals(signature)
-                        && isImplementationOf(clsName, setCls)
-                        && (stack.getStackDepth() > 2)) {
+                } else if ("put".equals(methodName) && "(Ljava/lang/Object;LJava/lang/Object;)Ljava/lang/Object;".equals(signature)
+                        && isImplementationOf(clsName, setCls) && (stack.getStackDepth() > 2)) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     JavaClass entryCls = item.getJavaClass();
                     if (isImplementationOf(entryCls, collectionCls)) {
@@ -154,8 +150,9 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     private boolean isImplementationOf(String clsName, JavaClass inf) {
 
         try {
-            if (clsName.startsWith("java/lang/"))
+            if (clsName.startsWith("java/lang/")) {
                 return false;
+            }
 
             JavaClass cls = Repository.lookupClass(clsName);
             return isImplementationOf(cls, inf);

@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 public class UnrelatedCollectionContents extends BytecodeScanningDetector {
     private static final Set<String> COLLECTION_CLASSES = UnmodifiableSet.create("java/util/Collection", Values.SLASHED_JAVA_UTIL_LIST, "java/util/Map",
-            "java/util/Set", "java/util/SortedMap", "java/util/SortedSet");
+            Values.SLASHED_JAVA_UTIL_SET, "java/util/SortedMap", "java/util/SortedSet");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;

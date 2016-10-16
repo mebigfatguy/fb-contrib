@@ -70,6 +70,8 @@ public class Values {
     public static final String SLASHED_JAVA_LANG_INTEGER = "java/lang/Integer";
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_LIST = "java/util/List";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_UTIL_SET = "java/util/Set";
 
     public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 
