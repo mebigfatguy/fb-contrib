@@ -306,6 +306,8 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConcurrentCollectionIssues" speed="fast" reports="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY"/>
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.UseTryWithResources" speed="fast" reports="UTWR_USE_TRY_WITH_RESOURCES"/>
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -574,4 +576,5 @@
 	<BugPattern abbrev="BL" type="BL_BURYING_LOGIC" category="STYLE"/>
 	<BugPattern abbrev="WI" type="WI_DUPLICATE_WIRED_TYPES" category="CORRECTNESS"/>
 	<BugPattern abbrev="CCI" type="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY" category="CORRECTNESS"/>
+	<BugPattern abbrev="UTWR" type="UTWR_USE_TRY_WITH_RESOURCES" category="STYLE" experimental="true"/>
 </FindbugsPlugin>

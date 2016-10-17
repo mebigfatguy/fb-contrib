@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.CodeException;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -31,6 +32,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class UseTryWithResources extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
+    private OpcodeStack stack;
 
     public UseTryWithResources(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -43,17 +45,28 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             int majorVersion = classContext.getJavaClass().getMajor();
 
             if (majorVersion >= MAJOR_1_7) {
+                stack = new OpcodeStack();
                 super.visitClassContext(classContext);
             }
         } finally {
-
+            stack = null;
         }
     }
 
     @Override
     public void visitCode(Code obj) {
         if (prescreen(obj)) {
+            stack.resetForMethodEntry(this);
             super.visitCode(obj);
+        }
+    }
+
+    @Override
+    public void sawOpcode(int seen) {
+        try {
+
+        } finally {
+            stack.sawOpcode(this, seen);
         }
     }
 

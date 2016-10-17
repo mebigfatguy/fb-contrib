@@ -1632,9 +1632,24 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConcurrentCollectionIssues">
     	<Details>
     		<![CDATA[
-    		<p>Looks for problems with using concurrent collecctions</p>
+    		<p>Looks for problems with using concurrent collections
+    		<ul>
+    			<li>Adding a collection as a value of Concurrent map, without the use of putIfAbsent</li>
+    		</ul>
+    		</p>
     		<p>It is a fast detector.</p>
     		]]>	
+    	</Details>
+    </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.UseTryWithResources">
+    	<Details>
+    		<![CDATA[
+    		<p>Looks for use of auto-closeable resources in JDK 7 or later that are not using
+    		the try-with-resources paradigm. To avoid problems, and ease the reader, use of try-with-resources 
+    		is recommended</p>
+    		<p>It is a fast detector.</p>
+    		]]>
     	</Details>
     </Detector>
 
@@ -5595,6 +5610,25 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="UTWR_USE_TRY_WITH_RESOURCES">
+    	<ShortDescription>Method manually handles closing an auto-closeable resource</ShortDescription>
+    	<LongDescription>Method {1} manually handles closing an auto-closeable resource</LongDescription>
+    	<Details>
+    		<![CDATA[[
+    		<p>This method allocates and uses a auto closeable resources. However it manually closes the resource in a finally block.
+    		While this is correct management, it doesn't rely on the Idiomatic way available to JDK 7 and above, and allows for possible
+    		subtle problems, and complicates the reading of code, by developers expecting the use of try-with-resources. 
+    		</p>
+    		<p>Switch to using try with resources, as:
+    		<pre>
+    		    try (InputStream is = getAStream()) {
+    		        useTheStream(is);
+    		    }
+    		</pre>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5733,4 +5767,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="BL">Burying Logic</BugCode>
 	<BugCode abbrev="WI">Wiring issues</BugCode>
 	<BugCode abbrev="CCI">Concurrent Collection Issues</BugCode>
+	<BugCode abbrev="UTWR">Use Try With Resources</BugCode>
 </MessageCollection>
