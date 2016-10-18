@@ -18,8 +18,15 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
+
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -33,6 +40,9 @@ public class UseTryWithResources extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
+    private Map<Integer, TryBlock> finallyBlocks;
+    private Map<Integer, Integer> regStoredPCs;
+    private int lastGoto;
 
     public UseTryWithResources(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -46,10 +56,14 @@ public class UseTryWithResources extends BytecodeScanningDetector {
 
             if (majorVersion >= MAJOR_1_7) {
                 stack = new OpcodeStack();
+                finallyBlocks = new HashMap<>();
+                regStoredPCs = new HashMap<>();
                 super.visitClassContext(classContext);
             }
         } finally {
             stack = null;
+            finallyBlocks = null;
+            regStoredPCs = null;
         }
     }
 
@@ -57,6 +71,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         if (prescreen(obj)) {
             stack.resetForMethodEntry(this);
+            regStoredPCs.clear();
+            lastGoto = -1;
             super.visitCode(obj);
         }
     }
@@ -64,24 +80,91 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
+            int pc = getPC();
+            Iterator<TryBlock> it = finallyBlocks.values().iterator();
+            while (it.hasNext()) {
+                TryBlock tb = it.next();
+                if (tb.getHandlerEndPC() < pc) {
+                    it.remove();
+                }
+            }
+            TryBlock tb = finallyBlocks.get(pc);
+            if (tb != null) {
+                if (lastGoto > -1) {
+                    tb.setHandlerEndPC(lastGoto);
+                }
+            }
 
+            if (OpcodeUtils.isAStore(seen)) {
+                regStoredPCs.put(Integer.valueOf(getRegisterOperand()), Integer.valueOf(pc));
+            }
+
+            lastGoto = (((seen == GOTO) || (seen == GOTO_W)) && (getBranchOffset() > 0)) ? getBranchTarget() : -1;
         } finally {
             stack.sawOpcode(this, seen);
         }
     }
 
     private boolean prescreen(Code obj) {
+        finallyBlocks.clear();
         CodeException[] ces = obj.getExceptionTable();
         if ((ces == null) || (ces.length == 0)) {
             return false;
         }
 
+        boolean hasFinally = false;
         for (CodeException ce : ces) {
             if (ce.getCatchType() == 0) {
-                return true;
+                finallyBlocks.put(Integer.valueOf(ce.getHandlerPC()), new TryBlock(ce.getStartPC(), ce.getEndPC(), ce.getHandlerPC()));
+                hasFinally = true;
             }
         }
 
-        return false;
+        return hasFinally;
+    }
+
+    @Override
+    public String toString() {
+        return ToString.build(this);
+    }
+
+    static class TryBlock {
+        private int startPC;
+        private int endPC;
+        private int handlerPC;
+        private int handlerEndPC;
+
+        public TryBlock(int startPC, int endPC, int handlerPC) {
+            super();
+            this.startPC = startPC;
+            this.endPC = endPC;
+            this.handlerPC = handlerPC;
+            this.handlerEndPC = Integer.MAX_VALUE;
+        }
+
+        public int getHandlerEndPC() {
+            return handlerEndPC;
+        }
+
+        public void setHandlerEndPC(int handlerEndPC) {
+            this.handlerEndPC = handlerEndPC;
+        }
+
+        public int getStartPC() {
+            return startPC;
+        }
+
+        public int getEndPC() {
+            return endPC;
+        }
+
+        public int getHandlerPC() {
+            return handlerPC;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
     }
 }
