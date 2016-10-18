@@ -20,7 +20,6 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.bcel.Repository;
@@ -48,16 +47,16 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     private JavaClass autoCloseableClass;
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private LinkedHashMap<Integer, TryBlock> finallyBlocks;
+    private Map<Integer, TryBlock> finallyBlocks;
     private Map<Integer, Integer> regStoredPCs;
-    private int lastGoto;
+    private int lastGotoPC;
     private int lastNullCheckedReg;
     private State state;
 
     public UseTryWithResources(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         try {
-            autoCloseableClass = Repository.lookupClass("java/lang/Autocloseable");
+            autoCloseableClass = Repository.lookupClass("java/lang/AutoCloseable");
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }
@@ -71,7 +70,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
 
             if (majorVersion >= MAJOR_1_7) {
                 stack = new OpcodeStack();
-                finallyBlocks = new LinkedHashMap<>();
+                finallyBlocks = new HashMap<>();
                 regStoredPCs = new HashMap<>();
                 super.visitClassContext(classContext);
             }
@@ -87,7 +86,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         if (prescreen(obj)) {
             stack.resetForMethodEntry(this);
             regStoredPCs.clear();
-            lastGoto = -1;
+            lastGotoPC = -1;
             state = State.SEEN_NOTHING;
             lastNullCheckedReg = -1;
             super.visitCode(obj);
@@ -107,8 +106,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             }
             TryBlock tb = finallyBlocks.get(pc);
             if (tb != null) {
-                if (lastGoto > -1) {
-                    tb.setHandlerEndPC(lastGoto);
+                if (lastGotoPC > -1) {
+                    tb.setHandlerEndPC(lastGotoPC);
                 }
             }
 
@@ -169,7 +168,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                 break;
             }
 
-            lastGoto = (((seen == GOTO) || (seen == GOTO_W)) && (getBranchOffset() > 0)) ? getBranchTarget() : -1;
+            lastGotoPC = (((seen == GOTO) || (seen == GOTO_W)) && (getBranchOffset() > 0)) ? getBranchTarget() : -1;
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         } finally {
