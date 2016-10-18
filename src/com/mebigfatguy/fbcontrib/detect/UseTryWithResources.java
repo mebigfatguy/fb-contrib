@@ -27,9 +27,11 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -45,18 +47,23 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     };
 
     private JavaClass autoCloseableClass;
+    private JavaClass throwableClass;
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Map<Integer, TryBlock> finallyBlocks;
     private Map<Integer, Integer> regStoredPCs;
     private int lastGotoPC;
     private int lastNullCheckedReg;
+    private int closeableReg;
+    private int bugPC;
+    private int closePC;
     private State state;
 
     public UseTryWithResources(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         try {
             autoCloseableClass = Repository.lookupClass("java/lang/AutoCloseable");
+            throwableClass = Repository.lookupClass("java/lang/Throwable");
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }
@@ -89,6 +96,9 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             lastGotoPC = -1;
             state = State.SEEN_NOTHING;
             lastNullCheckedReg = -1;
+            closeableReg = -1;
+            bugPC = -1;
+            closePC = -1;
             super.visitCode(obj);
         }
     }
@@ -111,6 +121,14 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                 }
             }
 
+            if (closePC >= pc) {
+                bugReporter.reportBug(new BugInstance(this, BugType.UTWR_USE_TRY_WITH_RESOURCES.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(this, bugPC));
+                closePC = -1;
+                closeableReg = -1;
+                bugPC = -1;
+            }
+
             if (OpcodeUtils.isAStore(seen)) {
                 regStoredPCs.put(Integer.valueOf(getRegisterOperand()), Integer.valueOf(pc));
             }
@@ -123,6 +141,19 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                         state = lastNullCheckedReg >= 0 ? State.SEEN_IFNULL : State.SEEN_NOTHING;
                     } else {
                         lastNullCheckedReg = -1;
+                    }
+
+                    if (((bugPC >= 0) && (seen == INVOKEVIRTUAL)) || (seen == INVOKEINTERFACE)) {
+                        if ("addSuppressed".equals(getNameConstantOperand()) && "Ljava/lang/Throwable;)V".equals(getSigConstantOperand())) {
+                            JavaClass cls = Repository.lookupClass(getClassConstantOperand());
+                            if (cls.implementationOf(throwableClass)) {
+
+                                closePC = -1;
+                                closeableReg = -1;
+                                bugPC = -1;
+
+                            }
+                        }
                     }
                 break;
 
@@ -148,18 +179,19 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                                 if (tb != null) {
                                     if (stack.getStackDepth() > 0) {
                                         OpcodeStack.Item itm = stack.getStackItem(0);
-                                        int closeableReg = itm.getRegisterNumber();
-                                        if (closeableReg >= 0) {
-                                            Integer storePC = regStoredPCs.get(closeableReg);
+                                        int reg = itm.getRegisterNumber();
+                                        if (reg >= 0) {
+                                            Integer storePC = regStoredPCs.get(Integer.valueOf(reg));
                                             if (storePC != null) {
                                                 if (storePC <= tb.getStartPC()) {
-                                                    // save this location off
+                                                    closeableReg = reg;
+                                                    bugPC = pc;
+                                                    closePC = tb.getHandlerEndPC();
                                                 }
                                             }
                                         }
                                     }
                                 }
-                                // wait to see if addSuppressedException is called
                             }
                         }
                     }
@@ -177,6 +209,10 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     }
 
     private boolean prescreen(Code obj) {
+        if (getMethod().isNative()) {
+            return false;
+        }
+
         finallyBlocks.clear();
         CodeException[] ces = obj.getExceptionTable();
         if ((ces == null) || (ces.length == 0)) {
@@ -186,7 +222,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         boolean hasFinally = false;
         for (CodeException ce : ces) {
             if (ce.getCatchType() == 0) {
-                finallyBlocks.put(Integer.valueOf(ce.getHandlerPC()), new TryBlock(ce.getStartPC(), ce.getEndPC(), ce.getHandlerPC()));
+                finallyBlocks.put(Integer.valueOf(ce.getHandlerPC()), new TryBlock(ce.getStartPC(), ce.getEndPC(), ce.getHandlerPC(), obj.getCode().length));
                 hasFinally = true;
             }
         }
@@ -221,12 +257,12 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         private int handlerPC;
         private int handlerEndPC;
 
-        public TryBlock(int startPC, int endPC, int handlerPC) {
+        public TryBlock(int startPC, int endPC, int handlerPC, int handlerEndPC) {
             super();
             this.startPC = startPC;
             this.endPC = endPC;
             this.handlerPC = handlerPC;
-            this.handlerEndPC = Integer.MAX_VALUE;
+            this.handlerEndPC = handlerEndPC;
         }
 
         public int getHandlerEndPC() {
