@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.apache.bcel.Repository;
@@ -47,7 +48,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     private JavaClass autoCloseableClass;
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private Map<Integer, TryBlock> finallyBlocks;
+    private LinkedHashMap<Integer, TryBlock> finallyBlocks;
     private Map<Integer, Integer> regStoredPCs;
     private int lastGoto;
     private int lastNullCheckedReg;
@@ -70,7 +71,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
 
             if (majorVersion >= MAJOR_1_7) {
                 stack = new OpcodeStack();
-                finallyBlocks = new HashMap<>();
+                finallyBlocks = new LinkedHashMap<>();
                 regStoredPCs = new HashMap<>();
                 super.visitClassContext(classContext);
             }
@@ -144,9 +145,21 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                             JavaClass cls = Repository.lookupClass(getClassConstantOperand());
                             if (cls.implementationOf(autoCloseableClass)) {
 
-                                // check if we are in a finally
-                                // check if lastNullCheckedReg was initialized before the try
-                                // save this location off
+                                tb = findEnclosingFinally(pc);
+                                if (tb != null) {
+                                    if (stack.getStackDepth() > 0) {
+                                        OpcodeStack.Item itm = stack.getStackItem(0);
+                                        int closeableReg = itm.getRegisterNumber();
+                                        if (closeableReg >= 0) {
+                                            Integer storePC = regStoredPCs.get(closeableReg);
+                                            if (storePC != null) {
+                                                if (storePC <= tb.getStartPC()) {
+                                                    // save this location off
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
                                 // wait to see if addSuppressedException is called
                             }
                         }
@@ -180,6 +193,22 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         }
 
         return hasFinally;
+    }
+
+    private TryBlock findEnclosingFinally(int pc) {
+        if (finallyBlocks.isEmpty()) {
+            return null;
+        }
+
+        TryBlock deepest = null;
+        for (TryBlock tb : finallyBlocks.values()) {
+            int handlerPC = tb.getHandlerPC();
+            if ((deepest == null) || ((handlerPC <= pc) && (deepest.getHandlerPC() < handlerPC))) {
+                deepest = tb;
+            }
+        }
+
+        return deepest;
     }
 
     @Override
