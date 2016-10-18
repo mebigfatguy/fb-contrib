@@ -22,8 +22,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -38,14 +40,26 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class UseTryWithResources extends BytecodeScanningDetector {
 
+    enum State {
+        SEEN_NOTHING, SEEN_IFNULL, SEEN_ALOAD
+    };
+
+    private JavaClass autoCloseableClass;
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Map<Integer, TryBlock> finallyBlocks;
     private Map<Integer, Integer> regStoredPCs;
     private int lastGoto;
+    private int lastNullCheckedReg;
+    private State state;
 
     public UseTryWithResources(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        try {
+            autoCloseableClass = Repository.lookupClass("java/lang/Autocloseable");
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
     }
 
     @Override
@@ -73,6 +87,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             stack.resetForMethodEntry(this);
             regStoredPCs.clear();
             lastGoto = -1;
+            state = State.SEEN_NOTHING;
+            lastNullCheckedReg = -1;
             super.visitCode(obj);
         }
     }
@@ -99,7 +115,50 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                 regStoredPCs.put(Integer.valueOf(getRegisterOperand()), Integer.valueOf(pc));
             }
 
+            switch (state) {
+                case SEEN_NOTHING:
+                    if ((seen == IFNULL) && (stack.getStackDepth() >= 1)) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        lastNullCheckedReg = itm.getRegisterNumber();
+                        state = lastNullCheckedReg >= 0 ? State.SEEN_IFNULL : State.SEEN_NOTHING;
+                    } else {
+                        lastNullCheckedReg = -1;
+                    }
+                break;
+
+                case SEEN_IFNULL:
+                    if (OpcodeUtils.isALoad(seen)) {
+                        if (lastNullCheckedReg == getRegisterOperand()) {
+                            state = State.SEEN_ALOAD;
+                        } else {
+                            state = State.SEEN_NOTHING;
+                            lastNullCheckedReg = -1;
+                        }
+
+                    }
+                break;
+
+                case SEEN_ALOAD:
+                    if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+                        if ("close".equals(getNameConstantOperand()) && ("()V".equals(getSigConstantOperand()))) {
+                            JavaClass cls = Repository.lookupClass(getClassConstantOperand());
+                            if (cls.implementationOf(autoCloseableClass)) {
+
+                                // check if we are in a finally
+                                // check if lastNullCheckedReg was initialized before the try
+                                // save this location off
+                                // wait to see if addSuppressedException is called
+                            }
+                        }
+                    }
+                    state = State.SEEN_NOTHING;
+                    lastNullCheckedReg = -1;
+                break;
+            }
+
             lastGoto = (((seen == GOTO) || (seen == GOTO_W)) && (getBranchOffset() > 0)) ? getBranchTarget() : -1;
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
         } finally {
             stack.sawOpcode(this, seen);
         }
