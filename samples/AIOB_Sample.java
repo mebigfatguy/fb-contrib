@@ -3,6 +3,7 @@ import java.util.List;
 public class AIOB_Sample {
     int[] fa = new int[4];
     int[] fb;
+    String[] unknownFields = new String[] {};
 
     public void testOutOfBounds() {
         int[] a = new int[4];
@@ -47,8 +48,9 @@ public class AIOB_Sample {
                 da[0] = 0.0;
             }
 
-            if (da == null)
+            if (da == null) {
                 da = new double[10];
+            }
         }
     }
 
@@ -62,5 +64,12 @@ public class AIOB_Sample {
         int[] a = new int[size];
 
         a[0] = 1;
+    }
+
+    public String[] fpCopyFieldOfUnknownSize() {
+        String[] fields = new String[unknownFields.length];
+        System.arraycopy(unknownFields, 0, fields, 0, unknownFields.length);
+
+        return fields;
     }
 }
