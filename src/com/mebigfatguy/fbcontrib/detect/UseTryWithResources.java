@@ -54,7 +54,6 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     private Map<Integer, Integer> regStoredPCs;
     private int lastGotoPC;
     private int lastNullCheckedReg;
-    private int closeableReg;
     private int bugPC;
     private int closePC;
     private State state;
@@ -96,7 +95,6 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             lastGotoPC = -1;
             state = State.SEEN_NOTHING;
             lastNullCheckedReg = -1;
-            closeableReg = -1;
             bugPC = -1;
             closePC = -1;
             super.visitCode(obj);
@@ -125,7 +123,6 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                 bugReporter.reportBug(new BugInstance(this, BugType.UTWR_USE_TRY_WITH_RESOURCES.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this, bugPC));
                 closePC = -1;
-                closeableReg = -1;
                 bugPC = -1;
             }
 
@@ -149,7 +146,6 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                             if (cls.implementationOf(throwableClass)) {
 
                                 closePC = -1;
-                                closeableReg = -1;
                                 bugPC = -1;
 
                             }
@@ -179,12 +175,11 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                                 if (tb != null) {
                                     if (stack.getStackDepth() > 0) {
                                         OpcodeStack.Item itm = stack.getStackItem(0);
-                                        int reg = itm.getRegisterNumber();
-                                        if (reg >= 0) {
-                                            Integer storePC = regStoredPCs.get(Integer.valueOf(reg));
+                                        int closeableReg = itm.getRegisterNumber();
+                                        if (closeableReg >= 0) {
+                                            Integer storePC = regStoredPCs.get(Integer.valueOf(closeableReg));
                                             if (storePC != null) {
                                                 if (storePC <= tb.getStartPC()) {
-                                                    closeableReg = reg;
                                                     bugPC = pc;
                                                     closePC = tb.getHandlerEndPC();
                                                 }
