@@ -27,6 +27,13 @@ public class AIOB_Sample {
         fb[4] = 4;
     }
 
+    public void testSystemArrayCopy() {
+        String[] s = { "Fee", "Fi", "Fo", "Fum" };
+
+        String[] copy = new String[s.length];
+        System.arraycopy(s, 1, copy, 1, s.length);
+    }
+
     public int[] fpPlusPlusNotRecognized(List<String> l) {
         int size = 0;
 
