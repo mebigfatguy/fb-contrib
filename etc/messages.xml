@@ -3395,6 +3395,21 @@ return "thisisaconstantstring";
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="SPP_WRONG_COMMONS_TO_STRING_OBJECT">
+		<ShortDescription>Method does not pass an object to commons-lang's ToStringBuilder</ShortDescription>
+		<LongDescription>Method {1} does not pass an object to commons-lang's ToStringBuilder</LongDescription>
+		<Details>
+			<![CDATA[[
+			This method uses commons-lang, or commons-lang3's ToStringBuilder to attempt to output a representation of an object.
+			However, no object was passed, just the style specifier, and so the output will be of the ToStringStyle object itself.
+			Don't forget to include the object you wish to output as the first parameter, such as
+			<pre>
+			ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
+			</pre>
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="BAS_BLOATED_ASSIGNMENT_SCOPE">
 		<ShortDescription>Method assigns a variable in a larger scope than is needed</ShortDescription>

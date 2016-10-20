@@ -17,6 +17,9 @@ import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
 
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
 import com.google.common.base.Optional;
 
 @SuppressWarnings("all")
@@ -201,7 +204,7 @@ public class SPP_Sample implements Serializable {
             System.out.println("Booya");
         }
 
-        Set<String> m = new HashSet<String>();
+        Set<String> m = new HashSet<>();
         Iterator<String> it = m.iterator();
         while (it.hasNext()) {
             s = it.next();
@@ -296,7 +299,7 @@ public class SPP_Sample implements Serializable {
     }
 
     public void testArray() {
-        List<String> notAnArray = new ArrayList<String>();
+        List<String> notAnArray = new ArrayList<>();
 
         Array.getLength(notAnArray);
 
@@ -310,8 +313,9 @@ public class SPP_Sample implements Serializable {
     }
 
     public void testTrim(String s) {
-        if (s.trim().length() > 0)
+        if (s.trim().length() > 0) {
             System.out.println(s);
+        }
 
         if (s.trim().equals("Booyah")) {
             System.out.println("Booyah->" + s);
@@ -335,7 +339,7 @@ public class SPP_Sample implements Serializable {
     }
 
     public boolean nullAndInstanceOf(double d1, double d2, double d3, Object o) {
-        if ((o != null) && (o instanceof String) && d1 < d2) {
+        if ((o != null) && (o instanceof String) && (d1 < d2)) {
             return true;
         }
         return false;
@@ -369,13 +373,17 @@ public class SPP_Sample implements Serializable {
         System.out.println(x.trim());
         return x;
     }
-    
+
     public String testOptional(Optional<String> o) {
         if (o == null) {
             return "";
         }
-        
+
         return o.get();
+    }
+
+    public String testCommonsLangToStringBuilder() {
+        return ToStringBuilder.reflectionToString(ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
     public boolean fpNullAndInstanceOf(Object o) {
@@ -387,12 +395,12 @@ public class SPP_Sample implements Serializable {
         }
         return Math.random() > 0.5;
     }
-    
+
     public boolean fpNullAndInstanceOfUnrelated(Throwable t, Object tag) {
         if ((tag != null) && (t instanceof RuntimeException)) {
             return true;
         }
-        
+
         return false;
     }
 
@@ -407,18 +415,18 @@ public class SPP_Sample implements Serializable {
     public void testFPToString(Object o) {
         System.out.println(o);
     }
-    
+
     public boolean testFPTrimNotUsed(StringProducer s, String t) {
         if (s.getString().trim().length() == 0) {
             return true;
         }
-        
+
         return t.equals("foo");
-        
+
     }
-    
+
     public void fpGitHubIssue81(PreparedStatement sqlQuery, String name) throws SQLException {
-        if (name != null && !(name = name.trim()).equals("")) {
+        if ((name != null) && !(name = name.trim()).equals("")) {
             sqlQuery.setString(1, name + "%");
         }
     }

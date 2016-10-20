@@ -623,6 +623,18 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 bugReporter.reportBug(
                         new BugInstance(this, BugType.SPP_STATIC_FORMAT_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
             }
+        } else if ("org/apache/commons/lang3/builder/ToStringBuilder".equals(className)
+                || "org/apache/commons/lang/builder/ToStringBuilder".equals(className)) {
+            if ("reflectionToString".equals(methodName) && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand())) {
+                if (stack.getStackDepth() >= 1) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    String toStringSig = itm.getSignature();
+                    if ((toStringSig != null) && toStringSig.contains("/ToStringStyle")) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.SPP_WRONG_COMMONS_TO_STRING_OBJECT.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
+                    }
+                }
+            }
         }
         return userValue;
     }
