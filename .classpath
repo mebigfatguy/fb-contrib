@@ -9,14 +9,14 @@
 	<classpathentry kind="lib" path="lib/javax.servlet-api-3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang3-3.3.jar" sourcepath="/home/dave/.m2/repository/org/apache/commons/commons-lang3/3.3/commons-lang3-3.3-sources.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.3.jar" sourcepath="lib/sources/commons-lang3-3.3-sources.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-1.7.7.jar"/>
 	<classpathentry kind="lib" path="lib/guava-17.0.jar" sourcepath="lib/sources/guava-17.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.3.4.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.3.4.jar"/>
-	<classpathentry kind="lib" path="lib/annotations-3.0.0.jar" sourcepath="/home/dave/.m2/repository/com/google/code/findbugs/annotations/3.0.0/annotations-3.0.0-sources.jar"/>
-	<classpathentry kind="lib" path="lib/asm-debug-all-5.0.2.jar" sourcepath="/home/dave/.m2/repository/org/ow2/asm/asm-debug-all/5.0.2/asm-debug-all-5.0.2-sources.jar"/>
+	<classpathentry kind="lib" path="lib/annotations-3.0.0.jar" sourcepath="lib/sources/annotations-3.0.0-sources.jar"/>
+	<classpathentry kind="lib" path="lib/asm-debug-all-5.0.2.jar" sourcepath="lib/sources/asm-debug-all-5.0.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/bcel-findbugs-6.0.jar" sourcepath="lib/sources/bcel-findbugs-6.0-sources.jar">
 		<attributes>
 			<attribute name="javadoc_location" value="http://commons.apache.org/proper/commons-bcel/apidocs/"/>
