@@ -362,7 +362,7 @@ public void test(int i)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ArrayBasedCollections">
 		<Details>
 			<![CDATA[
-			<p>Looks for methods that use arrays for items in the keyset of a map, or as
+			<p>Looks for methods that use arrays for items in the keySet of a map, or as
 			an element of a set, or in a list when using the contains method. Since arrays
 			do not, and cannot define an equals method, reference equality is used for these
 			collections, which is probably not desired. If it is, consider using the IdentityHashMap
@@ -1233,7 +1233,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsEqualsBuilderToEquals">
 		<Details>
 			<![CDATA[
-			<p>This detector looks for uses for Commons-lang EqualsBuilder where the
+			<p>This detector looks for uses for commons-lang EqualsBuilder where the
 			result of equals() is returned instead of calling the method isEquals().</p>
 			<p>It is a fast detector.</p>
 			]]>
@@ -1243,7 +1243,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsHashcodeBuilderToHashcode">
 		<Details>
 			<![CDATA[
-			<p>This detector looks for uses for Commons-lang <code>HashCodeBuilder</code> where the
+			<p>This detector looks for uses for commons-lang <code>HashCodeBuilder</code> where the
 			result of <code>hashCode()</code> is returned instead of calling the method <code>toHashCode()</code>.</p>
 			<p>It is a fast detector.</p>
 			]]>
@@ -1253,7 +1253,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CommonsStringBuilderToString">
 		<Details>
 			<![CDATA[
-			<p>This detector looks for uses for Commons-lang <code>ToStringBuilder</code> where the
+			<p>This detector looks for uses for commons-lang <code>ToStringBuilder</code> where the
 			result of <code>toString()</code> is returned without an intermediate invocation of toString().</p>
 			<p>It is a fast detector.</p>
 			]]>
@@ -1457,7 +1457,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
     	<Details>
     		<![CDATA[
 			<p>Looks for methods that perform arithmetic operations on values representing time
-			where the time unit is incompatible, ie adding a millisecond value to a nanosecond value.
+			where the time unit is incompatible, i.e. adding a millisecond value to a nanosecond value.
 			</p>
 			<p>It is a fast detector.</p>
     		]]>
