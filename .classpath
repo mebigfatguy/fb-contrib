@@ -5,16 +5,9 @@
 	<classpathentry excluding="lib/" kind="src" output="target/classes/samples" path="samples"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/backport-util-concurrent-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-collections-3.2.1.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet-api-3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang3-3.3.jar" sourcepath="lib/sources/commons-lang3-3.3-sources.jar"/>
-	<classpathentry kind="lib" path="lib/slf4j-api-1.7.7.jar"/>
-	<classpathentry kind="lib" path="lib/guava-17.0.jar" sourcepath="lib/sources/guava-17.0-sources.jar"/>
-	<classpathentry kind="lib" path="lib/httpclient-cache-4.3.4.jar"/>
-	<classpathentry kind="lib" path="lib/httpcore-4.3.2.jar"/>
-	<classpathentry kind="lib" path="lib/httpclient-4.3.4.jar"/>
 	<classpathentry kind="lib" path="lib/annotations-3.0.0.jar" sourcepath="lib/sources/annotations-3.0.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/asm-debug-all-5.0.2.jar" sourcepath="lib/sources/asm-debug-all-5.0.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/bcel-findbugs-6.0.jar" sourcepath="lib/sources/bcel-findbugs-6.0-sources.jar">
@@ -22,18 +15,26 @@
 			<attribute name="javadoc_location" value="http://commons.apache.org/proper/commons-bcel/apidocs/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/commons-codec-1.6.jar"/>
 	<classpathentry kind="lib" path="lib/findbugs-3.0.1.jar" sourcepath="lib/sources/findbugs-3.0.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.12.jar"/>
-	<classpathentry kind="lib" path="lib/testng-6.9.6.jar"/>
 	<classpathentry kind="lib" path="lib/jsr311-api-1.1.1.jar" sourcepath="lib/sources/jsr311-api-1.1.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/javax.persistence-2.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.3.2.jar" sourcepath="lib/sources/commons-io-1.3.2-sources.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-all-2.0.2-beta.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
-	<classpathentry kind="lib" path="lib/spring-beans-4.3.2.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-tx-4.3.2.RELEASE.jar"/>
-	<classpathentry kind="lib" path="lib/spring-context-4.3.2.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/threetenbp-1.3.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
+	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.4.jar"/>
+	<classpathentry kind="lib" path="lib/findbugs-ant-3.0.0.jar"/>
+	<classpathentry kind="lib" path="lib/guava-19.0.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-4.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/httpclient-cache-4.5.2.jar"/>
+	<classpathentry kind="lib" path="lib/httpcore-4.4.5.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-api-1.7.21.jar"/>
+	<classpathentry kind="lib" path="lib/spring-beans-4.3.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-context-4.3.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/spring-tx-4.3.3.RELEASE.jar"/>
+	<classpathentry kind="lib" path="lib/testng-6.9.13.6.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
