@@ -49,7 +49,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
 
     static {
         try {
-            MAP_CLASS = Repository.lookupClass("java/util/Map");
+            MAP_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_MAP);
             SET_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_SET);
             LIST_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_LIST);
             QUEUE_CLASS = Repository.lookupClass("java/util/Queue");

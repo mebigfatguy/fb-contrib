@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -66,7 +67,7 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
 
         try {
             collectionClass = Repository.lookupClass("java/util/Collection");
-            mapClass = Repository.lookupClass("java/util/Map");
+            mapClass = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_MAP);
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }

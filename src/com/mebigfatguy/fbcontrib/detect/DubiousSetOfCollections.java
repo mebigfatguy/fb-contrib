@@ -45,7 +45,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
         try {
             collectionCls = Repository.lookupClass("java/util/Collection");
             setCls = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_SET);
-            mapCls = Repository.lookupClass("java/util/Map");
+            mapCls = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_MAP);
         } catch (ClassNotFoundException cnfe) {
             // np bugReporter yet, so ignore
         }

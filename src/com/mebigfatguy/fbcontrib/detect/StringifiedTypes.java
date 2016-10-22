@@ -62,12 +62,12 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "add", "(Ljava/lang/Object;)Z"), parm0);
         COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "remove", "(Ljava/lang/Object;)Z"), parm0);
 
-        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "containsKey", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "containsValue", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
-        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
-        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
-        COLLECTION_PARMS.put(new FQMethod("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "containsKey", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "containsValue", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "get", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
     }
 
     private static final Map<String, Integer> STRING_PARSE_METHODS = new HashMap<>();

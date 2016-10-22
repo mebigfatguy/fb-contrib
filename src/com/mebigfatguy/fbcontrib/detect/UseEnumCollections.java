@@ -169,7 +169,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
-                if (("java/util/Map".equals(clsName)) && ("put".equals(methodName))
+                if ((Values.SLASHED_JAVA_UTIL_MAP.equals(clsName)) && ("put".equals(methodName))
                         && ("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(signature))) {
                     bug = isEnum(1) && !isEnumCollection(2) && !alreadyReported(2);
                 } else if ((Values.SLASHED_JAVA_UTIL_SET.equals(clsName)) && ("add".equals(methodName)) && ("(Ljava/lang/Object;)Z".equals(signature))) {

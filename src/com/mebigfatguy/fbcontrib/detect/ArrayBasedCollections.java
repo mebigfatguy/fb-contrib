@@ -129,7 +129,8 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
         boolean found = false;
         List<BugInstance> bugList = null;
 
-        if ("java/util/Map".equals(className) && "put".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(methodSig)) {
+        if (Values.SLASHED_JAVA_UTIL_MAP.equals(className) && "put".equals(methodName)
+                && "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(methodSig)) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item itm = stack.getStackItem(1);
                 String pushedSig = itm.getSignature();

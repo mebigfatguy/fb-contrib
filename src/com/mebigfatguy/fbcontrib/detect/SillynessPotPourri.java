@@ -73,7 +73,7 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
 public class SillynessPotPourri extends BytecodeScanningDetector {
 
     private static final Set<String> collectionInterfaces = UnmodifiableSet.create("java/util/Collection", Values.SLASHED_JAVA_UTIL_LIST,
-            Values.SLASHED_JAVA_UTIL_SET, "java/util/SortedSet", "java/util/Map", "java/util/SortedMap");
+            Values.SLASHED_JAVA_UTIL_SET, "java/util/SortedSet", Values.SLASHED_JAVA_UTIL_MAP, "java/util/SortedMap");
 
     private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create("java.lang.StringBuffer", "java.lang.StringBuilder");
 
@@ -903,7 +903,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         SPPUserValue userValue = null;
         String className = getClassConstantOperand();
 
-        if ("java/util/Map".equals(className)) {
+        if (Values.SLASHED_JAVA_UTIL_MAP.equals(className)) {
             String method = getNameConstantOperand();
             if ("keySet".equals(method)) {
                 userValue = new SPPUserValue(SPPMethod.KEYSET);

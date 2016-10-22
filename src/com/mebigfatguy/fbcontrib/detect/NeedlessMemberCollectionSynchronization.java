@@ -64,7 +64,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 
     static {
         try {
-            mapClass = Repository.lookupClass("java/util/Map");
+            mapClass = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_MAP);
         } catch (ClassNotFoundException cnfe) {
             mapClass = null;
         }
