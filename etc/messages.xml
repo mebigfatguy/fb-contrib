@@ -4821,6 +4821,7 @@ if (name != null) {
 			    <li>Sets.newHashSetWithExpectedSize(int)</li>
 			    <li>Maps.newHashMapWithExpectedSize(int)</li>
 			</ul>
+			If not, a good estimate would be the expectedSize / {LOADING_FACTOR} which by default is 0.75
 			</p>
 			]]>
 		</Details>
