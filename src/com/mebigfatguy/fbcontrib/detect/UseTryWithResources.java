@@ -112,7 +112,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                     it.remove();
                 }
             }
-            TryBlock tb = finallyBlocks.get(pc);
+            TryBlock tb = finallyBlocks.get(Integer.valueOf(pc));
             if (tb != null) {
                 if (lastGotoPC > -1) {
                     tb.setHandlerEndPC(lastGotoPC);
@@ -179,7 +179,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                                         if (closeableReg >= 0) {
                                             Integer storePC = regStoredPCs.get(Integer.valueOf(closeableReg));
                                             if (storePC != null) {
-                                                if (storePC <= tb.getStartPC()) {
+                                                if (storePC.intValue() <= tb.getStartPC()) {
                                                     bugPC = pc;
                                                     closePC = tb.getHandlerEndPC();
                                                 }
