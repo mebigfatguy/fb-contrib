@@ -27,7 +27,7 @@
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.4.jar"/>
 	<classpathentry kind="lib" path="lib/findbugs-ant-3.0.0.jar"/>
-	<classpathentry kind="lib" path="lib/guava-19.0.jar"/>
+	<classpathentry kind="lib" path="lib/guava-19.0.jar" sourcepath="lib/sources/guava-19.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.4.5.jar"/>
