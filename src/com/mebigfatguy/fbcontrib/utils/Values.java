@@ -69,6 +69,18 @@ public class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_INTEGER = "java/lang/Integer";
     @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_LONG = "java/lang/Long";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_FLOAT = "java/lang/Float";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_DOUBLE = "java/lang/Double";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_SHORT = "java/lang/Short";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_BYTE = "java/lang/Byte";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_BOOLEAN = "java/lang/Boolean";
+    @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_LIST = "java/util/List";
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_SET = "java/util/Set";
