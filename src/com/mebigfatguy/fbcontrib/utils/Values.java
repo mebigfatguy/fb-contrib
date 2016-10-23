@@ -79,6 +79,8 @@ public class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_BYTE = "java/lang/Byte";
     @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_CHARACTER = "java/lang/Character";
+    @SlashedClassName
     public static final String SLASHED_JAVA_LANG_BOOLEAN = "java/lang/Boolean";
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_LIST = "java/util/List";

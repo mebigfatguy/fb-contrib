@@ -32,6 +32,7 @@ import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -49,9 +50,24 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class InappropriateToStringUse extends BytecodeScanningDetector {
 
-    private static final Set<String> validToStringClasses = UnmodifiableSet.create("java/lang/Object", // too many fps
-            "java/lang/Byte", "java/lang/Character", "java/lang/Short", "java/lang/Integer", "java/lang/Boolean", "java/lang/Float", "java/lang/Double",
-            "java/lang/Long", "java/lang/String", "java/lang/Number", "java/lang/StringBuffer", "java/lang/StringBuilder", "java/io/StringWriter");
+    private static final Set<String> validToStringClasses = UnmodifiableSet.create(
+            // @formatter:off
+            Values.SLASHED_JAVA_LANG_OBJECT, // too many fps
+            Values.SLASHED_JAVA_LANG_BYTE,
+            Values.SLASHED_JAVA_LANG_CHARACTER,
+            Values.SLASHED_JAVA_LANG_SHORT,
+            Values.SLASHED_JAVA_LANG_INTEGER,
+            Values.SLASHED_JAVA_LANG_BOOLEAN,
+            Values.SLASHED_JAVA_LANG_FLOAT,
+            Values.SLASHED_JAVA_LANG_DOUBLE,
+            Values.SLASHED_JAVA_LANG_LONG,
+            Values.SLASHED_JAVA_LANG_STRING,
+            "java/lang/Number",
+            "java/lang/StringBuffer",
+            "java/lang/StringBuilder",
+            "java/io/StringWriter"
+            // @formatter:on
+    );
 
     private static final Set<String> stringAlgoMethods = UnmodifiableSet.create("indexOf", "contains", "startsWith", "endsWith", "substring");
 
@@ -80,7 +96,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            toStringRegisters = new HashMap<Integer, String>();
+            toStringRegisters = new HashMap<>();
             packageName = classContext.getJavaClass().getPackageName();
             super.visitClassContext(classContext);
         } finally {
