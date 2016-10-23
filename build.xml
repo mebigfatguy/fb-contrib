@@ -42,7 +42,7 @@
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/1.6.1/yank-1.6.1.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://bitbucket.org/kjlubick/bugrankcheckstyle/downloads/bug-rank-check-style-1.0.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/vcsversion/vcsversion/0.4.0/vcsversion-0.4.0.jar" dest="${user.home}/.ant/lib"/>
-		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/fb-delta/fb-delta/0.4.1/fb-delta-0.4.1.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
+		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/fb-delta/fb-delta/0.6.0/fb-delta-0.6.0.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
 	</target>
 	
 	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank" unless="no.yank">
