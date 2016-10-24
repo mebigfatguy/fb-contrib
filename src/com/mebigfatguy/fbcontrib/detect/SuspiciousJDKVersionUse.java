@@ -182,53 +182,42 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     }
 
     private boolean isValid(Map<String, Set<String>> validMethods, String clsName) throws IOException, ClassNotFoundException {
-        InputStream is = null;
+        Set<String> methodInfos = validMethods.get(clsName);
+        if (methodInfos == null) {
 
-        try {
-            Set<String> methodInfos = validMethods.get(clsName);
-            if (methodInfos == null) {
-
-                ZipEntry ze = jdkZip.getEntry(clsName + ".class");
-                if (ze != null) {
-                    is = new BufferedInputStream(jdkZip.getInputStream(ze));
+            ZipEntry ze = jdkZip.getEntry(clsName + ".class");
+            if (ze != null) {
+                JavaClass calledClass = null;
+                try (InputStream is = new BufferedInputStream(jdkZip.getInputStream(ze))) {
                     ClassParser parser = new ClassParser(is, clsName);
-                    JavaClass calledClass = parser.parse();
-
-                    superNames.put(clsName, calledClass.getSuperclassName().replace('.', '/'));
-                    Method[] methods = calledClass.getMethods();
-
-                    methodInfos = new HashSet<String>(methods.length);
-                    validMethods.put(clsName, methodInfos);
-
-                    for (Method m : methods) {
-                        methodInfos.add(m.getName() + m.getSignature());
-                    }
-                } else if (clsName.startsWith("java/")) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this).addClass(clsName));
+                    calledClass = parser.parse();
                 }
-            }
 
-            if (methodInfos != null) {
-                String wantedMethod = getNameConstantOperand() + getSigConstantOperand();
-                if (methodInfos.contains(wantedMethod)) {
-                    return true;
-                } else if (Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName)) {
-                    return false;
-                } else {
-                    return isValid(validMethods, superNames.get(clsName));
+                superNames.put(clsName, calledClass.getSuperclassName().replace('.', '/'));
+                Method[] methods = calledClass.getMethods();
+
+                methodInfos = new HashSet<String>(methods.length);
+                validMethods.put(clsName, methodInfos);
+
+                for (Method m : methods) {
+                    methodInfos.add(m.getName() + m.getSignature());
                 }
+            } else if (clsName.startsWith("java/")) {
+                bugReporter.reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(this).addClass(clsName));
             }
+        }
 
+        if (methodInfos == null) {
             return true;
-        } finally {
-            if (is != null) {
-                try {
-                    is.close();
-                } catch (IOException ioe) {
-                    // don't care
-                }
-            }
+        }
+        String wantedMethod = getNameConstantOperand() + getSigConstantOperand();
+        if (methodInfos.contains(wantedMethod)) {
+            return true;
+        } else if (Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName)) {
+            return false;
+        } else {
+            return isValid(validMethods, superNames.get(clsName));
         }
     }
 
