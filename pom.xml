@@ -249,7 +249,6 @@
                 </dependencies>
                 <configuration>
                     <rulesets>
-                        <ruleset>/rulesets/java/basic.xml</ruleset>
                         <ruleset>/rulesets/java/clone.xml</ruleset>
                         <ruleset>/rulesets/java/finalizers.xml</ruleset>
                         <ruleset>/rulesets/java/imports.xml</ruleset>
