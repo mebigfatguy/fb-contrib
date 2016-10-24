@@ -208,18 +208,17 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
             }
         }
 
-        if (methodInfos != null) {
-            String wantedMethod = getNameConstantOperand() + getSigConstantOperand();
-            if (methodInfos.contains(wantedMethod)) {
-                return true;
-            } else if (Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName)) {
-                return false;
-            } else {
-                return isValid(validMethods, superNames.get(clsName));
-            }
+        if (methodInfos == null) {
+            return true;
         }
-
-        return true;
+        String wantedMethod = getNameConstantOperand() + getSigConstantOperand();
+        if (methodInfos.contains(wantedMethod)) {
+            return true;
+        } else if (Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName)) {
+            return false;
+        } else {
+            return isValid(validMethods, superNames.get(clsName));
+        }
     }
 
     private File getRTJarFile() {
