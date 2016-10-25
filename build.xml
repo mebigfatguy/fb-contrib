@@ -225,7 +225,7 @@
 		</copy>
 	</target>
 	
-	<target name="sample_delta" depends="build" xmlns:fbdelta="antlib:com.mebigfatguy.fbdelta" description="compares this runs reported bugs on the sample classes set, against the stored report">
+	<target name="sample_delta" depends="install" xmlns:fbdelta="antlib:com.mebigfatguy.fbdelta" description="compares this runs reported bugs on the sample classes set, against the stored report">
 		<taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${lib.dir}/findbugs-ant-${findbugs-ant.version}.jar"/>
 		<findbugs reportlevel="low" home="${findbugs.dir}" auxClassPathRef="fb-contrib.samples.classpath" output="xml:withMessages" jvmargs="-ea -Xmx800m" projectName="Samples" outputFile="${target.dir}/samples.xml">
 		      <class location="${samples.classes.dir}" />
