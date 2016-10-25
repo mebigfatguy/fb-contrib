@@ -161,7 +161,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
             case SEEN_LOAD:
                 if (seen == INVOKEINTERFACE) {
                     String calledClass = getClassConstantOperand();
-                    if ("java/lang/Map".equals(calledClass)) {
+                    if ("java/util/Map".equals(calledClass)) {
                         if (mapToSetMethods.contains(getNameConstantOperand())) {
                             state = State.SEEN_LOAD;
                         } else {
