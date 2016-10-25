@@ -185,10 +185,10 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                             if (stack.getStackDepth() > parmIndex) {
                                 OpcodeStack.Item item = stack.getStackItem(parmIndex);
                                 if (item.getUserValue() != null) {
-                                    userValue = item.getUserValue();
+                                    Object uv = item.getUserValue();
                                     int reg;
-                                    if (userValue instanceof Integer) {
-                                        reg = ((Integer) userValue).intValue();
+                                    if (uv instanceof Integer) {
+                                        reg = ((Integer) uv).intValue();
                                     } else {
                                         reg = item.getRegisterNumber();
                                     }
@@ -196,7 +196,6 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                                     if (reg >= 0) {
                                         uninitializedRegs.clear(reg);
                                     }
-                                    userValue = null;
                                 }
                             }
                         }
