@@ -31,6 +31,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -45,7 +46,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 @CustomUserValue
 public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
-    private static final String UNINIT_ARRAY = "Unitialized Array";
+
     private static JavaClass THREAD_LOCAL_CLASS;
     private static final String INITIAL_VALUE = "initialValue";
 
@@ -135,7 +136,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        Object userValue = null;
+        SUAUserValue userValue = null;
         try {
             stack.precomputation(this);
 
@@ -146,7 +147,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                         if (typeCode != Constants.T_BYTE) {
                             String sig = '[' + SignatureUtils.getTypeCodeSignature(typeCode);
                             if (returnArraySig.equals(sig)) {
-                                userValue = UNINIT_ARRAY;
+                                userValue = SUAUserValue.UNINIT_ARRAY;
                             }
                         }
                     }
@@ -157,7 +158,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                     if (!isTOS0()) {
                         String sig = "[L" + getClassConstantOperand() + ';';
                         if (returnArraySig.equals(sig)) {
-                            userValue = UNINIT_ARRAY;
+                            userValue = SUAUserValue.UNINIT_ARRAY;
                         }
                     }
                 }
@@ -165,7 +166,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
                 case MULTIANEWARRAY: {
                     if (returnArraySig.equals(getClassConstantOperand())) {
-                        userValue = UNINIT_ARRAY;
+                        userValue = SUAUserValue.UNINIT_ARRAY;
                     }
                 }
                 break;
@@ -184,11 +185,11 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                             int parmIndex = types.length - t - 1;
                             if (stack.getStackDepth() > parmIndex) {
                                 OpcodeStack.Item item = stack.getStackItem(parmIndex);
-                                if (item.getUserValue() != null) {
-                                    userValue = item.getUserValue();
+                                SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                                if (uv != null) {
                                     int reg;
-                                    if (userValue instanceof Integer) {
-                                        reg = ((Integer) userValue).intValue();
+                                    if (uv.isRegister()) {
+                                        reg = uv.getRegister();
                                     } else {
                                         reg = item.getRegisterNumber();
                                     }
@@ -196,7 +197,6 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                                     if (reg >= 0) {
                                         uninitializedRegs.clear(reg);
                                     }
-                                    userValue = null;
                                 }
                             }
                         }
@@ -207,8 +207,9 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case AALOAD: {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item item = stack.getStackItem(1);
-                        if (UNINIT_ARRAY.equals(item.getUserValue())) {
-                            userValue = Integer.valueOf(item.getRegisterNumber());
+                        SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                        if ((uv != null) && (uv.isUnitializedArray())) {
+                            userValue = new SUAUserValue(item.getRegisterNumber());
                         }
                     }
                 }
@@ -224,10 +225,10 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case SASTORE: {
                     if (stack.getStackDepth() >= 3) {
                         OpcodeStack.Item item = stack.getStackItem(2);
-                        userValue = item.getUserValue();
+                        SUAUserValue uv = (SUAUserValue) item.getUserValue();
                         int reg;
-                        if (userValue instanceof Integer) {
-                            reg = ((Integer) userValue).intValue();
+                        if ((uv != null) && uv.isRegister()) {
+                            reg = uv.getRegister();
                         } else {
                             reg = item.getRegisterNumber();
                         }
@@ -235,7 +236,6 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                         if (reg >= 0) {
                             uninitializedRegs.clear(reg);
                         }
-                        userValue = null;
                     } else {
                         // error condition - stack isn't right
                         uninitializedRegs.clear();
@@ -251,7 +251,8 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                     int reg = RegisterUtils.getAStoreReg(this, seen);
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
-                        uninitializedRegs.set(reg, (UNINIT_ARRAY.equals(item.getUserValue())));
+                        SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                        uninitializedRegs.set(reg, (uv != null) && (uv.isUnitializedArray()));
                     } else {
                         uninitializedRegs.clear(reg);
                     }
@@ -265,7 +266,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case ALOAD_3: {
                     int reg = RegisterUtils.getALoadReg(this, seen);
                     if (uninitializedRegs.get(reg)) {
-                        userValue = UNINIT_ARRAY;
+                        userValue = SUAUserValue.UNINIT_ARRAY;
                     }
                 }
                 break;
@@ -285,7 +286,9 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case ARETURN: {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
-                        if (UNINIT_ARRAY.equals(item.getUserValue())) {
+                        SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                        if ((uv != null) && (uv.isUnitializedArray())) {
+
                             bugReporter.reportBug(new BugInstance(this, BugType.SUA_SUSPICIOUS_UNINITIALIZED_ARRAY.name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                         }
@@ -296,7 +299,9 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 default:
                 break;
             }
-        } finally {
+        } finally
+
+        {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
@@ -314,5 +319,43 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
         OpcodeStack.Item item = stack.getStackItem(0);
         return item.mustBeZero();
+    }
+
+    static final class SUAUserValue {
+
+        enum SUAUserValueType {
+            REGISTER, UNINIT_ARRAY
+        };
+
+        public static final SUAUserValue UNINIT_ARRAY = new SUAUserValue();
+        private SUAUserValueType type;
+        private int reg;
+
+        private SUAUserValue() {
+            this.type = SUAUserValueType.UNINIT_ARRAY;
+            reg = -1;
+        }
+
+        public SUAUserValue(int register) {
+            this.type = SUAUserValueType.REGISTER;
+            reg = register;
+        }
+
+        public boolean isUnitializedArray() {
+            return type == SUAUserValueType.UNINIT_ARRAY;
+        }
+
+        public boolean isRegister() {
+            return type == SUAUserValueType.REGISTER;
+        }
+
+        public int getRegister() {
+            return reg;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
     }
 }
