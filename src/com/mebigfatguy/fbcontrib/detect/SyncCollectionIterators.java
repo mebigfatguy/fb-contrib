@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -37,28 +38,16 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * Looks for use of iterators on synchronized collections built from the
- * Collections class. As the collection in question was built thru
- * Collections.synchronizedXXX, an assumption is made that this collection must
- * be multithreaded safe. However, iterator access is used, which is explicitly
- * unsafe. When iterators are to be used, synchronization should be done
- * manually.
+ * Looks for use of iterators on synchronized collections built from the Collections class. As the collection in question was built thru
+ * Collections.synchronizedXXX, an assumption is made that this collection must be multithreaded safe. However, iterator access is used, which is explicitly
+ * unsafe. When iterators are to be used, synchronization should be done manually.
  */
 public class SyncCollectionIterators extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
-    private static final Set<String> synchCollectionNames = UnmodifiableSet.create(
-            "synchronizedSet",
-            "synchronizedMap",
-            "synchronizedList",
-            "synchronizedSortedSet",
-            "synchronizedSortedMap"
-    );
+    private static final Set<String> synchCollectionNames = UnmodifiableSet.create("synchronizedSet", "synchronizedMap", "synchronizedList",
+            "synchronizedSortedSet", "synchronizedSortedMap");
 
-    private static final Set<String> mapToSetMethods = UnmodifiableSet.create(
-            "keySet",
-            "entrySet",
-            "values"
-    );
+    private static final Set<String> mapToSetMethods = UnmodifiableSet.create("keySet", "entrySet", "values");
 
     enum State {
         SEEN_NOTHING, SEEN_SYNC, SEEN_LOAD
@@ -84,9 +73,9 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(final ClassContext classContext) {
         try {
-            memberCollections = new HashSet<String>();
-            localCollections = new HashSet<Integer>();
-            monitorObjects = new ArrayList<Object>();
+            memberCollections = new HashSet<>();
+            localCollections = new HashSet<>();
+            monitorObjects = new ArrayList<>();
             stack = new OpcodeStack();
             super.visitClassContext(classContext);
         } finally {
@@ -114,81 +103,81 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (state) {
-            case SEEN_NOTHING:
-                if ((seen == INVOKESTATIC) && "java/util/Collections".equals(getClassConstantOperand())) {
-                    if (synchCollectionNames.contains(getNameConstantOperand())) {
-                        state = State.SEEN_SYNC;
-                    }
-                } else if (seen == ALOAD) {
-                    int reg = getRegisterOperand();
-                    if (localCollections.contains(Integer.valueOf(reg))) {
-                        collectionInfo = Integer.valueOf(reg);
-                        state = State.SEEN_LOAD;
-                    }
-                } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
-                    int reg = seen - ALOAD_0;
-                    if (localCollections.contains(Integer.valueOf(reg))) {
-                        collectionInfo = Integer.valueOf(reg);
-                        state = State.SEEN_LOAD;
-                    }
-                } else if (seen == GETFIELD) {
-                    ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
-                    ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
-
-                    String fieldName = nandt.getName(getConstantPool());
-                    if (memberCollections.contains(fieldName)) {
-                        collectionInfo = fieldName;
-                        state = State.SEEN_LOAD;
-                    }
-                }
-                break;
-
-            case SEEN_SYNC:
-                if (seen == ASTORE) {
-                    int reg = getRegisterOperand();
-                    localCollections.add(Integer.valueOf(reg));
-                } else if ((seen >= ASTORE_0) && (seen <= ASTORE_3)) {
-                    int reg = seen - ASTORE_0;
-                    localCollections.add(Integer.valueOf(reg));
-                } else if (seen == PUTFIELD) {
-                    ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
-                    ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
-                    memberCollections.add(nandt.getName(getConstantPool()));
-                }
-                state = State.SEEN_NOTHING;
-                break;
-
-            case SEEN_LOAD:
-                if (seen == INVOKEINTERFACE) {
-                    String calledClass = getClassConstantOperand();
-                    if ("java/util/Map".equals(calledClass)) {
-                        if (mapToSetMethods.contains(getNameConstantOperand())) {
-                            state = State.SEEN_LOAD;
-                        } else {
-                            state = State.SEEN_NOTHING;
+                case SEEN_NOTHING:
+                    if ((seen == INVOKESTATIC) && "java/util/Collections".equals(getClassConstantOperand())) {
+                        if (synchCollectionNames.contains(getNameConstantOperand())) {
+                            state = State.SEEN_SYNC;
                         }
-                    } else if (calledClass.startsWith("java/util/")) {
-                        if ("iterator".equals(getNameConstantOperand())) {
-                            if (monitorObjects.isEmpty()) {
-                                bugReporter.reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                                state = State.SEEN_NOTHING;
-                            } else {
-                                Object syncObj = monitorObjects.get(monitorObjects.size() - 1);
+                    } else if (seen == ALOAD) {
+                        int reg = getRegisterOperand();
+                        if (localCollections.contains(Integer.valueOf(reg))) {
+                            collectionInfo = Integer.valueOf(reg);
+                            state = State.SEEN_LOAD;
+                        }
+                    } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
+                        int reg = seen - ALOAD_0;
+                        if (localCollections.contains(Integer.valueOf(reg))) {
+                            collectionInfo = Integer.valueOf(reg);
+                            state = State.SEEN_LOAD;
+                        }
+                    } else if (seen == GETFIELD) {
+                        ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
+                        ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
 
-                                if (!syncIsMap(syncObj, collectionInfo)) {
-                                    bugReporter.reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this)
-                                            .addMethod(this).addSourceLine(this));
-                                }
+                        String fieldName = nandt.getName(getConstantPool());
+                        if (memberCollections.contains(fieldName)) {
+                            collectionInfo = fieldName;
+                            state = State.SEEN_LOAD;
+                        }
+                    }
+                break;
+
+                case SEEN_SYNC:
+                    if (seen == ASTORE) {
+                        int reg = getRegisterOperand();
+                        localCollections.add(Integer.valueOf(reg));
+                    } else if ((seen >= ASTORE_0) && (seen <= ASTORE_3)) {
+                        int reg = seen - ASTORE_0;
+                        localCollections.add(Integer.valueOf(reg));
+                    } else if (seen == PUTFIELD) {
+                        ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
+                        ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
+                        memberCollections.add(nandt.getName(getConstantPool()));
+                    }
+                    state = State.SEEN_NOTHING;
+                break;
+
+                case SEEN_LOAD:
+                    if (seen == INVOKEINTERFACE) {
+                        String calledClass = getClassConstantOperand();
+                        if (Values.SLASHED_JAVA_UTIL_MAP.equals(calledClass)) {
+                            if (mapToSetMethods.contains(getNameConstantOperand())) {
+                                state = State.SEEN_LOAD;
+                            } else {
                                 state = State.SEEN_NOTHING;
                             }
+                        } else if (calledClass.startsWith("java/util/")) {
+                            if ("iterator".equals(getNameConstantOperand())) {
+                                if (monitorObjects.isEmpty()) {
+                                    bugReporter.reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this)
+                                            .addMethod(this).addSourceLine(this));
+                                    state = State.SEEN_NOTHING;
+                                } else {
+                                    Object syncObj = monitorObjects.get(monitorObjects.size() - 1);
+
+                                    if (!syncIsMap(syncObj, collectionInfo)) {
+                                        bugReporter.reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this));
+                                    }
+                                    state = State.SEEN_NOTHING;
+                                }
+                            }
+                        } else {
+                            state = State.SEEN_NOTHING;
                         }
                     } else {
                         state = State.SEEN_NOTHING;
                     }
-                } else {
-                    state = State.SEEN_NOTHING;
-                }
                 break;
             }
 
@@ -196,12 +185,13 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     int reg = item.getRegisterNumber();
-                    if (reg >= 0)
+                    if (reg >= 0) {
                         monitorObjects.add(Integer.valueOf(reg));
-                    else {
+                    } else {
                         XField field = item.getXField();
-                        if (field != null)
+                        if (field != null) {
                             monitorObjects.add(field.getName());
+                        }
                     }
                 }
             } else if ((seen == MONITOREXIT) && !monitorObjects.isEmpty()) {
@@ -213,8 +203,9 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
     }
 
     private static boolean syncIsMap(Object syncObject, Object colInfo) {
-        if ((syncObject != null) && (colInfo != null) && syncObject.getClass().equals(colInfo.getClass()))
+        if ((syncObject != null) && (colInfo != null) && syncObject.getClass().equals(colInfo.getClass())) {
             return syncObject.equals(colInfo);
+        }
 
         // Something went wrong... don't report
         return true;
