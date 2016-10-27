@@ -267,7 +267,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 catchSB.setFinish(getPC() - 1);
                 rootScopeBlock.addChild(sb);
             }
-        } else if (monitorSyncPCs.isEmpty()) {
+        } else if (!monitorSyncPCs.isEmpty()) {
             ignoreRegs.set(reg);
         } else if (sawNull) {
             ignoreRegs.set(reg);
