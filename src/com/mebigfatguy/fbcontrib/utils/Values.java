@@ -102,4 +102,8 @@ public final class Values {
 
     private Values() {
     }
+
+    public static boolean isAppendableStringClassName(String className) {
+        return SLASHED_JAVA_LANG_STRINGBUILDER.equals(className) || SLASHED_JAVA_LANG_STRINGBUFFER.equals(className);
+    }
 }

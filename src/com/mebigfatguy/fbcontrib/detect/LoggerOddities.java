@@ -186,7 +186,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     checkForProblemsWithLoggerMethods();
                 } else if ("toString".equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
-                    if (("java/lang/StringBuilder".equals(callingClsName) || "java/lang/StringBuffer".equals(callingClsName)) && (stack.getStackDepth() > 0)) {
+                    if (Values.isAppendableStringClassName(callingClsName) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         // if the stringbuilder was previously stored, don't report it
                         if (item.getRegisterNumber() < 0) {

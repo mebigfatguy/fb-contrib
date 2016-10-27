@@ -130,7 +130,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
 
             if (seen == INVOKESPECIAL) {
                 String clsName = getClassConstantOperand();
-                if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
+                if (Values.isAppendableStringClassName(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
                     if (Values.CONSTRUCTOR.equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig) && (stack.getStackDepth() > 0)) {
@@ -140,7 +140,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 }
             } else if (seen == INVOKEVIRTUAL) {
                 String clsName = getClassConstantOperand();
-                if ("java/lang/StringBuffer".equals(clsName) || "java/lang/StringBuilder".equals(clsName)) {
+                if (Values.isAppendableStringClassName(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
                     if ("append".equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig) && (stack.getStackDepth() > 0)) {
