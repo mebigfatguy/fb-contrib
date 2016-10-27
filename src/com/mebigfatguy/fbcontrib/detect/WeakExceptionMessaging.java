@@ -135,16 +135,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if (seen == ATHROW) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    if (item.getUserValue() != null) {
-                        JavaClass exClass = item.getJavaClass();
-                        if ((exClass == null) || !ignorableExceptionTypes.contains(exClass.getClassName())) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.WEM_WEAK_EXCEPTION_MESSAGING.name(), LOW_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
-                    }
-                }
+                checkForWEM();
             } else if ((seen == LDC) || (seen == LDC_W)) {
                 if (getConstantRefOperand() instanceof ConstantString) {
                     sawConstant = true;
@@ -188,6 +179,21 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 item.setUserValue(Boolean.TRUE);
             }
+        }
+    }
+
+    private void checkForWEM() throws ClassNotFoundException {
+        if (stack.getStackDepth() == 0) {
+            return;
+        }
+        OpcodeStack.Item item = stack.getStackItem(0);
+        if (item.getUserValue() == null) {
+            return;
+        }
+        JavaClass exClass = item.getJavaClass();
+        if ((exClass == null) || !ignorableExceptionTypes.contains(exClass.getClassName())) {
+            bugReporter.reportBug(new BugInstance(this, BugType.WEM_WEAK_EXCEPTION_MESSAGING.name(), LOW_PRIORITY).addClass(this)
+                    .addMethod(this).addSourceLine(this));
         }
     }
 }

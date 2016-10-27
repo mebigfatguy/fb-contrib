@@ -149,29 +149,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
 
     @Override
     public void visitCode(Code obj) {
-        Method m = getMethod();
-        frameworkType = isTestCaseDerived && m.getName().startsWith("test") ? TestFrameworkType.JUNIT : TestFrameworkType.UNKNOWN;
-        hasAnnotation = false;
-
-        if ((frameworkType == TestFrameworkType.UNKNOWN) && isAnnotationCapable) {
-            AnnotationEntry[] annotations = m.getAnnotationEntries();
-            if (annotations != null) {
-                for (AnnotationEntry annotation : annotations) {
-                    String annotationType = annotation.getAnnotationType();
-                    if (annotation.isRuntimeVisible()) {
-                        if (TEST_ANNOTATION_SIGNATURE.equals(annotationType)) {
-                            frameworkType = TestFrameworkType.JUNIT;
-                            hasAnnotation = true;
-                            break;
-                        } else if (TESTNG_ANNOTATION_SIGNATURE.equals(annotationType)) {
-                            frameworkType = TestFrameworkType.TESTNG;
-                            hasAnnotation = true;
-                            break;
-                        }
-                    }
-                }
-            }
-        }
+        detectFrameworkType();
 
         if (frameworkType != TestFrameworkType.UNKNOWN) {
             stack.resetForMethodEntry(this);
@@ -182,6 +160,42 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
             if (!sawAssert && !hasExpects()) {
                 bugReporter.reportBug(new BugInstance(this, frameworkType == TestFrameworkType.JUNIT ? BugType.UTAO_JUNIT_ASSERTION_ODDITIES_NO_ASSERT.name()
                         : BugType.UTAO_TESTNG_ASSERTION_ODDITIES_NO_ASSERT.name(), LOW_PRIORITY).addClass(this).addMethod(this));
+            }
+        }
+    }
+
+    /**
+     * Attempt to identify whether we are dealing with JUnit or TestNG.
+     */
+    private void detectFrameworkType() {
+        hasAnnotation = false;
+        Method m = getMethod();
+        if (isTestCaseDerived  && m.getName().startsWith("test")) {
+            frameworkType = TestFrameworkType.JUNIT;
+            return;
+        }
+
+        frameworkType = TestFrameworkType.UNKNOWN;
+        if (!isAnnotationCapable) {
+            return;
+        }
+
+        AnnotationEntry[] annotations = m.getAnnotationEntries();
+        if (annotations == null) {
+            return;
+        }
+        for (AnnotationEntry annotation : annotations) {
+            String annotationType = annotation.getAnnotationType();
+            if (annotation.isRuntimeVisible()) {
+                if (TEST_ANNOTATION_SIGNATURE.equals(annotationType)) {
+                    frameworkType = TestFrameworkType.JUNIT;
+                    hasAnnotation = true;
+                    return;
+                } else if (TESTNG_ANNOTATION_SIGNATURE.equals(annotationType)) {
+                    frameworkType = TestFrameworkType.TESTNG;
+                    hasAnnotation = true;
+                    return;
+                }
             }
         }
     }

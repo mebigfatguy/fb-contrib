@@ -118,69 +118,79 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
         try {
             switch (state) {
             case SAW_NOTHING:
-                if (seen == INVOKEVIRTUAL) {
-                    String methodName = getNameConstantOperand();
-                    String sig = getSigConstantOperand();
-
-                    if ("equals".equals(methodName) && ("(Ljava/lang/Object;)Z".equals(sig))) {
-                        state = State.SAW_EQUALS;
-                        equalsPos = getPC();
-                    }
-                }
+                sawOpcodeAfterNothing(seen);
                 break;
 
             case SAW_EQUALS:
-                if (seen == IFEQ) {
-                    state = State.SAW_IFEQ;
-                    ifeqBranchTarget = getBranchTarget();
-                } else {
-                    state = State.SAW_NOTHING;
-                }
+                sawOpcodeAfterEquals(seen);
                 break;
 
             case SAW_IFEQ:
             case SAW_ASSIGNMENT:
-                if (getPC() >= ifeqBranchTarget) {
-                    if ((seen == GOTO) && !storeRegs.isEmpty() && (getBranchTarget() < equalsPos)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this, storeRegs.values().iterator().next().intValue()));
-                    }
-                    storeRegs.clear();
-                    loadRegs.clear();
-                    state = State.SAW_NOTHING;
-                } else if (OpcodeUtils.isBranch(seen) || OpcodeUtils.isReturn(seen)) {
-                    state = State.SAW_NOTHING;
-                } else {
-                    if (OpcodeUtils.isStore(seen)) {
-                        int reg = RegisterUtils.getStoreReg(this, seen);
-                        if (!loadRegs.get(reg)) {
-                            LocalVariableTable lvt = getMethod().getLocalVariableTable();
-                            String sig = "";
-                            if (lvt != null) {
-                                LocalVariable lv = lvt.getLocalVariable(reg, getPC());
-                                if (lv != null) {
-                                    sig = lv.getSignature();
-                                }
-                            }
-                            // ignore boolean flag stores, as this is a
-                            // relatively normal occurrence
-                            if (!"Z".equals(sig)) {
-                                storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
-                            }
-                        }
-                    } else if (OpcodeUtils.isLoad(seen)) {
-                        int reg = RegisterUtils.getLoadReg(this, seen);
-                        storeRegs.remove(Integer.valueOf(reg));
-                        loadRegs.set(reg);
-                    }
-                    state = State.SAW_ASSIGNMENT;
-                }
+                sawOpcodeAfterAssignment(seen);
                 break;
             }
         } finally {
             stack.sawOpcode(this, seen);
         }
 
+    }
+
+    private void sawOpcodeAfterNothing(int seen) {
+        if ((seen == INVOKEVIRTUAL)
+                && "equals".equals(getNameConstantOperand())
+                && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())) {
+            state = State.SAW_EQUALS;
+            equalsPos = getPC();
+        }
+    }
+
+
+    private void sawOpcodeAfterEquals(int seen) {
+        if (seen == IFEQ) {
+            state = State.SAW_IFEQ;
+            ifeqBranchTarget = getBranchTarget();
+        } else {
+            state = State.SAW_NOTHING;
+        }
+    }
+
+    private void sawOpcodeAfterAssignment(int seen) {
+        if (getPC() >= ifeqBranchTarget) {
+            if ((seen == GOTO) && !storeRegs.isEmpty() && (getBranchTarget() < equalsPos)) {
+                bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY).addClass(this)
+                        .addMethod(this).addSourceLine(this, storeRegs.values().iterator().next().intValue()));
+            }
+            storeRegs.clear();
+            loadRegs.clear();
+            state = State.SAW_NOTHING;
+        } else if (OpcodeUtils.isBranch(seen) || OpcodeUtils.isReturn(seen)) {
+            state = State.SAW_NOTHING;
+        } else {
+            if (OpcodeUtils.isStore(seen)) {
+                int reg = RegisterUtils.getStoreReg(this, seen);
+                if (!loadRegs.get(reg)) {
+                    LocalVariableTable lvt = getMethod().getLocalVariableTable();
+                    String sig = "";
+                    if (lvt != null) {
+                        LocalVariable lv = lvt.getLocalVariable(reg, getPC());
+                        if (lv != null) {
+                            sig = lv.getSignature();
+                        }
+                    }
+                    // ignore boolean flag stores, as this is a
+                    // relatively normal occurrence
+                    if (!"Z".equals(sig)) {
+                        storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
+                    }
+                }
+            } else if (OpcodeUtils.isLoad(seen)) {
+                int reg = RegisterUtils.getLoadReg(this, seen);
+                storeRegs.remove(Integer.valueOf(reg));
+                loadRegs.set(reg);
+            }
+            state = State.SAW_ASSIGNMENT;
+        }
     }
 
     /**

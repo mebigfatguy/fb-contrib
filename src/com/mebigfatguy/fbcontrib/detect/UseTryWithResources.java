@@ -133,66 +133,15 @@ public class UseTryWithResources extends BytecodeScanningDetector {
 
             switch (state) {
                 case SEEN_NOTHING:
-                    if ((seen == IFNULL) && (stack.getStackDepth() >= 1)) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        lastNullCheckedReg = itm.getRegisterNumber();
-                        state = lastNullCheckedReg >= 0 ? State.SEEN_IFNULL : State.SEEN_NOTHING;
-                    } else {
-                        lastNullCheckedReg = -1;
-                    }
-
-                    if (((bugPC >= 0) && (seen == INVOKEVIRTUAL)) || (seen == INVOKEINTERFACE)) {
-                        if ("addSuppressed".equals(getNameConstantOperand()) && "Ljava/lang/Throwable;)V".equals(getSigConstantOperand())) {
-                            JavaClass cls = Repository.lookupClass(getClassConstantOperand());
-                            if (cls.implementationOf(throwableClass)) {
-
-                                closePC = -1;
-                                bugPC = -1;
-
-                            }
-                        }
-                    }
+                    sawOpcodeAfterNothing(seen);
                 break;
 
                 case SEEN_IFNULL:
-                    if (OpcodeUtils.isALoad(seen)) {
-                        if (lastNullCheckedReg == getRegisterOperand()) {
-                            state = State.SEEN_ALOAD;
-                        } else {
-                            state = State.SEEN_NOTHING;
-                            lastNullCheckedReg = -1;
-                        }
-
-                    }
+                    sawOpcodeAfterNullCheck(seen);
                 break;
 
                 case SEEN_ALOAD:
-                    if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
-                        if ("close".equals(getNameConstantOperand()) && ("()V".equals(getSigConstantOperand()))) {
-                            JavaClass cls = Repository.lookupClass(getClassConstantOperand());
-                            if (cls.implementationOf(autoCloseableClass)) {
-
-                                tb = findEnclosingFinally(pc);
-                                if (tb != null) {
-                                    if (stack.getStackDepth() > 0) {
-                                        OpcodeStack.Item itm = stack.getStackItem(0);
-                                        int closeableReg = itm.getRegisterNumber();
-                                        if (closeableReg >= 0) {
-                                            Integer storePC = regStoredPCs.get(Integer.valueOf(closeableReg));
-                                            if (storePC != null) {
-                                                if (storePC.intValue() <= tb.getStartPC()) {
-                                                    bugPC = pc;
-                                                    closePC = tb.getHandlerEndPC();
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                    state = State.SEEN_NOTHING;
-                    lastNullCheckedReg = -1;
+                    sawOpcodeAfterLoad(seen, pc);
                 break;
             }
 
@@ -202,6 +151,58 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         } finally {
             stack.sawOpcode(this, seen);
         }
+    }
+
+    private void sawOpcodeAfterNothing(int seen) throws ClassNotFoundException {
+        if ((seen == IFNULL) && (stack.getStackDepth() >= 1)) {
+            OpcodeStack.Item itm = stack.getStackItem(0);
+            lastNullCheckedReg = itm.getRegisterNumber();
+            state = lastNullCheckedReg >= 0 ? State.SEEN_IFNULL : State.SEEN_NOTHING;
+        } else {
+            lastNullCheckedReg = -1;
+        }
+
+        if ((((bugPC >= 0) && (seen == INVOKEVIRTUAL)) || (seen == INVOKEINTERFACE))
+                && "addSuppressed".equals(getNameConstantOperand())
+                && "Ljava/lang/Throwable;)V".equals(getSigConstantOperand())
+                && Repository.lookupClass(getClassConstantOperand()).implementationOf(throwableClass)) {
+            closePC = -1;
+            bugPC = -1;
+        }
+    }
+
+    private void sawOpcodeAfterNullCheck(int seen) {
+        if (!OpcodeUtils.isALoad(seen)) {
+            return;
+        }
+        if (lastNullCheckedReg == getRegisterOperand()) {
+            state = State.SEEN_ALOAD;
+        } else {
+            state = State.SEEN_NOTHING;
+            lastNullCheckedReg = -1;
+        }
+    }
+
+    private void sawOpcodeAfterLoad(int seen, int pc) throws ClassNotFoundException {
+        if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE))
+                && "close".equals(getNameConstantOperand())
+                && "()V".equals(getSigConstantOperand())
+                && Repository.lookupClass(getClassConstantOperand()).implementationOf(autoCloseableClass)) {
+            TryBlock tb = findEnclosingFinally(pc);
+            if ((tb != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                int closeableReg = itm.getRegisterNumber();
+                if (closeableReg >= 0) {
+                    Integer storePC = regStoredPCs.get(Integer.valueOf(closeableReg));
+                    if ((storePC != null) && (storePC.intValue() <= tb.getStartPC())) {
+                        bugPC = pc;
+                        closePC = tb.getHandlerEndPC();
+                    }
+                }
+            }
+        }
+        state = State.SEEN_NOTHING;
+        lastNullCheckedReg = -1;
     }
 
     private boolean prescreen(Code obj) {

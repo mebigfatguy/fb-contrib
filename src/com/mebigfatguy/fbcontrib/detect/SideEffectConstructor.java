@@ -102,32 +102,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
 
             switch (state) {
             case SAW_NOTHING:
-                if (seen == INVOKESPECIAL) {
-                    String name = getNameConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(name)) {
-                        String sig = getSigConstantOperand();
-                        int numArgs = Type.getArgumentTypes(sig).length;
-                        if (stack.getStackDepth() > numArgs) {
-                            OpcodeStack.Item caller = stack.getStackItem(numArgs);
-                            if (caller.getRegisterNumber() != 0) {
-                                state = State.SAW_CTOR;
-                                pc = getPC();
-                            }
-                        }
-                    }
-                } else if (seen == RETURN) {
-                    int depth = stack.getStackDepth();
-                    for (int i = 0; i < depth; i++) {
-                        OpcodeStack.Item item = stack.getStackItem(i);
-                        Integer secPC = (Integer) item.getUserValue();
-                        if (secPC != null) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this, secPC.intValue()));
-                            break;
-                        }
-
-                    }
-                }
+                pc = sawOpcodeAfterNothing(seen);
                 break;
 
             case SAW_CTOR:
@@ -147,5 +122,35 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
                 item.setUserValue(Integer.valueOf(pc));
             }
         }
+    }
+
+    private int sawOpcodeAfterNothing(int seen) {
+        if (seen == INVOKESPECIAL) {
+            String name = getNameConstantOperand();
+            if (Values.CONSTRUCTOR.equals(name)) {
+                String sig = getSigConstantOperand();
+                int numArgs = Type.getArgumentTypes(sig).length;
+                if (stack.getStackDepth() > numArgs) {
+                    OpcodeStack.Item caller = stack.getStackItem(numArgs);
+                    if (caller.getRegisterNumber() != 0) {
+                        state = State.SAW_CTOR;
+                        return getPC();
+                    }
+                }
+            }
+        } else if (seen == RETURN) {
+            int depth = stack.getStackDepth();
+            for (int i = 0; i < depth; i++) {
+                OpcodeStack.Item item = stack.getStackItem(i);
+                Integer secPC = (Integer) item.getUserValue();
+                if (secPC != null) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this, secPC.intValue()));
+                    break;
+                }
+
+            }
+        }
+        return 0;
     }
 }

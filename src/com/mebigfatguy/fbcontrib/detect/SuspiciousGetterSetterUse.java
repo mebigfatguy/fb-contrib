@@ -84,100 +84,26 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
         boolean reset = true;
         switch (state) { // TODO: Refactor this to use state pattern, not nested
                          // switches
-        case SEEN_NOTHING:
-            switch (seen) {
-            case ALOAD:
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3:
-                beanReference1 = String.valueOf(getRegisterOperand());
-                state = State.SEEN_ALOAD;
-                reset = false;
-                break;
-            default:
-                break;
-            }
+            case SEEN_NOTHING:
+                reset = sawOpcodeAfterNothing(seen);
             break;
 
-        case SEEN_ALOAD:
-            switch (seen) {
-            case ALOAD:
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3:
-                if (!sawField && beanReference1.equals(String.valueOf(getRegisterOperand()))) {
-                    state = State.SEEN_DUAL_LOADS;
-                    reset = false;
-                }
-                break;
-
-            case GETFIELD: {
-                if (sawField) {
-                    beanReference2 += ':' + getNameConstantOperand();
-                    if (beanReference1.equals(beanReference2)) {
-                        state = State.SEEN_DUAL_LOADS;
-                        reset = false;
-                    }
-                } else {
-                    state = State.SEEN_GETFIELD;
-                    beanReference1 += ':' + getNameConstantOperand();
-                    sawField = true;
-                    reset = false;
-                }
-            }
-                break;
-            default:
-                break;
-            }
+            case SEEN_ALOAD:
+                reset = sawOpcodeAfterLoad(seen);
             break;
 
-        case SEEN_GETFIELD: {
-            switch (seen) {
-            case ALOAD:
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3:
-                beanReference2 = String.valueOf(getRegisterOperand());
-                state = State.SEEN_ALOAD;
-                reset = false;
-                break;
-            default:
-                break;
-            }
-        }
+            case SEEN_GETFIELD:
+                reset = sawOpcodeAfterGetField(seen);
             break;
 
-        case SEEN_DUAL_LOADS:
-            if (seen == INVOKEVIRTUAL) {
-                String sig = getSigConstantOperand();
-                if (sig.startsWith("()")) {
-                    propType = sig.substring("()".length());
-                    if (!"V".equals(propType)) {
-                        String methodName = getNameConstantOperand();
-                        if (methodName.startsWith("get")) {
-                            propName = methodName.substring("get".length());
-                            state = State.SEEN_INVOKEVIRTUAL;
-                            reset = false;
-                        }
-                    }
-                }
-            }
+            case SEEN_DUAL_LOADS:
+                reset = sawOpcodeAfterDualLoads(seen);
             break;
 
-        case SEEN_INVOKEVIRTUAL:
-            if (seen == INVOKEVIRTUAL) {
-                String sig = getSigConstantOperand();
-                if (sig.equals('(' + propType + ")V")) {
-                    String name = getNameConstantOperand();
-                    if (name.startsWith("set") && propName.equals(name.substring("set".length()))) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.SGSU_SUSPICIOUS_GETTER_SETTER_USE.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+            case SEEN_INVOKEVIRTUAL:
+                if (seen == INVOKEVIRTUAL) {
+                    checkForSGSU();
                 }
-            }
             break;
         }
 
@@ -190,4 +116,103 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
             state = State.SEEN_NOTHING;
         }
     }
+
+    private boolean sawOpcodeAfterNothing(int seen) {
+        switch (seen) {
+            case ALOAD:
+            case ALOAD_0:
+            case ALOAD_1:
+            case ALOAD_2:
+            case ALOAD_3:
+                beanReference1 = String.valueOf(getRegisterOperand());
+                state = State.SEEN_ALOAD;
+                return false;
+            default:
+                return true;
+        }
+    }
+
+    private boolean sawOpcodeAfterLoad(int seen) {
+        switch (seen) {
+            case ALOAD:
+            case ALOAD_0:
+            case ALOAD_1:
+            case ALOAD_2:
+            case ALOAD_3:
+                if (!sawField && beanReference1.equals(String.valueOf(getRegisterOperand()))) {
+                    state = State.SEEN_DUAL_LOADS;
+                    return false;
+                }
+            break;
+
+            case GETFIELD: {
+                if (sawField) {
+                    beanReference2 += ':' + getNameConstantOperand();
+                    if (beanReference1.equals(beanReference2)) {
+                        state = State.SEEN_DUAL_LOADS;
+                        return false;
+                    }
+                } else {
+                    state = State.SEEN_GETFIELD;
+                    beanReference1 += ':' + getNameConstantOperand();
+                    sawField = true;
+                    return false;
+                }
+            }
+            break;
+
+            default:
+            break;
+        }
+        return true;
+    }
+
+    private boolean sawOpcodeAfterGetField(int seen) {
+        switch (seen) {
+            case ALOAD:
+            case ALOAD_0:
+            case ALOAD_1:
+            case ALOAD_2:
+            case ALOAD_3:
+                beanReference2 = String.valueOf(getRegisterOperand());
+                state = State.SEEN_ALOAD;
+                return false;
+
+            default:
+                return true;
+        }
+    }
+
+    private boolean sawOpcodeAfterDualLoads(int seen) {
+        if (seen != INVOKEVIRTUAL) {
+            return true;
+        }
+        String sig = getSigConstantOperand();
+        if (!sig.startsWith("()")) {
+            return true;
+        }
+        propType = sig.substring("()".length());
+        if ("V".equals(propType)) {
+            return true;
+        }
+        String methodName = getNameConstantOperand();
+        if (!methodName.startsWith("get")) {
+            return true;
+        }
+        propName = methodName.substring("get".length());
+        state = State.SEEN_INVOKEVIRTUAL;
+        return false;
+    }
+
+    private void checkForSGSU() {
+        if (!getSigConstantOperand().equals('(' + propType + ")V")) {
+            return;
+        }
+        String name = getNameConstantOperand();
+        if (name.startsWith("set") && propName.equals(name.substring("set".length()))) {
+            bugReporter.reportBug(new BugInstance(this, BugType.SGSU_SUSPICIOUS_GETTER_SETTER_USE.name(), NORMAL_PRIORITY).addClass(this)
+                    .addMethod(this).addSourceLine(this));
+        }
+    }
+
 }
