@@ -119,7 +119,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                 }
             }
 
-            if (closePC >= pc) {
+            if ((closePC >= 0) && (closePC <= pc)) {
                 bugReporter.reportBug(new BugInstance(this, BugType.UTWR_USE_TRY_WITH_RESOURCES.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this, bugPC));
                 closePC = -1;
