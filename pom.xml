@@ -144,7 +144,7 @@
             <scope>provided</scope>
         </dependency>
         <dependency><scope>test</scope><groupId>backport-util-concurrent</groupId><artifactId>backport-util-concurrent</artifactId><version>3.1</version></dependency>
-        <dependency><scope>test</scope><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>17.0</version></dependency>
+        <dependency><scope>test</scope><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>19.0</version></dependency>
         <dependency><scope>test</scope><groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>1.6</version></dependency>
         <dependency><scope>test</scope><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.4</version></dependency>
         <dependency><scope>test</scope><groupId>commons-collections</groupId><artifactId>commons-collections</artifactId><version>3.2.1</version></dependency>
@@ -157,20 +157,20 @@
         <dependency><scope>test</scope><groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.3</version></dependency>
         <dependency><scope>test</scope><groupId>org.apache.httpcomponents</groupId><artifactId>httpclient</artifactId><version>4.3.4</version></dependency>
         <dependency><scope>test</scope><groupId>org.apache.httpcomponents</groupId><artifactId>httpcore</artifactId><version>4.3.2</version></dependency>
-        <dependency><scope>test</scope><groupId>org.mockito</groupId><artifactId>mockito-all</artifactId><version>1.10.19</version></dependency>
-        <dependency><scope>test</scope><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>1.7.7</version></dependency>
-        <dependency><scope>test</scope><groupId>org.springframework</groupId><artifactId>spring-tx</artifactId><version>4.3.2.RELEASE</version></dependency>
+        <dependency><scope>test</scope><groupId>org.mockito</groupId><artifactId>mockito-all</artifactId><version>2.0.2-beta</version></dependency>
+        <dependency><scope>test</scope><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>1.7.21</version></dependency>
+        <dependency><scope>test</scope><groupId>org.springframework</groupId><artifactId>spring-tx</artifactId><version>4.3.3.RELEASE</version></dependency>
         <dependency><scope>test</scope><groupId>org.testng</groupId><artifactId>testng</artifactId><version>6.9.10</version></dependency>
         <dependency>
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-context</artifactId>
-        	<version>4.3.2.RELEASE</version>
+        	<version>4.3.3.RELEASE</version>
         	<scope>test</scope>
         </dependency>
         <dependency>
         	<groupId>org.springframework</groupId>
         	<artifactId>spring-beans</artifactId>
-        	<version>4.3.2.RELEASE</version>
+        	<version>4.3.3.RELEASE</version>
         	<scope>test</scope>
         </dependency>
         <dependency>
