@@ -151,7 +151,7 @@ public final class SignatureUtils {
                 return "L";
         }
 
-        return "Ljava/lang/Object;";
+        return Values.SIG_JAVA_LANG_OBJECT;
     }
 
     private static JavaClass findInheritedMethod(JavaClass[] classes, String methodName, String signature) {

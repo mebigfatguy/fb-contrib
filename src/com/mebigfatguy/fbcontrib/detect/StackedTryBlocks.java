@@ -188,58 +188,60 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                 block.setState(TryBlock.State.IN_TRY);
             }
 
-            if (inBlocks.size() > 0) {
-                TryBlock innerBlock = inBlocks.get(inBlocks.size() - 1);
+            if (inBlocks.isEmpty()) {
+                return;
+            }
+            TryBlock innerBlock = inBlocks.get(inBlocks.size() - 1);
 
-                int nextPC = getNextPC();
-                if (innerBlock.atHandlerPC(nextPC)) {
-                    if ((seen == GOTO) || (seen == GOTO_W)) {
-                        innerBlock.setEndHandlerPC(getBranchTarget());
-                    } else {
-                        inBlocks.remove(innerBlock);
-                        blocks.remove(innerBlock);
-                    }
-                } else if (innerBlock.atHandlerPC(pc)) {
-                    innerBlock.setState(TryBlock.State.IN_CATCH);
-                } else if (innerBlock.atEndHandlerPC(pc)) {
-                    inBlocks.remove(inBlocks.size() - 1);
-                    innerBlock.setState(TryBlock.State.AFTER);
+            int nextPC = getNextPC();
+            if (innerBlock.atHandlerPC(nextPC)) {
+                if ((seen == GOTO) || (seen == GOTO_W)) {
+                    innerBlock.setEndHandlerPC(getBranchTarget());
+                } else {
+                    inBlocks.remove(innerBlock);
+                    blocks.remove(innerBlock);
                 }
+            } else if (innerBlock.atHandlerPC(pc)) {
+                innerBlock.setState(TryBlock.State.IN_CATCH);
+            } else if (innerBlock.atEndHandlerPC(pc)) {
+                inBlocks.remove(inBlocks.size() - 1);
+                innerBlock.setState(TryBlock.State.AFTER);
+            }
 
-                if (innerBlock.inCatch()) {
-                    if (((seen >= Constants.IFEQ) && ((seen <= Constants.RET))) || (seen == GOTO_W) || OpcodeUtils.isReturn(seen)) {
-                        blocks.remove(innerBlock);
-                        inBlocks.remove(inBlocks.size() - 1);
-                    } else if (seen == ATHROW) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            XMethod xm = item.getReturnValueOf();
-                            if (xm != null) {
-                                innerBlock.setThrowSignature(xm.getSignature());
-                            }
-                            innerBlock.setExceptionSignature(item.getSignature());
-                            innerBlock.setMessage((String) item.getUserValue());
-                        } else {
-                            inBlocks.remove(inBlocks.size() - 1);
-                            innerBlock.setState(TryBlock.State.AFTER);
+            if (innerBlock.inCatch()) {
+                if (((seen >= Constants.IFEQ) && ((seen <= Constants.RET))) || (seen == GOTO_W) || OpcodeUtils.isReturn(seen)) {
+                    blocks.remove(innerBlock);
+                    inBlocks.remove(inBlocks.size() - 1);
+                } else if (seen == ATHROW) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        XMethod xm = item.getReturnValueOf();
+                        if (xm != null) {
+                            innerBlock.setThrowSignature(xm.getSignature());
                         }
-                    } else if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
-                        String cls = getClassConstantOperand();
-                        JavaClass exCls = Repository.lookupClass(cls);
-                        if (exCls.instanceOf(THROWABLE_CLASS)) {
-                            String signature = getSigConstantOperand();
-                            Type[] types = Type.getArgumentTypes(signature);
-                            if (types.length > 0) {
-                                if ("Ljava/lang/String;".equals(types[0].getSignature()) && (stack.getStackDepth() >= types.length)) {
-                                    OpcodeStack.Item item = stack.getStackItem(types.length - 1);
-                                    message = (String) item.getConstant();
-                                    if (message == null) {
-                                        message = "____UNKNOWN____" + System.identityHashCode(item);
-                                    }
+                        innerBlock.setExceptionSignature(item.getSignature());
+                        innerBlock.setMessage((String) item.getUserValue());
+                    } else {
+                        inBlocks.remove(inBlocks.size() - 1);
+                        innerBlock.setState(TryBlock.State.AFTER);
+                    }
+                } else if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+                    String cls = getClassConstantOperand();
+                    JavaClass exCls = Repository.lookupClass(cls);
+                    if (exCls.instanceOf(THROWABLE_CLASS)) {
+                        String signature = getSigConstantOperand();
+                        Type[] types = Type.getArgumentTypes(signature);
+                        if (types.length > 0) {
+                            if (Values.SIG_JAVA_LANG_STRING.equals(types[0].getSignature())
+                                    && (stack.getStackDepth() >= types.length)) {
+                                OpcodeStack.Item item = stack.getStackItem(types.length - 1);
+                                message = (String) item.getConstant();
+                                if (message == null) {
+                                    message = "____UNKNOWN____" + System.identityHashCode(item);
                                 }
-                            } else {
-                                message = "";
                             }
+                        } else {
+                            message = "";
                         }
                     }
                 }

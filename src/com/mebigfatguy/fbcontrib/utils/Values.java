@@ -58,8 +58,14 @@ public final class Values {
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
+    public static final String SIG_JAVA_LANG_OBJECT = SignatureUtils.classToSignature(SLASHED_JAVA_LANG_OBJECT);
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRING = "java/lang/String";
+    public static final String SIG_JAVA_LANG_STRING = SignatureUtils.classToSignature(SLASHED_JAVA_LANG_STRING);
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_STRINGBUILDER = "java/lang/StringBuilder";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_STRINGBUFFER = "java/lang/StringBuffer";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_CLASS = "java/lang/Class";
     @SlashedClassName

@@ -70,11 +70,11 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         methodsMap.put(new FQMethod("java/io/PrintStream", "print", "(Ljava/lang/String;)V"), Values.ZERO);
         methodsMap.put(new FQMethod("java/io/PrintStream", "println", "(Ljava/lang/String;)V"), Values.ZERO);
         methodsMap.put(new FQMethod("java/io/StringWriter", "write", "(Ljava/lang/String;)V"), Values.ZERO);
-        methodsMap.put(new FQMethod("java/lang/StringBuffer", "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;"), Values.ZERO);
-        methodsMap.put(new FQMethod("java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;"), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUFFER, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;"), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUILDER, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;"), Values.ZERO);
 
         // same thing as above, except now with two params
-        methodsMap.put(new FQMethod("java/lang/String", "replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;"), new IntPair(0, 1));
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;"), new IntPair(0, 1));
 
         characterMethods = Collections.unmodifiableMap(methodsMap);
     }

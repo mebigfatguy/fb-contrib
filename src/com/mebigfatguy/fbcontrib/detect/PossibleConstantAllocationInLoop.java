@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 
-    private static final Set<String> SYNTHETIC_ALLOCATION_CLASSES = UnmodifiableSet.create("java/lang/StringBuffer", "java/lang/StringBuilder",
+    private static final Set<String> SYNTHETIC_ALLOCATION_CLASSES = UnmodifiableSet.create(Values.SLASHED_JAVA_LANG_STRINGBUFFER, Values.SLASHED_JAVA_LANG_STRINGBUILDER,
             "java/lang/AssertionError");
 
     private final BugReporter bugReporter;

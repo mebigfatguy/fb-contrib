@@ -347,7 +347,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 Type[] types = Type.getArgumentTypes(sig);
                 if (types.length <= stack.getStackDepth()) {
                     for (int i = 0; i < types.length; i++) {
-                        if ("Ljava/lang/String;".equals(types[i].getSignature())) {
+                        if (Values.SIG_JAVA_LANG_STRING.equals(types[i].getSignature())) {
                             OpcodeStack.Item item = stack.getStackItem(types.length - i - 1);
                             String cons = (String) item.getConstant();
                             if ((cons != null) && cons.contains("{}")) {

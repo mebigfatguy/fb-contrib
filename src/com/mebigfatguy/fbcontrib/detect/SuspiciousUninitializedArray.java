@@ -32,6 +32,7 @@ import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -181,7 +182,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                     for (int t = 0; t < types.length; t++) {
                         Type type = types[t];
                         String parmSig = type.getSignature();
-                        if (returnArraySig.equals(parmSig) || "Ljava/lang/Object;".equals(parmSig) || "[Ljava/lang/Object;".equals(parmSig)) {
+                        if (returnArraySig.equals(parmSig) || Values.SIG_JAVA_LANG_OBJECT.equals(parmSig) || ('[' + Values.SIG_JAVA_LANG_OBJECT).equals(parmSig)) {
                             int parmIndex = types.length - t - 1;
                             if (stack.getStackDepth() > parmIndex) {
                                 OpcodeStack.Item item = stack.getStackItem(parmIndex);
