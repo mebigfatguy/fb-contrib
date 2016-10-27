@@ -47,24 +47,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
 
-    /**
-     * represents a local array that is stored, for wrapping a value
-     */
-    static class WrapperInfo {
-        int wrappedReg;
-        boolean wasArg;
-
-        WrapperInfo(int reg) {
-            wrappedReg = reg;
-            wasArg = false;
-        }
-
-        @Override
-        public String toString() {
-            return ToString.build(this);
-        }
-    }
-
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private Map<Integer, WrapperInfo> wrappers;
@@ -340,4 +322,23 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
             }
         }
     }
+
+    /**
+     * represents a local array that is stored, for wrapping a value
+     */
+    static class WrapperInfo {
+        int wrappedReg;
+        boolean wasArg;
+
+        WrapperInfo(int reg) {
+            wrappedReg = reg;
+            wasArg = false;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    }
+
 }

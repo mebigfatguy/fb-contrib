@@ -47,6 +47,11 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
+    private final static Map<FQMethod, Object> characterMethods;
+
+    private final BugReporter bugReporter;
+    private OpcodeStack stack;
+
     /**
      * holds a user value for a StringBuilder or StringBuffer on the stack that is an online append ideally there would be an UNKNOWN option, rather than null,
      * but findbugs seems to have a nasty bug with static fields holding onto uservalues across detectors
@@ -54,8 +59,6 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     enum UCPMUserValue {
         INLINE
     }
-
-    private final static Map<FQMethod, Object> characterMethods;
 
     static {
         Map<FQMethod, Object> methodsMap = new HashMap<FQMethod, Object>();
@@ -78,23 +81,6 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
         characterMethods = Collections.unmodifiableMap(methodsMap);
     }
-
-    private static class IntPair {
-        final int firstStringParam, secondStringParam;
-
-        IntPair(int firstStringParam, int secondStringParam) {
-            this.firstStringParam = firstStringParam;
-            this.secondStringParam = secondStringParam;
-        }
-
-        @Override
-        public String toString() {
-            return ToString.build(this);
-        }
-    }
-
-    private final BugReporter bugReporter;
-    private OpcodeStack stack;
 
     /**
      * constructs a UCPM detector given the reporter to report bugs on
@@ -264,4 +250,19 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
         return null;
     }
+
+    private static class IntPair {
+        final int firstStringParam, secondStringParam;
+
+        IntPair(int firstStringParam, int secondStringParam) {
+            this.firstStringParam = firstStringParam;
+            this.secondStringParam = secondStringParam;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    }
+
 }
