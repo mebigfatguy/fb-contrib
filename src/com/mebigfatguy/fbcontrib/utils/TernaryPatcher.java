@@ -55,16 +55,17 @@ public final class TernaryPatcher {
      *            the opcode currently seen
      */
     public static void pre(OpcodeStack stack, int opcode) {
-        if (!sawGOTO) {
-            sawGOTO = (opcode == Constants.GOTO) || (opcode == Constants.GOTO_W);
-            if (sawGOTO) {
-                int depth = stack.getStackDepth();
-                if (depth > 0) {
-                    userValues.clear();
-                    for (int i = 0; i < depth; i++) {
-                        OpcodeStack.Item item = stack.getStackItem(i);
-                        userValues.add(item.getUserValue());
-                    }
+        if (sawGOTO) {
+            return;
+        }
+        sawGOTO = (opcode == Constants.GOTO) || (opcode == Constants.GOTO_W);
+        if (sawGOTO) {
+            int depth = stack.getStackDepth();
+            if (depth > 0) {
+                userValues.clear();
+                for (int i = 0; i < depth; i++) {
+                    OpcodeStack.Item item = stack.getStackItem(i);
+                    userValues.add(item.getUserValue());
                 }
             }
         }
@@ -81,21 +82,18 @@ public final class TernaryPatcher {
      *            the opcode currently seen
      */
     public static void post(OpcodeStack stack, int opcode) {
-        if ((opcode != Constants.GOTO) && (opcode != Constants.GOTO_W) && sawGOTO) {
-            int depth = stack.getStackDepth();
-            if (depth > 0) {
-                for (int i = 0; i < depth; i++) {
-                    if (userValues.size() > i) {
-                        OpcodeStack.Item item = stack.getStackItem(i);
-                        if (item.getUserValue() == null) {
-                            item.setUserValue(userValues.get(i));
-                        }
-                    }
-                }
-            }
-
-            userValues.clear();
-            sawGOTO = false;
+        if (!sawGOTO || (opcode == Constants.GOTO) || (opcode == Constants.GOTO_W)) {
+            return;
         }
+        int depth = stack.getStackDepth();
+        for (int i = 0; i < depth && i < userValues.size(); i++) {
+            OpcodeStack.Item item = stack.getStackItem(i);
+            if (item.getUserValue() == null) {
+                item.setUserValue(userValues.get(i));
+            }
+        }
+
+        userValues.clear();
+        sawGOTO = false;
     }
 }

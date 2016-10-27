@@ -108,23 +108,24 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
         String sig = m.getSignature();
         int sigPos = sig.indexOf(")[");
-        if (sigPos >= 0) {
-            if (INITIAL_VALUE.equals(m.getName())) {
-                try {
-                    if ((THREAD_LOCAL_CLASS == null) || getClassContext().getJavaClass().instanceOf(THREAD_LOCAL_CLASS)) {
-                        return;
-                    }
-                } catch (ClassNotFoundException e) {
-                    bugReporter.reportMissingClass(e);
+        if (sigPos < 0) {
+            return;
+        }
+        if (INITIAL_VALUE.equals(m.getName())) {
+            try {
+                if ((THREAD_LOCAL_CLASS == null) || getClassContext().getJavaClass().instanceOf(THREAD_LOCAL_CLASS)) {
                     return;
                 }
+            } catch (ClassNotFoundException e) {
+                bugReporter.reportMissingClass(e);
+                return;
             }
-
-            stack.resetForMethodEntry(this);
-            returnArraySig = sig.substring(sigPos + 1);
-            uninitializedRegs.clear();
-            super.visitCode(obj);
         }
+
+        stack.resetForMethodEntry(this);
+        returnArraySig = sig.substring(sigPos + 1);
+        uninitializedRegs.clear();
+        super.visitCode(obj);
     }
 
     /**
@@ -145,11 +146,9 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case NEWARRAY: {
                     if (!isTOS0()) {
                         int typeCode = getIntConstant();
-                        if (typeCode != Constants.T_BYTE) {
-                            String sig = '[' + SignatureUtils.getTypeCodeSignature(typeCode);
-                            if (returnArraySig.equals(sig)) {
-                                userValue = SUAUserValue.UNINIT_ARRAY;
-                            }
+                        if ((typeCode != Constants.T_BYTE)
+                                && returnArraySig.equals('[' + SignatureUtils.getTypeCodeSignature(typeCode))) {
+                            userValue = SUAUserValue.UNINIT_ARRAY;
                         }
                     }
                 }
@@ -157,7 +156,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
                 case ANEWARRAY: {
                     if (!isTOS0()) {
-                        String sig = "[L" + getClassConstantOperand() + ';';
+                        String sig = '[' + SignatureUtils.classToSignature(getClassConstantOperand());
                         if (returnArraySig.equals(sig)) {
                             userValue = SUAUserValue.UNINIT_ARRAY;
                         }

@@ -123,10 +123,10 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     int reg = RegisterUtils.getAStoreReg(this, seen);
-                    if (item.getUserValue() != null) {
-                        allocationRegs.set(reg);
-                    } else {
+                    if (item.getUserValue() == null) {
                         allocationRegs.clear(reg);
+                    } else {
+                        allocationRegs.set(reg);
                     }
                 }
                 break;

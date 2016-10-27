@@ -185,19 +185,16 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                         checkParms = COLLECTION_PARMS.get(cm);
                         if (checkParms != null) {
                             OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
-                            if (item.getXField() != null) {
+                            if (item.getXField() == null) {
+                                checkParms = null;
+                            } else {
                                 for (int parm : checkParms) {
-                                    if (parm >= 0) {
-                                        item = stack.getStackItem(parm);
-                                        if (TO_STRING.equals(item.getUserValue())) {
-                                            bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
-                                            break;
-                                        }
+                                    if ((parm >= 0) && TO_STRING.equals(stack.getStackItem(parm).getUserValue())) {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
+                                        break;
                                     }
                                 }
-                            } else {
-                                checkParms = null;
                             }
                         }
                     }

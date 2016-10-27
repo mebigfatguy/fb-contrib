@@ -99,18 +99,17 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEVIRTUAL) {
-                String methodName = getNameConstantOperand();
-                if ("wait".equals(methodName) && (stack.getStackDepth() > 0)) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    JavaClass cls = itm.getJavaClass();
-                    if (cls != null) {
-                        String clsName = cls.getClassName();
-                        if (concurrentAwaitClasses.contains(clsName)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT.name(), NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this));
-                        }
-                    }
+            if ((seen != INVOKEVIRTUAL)
+                    || !"wait".equals(getNameConstantOperand())
+                    || stack.getStackDepth() == 0) {
+                return;
+            }
+            JavaClass cls = stack.getStackItem(0).getJavaClass();
+            if (cls != null) {
+                String clsName = cls.getClassName();
+                if (concurrentAwaitClasses.contains(clsName)) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
         } catch (ClassNotFoundException cnfe) {

@@ -198,8 +198,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
         if (seen == PUTFIELD) {
             OpcodeStack stack = getStack();
             if (stack.getStackDepth() > 0) {
-                OpcodeStack.Item item = stack.getStackItem(0);
-                int reg = item.getRegisterNumber();
+                int reg = stack.getStackItem(0).getRegisterNumber();
                 if ((reg >= 0) && (reg < firstLocalRegister)) {
                     clearSpecialField(getNameConstantOperand());
                 }

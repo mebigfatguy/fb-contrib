@@ -136,7 +136,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                     boolean seenAll = seenNegative & seenPositive & seenZero;
                     if (!seenAll || seenUnconditionalNonZero) {
                         bugReporter.reportBug(
-                                new BugInstance(this, BugType.SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), (!seenAll) ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                new BugInstance(this, BugType.SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), seenAll ? LOW_PRIORITY : NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this, 0));
                     }
                 }
@@ -254,35 +254,34 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
      *
      */
     private void processIntegerReturn() {
-        if ((sawConstant != null) || (stack.getStackDepth() > 0)) {
-            Integer returnValue = null;
-            if (sawConstant != null) {
-                returnValue = sawConstant;
-            } else {
-                OpcodeStack.Item item = stack.getStackItem(0);
-                returnValue = (Integer) item.getConstant();
-            }
+        if ((sawConstant == null) && (stack.getStackDepth() == 0)) {
+            throw new StopOpcodeParsingException();
+        }
 
-            if (returnValue == null) {
-                throw new StopOpcodeParsingException();
-            } else {
-                int v = returnValue.intValue();
-                if (v < 0) {
-                    seenNegative = true;
-                    if (getPC() > furthestBranchTarget) {
-                        seenUnconditionalNonZero = true;
-                    }
-                } else if (v > 0) {
-                    seenPositive = true;
-                    if (getPC() > furthestBranchTarget) {
-                        seenUnconditionalNonZero = true;
-                    }
-                } else {
-                    seenZero = true;
-                }
+        Integer returnValue = null;
+        if (sawConstant == null) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            returnValue = (Integer) item.getConstant();
+        } else {
+            returnValue = sawConstant;
+        }
+
+        if (returnValue == null) {
+            throw new StopOpcodeParsingException();
+        }
+        int v = returnValue.intValue();
+        if (v < 0) {
+            seenNegative = true;
+            if (getPC() > furthestBranchTarget) {
+                seenUnconditionalNonZero = true;
+            }
+        } else if (v > 0) {
+            seenPositive = true;
+            if (getPC() > furthestBranchTarget) {
+                seenUnconditionalNonZero = true;
             }
         } else {
-            throw new StopOpcodeParsingException();
+            seenZero = true;
         }
 
         sawConstant = null;

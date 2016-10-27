@@ -212,16 +212,18 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
                 case FSTORE_1:
                 case FSTORE_2:
                 case FSTORE_3: {
-                    if (stack.getStackDepth() >= 1) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        Integer elReg = (Integer) itm.getUserValue();
-                        if (elReg != null) {
-                            int reg = RegisterUtils.getStoreReg(this, seen);
-                            if (elReg.intValue() == reg) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
-                            }
-                        }
+                    if (stack.getStackDepth() == 0) {
+                        break;
+                    }
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    Integer elReg = (Integer) itm.getUserValue();
+                    if (elReg == null) {
+                        break;
+                    }
+                    int reg = RegisterUtils.getStoreReg(this, seen);
+                    if (elReg.intValue() == reg) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
                 break;
@@ -248,24 +250,22 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
      *            the currently parsed opcode
      */
     private void processLocalStore(int seen) {
-        if (stack.getStackDepth() >= 1) {
-            OpcodeStack.Item itm = stack.getStackItem(0);
-            String sig = itm.getSignature();
-            if ((sig.length() > 0) && (sig.charAt(0) == '[')) {
-                int reg = RegisterUtils.getAStoreReg(this, seen);
-                Integer elReg = (Integer) itm.getUserValue();
-                if (elReg != null) {
-                    wrappers.put(Integer.valueOf(reg), new WrapperInfo(elReg.intValue()));
-                }
-            } else {
-                Integer elReg = (Integer) itm.getUserValue();
-                if (elReg != null) {
-                    int reg = RegisterUtils.getAStoreReg(this, seen);
-                    if (elReg.intValue() == reg) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
-                }
+        if (stack.getStackDepth() == 0) {
+            return;
+        }
+        OpcodeStack.Item itm = stack.getStackItem(0);
+        String sig = itm.getSignature();
+        if ((sig.length() > 0) && (sig.charAt(0) == '[')) {
+            int reg = RegisterUtils.getAStoreReg(this, seen);
+            Integer elReg = (Integer) itm.getUserValue();
+            if (elReg != null) {
+                wrappers.put(Integer.valueOf(reg), new WrapperInfo(elReg.intValue()));
+            }
+        } else {
+            Integer elReg = (Integer) itm.getUserValue();
+            if ((elReg != null) && (elReg.intValue() == RegisterUtils.getAStoreReg(this, seen))) {
+                bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
+                        .addMethod(this).addSourceLine(this));
             }
         }
     }
@@ -303,20 +303,21 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
      *
      */
     private void processMethodCall() {
-        if (!("invoke".equals(getNameConstantOperand()) && "java/lang/reflect/Method".equals(getClassConstantOperand()))) {
-            String sig = getSigConstantOperand();
-            Type[] args = Type.getArgumentTypes(sig);
-            if (stack.getStackDepth() >= args.length) {
-                for (int i = 0; i < args.length; i++) {
-                    Type t = args[i];
-                    String argSig = t.getSignature();
-                    if ((argSig.length() > 0) && (argSig.charAt(0) == '[')) {
-                        OpcodeStack.Item itm = stack.getStackItem(args.length - i - 1);
-                        int arrayReg = itm.getRegisterNumber();
-                        WrapperInfo wi = wrappers.get(Integer.valueOf(arrayReg));
-                        if (wi != null) {
-                            wi.wasArg = true;
-                        }
+        if ("invoke".equals(getNameConstantOperand()) && "java/lang/reflect/Method".equals(getClassConstantOperand())) {
+            return;
+        }
+        String sig = getSigConstantOperand();
+        Type[] args = Type.getArgumentTypes(sig);
+        if (stack.getStackDepth() >= args.length) {
+            for (int i = 0; i < args.length; i++) {
+                Type t = args[i];
+                String argSig = t.getSignature();
+                if ((argSig.length() > 0) && (argSig.charAt(0) == '[')) {
+                    OpcodeStack.Item itm = stack.getStackItem(args.length - i - 1);
+                    int arrayReg = itm.getRegisterNumber();
+                    WrapperInfo wi = wrappers.get(Integer.valueOf(arrayReg));
+                    if (wi != null) {
+                        wi.wasArg = true;
                     }
                 }
             }

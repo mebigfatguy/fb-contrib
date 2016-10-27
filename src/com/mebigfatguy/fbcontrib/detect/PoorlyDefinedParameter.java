@@ -170,20 +170,18 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
                 break;
             }
 
-            {
-                int insTarget = -1;
-                if (((seen >= IFEQ) && (seen <= IF_ACMPNE)) || (seen == GOTO) || (seen == GOTO_W)) {
-                    insTarget = getBranchTarget();
-                    if (insTarget < getPC()) {
-                        insTarget = -1;
-                    }
-                } else if ((seen == LOOKUPSWITCH) || (seen == TABLESWITCH)) {
-                    insTarget = this.getDefaultSwitchOffset() + getPC();
+            int insTarget = -1;
+            if (((seen >= IFEQ) && (seen <= IF_ACMPNE)) || (seen == GOTO) || (seen == GOTO_W)) {
+                insTarget = getBranchTarget();
+                if (insTarget < getPC()) {
+                    insTarget = -1;
                 }
+            } else if ((seen == LOOKUPSWITCH) || (seen == TABLESWITCH)) {
+                insTarget = this.getDefaultSwitchOffset() + getPC();
+            }
 
-                if (insTarget > downwardBranchTarget) {
-                    downwardBranchTarget = insTarget;
-                }
+            if (insTarget > downwardBranchTarget) {
+                downwardBranchTarget = insTarget;
             }
         } else {
             state = State.SAW_NOTHING;

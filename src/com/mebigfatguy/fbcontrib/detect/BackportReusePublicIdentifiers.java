@@ -108,13 +108,9 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 for (Backports backport : BACKPORTS) {
-                    if (Values.CONSTRUCTOR.equals(methodName)) {
-                        if (className.startsWith(backport.getPathPrefix())) {
-                            if (clsVersion >= backport.getMinimumJDK()) {
-                                reportBug(backport.getLibrary());
-                                break;
-                            }
-                        }
+                    if (Values.CONSTRUCTOR.equals(methodName) && className.startsWith(backport.getPathPrefix()) && (clsVersion >= backport.getMinimumJDK())) {
+                        reportBug(backport.getLibrary());
+                        break;
                     }
                 }
             }
