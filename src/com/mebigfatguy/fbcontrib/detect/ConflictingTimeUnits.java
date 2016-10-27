@@ -229,6 +229,8 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         return unit;
     }
 
+    // false positive; we're comparing enums
+    @SuppressWarnings("PMD.CompareObjectsWithEquals")
     private void processArithmetic() {
         if (stack.getStackDepth() > 1) {
             OpcodeStack.Item arg1 = stack.getStackItem(0);
