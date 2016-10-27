@@ -90,7 +90,7 @@ public class SluggishGui extends BytecodeScanningDetector {
                 }
             }
 
-            if (guiInterfaces.size() > 0) {
+            if (!guiInterfaces.isEmpty()) {
                 listenerCode = new LinkedHashMap<>();
                 expensiveThisCalls = new HashSet<>();
                 super.visitClassContext(classContext);

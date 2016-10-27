@@ -76,7 +76,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             fieldSpecialObjects = new HashMap<String, String>();
             super.visitClassContext(classContext);
 
-            if (!isInnerClass && (fieldSpecialObjects.size() > 0)) {
+            if (!isInnerClass && !fieldSpecialObjects.isEmpty()) {
 
                 for (Map.Entry<String, String> entry : fieldSpecialObjects.entrySet()) {
                     String fieldName = entry.getKey();

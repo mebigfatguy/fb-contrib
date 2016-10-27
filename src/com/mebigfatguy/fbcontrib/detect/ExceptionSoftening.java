@@ -192,7 +192,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 JavaClass exClass = itm.getJavaClass();
-                if ((exClass != null) && exClass.instanceOf(runtimeClass) && (catchInfos.size() > 0)) {
+                if ((exClass != null) && exClass.instanceOf(runtimeClass) && !catchInfos.isEmpty()) {
                     Set<String> possibleCatchSignatures = findPossibleCatchSignatures(catchInfos, getPC());
                     if (!possibleCatchSignatures.contains(exClass.getClassName())) {
                         boolean anyRuntimes = false;

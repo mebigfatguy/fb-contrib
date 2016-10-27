@@ -147,27 +147,28 @@ public class ClassEnvy extends BytecodeScanningDetector {
         clsAccessCount = new HashMap<>();
         super.visitCode(obj);
 
-        if (clsAccessCount.size() > 0) {
-            Map.Entry<String, Set<Integer>>[] envies = clsAccessCount.entrySet().toArray(new Map.Entry[clsAccessCount.size()]);
-            Arrays.sort(envies, ACCESS_COUNT_COMPARATOR);
+        if (clsAccessCount.isEmpty()) {
+            return;
+        }
+        Map.Entry<String, Set<Integer>>[] envies = clsAccessCount.entrySet().toArray(new Map.Entry[clsAccessCount.size()]);
+        Arrays.sort(envies, ACCESS_COUNT_COMPARATOR);
 
-            Map.Entry<String, Set<Integer>> bestEnvyEntry = envies[0];
-            int bestEnvyCount = bestEnvyEntry.getValue().size();
-            if (bestEnvyCount < envyMin) {
+        Map.Entry<String, Set<Integer>> bestEnvyEntry = envies[0];
+        int bestEnvyCount = bestEnvyEntry.getValue().size();
+        if (bestEnvyCount < envyMin) {
+            return;
+        }
+
+        double bestPercent = ((double) bestEnvyCount) / ((double) (bestEnvyCount + thisClsAccessCount));
+
+        if (bestPercent > envyPercent) {
+            String bestEnvy = bestEnvyEntry.getKey();
+            if (implementsCommonInterface(bestEnvy)) {
                 return;
             }
 
-            double bestPercent = ((double) bestEnvyCount) / ((double) (bestEnvyCount + thisClsAccessCount));
-
-            if (bestPercent > envyPercent) {
-                String bestEnvy = bestEnvyEntry.getKey();
-                if (implementsCommonInterface(bestEnvy)) {
-                    return;
-                }
-
-                bugReporter.reportBug(new BugInstance(this, BugType.CE_CLASS_ENVY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLineRange(this, 0, obj.getCode().length - 1).addString(bestEnvy));
-            }
+            bugReporter.reportBug(new BugInstance(this, BugType.CE_CLASS_ENVY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                    .addSourceLineRange(this, 0, obj.getCode().length - 1).addString(bestEnvy));
         }
     }
 

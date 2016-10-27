@@ -84,7 +84,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
                 if (tagClasses.contains(superCls.getClassName())) {
                     attributes = getAttributes(cls);
 
-                    if (attributes.size() > 0) {
+                    if (!attributes.isEmpty()) {
                         methodWrites = new HashMap<>();
                         fieldAnnotations = new HashMap<>();
                         super.visitClassContext(classContext);

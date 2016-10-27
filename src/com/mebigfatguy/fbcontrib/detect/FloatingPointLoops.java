@@ -75,7 +75,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (forLoops.size() > 0) {
+        if (!forLoops.isEmpty()) {
             Iterator<FloatForLoop> ffl = forLoops.iterator();
             while (ffl.hasNext()) {
                 if (!ffl.next().sawOpcode(seen)) {

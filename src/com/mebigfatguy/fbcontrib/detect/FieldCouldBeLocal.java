@@ -120,7 +120,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                 }
             }
 
-            if (localizableFields.size() > 0) {
+            if (!localizableFields.isEmpty()) {
                 buildMethodFieldModifiers(classContext);
                 super.visitClassContext(classContext);
                 for (FieldInfo fi : localizableFields.values()) {

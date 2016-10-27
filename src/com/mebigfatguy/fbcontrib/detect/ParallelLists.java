@@ -75,7 +75,7 @@ public class ParallelLists extends BytecodeScanningDetector {
                 }
             }
 
-            if (listFields.size() > 0) {
+            if (!listFields.isEmpty()) {
                 stack = new OpcodeStack();
                 indexToFieldMap = new HashMap<>();
                 super.visitClassContext(classContext);

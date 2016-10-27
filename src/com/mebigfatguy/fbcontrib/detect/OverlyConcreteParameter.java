@@ -389,7 +389,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
             }
             Map<JavaClass, List<MethodInfo>> definers = entry.getValue();
             definers.remove(objectClass);
-            if (definers.size() > 0) {
+            if (!definers.isEmpty()) {
                 String name = "";
                 LocalVariableTable lvt = getMethod().getLocalVariableTable();
                 if (lvt != null) {
@@ -465,7 +465,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     if (cls.isClass() && (!cls.isAbstract())) {
                         Map<JavaClass, List<MethodInfo>> definers = getClassDefiners(cls);
 
-                        if (definers.size() > 0) {
+                        if (!definers.isEmpty()) {
                             parameterDefiners.put(Integer.valueOf(i + (methodIsStatic ? 0 : 1)), definers);
                             hasPossiblyOverlyConcreteParm = true;
                         }
@@ -495,7 +495,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                 continue;
             }
             List<MethodInfo> methodInfos = getPublicMethodInfos(ci);
-            if (methodInfos.size() > 0) {
+            if (!methodInfos.isEmpty()) {
                 definers.put(ci, methodInfos);
             }
         }
@@ -531,38 +531,39 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     private void removeUselessDefiners(final int reg) {
 
         Map<JavaClass, List<MethodInfo>> definers = parameterDefiners.get(Integer.valueOf(reg));
-        if ((definers != null) && (definers.size() > 0)) {
-            String methodSig = getSigConstantOperand();
-            String methodName = getNameConstantOperand();
-            MethodInfo methodInfo = new MethodInfo(methodName, methodSig, null);
+        if ((definers == null) || definers.isEmpty()) {
+            return;
+        }
+        String methodSig = getSigConstantOperand();
+        String methodName = getNameConstantOperand();
+        MethodInfo methodInfo = new MethodInfo(methodName, methodSig, null);
 
-            Iterator<List<MethodInfo>> it = definers.values().iterator();
-            while (it.hasNext()) {
-                boolean methodDefined = false;
-                List<MethodInfo> methodSigs = it.next();
+        Iterator<List<MethodInfo>> it = definers.values().iterator();
+        while (it.hasNext()) {
+            boolean methodDefined = false;
+            List<MethodInfo> methodSigs = it.next();
 
-                for (MethodInfo mi : methodSigs) {
-                    if (methodInfo.equals(mi)) {
-                        methodDefined = true;
-                        String[] exceptions = mi.getMethodExceptions();
-                        if (exceptions != null) {
-                            for (String ex : exceptions) {
-                                if (!isExceptionHandled(ex)) {
-                                    methodDefined = false;
-                                    break;
-                                }
+            for (MethodInfo mi : methodSigs) {
+                if (methodInfo.equals(mi)) {
+                    methodDefined = true;
+                    String[] exceptions = mi.getMethodExceptions();
+                    if (exceptions != null) {
+                        for (String ex : exceptions) {
+                            if (!isExceptionHandled(ex)) {
+                                methodDefined = false;
+                                break;
                             }
                         }
-                        break;
                     }
-                }
-                if (!methodDefined) {
-                    it.remove();
+                    break;
                 }
             }
-            if (definers.isEmpty()) {
-                parameterDefiners.remove(Integer.valueOf(reg));
+            if (!methodDefined) {
+                it.remove();
             }
+        }
+        if (definers.isEmpty()) {
+            parameterDefiners.remove(Integer.valueOf(reg));
         }
     }
 

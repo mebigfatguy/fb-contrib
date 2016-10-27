@@ -76,9 +76,9 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                 Set<String> clsMethods = buildMethodSet(cls);
                 for (JavaClass inf : infs) {
                     Set<String> infMethods = buildMethodSet(inf);
-                    if (infMethods.size() > 0) {
+                    if (!infMethods.isEmpty()) {
                         infMethods.removeAll(clsMethods);
-                        if (infMethods.size() > 0) {
+                        if (!infMethods.isEmpty()) {
                             JavaClass superCls = cls.getSuperClass();
                             filterSuperInterfaceMethods(inf, infMethods, superCls);
                             if (!infMethods.isEmpty() && !superCls.implementationOf(inf)) {

@@ -107,7 +107,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
             }
         }
 
-        if (fieldsReported.size() > 0) {
+        if (!fieldsReported.isEmpty()) {
             super.visitClassContext(classContext);
             reportBugs();
         }
