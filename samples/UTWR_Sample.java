@@ -26,7 +26,7 @@ public class UTWR_Sample {
     public void fpInitializeProperties(InputStream is, Properties props) {
         try (InputStream r = new BufferedInputStream(is)) {
             props.load(r);
-        } catch (Exception e) {
+        } catch (IOException e) {
             System.out.println("Failed to load properties: " + e);
         }
     }
