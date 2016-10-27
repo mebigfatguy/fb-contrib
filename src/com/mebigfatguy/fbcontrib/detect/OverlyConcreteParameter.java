@@ -669,7 +669,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         private final String methodSig;
         private final String[] methodExceptions;
 
-        MethodInfo(String name, String sig, String[] excs) {
+        MethodInfo(String name, String sig, String... excs) {
             methodName = name;
             methodSig = sig;
             methodExceptions = excs;

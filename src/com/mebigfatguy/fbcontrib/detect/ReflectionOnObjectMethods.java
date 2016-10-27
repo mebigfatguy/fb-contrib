@@ -261,10 +261,10 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
      *
      * @return a signature string minus the return type
      */
-    private static String buildReflectionSignature(String methodName, String[] parmTypes) {
-        StringBuilder sb = new StringBuilder(64);
-        sb.append(methodName);
-        sb.append('(');
+    private static String buildReflectionSignature(String methodName, String... parmTypes) {
+        StringBuilder sb = new StringBuilder(64)
+            .append(methodName)
+            .append('(');
         if (parmTypes != null) {
             for (String type : parmTypes) {
                 sb.append('L');
