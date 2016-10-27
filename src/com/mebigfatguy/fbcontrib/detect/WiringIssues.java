@@ -42,7 +42,6 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * <ul>
  * <li>Injecting the same bean twice into the same class hierarchy, even with different field names</li>
  * </ul>
- * </li>
  */
 public class WiringIssues extends PreorderVisitor implements Detector {
 
