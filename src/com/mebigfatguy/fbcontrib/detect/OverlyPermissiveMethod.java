@@ -256,11 +256,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     }
 
     private static boolean isOverlyPermissive(int declaredAccess) {
-        if ((declaredAccess & Constants.ACC_PUBLIC) != 0) {
-            return true;
-        }
-
-        return false;
+        return (declaredAccess & Constants.ACC_PUBLIC) != 0;
     }
 
     /**

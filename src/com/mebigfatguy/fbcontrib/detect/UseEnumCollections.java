@@ -252,12 +252,8 @@ public class UseEnumCollections extends BytecodeScanningDetector {
             return true;
         }
 
-        if (nonEnumCollections.contains(realClass)) {
-            return false;
-        }
-
-        // Can't tell here so return true
-        return true;
+        // if can't tell here, then return true
+        return !nonEnumCollections.contains(realClass);
     }
 
     /**

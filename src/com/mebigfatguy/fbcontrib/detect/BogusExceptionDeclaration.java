@@ -200,17 +200,8 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
      * @return whether this method is a ctor of an instance based anonymous inner class
      */
     private static boolean isAnonymousInnerCtor(Method m, JavaClass cls) {
-        if (!Values.CONSTRUCTOR.equals(m.getName())) {
-            return false;
-        }
-
-        String clsName = cls.getClassName();
-        int dollarPos = clsName.lastIndexOf('$');
-        if (dollarPos < 0) {
-            return false;
-        }
-
-        return true;
+        return Values.CONSTRUCTOR.equals(m.getName())
+            && cls.getClassName().lastIndexOf('$') >= 0;
     }
 
     /**

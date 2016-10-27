@@ -140,7 +140,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
                     stackTracker.add(new StringBuilderInvokedStatus(p.register, true));
                 } else if ("toString".equals(calledMethodName) && "()Ljava/lang/String;".equals(calledMethodSig)) {
                     StringBuilderInvokedStatus p = stackTracker.pop();
-                    if (p.appendInvoked == false) {
+                    if (!p.appendInvoked) {
                         bugReporter.reportBug(new BugInstance(this, "CSBTS_COMMONS_STRING_BUILDER_TOSTRING", HIGH_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
                     }

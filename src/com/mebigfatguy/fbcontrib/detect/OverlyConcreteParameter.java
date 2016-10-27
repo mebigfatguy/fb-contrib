@@ -698,14 +698,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
 
             MethodInfo that = (MethodInfo) o;
 
-            if (!methodName.equals(that.methodName)) {
-                return false;
-            }
-            if (!methodSig.equals(that.methodSig)) {
-                return false;
-            }
-
-            return true;
+            return methodName.equals(that.methodName)
+                && methodSig.equals(that.methodSig);
         }
 
         @Override

@@ -191,30 +191,13 @@ public class ManualArrayCopy extends BytecodeScanningDetector {
      * @return whether the type of the load and store are the same
      */
     private static boolean similarArrayInstructions(int load, int store) {
-        if ((load == AALOAD) && (store == AASTORE)) {
-            return true;
-        }
-        if ((load == IALOAD) && (store == IASTORE)) {
-            return true;
-        }
-        if ((load == DALOAD) && (store == DASTORE)) {
-            return true;
-        }
-        if ((load == LALOAD) && (store == LASTORE)) {
-            return true;
-        }
-        if ((load == FALOAD) && (store == FASTORE)) {
-            return true;
-        }
-        if ((load == BALOAD) && (store == BASTORE)) {
-            return true;
-        }
-        if ((load == CALOAD) && (store == CASTORE)) {
-            return true;
-        }
-        if ((load == SALOAD) && (store == SASTORE)) {
-            return true;
-        }
-        return false;
+        return ((load == AALOAD) && (store == AASTORE))
+            || ((load == IALOAD) && (store == IASTORE))
+            || ((load == DALOAD) && (store == DASTORE))
+            || ((load == LALOAD) && (store == LASTORE))
+            || ((load == FALOAD) && (store == FASTORE))
+            || ((load == BALOAD) && (store == BASTORE))
+            || ((load == CALOAD) && (store == CASTORE))
+            || ((load == SALOAD) && (store == SASTORE));
     }
 }

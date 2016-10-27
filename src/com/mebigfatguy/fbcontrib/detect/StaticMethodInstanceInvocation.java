@@ -120,7 +120,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                 }
             }
 
-            if ((seen == INVOKESTATIC) && (popStack.size() > 0)) {
+            if ((seen == INVOKESTATIC) && !popStack.isEmpty()) {
                 String method = getNameConstantOperand();
                 if (method.indexOf('$') < 0) {
                     PopInfo pInfo = popStack.get(0);
