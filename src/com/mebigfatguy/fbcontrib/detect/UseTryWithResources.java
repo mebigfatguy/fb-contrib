@@ -89,6 +89,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
 
     @Override
     public void visitCode(Code obj) {
+        finallyBlocks.clear();
         if (prescreen(obj)) {
             stack.resetForMethodEntry(this);
             regStoredPCs.clear();
@@ -204,11 +205,11 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     }
 
     private boolean prescreen(Code obj) {
+
         if (getMethod().isNative()) {
             return false;
         }
 
-        finallyBlocks.clear();
         CodeException[] ces = obj.getExceptionTable();
         if ((ces == null) || (ces.length == 0)) {
             return false;
