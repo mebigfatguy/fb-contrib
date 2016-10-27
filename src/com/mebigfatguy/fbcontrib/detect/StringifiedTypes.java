@@ -139,7 +139,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                             if (stackDepth > 0) {
                                 OpcodeStack.Item item = stack.getStackItem(0);
                                 userValue = (String) item.getUserValue();
-                                if ((userValue == null) && !"Ljava/lang/String;".equals(item.getSignature())) {
+                                if ((userValue == null) && !Values.SIG_JAVA_LANG_STRING.equals(item.getSignature())) {
                                     userValue = TO_STRING;
                                     if (stackDepth > 1) {
                                         item = stack.getStackItem(1);
@@ -158,7 +158,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                                 toStringStringBuilders.clear(reg);
                             }
                         }
-                    } else if ("java/lang/String".equals(clsName)) {
+                    } else if (Values.SLASHED_JAVA_LANG_STRING.equals(clsName)) {
                         Integer priority = STRING_PARSE_METHODS.get(methodName);
                         if (priority != null) {
                             Type[] parmTypes = Type.getArgumentTypes(sig);

@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Code;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -136,8 +137,8 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         //
         // String checks
         //
-        dumbMethods.put(new FQMethod("java/lang/String", "<init>", "([B)V"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
-        dumbMethods.put(new FQMethod("java/lang/String", "getBytes", "()[B"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
+        dumbMethods.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "<init>", "([B)V"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
+        dumbMethods.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "getBytes", "()[B"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
         dumbMethods.put(new FQMethod("java/util/Locale", "setDefault", "(Ljava/util/Locale;)V"), new ReportInfo("MDM_SETDEFAULTLOCALE", NORMAL_PRIORITY));
     }
 

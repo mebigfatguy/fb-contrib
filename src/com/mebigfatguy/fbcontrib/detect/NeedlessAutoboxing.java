@@ -235,7 +235,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             break;
 
             case SEEN_ICONST:
-                if ((seen == INVOKESTATIC) && "java/lang/Boolean".equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())
+                if ((seen == INVOKESTATIC) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())
                         && "(Z)Ljava/lang/Boolean;".equals(getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this));
@@ -245,7 +245,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             break;
 
             case SEEN_GETSTATIC:
-                if ((seen == INVOKEVIRTUAL) && "java/lang/Boolean".equals(getClassConstantOperand()) && "booleanValue".equals(getNameConstantOperand())
+                if ((seen == INVOKEVIRTUAL) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand()) && "booleanValue".equals(getNameConstantOperand())
                         && "()Z".equals(getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this));
