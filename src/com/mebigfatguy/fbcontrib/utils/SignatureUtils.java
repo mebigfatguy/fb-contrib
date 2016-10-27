@@ -96,25 +96,25 @@ public final class SignatureUtils {
             return true;
         }
 
-        packName1 = packName1.replace('/', '.');
-        packName2 = packName2.replace('/', '.');
+        String dottedPackName1 = packName1.replace('/', '.');
+        String dottedPackName2 = packName2.replace('/', '.');
 
-        int dot1 = packName1.indexOf('.');
-        int dot2 = packName2.indexOf('.');
+        int dot1 = dottedPackName1.indexOf('.');
+        int dot2 = dottedPackName2.indexOf('.');
         if (dot1 < 0) {
             return (dot2 < 0);
         } else if (dot2 < 0) {
             return false;
         }
 
-        String s1 = packName1.substring(0, dot1);
-        String s2 = packName2.substring(0, dot2);
+        String s1 = dottedPackName1.substring(0, dot1);
+        String s2 = dottedPackName2.substring(0, dot2);
 
         if (!s1.equals(s2)) {
             return false;
         }
 
-        return similarPackages(packName1.substring(dot1 + 1), packName2.substring(dot2 + 1), depth - 1);
+        return similarPackages(dottedPackName1.substring(dot1 + 1), dottedPackName2.substring(dot2 + 1), depth - 1);
     }
 
     /**
@@ -244,11 +244,7 @@ public final class SignatureUtils {
             genReturnSig = genReturnSig.substring(0, bracketPos) + ';';
         }
 
-        if (!regReturnParms.getSignature().equals(genReturnSig) && !genReturnSig.startsWith("T")) {
-            return false;
-        }
-
-        return true;
+        return regReturnParms.getSignature().equals(genReturnSig) || genReturnSig.startsWith("T");
     }
 
     public static int getSignatureSize(String signature) {

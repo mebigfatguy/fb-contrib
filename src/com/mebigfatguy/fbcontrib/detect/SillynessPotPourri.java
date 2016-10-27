@@ -1005,15 +1005,15 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     }
 
     private boolean hasToString(JavaClass cls) throws ClassNotFoundException {
-        do {
-            for (Method m : cls.getMethods()) {
-                if ("toString".equals(m.getName()) && "()Ljava/lang/String;".equals(m.getSignature())) {
-                    return true;
-                }
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
+            return false;
+        }
+        for (Method m : cls.getMethods()) {
+            if ("toString".equals(m.getName()) && "()Ljava/lang/String;".equals(m.getSignature())) {
+                return true;
             }
-            cls = cls.getSuperClass();
-        } while (!Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName()));
-        return false;
+        }
+        return hasToString(cls.getSuperClass());
     }
 
     private SPPUserValue getTrimUserValue() {

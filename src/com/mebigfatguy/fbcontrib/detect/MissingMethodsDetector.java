@@ -268,7 +268,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         if (field != null) {
             String fieldName = field.getName();
             if (fieldSpecialObjects.containsKey(fieldName)) {
-                userObject = fieldName;
+                return fieldName;
             }
         }
         return userObject;
@@ -289,7 +289,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             OpcodeStack.Item item = stack.getStackItem(0);
             String sig = item.getSignature();
             if ((item.getRegisterNumber() == 0) || ((sig != null) && sig.equals(clsSignature))) {
-                userObject = sawGetStatic(userObject);
+                return sawGetStatic(userObject);
             }
         }
         return userObject;
@@ -298,7 +298,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     private Object sawLoad(int seen, Object userObject) {
         int reg = RegisterUtils.getALoadReg(this, seen);
         if (localSpecialObjects.containsKey(Integer.valueOf(reg))) {
-            userObject = Integer.valueOf(reg);
+            return Integer.valueOf(reg);
         }
         return userObject;
     }
@@ -325,20 +325,21 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     }
 
     private Object sawInvokeSpecial(Object userObject) {
+        Object returnValue = userObject;
         String methodName = getNameConstantOperand();
         if (Values.CONSTRUCTOR.equals(methodName)) {
             String clsName = getClassConstantOperand().replace('/', '.');
             if (doesObjectNeedToBeWatched(clsName)) {
-                userObject = Boolean.TRUE;
+                returnValue = Boolean.TRUE;
             }
         }
         processMethodParms();
-        return userObject;
+        return returnValue;
     }
 
     private Object sawInvokeStatic(Object userObject) {
         if (doesStaticFactoryReturnNeedToBeWatched(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand())) {
-            userObject = Boolean.TRUE;
+            return Boolean.TRUE;
         }
         return userObject;
     }

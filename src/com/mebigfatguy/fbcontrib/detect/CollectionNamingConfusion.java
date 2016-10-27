@@ -133,9 +133,9 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
      * @return whether the name doesn't match the type
      */
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "EXS_EXCEPTION_SOFTENING_RETURN_FALSE", justification = "No other simple way to determine whether class exists")
-    private boolean checkConfusedName(String name, String signature) {
+    private boolean checkConfusedName(String methodName, String signature) {
         try {
-            name = name.toLowerCase(Locale.ENGLISH);
+            String name = methodName.toLowerCase(Locale.ENGLISH);
             if ((name.endsWith("map") || (name.endsWith("set") && !name.endsWith("toset")) || name.endsWith("list") || name.endsWith("queue"))
                     && signature.startsWith("Ljava/util/")) {
                 String clsName = SignatureUtils.stripSignature(signature);

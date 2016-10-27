@@ -613,27 +613,29 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     }
 
     private void removeUselessDefiners(String parmSig, final int reg) {
-        if (parmSig.startsWith("L")) {
-            parmSig = SignatureUtils.stripSignature(parmSig);
-            if (Values.DOTTED_JAVA_LANG_OBJECT.equals(parmSig)) {
-                parameterDefiners.remove(Integer.valueOf(reg));
-                return;
-            }
+        if (!parmSig.startsWith("L")) {
+            return;
+        }
+        String parmClass = SignatureUtils.stripSignature(parmSig);
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(parmClass)) {
+            parameterDefiners.remove(Integer.valueOf(reg));
+            return;
+        }
 
-            Map<JavaClass, List<MethodInfo>> definers = parameterDefiners.get(Integer.valueOf(reg));
-            if ((definers != null) && (definers.size() > 0)) {
-                Iterator<JavaClass> it = definers.keySet().iterator();
-                while (it.hasNext()) {
-                    JavaClass definer = it.next();
-                    if (!definer.getClassName().equals(parmSig)) {
-                        it.remove();
-                    }
-                }
-
-                if (definers.isEmpty()) {
-                    parameterDefiners.remove(Integer.valueOf(reg));
-                }
+        Map<JavaClass, List<MethodInfo>> definers = parameterDefiners.get(Integer.valueOf(reg));
+        if ((definers == null) || definers.isEmpty()) {
+            return;
+        }
+        Iterator<JavaClass> it = definers.keySet().iterator();
+        while (it.hasNext()) {
+            JavaClass definer = it.next();
+            if (!definer.getClassName().equals(parmClass)) {
+                it.remove();
             }
+        }
+
+        if (definers.isEmpty()) {
+            parameterDefiners.remove(Integer.valueOf(reg));
         }
     }
 

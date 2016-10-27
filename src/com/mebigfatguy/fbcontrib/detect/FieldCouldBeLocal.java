@@ -227,17 +227,17 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
      * @param uncheckedFields
      *            the list of fields to look for
      */
-    private void checkBlock(BasicBlock bb, Set<String> uncheckedFields) {
+    private void checkBlock(BasicBlock startBB, Set<String> uncheckedFields) {
         Deque<BlockState> toBeProcessed = new ArrayDeque<>();
-        toBeProcessed.addLast(new BlockState(bb, uncheckedFields));
-        visitedBlocks.set(bb.getLabel());
+        toBeProcessed.addLast(new BlockState(startBB, uncheckedFields));
+        visitedBlocks.set(startBB.getLabel());
 
         while (!toBeProcessed.isEmpty()) {
             if (localizableFields.isEmpty()) {
                 return;
             }
             BlockState bState = toBeProcessed.removeFirst();
-            bb = bState.getBasicBlock();
+            BasicBlock bb = bState.getBasicBlock();
 
             InstructionIterator ii = bb.instructionIterator();
             while ((bState.getUncheckedFieldSize() > 0) && ii.hasNext()) {
