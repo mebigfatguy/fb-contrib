@@ -218,7 +218,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         boolean hasFinally = false;
         for (CodeException ce : ces) {
             if (ce.getCatchType() == 0) {
-                finallyBlocks.put(Integer.valueOf(ce.getHandlerPC()), new TryBlock(ce.getStartPC(), ce.getEndPC(), ce.getHandlerPC(), obj.getCode().length));
+                finallyBlocks.put(Integer.valueOf(ce.getHandlerPC()),
+                        new TryBlock(ce.getStartPC(), ce.getEndPC(), ce.getHandlerPC(), obj.getCode().length - 1));
                 hasFinally = true;
             }
         }
