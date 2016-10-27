@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.visitclass.DismantleBytecode;
 /**
  * an auxiliary class for managing and manipulating registers
  */
-public class RegisterUtils {
+public final class RegisterUtils {
 
     /**
      * private to reinforce the helper status of the class

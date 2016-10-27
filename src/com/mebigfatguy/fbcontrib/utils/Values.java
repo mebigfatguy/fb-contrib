@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 /**
  * a class holding common constants used throughout fb-contrib
  */
-public class Values {
+public final class Values {
 
     public static final Integer NEGATIVE_ONE = Integer.valueOf(-1);
     public static final Integer ZERO = Integer.valueOf(0);

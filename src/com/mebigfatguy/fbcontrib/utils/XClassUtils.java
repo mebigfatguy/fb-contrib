@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.classfile.Global;
 /**
  * Utility class for XClass and XMethod classes.
  */
-public class XClassUtils {
+public final class XClassUtils {
 
     /**
      * private to enforce the helper nature of this static class

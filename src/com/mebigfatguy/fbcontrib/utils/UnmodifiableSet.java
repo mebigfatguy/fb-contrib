@@ -25,7 +25,7 @@ import java.util.Set;
 /**
  * a factory for creating unmodifiable HashSets by presenting values to a var-args creator method.
  */
-public class UnmodifiableSet {
+public final class UnmodifiableSet {
 
     private UnmodifiableSet() {
     }

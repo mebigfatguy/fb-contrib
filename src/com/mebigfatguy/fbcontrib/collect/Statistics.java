@@ -28,7 +28,7 @@ import com.mebigfatguy.fbcontrib.utils.ToString;
 /**
  * holds statistics about classes and methods collected in the first pass.
  */
-public class Statistics implements Iterable<Map.Entry<FQMethod, MethodInfo>> {
+public final class Statistics implements Iterable<Map.Entry<FQMethod, MethodInfo>> {
 
     private static Statistics statistics = new Statistics();
     private static final MethodInfo NOT_FOUND_METHOD_INFO = new MethodInfo();

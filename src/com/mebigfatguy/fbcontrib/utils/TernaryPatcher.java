@@ -37,7 +37,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
  * class saves off user values across a GOTO involved with a ternary and
  * restores them appropriately.
  */
-public class TernaryPatcher {
+public final class TernaryPatcher {
 
     private static List<Object> userValues = new ArrayList<Object>();
     private static boolean sawGOTO = false;

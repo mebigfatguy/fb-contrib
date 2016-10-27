@@ -26,7 +26,7 @@ import java.util.List;
 /**
  * a factory for creating unmodifiable ArrayLists by presenting values to a var-args creator method.
  */
-public class UnmodifiableList {
+public final class UnmodifiableList {
 
     private UnmodifiableList() {
     }

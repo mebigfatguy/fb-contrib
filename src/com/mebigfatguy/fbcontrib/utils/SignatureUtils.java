@@ -35,7 +35,7 @@ import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
 /**
  * a collection of static methods for parsing signatures to find information out about them
  */
-public class SignatureUtils {
+public final class SignatureUtils {
 
     private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create("J", "D");
 

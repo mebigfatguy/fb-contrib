@@ -26,7 +26,7 @@ import org.apache.bcel.Constants;
 /**
  * a collection of static methods for categorizing opcodes into groups
  */
-public class OpcodeUtils implements Constants {
+public final class OpcodeUtils implements Constants {
 
     private static final BitSet BRANCH_OPS = new BitSet();
     private static final BitSet INVOKE_OPS = new BitSet();
