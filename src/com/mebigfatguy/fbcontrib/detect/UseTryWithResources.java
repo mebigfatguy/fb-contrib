@@ -89,6 +89,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
 
     @Override
     public void visitCode(Code obj) {
+        finallyBlocks.clear();
         if (prescreen(obj)) {
             stack.resetForMethodEntry(this);
             regStoredPCs.clear();
@@ -119,7 +120,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                 }
             }
 
-            if (closePC >= pc) {
+            if ((closePC >= 0) && (closePC <= pc)) {
                 bugReporter.reportBug(new BugInstance(this, BugType.UTWR_USE_TRY_WITH_RESOURCES.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this, bugPC));
                 closePC = -1;
@@ -204,11 +205,11 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     }
 
     private boolean prescreen(Code obj) {
+
         if (getMethod().isNative()) {
             return false;
         }
 
-        finallyBlocks.clear();
         CodeException[] ces = obj.getExceptionTable();
         if ((ces == null) || (ces.length == 0)) {
             return false;
@@ -217,7 +218,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         boolean hasFinally = false;
         for (CodeException ce : ces) {
             if (ce.getCatchType() == 0) {
-                finallyBlocks.put(Integer.valueOf(ce.getHandlerPC()), new TryBlock(ce.getStartPC(), ce.getEndPC(), ce.getHandlerPC(), obj.getCode().length));
+                finallyBlocks.put(Integer.valueOf(ce.getHandlerPC()),
+                        new TryBlock(ce.getStartPC(), ce.getEndPC(), ce.getHandlerPC(), obj.getCode().length - 1));
                 hasFinally = true;
             }
         }
