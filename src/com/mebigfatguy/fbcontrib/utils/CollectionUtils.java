@@ -72,7 +72,8 @@ public final class CollectionUtils {
         return (m == null) || m.isEmpty();
     }
 
-    public static <T> boolean isEmpty(T[] a) {
+    @SafeVarargs
+    public static <T> boolean isEmpty(T... a) {
         return (a == null) || (a.length == 0);
     }
 }
