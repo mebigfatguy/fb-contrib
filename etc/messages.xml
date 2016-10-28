@@ -1652,6 +1652,18 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
     		]]>
     	</Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousShadedClassUse">
+    	<Details>
+    		<![CDATA[
+			<p>Looks for use of shaded methods from 3rdparty jars, created by tools such as the maven shade plugin.
+			These methods are from classes that have been included in a jar, for internal use, and are copies of real 3rdparty jars. 
+			It is likely you meant to use the real class from the real jar, but your IDE picked the wrong import to use.
+			</p>
+			<p>It is a fast detector.</p>
+			]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5645,6 +5657,28 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="SSCU_SUSPICIOUS_SHADED_CLASS_USE">
+    	<ShortDescription>Method calls a method from a class that has been shaded by a 3rdparty jar</ShortDescription>
+    	<LongDescription>Method {1} calls a method from a class that has been shaded by a 3rdparty jar</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method calls a method found in a 3rdparty library, which appears to be shaded from another 3rdparty library.
+    		This occurs when a jar includes other code using tools like the maven shade plugin. It is likely you wanted to use the
+    		"first-class" class from the original jar, rather than the class with the shaded package structure, but your IDE pulled in
+    		the wrong import.</p>
+    		<p>An example might be, you attempted to use a method from the class:
+    		<pre><code>
+    		com.google.common.collect.Sets
+    		</code></pre>
+    		But instead, you import:
+    		<pre><code>
+    		org.apache.jena.ext.com.google.common.collect.Sets
+    		</code></pre>
+    		</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5784,4 +5818,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="WI">Wiring issues</BugCode>
 	<BugCode abbrev="CCI">Concurrent Collection Issues</BugCode>
 	<BugCode abbrev="UTWR">Use Try With Resources</BugCode>
+	<BugCode abbrev="SSCU">Suspicious Shaded Class Use</BugCode>
 </MessageCollection>
