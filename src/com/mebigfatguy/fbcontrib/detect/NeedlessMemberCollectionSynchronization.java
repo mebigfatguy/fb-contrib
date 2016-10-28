@@ -159,19 +159,20 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
      */
     @Override
     public void visitCode(Code obj) {
-        if (collectionFields.size() > 0) {
-            aliases.clear();
-            String methodName = getMethodName();
-            if (Values.STATIC_INITIALIZER.equals(methodName)) {
-                state = State.IN_CLINIT;
-            } else if (Values.CONSTRUCTOR.equals(methodName)) {
-                state = State.IN_INIT;
-            } else {
-                state = State.IN_METHOD;
-            }
-            stack.resetForMethodEntry(this);
-            super.visitCode(obj);
+        if (collectionFields.isEmpty()) {
+            return;
         }
+        aliases.clear();
+        String methodName = getMethodName();
+        if (Values.STATIC_INITIALIZER.equals(methodName)) {
+            state = State.IN_CLINIT;
+        } else if (Values.CONSTRUCTOR.equals(methodName)) {
+            state = State.IN_INIT;
+        } else {
+            state = State.IN_METHOD;
+        }
+        stack.resetForMethodEntry(this);
+        super.visitCode(obj);
     }
 
     /**

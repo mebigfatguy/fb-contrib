@@ -32,6 +32,7 @@ import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -107,23 +108,24 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
         String sig = m.getSignature();
         int sigPos = sig.indexOf(")[");
-        if (sigPos >= 0) {
-            if (INITIAL_VALUE.equals(m.getName())) {
-                try {
-                    if ((THREAD_LOCAL_CLASS == null) || getClassContext().getJavaClass().instanceOf(THREAD_LOCAL_CLASS)) {
-                        return;
-                    }
-                } catch (ClassNotFoundException e) {
-                    bugReporter.reportMissingClass(e);
+        if (sigPos < 0) {
+            return;
+        }
+        if (INITIAL_VALUE.equals(m.getName())) {
+            try {
+                if ((THREAD_LOCAL_CLASS == null) || getClassContext().getJavaClass().instanceOf(THREAD_LOCAL_CLASS)) {
                     return;
                 }
+            } catch (ClassNotFoundException e) {
+                bugReporter.reportMissingClass(e);
+                return;
             }
-
-            stack.resetForMethodEntry(this);
-            returnArraySig = sig.substring(sigPos + 1);
-            uninitializedRegs.clear();
-            super.visitCode(obj);
         }
+
+        stack.resetForMethodEntry(this);
+        returnArraySig = sig.substring(sigPos + 1);
+        uninitializedRegs.clear();
+        super.visitCode(obj);
     }
 
     /**
@@ -144,11 +146,9 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case NEWARRAY: {
                     if (!isTOS0()) {
                         int typeCode = getIntConstant();
-                        if (typeCode != Constants.T_BYTE) {
-                            String sig = '[' + SignatureUtils.getTypeCodeSignature(typeCode);
-                            if (returnArraySig.equals(sig)) {
-                                userValue = SUAUserValue.UNINIT_ARRAY;
-                            }
+                        if ((typeCode != Constants.T_BYTE)
+                                && returnArraySig.equals('[' + SignatureUtils.getTypeCodeSignature(typeCode))) {
+                            userValue = SUAUserValue.UNINIT_ARRAY;
                         }
                     }
                 }
@@ -156,7 +156,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
                 case ANEWARRAY: {
                     if (!isTOS0()) {
-                        String sig = "[L" + getClassConstantOperand() + ';';
+                        String sig = '[' + SignatureUtils.classToSignature(getClassConstantOperand());
                         if (returnArraySig.equals(sig)) {
                             userValue = SUAUserValue.UNINIT_ARRAY;
                         }
@@ -181,7 +181,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                     for (int t = 0; t < types.length; t++) {
                         Type type = types[t];
                         String parmSig = type.getSignature();
-                        if (returnArraySig.equals(parmSig) || "Ljava/lang/Object;".equals(parmSig) || "[Ljava/lang/Object;".equals(parmSig)) {
+                        if (returnArraySig.equals(parmSig) || Values.SIG_JAVA_LANG_OBJECT.equals(parmSig) || ('[' + Values.SIG_JAVA_LANG_OBJECT).equals(parmSig)) {
                             int parmIndex = types.length - t - 1;
                             if (stack.getStackDepth() > parmIndex) {
                                 OpcodeStack.Item item = stack.getStackItem(parmIndex);

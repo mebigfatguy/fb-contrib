@@ -26,7 +26,7 @@ import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
 
-public class Debug {
+public final class Debug {
 
     private static PrintStream out;
 

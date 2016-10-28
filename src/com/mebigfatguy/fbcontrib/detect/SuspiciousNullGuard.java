@@ -49,7 +49,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 
     /**
      * constructs a SNG detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -151,18 +151,20 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
                 break;
 
             case PUTFIELD: {
-                if (stack.getStackDepth() > 1) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    if (!item.isNull()) {
-                        XField xf = getXFieldOperand();
-                        if (xf != null) {
-                            NullGuard guard = findNullGuardWithField(xf);
-                            if (guard != null) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_FIELD_GUARD.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                                removeNullGuard(guard);
-                            }
-                        }
+                if (stack.getStackDepth() <= 1) {
+                    break;
+                }
+                OpcodeStack.Item item = stack.getStackItem(0);
+                if (item.isNull()) {
+                    break;
+                }
+                XField xf = getXFieldOperand();
+                if (xf != null) {
+                    NullGuard guard = findNullGuardWithField(xf);
+                    if (guard != null) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_FIELD_GUARD.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
+                        removeNullGuard(guard);
                     }
                 }
             }

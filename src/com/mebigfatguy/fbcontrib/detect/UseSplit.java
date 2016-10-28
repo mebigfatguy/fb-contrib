@@ -119,10 +119,11 @@ public class UseSplit extends BytecodeScanningDetector {
             if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
                 int reg = RegisterUtils.getALoadReg(this, seen);
                 State type = regValueType.get(Integer.valueOf(reg));
-                if (type != null)
-                    state = type;
-                else
+                if (type == null) {
                     state = State.SEEN_NOTHING;
+                } else {
+                    state = type;
+                }
                 return;
             }
             if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
@@ -137,10 +138,11 @@ public class UseSplit extends BytecodeScanningDetector {
             if ((seen == ILOAD) || ((seen >= ILOAD_0) && (seen <= ILOAD_3))) {
                 int reg = RegisterUtils.getLoadReg(this, seen);
                 State type = regValueType.get(Integer.valueOf(reg));
-                if (type != null)
-                    state = type;
-                else
+                if (type == null) {
                     state = State.SEEN_NOTHING;
+                } else {
+                    state = type;
+                }
                 return;
             }
             if ((seen == ISTORE) || ((seen >= ISTORE_0) && (seen <= ISTORE_3))) {

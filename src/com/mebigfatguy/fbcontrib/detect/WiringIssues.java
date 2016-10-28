@@ -95,12 +95,12 @@ public class WiringIssues extends PreorderVisitor implements Detector {
                     if (hasAutowired) {
                         WiringType wt = new WiringType(field.getSignature(), field.getGenericSignature(), qualifier);
                         FieldAnnotation existingAnnotation = wiredFields.get(wt);
-                        if (existingAnnotation != null) {
+                        if (existingAnnotation == null) {
+                            wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
+                        } else {
                             bugReporter.reportBug(new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY).addClass(cls)
                                     .addField(existingAnnotation).addField(FieldAnnotation.fromBCELField(cls, field)));
                             wiredFields.remove(wt);
-                        } else {
-                            wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
                         }
                     }
                 }
@@ -184,7 +184,7 @@ public class WiringIssues extends PreorderVisitor implements Detector {
 
         @Override
         public int hashCode() {
-            return signature.hashCode() ^ qualifier.hashCode() ^ ((genericSignature != null) ? genericSignature.hashCode() : 0);
+            return signature.hashCode() ^ qualifier.hashCode() ^ ((genericSignature == null) ? 0 : genericSignature.hashCode());
         }
 
         @Override

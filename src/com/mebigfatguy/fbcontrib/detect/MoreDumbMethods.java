@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Code;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -38,45 +39,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * looks for method calls that are unsafe or might indicate bugs.
  */
 public class MoreDumbMethods extends BytecodeScanningDetector {
-    private static class ReportInfo {
-        private final String bugPattern;
-        private final int bugPriority;
-
-        ReportInfo(String pattern, int priority) {
-            bugPattern = pattern;
-            bugPriority = priority;
-        }
-
-        String getPattern() {
-            return bugPattern;
-        }
-
-        int getPriority() {
-            return bugPriority;
-        }
-
-        @Override
-        public int hashCode() {
-            return bugPattern.hashCode() ^ bugPriority;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof ReportInfo)) {
-                return false;
-            }
-
-            ReportInfo that = (ReportInfo) o;
-            return (bugPriority == that.bugPriority) && bugPattern.equals(that.bugPattern);
-        }
-
-        @Override
-        public String toString() {
-            return ToString.build(this);
-        }
-    }
-
     private final static Map<FQMethod, ReportInfo> dumbMethods = new HashMap<FQMethod, ReportInfo>();
+
+    private static final Set<ReportInfo> assertableReports = UnmodifiableSet.create(new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
+
+    private final BugReporter bugReporter;
+
+    private boolean sawAssertionDisabled;
+    private int assertionEnd;
 
     static {
         dumbMethods.put(new FQMethod("java/lang/Runtime", "exit", "(I)V"), new ReportInfo("MDM_RUNTIME_EXIT_OR_HALT", LOW_PRIORITY));
@@ -136,17 +106,10 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         //
         // String checks
         //
-        dumbMethods.put(new FQMethod("java/lang/String", "<init>", "([B)V"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
-        dumbMethods.put(new FQMethod("java/lang/String", "getBytes", "()[B"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
+        dumbMethods.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "<init>", "([B)V"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
+        dumbMethods.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "getBytes", "()[B"), new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
         dumbMethods.put(new FQMethod("java/util/Locale", "setDefault", "(Ljava/util/Locale;)V"), new ReportInfo("MDM_SETDEFAULTLOCALE", NORMAL_PRIORITY));
     }
-
-    private static final Set<ReportInfo> assertableReports = UnmodifiableSet.create(new ReportInfo("MDM_LOCK_ISLOCKED", LOW_PRIORITY));
-
-    private final BugReporter bugReporter;
-
-    private boolean sawAssertionDisabled;
-    private int assertionEnd;
 
     /**
      * constructs an MDM detector given the reporter to report bugs on
@@ -211,4 +174,43 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         bugReporter.reportBug(
                 new BugInstance(this, info.getPattern(), info.getPriority()).addClass(this).addMethod(this).addCalledMethod(this).addSourceLine(this));
     }
+
+    private static class ReportInfo {
+        private final String bugPattern;
+        private final int bugPriority;
+
+        ReportInfo(String pattern, int priority) {
+            bugPattern = pattern;
+            bugPriority = priority;
+        }
+
+        String getPattern() {
+            return bugPattern;
+        }
+
+        int getPriority() {
+            return bugPriority;
+        }
+
+        @Override
+        public int hashCode() {
+            return bugPattern.hashCode() ^ bugPriority;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ReportInfo)) {
+                return false;
+            }
+
+            ReportInfo that = (ReportInfo) o;
+            return (bugPriority == that.bugPriority) && bugPattern.equals(that.bugPattern);
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    }
+
 }

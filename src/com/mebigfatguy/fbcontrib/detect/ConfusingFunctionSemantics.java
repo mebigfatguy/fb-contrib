@@ -36,6 +36,7 @@ import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -53,7 +54,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
 
     static {
         Set<String> ki = new HashSet<>();
-        ki.add("Ljava/lang/String;");
+        ki.add(Values.SIG_JAVA_LANG_STRING);
         ki.add("Ljava/lang/Byte;");
         ki.add("Ljava/lang/Character;");
         ki.add("Ljava/lang/Short;");

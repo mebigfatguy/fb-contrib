@@ -106,26 +106,32 @@ public class TailRecursion extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if (seen == INVOKEVIRTUAL) {
-                boolean isRecursion = (getMethodName().equals(getNameConstantOperand())) && (getMethodSig().equals(getSigConstantOperand()))
-                        && (getClassName().equals(getClassConstantOperand()));
-
-                if (isRecursion && !isStatic) {
-                    int numParms = Type.getArgumentTypes(getMethodSig()).length;
-                    if (stack.getStackDepth() > numParms) {
-                        OpcodeStack.Item itm = stack.getStackItem(numParms);
-                        isRecursion = (itm.getRegisterNumber() == 0);
-                    }
-                }
-
-                if (isRecursion && possibleTailRecursion && (getPC() >= trPCPos)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.TR_TAIL_RECURSION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                } else {
-                    possibleTailRecursion = false;
-                }
+                checkForTailRecursion();
             }
         } finally {
             stack.sawOpcode(this, seen);
         }
     }
+
+    private void checkForTailRecursion() {
+        boolean isRecursion = getMethodName().equals(getNameConstantOperand())
+            && getMethodSig().equals(getSigConstantOperand())
+            && getClassName().equals(getClassConstantOperand());
+
+        if (isRecursion && !isStatic) {
+            int numParms = Type.getArgumentTypes(getMethodSig()).length;
+            if (stack.getStackDepth() > numParms) {
+                OpcodeStack.Item itm = stack.getStackItem(numParms);
+                isRecursion = (itm.getRegisterNumber() == 0);
+            }
+        }
+
+        if (isRecursion && possibleTailRecursion && (getPC() >= trPCPos)) {
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.TR_TAIL_RECURSION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+        } else {
+            possibleTailRecursion = false;
+        }
+    }
+
 }

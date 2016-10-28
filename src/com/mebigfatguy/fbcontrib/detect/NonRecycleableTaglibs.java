@@ -46,7 +46,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
     private static final Set<String> tagClasses = UnmodifiableSet.create("javax.servlet.jsp.tagext.TagSupport", "javax.servlet.jsp.tagext.BodyTagSupport");
 
-    private static final Set<String> validAttrTypes = UnmodifiableSet.create("B", "C", "D", "F", "I", "J", "S", "Z", "Ljava/lang/String;", "Ljava/util/Date;");
+    private static final Set<String> validAttrTypes = UnmodifiableSet.create("B", "C", "D", "F", "I", "J", "S", "Z", Values.SIG_JAVA_LANG_STRING, "Ljava/util/Date;");
 
     private final BugReporter bugReporter;
     /**
@@ -84,7 +84,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
                 if (tagClasses.contains(superCls.getClassName())) {
                     attributes = getAttributes(cls);
 
-                    if (attributes.size() > 0) {
+                    if (!attributes.isEmpty()) {
                         methodWrites = new HashMap<>();
                         fieldAnnotations = new HashMap<>();
                         super.visitClassContext(classContext);

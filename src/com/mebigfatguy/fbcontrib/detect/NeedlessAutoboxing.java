@@ -109,90 +109,11 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
 
         switch (state) {
             case SEEN_NOTHING:
-                if (seen == INVOKEVIRTUAL) {
-                    boxClass = getClassConstantOperand();
-                    BoxParms boxSigs = boxClasses.get(boxClass);
-                    if (boxSigs != null) {
-                        String methodInfo = getNameConstantOperand() + getSigConstantOperand();
-                        if (boxSigs.getPrimitiveValueSignature().equals(methodInfo)) {
-                            state = State.SEEN_VALUE;
-                        }
-                    }
-                } else if (seen == INVOKESTATIC) {
-                    boxClass = getClassConstantOperand();
-                    BoxParms boxSigs = boxClasses.get(boxClass);
-                    if (boxSigs != null) {
-                        if ("valueOf".equals(getNameConstantOperand())) {
-                            String sig = getSigConstantOperand();
-                            if (sig.startsWith("(Ljava/lang/String;)")) {
-                                if (!"java/lang/Boolean".equals(boxClass) || (getClassContext().getJavaClass().getMajor() >= Constants.MAJOR_1_5)) {
-                                    state = State.SEEN_VALUEOFSTRING;
-                                }
-                            } else if (!sig.startsWith("(Ljava/lang/String;")) {
-                                state = State.SEEN_VALUEOFPRIMITIVE;
-                            }
-                        } else {
-                            String parseSig = parseClasses.get(boxClass);
-                            if (parseSig != null) {
-                                String methodInfo = getNameConstantOperand() + getSigConstantOperand();
-                                if (parseSig.equals(methodInfo)) {
-                                    state = State.SEEN_PARSE;
-                                }
-                            }
-                        }
-                    }
-                } else if (seen == INVOKESPECIAL) {
-                    boxClass = getClassConstantOperand();
-                    BoxParms boxSigs = boxClasses.get(boxClass);
-                    if ((boxSigs != null) && Values.CONSTRUCTOR.equals(getNameConstantOperand())
-                            && boxSigs.getCtorSignature().equals(getSigConstantOperand())) {
-                        state = State.SEEN_CTOR;
-                    }
-                } else if ((seen == ICONST_0) || (seen == ICONST_1)) {
-                    if (state == State.SEEN_NOTHING) {
-                        state = State.SEEN_ICONST;
-                    }
-                } else if (seen == GETSTATIC) {
-                    String clsName = getClassConstantOperand();
-                    if ("java/lang/Boolean".equals(clsName)) {
-                        String fldName = getNameConstantOperand();
-                        if ("TRUE".equals(fldName) || "FALSE".equals(fldName)) {
-                            state = State.SEEN_GETSTATIC;
-                        }
-                    }
-                } else if ((seen == GOTO) || (seen == GOTO_W)) {
-                    if (stack.getStackDepth() > 0) {
-                        ternaryPCs.set(getBranchTarget());
-                    }
-                    state = State.SEEN_NOTHING;
-                }
+                sawOpcodeAfterNothing(seen);
             break;
 
             case SEEN_VALUE:
-                if (seen == INVOKESPECIAL) {
-                    if (boxClass.equals(getClassConstantOperand())) {
-                        String methodName = getNameConstantOperand();
-                        if (Values.CONSTRUCTOR.equals(methodName)) {
-                            String boxSig = boxClasses.get(boxClass).getCtorSignature();
-                            String methodSig = getSigConstantOperand();
-                            if (boxSig.equals(methodSig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_CTOR.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            }
-                        }
-                    }
-                } else if ((seen == INVOKESTATIC) && boxClass.equals(getClassConstantOperand())) {
-                    String methodName = getNameConstantOperand();
-                    if ("valueOf".equals(methodName)) {
-                        String boxSig = boxClasses.get(boxClass).getValueOfSignature();
-                        String methodSig = getSigConstantOperand();
-                        if (boxSig.equals(methodSig)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_VALUEOF.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
-                    }
-                }
-                state = State.SEEN_NOTHING;
+                sawOpcodeAfterValue(seen);
             break;
 
             case SEEN_CTOR:
@@ -235,7 +156,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             break;
 
             case SEEN_ICONST:
-                if ((seen == INVOKESTATIC) && "java/lang/Boolean".equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())
+                if ((seen == INVOKESTATIC) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())
                         && "(Z)Ljava/lang/Boolean;".equals(getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this));
@@ -245,7 +166,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             break;
 
             case SEEN_GETSTATIC:
-                if ((seen == INVOKEVIRTUAL) && "java/lang/Boolean".equals(getClassConstantOperand()) && "booleanValue".equals(getNameConstantOperand())
+                if ((seen == INVOKEVIRTUAL) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand()) && "booleanValue".equals(getNameConstantOperand())
                         && "()Z".equals(getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this));
@@ -254,6 +175,108 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                 sawOpcode(seen);
             break;
         }
+    }
+
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "We don't need or want to handle every opcode")
+    private void sawOpcodeAfterNothing(int seen) {
+        BoxParms boxSigs;
+        switch (seen) {
+            case INVOKEVIRTUAL:
+                boxClass = getClassConstantOperand();
+                boxSigs = boxClasses.get(boxClass);
+                if (boxSigs != null) {
+                    String methodInfo = getNameConstantOperand() + getSigConstantOperand();
+                    if (boxSigs.getPrimitiveValueSignature().equals(methodInfo)) {
+                        state = State.SEEN_VALUE;
+                    }
+                }
+            break;
+
+            case INVOKESTATIC:
+                boxClass = getClassConstantOperand();
+                boxSigs = boxClasses.get(boxClass);
+                if (boxSigs != null) {
+                    if ("valueOf".equals(getNameConstantOperand())) {
+                        String sig = getSigConstantOperand();
+                        if (sig.startsWith("(Ljava/lang/String;)")) {
+                            if (!"java/lang/Boolean".equals(boxClass) || (getClassContext().getJavaClass().getMajor() >= Constants.MAJOR_1_5)) {
+                                state = State.SEEN_VALUEOFSTRING;
+                            }
+                        } else if (!sig.startsWith("(Ljava/lang/String;")) {
+                            state = State.SEEN_VALUEOFPRIMITIVE;
+                        }
+                    } else {
+                        String parseSig = parseClasses.get(boxClass);
+                        if (parseSig != null) {
+                            String methodInfo = getNameConstantOperand() + getSigConstantOperand();
+                            if (parseSig.equals(methodInfo)) {
+                                state = State.SEEN_PARSE;
+                            }
+                        }
+                    }
+                }
+            break;
+
+            case INVOKESPECIAL:
+                boxClass = getClassConstantOperand();
+                boxSigs = boxClasses.get(boxClass);
+                if ((boxSigs != null) && Values.CONSTRUCTOR.equals(getNameConstantOperand())
+                        && boxSigs.getCtorSignature().equals(getSigConstantOperand())) {
+                    state = State.SEEN_CTOR;
+                }
+            break;
+
+            case ICONST_0:
+            case ICONST_1:
+                if (state == State.SEEN_NOTHING) {
+                    state = State.SEEN_ICONST;
+                }
+            break;
+
+            case GETSTATIC:
+                String clsName = getClassConstantOperand();
+                if ("java/lang/Boolean".equals(clsName)) {
+                    String fldName = getNameConstantOperand();
+                    if ("TRUE".equals(fldName) || "FALSE".equals(fldName)) {
+                        state = State.SEEN_GETSTATIC;
+                    }
+                }
+            break;
+
+            case GOTO:
+            case GOTO_W:
+                if (stack.getStackDepth() > 0) {
+                    ternaryPCs.set(getBranchTarget());
+                }
+            break;
+        }
+    }
+
+    private void sawOpcodeAfterValue(int seen) {
+        if (seen == INVOKESPECIAL) {
+            if (boxClass.equals(getClassConstantOperand())) {
+                String methodName = getNameConstantOperand();
+                if (Values.CONSTRUCTOR.equals(methodName)) {
+                    String boxSig = boxClasses.get(boxClass).getCtorSignature();
+                    String methodSig = getSigConstantOperand();
+                    if (boxSig.equals(methodSig)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_CTOR.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
+                    }
+                }
+            }
+        } else if ((seen == INVOKESTATIC) && boxClass.equals(getClassConstantOperand())) {
+            String methodName = getNameConstantOperand();
+            if ("valueOf".equals(methodName)) {
+                String boxSig = boxClasses.get(boxClass).getValueOfSignature();
+                String methodSig = getSigConstantOperand();
+                if (boxSig.equals(methodSig)) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_VALUEOF.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
+                }
+            }
+        }
+        state = State.SEEN_NOTHING;
     }
 
     static class BoxParms {

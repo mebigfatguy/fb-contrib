@@ -175,29 +175,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
      */
     private void checkAdd(final OpcodeStack.Item colItm, final OpcodeStack.Item addItm) throws ClassNotFoundException {
         int reg = colItm.getRegisterNumber();
-        if (reg != -1) {
-            Set<SourceLineAnnotation> pcs = localSourceLineAnnotations.get(Integer.valueOf(reg));
-            if (pcs == null) {
-                pcs = new HashSet<>();
-                localSourceLineAnnotations.put(Integer.valueOf(reg), pcs);
-            }
-            pcs.add(SourceLineAnnotation.fromVisitedInstruction(this, getPC()));
-            Set<String> commonSupers = localCollections.get(Integer.valueOf(reg));
-            if (commonSupers != null) {
-                mergeItem(commonSupers, pcs, addItm);
-            } else {
-                commonSupers = new HashSet<>();
-                localCollections.put(Integer.valueOf(reg), commonSupers);
-                addNewItem(commonSupers, addItm);
-                Integer scopeEnd = Integer.valueOf(RegisterUtils.getLocalVariableEndRange(getMethod().getLocalVariableTable(), reg, getNextPC()));
-                Set<Integer> regs = localScopeEnds.get(scopeEnd);
-                if (regs == null) {
-                    regs = new HashSet<>();
-                    localScopeEnds.put(scopeEnd, regs);
-                }
-                regs.add(Integer.valueOf(reg));
-            }
-        } else {
+        if (reg == -1) {
             XField field = colItm.getXField();
             if (field == null) {
                 return;
@@ -210,12 +188,35 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
             }
             sla.add(SourceLineAnnotation.fromVisitedInstruction(this));
             Set<String> commonSupers = memberCollections.get(field.getName());
-            if (commonSupers != null) {
-                mergeItem(commonSupers, sla, addItm);
-            } else {
+            if (commonSupers == null) {
                 commonSupers = new HashSet<>();
                 memberCollections.put(field.getName(), commonSupers);
                 addNewItem(commonSupers, addItm);
+            } else {
+                mergeItem(commonSupers, sla, addItm);
+            }
+        } else {
+            Integer regNumber = Integer.valueOf(reg);
+            Set<SourceLineAnnotation> pcs = localSourceLineAnnotations.get(regNumber);
+            if (pcs == null) {
+                pcs = new HashSet<>();
+                localSourceLineAnnotations.put(regNumber, pcs);
+            }
+            pcs.add(SourceLineAnnotation.fromVisitedInstruction(this, getPC()));
+            Set<String> commonSupers = localCollections.get(regNumber);
+            if (commonSupers == null) {
+                commonSupers = new HashSet<>();
+                localCollections.put(Integer.valueOf(reg), commonSupers);
+                addNewItem(commonSupers, addItm);
+                Integer scopeEnd = Integer.valueOf(RegisterUtils.getLocalVariableEndRange(getMethod().getLocalVariableTable(), reg, getNextPC()));
+                Set<Integer> regs = localScopeEnds.get(scopeEnd);
+                if (regs == null) {
+                    regs = new HashSet<>();
+                    localScopeEnds.put(scopeEnd, regs);
+                }
+                regs.add(regNumber);
+            } else {
+                mergeItem(commonSupers, pcs, addItm);
             }
         }
     }

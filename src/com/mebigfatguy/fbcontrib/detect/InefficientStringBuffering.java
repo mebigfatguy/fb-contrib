@@ -140,7 +140,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         ISBUserValue userValue = null;
         String calledClass = getClassConstantOperand();
 
-        if (("java/lang/StringBuffer".equals(calledClass) || "java/lang/StringBuilder".equals(calledClass))) {
+        if (Values.isAppendableStringClassName(calledClass)) {
             String methodName = getNameConstantOperand();
             if ("append".equals(methodName)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(1);
@@ -200,7 +200,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
 
     private void dealWithEmptyString() {
         String calledClass = getClassConstantOperand();
-        if (("java/lang/StringBuffer".equals(calledClass) || "java/lang/StringBuilder".equals(calledClass)) && "append".equals(getNameConstantOperand())
+        if (Values.isAppendableStringClassName(calledClass) && "append".equals(getNameConstantOperand())
                 && getSigConstantOperand().startsWith("(Ljava/lang/String;)") && (stack.getStackDepth() > 1)) {
             OpcodeStack.Item sbItm = stack.getStackItem(1);
             if ((sbItm != null) && (sbItm.getUserValue() == null)) {
@@ -218,7 +218,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         ISBUserValue userValue = null;
         String calledClass = getClassConstantOperand();
 
-        if (("java/lang/StringBuffer".equals(calledClass) || "java/lang/StringBuilder".equals(calledClass))
+        if (Values.isAppendableStringClassName(calledClass)
                 && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
             String signature = getSigConstantOperand();
             if ("()V".equals(signature)) {

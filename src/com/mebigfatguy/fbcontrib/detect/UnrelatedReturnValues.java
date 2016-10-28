@@ -86,44 +86,46 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
+        Method m = getMethod();
+        String signature = m.getSignature();
+        if (!signature.endsWith(")Ljava/lang/Object;")) {
+            return;
+        }
+        stack.resetForMethodEntry(this);
+        returnTypes.clear();
+        super.visitCode(obj);
+        if (returnTypes.size() <= 1) {
+            return;
+        }
+        String methodName = m.getName();
         try {
-            Method m = getMethod();
-            String signature = m.getSignature();
-            if (signature.endsWith(")Ljava/lang/Object;")) {
-                stack.resetForMethodEntry(this);
-                returnTypes.clear();
-                super.visitCode(obj);
-                if (returnTypes.size() > 1) {
-                    String methodName = m.getName();
-                    boolean isInherited = SignatureUtils.isInheritedMethod(currentClass, methodName, signature);
+            boolean isInherited = SignatureUtils.isInheritedMethod(currentClass, methodName, signature);
 
-                    int priority = NORMAL_PRIORITY;
-                    for (JavaClass cls : returnTypes.keySet()) {
-                        if ((cls != null) && Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
-                            priority = LOW_PRIORITY;
-                            break;
-                        }
-                    }
-
-                    JavaClass cls = findCommonType(returnTypes.keySet());
-                    BugInstance bug;
-                    if ((cls != null) && !isInherited) {
-                        bug = new BugInstance(this, BugType.URV_CHANGE_RETURN_TYPE.name(), priority).addClass(this).addMethod(this);
-                        bug.addString(cls.getClassName());
-                    } else if (!isInherited) {
-                        bug = new BugInstance(this, BugType.URV_UNRELATED_RETURN_VALUES.name(), priority).addClass(this).addMethod(this);
-                    } else {
-                        bug = new BugInstance(this, BugType.URV_INHERITED_METHOD_WITH_RELATED_TYPES.name(), priority).addClass(this).addMethod(this);
-                        if (cls != null) {
-                            bug.addString(cls.getClassName());
-                        }
-                    }
-                    for (Integer pc : returnTypes.values()) {
-                        bug.addSourceLine(this, pc.intValue());
-                    }
-                    bugReporter.reportBug(bug);
+            int priority = NORMAL_PRIORITY;
+            for (JavaClass cls : returnTypes.keySet()) {
+                if ((cls != null) && Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
+                    priority = LOW_PRIORITY;
+                    break;
                 }
             }
+
+            JavaClass cls = findCommonType(returnTypes.keySet());
+            BugInstance bug;
+            if (isInherited) {
+                bug = new BugInstance(this, BugType.URV_INHERITED_METHOD_WITH_RELATED_TYPES.name(), priority).addClass(this).addMethod(this);
+                if (cls != null) {
+                    bug.addString(cls.getClassName());
+                }
+            } else if (cls == null) {
+                bug = new BugInstance(this, BugType.URV_UNRELATED_RETURN_VALUES.name(), priority).addClass(this).addMethod(this);
+            } else {
+                bug = new BugInstance(this, BugType.URV_CHANGE_RETURN_TYPE.name(), priority).addClass(this).addMethod(this);
+                bug.addString(cls.getClassName());
+            }
+            for (Integer pc : returnTypes.values()) {
+                bug.addSourceLine(this, pc.intValue());
+            }
+            bugReporter.reportBug(bug);
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }
@@ -159,7 +161,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
      * @param classes
      *            the set of classes to look for a common super class or interface
      * @return the type that is the common interface or superclass (not Object, tho).
-     * 
+     *
      * @throws ClassNotFoundException if a superclass or superinterface of one of the class is not found
      */
     private static JavaClass findCommonType(Set<JavaClass> classes) throws ClassNotFoundException {

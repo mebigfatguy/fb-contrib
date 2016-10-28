@@ -24,7 +24,7 @@ import org.apache.bcel.classfile.JavaClass;
 /**
  * a collection of static methods for determining if a class belongs to one or more collection types.
  */
-public class CollectionUtils {
+public final class CollectionUtils {
 
     private static JavaClass LIST_CLASS = null;
     private static JavaClass SET_CLASS = null;

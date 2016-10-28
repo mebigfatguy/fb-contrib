@@ -123,7 +123,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                     String clsName = getClassConstantOperand();
                     String methodName = getNameConstantOperand();
                     String sig = getSigConstantOperand();
-                    boolean isStringBuilder = "java/lang/StringBuilder".equals(clsName) || "java/lang/StringBuffer".equals(clsName);
+                    boolean isStringBuilder = Values.isAppendableStringClassName(clsName);
 
                     if (TO_STRING.equals(methodName) && "()Ljava/lang/String;".equals(sig)) {
                         if (isStringBuilder) {
@@ -139,7 +139,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                             if (stackDepth > 0) {
                                 OpcodeStack.Item item = stack.getStackItem(0);
                                 userValue = (String) item.getUserValue();
-                                if ((userValue == null) && !"Ljava/lang/String;".equals(item.getSignature())) {
+                                if ((userValue == null) && !Values.SIG_JAVA_LANG_STRING.equals(item.getSignature())) {
                                     userValue = TO_STRING;
                                     if (stackDepth > 1) {
                                         item = stack.getStackItem(1);
@@ -158,7 +158,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                                 toStringStringBuilders.clear(reg);
                             }
                         }
-                    } else if ("java/lang/String".equals(clsName)) {
+                    } else if (Values.SLASHED_JAVA_LANG_STRING.equals(clsName)) {
                         Integer priority = STRING_PARSE_METHODS.get(methodName);
                         if (priority != null) {
                             Type[] parmTypes = Type.getArgumentTypes(sig);
@@ -185,19 +185,16 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                         checkParms = COLLECTION_PARMS.get(cm);
                         if (checkParms != null) {
                             OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
-                            if (item.getXField() != null) {
+                            if (item.getXField() == null) {
+                                checkParms = null;
+                            } else {
                                 for (int parm : checkParms) {
-                                    if (parm >= 0) {
-                                        item = stack.getStackItem(parm);
-                                        if (TO_STRING.equals(item.getUserValue())) {
-                                            bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
-                                            break;
-                                        }
+                                    if ((parm >= 0) && TO_STRING.equals(stack.getStackItem(parm).getUserValue())) {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
+                                        break;
                                     }
                                 }
-                            } else {
-                                checkParms = null;
                             }
                         }
                     }

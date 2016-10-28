@@ -160,10 +160,10 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
         if (found) {
             BugInstance bi = new BugInstance(this, BugType.ABC_ARRAY_BASED_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLine(this);
-            if (bugList != null) {
-                bugList.add(bi);
-            } else {
+            if (bugList == null) {
                 bugReporter.reportBug(bi);
+            } else {
+                bugList.add(bi);
             }
         }
     }

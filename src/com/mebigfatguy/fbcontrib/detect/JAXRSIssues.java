@@ -29,6 +29,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -67,7 +68,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
 
     private static final Set<String> NATIVE_JAXRS_TYPES = UnmodifiableSet.create(
             //@formatter:off
-            "Ljava/lang/String;",
+            Values.SIG_JAVA_LANG_STRING,
             "[B",
             "Ljava/io/InputStream;",
             "Ljava/io/Reader;",

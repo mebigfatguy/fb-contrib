@@ -186,7 +186,10 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         if (methodInfos == null) {
 
             ZipEntry ze = jdkZip.getEntry(clsName + ".class");
-            if (ze != null) {
+            if (ze == null) {
+                bugReporter.reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(this).addClass(clsName));
+            } else if (clsName.startsWith("java/")) {
                 JavaClass calledClass = null;
                 try (InputStream is = new BufferedInputStream(jdkZip.getInputStream(ze))) {
                     ClassParser parser = new ClassParser(is, clsName);
@@ -202,9 +205,6 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
                 for (Method m : methods) {
                     methodInfos.add(m.getName() + m.getSignature());
                 }
-            } else if (clsName.startsWith("java/")) {
-                bugReporter.reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this).addClass(clsName));
             }
         }
 

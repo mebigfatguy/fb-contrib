@@ -177,7 +177,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 }
             } else if (seen == INVOKEVIRTUAL) {
                 String clsName = getClassConstantOperand();
-                if (clsName.startsWith("java/lang/StringB")) {
+                if (Values.isAppendableStringClassName(clsName)) {
                     sawSBToString = "toString".equals(getNameConstantOperand());
                 }
             } else if (((seen >= ISTORE) && (seen <= ASTORE_3)) || (seen == IINC)) {

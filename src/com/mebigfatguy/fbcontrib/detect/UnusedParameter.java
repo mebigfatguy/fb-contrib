@@ -107,45 +107,46 @@ public class UnusedParameter extends BytecodeScanningDetector {
         }
 
         int accessFlags = m.getAccessFlags();
-        if (((accessFlags & (Constants.ACC_STATIC | Constants.ACC_PRIVATE)) != 0) && ((accessFlags & Constants.ACC_SYNTHETIC) == 0)) {
-            Type[] parmTypes = Type.getArgumentTypes(m.getSignature());
+        if (((accessFlags & (Constants.ACC_STATIC | Constants.ACC_PRIVATE)) == 0) || ((accessFlags & Constants.ACC_SYNTHETIC) != 0)) {
+            return;
+        }
+        Type[] parmTypes = Type.getArgumentTypes(m.getSignature());
 
-            if (parmTypes.length > 0) {
+        if (parmTypes.length == 0) {
+            return;
+        }
+        int firstReg = 0;
+        if ((accessFlags & Constants.ACC_STATIC) == 0) {
+            ++firstReg;
+        }
 
-                int firstReg = 0;
-                if ((accessFlags & Constants.ACC_STATIC) == 0) {
-                    ++firstReg;
-                }
+        int reg = firstReg;
+        for (int i = 0; i < parmTypes.length; ++i) {
+            unusedParms.set(reg);
+            regToParm.put(Integer.valueOf(reg), Integer.valueOf(i + 1));
+            String parmSig = parmTypes[i].getSignature();
+            reg += SignatureUtils.getSignatureSize(parmSig);
+        }
 
-                int reg = firstReg;
-                for (int i = 0; i < parmTypes.length; ++i) {
-                    unusedParms.set(reg);
-                    regToParm.put(Integer.valueOf(reg), Integer.valueOf(i + 1));
-                    String parmSig = parmTypes[i].getSignature();
-                    reg += SignatureUtils.getSignatureSize(parmSig);
-                }
+        try {
+            super.visitCode(obj);
 
-                try {
-                    super.visitCode(obj);
+            if (!unusedParms.isEmpty()) {
+                LocalVariableTable lvt = m.getLocalVariableTable();
 
-                    if (!unusedParms.isEmpty()) {
-                        LocalVariableTable lvt = m.getLocalVariableTable();
-
-                        reg = unusedParms.nextSetBit(firstReg);
-                        while (reg >= 0) {
-                            LocalVariable lv = (lvt != null) ? lvt.getLocalVariable(reg, 0) : null;
-                            if (lv != null) {
-                                String parmName = lv.getName();
-                                bugReporter.reportBug(new BugInstance(this, BugType.UP_UNUSED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                        .addString("Parameter " + regToParm.get(Integer.valueOf(reg)) + ": " + parmName));
-                            }
-                            reg = unusedParms.nextSetBit(reg + 1);
-                        }
+                reg = unusedParms.nextSetBit(firstReg);
+                while (reg >= 0) {
+                    LocalVariable lv = (lvt == null) ? null : lvt.getLocalVariable(reg, 0);
+                    if (lv != null) {
+                        String parmName = lv.getName();
+                        bugReporter.reportBug(new BugInstance(this, BugType.UP_UNUSED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                .addString("Parameter " + regToParm.get(Integer.valueOf(reg)) + ": " + parmName));
                     }
-                } catch (StopOpcodeParsingException e) {
-                    // no unusedParms left
+                    reg = unusedParms.nextSetBit(reg + 1);
                 }
             }
+        } catch (StopOpcodeParsingException e) {
+            // no unusedParms left
         }
     }
 

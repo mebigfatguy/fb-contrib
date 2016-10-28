@@ -394,11 +394,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         }
 
         nextOp = CodeByteUtils.getbyte(code, nextPC++);
-        if ((nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN)) {
-            return true;
-        }
-
-        return false;
+        return (nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN);
     }
 
     /**

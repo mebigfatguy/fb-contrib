@@ -10,6 +10,23 @@
     <!-- these are used for readability -->
     <exclude name="CollapsibleIfStatements"/>
   </rule>
+  <rule ref="rulesets/java/design.xml">
+    <!-- not really necessary -->
+    <exclude name="ImmutableField"/>
+    <!-- not always appropriate -->
+    <exclude name="SwitchStmtsShouldHaveDefault"/>
+    <!-- switching on strings is quite efficient -->
+    <exclude name="TooFewBranchesForASwitchStatement"/>
+    <!-- would take serious refactoring in some cases -->
+    <exclude name="GodClass"/>
+    <!-- we already check this ourselves -->
+    <exclude name="MissingBreakInSwitch"/>
+
+    <!-- good rules, but not priority -->
+    <exclude name="AvoidDeeplyNestedIfStmts"/>
+    <exclude name="ConfusingTernary"/>
+    <exclude name="SwitchDensity"/>
+  </rule>
   <rule ref="rulesets/java/unnecessary.xml">
     <!-- these are used for readability -->
     <exclude name="UselessParentheses"/>

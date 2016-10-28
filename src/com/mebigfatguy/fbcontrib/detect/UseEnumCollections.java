@@ -141,10 +141,10 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
                     Boolean uv = (Boolean) itm.getUserValue();
-                    if (uv != null) {
-                        enumRegs.put(reg, uv);
-                    } else {
+                    if (uv == null) {
                         enumRegs.remove(reg);
+                    } else {
+                        enumRegs.put(reg, uv);
                     }
                 }
             } else if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
@@ -155,10 +155,10 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                     String fieldName = getNameConstantOperand();
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     Boolean uv = (Boolean) itm.getUserValue();
-                    if (uv != null) {
-                        enumFields.put(fieldName, uv);
-                    } else {
+                    if (uv == null) {
                         enumFields.remove(fieldName);
+                    } else {
+                        enumFields.put(fieldName, uv);
                     }
                 }
             } else if (seen == GETFIELD) {
@@ -252,12 +252,8 @@ public class UseEnumCollections extends BytecodeScanningDetector {
             return true;
         }
 
-        if (nonEnumCollections.contains(realClass)) {
-            return false;
-        }
-
-        // Can't tell here so return true
-        return true;
+        // if can't tell here, then return true
+        return !nonEnumCollections.contains(realClass);
     }
 
     /**

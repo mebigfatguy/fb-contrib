@@ -175,7 +175,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
                 suspectLocals.remove(item.getUserValue());
             }
 
-            if (suspectLocals.size() > 0) {
+            if (!suspectLocals.isEmpty()) {
                 if (isStandardInvoke(seen)) {
                     String sig = getSigConstantOperand();
                     int argCount = Type.getArgumentTypes(sig).length;

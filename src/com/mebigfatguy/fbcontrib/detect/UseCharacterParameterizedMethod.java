@@ -47,6 +47,11 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
+    private final static Map<FQMethod, Object> characterMethods;
+
+    private final BugReporter bugReporter;
+    private OpcodeStack stack;
+
     /**
      * holds a user value for a StringBuilder or StringBuffer on the stack that is an online append ideally there would be an UNKNOWN option, rather than null,
      * but findbugs seems to have a nasty bug with static fields holding onto uservalues across detectors
@@ -54,8 +59,6 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     enum UCPMUserValue {
         INLINE
     }
-
-    private final static Map<FQMethod, Object> characterMethods;
 
     static {
         Map<FQMethod, Object> methodsMap = new HashMap<FQMethod, Object>();
@@ -70,31 +73,14 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         methodsMap.put(new FQMethod("java/io/PrintStream", "print", "(Ljava/lang/String;)V"), Values.ZERO);
         methodsMap.put(new FQMethod("java/io/PrintStream", "println", "(Ljava/lang/String;)V"), Values.ZERO);
         methodsMap.put(new FQMethod("java/io/StringWriter", "write", "(Ljava/lang/String;)V"), Values.ZERO);
-        methodsMap.put(new FQMethod("java/lang/StringBuffer", "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;"), Values.ZERO);
-        methodsMap.put(new FQMethod("java/lang/StringBuilder", "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;"), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUFFER, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;"), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUILDER, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;"), Values.ZERO);
 
         // same thing as above, except now with two params
-        methodsMap.put(new FQMethod("java/lang/String", "replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;"), new IntPair(0, 1));
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;"), new IntPair(0, 1));
 
         characterMethods = Collections.unmodifiableMap(methodsMap);
     }
-
-    private static class IntPair {
-        final int firstStringParam, secondStringParam;
-
-        IntPair(int firstStringParam, int secondStringParam) {
-            this.firstStringParam = firstStringParam;
-            this.secondStringParam = secondStringParam;
-        }
-
-        @Override
-        public String toString() {
-            return ToString.build(this);
-        }
-    }
-
-    private final BugReporter bugReporter;
-    private OpcodeStack stack;
 
     /**
      * constructs a UCPM detector given the reporter to report bugs on
@@ -227,7 +213,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
      * @return whether we are in an inline string append
      */
     private boolean isInlineAppend(FQMethod fqm) {
-        if (!"java/lang/StringBuilder".equals(fqm.getClassName()) && !"java/lang/StringBuffer".equals(fqm.getClassName())) {
+        if (!Values.isAppendableStringClassName(fqm.getClassName())) {
             return false;
         }
 
@@ -264,4 +250,19 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
         return null;
     }
+
+    private static class IntPair {
+        final int firstStringParam, secondStringParam;
+
+        IntPair(int firstStringParam, int secondStringParam) {
+            this.firstStringParam = firstStringParam;
+            this.secondStringParam = secondStringParam;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    }
+
 }

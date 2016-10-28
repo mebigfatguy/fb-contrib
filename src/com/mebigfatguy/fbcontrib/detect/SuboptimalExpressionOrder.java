@@ -206,14 +206,16 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(0);
 
                         Integer uv = (Integer) itm.getUserValue();
-                        if (uv != null) {
+                        if (uv == null) {
+                            if (sawMethodWeight > 0) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(),
+                                        sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this)
+                                                .addSourceLine(this));
+                                sawMethodWeight = 0;
+                                conditionalTarget = Integer.MAX_VALUE;
+                            }
+                        } else {
                             sawMethodWeight = Math.max(sawMethodWeight, uv.intValue());
-                        } else if (sawMethodWeight > 0) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(),
-                                    sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this)
-                                            .addSourceLine(this));
-                            sawMethodWeight = 0;
-                            conditionalTarget = Integer.MAX_VALUE;
                         }
                     }
                 break;

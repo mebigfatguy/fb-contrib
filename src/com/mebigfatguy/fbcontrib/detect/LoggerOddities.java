@@ -186,7 +186,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     checkForProblemsWithLoggerMethods();
                 } else if ("toString".equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
-                    if (("java/lang/StringBuilder".equals(callingClsName) || "java/lang/StringBuffer".equals(callingClsName)) && (stack.getStackDepth() > 0)) {
+                    if (Values.isAppendableStringClassName(callingClsName) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         // if the stringbuilder was previously stored, don't report it
                         if (item.getRegisterNumber() < 0) {
@@ -347,7 +347,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 Type[] types = Type.getArgumentTypes(sig);
                 if (types.length <= stack.getStackDepth()) {
                     for (int i = 0; i < types.length; i++) {
-                        if ("Ljava/lang/String;".equals(types[i].getSignature())) {
+                        if (Values.SIG_JAVA_LANG_STRING.equals(types[i].getSignature())) {
                             OpcodeStack.Item item = stack.getStackItem(types.length - i - 1);
                             String cons = (String) item.getConstant();
                             if ((cons != null) && cons.contains("{}")) {

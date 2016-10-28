@@ -267,7 +267,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 catchSB.setFinish(getPC() - 1);
                 rootScopeBlock.addChild(sb);
             }
-        } else if (monitorSyncPCs.size() > 0) {
+        } else if (!monitorSyncPCs.isEmpty()) {
             ignoreRegs.set(reg);
         } else if (sawNull) {
             ignoreRegs.set(reg);
@@ -320,7 +320,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
         if (catchHandlers.get(pc)) {
             ignoreRegs.set(reg);
-        } else if (monitorSyncPCs.size() > 0) {
+        } else if (!monitorSyncPCs.isEmpty()) {
             ignoreRegs.set(reg);
         } else if (sawNull) {
             ignoreRegs.set(reg);
@@ -565,7 +565,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      *            the current program counter
      */
     private void sawMonitorExit(int pc) {
-        if (monitorSyncPCs.size() > 0) {
+        if (!monitorSyncPCs.isEmpty()) {
             ScopeBlock sb = findSynchronizedScopeBlock(rootScopeBlock, monitorSyncPCs.get(0).intValue());
             if (sb != null) {
                 sb.setFinish(pc);
@@ -1081,7 +1081,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                     stores.remove(Integer.valueOf(r));
                 }
 
-                if ((children != null) && (stores.size() > 0)) {
+                if ((children != null) && !stores.isEmpty()) {
                     for (Map.Entry<Integer, Integer> entry : stores.entrySet()) {
                         int childUseCount = 0;
                         boolean inIgnoreSB = false;

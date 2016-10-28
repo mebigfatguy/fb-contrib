@@ -78,7 +78,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
             Method m = getMethod();
             if (m.isStatic() || m.isPrivate() || Values.CONSTRUCTOR.equals(m.getName())) {
                 parmSigs = SignatureUtils.getParameterSignatures(m);
-                if ((parmSigs.size() > 0) && prescreen(m)) {
+                if (!parmSigs.isEmpty() && prescreen(m)) {
                     state = State.SAW_NOTHING;
                     bugs = new HashMap<Integer, BugInfo>();
                     downwardBranchTarget = -1;
@@ -113,82 +113,91 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
         if (downwardBranchTarget == -1) {
             switch (state) {
                 case SAW_NOTHING:
-                    if (OpcodeUtils.isALoad(seen)) {
-                        loadedReg = RegisterUtils.getALoadReg(this, seen);
-                        parmSig = parmSigs.get(Integer.valueOf(loadedReg));
-                        if (parmSig != null) {
-                            state = State.SAW_LOAD;
-                        }
-                    }
+                    sawOpcodeAfterNothing(seen);
                 break;
 
                 case SAW_LOAD:
-                    if (seen == CHECKCAST) {
-                        castClass = SignatureUtils.classToSignature(getClassConstantOperand());
-                        if (!castClass.equals(parmSig)) {
-                            state = State.SAW_CHECKCAST;
-                            return;
-                        }
-                    } else if (seen == INSTANCEOF) {
-                        // probably an if guard... assume the code is reasonable
-                        parmSigs.remove(Integer.valueOf(loadedReg));
-                    }
-                    state = State.SAW_NOTHING;
+                    sawOpcodeAfterLoad(seen);
                 break;
 
                 case SAW_CHECKCAST:
-                    if ((seen == PUTFIELD) || (seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
-                        String parmName = null;
-                        LocalVariableTable lvt = getMethod().getLocalVariableTable();
-                        if (lvt != null) {
-                            LocalVariable lv = lvt.getLocalVariable(loadedReg, 1);
-                            if (lv != null) {
-                                parmName = lv.getName();
-                            }
-                        }
-                        if (parmName == null) {
-                            parmName = "(" + loadedReg + ')';
-                        }
-
-                        BugInstance bug = new BugInstance(this, BugType.PDP_POORLY_DEFINED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this).addString(parmName);
-                        Integer lr = Integer.valueOf(loadedReg);
-                        BugInfo bi = bugs.get(lr);
-                        if (bi == null) {
-                            bugs.put(lr, new BugInfo(castClass, bug));
-                        } else {
-                            // If there are casts to multiple different types, don't
-                            // report it altho suspect
-                            if (!bi.castClass.equals(castClass)) {
-                                bugs.remove(lr);
-                            }
-                        }
-
-                    }
-
-                    state = State.SAW_NOTHING;
+                    sawOpcodeAfterCheckCast(seen);
                 break;
             }
 
-            {
-                int insTarget = -1;
-                if (((seen >= IFEQ) && (seen <= IF_ACMPNE)) || (seen == GOTO) || (seen == GOTO_W)) {
-                    insTarget = getBranchTarget();
-                    if (insTarget < getPC()) {
-                        insTarget = -1;
-                    }
-                } else if ((seen == LOOKUPSWITCH) || (seen == TABLESWITCH)) {
-                    insTarget = this.getDefaultSwitchOffset() + getPC();
+            int insTarget = -1;
+            if (((seen >= IFEQ) && (seen <= IF_ACMPNE)) || (seen == GOTO) || (seen == GOTO_W)) {
+                insTarget = getBranchTarget();
+                if (insTarget < getPC()) {
+                    insTarget = -1;
                 }
+            } else if ((seen == LOOKUPSWITCH) || (seen == TABLESWITCH)) {
+                insTarget = this.getDefaultSwitchOffset() + getPC();
+            }
 
-                if (insTarget > downwardBranchTarget) {
-                    downwardBranchTarget = insTarget;
-                }
+            if (insTarget > downwardBranchTarget) {
+                downwardBranchTarget = insTarget;
             }
         } else {
             state = State.SAW_NOTHING;
             if (getPC() >= downwardBranchTarget) {
                 downwardBranchTarget = -1;
+            }
+        }
+    }
+
+    private void sawOpcodeAfterNothing(int seen) {
+        if (OpcodeUtils.isALoad(seen)) {
+            loadedReg = RegisterUtils.getALoadReg(this, seen);
+            parmSig = parmSigs.get(Integer.valueOf(loadedReg));
+            if (parmSig != null) {
+                state = State.SAW_LOAD;
+            }
+        }
+    }
+
+    private void sawOpcodeAfterLoad(int seen) {
+        if (seen == CHECKCAST) {
+            castClass = SignatureUtils.classToSignature(getClassConstantOperand());
+            if (!castClass.equals(parmSig)) {
+                state = State.SAW_CHECKCAST;
+                return;
+            }
+        } else if (seen == INSTANCEOF) {
+            // probably an if guard... assume the code is reasonable
+            parmSigs.remove(Integer.valueOf(loadedReg));
+        }
+        state = State.SAW_NOTHING;
+    }
+
+    private void sawOpcodeAfterCheckCast(int seen) {
+        state = State.SAW_NOTHING;
+        if (!((seen == PUTFIELD) || (seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)))) {
+            return;
+        }
+        String parmName = null;
+        LocalVariableTable lvt = getMethod().getLocalVariableTable();
+        if (lvt != null) {
+            LocalVariable lv = lvt.getLocalVariable(loadedReg, 1);
+            if (lv != null) {
+                parmName = lv.getName();
+            }
+        }
+        if (parmName == null) {
+            parmName = "(" + loadedReg + ')';
+        }
+
+        BugInstance bug = new BugInstance(this, BugType.PDP_POORLY_DEFINED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                .addSourceLine(this).addString(parmName);
+        Integer lr = Integer.valueOf(loadedReg);
+        BugInfo bi = bugs.get(lr);
+        if (bi == null) {
+            bugs.put(lr, new BugInfo(castClass, bug));
+        } else {
+            // If there are casts to multiple different types, don't
+            // report it altho suspect
+            if (!bi.castClass.equals(castClass)) {
+                bugs.remove(lr);
             }
         }
     }

@@ -27,6 +27,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -152,7 +153,7 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 
     private void checkSignatures(String sourceSignature, String targetSignature) {
         try {
-            if ("Ljava/lang/Object;".equals(targetSignature)) {
+            if (Values.SIG_JAVA_LANG_OBJECT.equals(targetSignature)) {
                 return;
             }
 

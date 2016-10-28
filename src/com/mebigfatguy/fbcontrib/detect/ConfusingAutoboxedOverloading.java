@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -195,8 +196,8 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
     private static boolean isPossiblyConfusingSignature(String sig) {
         Type[] types = Type.getArgumentTypes(sig);
         for (Type t : types) {
-            sig = t.getSignature();
-            if (primitiveSigs.contains(sig) || "Ljava/lang/Character;".equals(sig)) {
+            String typeSig = t.getSignature();
+            if (primitiveSigs.contains(typeSig) || SignatureUtils.classToSignature(Values.SLASHED_JAVA_LANG_CHARACTER).equals(typeSig)) {
                 return true;
             }
         }
@@ -208,5 +209,6 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
      */
     @Override
     public void report() {
+        // nothing to do here
     }
 }

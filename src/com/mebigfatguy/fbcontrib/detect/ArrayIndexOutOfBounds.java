@@ -257,6 +257,7 @@ public class ArrayIndexOutOfBounds extends BytecodeScanningDetector {
                             it.remove();
                         }
                     }
+                break;
             }
 
         } finally {

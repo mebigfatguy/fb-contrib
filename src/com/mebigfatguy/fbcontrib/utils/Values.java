@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 /**
  * a class holding common constants used throughout fb-contrib
  */
-public class Values {
+public final class Values {
 
     public static final Integer NEGATIVE_ONE = Integer.valueOf(-1);
     public static final Integer ZERO = Integer.valueOf(0);
@@ -58,8 +58,14 @@ public class Values {
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
+    public static final String SIG_JAVA_LANG_OBJECT = SignatureUtils.classToSignature(SLASHED_JAVA_LANG_OBJECT);
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRING = "java/lang/String";
+    public static final String SIG_JAVA_LANG_STRING = SignatureUtils.classToSignature(SLASHED_JAVA_LANG_STRING);
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_STRINGBUILDER = "java/lang/StringBuilder";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_STRINGBUFFER = "java/lang/StringBuffer";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_CLASS = "java/lang/Class";
     @SlashedClassName
@@ -95,5 +101,9 @@ public class Values {
     public static final Integer LOW_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.LOW_PRIORITY);
 
     private Values() {
+    }
+
+    public static boolean isAppendableStringClassName(String className) {
+        return SLASHED_JAVA_LANG_STRINGBUILDER.equals(className) || SLASHED_JAVA_LANG_STRINGBUFFER.equals(className);
     }
 }

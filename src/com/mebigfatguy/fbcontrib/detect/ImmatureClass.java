@@ -11,7 +11,6 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
-import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -141,18 +140,14 @@ public class ImmatureClass extends BytecodeScanningDetector {
      *             if a super class can't be found
      */
     private static boolean hasMethodInHierarchy(JavaClass cls, String methodName, String methodSig) throws ClassNotFoundException {
-        MethodInfo mi = null;
+        String clsName = cls.getClassName();
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(clsName)) {
+            return false;
+        }
 
-        do {
-            String clsName = cls.getClassName();
-            if (Values.DOTTED_JAVA_LANG_OBJECT.equals(clsName)) {
-                return false;
-            }
-
-            mi = Statistics.getStatistics().getMethodStatistics(clsName.replace('.', '/'), methodName, methodSig);
-            cls = cls.getSuperClass();
-        } while (mi.getNumBytes() == 0);
-
+        if (Statistics.getStatistics().getMethodStatistics(clsName.replace('.', '/'), methodName, methodSig).getNumBytes() == 0) {
+            return hasMethodInHierarchy(cls.getSuperClass(), methodName, methodSig);
+        }
         return true;
     }
 

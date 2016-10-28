@@ -104,80 +104,15 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
 
             switch (state) {
                 case SEEN_NOTHING:
-                    if ((seen == INVOKESTATIC) && "java/util/Collections".equals(getClassConstantOperand())) {
-                        if (synchCollectionNames.contains(getNameConstantOperand())) {
-                            state = State.SEEN_SYNC;
-                        }
-                    } else if (seen == ALOAD) {
-                        int reg = getRegisterOperand();
-                        if (localCollections.contains(Integer.valueOf(reg))) {
-                            collectionInfo = Integer.valueOf(reg);
-                            state = State.SEEN_LOAD;
-                        }
-                    } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
-                        int reg = seen - ALOAD_0;
-                        if (localCollections.contains(Integer.valueOf(reg))) {
-                            collectionInfo = Integer.valueOf(reg);
-                            state = State.SEEN_LOAD;
-                        }
-                    } else if (seen == GETFIELD) {
-                        ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
-                        ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
-
-                        String fieldName = nandt.getName(getConstantPool());
-                        if (memberCollections.contains(fieldName)) {
-                            collectionInfo = fieldName;
-                            state = State.SEEN_LOAD;
-                        }
-                    }
+                    sawOpcodeAfterNothing(seen);
                 break;
 
                 case SEEN_SYNC:
-                    if (seen == ASTORE) {
-                        int reg = getRegisterOperand();
-                        localCollections.add(Integer.valueOf(reg));
-                    } else if ((seen >= ASTORE_0) && (seen <= ASTORE_3)) {
-                        int reg = seen - ASTORE_0;
-                        localCollections.add(Integer.valueOf(reg));
-                    } else if (seen == PUTFIELD) {
-                        ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
-                        ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
-                        memberCollections.add(nandt.getName(getConstantPool()));
-                    }
-                    state = State.SEEN_NOTHING;
+                    sawOpcodeAfterSync(seen);
                 break;
 
                 case SEEN_LOAD:
-                    if (seen == INVOKEINTERFACE) {
-                        String calledClass = getClassConstantOperand();
-                        if (Values.SLASHED_JAVA_UTIL_MAP.equals(calledClass)) {
-                            if (mapToSetMethods.contains(getNameConstantOperand())) {
-                                state = State.SEEN_LOAD;
-                            } else {
-                                state = State.SEEN_NOTHING;
-                            }
-                        } else if (calledClass.startsWith("java/util/")) {
-                            if ("iterator".equals(getNameConstantOperand())) {
-                                if (monitorObjects.isEmpty()) {
-                                    bugReporter.reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this)
-                                            .addMethod(this).addSourceLine(this));
-                                    state = State.SEEN_NOTHING;
-                                } else {
-                                    Object syncObj = monitorObjects.get(monitorObjects.size() - 1);
-
-                                    if (!syncIsMap(syncObj, collectionInfo)) {
-                                        bugReporter.reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this)
-                                                .addMethod(this).addSourceLine(this));
-                                    }
-                                    state = State.SEEN_NOTHING;
-                                }
-                            }
-                        } else {
-                            state = State.SEEN_NOTHING;
-                        }
-                    } else {
-                        state = State.SEEN_NOTHING;
-                    }
+                    sawOpcodeAfterLoad(seen);
                 break;
             }
 
@@ -199,6 +134,64 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
+        }
+    }
+
+    private void sawOpcodeAfterNothing(int seen) {
+        if ((seen == INVOKESTATIC) && "java/util/Collections".equals(getClassConstantOperand())) {
+            if (synchCollectionNames.contains(getNameConstantOperand())) {
+                state = State.SEEN_SYNC;
+            }
+        } else if (seen == ALOAD) {
+            Integer reg = Integer.valueOf(getRegisterOperand());
+            if (localCollections.contains(reg)) {
+                collectionInfo = reg;
+                state = State.SEEN_LOAD;
+            }
+        } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
+            Integer reg = Integer.valueOf(seen - ALOAD_0);
+            if (localCollections.contains(reg)) {
+                collectionInfo = reg;
+                state = State.SEEN_LOAD;
+            }
+        } else if (seen == GETFIELD) {
+            ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
+            ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
+
+            String fieldName = nandt.getName(getConstantPool());
+            if (memberCollections.contains(fieldName)) {
+                collectionInfo = fieldName;
+                state = State.SEEN_LOAD;
+            }
+        }
+    }
+
+    private void sawOpcodeAfterSync(int seen) {
+        if (seen == ASTORE) {
+            localCollections.add(getRegisterOperand());
+        } else if ((seen >= ASTORE_0) && (seen <= ASTORE_3)) {
+            localCollections.add(seen - ASTORE_0);
+        } else if (seen == PUTFIELD) {
+            ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
+            ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
+            memberCollections.add(nandt.getName(getConstantPool()));
+        }
+        state = State.SEEN_NOTHING;
+    }
+
+    private void sawOpcodeAfterLoad(int seen) {
+        state = State.SEEN_NOTHING;
+        if (seen != INVOKEINTERFACE) {
+            return;
+        }
+        String calledClass = getClassConstantOperand();
+        if (Values.SLASHED_JAVA_UTIL_MAP.equals(calledClass) && mapToSetMethods.contains(getNameConstantOperand())) {
+            state = State.SEEN_LOAD;
+        } else if (calledClass.startsWith("java/util/")
+                && "iterator".equals(getNameConstantOperand())
+                && (monitorObjects.isEmpty() || !syncIsMap(monitorObjects.get(monitorObjects.size() - 1), collectionInfo))) {
+            bugReporter.reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this)
+                    .addMethod(this).addSourceLine(this));
         }
     }
 

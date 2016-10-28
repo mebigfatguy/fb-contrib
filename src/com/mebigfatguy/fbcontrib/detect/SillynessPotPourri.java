@@ -335,7 +335,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         if (lvt != null) {
             LocalVariable lv = LVTHelper.getLocalVariableAtPC(lvt, RegisterUtils.getALoadReg(this, seen), getPC());
             if (lv != null) {
-                lastLoadWasString = "Ljava/lang/String;".equals(lv.getSignature());
+                lastLoadWasString = Values.SIG_JAVA_LANG_STRING.equals(lv.getSignature());
             }
         }
     }
@@ -588,13 +588,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             } else if ("arraycopy".equals(methodName) && (stack.getStackDepth() >= 5)) {
                 OpcodeStack.Item item = stack.getStackItem(2);
                 String sig = item.getSignature();
-                if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
+                if ((sig.charAt(0) != '[') && !Values.SIG_JAVA_LANG_OBJECT.equals(sig)) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
                 item = stack.getStackItem(4);
                 sig = item.getSignature();
-                if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
+                if ((sig.charAt(0) != '[') && !Values.SIG_JAVA_LANG_OBJECT.equals(sig)) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
@@ -611,12 +611,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             if ((offset >= 0) && (stack.getStackDepth() > offset)) {
                 OpcodeStack.Item item = stack.getStackItem(offset);
                 String sig = item.getSignature();
-                if ((sig.charAt(0) != '[') && !"Ljava/lang/Object;".equals(sig)) {
+                if ((sig.charAt(0) != '[') && !Values.SIG_JAVA_LANG_OBJECT.equals(sig)) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
-        } else if ("java/lang/String".equals(className) && "format".equals(methodName) && (stack.getStackDepth() >= 2)) {
+        } else if (Values.SLASHED_JAVA_LANG_STRING.equals(className) && "format".equals(methodName) && (stack.getStackDepth() >= 2)) {
             OpcodeStack.Item item = stack.getStackItem(1);
             String format = (String) item.getConstant();
             if ((format != null) && !format.contains("%")) {
@@ -644,7 +644,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         String methodName = getNameConstantOperand();
         if ("java/util/BitSet".equals(className)) {
             bitSetSilliness(methodName);
-        } else if ("java/lang/StringBuilder".equals(className) || "java/lang/StringBuffer".equals(className)) {
+        } else if (Values.isAppendableStringClassName(className)) {
             return stringBufferSilliness(methodName);
         } else if (Values.SLASHED_JAVA_LANG_STRING.equals(className)) {
             return stringSilliness(methodName, getSigConstantOperand());
@@ -849,7 +849,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             String itemSig = item.getSignature();
             // Rule out java.lang.Object as mergeJumps can throw away type info
             // (BUG)
-            if (!"Ljava/lang/Object;".equals(itemSig) && !"Ljava/util/Calendar;".equals(itemSig) && !"Ljava/util/GregorianCalendar;".equals(itemSig)) {
+            if (!Values.SIG_JAVA_LANG_OBJECT.equals(itemSig) && !"Ljava/util/Calendar;".equals(itemSig) && !"Ljava/util/GregorianCalendar;".equals(itemSig)) {
                 try {
                     JavaClass cls = Repository.lookupClass(SignatureUtils.stripSignature(itemSig));
                     if (!cls.instanceOf(calendarClass)) {
@@ -946,7 +946,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     private void sawInvokeSpecial() {
         String className = getClassConstantOperand();
-        if ("java/lang/StringBuffer".equals(className) || "java/lang/StringBuilder".equals(className)) {
+        if (Values.isAppendableStringClassName(className)) {
             String methodName = getNameConstantOperand();
             if (Values.CONSTRUCTOR.equals(methodName)) {
                 String signature = getSigConstantOperand();
@@ -991,7 +991,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             Field[] fields = getClassContext().getJavaClass().getFields();
             for (Field f : fields) {
                 if (((f.getAccessFlags() & (Constants.ACC_FINAL | Constants.ACC_STATIC)) == (Constants.ACC_FINAL | Constants.ACC_STATIC))
-                        && "Ljava/lang/String;".equals(f.getSignature())) {
+                        && Values.SIG_JAVA_LANG_STRING.equals(f.getSignature())) {
                     ConstantValue cv = f.getConstantValue();
                     if (cv != null) {
                         int cvIndex = cv.getConstantValueIndex();
@@ -1005,15 +1005,15 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     }
 
     private boolean hasToString(JavaClass cls) throws ClassNotFoundException {
-        do {
-            for (Method m : cls.getMethods()) {
-                if ("toString".equals(m.getName()) && "()Ljava/lang/String;".equals(m.getSignature())) {
-                    return true;
-                }
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
+            return false;
+        }
+        for (Method m : cls.getMethods()) {
+            if ("toString".equals(m.getName()) && "()Ljava/lang/String;".equals(m.getSignature())) {
+                return true;
             }
-            cls = cls.getSuperClass();
-        } while (!Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName()));
-        return false;
+        }
+        return hasToString(cls.getSuperClass());
     }
 
     private SPPUserValue getTrimUserValue() {

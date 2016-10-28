@@ -28,6 +28,7 @@ import org.apache.bcel.generic.Type;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -165,21 +166,15 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
     /**
      * returns whether the class is a jdbc class
      *
-     * @param clsName
+     * @param name
      *            class name or signature of a class
      *
      * @return if the class name is a jdbc one
      */
-    private static boolean isJDBCClass(String clsName) {
-        if (clsName.endsWith(";")) {
-            clsName = clsName.substring(1, clsName.length() - 1);
-        }
-        clsName = clsName.replace('.', '/');
+    private static boolean isJDBCClass(String name) {
+        String clsName = SignatureUtils.stripSignature(name);
 
-        if (!clsName.startsWith("java/sql/") && !clsName.startsWith("javax/sql/")) {
-            return false;
-        }
-
-        return (!clsName.endsWith("Exception"));
+        return (clsName.startsWith("java/sql/") || clsName.startsWith("javax/sql/"))
+            && !clsName.endsWith("Exception");
     }
 }

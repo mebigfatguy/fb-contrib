@@ -52,10 +52,7 @@ public class MethodInfo {
     }
 
     public void setNumMethodCalls(int numCalls) {
-        if (numCalls > 255) {
-            numCalls = 255;
-        }
-        numMethodCalls = (byte) numCalls;
+        numMethodCalls = numCalls > 255 ? Byte.MAX_VALUE : (byte) numCalls;
     }
 
     public void setDeclaredAccess(int access) {

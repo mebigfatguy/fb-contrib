@@ -63,8 +63,8 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
             Values.SLASHED_JAVA_LANG_LONG,
             Values.SLASHED_JAVA_LANG_STRING,
             "java/lang/Number",
-            "java/lang/StringBuffer",
-            "java/lang/StringBuilder",
+            Values.SLASHED_JAVA_LANG_STRINGBUFFER,
+            Values.SLASHED_JAVA_LANG_STRINGBUILDER,
             "java/io/StringWriter"
             // @formatter:on
     );
@@ -178,7 +178,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
             }
         } else if (stringAlgoMethods.contains(methodName)) {
             String className = getClassConstantOperand();
-            if ("java/lang/String".equals(className)) {
+            if (Values.SLASHED_JAVA_LANG_STRING.equals(className)) {
                 String signature = getSigConstantOperand();
                 int numParms = Type.getArgumentTypes(signature).length;
                 if (stack.getStackDepth() > numParms) {

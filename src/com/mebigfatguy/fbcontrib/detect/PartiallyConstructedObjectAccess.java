@@ -76,7 +76,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                 methodToCalledMethods = new HashMap<>();
                 super.visitClassContext(classContext);
 
-                if (methodToCalledMethods.size() > 0) {
+                if (!methodToCalledMethods.isEmpty()) {
                     reportChainedMethods();
                 }
             }

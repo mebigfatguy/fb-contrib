@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -102,10 +103,10 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
                         if ("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(sig) && (stack.getStackDepth() >= 3)) {
                             OpcodeStack.Item valueItem = stack.getStackItem(0);
                             String valueSig = valueItem.getSignature();
-                            if ("Ljava/lang/String;".equals(valueSig)) {
+                            if (Values.SIG_JAVA_LANG_STRING.equals(valueSig)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(), LOW_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
-                            } else if ("Ljava/lang/Object;".equals(valueSig)) {
+                            } else if (Values.SIG_JAVA_LANG_OBJECT.equals(valueSig)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                             } else {

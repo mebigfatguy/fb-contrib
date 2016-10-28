@@ -104,33 +104,34 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         modifiesState = false;
 
         byte[] code = obj.getCode();
-        if (code != null) {
-            stack.resetForMethodEntry(this);
-            curMethod = null;
-            super.visitCode(obj);
-            String clsName = getClassName();
-            Method method = getMethod();
-            int accessFlags = method.getAccessFlags();
-            MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(),
-                    numMethodCalls);
-            if (clsName.contains("$") || ((accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0)) {
+        if (code == null) {
+            return;
+        }
+        stack.resetForMethodEntry(this);
+        curMethod = null;
+        super.visitCode(obj);
+        String clsName = getClassName();
+        Method method = getMethod();
+        int accessFlags = method.getAccessFlags();
+        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(),
+                numMethodCalls);
+        if (clsName.contains("$") || ((accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0)) {
+            mi.addCallingAccess(Constants.ACC_PUBLIC);
+        } else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
+            if (isAssociationedWithAnnotations(method)) {
                 mi.addCallingAccess(Constants.ACC_PUBLIC);
-            } else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
-                if (isAssociationedWithAnnotations(method)) {
-                    mi.addCallingAccess(Constants.ACC_PUBLIC);
-                } else {
-                    String methodSig = getMethodName() + getMethodSig();
-                    for (String sig : COMMON_METHOD_SIGS) {
-                        if (methodSig.matches(sig)) {
-                            mi.addCallingAccess(Constants.ACC_PUBLIC);
-                            break;
-                        }
+            } else {
+                String methodSig = getMethodName() + getMethodSig();
+                for (String sig : COMMON_METHOD_SIGS) {
+                    if (methodSig.matches(sig)) {
+                        mi.addCallingAccess(Constants.ACC_PUBLIC);
+                        break;
                     }
                 }
             }
-
-            mi.setModifiesState(modifiesState);
         }
+
+        mi.setModifiesState(modifiesState);
     }
 
     @Override
