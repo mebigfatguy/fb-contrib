@@ -46,7 +46,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class JDBCVendorReliance extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private OpcodeStack stack;
-    private Map<Integer, Integer> jdbcLocals = new HashMap<Integer, Integer>();
+    private Map<Integer, Integer> jdbcLocals = new HashMap<>();
 
     /**
      * constructs a JVR detector given the reporter to report bugs on
@@ -67,7 +67,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         stack = new OpcodeStack();
-        jdbcLocals = new HashMap<Integer, Integer>();
+        jdbcLocals = new HashMap<>();
         super.visitClassContext(classContext);
         stack = null;
         jdbcLocals = null;
@@ -174,7 +174,6 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
     private static boolean isJDBCClass(String name) {
         String clsName = SignatureUtils.stripSignature(name);
 
-        return (clsName.startsWith("java/sql/") || clsName.startsWith("javax/sql/"))
-            && !clsName.endsWith("Exception");
+        return (clsName.startsWith("java.sql.") || clsName.startsWith("javax.sql.")) && !clsName.endsWith("Exception");
     }
 }
