@@ -180,18 +180,28 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterLoad(int seen) {
-        state = State.SEEN_NOTHING;
         if (seen != INVOKEINTERFACE) {
+            state = State.SEEN_NOTHING;
             return;
         }
         String calledClass = getClassConstantOperand();
-        if ((Values.SLASHED_JAVA_UTIL_MAP.equals(calledClass) || ("java/util/SortedMap".equals(calledClass)))
-                && mapToSetMethods.contains(getNameConstantOperand())) {
-            state = State.SEEN_LOAD;
-        } else if (calledClass.startsWith("java/util/") && "iterator".equals(getNameConstantOperand())
-                && (monitorObjects.isEmpty() || !syncIsMap(monitorObjects.get(monitorObjects.size() - 1), collectionInfo))) {
-            bugReporter.reportBug(
-                    new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+        if ((Values.SLASHED_JAVA_UTIL_MAP.equals(calledClass) || ("java/util/SortedMap".equals(calledClass)))) {
+            if (mapToSetMethods.contains(getNameConstantOperand())) {
+                state = State.SEEN_LOAD;
+            } else {
+                state = State.SEEN_NOTHING;
+            }
+        } else if (calledClass.startsWith("java/util/")) {
+            if ("iterator".equals(getNameConstantOperand())) {
+                state = State.SEEN_NOTHING;
+                if (monitorObjects.isEmpty() || !syncIsMap(monitorObjects.get(monitorObjects.size() - 1), collectionInfo)) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                }
+            }
+            /* don't change state at this point */
+        } else {
+            state = State.SEEN_NOTHING;
         }
     }
 
