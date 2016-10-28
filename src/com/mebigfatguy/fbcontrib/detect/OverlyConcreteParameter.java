@@ -40,6 +40,7 @@ import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -531,7 +532,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     private void removeUselessDefiners(final int reg) {
 
         Map<JavaClass, List<MethodInfo>> definers = parameterDefiners.get(Integer.valueOf(reg));
-        if ((definers == null) || definers.isEmpty()) {
+        if (CollectionUtils.isEmpty(definers)) {
             return;
         }
         String methodSig = getSigConstantOperand();
@@ -623,7 +624,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         }
 
         Map<JavaClass, List<MethodInfo>> definers = parameterDefiners.get(Integer.valueOf(reg));
-        if ((definers == null) || definers.isEmpty()) {
+        if (CollectionUtils.isEmpty(definers)) {
             return;
         }
         Iterator<JavaClass> it = definers.keySet().iterator();

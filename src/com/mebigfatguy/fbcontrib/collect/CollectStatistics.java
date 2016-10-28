@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.objectweb.asm.Type;
 
+import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
@@ -83,7 +84,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         try {
             JavaClass cls = classContext.getJavaClass();
             AnnotationEntry[] annotations = cls.getAnnotationEntries();
-            classHasAnnotation = (annotations != null) && (annotations.length > 0);
+            classHasAnnotation = !CollectionUtils.isEmpty(annotations);
             stack = new OpcodeStack();
             selfCallTree = new HashMap<>();
             super.visitClassContext(classContext);
@@ -113,8 +114,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         String clsName = getClassName();
         Method method = getMethod();
         int accessFlags = method.getAccessFlags();
-        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(),
-                numMethodCalls);
+        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(), numMethodCalls);
         if (clsName.contains("$") || ((accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0)) {
             mi.addCallingAccess(Constants.ACC_PUBLIC);
         } else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
@@ -239,8 +239,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
             return true;
         }
 
-        AnnotationEntry[] annotations = m.getAnnotationEntries();
-        return (annotations != null) && (annotations.length > 0);
+        return !CollectionUtils.isEmpty(m.getAnnotationEntries());
     }
 
     /**

@@ -38,6 +38,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -125,7 +126,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
         }
 
         CodeException[] ce = code.getExceptionTable();
-        if ((ce == null) || (ce.length == 0)) {
+        if (CollectionUtils.isEmpty(ce)) {
             return false;
         }
 

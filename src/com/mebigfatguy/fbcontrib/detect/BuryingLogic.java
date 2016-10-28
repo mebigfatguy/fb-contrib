@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -123,7 +124,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
         activeUnconditional = null;
 
         CodeException[] ces = obj.getExceptionTable();
-        if ((ces == null) || (ces.length == 0)) {
+        if (CollectionUtils.isEmpty(ces)) {
             catchPCs = null;
         } else {
             catchPCs = new BitSet();
@@ -238,12 +239,8 @@ public class BuryingLogic extends BytecodeScanningDetector {
      * @return if this operation resets the looking for conditionals
      */
     private boolean isResetOp(int seen) {
-        return (seen == PUTFIELD)
-            || (seen == PUTSTATIC)
-            || (seen == POP)
-            || (seen == POP2)
-            || OpcodeUtils.isStore(seen)
-            || (OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")Z"));
+        return (seen == PUTFIELD) || (seen == PUTSTATIC) || (seen == POP) || (seen == POP2) || OpcodeUtils.isStore(seen)
+                || (OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")Z"));
     }
 
     private void removeLoopBlocks(int target) {

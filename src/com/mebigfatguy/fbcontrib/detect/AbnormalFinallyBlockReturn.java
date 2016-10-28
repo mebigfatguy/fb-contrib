@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
@@ -225,7 +226,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     private boolean catchBlockInFinally(FinallyBlockInfo fBlockInfo) {
 
         CodeException[] catchExceptions = getCode().getExceptionTable();
-        if ((catchExceptions == null) || (catchExceptions.length == 0)) {
+        if (CollectionUtils.isEmpty(catchExceptions)) {
             return false;
         }
 

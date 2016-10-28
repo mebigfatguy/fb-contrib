@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.util.Collection;
+import java.util.Map;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -59,5 +62,17 @@ public final class CollectionUtils {
     public static boolean isListSetMap(String clsName) throws ClassNotFoundException {
         JavaClass cls = Repository.lookupClass(clsName);
         return (cls.implementationOf(LIST_CLASS) || cls.implementationOf(SET_CLASS) || cls.implementationOf(MAP_CLASS));
+    }
+
+    public static boolean isEmpty(Collection<?> c) {
+        return (c == null) || c.isEmpty();
+    }
+
+    public static boolean isEmpty(Map<?, ?> m) {
+        return (m == null) || m.isEmpty();
+    }
+
+    public static <T> boolean isEmpty(T[] a) {
+        return (a == null) || (a.length == 0);
     }
 }

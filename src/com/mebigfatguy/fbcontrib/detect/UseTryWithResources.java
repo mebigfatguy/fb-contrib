@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
@@ -162,8 +163,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             lastNullCheckedReg = -1;
         }
 
-        if ((((bugPC >= 0) && (seen == INVOKEVIRTUAL)) || (seen == INVOKEINTERFACE))
-                && "addSuppressed".equals(getNameConstantOperand())
+        if ((((bugPC >= 0) && (seen == INVOKEVIRTUAL)) || (seen == INVOKEINTERFACE)) && "addSuppressed".equals(getNameConstantOperand())
                 && "Ljava/lang/Throwable;)V".equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).implementationOf(throwableClass)) {
             closePC = -1;
@@ -184,9 +184,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterLoad(int seen, int pc) throws ClassNotFoundException {
-        if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE))
-                && "close".equals(getNameConstantOperand())
-                && "()V".equals(getSigConstantOperand())
+        if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && "close".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).implementationOf(autoCloseableClass)) {
             TryBlock tb = findEnclosingFinally(pc);
             if ((tb != null) && (stack.getStackDepth() > 0)) {
@@ -212,7 +210,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         }
 
         CodeException[] ces = obj.getExceptionTable();
-        if ((ces == null) || (ces.length == 0)) {
+        if (CollectionUtils.isEmpty(ces)) {
             return false;
         }
 
