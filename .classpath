@@ -36,5 +36,6 @@
 	<classpathentry kind="lib" path="lib/spring-context-4.3.3.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-tx-4.3.3.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.9.13.6.jar"/>
+	<classpathentry kind="lib" path="lib/jena-shaded-guava-3.1.0.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>

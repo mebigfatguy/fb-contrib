@@ -116,6 +116,7 @@
 			<pathelement location="${lib.dir}/spring-tx-${spring-tx.version}.jar" />
 			<pathelement location="${lib.dir}/javax.persistence-${javax.persistence.version}.jar" />
 			<pathelement location="${lib.dir}/mockito-all-${mockito-all.version}.jar" />
+			<pathelement location="${lib.dir}/jena-shaded-guava-${jena-shaded-guava.version}.jar" />
 		</path>
 	</target>
 
