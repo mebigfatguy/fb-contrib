@@ -536,7 +536,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         }
         String methodSig = getSigConstantOperand();
         String methodName = getNameConstantOperand();
-        MethodInfo methodInfo = new MethodInfo(methodName, methodSig, null);
+        MethodInfo methodInfo = new MethodInfo(methodName, methodSig);
 
         Iterator<List<MethodInfo>> it = definers.values().iterator();
         while (it.hasNext()) {
@@ -700,8 +700,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
 
             MethodInfo that = (MethodInfo) o;
 
-            return methodName.equals(that.methodName)
-                && methodSig.equals(that.methodSig);
+            return methodName.equals(that.methodName) && methodSig.equals(that.methodSig);
         }
 
         @Override
