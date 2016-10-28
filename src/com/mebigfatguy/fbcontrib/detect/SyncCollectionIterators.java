@@ -185,13 +185,13 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
             return;
         }
         String calledClass = getClassConstantOperand();
-        if (Values.SLASHED_JAVA_UTIL_MAP.equals(calledClass) && mapToSetMethods.contains(getNameConstantOperand())) {
+        if ((Values.SLASHED_JAVA_UTIL_MAP.equals(calledClass) || ("java/util/SortedMap".equals(calledClass)))
+                && mapToSetMethods.contains(getNameConstantOperand())) {
             state = State.SEEN_LOAD;
-        } else if (calledClass.startsWith("java/util/")
-                && "iterator".equals(getNameConstantOperand())
+        } else if (calledClass.startsWith("java/util/") && "iterator".equals(getNameConstantOperand())
                 && (monitorObjects.isEmpty() || !syncIsMap(monitorObjects.get(monitorObjects.size() - 1), collectionInfo))) {
-            bugReporter.reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this)
-                    .addMethod(this).addSourceLine(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 
