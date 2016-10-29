@@ -23,8 +23,6 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
-
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -34,26 +32,23 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 
 /**
- * looks for allocations of synchronized collections that are stored in local
- * variables, and never stored in fields or returned from methods. As local
- * variables are by definition thread safe, using synchronized collections in
- * this context makes no sense.
+ * looks for allocations of synchronized collections that are stored in local variables, and never stored in fields or returned from methods. As local variables
+ * are by definition thread safe, using synchronized collections in this context makes no sense.
  */
 @CustomUserValue
 public class LocalSynchronizedCollection extends LocalTypeDetector {
-    private static final Map<String, Integer> syncCtors = new HashMap<String, Integer>();
-    private static final Integer JAVA_1_1 = Integer.valueOf(Constants.MAJOR_1_1);
+    private static final Map<String, Integer> syncCtors = new HashMap<>();
 
     static {
-        syncCtors.put("java/util/Vector", JAVA_1_1);
-        syncCtors.put("java/util/Hashtable", JAVA_1_1);
+        syncCtors.put("java/util/Vector", Values.JAVA_1_1);
+        syncCtors.put("java/util/Hashtable", Values.JAVA_1_1);
         syncCtors.put(Values.SLASHED_JAVA_LANG_STRINGBUFFER, Values.JAVA_5);
     }
 
-    private static final Map<String, Set<String>> synchClassMethods = new HashMap<String, Set<String>>();
+    private static final Map<String, Set<String>> synchClassMethods = new HashMap<>();
 
     static {
-        Set<String> syncMethods = new HashSet<String>();
+        Set<String> syncMethods = new HashSet<>();
         syncMethods.add("synchronizedCollection");
         syncMethods.add("synchronizedList");
         syncMethods.add("synchronizedMap");

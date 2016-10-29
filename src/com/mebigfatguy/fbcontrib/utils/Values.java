@@ -95,6 +95,7 @@ public final class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_MAP = "java/util/Map";
 
+    public static final Integer JAVA_1_1 = Integer.valueOf(Constants.MAJOR_1_1);
     public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 
     public static final Integer NORMAL_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.NORMAL_PRIORITY);
