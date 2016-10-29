@@ -36,6 +36,7 @@ import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -151,7 +152,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private OpcodeStack stack = null;
     private Map<Integer, MethodCall> localMethodCalls = null;
-    private Map<String, MethodCall> fieldMethodCalls = null;
+    private Map<FieldInfo, MethodCall> fieldMethodCalls = null;
     private Map<String, MethodCall> staticMethodCalls = null;
     private BitSet branchTargets = null;
 
@@ -254,7 +255,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         fieldSource = "";
                     }
                 }
-                fieldMethodCalls.remove(fieldSource + ':' + getNameConstantOperand());
+                fieldMethodCalls.remove(new FieldInfo(fieldSource, getNameConstantOperand()));
             } else if (seen == GETFIELD) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
@@ -299,7 +300,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         if (fieldSource == null) {
                             fieldSource = "";
                         }
-                        mc = fieldMethodCalls.get(fieldSource + ':' + field.getName());
+                        mc = fieldMethodCalls.get(new FieldInfo(fieldSource, field.getName()));
                         MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, getNameConstantOperand(), signature);
                         if ((mi != null) && mi.getModifiesState()) {
                             clearFieldMethods(fieldSource);
@@ -361,7 +362,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                             if (reg >= 0) {
                                 localMethodCalls.remove(Integer.valueOf(reg));
                             } else if (fieldSource != null) {
-                                fieldMethodCalls.remove(fieldSource + ':' + field.getName());
+                                fieldMethodCalls.remove(new FieldInfo(fieldSource, field.getName()));
                             }
                         }
                     } else {
@@ -377,7 +378,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                                 if (fieldSource == null) {
                                     fieldSource = "";
                                 }
-                                fieldMethodCalls.put(fieldSource + ':' + field.getName(), new MethodCall(methodName, signature, parmConstants, pc, ln));
+                                fieldMethodCalls.put(new FieldInfo(fieldSource, field.getName()), new MethodCall(methodName, signature, parmConstants, pc, ln));
                             }
                         }
                     }
@@ -393,10 +394,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     }
 
     private void clearFieldMethods(String fieldSource) {
-        String prefix = fieldSource + ":";
-        Iterator<String> it = fieldMethodCalls.keySet().iterator();
+        Iterator<FieldInfo> it = fieldMethodCalls.keySet().iterator();
         while (it.hasNext()) {
-            if (it.next().startsWith(prefix)) {
+            if (it.next().hasFieldSource(fieldSource)) {
                 it.remove();
             }
         }
@@ -496,6 +496,43 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         }
 
         return lns[mid].getLineNumber();
+    }
+
+    /**
+     * contains information about a field access
+     */
+    static class FieldInfo {
+        private final String fieldSource;
+        private final String fieldName;
+
+        public FieldInfo(String source, String name) {
+            fieldSource = source;
+            fieldName = name;
+        }
+
+        public boolean hasFieldSource(String source) {
+            return fieldSource.equals(source);
+        }
+
+        @Override
+        public int hashCode() {
+            return fieldSource.hashCode() ^ fieldName.hashCode();
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof FieldInfo)) {
+                return false;
+            }
+
+            FieldInfo that = (FieldInfo) o;
+            return fieldSource.equals(that.fieldSource) && fieldName.equals(that.fieldName);
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
     }
 
     /**
