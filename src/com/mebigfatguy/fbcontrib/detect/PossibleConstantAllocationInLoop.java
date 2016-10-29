@@ -50,8 +50,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 
-    private static final Set<String> SYNTHETIC_ALLOCATION_CLASSES = UnmodifiableSet.create(Values.SLASHED_JAVA_LANG_STRINGBUFFER, Values.SLASHED_JAVA_LANG_STRINGBUILDER,
-            "java/lang/AssertionError");
+    private static final Set<String> SYNTHETIC_ALLOCATION_CLASSES = UnmodifiableSet.create(Values.SLASHED_JAVA_LANG_STRINGBUFFER,
+            Values.SLASHED_JAVA_LANG_STRINGBUILDER, "java/lang/AssertionError");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
@@ -70,9 +70,9 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            allocations = new HashMap<Integer, AllocationInfo>();
-            storedAllocations = new HashMap<Integer, Integer>();
-            switchInfos = new ArrayList<SwitchInfo>();
+            allocations = new HashMap<>();
+            storedAllocations = new HashMap<>();
+            switchInfos = new ArrayList<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -159,7 +159,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                             OpcodeStack.Item item = stack.getStackItem(types.length);
                             Integer allocation = (Integer) item.getUserValue();
                             if (allocation != null) {
-                                String retType = Type.getReturnType(signature).getSignature();
+                                String retType = getReturnSignature(signature);
                                 if (!"V".equals(retType) && retType.equals(item.getSignature())) {
                                     sawAllocationNumber = allocation;
                                     sawAllocation = true;
@@ -322,6 +322,24 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 
         LocalVariable lv = lvt.getLocalVariable(reg, getPC());
         return lv == null;
+    }
+
+    /**
+     * gets the return type signature from a method signature
+     *
+     * @param methodSig
+     *            the signature of the method
+     *
+     * @return the signature of the return type, or ? if a bogus method signature is given
+     *
+     */
+    private String getReturnSignature(String methodSig) {
+        int parenPos = methodSig.indexOf(')');
+        if (parenPos < 0) {
+            return "?";
+        }
+
+        return methodSig.substring(parenPos + 1);
     }
 
     static class AllocationInfo {
