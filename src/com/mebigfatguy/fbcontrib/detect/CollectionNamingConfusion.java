@@ -42,24 +42,10 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  */
 public class CollectionNamingConfusion extends PreorderVisitor implements Detector {
 
-    private static JavaClass MAP_CLASS;
-    private static JavaClass SET_CLASS;
-    private static JavaClass LIST_CLASS;
-    private static JavaClass QUEUE_CLASS;
-
-    static {
-        try {
-            MAP_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_MAP);
-            SET_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_SET);
-            LIST_CLASS = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_LIST);
-            QUEUE_CLASS = Repository.lookupClass("java/util/Queue");
-        } catch (ClassNotFoundException cnfe) {
-            MAP_CLASS = null;
-            SET_CLASS = null;
-            LIST_CLASS = null;
-            QUEUE_CLASS = null;
-        }
-    }
+    private JavaClass mapInterface;
+    private JavaClass setInterface;
+    private JavaClass listInterface;
+    private JavaClass queueInterface;
 
     private BugReporter bugReporter;
     private ClassContext classContext;
@@ -72,6 +58,20 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
      */
     public CollectionNamingConfusion(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            mapInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_MAP);
+            setInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_SET);
+            listInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_LIST);
+            queueInterface = Repository.lookupClass("java/util/Queue");
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+            mapInterface = null;
+            setInterface = null;
+            listInterface = null;
+            queueInterface = null;
+
+        }
     }
 
     /**
@@ -82,7 +82,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (MAP_CLASS != null) {
+        if (mapInterface != null) {
             this.classContext = classContext;
             classContext.getJavaClass().accept(this);
         }
@@ -140,10 +140,8 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
                     && signature.startsWith("Ljava/util/")) {
                 String clsName = SignatureUtils.stripSignature(signature);
                 JavaClass cls = Repository.lookupClass(clsName);
-                if (cls.implementationOf(MAP_CLASS) && !name.endsWith("map")
-                        || (cls.implementationOf(SET_CLASS) && !name.endsWith("set"))
-                        || (cls.implementationOf(LIST_CLASS) && !name.endsWith("list"))
-                        || (cls.implementationOf(QUEUE_CLASS) && !name.endsWith("queue"))) {
+                if ((cls.implementationOf(mapInterface) && !name.endsWith("map")) || (cls.implementationOf(setInterface) && !name.endsWith("set"))
+                        || (cls.implementationOf(listInterface) && !name.endsWith("list")) || (cls.implementationOf(queueInterface) && !name.endsWith("queue"))) {
                     return true;
                 }
             }
