@@ -125,9 +125,11 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
                             parmRegs = RegisterUtils.getParameterRegisters(m);
                         }
 
-                        JavaClass parmClass = Repository.lookupClass(SignatureUtils.stripSignature(parmSignature));
-                        if ((parmRegs != null) && parmClass.instanceOf(returnClass)) {
-                            possibleParmRegs.put(Integer.valueOf(parmRegs[p]), new ParmUsage());
+                        if (parmRegs != null) {
+                            JavaClass parmClass = Repository.lookupClass(SignatureUtils.stripSignature(parmSignature));
+                            if (parmClass.instanceOf(returnClass)) {
+                                possibleParmRegs.put(Integer.valueOf(parmRegs[p]), new ParmUsage());
+                            }
                         }
                     }
                 }
