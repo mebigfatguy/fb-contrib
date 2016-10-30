@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -163,7 +162,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
                 case INVOKEINTERFACE: {
                     String sig = getSigConstantOperand();
                     if (SignatureUtils.getReturnSignature(sig).startsWith("L")) {
-                        int parmCnt = Type.getArgumentTypes(sig).length;
+                        int parmCnt = SignatureUtils.getNumParameters(sig);
                         if (stack.getStackDepth() > parmCnt) {
                             OpcodeStack.Item itm = stack.getStackItem(parmCnt);
                             Integer priority = (Integer) itm.getUserValue();

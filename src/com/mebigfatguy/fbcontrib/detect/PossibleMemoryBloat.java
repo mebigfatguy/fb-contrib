@@ -28,9 +28,9 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -191,7 +191,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEDYNAMIC)) {
                 String sig = getSigConstantOperand();
-                int argCount = Type.getArgumentTypes(sig).length;
+                int argCount = SignatureUtils.getNumParameters(sig);
                 if (stack.getStackDepth() > argCount) {
                     OpcodeStack.Item itm = stack.getStackItem(argCount);
                     XField field = itm.getXField();

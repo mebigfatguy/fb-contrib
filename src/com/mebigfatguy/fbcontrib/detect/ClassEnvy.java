@@ -30,7 +30,6 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumberTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
@@ -187,7 +186,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
                 String calledClass = getClassConstantOperand().replace('/', '.');
 
                 if (seen == INVOKEINTERFACE) {
-                    int parmCount = Type.getArgumentTypes(this.getSigConstantOperand()).length;
+                    int parmCount = SignatureUtils.getNumParameters(this.getSigConstantOperand());
                     if (!countClassAccess(parmCount)) {
                         countClassAccess(calledClass);
                     }

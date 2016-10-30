@@ -23,9 +23,9 @@ import java.util.List;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
@@ -122,7 +122,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
         String methodName = getMethodName();
         String methodSig = getMethodSig();
         if (methodName.equals(methodInfo.methodName) && methodSig.endsWith(methodInfo.signatureEnding)
-                && (Type.getArgumentTypes(methodSig).length == methodInfo.argumentCount)) {
+                && (SignatureUtils.getNumParameters(methodSig) == methodInfo.argumentCount)) {
             stack.resetForMethodEntry(this);
             seenNegative = false;
             seenPositive = false;

@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -196,7 +197,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
 
     private void processInvoke() {
         String sig = getSigConstantOperand();
-        int argCount = Type.getArgumentTypes(sig).length;
+        int argCount = SignatureUtils.getNumParameters(sig);
         if (stack.getStackDepth() > argCount) {
             OpcodeStack.Item invokeeItem = stack.getStackItem(argCount);
             XField fieldOnWhichMethodIsInvoked = invokeeItem.getXField();

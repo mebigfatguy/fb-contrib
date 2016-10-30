@@ -23,10 +23,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -49,7 +49,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
     private static final Map<FQMethod, Units> TIME_UNIT_GENERATING_METHODS;
 
     static {
-        Map<FQMethod, Units> tugm = new HashMap<FQMethod, Units>(50);
+        Map<FQMethod, Units> tugm = new HashMap<>(50);
         tugm.put(new FQMethod("java/lang/System", "currentTimeMillis", "()J"), Units.MILLIS);
         tugm.put(new FQMethod("java/lang/System", "nanoTime", "()J"), Units.NANOS);
         tugm.put(new FQMethod("java/sql/Timestamp", "getTime", "()J"), Units.MILLIS);
@@ -104,7 +104,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
     private static final Map<String, Units> TIMEUNIT_TO_UNITS;
 
     static {
-        Map<String, Units> tutu = new HashMap<String, Units>();
+        Map<String, Units> tutu = new HashMap<>();
         tutu.put("NANOSECONDS", Units.NANOS);
         tutu.put("MICROSECONDS", Units.MICROS);
         tutu.put("MILLISECONDS", Units.MILLIS);
@@ -217,7 +217,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         FQMethod methodCall = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), signature);
         Units unit = TIME_UNIT_GENERATING_METHODS.get(methodCall);
         if (unit == Units.CALLER) {
-            int offset = Type.getArgumentTypes(signature).length;
+            int offset = SignatureUtils.getNumParameters(signature);
             if (stack.getStackDepth() > offset) {
                 OpcodeStack.Item item = stack.getStackItem(offset);
                 unit = (Units) item.getUserValue();

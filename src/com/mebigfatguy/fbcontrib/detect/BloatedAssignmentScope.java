@@ -34,7 +34,6 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
@@ -586,12 +585,13 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             return null;
         }
 
-        Type[] types = Type.getArgumentTypes(sig);
-        if (stack.getStackDepth() <= types.length) {
+        int numParameters = SignatureUtils.getNumParameters(sig);
+
+        if (stack.getStackDepth() <= numParameters) {
             return null;
         }
 
-        OpcodeStack.Item caller = stack.getStackItem(types.length);
+        OpcodeStack.Item caller = stack.getStackItem(numParameters);
         UserObject uo = (UserObject) caller.getUserValue();
         if ((uo != null) && (uo.caller != null)) {
             return uo.caller;

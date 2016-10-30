@@ -19,9 +19,9 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
-import org.objectweb.asm.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -126,7 +126,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
         if ("java/io/File".equals(clsName)) {
             String methodName = getNameConstantOperand();
             String sig = getSigConstantOperand();
-            if (Values.CONSTRUCTOR.equals(methodName) && (Type.getArgumentTypes(sig).length == 1) && (stack.getStackDepth() > 0)) {
+            if (Values.CONSTRUCTOR.equals(methodName) && (SignatureUtils.getNumParameters(sig) == 1) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (item.getUserValue() != null) {
                     bugReporter.reportBug(new BugInstance(this, BugType.CRF_CONFLATING_RESOURCES_AND_FILES.name(), NORMAL_PRIORITY).addClass(this)

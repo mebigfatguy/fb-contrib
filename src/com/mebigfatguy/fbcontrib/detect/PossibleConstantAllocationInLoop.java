@@ -27,7 +27,6 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -145,9 +144,9 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                 case INVOKEVIRTUAL:
                 case INVOKESTATIC:
                     String signature = getSigConstantOperand();
-                    Type[] types = Type.getArgumentTypes(signature);
-                    if (stack.getStackDepth() >= types.length) {
-                        for (int i = 0; i < types.length; i++) {
+                    int numParameters = SignatureUtils.getNumParameters(signature);
+                    if (stack.getStackDepth() >= numParameters) {
+                        for (int i = 0; i < numParameters; i++) {
                             OpcodeStack.Item item = stack.getStackItem(i);
                             Integer allocation = (Integer) item.getUserValue();
                             if (allocation != null) {
@@ -156,8 +155,8 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                         }
                         if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL))
                                 // ignore possible method chaining
-                                && (stack.getStackDepth() > types.length)) {
-                            OpcodeStack.Item item = stack.getStackItem(types.length);
+                                && (stack.getStackDepth() > numParameters)) {
+                            OpcodeStack.Item item = stack.getStackItem(numParameters);
                             Integer allocation = (Integer) item.getUserValue();
                             if (allocation != null) {
                                 String retType = SignatureUtils.getReturnSignature(signature);

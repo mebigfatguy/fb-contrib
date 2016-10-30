@@ -196,7 +196,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
         String calledSig = getSigConstantOperand();
         String calledRet = SignatureUtils.getReturnSignature(calledSig);
         if ("V".equals(calledRet)) {
-            int calledObjOffset = Type.getArgumentTypes(calledSig).length;
+            int calledObjOffset = SignatureUtils.getNumParameters(calledSig);
             if (stack.getStackDepth() > calledObjOffset) {
                 OpcodeStack.Item item = stack.getStackItem(calledObjOffset);
                 int reg = item.getRegisterNumber();

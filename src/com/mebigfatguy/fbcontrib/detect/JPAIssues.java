@@ -35,10 +35,10 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -244,9 +244,9 @@ public class JPAIssues extends BytecodeScanningDetector {
 
         TransactionalType calledMethodTransType = getTransactionalType(new FQMethod(dottedCls, methodName, signature));
         if ((calledMethodTransType != TransactionalType.NONE) && !TransactionalType.isContainedBy(calledMethodTransType, methodTransType)) {
-            Type[] parmTypes = Type.getArgumentTypes(signature);
-            if (stack.getStackDepth() > parmTypes.length) {
-                OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
+            int numParameters = SignatureUtils.getNumParameters(signature);
+            if (stack.getStackDepth() > numParameters) {
+                OpcodeStack.Item itm = stack.getStackItem(numParameters);
                 if (itm.getRegisterNumber() == 0) {
                     bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), isPublic ? NORMAL_PRIORITY : LOW_PRIORITY)
                             .addClass(this).addMethod(this).addSourceLine(this));

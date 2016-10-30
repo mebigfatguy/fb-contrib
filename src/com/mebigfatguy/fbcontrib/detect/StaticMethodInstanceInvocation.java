@@ -28,7 +28,6 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -124,8 +123,8 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                 String method = getNameConstantOperand();
                 if (method.indexOf('$') < 0) {
                     PopInfo pInfo = popStack.get(0);
-                    Type[] args = Type.getArgumentTypes(getSigConstantOperand());
-                    if (((args.length > 0) || (pInfo.popPC == (getPC() - 1))) && (args.length == (stack.getStackDepth() - pInfo.popDepth))
+                    int numArguments = SignatureUtils.getNumParameters(getSigConstantOperand());
+                    if (((numArguments > 0) || (pInfo.popPC == (getPC() - 1))) && (numArguments == (stack.getStackDepth() - pInfo.popDepth))
                             && classDefinesStaticMethod(SignatureUtils.stripSignature(pInfo.popSignature))) {
                         int lineNumber = -1;
                         if (lineNumberTable != null) {

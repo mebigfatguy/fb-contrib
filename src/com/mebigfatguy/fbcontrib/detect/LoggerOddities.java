@@ -284,7 +284,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 if ("(Ljava/lang/String;)V".equals(signature) || "(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature)
                         || "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V".equals(signature)
                         || "(Ljava/lang/String;[Ljava/lang/Object;)V".equals(signature)) {
-                    int numParms = Type.getArgumentTypes(signature).length;
+                    int numParms = SignatureUtils.getNumParameters(signature);
                     if (stack.getStackDepth() >= numParms) {
                         OpcodeStack.Item formatItem = stack.getStackItem(numParms - 1);
                         Object con = formatItem.getConstant();

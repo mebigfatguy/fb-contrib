@@ -114,7 +114,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
                 String clsName = getClassConstantOperand();
                 if (!Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName) && !isJDBCClass(clsName)) {
-                    int parmCnt = Type.getArgumentTypes(getSigConstantOperand()).length;
+                    int parmCnt = SignatureUtils.getNumParameters(getSigConstantOperand());
                     if (stack.getStackDepth() > parmCnt) {
                         OpcodeStack.Item itm = stack.getStackItem(parmCnt);
                         if (itm.getUserValue() != null) {

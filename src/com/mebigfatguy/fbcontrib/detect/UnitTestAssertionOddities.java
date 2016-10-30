@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
@@ -170,7 +171,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private void detectFrameworkType() {
         hasAnnotation = false;
         Method m = getMethod();
-        if (isTestCaseDerived  && m.getName().startsWith("test")) {
+        if (isTestCaseDerived && m.getName().startsWith("test")) {
             frameworkType = TestFrameworkType.JUNIT;
             return;
         }
@@ -259,8 +260,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                         }
                     } else if ("assertNotEquals".equals(methodName)) {
                         String signature = getSigConstantOperand();
-                        Type[] argTypes = Type.getArgumentTypes(signature);
-                        if (((argTypes.length == 2) || (argTypes.length == 3)) && (stack.getStackDepth() >= 2)) {
+                        int numArguments = SignatureUtils.getNumParameters(signature);
+                        if (((numArguments == 2) || (numArguments == 3)) && (stack.getStackDepth() >= 2)) {
                             OpcodeStack.Item expectedItem = stack.getStackItem(1);
                             if (expectedItem.isNull()) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_USE_ASSERT_NOT_NULL.name(), NORMAL_PRIORITY)

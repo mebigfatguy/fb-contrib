@@ -51,31 +51,25 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     private int classVersion;
 
     /**
-     * Should return a map of constructors that should be watched, as well as
-     * version number of Java that the given constructor becomes a bad idea.
+     * Should return a map of constructors that should be watched, as well as version number of Java that the given constructor becomes a bad idea.
      *
-     * e.g. StringBuffer was the only way to efficiently concatenate a string
-     * until the faster, non-thread safe StringBuilder was introduced in 1.5.
-     * Thus, in code that targets before 1.5, FindBugs should not report a
-     * LocalSynchronizedCollection bug. Therefore, the entry
-     * &lt;"java/lang/StringBuffer", Constants.MAJOR_1_5&gt; is in the returned
-     * map.
+     * e.g. StringBuffer was the only way to efficiently concatenate a string until the faster, non-thread safe StringBuilder was introduced in 1.5. Thus, in
+     * code that targets before 1.5, FindBugs should not report a LocalSynchronizedCollection bug. Therefore, the entry &lt;"java/lang/StringBuffer",
+     * Constants.MAJOR_1_5&gt; is in the returned map.
      *
      * @return the map of watched constructors
      */
     protected abstract Map<String, Integer> getWatchedConstructors();
 
     /**
-     * Should return a map of a class and a set of "factory" methods that create
-     * types that should be reported buggy (when made as local variables).
+     * Should return a map of a class and a set of "factory" methods that create types that should be reported buggy (when made as local variables).
      *
      * @return map of factory methods
      */
     protected abstract Map<String, Set<String>> getWatchedClassMethods();
 
     /**
-     * returns a set of self returning methods, that is, methods that when
-     * called on a a synchronized collection return themselves.
+     * returns a set of self returning methods, that is, methods that when called on a a synchronized collection return themselves.
      *
      * @return a set of self referential methods
      */
@@ -99,7 +93,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            suspectLocals = new HashMap<Integer, RegisterInfo>();
+            suspectLocals = new HashMap<>();
             classVersion = classContext.getJavaClass().getMajor();
             super.visitClassContext(classContext);
         } finally {
@@ -144,8 +138,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find the constructors defined in
-     * getWatchedConstructors() and the method calls in getWatchedClassMethods()
+     * implements the visitor to find the constructors defined in getWatchedConstructors() and the method calls in getWatchedClassMethods()
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -178,15 +171,16 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
             if (!suspectLocals.isEmpty()) {
                 if (isStandardInvoke(seen)) {
                     String sig = getSigConstantOperand();
-                    int argCount = Type.getArgumentTypes(sig).length;
+                    int argCount = SignatureUtils.getNumParameters(sig);
                     if (stack.getStackDepth() >= argCount) {
                         for (int i = 0; i < argCount; i++) {
                             OpcodeStack.Item item = stack.getStackItem(i);
                             RegisterInfo cri = suspectLocals.get(item.getUserValue());
                             if (cri != null) {
-                                if (SignatureUtils.similarPackages(SignatureUtils.getPackageName(SignatureUtils.stripSignature(getClassConstantOperand())), SignatureUtils.getPackageName(SignatureUtils.stripSignature(this.getClassName())), 2))
+                                if (SignatureUtils.similarPackages(SignatureUtils.getPackageName(SignatureUtils.stripSignature(getClassConstantOperand())),
+                                        SignatureUtils.getPackageName(SignatureUtils.stripSignature(this.getClassName())), 2)) {
                                     cri.setPriority(LOW_PRIORITY);
-                                else {
+                                } else {
                                     cri.setIgnore();
                                 }
                             }
@@ -245,10 +239,11 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     protected Integer checkStaticCreations() {
         Integer tosIsSyncColReg = null;
         Map<String, Set<String>> mapOfClassToMethods = getWatchedClassMethods();
-        for (Entry<String, Set<String>> entry : mapOfClassToMethods.entrySet())
+        for (Entry<String, Set<String>> entry : mapOfClassToMethods.entrySet()) {
             if (entry.getKey().equals(getClassConstantOperand()) && entry.getValue().contains(getNameConstantOperand())) {
                 tosIsSyncColReg = Values.NEGATIVE_ONE;
             }
+        }
         return tosIsSyncColReg;
     }
 
@@ -256,7 +251,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
         Integer tosIsSyncColReg = null;
         Set<String> selfReturningMethods = getSelfReturningMethods();
         String methodName = getClassConstantOperand() + '.' + getNameConstantOperand();
-        for (String selfRefNames : selfReturningMethods)
+        for (String selfRefNames : selfReturningMethods) {
             if (methodName.equals(selfRefNames)) {
                 Type[] parmTypes = Type.getArgumentTypes(getSigConstantOperand());
                 if (stack.getStackDepth() > parmTypes.length) {
@@ -265,6 +260,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
                 }
                 break;
             }
+        }
         return tosIsSyncColReg;
     }
 
@@ -329,8 +325,9 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
         }
 
         public void setPriority(int newPriority) {
-            if (newPriority > priority)
+            if (newPriority > priority) {
                 priority = newPriority;
+            }
         }
 
         public int getPriority() {

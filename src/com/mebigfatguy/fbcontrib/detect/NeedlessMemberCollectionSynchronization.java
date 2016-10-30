@@ -26,7 +26,6 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -264,7 +263,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
                     String methodName = getNameConstantOperand();
                     if (modifyingMethods.contains(methodName)) {
                         String signature = getSigConstantOperand();
-                        int parmCount = Type.getArgumentTypes(signature).length;
+                        int parmCount = SignatureUtils.getNumParameters(signature);
                         if (stack.getStackDepth() > parmCount) {
                             OpcodeStack.Item item = stack.getStackItem(parmCount);
                             XField field = item.getXField();
@@ -374,7 +373,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
      * removes collection fields that are passed to other methods as arguments
      */
     private void removeCollectionParameters() {
-        int parmCount = Type.getArgumentTypes(getSigConstantOperand()).length;
+        int parmCount = SignatureUtils.getNumParameters(getSigConstantOperand());
         if (stack.getStackDepth() >= parmCount) {
             for (int i = 0; i < parmCount; i++) {
                 OpcodeStack.Item item = stack.getStackItem(i);

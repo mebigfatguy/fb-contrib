@@ -24,7 +24,6 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
@@ -180,7 +179,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
             String className = getClassConstantOperand();
             if (Values.SLASHED_JAVA_LANG_STRING.equals(className)) {
                 String signature = getSigConstantOperand();
-                int numParms = Type.getArgumentTypes(signature).length;
+                int numParms = SignatureUtils.getNumParameters(signature);
                 if (stack.getStackDepth() > numParms) {
                     OpcodeStack.Item item = stack.getStackItem(numParms);
                     if (item.getUserValue() != null) {

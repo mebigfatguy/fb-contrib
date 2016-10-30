@@ -30,12 +30,12 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -276,7 +276,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
                 String className = getClassConstantOperand();
                 String signature = getSigConstantOperand();
-                int parmCount = Type.getArgumentTypes(signature).length;
+                int parmCount = SignatureUtils.getNumParameters(signature);
 
                 int reg = -1;
                 XField field = null;

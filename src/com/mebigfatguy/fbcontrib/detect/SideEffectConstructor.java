@@ -19,9 +19,9 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -33,8 +33,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for constructors that operate through side effects, specifically
- * constructors that aren't assigned to any variable or field.
+ * looks for constructors that operate through side effects, specifically constructors that aren't assigned to any variable or field.
  */
 @CustomUserValue
 public class SideEffectConstructor extends BytecodeScanningDetector {
@@ -87,9 +86,8 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for constructors who's value is popped off
-     * the stack, and not assigned before the pop of the value, or if a return
-     * is issued with that object still on the stack.
+     * overrides the visitor to look for constructors who's value is popped off the stack, and not assigned before the pop of the value, or if a return is
+     * issued with that object still on the stack.
      *
      * @param seen
      *            the opcode of the currently parse opcode
@@ -101,16 +99,16 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (state) {
-            case SAW_NOTHING:
-                pc = sawOpcodeAfterNothing(seen);
+                case SAW_NOTHING:
+                    pc = sawOpcodeAfterNothing(seen);
                 break;
 
-            case SAW_CTOR:
-                if (seen == POP || seen == RETURN) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this));
-                }
-                state = State.SAW_NOTHING;
+                case SAW_CTOR:
+                    if ((seen == POP) || (seen == RETURN)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                .addSourceLine(this));
+                    }
+                    state = State.SAW_NOTHING;
                 break;
             }
         } finally {
@@ -129,7 +127,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
             String name = getNameConstantOperand();
             if (Values.CONSTRUCTOR.equals(name)) {
                 String sig = getSigConstantOperand();
-                int numArgs = Type.getArgumentTypes(sig).length;
+                int numArgs = SignatureUtils.getNumParameters(sig);
                 if (stack.getStackDepth() > numArgs) {
                     OpcodeStack.Item caller = stack.getStackItem(numArgs);
                     if (caller.getRegisterNumber() != 0) {
@@ -144,8 +142,8 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(i);
                 Integer secPC = (Integer) item.getUserValue();
                 if (secPC != null) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this, secPC.intValue()));
+                    bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this, secPC.intValue()));
                     break;
                 }
 

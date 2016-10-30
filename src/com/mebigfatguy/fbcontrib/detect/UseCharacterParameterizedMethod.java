@@ -26,7 +26,6 @@ import java.util.Map;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
@@ -243,7 +242,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         String sig = getSigConstantOperand();
         String returnSig = SignatureUtils.getReturnSignature(sig);
         if ("Ljava/lang/StringBuilder;".equals(returnSig) || "Ljava/lang/StringBuffer;".equals(returnSig)) {
-            int parmCount = Type.getArgumentTypes(sig).length;
+            int parmCount = SignatureUtils.getNumParameters(sig);
             if (stack.getStackDepth() > parmCount) {
                 OpcodeStack.Item itm = stack.getStackItem(parmCount);
                 return (UCPMUserValue) itm.getUserValue();

@@ -25,9 +25,9 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -50,7 +50,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
     static {
         try {
             cloneableClass = Repository.lookupClass("java/lang/Cloneable");
-            changingMethods = new HashMap<String, Integer>();
+            changingMethods = new HashMap<>();
             changingMethods.put("add", Values.NORMAL_BUG_PRIORITY);
             changingMethods.put("addAll", Values.NORMAL_BUG_PRIORITY);
             changingMethods.put("put", Values.NORMAL_BUG_PRIORITY);
@@ -164,7 +164,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
                 case INVOKEINTERFACE:
                 case INVOKEVIRTUAL:
                     String sig = getSigConstantOperand();
-                    int numArgs = Type.getArgumentTypes(sig).length;
+                    int numArgs = SignatureUtils.getNumParameters(sig);
                     if (stack.getStackDepth() > numArgs) {
                         OpcodeStack.Item item = stack.getStackItem(numArgs);
                         if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {

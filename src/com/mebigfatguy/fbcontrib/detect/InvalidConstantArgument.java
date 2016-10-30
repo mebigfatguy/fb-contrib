@@ -33,9 +33,9 @@ import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 
@@ -62,11 +62,11 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
             new InvalidPattern("javax/swing/JScrollBar#\\<init\\>\\(I.*\\)V",
                     ParameterInfo.createIntegerParameterInfo(0, true, Adjustable.HORIZONTAL, Adjustable.VERTICAL)),
             new InvalidPattern("java/lang/Thread#setPriority\\(I\\)V",
-                    new ParameterInfo<Integer>(0, true, Range.createIntegerRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY))),
+                    new ParameterInfo<>(0, true, Range.createIntegerRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY))),
             new InvalidPattern("java/math/BigDecimal#divide\\(Ljava/math/BigDecimal;.*I\\)Ljava/math/BigDecimal;",
-                    new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
+                    new ParameterInfo<>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
             new InvalidPattern("java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;",
-                    new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
+                    new ParameterInfo<>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
             new InvalidPattern("java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;", ParameterInfo.createIntegerParameterInfo(0, true,
                     ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE)),
             new InvalidPattern("java/sql/Connection#createStatement\\(III?\\)Ljava/sql/Statement;",
@@ -134,14 +134,14 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
                         Matcher m = entry.getPattern().matcher(mInfo);
                         if (m.matches()) {
                             for (ParameterInfo<?> info : entry.getParmInfo()) {
-                                int parmOffset = info.fromStart ? Type.getArgumentTypes(sig).length - info.parameterOffset - 1 : info.parameterOffset;
+                                int parmOffset = info.fromStart ? SignatureUtils.getNumParameters(sig) - info.parameterOffset - 1 : info.parameterOffset;
                                 if (stack.getStackDepth() > parmOffset) {
                                     OpcodeStack.Item item = stack.getStackItem(parmOffset);
 
                                     Comparable cons = (Comparable) item.getConstant();
                                     if (!info.isValid(cons)) {
                                         int badParm = 1
-                                                + (info.fromStart ? info.parameterOffset : Type.getArgumentTypes(sig).length - info.parameterOffset - 1);
+                                                + (info.fromStart ? info.parameterOffset : SignatureUtils.getNumParameters(sig) - info.parameterOffset - 1);
                                         bugReporter.reportBug(new BugInstance(this, BugType.ICA_INVALID_CONSTANT_ARGUMENT.name(), NORMAL_PRIORITY)
                                                 .addClass(this).addMethod(this).addSourceLine(this).addString("Parameter " + badParm));
                                         break;
@@ -195,7 +195,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         public ParameterInfo(int offset, boolean start, T... values) {
             parameterOffset = offset;
             fromStart = start;
-            validValues = new HashSet<T>(Arrays.asList(values));
+            validValues = new HashSet<>(Arrays.asList(values));
             range = null;
         }
 
@@ -207,7 +207,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         }
 
         public static ParameterInfo<Integer> createIntegerParameterInfo(int offset, boolean start, int... values) {
-            ParameterInfo<Integer> info = new ParameterInfo<Integer>(offset, start);
+            ParameterInfo<Integer> info = new ParameterInfo<>(offset, start);
             for (int v : values) {
                 info.validValues.add(Integer.valueOf(v));
             }
@@ -243,7 +243,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
         }
 
         public static Range<Integer> createIntegerRange(int f, int t) {
-            return new Range<Integer>(Integer.valueOf(f), Integer.valueOf(t));
+            return new Range<>(Integer.valueOf(f), Integer.valueOf(t));
         }
 
         public T getFrom() {

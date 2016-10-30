@@ -25,7 +25,6 @@ import java.util.Map;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
@@ -142,7 +141,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                     unsafeCallOccurred = true;
                 } else {
                     if (!"V".equals(SignatureUtils.getReturnSignature(methodSig))) {
-                        int parmCount = Type.getArgumentTypes(methodSig).length;
+                        int parmCount = SignatureUtils.getNumParameters(methodSig);
                         if (stack.getStackDepth() > parmCount) {
                             OpcodeStack.Item itm = stack.getStackItem(parmCount);
                             unsafeCallOccurred = unsafeAliases.get(itm.getRegisterNumber());

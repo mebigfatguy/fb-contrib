@@ -24,11 +24,11 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -73,8 +73,8 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            nodeCreations = new HashMap<OpcodeStack.Item, Integer>();
-            nodeStores = new HashMap<Integer, Integer>();
+            nodeCreations = new HashMap<>();
+            nodeStores = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -96,7 +96,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
         nodeStores.clear();
         super.visitCode(obj);
 
-        Set<Integer> reportedPCs = new HashSet<Integer>();
+        Set<Integer> reportedPCs = new HashSet<>();
         for (Integer pc : nodeCreations.values()) {
             if (!reportedPCs.contains(pc)) {
                 bugReporter.reportBug(new BugInstance(this, BugType.ODN_ORPHANED_DOM_NODE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
@@ -160,7 +160,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
 
             if (!sawCreate && ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL))) {
                 String methodSig = getSigConstantOperand();
-                int argCount = Type.getArgumentTypes(methodSig).length;
+                int argCount = SignatureUtils.getNumParameters(methodSig);
                 if (stack.getStackDepth() >= argCount) {
                     for (int a = 0; a < argCount; a++) {
                         OpcodeStack.Item itm = stack.getStackItem(a);

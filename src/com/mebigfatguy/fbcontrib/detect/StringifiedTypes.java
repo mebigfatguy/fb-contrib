@@ -23,11 +23,11 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -161,9 +161,9 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                     } else if (Values.SLASHED_JAVA_LANG_STRING.equals(clsName)) {
                         Integer priority = STRING_PARSE_METHODS.get(methodName);
                         if (priority != null) {
-                            Type[] parmTypes = Type.getArgumentTypes(sig);
-                            if (stackDepth > parmTypes.length) {
-                                OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
+                            int numParameters = SignatureUtils.getNumParameters(sig);
+                            if (stackDepth > numParameters) {
+                                OpcodeStack.Item item = stack.getStackItem(numParameters);
                                 if ((item.getXField() != null) || FROM_FIELD.equals(item.getUserValue())) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.STT_STRING_PARSING_A_FIELD.name(), priority.intValue()).addClass(this)
                                             .addMethod(this).addSourceLine(this));
@@ -179,19 +179,19 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                     String methodName = getNameConstantOperand();
                     String sig = getSigConstantOperand();
 
-                    Type[] parmTypes = Type.getArgumentTypes(sig);
-                    if (stackDepth > parmTypes.length) {
+                    int numParameters = SignatureUtils.getNumParameters(sig);
+                    if (stackDepth > numParameters) {
                         FQMethod cm = new FQMethod(clsName, methodName, sig);
                         checkParms = COLLECTION_PARMS.get(cm);
                         if (checkParms != null) {
-                            OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
+                            OpcodeStack.Item item = stack.getStackItem(numParameters);
                             if (item.getXField() == null) {
                                 checkParms = null;
                             } else {
                                 for (int parm : checkParms) {
                                     if ((parm >= 0) && TO_STRING.equals(stack.getStackItem(parm).getUserValue())) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY)
-                                                .addClass(this).addMethod(this).addSourceLine(this));
+                                        bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this));
                                         break;
                                     }
                                 }

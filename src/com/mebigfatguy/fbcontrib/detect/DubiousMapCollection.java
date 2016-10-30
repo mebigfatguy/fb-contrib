@@ -26,10 +26,10 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -174,7 +174,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
 
     private void processNormalInvoke() {
         String signature = getSigConstantOperand();
-        int numParms = Type.getArgumentTypes(signature).length;
+        int numParms = SignatureUtils.getNumParameters(signature);
         if (stack.getStackDepth() <= numParms) {
             return;
         }
@@ -219,7 +219,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
      * parses all the parameters of a called method and removes any of the parameters that are maps currently being looked at for this detector
      */
     private void processMethodCall() {
-        int numParams = Type.getArgumentTypes(getSigConstantOperand()).length;
+        int numParams = SignatureUtils.getNumParameters(getSigConstantOperand());
 
         int depth = stack.getStackDepth();
         for (int i = 0; i < numParams; i++) {

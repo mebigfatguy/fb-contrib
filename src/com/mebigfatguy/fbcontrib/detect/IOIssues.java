@@ -23,10 +23,10 @@ import java.util.Set;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -181,9 +181,9 @@ public class IOIssues extends BytecodeScanningDetector {
         FQMethod m = new FQMethod(clsName, methodName, ANY_PARMS);
         if (COPY_METHODS.contains(m)) {
             String signature = getSigConstantOperand();
-            Type[] argTypes = Type.getArgumentTypes(signature);
-            if (stack.getStackDepth() >= argTypes.length) {
-                for (int i = 0; i < argTypes.length; i++) {
+            int numArguments = SignatureUtils.getNumParameters(signature);
+            if (stack.getStackDepth() >= numArguments) {
+                for (int i = 0; i < numArguments; i++) {
                     OpcodeStack.Item itm = stack.getStackItem(i);
                     IOIUserValue uv = (IOIUserValue) itm.getUserValue();
                     if (uv != null) {

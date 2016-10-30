@@ -25,10 +25,10 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
@@ -75,7 +75,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
     private final OpcodeStack stack = new OpcodeStack();
-    private final Map<String, FieldInfo> fieldsReported = new HashMap<String, FieldInfo>(10);
+    private final Map<String, FieldInfo> fieldsReported = new HashMap<>(10);
 
     /**
      * constructs a DLC detector given the reporter to report bugs on
@@ -197,7 +197,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
      * @return the field annotation for the field whose method was executed
      */
     private static XField getFieldFromStack(final OpcodeStack stk, final String signature) {
-        int parmCount = Type.getArgumentTypes(signature).length;
+        int parmCount = SignatureUtils.getNumParameters(signature);
         if (stk.getStackDepth() > parmCount) {
             OpcodeStack.Item itm = stk.getStackItem(parmCount);
             return itm.getXField();

@@ -27,11 +27,11 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -47,13 +47,14 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for interfaces that ignore 508 compliance, including not using
- * JLabel.setLabelFor, Using null layouts,
+ * looks for interfaces that ignore 508 compliance, including not using JLabel.setLabelFor, Using null layouts,
  */
 @CustomUserValue
 public class Section508Compliance extends BytecodeScanningDetector {
 
-    private enum S508UserValue { SAW_TEXT_LABEL, FROM_UIMANAGER, APPENDED_STRING };
+    private enum S508UserValue {
+        SAW_TEXT_LABEL, FROM_UIMANAGER, APPENDED_STRING
+    };
 
     private static JavaClass windowClass;
     private static JavaClass componentClass;
@@ -88,7 +89,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
         }
     }
 
-    private static final Map<FQMethod, Integer> displayTextMethods = new HashMap<FQMethod, Integer>();
+    private static final Map<FQMethod, Integer> displayTextMethods = new HashMap<>();
 
     static {
         displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
@@ -100,10 +101,12 @@ public class Section508Compliance extends BytecodeScanningDetector {
         displayTextMethods.put(new FQMethod("javax/swing/JFrame", "<init>", "(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)"), Values.ONE);
         displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;)"), Values.ZERO);
         displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;Z)"), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)"), Values.TWO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)"),
+                Values.TWO);
         displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;)"), Values.ZERO);
         displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;Z)"), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)"), Values.TWO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)"),
+                Values.TWO);
         displayTextMethods.put(new FQMethod("java/awt/Dialog", "setTitle", "(Ljava/lang/String;)"), Values.ZERO);
         displayTextMethods.put(new FQMethod("java/awt/Frame", "setTitle", "(Ljava/lang/String;)"), Values.ZERO);
         displayTextMethods.put(new FQMethod("javax/swing/JMenu", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
@@ -126,8 +129,9 @@ public class Section508Compliance extends BytecodeScanningDetector {
      */
     public Section508Compliance(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        if (clsNFException != null)
+        if (clsNFException != null) {
             bugReporter.reportMissingClass(clsNFException);
+        }
     }
 
     /**
@@ -147,8 +151,8 @@ public class Section508Compliance extends BytecodeScanningDetector {
             }
 
             stack = new OpcodeStack();
-            fieldLabels = new HashSet<XField>();
-            localLabels = new HashMap<Integer, SourceLineAnnotation>();
+            fieldLabels = new HashSet<>();
+            localLabels = new HashMap<>();
             super.visitClassContext(classContext);
             for (XField fa : fieldLabels) {
                 bugReporter.reportBug(new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY).addClass(this).addField(fa));
@@ -279,7 +283,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
                 processSetSizeOps(methodName);
                 processNullLayouts(className, methodName);
                 processSetColorOps(methodName);
-            } else if (seen == INVOKESTATIC && "javax/swing/UIManager".equals(getClassConstantOperand())) {
+            } else if ((seen == INVOKESTATIC) && "javax/swing/UIManager".equals(getClassConstantOperand())) {
                 sawUIManager = true;
             }
 
@@ -310,15 +314,13 @@ public class Section508Compliance extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for calls to set a readable string that is generated from a static
-     * constant, as these strings are not translatable. also looks for setting
-     * readable strings that are appended together. This is likely not to be
-     * internationalizable.
+     * looks for calls to set a readable string that is generated from a static constant, as these strings are not translatable. also looks for setting readable
+     * strings that are appended together. This is likely not to be internationalizable.
      */
     private void processFaultyGuiStrings() {
         FQMethod methodInfo = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
         Integer parmIndex = displayTextMethods.get(methodInfo);
-        if (parmIndex != null && (stack.getStackDepth() > parmIndex.intValue())) {
+        if ((parmIndex != null) && (stack.getStackDepth() > parmIndex.intValue())) {
             OpcodeStack.Item item = stack.getStackItem(parmIndex.intValue());
             if (item.getConstant() != null) {
                 bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_TRANSLATABLE_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
@@ -340,16 +342,13 @@ public class Section508Compliance extends BytecodeScanningDetector {
      *            name of the method that is called
      */
     private void processNullLayouts(String className, String methodName) {
-        if ("java/awt/Container".equals(className) && "setLayout".equals(methodName)
-                && (stack.getStackDepth() > 0) && stack.getStackItem(0).isNull()) {
-            bugReporter.reportBug(
-                    new BugInstance(this, BugType.S508C_NULL_LAYOUT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+        if ("java/awt/Container".equals(className) && "setLayout".equals(methodName) && (stack.getStackDepth() > 0) && stack.getStackItem(0).isNull()) {
+            bugReporter.reportBug(new BugInstance(this, BugType.S508C_NULL_LAYOUT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 
     /**
-     * looks for calls to set the color of components where the color isn't from
-     * UIManager
+     * looks for calls to set the color of components where the color isn't from UIManager
      *
      * @param methodName
      *            the method that is called
@@ -359,7 +358,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
      */
     private void processSetColorOps(String methodName) throws ClassNotFoundException {
         if ("setBackground".equals(methodName) || "setForeground".equals(methodName)) {
-            int argCount = Type.getArgumentTypes(getSigConstantOperand()).length;
+            int argCount = SignatureUtils.getNumParameters(getSigConstantOperand());
             if (stack.getStackDepth() > argCount) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (S508UserValue.FROM_UIMANAGER != item.getUserValue()) {
@@ -375,8 +374,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for calls to setSize on components, rather than letting the layout
-     * manager set them
+     * looks for calls to setSize on components, rather than letting the layout manager set them
      *
      * @param methodName
      *            the method that was called on a component
@@ -386,7 +384,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
      */
     private void processSetSizeOps(String methodName) throws ClassNotFoundException {
         if ("setSize".equals(methodName)) {
-            int argCount = Type.getArgumentTypes(getSigConstantOperand()).length;
+            int argCount = SignatureUtils.getNumParameters(getSigConstantOperand());
             if ((windowClass != null) && (stack.getStackDepth() > argCount)) {
                 OpcodeStack.Item item = stack.getStackItem(argCount);
                 JavaClass cls = item.getJavaClass();

@@ -28,9 +28,9 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -113,7 +113,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL)) {
-                int parmCount = Type.getArgumentTypes(getSigConstantOperand()).length;
+                int parmCount = SignatureUtils.getNumParameters(getSigConstantOperand());
                 if (stack.getStackDepth() > parmCount) {
                     OpcodeStack.Item itm = stack.getStackItem(parmCount);
                     if (itm.getRegisterNumber() == 0) {

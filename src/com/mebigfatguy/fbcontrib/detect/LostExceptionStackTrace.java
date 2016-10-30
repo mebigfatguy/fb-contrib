@@ -35,7 +35,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
@@ -327,7 +326,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
             returnSig = returnSig.substring(1, returnSig.length() - 1);
             JavaClass retCls = Repository.lookupClass(returnSig);
             if (retCls.instanceOf(throwableClass)) {
-                int numParms = Type.getArgumentTypes(sig).length;
+                int numParms = SignatureUtils.getNumParameters(sig);
                 if (stack.getStackDepth() >= numParms) {
                     for (int p = 0; p < numParms; p++) {
                         OpcodeStack.Item item = stack.getStackItem(p);

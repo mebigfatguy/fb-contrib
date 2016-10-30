@@ -24,10 +24,10 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -65,8 +65,8 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            changedAttributes = new HashMap<String, Integer>();
-            savedAttributes = new HashMap<Integer, String>();
+            changedAttributes = new HashMap<>();
+            savedAttributes = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -133,8 +133,7 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
                 int reg = RegisterUtils.getALoadReg(this, seen);
                 attributeName = savedAttributes.get(Integer.valueOf(reg));
                 sawGetAttribute = attributeName != null;
-            } else if ((((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == ASTORE))
-                    && (stack.getStackDepth() > 0)) {
+            } else if ((((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == ASTORE)) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 attributeName = (String) item.getUserValue();
                 int reg = RegisterUtils.getAStoreReg(this, seen);
@@ -146,7 +145,7 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
                 Matcher m = modifyingNames.matcher(methodName);
                 if (m.matches()) {
                     String signature = getSigConstantOperand();
-                    int numArgs = Type.getArgumentTypes(signature).length;
+                    int numArgs = SignatureUtils.getNumParameters(signature);
                     if (stack.getStackDepth() > numArgs) {
                         OpcodeStack.Item item = stack.getStackItem(numArgs);
                         attributeName = (String) item.getUserValue();

@@ -20,9 +20,9 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -114,12 +114,11 @@ public class TailRecursion extends BytecodeScanningDetector {
     }
 
     private void checkForTailRecursion() {
-        boolean isRecursion = getMethodName().equals(getNameConstantOperand())
-            && getMethodSig().equals(getSigConstantOperand())
-            && getClassName().equals(getClassConstantOperand());
+        boolean isRecursion = getMethodName().equals(getNameConstantOperand()) && getMethodSig().equals(getSigConstantOperand())
+                && getClassName().equals(getClassConstantOperand());
 
         if (isRecursion && !isStatic) {
-            int numParms = Type.getArgumentTypes(getMethodSig()).length;
+            int numParms = SignatureUtils.getNumParameters(getMethodSig());
             if (stack.getStackDepth() > numParms) {
                 OpcodeStack.Item itm = stack.getStackItem(numParms);
                 isRecursion = (itm.getRegisterNumber() == 0);
@@ -127,8 +126,7 @@ public class TailRecursion extends BytecodeScanningDetector {
         }
 
         if (isRecursion && possibleTailRecursion && (getPC() >= trPCPos)) {
-            bugReporter.reportBug(
-                    new BugInstance(this, BugType.TR_TAIL_RECURSION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+            bugReporter.reportBug(new BugInstance(this, BugType.TR_TAIL_RECURSION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         } else {
             possibleTailRecursion = false;
         }

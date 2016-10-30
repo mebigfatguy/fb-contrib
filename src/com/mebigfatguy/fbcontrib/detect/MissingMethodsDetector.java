@@ -24,7 +24,6 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -300,7 +299,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
     private void sawInvokeInterfaceVirtual() {
         String sig = getSigConstantOperand();
-        int numParms = Type.getArgumentTypes(sig).length;
+        int numParms = SignatureUtils.getNumParameters(sig);
         if (stack.getStackDepth() > numParms) {
             OpcodeStack.Item item = stack.getStackItem(numParms);
             Object uo = item.getUserValue();
@@ -387,7 +386,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
      */
     protected void processMethodParms() {
         String sig = getSigConstantOperand();
-        int numParms = Type.getArgumentTypes(sig).length;
+        int numParms = SignatureUtils.getNumParameters(sig);
         if ((numParms > 0) && (stack.getStackDepth() >= numParms)) {
             for (int i = 0; i < numParms; i++) {
                 clearUserValue(stack.getStackItem(i));

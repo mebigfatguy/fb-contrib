@@ -228,6 +228,35 @@ public final class SignatureUtils {
     }
 
     /**
+     * returns the number of parameters in this method signature
+     *
+     * @param methodSignature
+     *            the method signature to parse
+     * @return the number of parameters
+     */
+    public static int getNumParameters(String methodSignature) {
+        int start = methodSignature.indexOf('(') + 1;
+        int limit = methodSignature.lastIndexOf(')');
+
+        if ((limit - start) == 0) {
+            return 0;
+        }
+
+        int numParms = 0;
+        for (int i = start; i < limit; i++) {
+            char c = methodSignature.charAt(i);
+            if (c != '[') {
+                if (c == 'L') {
+                    i = methodSignature.indexOf(';', i + 1);
+                }
+                numParms++;
+            }
+        }
+
+        return numParms;
+    }
+
+    /**
      * returns the first open register slot after parameters
      *
      * @param m

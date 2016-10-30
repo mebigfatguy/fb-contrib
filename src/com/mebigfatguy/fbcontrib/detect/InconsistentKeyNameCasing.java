@@ -26,8 +26,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
 
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -76,7 +76,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
      */
     public InconsistentKeyNameCasing(BugReporter reporter) {
         bugReporter = reporter;
-        parmInfo = new EnumMap<KeyType, Map<String, Map<String, List<SourceInfo>>>>(KeyType.class);
+        parmInfo = new EnumMap<>(KeyType.class);
         parmInfo.put(KeyType.ATTRIBUTE, new HashMap<String, Map<String, List<SourceInfo>>>());
         parmInfo.put(KeyType.PARAMETER, new HashMap<String, Map<String, List<SourceInfo>>>());
     }
@@ -123,7 +123,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
             if (seen == INVOKEINTERFACE) {
                 KeyType type = isKeyAccessMethod(seen);
                 if (type != null) {
-                    int numParms = Type.getArgumentTypes(getSigConstantOperand()).length;
+                    int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
                     if (stack.getStackDepth() >= numParms) {
                         OpcodeStack.Item item = stack.getStackItem(numParms - 1);
                         String parmName = (String) item.getConstant();
@@ -132,13 +132,13 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
                             Map<String, Map<String, List<SourceInfo>>> typeMap = parmInfo.get(KeyType.PARAMETER);
                             Map<String, List<SourceInfo>> parmCaseInfo = typeMap.get(upperParmName);
                             if (parmCaseInfo == null) {
-                                parmCaseInfo = new HashMap<String, List<SourceInfo>>();
+                                parmCaseInfo = new HashMap<>();
                                 typeMap.put(upperParmName, parmCaseInfo);
                             }
 
                             List<SourceInfo> annotations = parmCaseInfo.get(parmName);
                             if (annotations == null) {
-                                annotations = new ArrayList<SourceInfo>();
+                                annotations = new ArrayList<>();
                                 parmCaseInfo.put(parmName, annotations);
                             }
 

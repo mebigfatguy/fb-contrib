@@ -29,10 +29,10 @@ import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.objectweb.asm.Type;
 
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugReporter;
@@ -146,7 +146,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                     numMethodCalls++;
 
                     if (seen != INVOKESTATIC) {
-                        int numParms = Type.getArgumentTypes(getSigConstantOperand()).length;
+                        int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
                         if (stack.getStackDepth() > numParms) {
                             OpcodeStack.Item itm = stack.getStackItem(numParms);
                             if (itm.getRegisterNumber() == 0) {

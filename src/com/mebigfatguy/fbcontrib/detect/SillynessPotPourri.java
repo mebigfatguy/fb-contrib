@@ -42,7 +42,6 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
@@ -723,7 +722,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             Object constant = itm.getConstant();
             if ((constant != null) && constant.getClass().equals(String.class) && (itm.getXField() == null)) {
                 int priority = NORMAL_PRIORITY;
-                if (Type.getArgumentTypes(getSigConstantOperand()).length > 0) {
+                if (SignatureUtils.getNumParameters(getSigConstantOperand()) > 0) {
                     // if an argument is passed in, it may be
                     // locale-specific
                     priority = LOW_PRIORITY;
