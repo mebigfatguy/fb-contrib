@@ -229,15 +229,17 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                         } else if (seen == INVOKEVIRTUAL) {
                             String methodName = getNameConstantOperand();
                             if ("initCause".equals(methodName) || "addSuppressed".equals(methodName)) {
-                                String className = getClassConstantOperand();
-                                JavaClass exClass = Repository.lookupClass(className);
-                                if (exClass.instanceOf(throwableClass) && (stack.getStackDepth() > 1)) {
-                                    OpcodeStack.Item itm = stack.getStackItem(1);
-                                    int reg = itm.getRegisterNumber();
-                                    if (reg >= 0) {
-                                        exReg.put(Integer.valueOf(reg), Boolean.TRUE);
+                                if (stack.getStackDepth() > 1) {
+                                    String className = getClassConstantOperand();
+                                    JavaClass exClass = Repository.lookupClass(className);
+                                    if (exClass.instanceOf(throwableClass)) {
+                                        OpcodeStack.Item itm = stack.getStackItem(1);
+                                        int reg = itm.getRegisterNumber();
+                                        if (reg >= 0) {
+                                            exReg.put(Integer.valueOf(reg), Boolean.TRUE);
+                                        }
+                                        markAsValid = true; // Fixes javac generated code
                                     }
-                                    markAsValid = true; // Fixes javac generated code
                                 }
                             } else if (("getTargetException".equals(methodName) || "getCause".equals(methodName))
                                     && "java/lang/reflect/InvocationTargetException".equals(getClassConstantOperand())) {
