@@ -179,29 +179,30 @@ public final class SignatureUtils {
      */
     public static Map<Integer, String> getParameterSignatures(boolean methodIsStatic, String methodSignature) {
 
-        String parmsSignature = methodSignature.substring(methodSignature.indexOf('(') + 1, methodSignature.lastIndexOf(')'));
-        int length = parmsSignature.length();
-        if (length == 0) {
+        int start = methodSignature.indexOf('(') + 1;
+        int limit = methodSignature.lastIndexOf(')');
+
+        if ((limit - start) == 0) {
             return Collections.emptyMap();
         }
 
         Map<Integer, String> slotIndexToParms = new LinkedHashMap<>();
         int slot = methodIsStatic ? 0 : 1;
-        int start = 0;
-        for (int i = 0; i < length; i++) {
-            char c = parmsSignature.charAt(i);
+        int sigStart = start;
+        for (int i = start; i < limit; i++) {
+            char c = methodSignature.charAt(i);
             String parmSignature;
             if (c != '[') {
                 if (c == 'L') {
-                    int semiPos = parmsSignature.indexOf(';', i + 1);
-                    parmSignature = parmsSignature.substring(start, semiPos + 1);
+                    int semiPos = methodSignature.indexOf(';', i + 1);
+                    parmSignature = methodSignature.substring(sigStart, semiPos + 1);
                     slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
                     i = semiPos;
                 } else {
-                    parmSignature = parmsSignature.substring(start, i + 1);
+                    parmSignature = methodSignature.substring(sigStart, i + 1);
                     slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
                 }
-                start = i + 1;
+                sigStart = i + 1;
                 slot += getSignatureSize(parmSignature);
             }
         }
