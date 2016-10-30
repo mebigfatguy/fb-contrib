@@ -74,6 +74,11 @@ public class CloneUsability extends BytecodeScanningDetector {
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
+
+        if (cloneClass == null) {
+            return;
+        }
+
         try {
             cls = classContext.getJavaClass();
             if (cls.implementationOf(cloneClass)) {
@@ -109,8 +114,8 @@ public class CloneUsability extends BytecodeScanningDetector {
                         bugReporter.reportBug(
                                 new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                     } else {
-                        JavaClass cloneClass = Repository.lookupClass(returnClsName);
-                        if (!cls.instanceOf(cloneClass)) {
+                        JavaClass clonedClass = Repository.lookupClass(returnClsName);
+                        if (!cls.instanceOf(clonedClass)) {
                             bugReporter.reportBug(
                                     new BugInstance(this, BugType.CU_CLONE_USABILITY_MISMATCHED_RETURN.name(), HIGH_PRIORITY).addClass(this).addMethod(this));
                         }
