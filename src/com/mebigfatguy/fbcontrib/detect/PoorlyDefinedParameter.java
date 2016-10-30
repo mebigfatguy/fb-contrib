@@ -77,10 +77,10 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
         try {
             Method m = getMethod();
             if (m.isStatic() || m.isPrivate() || Values.CONSTRUCTOR.equals(m.getName())) {
-                parmSigs = SignatureUtils.getParameterSignatures(m);
+                parmSigs = SignatureUtils.getParameterSignatures(m.isStatic(), m.getSignature());
                 if (!parmSigs.isEmpty() && prescreen(m)) {
                     state = State.SAW_NOTHING;
-                    bugs = new HashMap<Integer, BugInfo>();
+                    bugs = new HashMap<>();
                     downwardBranchTarget = -1;
                     super.visitCode(obj);
                     for (BugInfo bi : bugs.values()) {
@@ -187,8 +187,8 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
             parmName = "(" + loadedReg + ')';
         }
 
-        BugInstance bug = new BugInstance(this, BugType.PDP_POORLY_DEFINED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                .addSourceLine(this).addString(parmName);
+        BugInstance bug = new BugInstance(this, BugType.PDP_POORLY_DEFINED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this)
+                .addString(parmName);
         Integer lr = Integer.valueOf(loadedReg);
         BugInfo bi = bugs.get(lr);
         if (bi == null) {

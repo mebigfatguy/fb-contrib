@@ -171,26 +171,42 @@ public final class SignatureUtils {
     /**
      * returns a Map that represents the type of the parameter in slot x
      *
-     * @param m
-     *            the method for which you want the parameters
+     * @param methodIsStatic
+     *            if the method is static, causes where to start counting from, slot 0 or 1
+     * @param methodSignature
+     *            the signature of the method to parse
      * @return a map of parameter types (expect empty slots when doubles/longs are used
      */
-    public static Map<Integer, String> getParameterSignatures(Method m) {
-        Type[] parms = m.getArgumentTypes();
-        if (parms.length == 0) {
+    public static Map<Integer, String> getParameterSignatures(boolean methodIsStatic, String methodSignature) {
+
+        String parmsSignature = methodSignature.substring(methodSignature.indexOf('(') + 1, methodSignature.lastIndexOf(')'));
+        int length = parmsSignature.length();
+        if (length == 0) {
             return Collections.emptyMap();
         }
 
-        Map<Integer, String> parmSigs = new LinkedHashMap<>(parms.length);
-
-        int slot = m.isStatic() ? 0 : 1;
-        for (Type t : parms) {
-            String signature = t.getSignature();
-            parmSigs.put(Integer.valueOf(slot), signature);
-            slot += getSignatureSize(signature);
+        Map<Integer, String> slotIndexToParms = new LinkedHashMap<>();
+        int slot = methodIsStatic ? 0 : 1;
+        int start = 0;
+        for (int i = 0; i < length; i++) {
+            char c = parmsSignature.charAt(i);
+            String parmSignature;
+            if (c != '[') {
+                if (c == 'L') {
+                    int semiPos = parmsSignature.indexOf(';', i + 1);
+                    parmSignature = parmsSignature.substring(start, semiPos + 1);
+                    slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
+                    i = semiPos;
+                } else {
+                    parmSignature = parmsSignature.substring(start, i + 1);
+                    slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
+                }
+                start = i + 1;
+                slot += getSignatureSize(parmSignature);
+            }
         }
 
-        return parmSigs;
+        return slotIndexToParms;
     }
 
     /**
