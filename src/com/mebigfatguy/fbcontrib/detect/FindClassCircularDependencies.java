@@ -178,8 +178,8 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
             return false;
         }
 
-        String extra = child.substring(parent.length());
-        return ((extra.charAt(0) == '.') && (extra.indexOf('.', 1) < 0));
+        int parentLength = parent.length();
+        return ((child.charAt(parentLength) == '.') && (child.indexOf('.', parentLength + 1) < 0));
     }
 
     private void removeDependencyLeaves() {
