@@ -20,7 +20,6 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LineNumberTable;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -88,11 +87,11 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
             case SEEN_NOTHING:
                 if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
                     String sig = getSigConstantOperand();
-                    Type retType = Type.getReturnType(sig);
-                    if (retType.getSignature().startsWith("L")) {
+                    String returnSig = SignatureUtils.getReturnSignature(sig);
+                    if (returnSig.startsWith("L")) {
                         String clsName = getClassConstantOperand();
                         if (!Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName) && !Values.SLASHED_JAVA_LANG_CLASS.equals(clsName)) {
-                            returnType = SignatureUtils.trimSignature(retType.getSignature());
+                            returnType = SignatureUtils.trimSignature(returnSig);
                             invokePC = getPC();
                             state = State.SEEN_INVOKE;
                         }

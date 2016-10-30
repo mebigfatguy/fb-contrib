@@ -176,7 +176,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     private boolean isGetterSetter(String methodName, String methodSignature) {
         if (methodName.startsWith("get") || methodName.startsWith("set")) {
             Type[] parmTypes = Type.getArgumentTypes(methodSignature);
-            boolean voidReturn = "V".equals(Type.getReturnType(methodSignature).getSignature());
+            boolean voidReturn = "V".equals(SignatureUtils.getReturnSignature(methodSignature));
 
             if ((parmTypes.length == 0) && !voidReturn && (methodName.charAt(0) == 'g')) {
                 return true;

@@ -111,7 +111,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
             possibleParmRegs.clear();
             Method m = getMethod();
             String methodSignature = m.getSignature();
-            String retSignature = Type.getReturnType(methodSignature).getSignature();
+            String retSignature = SignatureUtils.getReturnSignature(methodSignature);
             JavaClass returnClass = null;
             int[] parmRegs = null;
 
@@ -194,7 +194,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
 
     private void processInvoke() {
         String calledSig = getSigConstantOperand();
-        String calledRet = Type.getReturnType(calledSig).getSignature();
+        String calledRet = SignatureUtils.getReturnSignature(calledSig);
         if ("V".equals(calledRet)) {
             int calledObjOffset = Type.getArgumentTypes(calledSig).length;
             if (stack.getStackDepth() > calledObjOffset) {

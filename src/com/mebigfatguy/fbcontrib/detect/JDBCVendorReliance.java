@@ -130,8 +130,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
                 String infName = getClassConstantOperand();
                 if (isJDBCClass(infName)) {
                     String sig = getSigConstantOperand();
-                    Type retType = Type.getReturnType(sig);
-                    infName = retType.getSignature();
+                    infName = SignatureUtils.getReturnSignature(sig);
                     if (isJDBCClass(infName)) {
                         tosIsJDBC = true;
                     }

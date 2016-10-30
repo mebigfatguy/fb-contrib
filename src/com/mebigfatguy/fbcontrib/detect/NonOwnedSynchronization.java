@@ -29,6 +29,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -68,7 +69,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            regPriorities = new HashMap<Integer, Integer>();
+            regPriorities = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -161,8 +162,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
                 case INVOKEVIRTUAL:
                 case INVOKEINTERFACE: {
                     String sig = getSigConstantOperand();
-                    Type t = Type.getReturnType(sig);
-                    if (t.getSignature().startsWith("L")) {
+                    if (SignatureUtils.getReturnSignature(sig).startsWith("L")) {
                         int parmCnt = Type.getArgumentTypes(sig).length;
                         if (stack.getStackDepth() > parmCnt) {
                             OpcodeStack.Item itm = stack.getStackItem(parmCnt);
@@ -184,8 +184,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
 
                 case INVOKESTATIC: {
                     String sig = getSigConstantOperand();
-                    Type t = Type.getReturnType(sig);
-                    if (t.getSignature().startsWith("L")) {
+                    if (SignatureUtils.getReturnSignature(sig).startsWith("L")) {
                         tosIsPriority = OWNED; // can't be sure
                     }
                 }
@@ -217,7 +216,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (tosIsPriority != null && (stack.getStackDepth() > 0)) {
+            if ((tosIsPriority != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(tosIsPriority);
             }

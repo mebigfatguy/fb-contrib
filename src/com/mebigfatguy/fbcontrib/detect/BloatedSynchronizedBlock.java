@@ -32,6 +32,7 @@ import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -70,7 +71,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
         try {
             stack = new OpcodeStack();
             unsafeAliases = new BitSet();
-            branchInfo = new HashMap<Integer, Integer>();
+            branchInfo = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -140,8 +141,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                 if (mi.getModifiesState()) {
                     unsafeCallOccurred = true;
                 } else {
-                    Type returnType = Type.getReturnType(methodSig);
-                    if (!(returnType.equals(Type.VOID))) {
+                    if (!"V".equals(SignatureUtils.getReturnSignature(methodSig))) {
                         int parmCount = Type.getArgumentTypes(methodSig).length;
                         if (stack.getStackDepth() > parmCount) {
                             OpcodeStack.Item itm = stack.getStackItem(parmCount);

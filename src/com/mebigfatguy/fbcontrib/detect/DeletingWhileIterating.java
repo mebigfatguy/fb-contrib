@@ -34,13 +34,13 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -192,7 +192,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                                 if (loop != null) {
                                     int pc = getPC();
                                     if (loop.hasPC(pc)) {
-                                        boolean needPop = !"V".equals(Type.getReturnType(signature).getSignature());
+                                        boolean needPop = !"V".equals(SignatureUtils.getReturnSignature(signature));
 
                                         if (!breakFollows(loop, needPop) && !returnFollows(needPop)) {
                                             bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
@@ -214,7 +214,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                                     if (loop != null) {
                                         int pc = getPC();
                                         if (loop.hasPC(pc)) {
-                                            boolean needPop = !"V".equals(Type.getReturnType(signature).getSignature());
+                                            boolean needPop = !"V".equals(SignatureUtils.getReturnSignature(signature));
                                             boolean breakFollows = breakFollows(loop, needPop);
                                             boolean returnFollows = !breakFollows && returnFollows(needPop);
 

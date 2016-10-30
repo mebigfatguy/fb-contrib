@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -46,7 +47,8 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
     private static final Set<String> tagClasses = UnmodifiableSet.create("javax.servlet.jsp.tagext.TagSupport", "javax.servlet.jsp.tagext.BodyTagSupport");
 
-    private static final Set<String> validAttrTypes = UnmodifiableSet.create("B", "C", "D", "F", "I", "J", "S", "Z", Values.SIG_JAVA_LANG_STRING, "Ljava/util/Date;");
+    private static final Set<String> validAttrTypes = UnmodifiableSet.create("B", "C", "D", "F", "I", "J", "S", "Z", Values.SIG_JAVA_LANG_STRING,
+            "Ljava/util/Date;");
 
     private final BugReporter bugReporter;
     /**
@@ -106,7 +108,8 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     /**
      * collect all possible attributes given the name of methods available.
      *
-     * @param cls the class to look for setter methods to infer properties
+     * @param cls
+     *            the class to look for setter methods to infer properties
      * @return the map of possible attributes/types
      */
     private static Map<String, String> getAttributes(JavaClass cls) {
@@ -116,9 +119,8 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
             String name = m.getName();
             if (name.startsWith("set") && m.isPublic() && !m.isStatic()) {
                 String sig = m.getSignature();
-                Type ret = Type.getReturnType(sig);
                 Type[] args = Type.getArgumentTypes(sig);
-                if ((args.length == 1) && ret.equals(Type.VOID)) {
+                if ((args.length == 1) && "V".equals(SignatureUtils.getReturnSignature(sig))) {
                     String parmSig = args[0].getSignature();
                     if (validAttrTypes.contains(parmSig)) {
                         Code code = m.getCode();

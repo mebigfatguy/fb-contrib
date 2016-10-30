@@ -23,10 +23,10 @@ import java.util.Iterator;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -113,8 +113,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
                         return true;
                     } else if (OpcodeUtils.isInvoke(seen)) {
                         String methodSig = FloatingPointLoops.this.getSigConstantOperand();
-                        Type t = Type.getReturnType(methodSig);
-                        return !"V".equals(t.getSignature());
+                        return !"V".equals(SignatureUtils.getReturnSignature(methodSig));
                     } else if ((seen < ISTORE) || (seen > SASTORE)) {
                         return true;
                     }

@@ -30,6 +30,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -61,7 +62,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     }
 
     static {
-        Map<FQMethod, Object> methodsMap = new HashMap<FQMethod, Object>();
+        Map<FQMethod, Object> methodsMap = new HashMap<>();
         // The values are where the parameter will be on the stack - For
         // example, a value of 0 means the String literal to check
         // was the last parameter, and a stack offset of 2 means it was the 3rd
@@ -77,7 +78,8 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUILDER, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;"), Values.ZERO);
 
         // same thing as above, except now with two params
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;"), new IntPair(0, 1));
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;"),
+                new IntPair(0, 1));
 
         characterMethods = Collections.unmodifiableMap(methodsMap);
     }
@@ -239,7 +241,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         }
 
         String sig = getSigConstantOperand();
-        String returnSig = Type.getReturnType(sig).getSignature();
+        String returnSig = SignatureUtils.getReturnSignature(sig);
         if ("Ljava/lang/StringBuilder;".equals(returnSig) || "Ljava/lang/StringBuffer;".equals(returnSig)) {
             int parmCount = Type.getArgumentTypes(sig).length;
             if (stack.getStackDepth() > parmCount) {

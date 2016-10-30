@@ -19,11 +19,11 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -111,8 +111,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case INVOKEINTERFACE:
                 case INVOKEVIRTUAL:
                     String signature = getSigConstantOperand();
-                    Type t = Type.getReturnType(signature);
-                    if (t == Type.VOID) {
+                    if ("V".equals(SignatureUtils.getReturnSignature(signature))) {
                         sawMethodWeight = 0;
                         return;
                     }

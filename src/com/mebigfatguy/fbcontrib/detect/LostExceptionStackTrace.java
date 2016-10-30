@@ -41,6 +41,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -321,8 +322,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
      */
     public boolean isPossibleExBuilder(int excReg) throws ClassNotFoundException {
         String sig = getSigConstantOperand();
-        Type returnType = Type.getReturnType(sig);
-        String returnSig = returnType.getSignature();
+        String returnSig = SignatureUtils.getReturnSignature(sig);
         if (returnSig.startsWith("L")) {
             returnSig = returnSig.substring(1, returnSig.length() - 1);
             JavaClass retCls = Repository.lookupClass(returnSig);

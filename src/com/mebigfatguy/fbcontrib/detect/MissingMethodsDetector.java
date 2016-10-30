@@ -39,8 +39,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * an abstract base class for WriteOnlyCollections and HttpClientProblems, looks
- * for calls that are expected to be made, but are not.
+ * an abstract base class for WriteOnlyCollections and HttpClientProblems, looks for calls that are expected to be made, but are not.
  */
 public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
@@ -72,8 +71,8 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
             clsSignature = SignatureUtils.classToSignature(clsName);
             stack = new OpcodeStack();
-            localSpecialObjects = new HashMap<Integer, Integer>();
-            fieldSpecialObjects = new HashMap<String, String>();
+            localSpecialObjects = new HashMap<>();
+            fieldSpecialObjects = new HashMap<>();
             super.visitClassContext(classContext);
 
             if (!isInnerClass && !fieldSpecialObjects.isEmpty()) {
@@ -124,16 +123,12 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for uses of collections where the only
-     * access to to the collection is to write to it
+     * overrides the visitor to look for uses of collections where the only access to to the collection is to write to it
      *
      * @param seen
      *            the opcode of the currently visited instruction
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(
-        value = "SF_SWITCH_FALLTHROUGH",
-        justification = "This fall-through is deliberate and documented"
-    )
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH", justification = "This fall-through is deliberate and documented")
     @Override
     public void sawOpcode(int seen) {
         Object userObject = null;
@@ -151,78 +146,78 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-            case INVOKESPECIAL:
-                userObject = sawInvokeSpecial(userObject);
+                case INVOKESPECIAL:
+                    userObject = sawInvokeSpecial(userObject);
                 break;
-            case INVOKEINTERFACE:
-            case INVOKEVIRTUAL:
-                sawInvokeInterfaceVirtual();
+                case INVOKEINTERFACE:
+                case INVOKEVIRTUAL:
+                    sawInvokeInterfaceVirtual();
                 break;
-            case INVOKESTATIC:
-                userObject = sawInvokeStatic(userObject);
-                //$FALL-THROUGH$
-            case INVOKEDYNAMIC:
-                processMethodParms();
+                case INVOKESTATIC:
+                    userObject = sawInvokeStatic(userObject);
+                    //$FALL-THROUGH$
+                case INVOKEDYNAMIC:
+                    processMethodParms();
                 break;
-            case ARETURN:
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    clearUserValue(item);
-                }
-                break;
-
-            case ASTORE_0:
-            case ASTORE_1:
-            case ASTORE_2:
-            case ASTORE_3:
-            case ASTORE:
-                sawAStore(seen);
-                break;
-
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3:
-            case ALOAD:
-                userObject = sawLoad(seen, userObject);
-                break;
-
-            case AASTORE:
-                if (stack.getStackDepth() >= 3) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    clearUserValue(item);
-                }
-                break;
-
-            case PUTFIELD:
-                sawPutField();
-                break;
-
-            case GETFIELD:
-                userObject = sawGetField(userObject);
-                break;
-
-            case PUTSTATIC:
-                sawPutStatic();
-                break;
-
-            case GETSTATIC:
-                userObject = sawGetStatic(userObject);
-                break;
-
-            case GOTO:
-            case IFNULL:
-            case IFNONNULL:
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    Object uo = item.getUserValue();
-                    if ((uo != null) && !(uo instanceof Boolean)) {
+                case ARETURN:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
                         clearUserValue(item);
                     }
-                    sawTernary = true;
-                }
                 break;
-            default:
+
+                case ASTORE_0:
+                case ASTORE_1:
+                case ASTORE_2:
+                case ASTORE_3:
+                case ASTORE:
+                    sawAStore(seen);
+                break;
+
+                case ALOAD_0:
+                case ALOAD_1:
+                case ALOAD_2:
+                case ALOAD_3:
+                case ALOAD:
+                    userObject = sawLoad(seen, userObject);
+                break;
+
+                case AASTORE:
+                    if (stack.getStackDepth() >= 3) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        clearUserValue(item);
+                    }
+                break;
+
+                case PUTFIELD:
+                    sawPutField();
+                break;
+
+                case GETFIELD:
+                    userObject = sawGetField(userObject);
+                break;
+
+                case PUTSTATIC:
+                    sawPutStatic();
+                break;
+
+                case GETSTATIC:
+                    userObject = sawGetStatic(userObject);
+                break;
+
+                case GOTO:
+                case IFNULL:
+                case IFNONNULL:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        Object uo = item.getUserValue();
+                        if ((uo != null) && !(uo instanceof Boolean)) {
+                            clearUserValue(item);
+                        }
+                        sawTernary = true;
+                    }
+                break;
+                default:
                 break;
             }
         } finally {
@@ -314,8 +309,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 if (isMethodThatShouldBeCalled(name)) {
                     clearUserValue(item);
                 } else if (!"clone".equals(name)) {
-                    Type t = Type.getReturnType(sig);
-                    if ((t != Type.VOID) && !nextOpIsPop()) {
+                    if ((!"V".equals(SignatureUtils.getReturnSignature(sig))) && !nextOpIsPop()) {
                         clearUserValue(item);
                     }
                 }
@@ -386,12 +380,10 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     }
 
     /**
-     * Checks to see if any of the locals or fields that we are tracking are
-     * passed into another method. If they are, we clear out our tracking of
-     * them, because we can't easily track their progress into the method.
+     * Checks to see if any of the locals or fields that we are tracking are passed into another method. If they are, we clear out our tracking of them, because
+     * we can't easily track their progress into the method.
      *
-     * This can be overridden to check for exceptions to this rule, for example,
-     * being logged to the console not counting.
+     * This can be overridden to check for exceptions to this rule, for example, being logged to the console not counting.
      */
     protected void processMethodParms() {
         String sig = getSigConstantOperand();
@@ -405,8 +397,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     }
 
     /**
-     * informs the missing method detector that a field should no longer be
-     * considered special
+     * informs the missing method detector that a field should no longer be considered special
      *
      * @param name
      *            the name of the field
