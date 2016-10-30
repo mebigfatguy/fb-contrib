@@ -189,59 +189,61 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
     private void processThrow() {
         try {
-            if (stack.getStackDepth() > 0) {
-                OpcodeStack.Item itm = stack.getStackItem(0);
-                JavaClass exClass = itm.getJavaClass();
-                if ((exClass != null) && exClass.instanceOf(runtimeClass) && !catchInfos.isEmpty()) {
-                    Set<String> possibleCatchSignatures = findPossibleCatchSignatures(catchInfos, getPC());
-                    if (!possibleCatchSignatures.contains(exClass.getClassName())) {
-                        boolean anyRuntimes = false;
-                        for (String possibleCatches : possibleCatchSignatures) {
-                            exClass = Repository.lookupClass(possibleCatches);
-                            if (exClass.instanceOf(runtimeClass)) {
-                                anyRuntimes = true;
-                                break;
-                            }
-                        }
-
-                        if (!anyRuntimes) {
-
-                            if (constrainingInfo == null) {
-                                constrainingInfo = getConstrainingInfo(getClassContext().getJavaClass(), getMethod());
+            if (!catchInfos.isEmpty()) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    JavaClass exClass = itm.getJavaClass();
+                    if ((exClass != null) && exClass.instanceOf(runtimeClass)) {
+                        Set<String> possibleCatchSignatures = findPossibleCatchSignatures(catchInfos, getPC());
+                        if (!possibleCatchSignatures.contains(exClass.getClassName())) {
+                            boolean anyRuntimes = false;
+                            for (String possibleCatches : possibleCatchSignatures) {
+                                exClass = Repository.lookupClass(possibleCatches);
+                                if (exClass.instanceOf(runtimeClass)) {
+                                    anyRuntimes = true;
+                                    break;
+                                }
                             }
 
-                            BugType bug = null;
-                            int priority = NORMAL_PRIORITY;
+                            if (!anyRuntimes) {
 
-                            if (constrainingInfo == null) {
-                                bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS;
-                                priority = HIGH_PRIORITY;
-                            } else if (!constrainingInfo.values().iterator().next().isEmpty()) {
-                                bug = BugType.EXS_EXCEPTION_SOFTENING_HAS_CHECKED;
-                                priority = NORMAL_PRIORITY;
-                            } else {
-                                String pack1 = constrainingInfo.keySet().iterator().next();
-                                String pack2 = getClassContext().getJavaClass().getClassName();
-                                int dotPos = pack1.lastIndexOf('.');
-                                if (dotPos >= 0) {
-                                    pack1 = pack1.substring(0, dotPos);
-                                } else {
-                                    pack1 = "";
+                                if (constrainingInfo == null) {
+                                    constrainingInfo = getConstrainingInfo(getClassContext().getJavaClass(), getMethod());
                                 }
-                                dotPos = pack2.lastIndexOf('.');
-                                if (dotPos >= 0) {
-                                    pack2 = pack2.substring(0, dotPos);
-                                } else {
-                                    pack2 = "";
-                                }
-                                if (SignatureUtils.similarPackages(pack1, pack2, 2)) {
-                                    bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CHECKED;
+
+                                BugType bug = null;
+                                int priority = NORMAL_PRIORITY;
+
+                                if (constrainingInfo == null) {
+                                    bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CONSTRAINTS;
+                                    priority = HIGH_PRIORITY;
+                                } else if (!constrainingInfo.values().iterator().next().isEmpty()) {
+                                    bug = BugType.EXS_EXCEPTION_SOFTENING_HAS_CHECKED;
                                     priority = NORMAL_PRIORITY;
+                                } else {
+                                    String pack1 = constrainingInfo.keySet().iterator().next();
+                                    String pack2 = getClassContext().getJavaClass().getClassName();
+                                    int dotPos = pack1.lastIndexOf('.');
+                                    if (dotPos >= 0) {
+                                        pack1 = pack1.substring(0, dotPos);
+                                    } else {
+                                        pack1 = "";
+                                    }
+                                    dotPos = pack2.lastIndexOf('.');
+                                    if (dotPos >= 0) {
+                                        pack2 = pack2.substring(0, dotPos);
+                                    } else {
+                                        pack2 = "";
+                                    }
+                                    if (SignatureUtils.similarPackages(pack1, pack2, 2)) {
+                                        bug = BugType.EXS_EXCEPTION_SOFTENING_NO_CHECKED;
+                                        priority = NORMAL_PRIORITY;
+                                    }
                                 }
-                            }
 
-                            if (bug != null) {
-                                bugReporter.reportBug(new BugInstance(this, bug.name(), priority).addClass(this).addMethod(this).addSourceLine(this));
+                                if (bug != null) {
+                                    bugReporter.reportBug(new BugInstance(this, bug.name(), priority).addClass(this).addMethod(this).addSourceLine(this));
+                                }
                             }
                         }
                     }
