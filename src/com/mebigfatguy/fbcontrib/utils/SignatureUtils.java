@@ -193,13 +193,16 @@ public final class SignatureUtils {
         int sigStart = start;
         for (int i = start; i < limit; i++) {
             char c = methodSignature.charAt(i);
-            String parmSignature;
+            String parmSignature = null;
             if (c != '[') {
                 if (c == 'L') {
                     int semiPos = methodSignature.indexOf(';', i + 1);
                     parmSignature = methodSignature.substring(sigStart, semiPos + 1);
                     slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
                     i = semiPos;
+                } else if ((c == '!') || (c == '+')) {
+                    // eclipse wonky classes
+                    sigStart++;
                 } else {
                     parmSignature = methodSignature.substring(sigStart, i + 1);
                     slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
@@ -239,6 +242,9 @@ public final class SignatureUtils {
                     parmSignature = methodSignature.substring(sigStart, semiPos + 1);
                     parmSignatures.add(parmSignature);
                     i = semiPos;
+                } else if ((c == '!') || (c == '+')) {
+                    // eclipse wonky classes
+                    sigStart++;
                 } else {
                     parmSignature = methodSignature.substring(sigStart, i + 1);
                     parmSignatures.add(parmSignature);
@@ -289,6 +295,9 @@ public final class SignatureUtils {
             if (c != '[') {
                 if (c == 'L') {
                     i = methodSignature.indexOf(';', i + 1);
+                } else if ((c == '!') || (c == '+')) {
+                    // eclipse wonky classes
+                    continue;
                 }
                 numParms++;
             }
