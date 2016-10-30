@@ -181,7 +181,7 @@ public final class SignatureUtils {
             return Collections.emptyMap();
         }
 
-        Map<Integer, String> parmSigs = new LinkedHashMap<Integer, String>(parms.length);
+        Map<Integer, String> parmSigs = new LinkedHashMap<>(parms.length);
 
         int slot = m.isStatic() ? 0 : 1;
         for (Type t : parms) {
@@ -191,6 +191,24 @@ public final class SignatureUtils {
         }
 
         return parmSigs;
+    }
+
+    /**
+     * gets the return type signature from a method signature
+     *
+     * @param methodSig
+     *            the signature of the method
+     *
+     * @return the signature of the return type, or ? if a bogus method signature is given
+     *
+     */
+    public static String getReturnSignature(String methodSig) {
+        int parenPos = methodSig.indexOf(')');
+        if (parenPos < 0) {
+            return "?";
+        }
+
+        return methodSig.substring(parenPos + 1);
     }
 
     /**

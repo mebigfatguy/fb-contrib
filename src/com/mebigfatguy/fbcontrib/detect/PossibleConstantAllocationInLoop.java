@@ -31,6 +31,7 @@ import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -159,7 +160,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                             OpcodeStack.Item item = stack.getStackItem(types.length);
                             Integer allocation = (Integer) item.getUserValue();
                             if (allocation != null) {
-                                String retType = getReturnSignature(signature);
+                                String retType = SignatureUtils.getReturnSignature(signature);
                                 if (!"V".equals(retType) && retType.equals(item.getSignature())) {
                                     sawAllocationNumber = allocation;
                                     sawAllocation = true;
@@ -322,24 +323,6 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
 
         LocalVariable lv = lvt.getLocalVariable(reg, getPC());
         return lv == null;
-    }
-
-    /**
-     * gets the return type signature from a method signature
-     *
-     * @param methodSig
-     *            the signature of the method
-     *
-     * @return the signature of the return type, or ? if a bogus method signature is given
-     *
-     */
-    private String getReturnSignature(String methodSig) {
-        int parenPos = methodSig.indexOf(')');
-        if (parenPos < 0) {
-            return "?";
-        }
-
-        return methodSig.substring(parenPos + 1);
     }
 
     static class AllocationInfo {
