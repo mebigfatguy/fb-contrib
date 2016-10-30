@@ -43,6 +43,7 @@ public class AbstractCollectionScanningDetector extends BytecodeScanningDetector
         try {
             clazz = Repository.lookupClass(collectionClassName);
         } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
             clazz = null;
             ex = cnfe;
         }
