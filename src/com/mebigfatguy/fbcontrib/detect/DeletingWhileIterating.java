@@ -177,13 +177,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                 QMethod methodInfo = new QMethod(methodName, signature);
 
                 if (isCollection(className)) {
-                    if (collectionMethods.contains(methodInfo)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            groupId = findCollectionGroup(itm, true);
-
-                        }
-                    } else if (ITERATOR.equals(methodInfo)) {
+                    if (collectionMethods.contains(methodInfo) || ITERATOR.equals(methodInfo)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             groupId = findCollectionGroup(itm, true);
