@@ -177,7 +177,7 @@ public final class SignatureUtils {
      *            the signature of the method to parse
      * @return a map of parameter types (expect empty slots when doubles/longs are used
      */
-    public static Map<Integer, String> getParameterSignatures(boolean methodIsStatic, String methodSignature) {
+    public static Map<Integer, String> getParameterSlotAndSignatures(boolean methodIsStatic, String methodSignature) {
 
         int start = methodSignature.indexOf('(') + 1;
         int limit = methodSignature.lastIndexOf(')');

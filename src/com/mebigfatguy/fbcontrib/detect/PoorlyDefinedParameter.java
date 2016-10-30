@@ -77,7 +77,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
         try {
             Method m = getMethod();
             if (m.isStatic() || m.isPrivate() || Values.CONSTRUCTOR.equals(m.getName())) {
-                parmSigs = SignatureUtils.getParameterSignatures(m.isStatic(), m.getSignature());
+                parmSigs = SignatureUtils.getParameterSlotAndSignatures(m.isStatic(), m.getSignature());
                 if (!parmSigs.isEmpty() && prescreen(m)) {
                     state = State.SAW_NOTHING;
                     bugs = new HashMap<>();
