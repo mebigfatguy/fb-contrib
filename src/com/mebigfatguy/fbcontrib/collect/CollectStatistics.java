@@ -45,14 +45,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * a first pass detector to collect various statistics used in second pass detectors.
  */
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
-    private static final Set<String> COMMON_METHOD_SIGS = UnmodifiableSet.create(
+    private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
             //@formatter:off
-            "\\<init\\>\\(\\)V",
-            "toString\\(\\)Ljava/lang/String;",
-            "hashCode\\(\\)I",
-            "clone\\(\\).*",
-            "values\\(\\).*",
-            "main\\(\\[Ljava/lang/String;\\)V"
+            "<init>()V",
+            "toString()Ljava/lang/String;",
+            "hashCode()I",
+            "clone()",
+            "values()",
+            "main([Ljava/lang/String;)V"
             //@formatter:on
     );
 
@@ -122,8 +122,8 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                 mi.addCallingAccess(Constants.ACC_PUBLIC);
             } else {
                 String methodSig = getMethodName() + getMethodSig();
-                for (String sig : COMMON_METHOD_SIGS) {
-                    if (methodSig.matches(sig)) {
+                for (String sig : COMMON_METHOD_SIG_PREFIXES) {
+                    if (methodSig.startsWith(sig)) {
                         mi.addCallingAccess(Constants.ACC_PUBLIC);
                         break;
                     }
