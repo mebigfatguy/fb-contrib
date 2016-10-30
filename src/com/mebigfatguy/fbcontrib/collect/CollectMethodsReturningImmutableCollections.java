@@ -22,7 +22,6 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -97,7 +96,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
     @Override
     public void visitCode(Code obj) {
         try {
-            String signature = Type.getReturnType(getMethod().getSignature()).getSignature();
+            String signature = SignatureUtils.getReturnSignature(getMethod().getSignature());
             if (signature.startsWith("L") && CollectionUtils.isListSetMap(SignatureUtils.stripSignature(signature))) {
                 stack.resetForMethodEntry(this);
                 imType = ImmutabilityType.UNKNOWN;

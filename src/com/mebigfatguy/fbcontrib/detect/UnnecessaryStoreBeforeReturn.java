@@ -150,7 +150,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         Method m = getMethod();
         String sig = m.getSignature();
-        if ("V".equals(SignatureUtils.getReturnSignature(sig))) {
+        if (!"V".equals(SignatureUtils.getReturnSignature(sig))) {
             state = State.SEEN_NOTHING;
             branchTargets.clear();
             CodeException[] ces = obj.getExceptionTable();
