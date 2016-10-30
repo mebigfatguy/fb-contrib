@@ -97,7 +97,7 @@ public class FinalParameters extends BytecodeScanningDetector {
 
         List<String> parms = SignatureUtils.getParameterSignatures(obj.getSignature());
 
-        if (parms.size() > 0) {
+        if (!parms.isEmpty()) {
             boolean isStatic = obj.isStatic();
             isAbstract = obj.isAbstract();
 

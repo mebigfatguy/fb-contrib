@@ -222,7 +222,7 @@ public class HangingExecutors extends BytecodeScanningDetector {
                     XMethod method = stack.getStackItem(0).getReturnValueOf();
                     if (method != null) {
                         List<String> argumentTypes = SignatureUtils.getParameterSignatures(method.getSignature());
-                        if ((argumentTypes.size() != 0) && "Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes.get(argumentTypes.size() - 1))) {
+                        if ((!argumentTypes.isEmpty()) && "Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes.get(argumentTypes.size() - 1))) {
                             AnnotationPriority ap = this.hangingFieldCandidates.get(f);
                             if (ap != null) {
                                 ap.priority = LOW_PRIORITY;

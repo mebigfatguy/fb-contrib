@@ -231,7 +231,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                     if (exCls.instanceOf(THROWABLE_CLASS)) {
                         String signature = getSigConstantOperand();
                         List<String> types = SignatureUtils.getParameterSignatures(signature);
-                        if (types.size() > 0) {
+                        if (!types.isEmpty()) {
                             if (Values.SIG_JAVA_LANG_STRING.equals(types.get(0)) && (stack.getStackDepth() >= types.size())) {
                                 OpcodeStack.Item item = stack.getStackItem(types.size() - 1);
                                 message = (String) item.getConstant();

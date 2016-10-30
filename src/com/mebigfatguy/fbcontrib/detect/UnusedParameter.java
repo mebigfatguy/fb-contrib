@@ -113,7 +113,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
 
         List<String> parmTypes = SignatureUtils.getParameterSignatures(m.getSignature());
 
-        if (parmTypes.size() == 0) {
+        if (parmTypes.isEmpty()) {
             return;
         }
         int firstReg = 0;
