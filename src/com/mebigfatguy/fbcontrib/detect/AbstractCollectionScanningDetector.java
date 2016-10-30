@@ -35,8 +35,6 @@ public class AbstractCollectionScanningDetector extends BytecodeScanningDetector
     protected final BugReporter bugReporter;
     protected OpcodeStack stack;
 
-    private ClassNotFoundException ex;
-
     AbstractCollectionScanningDetector(BugReporter bugReporter, String collectionClassName) {
         this.bugReporter = bugReporter;
         JavaClass clazz;
@@ -45,7 +43,6 @@ public class AbstractCollectionScanningDetector extends BytecodeScanningDetector
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
             clazz = null;
-            ex = cnfe;
         }
         collectionClass = clazz;
     }
@@ -59,10 +56,6 @@ public class AbstractCollectionScanningDetector extends BytecodeScanningDetector
     @Override
     public void visitClassContext(ClassContext classContext) {
         if (collectionClass == null) {
-            if (ex != null) {
-                bugReporter.reportMissingClass(ex);
-                ex = null;
-            }
             return;
         }
 
