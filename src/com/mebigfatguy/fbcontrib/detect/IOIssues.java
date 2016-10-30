@@ -99,6 +99,7 @@ public class IOIssues extends BytecodeScanningDetector {
      */
     @Override
     public void visitClassContext(ClassContext clsContext) {
+
         try {
             stack = new OpcodeStack();
             super.visitClassContext(clsContext);
@@ -163,7 +164,7 @@ public class IOIssues extends BytecodeScanningDetector {
             String clsName = getDottedClassConstantOperand();
             if (BUFFERED_CLASSES.contains(clsName)) {
                 return IOIUserValue.BUFFER;
-            } else {
+            } else if (readerClass != null) {
                 JavaClass cls = Repository.lookupClass(clsName);
                 if (cls.instanceOf(readerClass)) {
                     return IOIUserValue.READER;
