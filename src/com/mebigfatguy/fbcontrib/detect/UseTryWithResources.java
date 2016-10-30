@@ -62,8 +62,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     public UseTryWithResources(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         try {
-            autoCloseableClass = Repository.lookupClass("java/lang/AutoCloseable");
             throwableClass = Repository.lookupClass("java/lang/Throwable");
+            autoCloseableClass = Repository.lookupClass("java/lang/AutoCloseable");
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }
@@ -71,6 +71,10 @@ public class UseTryWithResources extends BytecodeScanningDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
+
+        if (autoCloseableClass == null) {
+            return;
+        }
 
         try {
             int majorVersion = classContext.getJavaClass().getMajor();
