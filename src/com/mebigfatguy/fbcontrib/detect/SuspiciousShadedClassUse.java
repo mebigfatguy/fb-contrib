@@ -48,7 +48,7 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if (OpcodeUtils.isInvoke(seen)) {
+        if (OpcodeUtils.isStandardInvoke(seen)) {
             String invokedCls = getClassConstantOperand();
 
             for (String suspiciousRoot : SUSPICIOUS_ROOTS) {
