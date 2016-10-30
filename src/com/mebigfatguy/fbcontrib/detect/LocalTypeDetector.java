@@ -31,7 +31,6 @@ import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -253,9 +252,9 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
         String methodName = getClassConstantOperand() + '.' + getNameConstantOperand();
         for (String selfRefNames : selfReturningMethods) {
             if (methodName.equals(selfRefNames)) {
-                Type[] parmTypes = Type.getArgumentTypes(getSigConstantOperand());
-                if (stack.getStackDepth() > parmTypes.length) {
-                    OpcodeStack.Item item = stack.getStackItem(parmTypes.length);
+                int numParameters = SignatureUtils.getNumParameters(getSigConstantOperand());
+                if (stack.getStackDepth() > numParameters) {
+                    OpcodeStack.Item item = stack.getStackItem(numParameters);
                     tosIsSyncColReg = (Integer) item.getUserValue();
                 }
                 break;

@@ -22,9 +22,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -175,13 +175,13 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
             String className = getClassConstantOperand();
             String sig = getSigConstantOperand();
             if (!hasMapComparator && "java/util/TreeMap".equals(className)) {
-                Type[] parms = Type.getArgumentTypes(sig);
-                if ((parms.length == 1) && "Ljava/util/Comparator;".equals(parms[0].getSignature())) {
+                List<String> parmSignatures = SignatureUtils.getParameterSignatures(sig);
+                if ((parmSignatures.size() == 1) && "Ljava/util/Comparator;".equals(parmSignatures.get(0))) {
                     hasMapComparator = true;
                 }
             } else if (!hasSetComparator && "java/util/TreeSet".equals(className)) {
-                Type[] parms = Type.getArgumentTypes(sig);
-                if ((parms.length == 1) && "Ljava/util/Comparator;".equals(parms[0].getSignature())) {
+                List<String> parmSignatures = SignatureUtils.getParameterSignatures(sig);
+                if ((parmSignatures.size() == 1) && "Ljava/util/Comparator;".equals(parmSignatures.get(0))) {
                     hasSetComparator = true;
                 }
             }

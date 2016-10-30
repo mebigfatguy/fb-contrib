@@ -30,7 +30,6 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
@@ -96,15 +95,14 @@ public class FinalParameters extends BytecodeScanningDetector {
             return;
         }
 
-        Type[] parms = Type.getArgumentTypes(obj.getSignature());
+        List<String> parms = SignatureUtils.getParameterSignatures(obj.getSignature());
 
-        if (parms.length > 0) {
+        if (parms.size() > 0) {
             boolean isStatic = obj.isStatic();
             isAbstract = obj.isAbstract();
 
             firstLocalReg = isStatic ? 0 : 1;
-            for (Type p : parms) {
-                String parmSig = p.getSignature();
+            for (String parmSig : parms) {
                 firstLocalReg += SignatureUtils.getSignatureSize(parmSig);
             }
 

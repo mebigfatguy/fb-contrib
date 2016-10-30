@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +29,6 @@ import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
@@ -116,9 +116,9 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
             int[] parmRegs = null;
 
             if ((retSignature.charAt(0) == 'L') && !knownImmutables.contains(retSignature)) {
-                Type[] parmTypes = Type.getArgumentTypes(methodSignature);
-                for (int p = 0; p < parmTypes.length; p++) {
-                    String parmSignature = parmTypes[p].getSignature();
+                List<String> parmTypes = SignatureUtils.getParameterSignatures(methodSignature);
+                for (int p = 0; p < parmTypes.size(); p++) {
+                    String parmSignature = parmTypes.get(p);
                     if ((parmSignature.charAt(0) == 'L') && !knownImmutables.contains(parmSignature)) {
                         if (returnClass == null) {
                             returnClass = Repository.lookupClass(retSignature.substring(1, retSignature.length() - 1));

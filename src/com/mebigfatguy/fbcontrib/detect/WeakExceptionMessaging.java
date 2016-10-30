@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
+import java.util.List;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -27,9 +28,9 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -150,22 +151,21 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
                     return;
                 }
                 String sig = getSigConstantOperand();
-                Type[] argTypes = Type.getArgumentTypes(sig);
+                List<String> argTypes = SignatureUtils.getParameterSignatures(sig);
                 int stringParms = 0;
-                for (int t = 0; t < argTypes.length; t++) {
-                    if (!Values.SIG_JAVA_LANG_STRING.equals(argTypes[t].getSignature())) {
+                for (int t = 0; t < argTypes.size(); t++) {
+                    if (!Values.SIG_JAVA_LANG_STRING.equals(argTypes.get(t))) {
                         continue;
                     }
                     stringParms++;
-                    int stackOffset = argTypes.length - t - 1;
-                    if ((stack.getStackDepth() > stackOffset)
-                            && (stack.getStackItem(stackOffset).getUserValue() == null)) {
+                    int stackOffset = argTypes.size() - t - 1;
+                    if ((stack.getStackDepth() > stackOffset) && (stack.getStackItem(stackOffset).getUserValue() == null)) {
                         return;
                     }
                 }
                 if (Values.SLASHED_JAVA_LANG_EXCEPTION.equals(clsName) && "(Ljava/lang/Throwable;)V".equals(getSigConstantOperand())) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
                 allConstantStrings = stringParms > 0;
             }
@@ -192,8 +192,8 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
         }
         JavaClass exClass = item.getJavaClass();
         if ((exClass == null) || !ignorableExceptionTypes.contains(exClass.getClassName())) {
-            bugReporter.reportBug(new BugInstance(this, BugType.WEM_WEAK_EXCEPTION_MESSAGING.name(), LOW_PRIORITY).addClass(this)
-                    .addMethod(this).addSourceLine(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.WEM_WEAK_EXCEPTION_MESSAGING.name(), LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 }

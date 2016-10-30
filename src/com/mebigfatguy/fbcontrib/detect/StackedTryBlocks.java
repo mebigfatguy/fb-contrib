@@ -16,10 +16,10 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -91,11 +91,11 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
             XMethod xMethod = getXMethod();
             if (xMethod != null) {
                 String[] tes = xMethod.getThrownExceptions();
-                Set<String> thrownExceptions = new HashSet<String>(Arrays.<String> asList((tes == null) ? new String[0] : tes));
+                Set<String> thrownExceptions = new HashSet<>(Arrays.<String> asList((tes == null) ? new String[0] : tes));
 
-                blocks = new ArrayList<TryBlock>();
-                inBlocks = new ArrayList<TryBlock>();
-                transitionPoints = new ArrayList<Integer>();
+                blocks = new ArrayList<>();
+                inBlocks = new ArrayList<>();
+                transitionPoints = new ArrayList<>();
 
                 CodeException[] ces = obj.getExceptionTable();
                 for (CodeException ce : ces) {
@@ -230,11 +230,10 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                     JavaClass exCls = Repository.lookupClass(cls);
                     if (exCls.instanceOf(THROWABLE_CLASS)) {
                         String signature = getSigConstantOperand();
-                        Type[] types = Type.getArgumentTypes(signature);
-                        if (types.length > 0) {
-                            if (Values.SIG_JAVA_LANG_STRING.equals(types[0].getSignature())
-                                    && (stack.getStackDepth() >= types.length)) {
-                                OpcodeStack.Item item = stack.getStackItem(types.length - 1);
+                        List<String> types = SignatureUtils.getParameterSignatures(signature);
+                        if (types.size() > 0) {
+                            if (Values.SIG_JAVA_LANG_STRING.equals(types.get(0)) && (stack.getStackDepth() >= types.size())) {
+                                OpcodeStack.Item item = stack.getStackItem(types.size() - 1);
                                 message = (String) item.getConstant();
                                 if (message == null) {
                                     message = "____UNKNOWN____" + System.identityHashCode(item);

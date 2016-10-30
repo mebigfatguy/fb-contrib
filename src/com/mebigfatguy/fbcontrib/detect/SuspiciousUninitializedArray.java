@@ -19,13 +19,13 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
+import java.util.List;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -146,8 +146,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case NEWARRAY: {
                     if (!isTOS0()) {
                         int typeCode = getIntConstant();
-                        if ((typeCode != Constants.T_BYTE)
-                                && returnArraySig.equals('[' + SignatureUtils.getTypeCodeSignature(typeCode))) {
+                        if ((typeCode != Constants.T_BYTE) && returnArraySig.equals('[' + SignatureUtils.getTypeCodeSignature(typeCode))) {
                             userValue = SUAUserValue.UNINIT_ARRAY;
                         }
                     }
@@ -177,12 +176,12 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case INVOKESTATIC:
                 case INVOKEDYNAMIC: {
                     String methodSig = getSigConstantOperand();
-                    Type[] types = Type.getArgumentTypes(methodSig);
-                    for (int t = 0; t < types.length; t++) {
-                        Type type = types[t];
-                        String parmSig = type.getSignature();
-                        if (returnArraySig.equals(parmSig) || Values.SIG_JAVA_LANG_OBJECT.equals(parmSig) || ('[' + Values.SIG_JAVA_LANG_OBJECT).equals(parmSig)) {
-                            int parmIndex = types.length - t - 1;
+                    List<String> types = SignatureUtils.getParameterSignatures(methodSig);
+                    for (int t = 0; t < types.size(); t++) {
+                        String parmSig = types.get(t);
+                        if (returnArraySig.equals(parmSig) || Values.SIG_JAVA_LANG_OBJECT.equals(parmSig)
+                                || ('[' + Values.SIG_JAVA_LANG_OBJECT).equals(parmSig)) {
+                            int parmIndex = types.size() - t - 1;
                             if (stack.getStackDepth() > parmIndex) {
                                 OpcodeStack.Item item = stack.getStackItem(parmIndex);
                                 SUAUserValue uv = (SUAUserValue) item.getUserValue();

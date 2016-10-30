@@ -20,15 +20,16 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -222,8 +223,8 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
                     }
                     int reg = RegisterUtils.getStoreReg(this, seen);
                     if (elReg.intValue() == reg) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY)
-                                .addClass(this).addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
                     }
                 }
                 break;
@@ -307,13 +308,12 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
             return;
         }
         String sig = getSigConstantOperand();
-        Type[] args = Type.getArgumentTypes(sig);
-        if (stack.getStackDepth() >= args.length) {
-            for (int i = 0; i < args.length; i++) {
-                Type t = args[i];
-                String argSig = t.getSignature();
+        List<String> args = SignatureUtils.getParameterSignatures(sig);
+        if (stack.getStackDepth() >= args.size()) {
+            for (int i = 0; i < args.size(); i++) {
+                String argSig = args.get(i);
                 if ((argSig.length() > 0) && (argSig.charAt(0) == '[')) {
-                    OpcodeStack.Item itm = stack.getStackItem(args.length - i - 1);
+                    OpcodeStack.Item itm = stack.getStackItem(args.size() - i - 1);
                     int arrayReg = itm.getRegisterNumber();
                     WrapperInfo wi = wrappers.get(Integer.valueOf(arrayReg));
                     if (wi != null) {

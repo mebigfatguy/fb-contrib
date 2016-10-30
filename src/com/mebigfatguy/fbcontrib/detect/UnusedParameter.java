@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -28,7 +29,6 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
@@ -110,9 +110,10 @@ public class UnusedParameter extends BytecodeScanningDetector {
         if (((accessFlags & (Constants.ACC_STATIC | Constants.ACC_PRIVATE)) == 0) || ((accessFlags & Constants.ACC_SYNTHETIC) != 0)) {
             return;
         }
-        Type[] parmTypes = Type.getArgumentTypes(m.getSignature());
 
-        if (parmTypes.length == 0) {
+        List<String> parmTypes = SignatureUtils.getParameterSignatures(m.getSignature());
+
+        if (parmTypes.size() == 0) {
             return;
         }
         int firstReg = 0;
@@ -121,10 +122,10 @@ public class UnusedParameter extends BytecodeScanningDetector {
         }
 
         int reg = firstReg;
-        for (int i = 0; i < parmTypes.length; ++i) {
+        for (int i = 0; i < parmTypes.size(); ++i) {
             unusedParms.set(reg);
             regToParm.put(Integer.valueOf(reg), Integer.valueOf(i + 1));
-            String parmSig = parmTypes[i].getSignature();
+            String parmSig = parmTypes.get(i);
             reg += SignatureUtils.getSignatureSize(parmSig);
         }
 

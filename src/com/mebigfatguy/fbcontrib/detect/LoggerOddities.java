@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -30,7 +31,6 @@ import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
@@ -113,9 +113,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
         Method m = getMethod();
         if (Values.CONSTRUCTOR.equals(m.getName())) {
-            Type[] types = Type.getArgumentTypes(m.getSignature());
-            for (Type t : types) {
-                String parmSig = t.getSignature();
+            for (String parmSig : SignatureUtils.getParameterSignatures(m.getSignature())) {
                 if ("Lorg/slf4j/Logger;".equals(parmSig) || "Lorg/apache/log4j/Logger;".equals(parmSig) || "Lorg/apache/commons/logging/Log;".equals(parmSig)) {
                     bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                 }
@@ -344,11 +342,12 @@ public class LoggerOddities extends BytecodeScanningDetector {
             String cls = getClassConstantOperand();
             if ((cls.startsWith("java/") || cls.startsWith("javax/")) && cls.endsWith("Exception")) {
                 String sig = getSigConstantOperand();
-                Type[] types = Type.getArgumentTypes(sig);
-                if (types.length <= stack.getStackDepth()) {
-                    for (int i = 0; i < types.length; i++) {
-                        if (Values.SIG_JAVA_LANG_STRING.equals(types[i].getSignature())) {
-                            OpcodeStack.Item item = stack.getStackItem(types.length - i - 1);
+                List<String> types = SignatureUtils.getParameterSignatures(sig);
+                if (types.size() <= stack.getStackDepth()) {
+                    for (int i = 0; i < types.size(); i++) {
+                        String parmSig = types.get(i);
+                        if (Values.SIG_JAVA_LANG_STRING.equals(parmSig)) {
+                            OpcodeStack.Item item = stack.getStackItem(types.size() - i - 1);
                             String cons = (String) item.getConstant();
                             if ((cons != null) && cons.contains("{}")) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.LO_EXCEPTION_WITH_LOGGER_PARMS.name(), NORMAL_PRIORITY).addClass(this)

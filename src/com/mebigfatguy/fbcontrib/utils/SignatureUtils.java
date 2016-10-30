@@ -18,9 +18,11 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -208,6 +210,44 @@ public final class SignatureUtils {
         }
 
         return slotIndexToParms;
+    }
+
+    /**
+     * returns a List of parameter signatures
+     *
+     * @param methodSignature
+     *            the signature of the method to parse
+     * @return a list of parameter signatures
+     */
+    public static List<String> getParameterSignatures(String methodSignature) {
+
+        int start = methodSignature.indexOf('(') + 1;
+        int limit = methodSignature.lastIndexOf(')');
+
+        if ((limit - start) == 0) {
+            return Collections.emptyList();
+        }
+
+        List<String> parmSignatures = new ArrayList<>();
+        int sigStart = start;
+        for (int i = start; i < limit; i++) {
+            char c = methodSignature.charAt(i);
+            String parmSignature;
+            if (c != '[') {
+                if (c == 'L') {
+                    int semiPos = methodSignature.indexOf(';', i + 1);
+                    parmSignature = methodSignature.substring(sigStart, semiPos + 1);
+                    parmSignatures.add(parmSignature);
+                    i = semiPos;
+                } else {
+                    parmSignature = methodSignature.substring(sigStart, i + 1);
+                    parmSignatures.add(parmSignature);
+                }
+                sigStart = i + 1;
+            }
+        }
+
+        return parmSignatures;
     }
 
     /**

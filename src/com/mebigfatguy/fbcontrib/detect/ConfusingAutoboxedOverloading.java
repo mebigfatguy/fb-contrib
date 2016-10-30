@@ -20,12 +20,12 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -119,17 +119,17 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
             return false;
         }
 
-        Type[] type1 = Type.getArgumentTypes(sig1);
-        Type[] type2 = Type.getArgumentTypes(sig2);
+        List<String> type1 = SignatureUtils.getParameterSignatures(sig1);
+        List<String> type2 = SignatureUtils.getParameterSignatures(sig2);
 
-        if (type1.length != type2.length) {
+        if (type1.size() != type2.size()) {
             return false;
         }
 
         boolean foundParmDiff = false;
-        for (int i = 0; i < type1.length; i++) {
-            String typeOneSig = type1[i].getSignature();
-            String typeTwoSig = type2[i].getSignature();
+        for (int i = 0; i < type1.size(); i++) {
+            String typeOneSig = type1.get(i);
+            String typeTwoSig = type2.get(i);
 
             if (!typeOneSig.equals(typeTwoSig)) {
                 if ("Ljava/lang/Character;".equals(typeOneSig)) {
@@ -194,9 +194,8 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
      * @return whether a method signature has either a Character or primitive
      */
     private static boolean isPossiblyConfusingSignature(String sig) {
-        Type[] types = Type.getArgumentTypes(sig);
-        for (Type t : types) {
-            String typeSig = t.getSignature();
+        List<String> types = SignatureUtils.getParameterSignatures(sig);
+        for (String typeSig : types) {
             if (primitiveSigs.contains(typeSig) || SignatureUtils.classToSignature(Values.SLASHED_JAVA_LANG_CHARACTER).equals(typeSig)) {
                 return true;
             }

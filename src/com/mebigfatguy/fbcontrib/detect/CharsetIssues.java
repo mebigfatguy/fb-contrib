@@ -21,17 +21,18 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.PublicAPI;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -59,7 +60,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
      * Not coincidentally, the argument that needs to be replaced is the [(# of arguments) - offset]th one
      */
     static {
-        Map<FQMethod, Integer> replaceable = new HashMap<FQMethod, Integer>(8);
+        Map<FQMethod, Integer> replaceable = new HashMap<>(8);
         replaceable.put(new FQMethod("java/io/InputStreamReader", "<init>", "(Ljava/io/InputStream;Ljava/lang/String;)V"), Values.ZERO);
         replaceable.put(new FQMethod("java/io/OutputStreamWriter", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;)V"), Values.ZERO);
         replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "<init>", "([BLjava/lang/String;)V"), Values.ZERO);
@@ -69,7 +70,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
 
         REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replaceable);
 
-        Map<FQMethod, Integer> unreplaceable = new HashMap<FQMethod, Integer>(32);
+        Map<FQMethod, Integer> unreplaceable = new HashMap<>(32);
         unreplaceable.put(new FQMethod("java/net/URLEncoder", "encode", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"), Values.ZERO);
         unreplaceable.put(new FQMethod("java/net/URLDecoder", "decode", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"), Values.ZERO);
         unreplaceable.put(new FQMethod("java/io/ByteArrayOutputStream", "toString", "(Ljava/lang/String;)V"), Values.ZERO);
@@ -244,16 +245,17 @@ public class CharsetIssues extends BytecodeScanningDetector {
      * @return a new signature with a Charset parameter
      */
     private static String replaceNthArgWithCharsetString(String sig, int stackOffset) {
-        Type[] arguments = Type.getArgumentTypes(sig);
+
+        List<String> arguments = SignatureUtils.getParameterSignatures(sig);
 
         StringBuilder sb = new StringBuilder("(");
-        int argumentIndexToReplace = (arguments.length - stackOffset) - 1;
+        int argumentIndexToReplace = (arguments.size() - stackOffset) - 1;
 
-        for (int i = 0; i < arguments.length; i++) {
+        for (int i = 0; i < arguments.size(); i++) {
             if (i == argumentIndexToReplace) {
                 sb.append(CHARSET_SIG);
             } else {
-                sb.append(arguments[i].getSignature());
+                sb.append(arguments.get(i));
             }
         }
 
@@ -268,7 +270,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
      */
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
     public static Map<String, Integer> getUnreplaceableCharsetEncodings() {
-        Map<String, Integer> encodings = new HashMap<String, Integer>();
+        Map<String, Integer> encodings = new HashMap<>();
         for (Map.Entry<FQMethod, Integer> entry : UNREPLACEABLE_ENCODING_METHODS.entrySet()) {
             encodings.put(entry.getKey().toString(), entry.getValue());
         }
@@ -282,7 +284,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
      */
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
     public static Map<String, Integer> getReplaceableCharsetEncodings() {
-        Map<String, Integer> encodings = new HashMap<String, Integer>();
+        Map<String, Integer> encodings = new HashMap<>();
         for (Map.Entry<FQMethod, Integer> entry : REPLACEABLE_ENCODING_METHODS.entrySet()) {
             encodings.put(entry.getKey().toString(), entry.getValue());
         }

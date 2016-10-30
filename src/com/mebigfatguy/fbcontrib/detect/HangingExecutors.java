@@ -22,6 +22,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -30,7 +31,6 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -221,9 +221,8 @@ public class HangingExecutors extends BytecodeScanningDetector {
                     // low
                     XMethod method = stack.getStackItem(0).getReturnValueOf();
                     if (method != null) {
-                        Type[] argumentTypes = Type.getArgumentTypes(method.getSignature());
-                        if ((argumentTypes.length != 0)
-                                && "Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes[argumentTypes.length - 1].getSignature())) {
+                        List<String> argumentTypes = SignatureUtils.getParameterSignatures(method.getSignature());
+                        if ((argumentTypes.size() != 0) && "Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes.get(argumentTypes.size() - 1))) {
                             AnnotationPriority ap = this.hangingFieldCandidates.get(f);
                             if (ap != null) {
                                 ap.priority = LOW_PRIORITY;

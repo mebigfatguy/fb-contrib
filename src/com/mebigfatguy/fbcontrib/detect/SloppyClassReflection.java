@@ -38,11 +38,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that use Class.forName("XXX") to load a class object for a
- * class that is already referenced by this class. It is simpler to just use
- * XXX.class, and doing so protects the integrity of this code from such
- * transformations as obfuscation. Use of Class.forName should only be used when
- * the class in question isn't already statically bound to this context.
+ * looks for methods that use Class.forName("XXX") to load a class object for a class that is already referenced by this class. It is simpler to just use
+ * XXX.class, and doing so protects the integrity of this code from such transformations as obfuscation. Use of Class.forName should only be used when the class
+ * in question isn't already statically bound to this context.
  */
 public class SloppyClassReflection extends BytecodeScanningDetector {
     enum State {
@@ -73,7 +71,7 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            refClasses = new HashSet<String>();
+            refClasses = new HashSet<>();
             refClasses.add(classContext.getJavaClass().getClassName());
             state = State.COLLECT;
             super.visitClassContext(classContext);
@@ -92,13 +90,15 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
      */
     @Override
     public void visitMethod(Method obj) {
-        if (Values.STATIC_INITIALIZER.equals(obj.getName()))
+        if (Values.STATIC_INITIALIZER.equals(obj.getName())) {
             return;
+        }
 
         if (state == State.COLLECT) {
             Type[] argTypes = obj.getArgumentTypes();
-            for (Type t : argTypes)
+            for (Type t : argTypes) {
                 addType(t);
+            }
             Type resultType = obj.getReturnType();
             addType(resultType);
             LocalVariableTable lvt = obj.getLocalVariableTable();
@@ -113,8 +113,9 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
                     }
                 }
             }
-        } else
+        } else {
             state = State.SEEN_NOTHING;
+        }
         super.visitMethod(obj);
     }
 
@@ -135,48 +136,50 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         switch (state) {
-        case COLLECT:
-            if ((seen == INVOKESTATIC) || (seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL)) {
-                refClasses.add(getClassConstantOperand());
-                String signature = getSigConstantOperand();
-                Type[] argTypes = Type.getArgumentTypes(signature);
-                for (Type t : argTypes)
-                    addType(t);
-                Type resultType = Type.getReturnType(signature);
-                addType(resultType);
-            }
-            break;
-
-        case SEEN_NOTHING:
-            if ((seen == LDC) || (seen == LDC_W)) {
-                Constant c = getConstantRefOperand();
-                if (c instanceof ConstantString) {
-                    clsName = ((ConstantString) c).getBytes(getConstantPool());
-                    state = State.SEEN_LDC;
+            case COLLECT:
+                if ((seen == INVOKESTATIC) || (seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL)) {
+                    refClasses.add(getClassConstantOperand());
+                    String signature = getSigConstantOperand();
+                    Type[] argTypes = Type.getArgumentTypes(signature);
+                    for (Type t : argTypes) {
+                        addType(t);
+                    }
+                    Type resultType = Type.getReturnType(signature);
+                    addType(resultType);
                 }
-            }
             break;
 
-        case SEEN_LDC:
-            if ((seen == INVOKESTATIC) && "forName".equals(getNameConstantOperand()) && "java/lang/Class".equals(getClassConstantOperand()) && refClasses.contains(clsName)) {
-                bugReporter.reportBug(new BugInstance(this, BugType.SCR_SLOPPY_CLASS_REFLECTION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this));
-            }
-            state = State.SEEN_NOTHING;
+            case SEEN_NOTHING:
+                if ((seen == LDC) || (seen == LDC_W)) {
+                    Constant c = getConstantRefOperand();
+                    if (c instanceof ConstantString) {
+                        clsName = ((ConstantString) c).getBytes(getConstantPool());
+                        state = State.SEEN_LDC;
+                    }
+                }
+            break;
+
+            case SEEN_LDC:
+                if ((seen == INVOKESTATIC) && "forName".equals(getNameConstantOperand()) && "java/lang/Class".equals(getClassConstantOperand())
+                        && refClasses.contains(clsName)) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.SCR_SLOPPY_CLASS_REFLECTION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this));
+                }
+                state = State.SEEN_NOTHING;
             break;
         }
     }
 
     /**
-     * add the type string represented by the type to the refClasses set if it
-     * is a reference
+     * add the type string represented by the type to the refClasses set if it is a reference
      *
      * @param t
      *            the type to add
      */
     private void addType(Type t) {
         String signature = t.getSignature();
-        if (signature.charAt(0) == 'L')
+        if (signature.charAt(0) == 'L') {
             refClasses.add(signature.substring(1, signature.length() - 1));
+        }
     }
 }

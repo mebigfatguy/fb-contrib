@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Collection;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -31,12 +32,12 @@ import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -230,8 +231,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                     String methodName = getNameConstantOperand();
                     if ("assertEquals".equals(methodName)) {
                         String signature = getSigConstantOperand();
-                        Type[] argTypes = Type.getArgumentTypes(signature);
-                        if (((argTypes.length == 2) || (argTypes.length == 3)) && (stack.getStackDepth() >= 2)) {
+                        List<String> argTypes = SignatureUtils.getParameterSignatures(signature);
+                        if (((argTypes.size() == 2) || (argTypes.size() == 3)) && (stack.getStackDepth() >= 2)) {
                             OpcodeStack.Item item0 = stack.getStackItem(0);
                             OpcodeStack.Item expectedItem = stack.getStackItem(1);
                             Object cons1 = expectedItem.getConstant();
@@ -241,7 +242,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
-                            if ((cons1 == null) && (item0.getConstant() != null) && ((argTypes.length == 2) || !isFloatingPtPrimitive(item0.getSignature()))) {
+                            if ((cons1 == null) && (item0.getConstant() != null) && ((argTypes.size() == 2) || !isFloatingPtPrimitive(item0.getSignature()))) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_ACTUAL_CONSTANT.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
@@ -251,8 +252,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
-                            if (argTypes[argTypes.length - 1].equals(Type.DOUBLE) && argTypes[argTypes.length - 2].equals(Type.DOUBLE)
-                                    && ((argTypes.length < 3) || !argTypes[argTypes.length - 3].equals(Type.DOUBLE))) {
+                            if (argTypes.get(argTypes.size() - 1).equals("D") && argTypes.get(argTypes.size() - 2).equals("D")
+                                    && ((argTypes.size() < 3) || !argTypes.get(argTypes.size() - 3).equals("D"))) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
@@ -289,14 +290,14 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                     String methodName = getNameConstantOperand();
                     if ("assertEquals".equals(methodName)) {
                         String signature = getSigConstantOperand();
-                        Type[] argTypes = Type.getArgumentTypes(signature);
-                        if ((argTypes.length == 2) || (argTypes.length == 3)) {
+                        List<String> argTypes = SignatureUtils.getParameterSignatures(signature);
+                        if ((argTypes.size() == 2) || (argTypes.size() == 3)) {
 
                             OpcodeStack.Item actualItem, expectedItem;
-                            if ((argTypes.length == 2) && (stack.getStackDepth() >= 2)) {
+                            if ((argTypes.size() == 2) && (stack.getStackDepth() >= 2)) {
                                 expectedItem = stack.getStackItem(0);
                                 actualItem = stack.getStackItem(1);
-                            } else if ((argTypes.length == 3) && (stack.getStackDepth() >= 3)) {
+                            } else if ((argTypes.size() == 3) && (stack.getStackDepth() >= 3)) {
                                 expectedItem = stack.getStackItem(1);
                                 actualItem = stack.getStackItem(2);
                             } else {
@@ -304,13 +305,13 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                             }
 
                             Object cons1 = expectedItem.getConstant();
-                            if ((cons1 != null) && argTypes[0].equals(Type.BOOLEAN) && argTypes[1].equals(Type.BOOLEAN)) {
+                            if ((cons1 != null) && argTypes.get(0).equals("Z") && argTypes.get(1).equals("Z")) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
                             if ((actualItem.getConstant() != null) && (expectedItem.getConstant() == null)
-                                    && ((argTypes.length == 2) || !isFloatingPtPrimitive(actualItem.getSignature()))) {
+                                    && ((argTypes.size() == 2) || !isFloatingPtPrimitive(actualItem.getSignature()))) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_ACTUAL_CONSTANT.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
@@ -320,8 +321,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
-                            if (Type.OBJECT.equals(argTypes[0]) && Type.OBJECT.equals(argTypes[1]) && LJAVA_LANG_DOUBLE.equals(actualItem.getSignature())
-                                    && LJAVA_LANG_DOUBLE.equals(expectedItem.getSignature())) {
+                            if (Values.SIG_JAVA_LANG_OBJECT.equals(argTypes.get(0)) && Values.SIG_JAVA_LANG_OBJECT.equals(argTypes.get(1))
+                                    && LJAVA_LANG_DOUBLE.equals(actualItem.getSignature()) && LJAVA_LANG_DOUBLE.equals(expectedItem.getSignature())) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
@@ -329,11 +330,11 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                         }
                     } else if ("assertNotEquals".equals(methodName)) {
                         String signature = getSigConstantOperand();
-                        Type[] argTypes = Type.getArgumentTypes(signature);
+                        int numArgs = SignatureUtils.getNumParameters(signature);
                         OpcodeStack.Item expectedItem;
-                        if ((argTypes.length == 2) && (stack.getStackDepth() >= 2)) {
+                        if ((numArgs == 2) && (stack.getStackDepth() >= 2)) {
                             expectedItem = stack.getStackItem(0);
-                        } else if ((argTypes.length == 3) && (stack.getStackDepth() >= 3)) {
+                        } else if ((numArgs == 3) && (stack.getStackDepth() >= 3)) {
                             expectedItem = stack.getStackItem(1);
                         } else {
                             return;

@@ -27,7 +27,6 @@ import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
@@ -202,12 +201,12 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             return false;
         }
 
-        Type[] argTypes = Type.getArgumentTypes(sig);
-        if (stack.getStackDepth() <= argTypes.length) {
+        int numParameters = SignatureUtils.getNumParameters(sig);
+        if (stack.getStackDepth() <= numParameters) {
             return false;
         }
 
-        OpcodeStack.Item item = stack.getStackItem(argTypes.length);
+        OpcodeStack.Item item = stack.getStackItem(numParameters);
         return item.getRegisterNumber() == 0;
     }
 

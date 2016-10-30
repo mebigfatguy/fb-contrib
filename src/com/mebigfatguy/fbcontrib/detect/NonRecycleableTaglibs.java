@@ -19,13 +19,13 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -119,9 +119,9 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
             String name = m.getName();
             if (name.startsWith("set") && m.isPublic() && !m.isStatic()) {
                 String sig = m.getSignature();
-                Type[] args = Type.getArgumentTypes(sig);
-                if ((args.length == 1) && "V".equals(SignatureUtils.getReturnSignature(sig))) {
-                    String parmSig = args[0].getSignature();
+                List<String> args = SignatureUtils.getParameterSignatures(sig);
+                if ((args.size() == 1) && "V".equals(SignatureUtils.getReturnSignature(sig))) {
+                    String parmSig = args.get(0);
                     if (validAttrTypes.contains(parmSig)) {
                         Code code = m.getCode();
                         if ((code != null) && (code.getCode().length < MAX_ATTRIBUTE_CODE_LENGTH)) {

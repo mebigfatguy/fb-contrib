@@ -233,19 +233,19 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
 
             if (OpcodeUtils.isInvoke(seen)) {
                 String methodSig = getSigConstantOperand();
-                Type[] parmTypes = Type.getArgumentTypes(methodSig);
+                List<String> parmTypes = SignatureUtils.getParameterSignatures(methodSig);
                 int stackDepth = stack.getStackDepth();
-                if (stackDepth >= parmTypes.length) {
-                    for (int i = 0; i < parmTypes.length; i++) {
+                if (stackDepth >= parmTypes.size()) {
+                    for (int i = 0; i < parmTypes.size(); i++) {
                         OpcodeStack.Item itm = stack.getStackItem(i);
                         int reg = itm.getRegisterNumber();
-                        removeUselessDefiners(parmTypes[parmTypes.length - i - 1].getSignature(), reg);
+                        removeUselessDefiners(parmTypes.get(parmTypes.size() - i - 1), reg);
                     }
                 }
 
                 if ((seen != INVOKESPECIAL) && (seen != INVOKESTATIC)) {
-                    if (stackDepth > parmTypes.length) {
-                        OpcodeStack.Item itm = stack.getStackItem(parmTypes.length);
+                    if (stackDepth > parmTypes.size()) {
+                        OpcodeStack.Item itm = stack.getStackItem(parmTypes.size());
                         int reg = itm.getRegisterNumber();
                         int parm = reg;
                         if (!methodIsStatic) {
