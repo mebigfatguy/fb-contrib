@@ -25,9 +25,9 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -38,8 +38,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Looks for methods that store the return result in a local variable, and then
- * immediately returns that local variable.
+ * Looks for methods that store the return result in a local variable, and then immediately returns that local variable.
  */
 @CustomUserValue
 public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
@@ -130,8 +129,8 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            branchTargets = new HashSet<Integer>();
-            catchTargets = new HashSet<Integer>();
+            branchTargets = new HashSet<>();
+            catchTargets = new HashSet<>();
             stack = new OpcodeStack();
             super.visitClassContext(classContext);
         } finally {
@@ -142,8 +141,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to make sure method returns a value, and then
-     * clears the targets
+     * implements the visitor to make sure method returns a value, and then clears the targets
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -152,8 +150,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         Method m = getMethod();
         String sig = m.getSignature();
-        Type t = Type.getReturnType(sig);
-        if (!t.equals(Type.VOID)) {
+        if ("V".equals(SignatureUtils.getReturnSignature(sig))) {
             state = State.SEEN_NOTHING;
             branchTargets.clear();
             CodeException[] ces = obj.getExceptionTable();
@@ -169,8 +166,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for store of registers immediately before
-     * returns of that register
+     * implements the visitor to look for store of registers immediately before returns of that register
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -182,31 +178,31 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (state) {
-            case SEEN_NOTHING:
-                if (!catchTargets.contains(Integer.valueOf(getPC())) && lookForStore(seen) && (stack.getStackDepth() >= 1)) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    Integer reg = (Integer) item.getUserValue();
-                    if ((reg == null) || (reg.intValue() != storeReg)) {
-                        state = State.SEEN_STORE;
+                case SEEN_NOTHING:
+                    if (!catchTargets.contains(Integer.valueOf(getPC())) && lookForStore(seen) && (stack.getStackDepth() >= 1)) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        Integer reg = (Integer) item.getUserValue();
+                        if ((reg == null) || (reg.intValue() != storeReg)) {
+                            state = State.SEEN_STORE;
+                        }
                     }
-                }
                 break;
 
-            case SEEN_STORE:
-                if (branchTargets.contains(Integer.valueOf(getPC()))) {
+                case SEEN_STORE:
+                    if (branchTargets.contains(Integer.valueOf(getPC()))) {
+                        state = State.SEEN_NOTHING;
+                        break;
+                    }
+
+                    state = lookForLoad(seen) ? State.SEEN_LOAD : State.SEEN_NOTHING;
+                break;
+
+                case SEEN_LOAD:
+                    if ((seen >= IRETURN) && (seen <= ARETURN)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.USBR_UNNECESSARY_STORE_BEFORE_RETURN.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
+                    }
                     state = State.SEEN_NOTHING;
-                    break;
-                }
-
-                state = lookForLoad(seen) ? State.SEEN_LOAD : State.SEEN_NOTHING;
-                break;
-
-            case SEEN_LOAD:
-                if ((seen >= IRETURN) && (seen <= ARETURN)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.USBR_UNNECESSARY_STORE_BEFORE_RETURN.name(), NORMAL_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this));
-                }
-                state = State.SEEN_NOTHING;
                 break;
             }
 
@@ -236,20 +232,21 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
      * @return if a store was seen
      */
     private boolean lookForStore(int seen) {
-        if ((seen >= ISTORE) && (seen <= ASTORE))
+        if ((seen >= ISTORE) && (seen <= ASTORE)) {
             storeReg = getRegisterOperand();
-        else if ((seen >= ISTORE_0) && (seen <= ISTORE_3))
+        } else if ((seen >= ISTORE_0) && (seen <= ISTORE_3)) {
             storeReg = seen - ISTORE_0;
-        else if ((seen >= LSTORE_0) && (seen <= LSTORE_3))
+        } else if ((seen >= LSTORE_0) && (seen <= LSTORE_3)) {
             storeReg = seen - LSTORE_0;
-        else if ((seen >= FSTORE_0) && (seen <= FSTORE_3))
+        } else if ((seen >= FSTORE_0) && (seen <= FSTORE_3)) {
             storeReg = seen - FSTORE_0;
-        else if ((seen >= DSTORE_0) && (seen <= DSTORE_3))
+        } else if ((seen >= DSTORE_0) && (seen <= DSTORE_3)) {
             storeReg = seen - DSTORE_0;
-        else if ((seen >= ASTORE_0) && (seen <= ASTORE_3))
+        } else if ((seen >= ASTORE_0) && (seen <= ASTORE_3)) {
             storeReg = seen - ASTORE_0;
-        else
+        } else {
             return false;
+        }
         return true;
     }
 
@@ -262,27 +259,27 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
      */
     private boolean lookForLoad(int seen) {
         int loadReg;
-        if ((seen >= ILOAD) && (seen <= ALOAD))
+        if ((seen >= ILOAD) && (seen <= ALOAD)) {
             loadReg = getRegisterOperand();
-        else if ((seen >= ILOAD_0) && (seen <= ILOAD_3))
+        } else if ((seen >= ILOAD_0) && (seen <= ILOAD_3)) {
             loadReg = seen - ILOAD_0;
-        else if ((seen >= LLOAD_0) && (seen <= LLOAD_3))
+        } else if ((seen >= LLOAD_0) && (seen <= LLOAD_3)) {
             loadReg = seen - LLOAD_0;
-        else if ((seen >= FLOAD_0) && (seen <= FLOAD_3))
+        } else if ((seen >= FLOAD_0) && (seen <= FLOAD_3)) {
             loadReg = seen - FLOAD_0;
-        else if ((seen >= DLOAD_0) && (seen <= DLOAD_3))
+        } else if ((seen >= DLOAD_0) && (seen <= DLOAD_3)) {
             loadReg = seen - DLOAD_0;
-        else if ((seen >= ALOAD_0) && (seen <= ALOAD_3))
+        } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
             loadReg = seen - ALOAD_0;
-        else
+        } else {
             return false;
+        }
 
         return (storeReg == loadReg);
     }
 
     /**
-     * looks for instructions that are binary operators, and if it is saves the
-     * left hand side register (if it exists) in the userValue.
+     * looks for instructions that are binary operators, and if it is saves the left hand side register (if it exists) in the userValue.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
