@@ -143,7 +143,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                     || ((seen >= IFEQ) && (seen <= IF_ACMPNE))) {
                 popStack.clear();
             } else if ((seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC)) {
-                if ("V".equals(SignatureUtils.getReturnSignature(getSigConstantOperand()))) {
+                if (Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(getSigConstantOperand()))) {
                     popStack.clear();
                 }
             }

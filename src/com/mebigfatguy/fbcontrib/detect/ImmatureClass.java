@@ -75,7 +75,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
                             }
                             if (heStatus != HEStatus.NOT_NEEDED) {
                                 String fieldSig = f.getSignature();
-                                if (fieldSig.startsWith("L")) {
+                                if (fieldSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                                     if (!fieldSig.startsWith("Ljava")) {
                                         JavaClass fieldClass = Repository.lookupClass(fieldSig.substring(1, fieldSig.length() - 1));
                                         if (!hasMethodInHierarchy(fieldClass, "equals", "(Ljava/lang/Object)Z")) {
@@ -84,7 +84,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
                                     } else if (!fieldSig.startsWith("Ljava/lang/") && !fieldSig.startsWith("Ljava/util/")) {
                                         heStatus = HEStatus.NOT_NEEDED;
                                     }
-                                } else if (!fieldSig.startsWith("[")) {
+                                } else if (!fieldSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
                                     heStatus = HEStatus.NEEDED;
                                 }
                             }

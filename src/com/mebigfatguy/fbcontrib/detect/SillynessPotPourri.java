@@ -434,7 +434,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private void checkForUselessTernaryReturn() {
         byte[] bytes = getCode().getCode();
         if ((lastPCs[0] != -1) && ((0x00FF & bytes[lastPCs[3]]) == ICONST_0) && ((0x00FF & bytes[lastPCs[2]]) == GOTO)
-                && ((0x00FF & bytes[lastPCs[1]]) == ICONST_1) && ((0x00FF & bytes[lastPCs[0]]) == IFEQ) && getMethod().getSignature().endsWith("Z")) {
+                && ((0x00FF & bytes[lastPCs[1]]) == ICONST_1) && ((0x00FF & bytes[lastPCs[0]]) == IFEQ) && getMethod().getSignature().endsWith(Values.SIG_PRIMITIVE_BOOLEAN)) {
             boolean bug = true;
             BitSet branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[1]));
             if (branchInsSet != null) {
@@ -455,7 +455,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private void checkEqualsStringBufferLength() {
         if (stack.getStackDepth() > 0) {
             OpcodeStack.Item itm = stack.getStackItem(0);
-            lastIfEqWasBoolean = "Z".equals(itm.getSignature());
+            lastIfEqWasBoolean = Values.SIG_PRIMITIVE_BOOLEAN.equals(itm.getSignature());
         }
 
         byte[] bytes = getCode().getCode();

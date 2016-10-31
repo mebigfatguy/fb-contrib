@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Signature;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -160,7 +161,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
 
         public TemplateItem(String type, String extension) {
             templateType = type;
-            templateExtension = extension.startsWith("L") ? "" : extension.substring(1);
+            templateExtension = extension.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) ? "" : extension.substring(1);
         }
 
         @Override

@@ -252,8 +252,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
-                            if (argTypes.get(argTypes.size() - 1).equals("D") && argTypes.get(argTypes.size() - 2).equals("D")
-                                    && ((argTypes.size() < 3) || !argTypes.get(argTypes.size() - 3).equals("D"))) {
+                            if (Values.SIG_PRIMITIVE_DOUBLE.equals(argTypes.get(argTypes.size() - 1)) && Values.SIG_PRIMITIVE_DOUBLE.equals(argTypes.get(argTypes.size() - 2))
+                                    && ((argTypes.size() < 3) || !Values.SIG_PRIMITIVE_DOUBLE.equals(argTypes.get(argTypes.size() - 3)))) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
@@ -305,7 +305,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                             }
 
                             Object cons1 = expectedItem.getConstant();
-                            if ((cons1 != null) && argTypes.get(0).equals("Z") && argTypes.get(1).equals("Z")) {
+                            if ((cons1 != null) && Values.SIG_PRIMITIVE_BOOLEAN.equals(argTypes.get(0)) && Values.SIG_PRIMITIVE_BOOLEAN.equals(argTypes.get(1))) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
@@ -459,7 +459,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     }
 
     private boolean isFloatingPtPrimitive(String signature) {
-        return "D".equals(signature) || "F".equals(signature);
+        return Values.SIG_PRIMITIVE_DOUBLE.equals(signature) || Values.SIG_PRIMITIVE_FLOAT.equals(signature);
     }
 
     private boolean hasExpects() {

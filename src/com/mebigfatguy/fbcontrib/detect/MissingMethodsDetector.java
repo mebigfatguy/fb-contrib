@@ -93,8 +93,8 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     public void visitField(Field obj) {
         if (!isInnerClass && obj.isPrivate() && !obj.isSynthetic()) {
             String sig = obj.getSignature();
-            if (sig.startsWith("L")) {
-                String type = sig.substring(1, sig.length() - 1).replace('/', '.');
+            if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+                String type = SignatureUtils.stripSignature(sig);
                 if (doesObjectNeedToBeWatched(type)) {
                     fieldSpecialObjects.put(obj.getName(), obj.getSignature());
                 }
@@ -308,7 +308,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 if (isMethodThatShouldBeCalled(name)) {
                     clearUserValue(item);
                 } else if (!"clone".equals(name)) {
-                    if ((!"V".equals(SignatureUtils.getReturnSignature(sig))) && !nextOpIsPop()) {
+                    if ((!Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(sig))) && !nextOpIsPop()) {
                         clearUserValue(item);
                     }
                 }

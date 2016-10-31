@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -192,7 +193,7 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
             return true;
         }
         propType = sig.substring("()".length());
-        if ("V".equals(propType)) {
+        if (Values.SIG_VOID.equals(propType)) {
             return true;
         }
         String methodName = getNameConstantOperand();

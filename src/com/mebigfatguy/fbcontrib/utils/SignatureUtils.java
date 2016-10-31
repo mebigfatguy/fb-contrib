@@ -39,7 +39,7 @@ import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
  */
 public final class SignatureUtils {
 
-    private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create("J", "D");
+    private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE);
 
     private static final Pattern CLASS_COMPONENT_DELIMITER = Pattern.compile("\\$");
     private static final Pattern ANONYMOUS_COMPONENT = Pattern.compile("^[1-9][0-9]{0,9}$");
@@ -129,28 +129,28 @@ public final class SignatureUtils {
     public static String getTypeCodeSignature(int typeCode) {
         switch (typeCode) {
             case Constants.T_BOOLEAN:
-                return "Z";
+                return Values.SIG_PRIMITIVE_BOOLEAN;
 
             case Constants.T_CHAR:
-                return "C";
+                return Values.SIG_PRIMITIVE_CHAR;
 
             case Constants.T_FLOAT:
-                return "F";
+                return Values.SIG_PRIMITIVE_FLOAT;
 
             case Constants.T_DOUBLE:
-                return "D";
+                return Values.SIG_PRIMITIVE_DOUBLE;
 
             case Constants.T_BYTE:
-                return "B";
+                return Values.SIG_PRIMITIVE_BYTE;
 
             case Constants.T_SHORT:
-                return "S";
+                return Values.SIG_PRIMITIVE_SHORT;
 
             case Constants.T_INT:
-                return "I";
+                return Values.SIG_PRIMITIVE_INT;
 
             case Constants.T_LONG:
-                return "J";
+                return Values.SIG_PRIMITIVE_LONG;
         }
 
         return Values.SIG_JAVA_LANG_OBJECT;
@@ -341,7 +341,7 @@ public final class SignatureUtils {
                 genSig = genSig.substring(0, bracketPos) + ';';
             }
 
-            if (!regParm.getSignature().equals(genSig) && !genSig.startsWith("T")) {
+            if (!regParm.getSignature().equals(genSig) && !genSig.startsWith(Values.SIG_GENERIC_TEMPLATE)) {
                 return false;
             }
         }
@@ -357,7 +357,7 @@ public final class SignatureUtils {
             genReturnSig = genReturnSig.substring(0, bracketPos) + ';';
         }
 
-        return regReturnParms.getSignature().equals(genReturnSig) || genReturnSig.startsWith("T");
+        return regReturnParms.getSignature().equals(genReturnSig) || genReturnSig.startsWith(Values.SIG_GENERIC_TEMPLATE);
     }
 
     public static int getSignatureSize(String signature) {
@@ -385,7 +385,7 @@ public final class SignatureUtils {
      * @return the slashed class name
      */
     public static String trimSignature(String signature) {
-        if (signature.startsWith("L") && signature.endsWith(";")) {
+        if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(";")) {
             return signature.substring(1, signature.length() - 1);
         }
 
@@ -400,7 +400,7 @@ public final class SignatureUtils {
      * @return the signature format of the class
      */
     public static String classToSignature(String className) {
-        return 'L' + className.replace('.', '/') + ';';
+        return Values.SIG_QUALIFIED_CLASS_PREFIX + className.replace('.', '/') + ';';
     }
 
     /**

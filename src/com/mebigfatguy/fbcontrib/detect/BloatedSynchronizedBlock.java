@@ -32,6 +32,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -140,7 +141,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                 if (mi.getModifiesState()) {
                     unsafeCallOccurred = true;
                 } else {
-                    if (!"V".equals(SignatureUtils.getReturnSignature(methodSig))) {
+                    if (!Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(methodSig))) {
                         int parmCount = SignatureUtils.getNumParameters(methodSig);
                         if (stack.getStackDepth() > parmCount) {
                             OpcodeStack.Item itm = stack.getStackItem(parmCount);

@@ -29,6 +29,7 @@ import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -50,8 +51,8 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
         try {
             compareClasses = UnmodifiableList.create(
                 // @formatter:off
-                new CompareSpec("java/lang/Comparable", new MethodInfo("compareTo", 1, "I")),
-                new CompareSpec("java/util/Comparator", new MethodInfo("compare", 2, "I"))
+                new CompareSpec("java/lang/Comparable", new MethodInfo("compareTo", 1, Values.SIG_PRIMITIVE_INT)),
+                new CompareSpec("java/util/Comparator", new MethodInfo("compare", 2, Values.SIG_PRIMITIVE_INT))
                 // @formatter:on
             );
         } catch (ClassNotFoundException e) {

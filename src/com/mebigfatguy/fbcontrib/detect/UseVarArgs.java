@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -85,11 +86,11 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
             }
 
             String lastParmSig = types[types.length - 1].getSignature();
-            if (!lastParmSig.startsWith("[") || lastParmSig.startsWith("[[")) {
+            if (!lastParmSig.startsWith(Values.SIG_ARRAY_PREFIX) || lastParmSig.startsWith(Values.SIG_ARRAY_OF_ARRAYS_PREFIX)) {
                 return;
             }
 
-            if ("[B".equals(lastParmSig) || "[C".equals(lastParmSig)) {
+            if ((Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).equals(lastParmSig) || (Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_CHAR).equals(lastParmSig)) {
                 return;
             }
 
@@ -131,13 +132,13 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
     private static boolean hasSimilarParms(Type... argTypes) {
 
         for (int i = 0; i < (argTypes.length - 1); i++) {
-            if (argTypes[i].getSignature().startsWith("[")) {
+            if (argTypes[i].getSignature().startsWith(Values.SIG_ARRAY_PREFIX)) {
                 return true;
             }
         }
 
         String baseType = argTypes[argTypes.length - 1].getSignature();
-        while (baseType.startsWith("[")) {
+        while (baseType.startsWith(Values.SIG_ARRAY_PREFIX)) {
             baseType = baseType.substring(1);
         }
 

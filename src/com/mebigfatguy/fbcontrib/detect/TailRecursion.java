@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -82,7 +83,7 @@ public class TailRecursion extends BytecodeScanningDetector {
             byte[] opcodes = c.getCode();
             if (opcodes != null) {
                 trPCPos = opcodes.length - 1;
-                if (!obj.getSignature().endsWith("V")) {
+                if (!obj.getSignature().endsWith(Values.SIG_VOID)) {
                     trPCPos -= 1;
                 }
                 trPCPos -= TAILRECURSIONFUDGE;

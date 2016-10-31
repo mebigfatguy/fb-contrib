@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.utils;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
@@ -43,6 +44,20 @@ public final class Values {
     public static final String CONSTRUCTOR = "<init>";
     public static final String STATIC_INITIALIZER = "<clinit>";
 
+    public static final String SIG_PRIMITIVE_BOOLEAN = Type.BOOLEAN.getSignature();
+    public static final String SIG_PRIMITIVE_CHAR = Type.CHAR.getSignature();
+    public static final String SIG_PRIMITIVE_FLOAT = Type.FLOAT.getSignature();
+    public static final String SIG_PRIMITIVE_DOUBLE = Type.DOUBLE.getSignature();
+    public static final String SIG_PRIMITIVE_BYTE = Type.BYTE.getSignature();
+    public static final String SIG_PRIMITIVE_SHORT = Type.SHORT.getSignature();
+    public static final String SIG_PRIMITIVE_INT = Type.INT.getSignature();
+    public static final String SIG_PRIMITIVE_LONG = Type.LONG.getSignature();
+    public static final String SIG_VOID = Type.VOID.getSignature();
+    public static final String SIG_GENERIC_TEMPLATE = "T";
+    public static final String SIG_QUALIFIED_CLASS_PREFIX = "L";
+    public static final String SIG_ARRAY_PREFIX = "[";
+    public static final String SIG_ARRAY_OF_ARRAYS_PREFIX = "[[";
+
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_OBJECT = "java.lang.Object";
     @DottedClassName
@@ -58,10 +73,10 @@ public final class Values {
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
-    public static final String SIG_JAVA_LANG_OBJECT = SignatureUtils.classToSignature(SLASHED_JAVA_LANG_OBJECT);
+    public static final String SIG_JAVA_LANG_OBJECT = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_OBJECT + ';';
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRING = "java/lang/String";
-    public static final String SIG_JAVA_LANG_STRING = SignatureUtils.classToSignature(SLASHED_JAVA_LANG_STRING);
+    public static final String SIG_JAVA_LANG_STRING = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_STRING + ';';
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRINGBUILDER = "java/lang/StringBuilder";
     @SlashedClassName

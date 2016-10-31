@@ -339,7 +339,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
                     String methodName = getNameConstantOperand();
                     if (mc != null) {
-                        if (!signature.endsWith("V") && methodName.equals(mc.getName()) && signature.equals(mc.getSignature())
+                        if (!signature.endsWith(Values.SIG_VOID) && methodName.equals(mc.getName()) && signature.equals(mc.getSignature())
                                 && !isRiskyName(className, methodName)) {
                             Object[] parms = mc.getParms();
                             if (Arrays.equals(parms, parmConstants)) {

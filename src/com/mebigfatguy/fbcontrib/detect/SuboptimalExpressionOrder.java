@@ -111,7 +111,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                 case INVOKEINTERFACE:
                 case INVOKEVIRTUAL:
                     String signature = getSigConstantOperand();
-                    if ("V".equals(SignatureUtils.getReturnSignature(signature))) {
+                    if (Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(signature))) {
                         sawMethodWeight = 0;
                         return;
                     }

@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -113,7 +114,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
                         return true;
                     } else if (OpcodeUtils.isInvoke(seen)) {
                         String methodSig = FloatingPointLoops.this.getSigConstantOperand();
-                        return !"V".equals(SignatureUtils.getReturnSignature(methodSig));
+                        return !Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(methodSig));
                     } else if ((seen < ISTORE) || (seen > SASTORE)) {
                         return true;
                     }

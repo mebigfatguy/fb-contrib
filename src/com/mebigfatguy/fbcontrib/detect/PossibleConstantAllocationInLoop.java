@@ -160,7 +160,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                             Integer allocation = (Integer) item.getUserValue();
                             if (allocation != null) {
                                 String retType = SignatureUtils.getReturnSignature(signature);
-                                if (!"V".equals(retType) && retType.equals(item.getSignature())) {
+                                if (!Values.SIG_VOID.equals(retType) && retType.equals(item.getSignature())) {
                                     sawAllocationNumber = allocation;
                                     sawAllocation = true;
                                 }

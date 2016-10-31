@@ -88,7 +88,7 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
                 if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
                     String sig = getSigConstantOperand();
                     String returnSig = SignatureUtils.getReturnSignature(sig);
-                    if (returnSig.startsWith("L")) {
+                    if (returnSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                         String clsName = getClassConstantOperand();
                         if (!Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName) && !Values.SLASHED_JAVA_LANG_CLASS.equals(clsName)) {
                             returnType = SignatureUtils.trimSignature(returnSig);
