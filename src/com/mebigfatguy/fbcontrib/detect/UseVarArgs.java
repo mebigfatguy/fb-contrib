@@ -18,12 +18,14 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.List;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
-import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -76,8 +78,8 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
                 return;
             }
 
-            Type[] types = obj.getArgumentTypes();
-            if ((types.length == 0) || (types.length > 2)) {
+            List<String> types = SignatureUtils.getParameterSignatures(obj.getSignature());
+            if ((types.isEmpty()) || (types.size() > 2)) {
                 return;
             }
 
@@ -85,12 +87,13 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
                 return;
             }
 
-            String lastParmSig = types[types.length - 1].getSignature();
+            String lastParmSig = types.get(types.size() - 1);
             if (!lastParmSig.startsWith(Values.SIG_ARRAY_PREFIX) || lastParmSig.startsWith(Values.SIG_ARRAY_OF_ARRAYS_PREFIX)) {
                 return;
             }
 
-            if ((Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).equals(lastParmSig) || (Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_CHAR).equals(lastParmSig)) {
+            if ((Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).equals(lastParmSig)
+                    || (Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_CHAR).equals(lastParmSig)) {
                 return;
             }
 
@@ -126,24 +129,24 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
      * determines whether a bunch of types are similar and thus would be confusing to have one be a varargs.
      *
      * @param argTypes
-     *            the parameter types to check
+     *            the parameter signatures to check
      * @return whether the parameter are similar
      */
-    private static boolean hasSimilarParms(Type... argTypes) {
+    private static boolean hasSimilarParms(List<String> argTypes) {
 
-        for (int i = 0; i < (argTypes.length - 1); i++) {
-            if (argTypes[i].getSignature().startsWith(Values.SIG_ARRAY_PREFIX)) {
+        for (int i = 0; i < (argTypes.size() - 1); i++) {
+            if (argTypes.get(i).startsWith(Values.SIG_ARRAY_PREFIX)) {
                 return true;
             }
         }
 
-        String baseType = argTypes[argTypes.length - 1].getSignature();
+        String baseType = argTypes.get(argTypes.size() - 1);
         while (baseType.startsWith(Values.SIG_ARRAY_PREFIX)) {
             baseType = baseType.substring(1);
         }
 
-        for (int i = 0; i < (argTypes.length - 1); i++) {
-            if (argTypes[i].getSignature().equals(baseType)) {
+        for (int i = 0; i < (argTypes.size() - 1); i++) {
+            if (argTypes.get(i).equals(baseType)) {
                 return true;
             }
         }
