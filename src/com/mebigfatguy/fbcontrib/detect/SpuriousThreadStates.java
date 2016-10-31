@@ -80,9 +80,9 @@ public class SpuriousThreadStates extends BytecodeScanningDetector {
                         if (("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) && "()V".equals(signature)) {
                             itm = stack.getStackItem(0);
                         } else if ("wait".equals(methodName)) {
-                            if ("(L)V".equals(signature) && (stack.getStackDepth() > 1)) {
+                            if ("(J)V".equals(signature) && (stack.getStackDepth() > 1)) {
                                 itm = stack.getStackItem(1);
-                            } else if ("(LI)V".equals(signature) && (stack.getStackDepth() > 2)) {
+                            } else if ("(JI)V".equals(signature) && (stack.getStackDepth() > 2)) {
                                 itm = stack.getStackItem(2);
                             }
                         }
