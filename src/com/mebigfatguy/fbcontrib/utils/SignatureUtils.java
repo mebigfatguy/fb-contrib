@@ -150,7 +150,7 @@ public final class SignatureUtils {
                 return "I";
 
             case Constants.T_LONG:
-                return "L";
+                return "J";
         }
 
         return Values.SIG_JAVA_LANG_OBJECT;
