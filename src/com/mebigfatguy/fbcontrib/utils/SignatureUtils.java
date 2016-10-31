@@ -33,6 +33,8 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.ba.generic.GenericSignatureParser;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * a collection of static methods for parsing signatures to find information out about them
@@ -372,7 +374,7 @@ public final class SignatureUtils {
      *
      * @return the dotted class name
      */
-    public static String stripSignature(String signature) {
+    public static @DottedClassName String stripSignature(String signature) {
         return trimSignature(signature).replace('/', '.');
     }
 
@@ -384,7 +386,7 @@ public final class SignatureUtils {
      *
      * @return the slashed class name
      */
-    public static String trimSignature(String signature) {
+    public static @SlashedClassName String trimSignature(String signature) {
         if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(";")) {
             return signature.substring(1, signature.length() - 1);
         }
