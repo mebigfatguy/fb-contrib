@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -111,7 +112,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     }
 
     private String normalizeArrayClass(String clsName) {
-        if (!clsName.startsWith("[")) {
+        if (!clsName.startsWith(Values.SIG_ARRAY_PREFIX)) {
             return clsName;
         }
 

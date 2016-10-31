@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -110,7 +111,7 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
                 case INVOKEINTERFACE:
                 case INVOKESTATIC:
                     String sig = getSigConstantOperand();
-                    if (!sig.endsWith("V")) {
+                    if (!sig.endsWith(Values.SIG_VOID)) {
                         methodInfo = getClassConstantOperand() + '@' + getNameConstantOperand() + getSigConstantOperand();
                     }
                 break;

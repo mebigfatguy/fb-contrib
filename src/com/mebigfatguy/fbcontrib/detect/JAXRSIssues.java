@@ -69,7 +69,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     private static final Set<String> NATIVE_JAXRS_TYPES = UnmodifiableSet.create(
             //@formatter:off
             Values.SIG_JAVA_LANG_STRING,
-            "[B",
+            Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE,
             "Ljava/io/InputStream;",
             "Ljava/io/Reader;",
             "Ljava/io/File;",

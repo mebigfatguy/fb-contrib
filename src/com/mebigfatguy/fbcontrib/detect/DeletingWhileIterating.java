@@ -192,7 +192,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                                 if (loop != null) {
                                     int pc = getPC();
                                     if (loop.hasPC(pc)) {
-                                        boolean needPop = !"V".equals(SignatureUtils.getReturnSignature(signature));
+                                        boolean needPop = !Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(signature));
 
                                         if (!breakFollows(loop, needPop) && !returnFollows(needPop)) {
                                             bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
@@ -214,7 +214,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                                     if (loop != null) {
                                         int pc = getPC();
                                         if (loop.hasPC(pc)) {
-                                            boolean needPop = !"V".equals(SignatureUtils.getReturnSignature(signature));
+                                            boolean needPop = !Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(signature));
                                             boolean breakFollows = breakFollows(loop, needPop);
                                             boolean returnFollows = !breakFollows && returnFollows(needPop);
 
@@ -277,7 +277,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                         }
                     } else {
                         String cls = itm.getSignature();
-                        if ((cls != null) && cls.startsWith("L")) {
+                        if ((cls != null) && cls.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                             cls = cls.substring(1, cls.length() - 1);
                             if (isCollection(cls) || "java/util/Iterator".equals(cls)) {
                                 int reg = RegisterUtils.getAStoreReg(this, seen);

@@ -507,13 +507,13 @@ public class LoggerOddities extends BytecodeScanningDetector {
             for (int i = 0; i < (stack.getStackDepth() - 1); i++) {
                 OpcodeStack.Item item = stack.getStackItem(i);
                 String sig = item.getSignature();
-                if (sig.startsWith("L")) {
+                if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                     String name = SignatureUtils.stripSignature(sig);
                     JavaClass cls = Repository.lookupClass(name);
                     if (cls.instanceOf(throwableClass)) {
                         return true;
                     }
-                } else if (sig.startsWith("[")) {
+                } else if (sig.startsWith(Values.SIG_ARRAY_PREFIX)) {
                     LOUserValue<Integer> uv = (LOUserValue<Integer>) item.getUserValue();
                     if ((uv != null) && (uv.getType() == LOUserValue.LOType.ARRAY_SIZE)) {
                         Integer sz = uv.getValue();

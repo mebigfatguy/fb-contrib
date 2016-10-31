@@ -322,7 +322,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     public boolean isPossibleExBuilder(int excReg) throws ClassNotFoundException {
         String sig = getSigConstantOperand();
         String returnSig = SignatureUtils.getReturnSignature(sig);
-        if (returnSig.startsWith("L")) {
+        if (returnSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
             returnSig = returnSig.substring(1, returnSig.length() - 1);
             JavaClass retCls = Repository.lookupClass(returnSig);
             if (retCls.instanceOf(throwableClass)) {

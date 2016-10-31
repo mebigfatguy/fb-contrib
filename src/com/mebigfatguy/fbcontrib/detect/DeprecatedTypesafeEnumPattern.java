@@ -100,7 +100,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
             JavaClass cls = getClassContext().getJavaClass();
             if (!obj.isEnum()) {
                 String fieldClass = obj.getSignature();
-                if (fieldClass.startsWith("L")) {
+                if (fieldClass.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                     fieldClass = fieldClass.substring(1, fieldClass.length() - 1);
                     String clsClass = cls.getClassName();
                     if (fieldClass.equals(clsClass)) {

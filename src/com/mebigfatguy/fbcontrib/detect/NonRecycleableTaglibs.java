@@ -47,8 +47,10 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
     private static final Set<String> tagClasses = UnmodifiableSet.create("javax.servlet.jsp.tagext.TagSupport", "javax.servlet.jsp.tagext.BodyTagSupport");
 
-    private static final Set<String> validAttrTypes = UnmodifiableSet.create("B", "C", "D", "F", "I", "J", "S", "Z", Values.SIG_JAVA_LANG_STRING,
-            "Ljava/util/Date;");
+    private static final Set<String> validAttrTypes = UnmodifiableSet.create(
+        Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_FLOAT,
+        Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_BOOLEAN,
+        Values.SIG_JAVA_LANG_STRING, "Ljava/util/Date;");
 
     private final BugReporter bugReporter;
     /**
@@ -120,7 +122,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
             if (name.startsWith("set") && m.isPublic() && !m.isStatic()) {
                 String sig = m.getSignature();
                 List<String> args = SignatureUtils.getParameterSignatures(sig);
-                if ((args.size() == 1) && "V".equals(SignatureUtils.getReturnSignature(sig))) {
+                if ((args.size() == 1) && Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(sig))) {
                     String parmSig = args.get(0);
                     if (validAttrTypes.contains(parmSig)) {
                         Code code = m.getCode();

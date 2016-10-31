@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -150,7 +151,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         Method m = getMethod();
         String sig = m.getSignature();
-        if (!"V".equals(SignatureUtils.getReturnSignature(sig))) {
+        if (!Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(sig))) {
             state = State.SEEN_NOTHING;
             branchTargets.clear();
             CodeException[] ces = obj.getExceptionTable();

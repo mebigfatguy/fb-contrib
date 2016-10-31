@@ -148,7 +148,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                     }
 
                     String returnSig = item.getSignature();
-                    if ((returnSig != null) && returnSig.startsWith("[")) {
+                    if ((returnSig != null) && returnSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
                         XField f = item.getXField();
                         if ((f == null) || (!f.isStatic())) {
                             throw new StopOpcodeParsingException();
@@ -194,7 +194,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                             registerConstants.put(register, null);
                         }
                     } else {
-                        if (item.getSignature().contains("[")) {
+                        if (item.getSignature().contains(Values.SIG_ARRAY_PREFIX)) {
                             registerConstants.put(register, null);
                         } else {
                             registerConstants.put(register, constant);

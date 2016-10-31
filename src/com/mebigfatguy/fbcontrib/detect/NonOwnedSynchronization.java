@@ -161,7 +161,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
                 case INVOKEVIRTUAL:
                 case INVOKEINTERFACE: {
                     String sig = getSigConstantOperand();
-                    if (SignatureUtils.getReturnSignature(sig).startsWith("L")) {
+                    if (SignatureUtils.getReturnSignature(sig).startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                         int parmCnt = SignatureUtils.getNumParameters(sig);
                         if (stack.getStackDepth() > parmCnt) {
                             OpcodeStack.Item itm = stack.getStackItem(parmCnt);
@@ -183,7 +183,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
 
                 case INVOKESTATIC: {
                     String sig = getSigConstantOperand();
-                    if (SignatureUtils.getReturnSignature(sig).startsWith("L")) {
+                    if (SignatureUtils.getReturnSignature(sig).startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                         tosIsPriority = OWNED; // can't be sure
                     }
                 }

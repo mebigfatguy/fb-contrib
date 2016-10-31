@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -117,7 +118,7 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
         for (Field f : fields) {
             if (f.isSynthetic()) {
                 String sig = f.getSignature();
-                if (sig.startsWith("L")) {
+                if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                     sig = sig.substring(1, sig.length() - 1);
                     if (cls.getClassName().startsWith(sig)) {
                         return true;

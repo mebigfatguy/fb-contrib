@@ -456,7 +456,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         for (int i = 0; i < parms.length; i++) {
             if ((annotations.length <= i) || (annotations[i] == null) || (annotations[i].getAnnotationEntries().length == 0)) {
                 String parm = parms[i].getSignature();
-                if (parm.startsWith("L")) {
+                if (parm.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                     String clsName = SignatureUtils.stripSignature(parm);
                     if (clsName.startsWith("java.lang.")) {
                         continue;
@@ -614,7 +614,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     }
 
     private void removeUselessDefiners(String parmSig, final int reg) {
-        if (!parmSig.startsWith("L")) {
+        if (!parmSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
             return;
         }
         String parmClass = SignatureUtils.stripSignature(parmSig);

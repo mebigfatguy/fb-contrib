@@ -18,13 +18,13 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.Collections;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -41,20 +41,16 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class ConfusingArrayAsList extends BytecodeScanningDetector {
 
-    private static final Set<String> PRIMITIVE_ARRAYS;
-
-    static {
-        Set<String> pa = new HashSet<String>();
-        pa.add("[[B");
-        pa.add("[[C");
-        pa.add("[[S");
-        pa.add("[[I");
-        pa.add("[[J");
-        pa.add("[[F");
-        pa.add("[[D");
-        pa.add("[[Z");
-        PRIMITIVE_ARRAYS = Collections.<String> unmodifiableSet(pa);
-    }
+    private static final Set<String> PRIMITIVE_ARRAYS = UnmodifiableSet.create(
+        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_BYTE,
+        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_CHAR,
+        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_SHORT,
+        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_INT,
+        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_LONG,
+        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_FLOAT,
+        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_DOUBLE,
+        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_BOOLEAN
+    );
 
     private BugReporter bugReporter;
     private OpcodeStack stack;

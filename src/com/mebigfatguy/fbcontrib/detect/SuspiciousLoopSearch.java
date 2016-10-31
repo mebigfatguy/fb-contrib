@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -180,7 +181,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                     }
                     // ignore boolean flag stores, as this is a
                     // relatively normal occurrence
-                    if (!"Z".equals(sig)) {
+                    if (!Values.SIG_PRIMITIVE_BOOLEAN.equals(sig)) {
                         storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
                     }
                 }

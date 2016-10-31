@@ -44,6 +44,7 @@ import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -473,12 +474,12 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         String signature = getSigConstantOperand();
         String name = getNameConstantOperand();
 
-        // this is kind of a wart. there should be a more seemless way to check this
+        // this is kind of a wart. there should be a more seamless way to check this
         if ("wasNull".equals(getNameConstantOperand()) && "()Z".equals(signature)) {
             dontReport = true;
         }
 
-        if (signature.endsWith("V")) {
+        if (signature.endsWith(Values.SIG_VOID)) {
             return null;
         }
 
@@ -505,7 +506,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      */
     private UserObject sawStaticCall() {
 
-        if (getSigConstantOperand().endsWith("V")) {
+        if (getSigConstantOperand().endsWith(Values.SIG_VOID)) {
             return null;
         }
 
@@ -581,7 +582,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      */
     private Comparable<?> getCallingObject() {
         String sig = getSigConstantOperand();
-        if ("V".equals(SignatureUtils.getReturnSignature(sig))) {
+        if (Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(sig))) {
             return null;
         }
 
