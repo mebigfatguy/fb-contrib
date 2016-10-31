@@ -47,10 +47,9 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
     private static final Set<String> tagClasses = UnmodifiableSet.create("javax.servlet.jsp.tagext.TagSupport", "javax.servlet.jsp.tagext.BodyTagSupport");
 
-    private static final Set<String> validAttrTypes = UnmodifiableSet.create(
-        Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_FLOAT,
-        Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_BOOLEAN,
-        Values.SIG_JAVA_LANG_STRING, "Ljava/util/Date;");
+    private static final Set<String> validAttrTypes = UnmodifiableSet.create(Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_DOUBLE,
+            Values.SIG_PRIMITIVE_FLOAT, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_BOOLEAN,
+            Values.SIG_JAVA_LANG_STRING, "Ljava/util/Date;");
 
     private final BugReporter bugReporter;
     /**
@@ -189,12 +188,13 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
             String fieldInfo = fields.keySet().iterator().next();
             int colonPos = fieldInfo.indexOf(':');
-            String fieldName = fieldInfo.substring(0, colonPos);
             String fieldType = fieldInfo.substring(colonPos + 1);
 
             if (!attType.equals(fieldType)) {
                 continue;
             }
+
+            String fieldName = fieldInfo.substring(0, colonPos);
 
             for (Map.Entry<String, Map<String, SourceLineAnnotation>> fwEntry : methodWrites.entrySet()) {
                 if (fwEntry.getKey().equals(methodInfo)) {
