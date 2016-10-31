@@ -80,8 +80,8 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         }
     }
 
-    private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(new QMethod("entrySet", "()Ljava/lang/Set;"),
-            new QMethod("keySet", "()Ljava/lang/Set;"), new QMethod("values", "()Ljava/lang/Collection;"));
+    private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(new QMethod("entrySet", "()Ljava/util/Set;"),
+            new QMethod("keySet", "()Ljava/util/Set;"), new QMethod("values", "()Ljava/util/Collection;"));
 
     private static final Map<QMethod, Integer> modifyingMethods;
 
