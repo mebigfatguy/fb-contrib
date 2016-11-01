@@ -74,12 +74,12 @@ public class SignatureBuilder {
         return this;
     }
 
-    public SignatureBuilder withParamTypes(Class... types) {
+    public SignatureBuilder withParamTypes(Class<?>... types) {
         if (paramTypes == null) {
             paramTypes = new ArrayList<>(types.length);
         }
 
-        for (Class type : types) {
+        for (Class<?> type : types) {
             paramTypes.add(SignatureUtils.classToSignature(type.getName()));
         }
         return this;
@@ -93,7 +93,7 @@ public class SignatureBuilder {
         return this;
     }
 
-    public SignatureBuilder withReturnType(Class type) {
+    public SignatureBuilder withReturnType(Class<?> type) {
         if (type == null) {
             throw new IllegalArgumentException("Missing return type; did you mean 'withoutReturnType'?");
         }
