@@ -71,7 +71,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
  * no use, and most probably can be removed. It is similar to a dead local store.
  */
 @CustomUserValue
-@SuppressWarnings({"PMD.ReplaceHashtableWithMap", "PMD.ReplaceVectorWithList"})
+@SuppressWarnings({ "PMD.ReplaceHashtableWithMap", "PMD.ReplaceVectorWithList" })
 public class WriteOnlyCollection extends MissingMethodsDetector {
 
     private static final Set<String> collectionClasses;
@@ -83,7 +83,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     private int firstLocalRegister;
 
     static {
-        Set<String> cc = new HashSet<String>(35);
+        Set<String> cc = new HashSet<>(35);
         cc.add(Set.class.getName());
         cc.add(Map.class.getName());
         cc.add(List.class.getName());
@@ -119,7 +119,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     }
 
     static {
-        Set<String> nim = new HashSet<String>(20);
+        Set<String> nim = new HashSet<>(20);
         nim.add("add");
         nim.add("addAll");
         nim.add("addElement");
@@ -144,33 +144,39 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     }
 
     static {
-        Set<FQMethod> cfm = new HashSet<FQMethod>(25);
+        Set<FQMethod> cfm = new HashSet<>(25);
         cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayList", noParamsReturnType(ArrayList.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithCapacity", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithExpectedSize", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithCapacity",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithExpectedSize",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Lists", "newLinkedList", noParamsReturnType(LinkedList.class)));
         cfm.add(new FQMethod("com/google/common/collect/Lists", "newCopyOnWriteArrayList", noParamsReturnType(CopyOnWriteArrayList.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newHashSet", noParamsReturnType(HashSet.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newHashSetWithExpectedSize", noParamsReturnType(HashSet.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newConcurrentHashSet", noParamsReturnType(Set.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSet", noParamsReturnType(LinkedHashSet.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSetWithExpectedSize", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(LinkedHashSet.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSetWithExpectedSize",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(LinkedHashSet.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet", noParamsReturnType(TreeSet.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet", new SignatureBuilder().withParamTypes(Comparator.class).withReturnType(TreeSet.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet",
+                new SignatureBuilder().withParamTypes(Comparator.class).withReturnType(TreeSet.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newIdentityHashSet", noParamsReturnType(Set.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newCopyOnWriteArraySet", noParamsReturnType(CopyOnWriteArraySet.class)));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMap", noParamsReturnType(HashMap.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMapWithExpectedSize", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(HashMap.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMapWithExpectedSize",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(HashMap.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newLinkedHashMap", noParamsReturnType(LinkedHashMap.class)));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newConcurrentMap", noParamsReturnType(ConcurrentHashMap.class)));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", noParamsReturnType(TreeMap.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", new SignatureBuilder().withParamTypes(Comparator.class).withReturnType(TreeMap.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap",
+                new SignatureBuilder().withParamTypes(Comparator.class).withReturnType(TreeMap.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newIdentityHashMap", noParamsReturnType(IdentityHashMap.class)));
 
         collectionFactoryMethods = Collections.<FQMethod> unmodifiableSet(cfm);
     }
 
-    private static String noParamsReturnType(Class type) {
+    private static String noParamsReturnType(Class<?> type) {
         return new SignatureBuilder().withReturnType(type).toString();
     }
 
@@ -199,7 +205,8 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * overrides the visitor to look for PUTFIELDS of collections
      *
-     * @param seen the currently parsed opcode
+     * @param seen
+     *            the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -238,7 +245,8 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * implements the MissingMethodsDetector to determine whether this class type is a collection
      *
-     * @param type the class type to check
+     * @param type
+     *            the class type to check
      * @return whether this class is a collection
      */
     @Override
@@ -249,9 +257,12 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * implements the MissingMethodsDetector to determine whether this factory-like method returns a collection
      *
-     * @param clsName the clsName the class name of the factory
-     * @param methodName the method name of the factory
-     * @param signature the signature of the factory method
+     * @param clsName
+     *            the clsName the class name of the factory
+     * @param methodName
+     *            the method name of the factory
+     * @param signature
+     *            the signature of the factory method
      *
      * @return whether this class is a collection
      */
