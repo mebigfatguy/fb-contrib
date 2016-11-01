@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for for loops that iterate over a java.util.List using an integer index, and get, rather than using an Iterator. An iterator may perform better
@@ -218,6 +219,16 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
                             if (stack.getStackDepth() > 1) {
                                 OpcodeStack.Item itm = stack.getStackItem(0);
                                 if (itm.getConstant() != null) {
+                                    it.remove();
+                                    continue;
+                                }
+                                XMethod constantSource = itm.getReturnValueOf();
+                                if (constantSource != null) {
+                                    if (!"size".equals(constantSource.getMethodDescriptor().getName())) {
+                                        it.remove();
+                                        continue;
+                                    }
+                                } else if (getPrevOpcode(1) != ARRAYLENGTH) {
                                     it.remove();
                                     continue;
                                 }
