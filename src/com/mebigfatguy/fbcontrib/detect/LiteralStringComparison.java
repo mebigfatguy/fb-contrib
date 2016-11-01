@@ -26,6 +26,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -127,9 +128,9 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
                         String calledMethodName = getNameConstantOperand();
                         String calledMethodSig = getSigConstantOperand();
 
-                        if (("equals".equals(calledMethodName) && "(Ljava/lang/Object;)Z".equals(calledMethodSig))
-                                || ("compareTo".equals(calledMethodName) && "(Ljava/lang/String;)I".equals(calledMethodSig))
-                                || ("equalsIgnoreCase".equals(calledMethodName) && "(Ljava/lang/String;)Z".equals(calledMethodSig))) {
+                        if (("equals".equals(calledMethodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(calledMethodSig))
+                                || ("compareTo".equals(calledMethodName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_PRIMITIVE_INT).toString().equals(calledMethodSig))
+                                || ("equalsIgnoreCase".equals(calledMethodName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString().equals(calledMethodSig))) {
 
                             if (stack.getStackDepth() > 0) {
                                 OpcodeStack.Item itm = stack.getStackItem(0);

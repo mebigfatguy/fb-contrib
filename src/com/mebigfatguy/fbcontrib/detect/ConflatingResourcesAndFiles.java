@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -136,7 +137,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
         } else if ("java/net/URI".equals(clsName) || "java/net/URL".equals(clsName)) {
             String methodName = getNameConstantOperand();
             String sig = getSigConstantOperand();
-            if (Values.CONSTRUCTOR.equals(methodName) && "(Ljava/lang/String;)V".equals(sig) && (stack.getStackDepth() > 0)) {
+            if (Values.CONSTRUCTOR.equals(methodName) && SignatureBuilder.SIG_STRING_TO_VOID.equals(sig) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 String cons = (String) item.getConstant();
                 if ((cons != null) && !cons.startsWith("file:/")) {

@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.ConstantString;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -174,7 +175,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                 break;
 
                 case SAW_CONST:
-                    if ((seen == INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())) {
+                    if ((seen == INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
                         state = State.SAW_EQUALS;
                     } else if (seen == IF_ICMPEQ) {
                         conditionCount++;

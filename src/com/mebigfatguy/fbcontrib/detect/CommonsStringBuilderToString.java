@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -52,9 +53,9 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 public class CommonsStringBuilderToString extends OpcodeStackDetector {
 
     private static final Set<String> TOSTRINGBUILDER_CTOR_SIGS = UnmodifiableSet.create(
-        "(Ljava/lang/Object;)V",
-        "(Ljava/lang/Object;Lorg/apache/commons/lang/builder/ToStringStyle;)V",
-        "(Ljava/lang/Object;Lorg/apache/commons/lang3/builder/ToStringStyle;)V"
+        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).toString(),
+        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withParamTypes("org/apache/commons/lang/builder/ToStringStyle").toString(),
+        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withParamTypes("org/apache/commons/lang3/builder/ToStringStyle").toString()
     );
 
     private final BugReporter bugReporter;
@@ -138,7 +139,7 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
                 } else if ("append".equals(calledMethodName)) {
                     StringBuilderInvokedStatus p = stackTracker.pop();
                     stackTracker.add(new StringBuilderInvokedStatus(p.register, true));
-                } else if ("toString".equals(calledMethodName) && "()Ljava/lang/String;".equals(calledMethodSig)) {
+                } else if ("toString".equals(calledMethodName) && SignatureBuilder.SIG_VOID_TO_STRING.equals(calledMethodSig)) {
                     StringBuilderInvokedStatus p = stackTracker.pop();
                     if (!p.appendInvoked) {
                         bugReporter.reportBug(new BugInstance(this, "CSBTS_COMMONS_STRING_BUILDER_TOSTRING", HIGH_PRIORITY).addClass(this).addMethod(this)

@@ -22,6 +22,7 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Deque;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -49,13 +50,16 @@ import java.util.concurrent.ConcurrentNavigableMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingDeque;
 
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -71,6 +75,12 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 public class WriteOnlyCollection extends MissingMethodsDetector {
 
     private static final Set<String> collectionClasses;
+
+    private static final Set<FQMethod> collectionFactoryMethods;
+
+    private static final Set<String> nonInformationalMethods;
+
+    private int firstLocalRegister;
 
     static {
         Set<String> cc = new HashSet<String>(35);
@@ -108,37 +118,6 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
         collectionClasses = Collections.unmodifiableSet(cc);
     }
 
-    private static final Set<FQMethod> collectionFactoryMethods;
-
-    static {
-        Set<FQMethod> cfm = new HashSet<FQMethod>(25);
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayList", "()Ljava/util/ArrayList;"));
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithCapacity", "(I)Ljava/util/ArrayList;"));
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithExpectedSize", "(I)Ljava/util/ArrayList;"));
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newLinkedList", "()Ljava/util/LinkedList;"));
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newCopyOnWriteArrayList", "()Ljava/util/concurrent/CopyOnWriteArrayList;"));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newHashSet", "()Ljava/util/HashSet;"));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newHashSetWithExpectedSize", "(I)Ljava/util/HashSet;"));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newConcurrentHashSet", "()Ljava/util/Set;"));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSet", "()Ljava/util/LinkedHashSet;"));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSetWithExpectedSize", "(I)Ljava/util/LinkedHashSet;"));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet", "()Ljava/util/TreeSet;"));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet", "(Ljava/util/Comparator;)Ljava/util/TreeSet;"));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newIdentityHashSet", "()Ljava/util/Set;"));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newCopyOnWriteArraySet", "()Ljava/util/concurrent/CopyOnWriteArraySet;"));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMap", "()Ljava/util/HashMap;"));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMapWithExpectedSize", "(I)Ljava/util/HashMap;"));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newLinkedHashMap", "()Ljava/util/LinkedHashMap;"));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newConcurrentMap", "()Ljava/util/concurrent/ConcurrentHashMap;"));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", "()Ljava/util/TreeMap;"));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", "(Ljava/util/Comparator;)Ljava/util/TreeMap;"));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newIdentityHashMap", "()Ljava/util/IdentityHashMap;"));
-
-        collectionFactoryMethods = Collections.<FQMethod> unmodifiableSet(cfm);
-    }
-
-    private static final Set<String> nonInformationalMethods;
-
     static {
         Set<String> nim = new HashSet<String>(20);
         nim.add("add");
@@ -164,7 +143,36 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
         nonInformationalMethods = Collections.unmodifiableSet(nim);
     }
 
-    private int firstLocalRegister;
+    static {
+        Set<FQMethod> cfm = new HashSet<FQMethod>(25);
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayList", noParamsReturnType(ArrayList.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithCapacity", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithExpectedSize", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newLinkedList", noParamsReturnType(LinkedList.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newCopyOnWriteArrayList", noParamsReturnType(CopyOnWriteArrayList.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newHashSet", noParamsReturnType(HashSet.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newHashSetWithExpectedSize", noParamsReturnType(HashSet.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newConcurrentHashSet", noParamsReturnType(Set.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSet", noParamsReturnType(LinkedHashSet.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSetWithExpectedSize", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(LinkedHashSet.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet", noParamsReturnType(TreeSet.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet", new SignatureBuilder().withParamTypes(Comparator.class).withReturnType(TreeSet.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newIdentityHashSet", noParamsReturnType(Set.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newCopyOnWriteArraySet", noParamsReturnType(CopyOnWriteArraySet.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMap", noParamsReturnType(HashMap.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMapWithExpectedSize", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(HashMap.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newLinkedHashMap", noParamsReturnType(LinkedHashMap.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newConcurrentMap", noParamsReturnType(ConcurrentHashMap.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", noParamsReturnType(TreeMap.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", new SignatureBuilder().withParamTypes(Comparator.class).withReturnType(TreeMap.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newIdentityHashMap", noParamsReturnType(IdentityHashMap.class)));
+
+        collectionFactoryMethods = Collections.<FQMethod> unmodifiableSet(cfm);
+    }
+
+    private static String noParamsReturnType(Class type) {
+        return new SignatureBuilder().withReturnType(type).toString();
+    }
 
     /**
      * constructs a WOC detector given the reporter to report bugs on

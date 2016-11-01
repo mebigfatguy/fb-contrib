@@ -27,8 +27,10 @@ import java.util.Map;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -46,9 +48,9 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     private static final String GET_ATTRIBUTE = "getAttribute";
     private static final String SET_ATTRIBUTE = "setAttribute";
     private static final String GET_PARAMETER = "getParameter";
-    private static final String GET_ATTRIBUTE_SIG = "(Ljava/lang/String;)Ljava/lang/Object;";
-    private static final String SET_ATTRIBUTE_SIG = "(Ljava/lang/String;Ljava/lang/Object;)V";
-    private static final String GET_PARAMETER_SIG = "(Ljava/lang/String;)Ljava/lang/String;";
+    private static final String GET_ATTRIBUTE_SIG = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+    private static final String SET_ATTRIBUTE_SIG = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT).toString();
+    private static final String GET_PARAMETER_SIG = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
 
     enum KeyType {
         ATTRIBUTE("IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING"), PARAMETER("IKNC_INCONSISTENT_HTTP_PARAM_CASING");

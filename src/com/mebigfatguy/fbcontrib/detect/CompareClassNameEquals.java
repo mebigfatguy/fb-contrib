@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -69,10 +70,10 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (seen == INVOKEVIRTUAL) {
-            if ("getName".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())
+            if ("getName".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())
                     && Values.SLASHED_JAVA_LANG_CLASS.equals(getClassConstantOperand())) {
                 flag = true;
-            } else if ("equals".equals(getNameConstantOperand()) && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())
+            } else if ("equals".equals(getNameConstantOperand()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())
                     && Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand())) {
                 Item item = stack.getItemMethodInvokedOn(this);
                 Object srcValue = item.getUserValue();

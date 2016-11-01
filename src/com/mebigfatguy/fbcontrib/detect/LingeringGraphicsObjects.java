@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Code;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -53,13 +54,13 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
     static {
         Set<FQMethod> gp = new HashSet<FQMethod>();
-        gp.add(new FQMethod("java/awt/image/BufferedImage", "getGraphics", "()Ljava/awt/Graphics;"));
-        gp.add(new FQMethod("java/awt/Graphics", "create", "()Ljava/awt/Graphics;"));
+        gp.add(new FQMethod("java/awt/image/BufferedImage", "getGraphics", new SignatureBuilder().withReturnType("java/awt/Graphics").toString()));
+        gp.add(new FQMethod("java/awt/Graphics", "create", new SignatureBuilder().withReturnType("java/awt/Graphics").toString()));
         GRAPHICS_PRODUCERS = Collections.<FQMethod>unmodifiableSet(gp);
 
         Set<FQMethod> gd = new HashSet<FQMethod>();
-        gd.add(new FQMethod("java/awt/Graphics", "dispose", "()V"));
-        gd.add(new FQMethod("java/awt/Graphics2D", "dispose", "()V"));
+        gd.add(new FQMethod("java/awt/Graphics", "dispose", SignatureBuilder.SIG_VOID_TO_VOID));
+        gd.add(new FQMethod("java/awt/Graphics2D", "dispose", SignatureBuilder.SIG_VOID_TO_VOID));
         GRAPHICS_DISPOSERS = Collections.<FQMethod>unmodifiableSet(gd);
     }
 

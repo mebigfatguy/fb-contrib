@@ -26,6 +26,7 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -44,33 +45,50 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
 
     private static final Map<String, BoxParms> boxClasses = new HashMap<>();
 
-    static {
-        boxClasses.put(Values.SLASHED_JAVA_LANG_BOOLEAN, new BoxParms("booleanValue()Z", "(Z)V", "(Z)Ljava/lang/Boolean;"));
-        boxClasses.put(Values.SLASHED_JAVA_LANG_CHARACTER, new BoxParms("charValue()C", "(C)V", "(C)Ljava/lang/Character;"));
-        boxClasses.put(Values.SLASHED_JAVA_LANG_BYTE, new BoxParms("byteValue()B", "(B)V", "(B)Ljava/lang/Byte;"));
-        boxClasses.put(Values.SLASHED_JAVA_LANG_SHORT, new BoxParms("shortValue()S", "(S)V", "(S)Ljava/lang/Short;"));
-        boxClasses.put(Values.SLASHED_JAVA_LANG_INTEGER, new BoxParms("intValue()I", "(I)V", "(I)Ljava/lang/Integer;"));
-        boxClasses.put(Values.SLASHED_JAVA_LANG_LONG, new BoxParms("longValue()J", "(J)V", "(J)Ljava/lang/Long;"));
-        boxClasses.put(Values.SLASHED_JAVA_LANG_FLOAT, new BoxParms("floatValue()F", "(F)V", "(F)Ljava/lang/Float;"));
-        boxClasses.put(Values.SLASHED_JAVA_LANG_DOUBLE, new BoxParms("doubleValue()D", "(D)V", "(D)Ljava/lang/Double;"));
-    }
-
     private static final Map<String, String> parseClasses = new HashMap<>();
-
-    static {
-        parseClasses.put(Values.SLASHED_JAVA_LANG_BOOLEAN, "parseBoolean(Ljava/lang/String;)Z");
-        parseClasses.put(Values.SLASHED_JAVA_LANG_BYTE, "parseByte(Ljava/lang/String;)B");
-        parseClasses.put(Values.SLASHED_JAVA_LANG_SHORT, "parseShort(Ljava/lang/String;)S");
-        parseClasses.put(Values.SLASHED_JAVA_LANG_INTEGER, "parseInt(Ljava/lang/String;)I");
-        parseClasses.put(Values.SLASHED_JAVA_LANG_LONG, "parseLong(Ljava/lang/String;)J");
-        parseClasses.put(Values.SLASHED_JAVA_LANG_FLOAT, "parseFloat(Ljava/lang/String;)F");
-        parseClasses.put(Values.SLASHED_JAVA_LANG_DOUBLE, "parseDouble(Ljava/lang/String;)D");
-    }
 
     private BugReporter bugReporter;
     private State state;
     private String boxClass;
     private BitSet ternaryPCs;
+
+    static {
+        addBoxClass(boxClasses, Values.SLASHED_JAVA_LANG_BOOLEAN, "boolean", Values.SIG_PRIMITIVE_BOOLEAN);
+        addBoxClass(boxClasses, Values.SLASHED_JAVA_LANG_CHARACTER, "char", Values.SIG_PRIMITIVE_CHAR);
+        addBoxClass(boxClasses, Values.SLASHED_JAVA_LANG_BYTE, "byte", Values.SIG_PRIMITIVE_BYTE);
+        addBoxClass(boxClasses, Values.SLASHED_JAVA_LANG_SHORT, "short", Values.SIG_PRIMITIVE_SHORT);
+        addBoxClass(boxClasses, Values.SLASHED_JAVA_LANG_INTEGER, "int", Values.SIG_PRIMITIVE_INT);
+        addBoxClass(boxClasses, Values.SLASHED_JAVA_LANG_LONG, "long", Values.SIG_PRIMITIVE_LONG);
+        addBoxClass(boxClasses, Values.SLASHED_JAVA_LANG_FLOAT, "float", Values.SIG_PRIMITIVE_FLOAT);
+        addBoxClass(boxClasses, Values.SLASHED_JAVA_LANG_DOUBLE, "double", Values.SIG_PRIMITIVE_DOUBLE);
+    }
+
+    private static void addBoxClass(Map<String, BoxParms> map, String slashedClass, String primitiveName, String primitiveSig) {
+        map.put(slashedClass, new BoxParms(
+                new SignatureBuilder().withMethodName(primitiveName + "Value").withReturnType(primitiveSig).toString(),
+                new SignatureBuilder().withParamTypes(primitiveSig).toString(),
+                new SignatureBuilder().withParamTypes(primitiveSig).withReturnType(slashedClass).toString()
+        ));
+    }
+
+    static {
+        addParseClass(parseClasses, Values.SLASHED_JAVA_LANG_BOOLEAN, "boolean", Values.SIG_PRIMITIVE_BOOLEAN);
+        addParseClass(parseClasses, Values.SLASHED_JAVA_LANG_CHARACTER, "char", Values.SIG_PRIMITIVE_CHAR);
+        addParseClass(parseClasses, Values.SLASHED_JAVA_LANG_BYTE, "byte", Values.SIG_PRIMITIVE_BYTE);
+        addParseClass(parseClasses, Values.SLASHED_JAVA_LANG_SHORT, "short", Values.SIG_PRIMITIVE_SHORT);
+        addParseClass(parseClasses, Values.SLASHED_JAVA_LANG_INTEGER, "int", Values.SIG_PRIMITIVE_INT);
+        addParseClass(parseClasses, Values.SLASHED_JAVA_LANG_LONG, "long", Values.SIG_PRIMITIVE_LONG);
+        addParseClass(parseClasses, Values.SLASHED_JAVA_LANG_FLOAT, "float", Values.SIG_PRIMITIVE_DOUBLE);
+        addParseClass(parseClasses, Values.SLASHED_JAVA_LANG_DOUBLE, "double", Values.SIG_PRIMITIVE_DOUBLE);
+    }
+
+    private static void addParseClass(Map<String, String> map, String slashedClass, String primitiveName, String primitiveSig) {
+        map.put(slashedClass, new SignatureBuilder()
+            .withMethodName("parse" + Character.toUpperCase(primitiveName.charAt(0)) + primitiveName.substring(1))
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
+            .withReturnType(primitiveSig).toString()
+        );
+    }
 
     /**
      * constructs a NAB detector given the reporter to report bugs on
@@ -123,7 +141,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                     if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
                         bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_UNBOX.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
-                    } else if (getSigConstantOperand().startsWith("()") && getNameConstantOperand().endsWith("Value")) {
+                    } else if (getSigConstantOperand().startsWith(new SignatureBuilder().withoutReturnType().toString()) && getNameConstantOperand().endsWith("Value")) {
                         bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_CAST.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
                     }
@@ -157,7 +175,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
 
             case SEEN_ICONST:
                 if ((seen == INVOKESTATIC) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())
-                        && "(Z)Ljava/lang/Boolean;".equals(getSigConstantOperand())) {
+                        && new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_BOOLEAN).withReturnType(Values.SLASHED_JAVA_LANG_BOOLEAN).toString().equals(getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this));
                 }
@@ -167,7 +185,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
 
             case SEEN_GETSTATIC:
                 if ((seen == INVOKEVIRTUAL) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand()) && "booleanValue".equals(getNameConstantOperand())
-                        && "()Z".equals(getSigConstantOperand())) {
+                        && SignatureBuilder.SIG_VOID_TO_BOOLEAN.equals(getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this));
                 }
@@ -198,11 +216,11 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                 if (boxSigs != null) {
                     if ("valueOf".equals(getNameConstantOperand())) {
                         String sig = getSigConstantOperand();
-                        if (sig.startsWith("(Ljava/lang/String;)")) {
-                            if (!"java/lang/Boolean".equals(boxClass) || (getClassContext().getJavaClass().getMajor() >= Constants.MAJOR_1_5)) {
+                        if (sig.startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withoutReturnType().toString())) {
+                            if (!Values.SLASHED_JAVA_LANG_BOOLEAN.equals(boxClass) || (getClassContext().getJavaClass().getMajor() >= Constants.MAJOR_1_5)) {
                                 state = State.SEEN_VALUEOFSTRING;
                             }
-                        } else if (!sig.startsWith("(Ljava/lang/String;")) {
+                        } else {
                             state = State.SEEN_VALUEOFPRIMITIVE;
                         }
                     } else {

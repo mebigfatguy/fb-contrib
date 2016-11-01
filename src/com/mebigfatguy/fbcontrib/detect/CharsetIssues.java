@@ -32,6 +32,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.PublicAPI;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -61,50 +62,52 @@ public class CharsetIssues extends BytecodeScanningDetector {
      */
     static {
         Map<FQMethod, Integer> replaceable = new HashMap<>(8);
-        replaceable.put(new FQMethod("java/io/InputStreamReader", "<init>", "(Ljava/io/InputStream;Ljava/lang/String;)V"), Values.ZERO);
-        replaceable.put(new FQMethod("java/io/OutputStreamWriter", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;)V"), Values.ZERO);
-        replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "<init>", "([BLjava/lang/String;)V"), Values.ZERO);
-        replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "<init>", "([BIILjava/lang/String;)V"), Values.ZERO);
-        replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "getBytes", "(Ljava/lang/String;)[B"), Values.ZERO);
-        replaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/io/File;Ljava/lang/String;Ljava/util/Locale;)V"), Values.ONE);
+        replaceable.put(new FQMethod("java/io/InputStreamReader", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/InputStream", Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        replaceable.put(new FQMethod("java/io/OutputStreamWriter", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/OutputStream", Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE, Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        replaceable.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "getBytes", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).toString()), Values.ZERO);
+        replaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/File", Values.SLASHED_JAVA_LANG_STRING, "java/util/Locale").toString()), Values.ONE);
 
         REPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(replaceable);
 
+        String twoStringsToVoid = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING).toString();
+        String twoStringsToString = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
+        String fileAndStringToVoid = new SignatureBuilder().withParamTypes("java/io/File", Values.SLASHED_JAVA_LANG_STRING).toString();
+        String stringToCharset = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/nio/charset/Charset").toString();
         Map<FQMethod, Integer> unreplaceable = new HashMap<>(32);
-        unreplaceable.put(new FQMethod("java/net/URLEncoder", "encode", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/net/URLDecoder", "decode", "(Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/io/ByteArrayOutputStream", "toString", "(Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/io/PrintStream", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/io/PrintStream", "<init>", "(Ljava/io/File;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/io/PrintStream", "<init>", "(Ljava/io/OutputStream;BLjava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/io/PrintStream", "toCharset", "(Ljava/lang/String;)Ljava/nio/charset/Charset;"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/io/PrintWriter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/io/PrintWriter", "<init>", "(Ljava/io/File;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/io/PrintWriter", "toCharset", "(Ljava/lang/String;)Ljava/nio/charset/Charset;"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/lang/StringCoding", "decode", "(Ljava/lang/String;[BII)[C"), Values.THREE);
-        unreplaceable.put(new FQMethod("java/lang/StringCoding", "encode", "(Ljava/lang/String;[CII)[B"), Values.THREE);
-        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/io/File;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;Ljava/util/Locale;)V"), Values.ONE);
-        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"), Values.ONE);
-        unreplaceable.put(new FQMethod("java/util/Formatter", "<init>", "(Ljava/lang/String;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/Formatter", "toCharset", "(Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/logging/Handler", "setEncoding", "(Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/logging/MemoryHandler", "setEncoding", "(Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/logging/StreamHandler", "setEncoding", "(Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/Scanner", "<init>", "(Ljava/io/File;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/Scanner", "<init>", "(Ljava/io/InputStream;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/Scanner", "<init>", "(Ljava/nio/file/Path;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/Scanner", "<init>", "(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/lang/StringCoding", "decode", "(Ljava/lang/String;[BII)[C"), Values.THREE);
-        unreplaceable.put(new FQMethod("java/lang/StringCoding", "encode", "(Ljava/lang/String;[CII)[B"), Values.THREE);
-        unreplaceable.put(new FQMethod("javax/servlet/ServletResponse", "setCharacterEncoding", "(Ljava/lang/String;)V"), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/beans/XMLEncoder", "<init>", "(Ljava/io/OutputStream;Ljava/lang/String;ZI)V"), Values.TWO);
+        unreplaceable.put(new FQMethod("java/net/URLEncoder", "encode", twoStringsToString), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/net/URLDecoder", "decode", twoStringsToString), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/ByteArrayOutputStream", "toString", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintStream", Values.CONSTRUCTOR, twoStringsToVoid), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintStream", Values.CONSTRUCTOR, fileAndStringToVoid), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintStream", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/OutputStream", Values.SIG_PRIMITIVE_BYTE, Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintStream", "toCharset", stringToCharset), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintWriter", Values.CONSTRUCTOR, twoStringsToVoid), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintWriter", Values.CONSTRUCTOR, fileAndStringToVoid), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/io/PrintWriter", "toCharset", stringToCharset), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/lang/StringCoding", "decode", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_CHAR).toString()), Values.THREE);
+        unreplaceable.put(new FQMethod("java/lang/StringCoding", "encode", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).toString()), Values.THREE);
+        unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, fileAndStringToVoid), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/OutputStream", Values.SLASHED_JAVA_LANG_STRING, "java/util/Locale").toString()), Values.ONE);
+        unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/OutputStream", Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING, "java/util/Locale").toString()), Values.ONE);
+        unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, twoStringsToVoid), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Formatter", "toCharset", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/logging/Handler", "setEncoding", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/logging/MemoryHandler", "setEncoding", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/logging/StreamHandler", "setEncoding", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Scanner", Values.CONSTRUCTOR, fileAndStringToVoid), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Scanner", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/InputStream", Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Scanner", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/nio/file/Path", Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/util/Scanner", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/nio/channels/ReadableByteChannel", Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        unreplaceable.put(new FQMethod("javax/servlet/ServletResponse", "setCharacterEncoding", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        unreplaceable.put(new FQMethod("java/beans/XMLEncoder", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/OutputStream", Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN, Values.SIG_PRIMITIVE_INT).toString()), Values.TWO);
         unreplaceable.put(
-                new FQMethod("java/nio/channels/Channels", "newReader", "(Ljava/nio/channels/ReadableByteChannel;Ljava/lang/String;)Ljava/io/Reader;"),
+                new FQMethod("java/nio/channels/Channels", "newReader", new SignatureBuilder().withParamTypes("java/nio/channels/ReadableByteChannel", Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/io/Reader").toString()),
                 Values.ZERO);
         unreplaceable.put(
-                new FQMethod("java/nio/channels/Channels", "newWriter", "(Ljava/nio/channels/WritableByteChannel;Ljava/lang/String;)Ljava/io/Writer;"),
+                new FQMethod("java/nio/channels/Channels", "newWriter", new SignatureBuilder().withParamTypes("java/nio/channels/WritableByteChannel", Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/io/Writer").toString()),
                 Values.ZERO);
 
         UNREPLACEABLE_ENCODING_METHODS = Collections.unmodifiableMap(unreplaceable);

@@ -66,7 +66,7 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
 
         try {
-            collectionClass = Repository.lookupClass("java/util/Collection");
+            collectionClass = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_COLLECTION);
             mapClass = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_MAP);
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);

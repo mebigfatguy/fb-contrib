@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -109,7 +110,7 @@ public class ParallelLists extends BytecodeScanningDetector {
                 String methodName = getNameConstantOperand();
                 String methodSig = getSigConstantOperand();
 
-                if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "get".equals(methodName) && "(I)Ljava/lang/Object;".equals(methodSig)) {
+                if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "get".equals(methodName) && SignatureBuilder.SIG_INT_TO_OBJECT.equals(methodSig)) {
                     checkParms();
                 }
             } else if ((seen >= IFEQ) && (seen <= RETURN)) {

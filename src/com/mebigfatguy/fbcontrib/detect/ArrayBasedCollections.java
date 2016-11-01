@@ -24,6 +24,7 @@ import java.util.List;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -130,7 +131,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
         List<BugInstance> bugList = null;
 
         if (Values.SLASHED_JAVA_UTIL_MAP.equals(className) && "put".equals(methodName)
-                && "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(methodSig)) {
+                && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(methodSig)) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item itm = stack.getStackItem(1);
                 String pushedSig = itm.getSignature();
@@ -139,7 +140,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
                     found = true;
                 }
             }
-        } else if (Values.SLASHED_JAVA_UTIL_SET.equals(className) && "add".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)) {
+        } else if (Values.SLASHED_JAVA_UTIL_SET.equals(className) && "add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(methodSig)) {
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 String pushedSig = itm.getSignature();
@@ -148,7 +149,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
                     found = true;
                 }
             }
-        } else if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "contains".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)
+        } else if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "contains".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(methodSig)
                 && (stack.getStackDepth() > 0)) {
             OpcodeStack.Item itm = stack.getStackItem(0);
             String pushedSig = itm.getSignature();

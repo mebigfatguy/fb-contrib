@@ -53,7 +53,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 
     static {
         try {
-            collectionClass = Repository.lookupClass("java/util/Collection");
+            collectionClass = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_COLLECTION);
         } catch (ClassNotFoundException cnfe) {
             collectionClass = null;
         }

@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -169,10 +170,10 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
-                if ((Values.SLASHED_JAVA_UTIL_MAP.equals(clsName)) && ("put".equals(methodName))
-                        && ("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(signature))) {
+                if (Values.SLASHED_JAVA_UTIL_MAP.equals(clsName) && "put".equals(methodName)
+                        && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)) {
                     bug = isEnum(1) && !isEnumCollection(2) && !alreadyReported(2);
-                } else if ((Values.SLASHED_JAVA_UTIL_SET.equals(clsName)) && ("add".equals(methodName)) && ("(Ljava/lang/Object;)Z".equals(signature))) {
+                } else if (Values.SLASHED_JAVA_UTIL_SET.equals(clsName) && "add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature)) {
                     bug = isEnum(0) && !isEnumCollection(1) && !alreadyReported(1);
                 }
 

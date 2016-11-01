@@ -40,6 +40,7 @@ import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -80,26 +81,27 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         }
     }
 
-    private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(new QMethod("entrySet", "()Ljava/util/Set;"),
-            new QMethod("keySet", "()Ljava/util/Set;"), new QMethod("values", "()Ljava/util/Collection;"));
+    private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(new QMethod("entrySet", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_SET).toString()),
+            new QMethod("keySet", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_SET).toString()),
+            new QMethod("values", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_COLLECTION).toString()));
 
     private static final Map<QMethod, Integer> modifyingMethods;
 
     static {
         Map<QMethod, Integer> mm = new HashMap<>();
-        mm.put(new QMethod("add", "(Ljava/lang/Object;)Z"), Values.ONE);
-        mm.put(new QMethod("addAll", "(Ljava/util/Collection;)Z"), Values.ONE);
-        mm.put(new QMethod("addAll", "(ILjava/util/Collection;)Z"), Values.TWO);
-        mm.put(new QMethod("clear", "()V"), Values.ZERO);
-        mm.put(new QMethod("remove", "(I)Ljava/lang/Object;"), Values.ONE);
-        mm.put(new QMethod("removeAll", "(Ljava/util/Collection;)Z"), Values.ONE);
-        mm.put(new QMethod("retainAll", "(Ljava/util/Collection;)Z"), Values.ONE);
+        mm.put(new QMethod("add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), Values.ONE);
+        mm.put(new QMethod("addAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN), Values.ONE);
+        mm.put(new QMethod("addAll", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION).withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.TWO);
+        mm.put(new QMethod("clear", SignatureBuilder.SIG_VOID_TO_VOID), Values.ZERO);
+        mm.put(new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT), Values.ONE);
+        mm.put(new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN), Values.ONE);
+        mm.put(new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN), Values.ONE);
         modifyingMethods = Collections.<QMethod, Integer> unmodifiableMap(mm);
     }
 
-    private static final QMethod ITERATOR = new QMethod("iterator", "()Ljava/util/Iterator;");
-    private static final QMethod REMOVE = new QMethod("remove", "(Ljava/lang/Object;)Z");
-    private static final QMethod HASNEXT = new QMethod("hasNext", "()Z");
+    private static final QMethod ITERATOR = new QMethod("iterator", new SignatureBuilder().withReturnType("java/util/Iterator").toString());
+    private static final QMethod REMOVE = new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final QMethod HASNEXT = new QMethod("hasNext", SignatureBuilder.SIG_VOID_TO_BOOLEAN);
 
     private List<GroupPair> collectionGroups;
     private Map<Integer, Integer> groupToIterator;
@@ -113,7 +115,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
      *            the sync of bug reports
      */
     public DeletingWhileIterating(BugReporter bugReporter) {
-        super(bugReporter, "java/util/Collection");
+        super(bugReporter, Values.SLASHED_JAVA_UTIL_COLLECTION);
     }
 
     /**

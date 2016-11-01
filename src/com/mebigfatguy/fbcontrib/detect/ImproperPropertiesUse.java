@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -100,7 +101,7 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
                     String methodName = getNameConstantOperand();
                     if ("put".equals(methodName)) {
                         String sig = getSigConstantOperand();
-                        if ("(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(sig) && (stack.getStackDepth() >= 3)) {
+                        if (SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(sig) && (stack.getStackDepth() >= 3)) {
                             OpcodeStack.Item valueItem = stack.getStackItem(0);
                             String valueSig = valueItem.getSignature();
                             if (Values.SIG_JAVA_LANG_STRING.equals(valueSig)) {

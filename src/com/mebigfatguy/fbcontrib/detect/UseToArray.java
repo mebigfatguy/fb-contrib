@@ -25,7 +25,9 @@ import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -48,7 +50,7 @@ public class UseToArray extends AbstractCollectionScanningDetector {
      *            the sync of bug reports
      */
     public UseToArray(BugReporter bugReporter) {
-        super(bugReporter, "java/util/Collection");
+        super(bugReporter, Values.SLASHED_JAVA_UTIL_COLLECTION);
     }
 
     /**
@@ -87,7 +89,7 @@ public class UseToArray extends AbstractCollectionScanningDetector {
             if (seen == INVOKEINTERFACE) {
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
-                if ("size".equals(methodName) && "()I".equals(signature)) {
+                if ("size".equals(methodName) && SignatureBuilder.SIG_VOID_TO_INT.equals(signature)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         reg = isLocalCollection(itm);
@@ -95,7 +97,7 @@ public class UseToArray extends AbstractCollectionScanningDetector {
                             sawAlias = true;
                         }
                     }
-                } else if ("get".equals(methodName) && "(I)Ljava/lang/Object;".equals(signature)) {
+                } else if ("get".equals(methodName) && SignatureBuilder.SIG_INT_TO_OBJECT.equals(signature)) {
                     if (stack.getStackDepth() > 1) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         reg = isLocalCollection(itm);

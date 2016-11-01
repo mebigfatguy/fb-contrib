@@ -40,6 +40,7 @@ import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -475,7 +476,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         String name = getNameConstantOperand();
 
         // this is kind of a wart. there should be a more seamless way to check this
-        if ("wasNull".equals(getNameConstantOperand()) && "()Z".equals(signature)) {
+        if ("wasNull".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_BOOLEAN.equals(signature)) {
             dontReport = true;
         }
 

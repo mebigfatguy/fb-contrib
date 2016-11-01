@@ -22,7 +22,9 @@ import java.util.Set;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -32,13 +34,16 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
  * looks for method calls to collection classes where the method is not defined by the Collections interface, and an equivalent method exists in the interface.
  */
 public class NonCollectionMethodUse extends BytecodeScanningDetector {
-    private static final Set<FQMethod> oldMethods = UnmodifiableSet.create(new FQMethod("java/util/Hashtable", "contains", "(java/lang/Object)Z"),
-            new FQMethod("java/util/Hashtable", "elements", "()Ljava/util/Enumeration;"),
-            new FQMethod("java/util/Hashtable", "keys", "()Ljava/util/Enumeration;"), new FQMethod("java/util/Vector", "addElement", "(Ljava/lang/Object;)V"),
-            new FQMethod("java/util/Vector", "elementAt", "(I)Ljava/lang/Object;"),
-            new FQMethod("java/util/Vector", "insertElementAt", "(Ljava/lang/Object;I)V"), new FQMethod("java/util/Vector", "removeAllElements", "()V"),
-            new FQMethod("java/util/Vector", "removeElement", "(Ljava/lang/Object;)Z"), new FQMethod("java/util/Vector", "removeElementAt", "(I)V"),
-            new FQMethod("java/util/Vector", "setElementAt", "(Ljava/lang/Object;I)V"));
+    private static final Set<FQMethod> oldMethods = UnmodifiableSet.create(new FQMethod("java/util/Hashtable", "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
+            new FQMethod("java/util/Hashtable", "elements", new SignatureBuilder().withReturnType("java/util/Enumeration").toString()),
+            new FQMethod("java/util/Hashtable", "keys", new SignatureBuilder().withReturnType("java/util/Enumeration").toString()),
+            new FQMethod("java/util/Vector", "addElement", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).toString()),
+            new FQMethod("java/util/Vector", "elementAt", SignatureBuilder.SIG_INT_TO_OBJECT),
+            new FQMethod("java/util/Vector", "insertElementAt", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SIG_PRIMITIVE_INT).toString()),
+            new FQMethod("java/util/Vector", "removeAllElements", SignatureBuilder.SIG_VOID_TO_VOID),
+            new FQMethod("java/util/Vector", "removeElement", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
+            new FQMethod("java/util/Vector", "removeElementAt", SignatureBuilder.SIG_INT_TO_VOID),
+            new FQMethod("java/util/Vector", "setElementAt", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SIG_PRIMITIVE_INT).toString()));
 
     private BugReporter bugReporter;
 

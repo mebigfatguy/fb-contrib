@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -35,6 +36,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * serializable classes.
  */
 public class PossibleIncompleteSerialization implements Detector {
+
+    public static final String SIG_OBJECT_OUTPUT_STREAM_TO_VOID = new SignatureBuilder().withParamTypes("java/io/ObjectOutputStream").toString();
+    public static final String SIG_OBJECT_OUTPUT_TO_VOID = new SignatureBuilder().withParamTypes("java/io/ObjectOutput").toString();
+
     private final BugReporter bugReporter;
 
     /**
@@ -74,7 +79,7 @@ public class PossibleIncompleteSerialization implements Detector {
      *
      * @param cls
      *            the class to check for interfaces
-     * 
+     *
      * @return if the class implements Serializable or Externalizable
      *
      * @throws ClassNotFoundException
@@ -121,10 +126,10 @@ public class PossibleIncompleteSerialization implements Detector {
             if (!m.isStatic()) {
                 String methodName = m.getName();
                 String methodSig = m.getSignature();
-                if ("writeObject".equals(methodName) && "(Ljava/io/ObjectOutputStream;)V".equals(methodSig)) {
+                if ("writeObject".equals(methodName) && SIG_OBJECT_OUTPUT_STREAM_TO_VOID.equals(methodSig)) {
                     return true;
                 }
-                if ("writeExternal".equals(methodName) && "(Ljava/io/ObjectOutput;)V".equals(methodSig)) {
+                if ("writeExternal".equals(methodName) && SIG_OBJECT_OUTPUT_TO_VOID.equals(methodSig)) {
                     return true;
                 }
             }

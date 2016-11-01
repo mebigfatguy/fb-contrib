@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -61,23 +62,26 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     }
 
     static {
+        String stringToInt = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_PRIMITIVE_INT).toString();
+        String stringAndIntToInt = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_PRIMITIVE_INT).toString();
+
         Map<FQMethod, Object> methodsMap = new HashMap<>();
         // The values are where the parameter will be on the stack - For
         // example, a value of 0 means the String literal to check
         // was the last parameter, and a stack offset of 2 means it was the 3rd
         // to last.
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", "(Ljava/lang/String;)I"), Values.ZERO);
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", "(Ljava/lang/String;I)I"), Values.ONE);
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", "(Ljava/lang/String;)I"), Values.ZERO);
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", "(Ljava/lang/String;I)I"), Values.ONE);
-        methodsMap.put(new FQMethod("java/io/PrintStream", "print", "(Ljava/lang/String;)V"), Values.ZERO);
-        methodsMap.put(new FQMethod("java/io/PrintStream", "println", "(Ljava/lang/String;)V"), Values.ZERO);
-        methodsMap.put(new FQMethod("java/io/StringWriter", "write", "(Ljava/lang/String;)V"), Values.ZERO);
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUFFER, "append", "(Ljava/lang/String;)Ljava/lang/StringBuffer;"), Values.ZERO);
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUILDER, "append", "(Ljava/lang/String;)Ljava/lang/StringBuilder;"), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", stringToInt), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", stringAndIntToInt), Values.ONE);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", stringToInt), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", stringAndIntToInt), Values.ONE);
+        methodsMap.put(new FQMethod("java/io/PrintStream", "print", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        methodsMap.put(new FQMethod("java/io/PrintStream", "println", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        methodsMap.put(new FQMethod("java/io/StringWriter", "write", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUFFER, "append", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuffer").toString()), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUILDER, "append", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuilder").toString()), Values.ZERO);
 
         // same thing as above, except now with two params
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace", "(Ljava/lang/CharSequence;Ljava/lang/CharSequence;)Ljava/lang/String;"),
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace", new SignatureBuilder().withParamTypes("java/lang/CharSequence", "java/lang/CharSequence").withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString()),
                 new IntPair(0, 1));
 
         characterMethods = Collections.unmodifiableMap(methodsMap);

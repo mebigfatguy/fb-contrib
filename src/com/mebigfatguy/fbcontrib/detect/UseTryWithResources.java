@@ -30,7 +30,9 @@ import org.apache.bcel.classfile.JavaClass;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -62,7 +64,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     public UseTryWithResources(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         try {
-            throwableClass = Repository.lookupClass("java/lang/Throwable");
+            throwableClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_THROWABLE);
             autoCloseableClass = Repository.lookupClass("java/lang/AutoCloseable");
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
@@ -188,7 +190,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterLoad(int seen, int pc) throws ClassNotFoundException {
-        if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && "close".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())
+        if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && "close".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).implementationOf(autoCloseableClass)) {
             TryBlock tb = findEnclosingFinally(pc);
             if ((tb != null) && (stack.getStackDepth() > 0)) {

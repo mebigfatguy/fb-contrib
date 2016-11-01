@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -163,7 +164,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
                         return;
                     }
                 }
-                if (Values.SLASHED_JAVA_LANG_EXCEPTION.equals(clsName) && "(Ljava/lang/Throwable;)V".equals(getSigConstantOperand())) {
+                if (Values.SLASHED_JAVA_LANG_EXCEPTION.equals(clsName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_THROWABLE).toString().equals(getSigConstantOperand())) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }

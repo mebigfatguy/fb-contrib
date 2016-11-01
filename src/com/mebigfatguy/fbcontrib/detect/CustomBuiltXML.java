@@ -24,6 +24,7 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Code;
 
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -133,7 +134,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if (Values.isAppendableStringClassName(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig) && (stack.getStackDepth() > 0)) {
+                    if (Values.CONSTRUCTOR.equals(methodName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(clsName).toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         strCon = (String) itm.getConstant();
                     }
@@ -143,7 +144,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if (Values.isAppendableStringClassName(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if ("append".equals(methodName) && ("(Ljava/lang/String;)L" + clsName + ';').equals(methodSig) && (stack.getStackDepth() > 0)) {
+                    if ("append".equals(methodName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(clsName).toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         strCon = (String) itm.getConstant();
                     }

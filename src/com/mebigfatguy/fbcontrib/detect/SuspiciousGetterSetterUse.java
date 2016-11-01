@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -189,10 +190,11 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
             return true;
         }
         String sig = getSigConstantOperand();
-        if (!sig.startsWith("()")) {
+        String noParams = new SignatureBuilder().withoutReturnType().toString();
+        if (!sig.startsWith(noParams)) {
             return true;
         }
-        propType = sig.substring("()".length());
+        propType = sig.substring(noParams.length());
         if (Values.SIG_VOID.equals(propType)) {
             return true;
         }

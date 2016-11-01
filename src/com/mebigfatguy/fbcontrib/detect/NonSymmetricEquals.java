@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -85,7 +86,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
         String name = m.getName();
         String signature = m.getSignature();
 
-        if ("equals".equals(name) && "(Ljava/lang/Object;)Z".equals(signature) && prescreen(m)) {
+        if ("equals".equals(name) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature) && prescreen(m)) {
             stack.resetForMethodEntry(this);
             super.visitCode(obj);
         }

@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -176,7 +177,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
             }
 
             if ((seen == INVOKEINTERFACE) && Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand()) && "size".equals(getNameConstantOperand())
-                    && "()I".equals(getSigConstantOperand())) {
+                    && SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand())) {
                 sawListSize = true;
             }
         } finally {
@@ -258,7 +259,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
                             }
                         } else if (fl.getLoopRegLoaded()) {
                             boolean sawGet = ((seen == INVOKEINTERFACE) && Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())
-                                    && "get".equals(getNameConstantOperand()) && "(I)Ljava/lang/Object;".equals(getSigConstantOperand()));
+                                    && "get".equals(getNameConstantOperand()) && SignatureBuilder.SIG_INT_TO_OBJECT.equals(getSigConstantOperand()));
                             if (!sawGet) {
                                 it.remove();
                             } else {

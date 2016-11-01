@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -43,7 +44,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
 
     static {
         try {
-            collectionCls = Repository.lookupClass("java/util/Collection");
+            collectionCls = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_COLLECTION);
             setCls = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_SET);
             mapCls = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_MAP);
         } catch (ClassNotFoundException cnfe) {
@@ -112,7 +113,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
 
-                if ("add".equals(methodName) && "(Ljava/lang/Object;)Z".equals(signature) && isImplementationOf(clsName, setCls)) {
+                if ("add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature) && isImplementationOf(clsName, setCls)) {
                     if (stack.getStackDepth() > 1) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         JavaClass entryCls = item.getJavaClass();
@@ -121,7 +122,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
                                     .addMethod(this).addSourceLine(this));
                         }
                     }
-                } else if ("put".equals(methodName) && "(Ljava/lang/Object;LJava/lang/Object;)Ljava/lang/Object;".equals(signature)
+                } else if ("put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)
                         && isImplementationOf(clsName, setCls) && (stack.getStackDepth() > 2)) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     JavaClass entryCls = item.getJavaClass();

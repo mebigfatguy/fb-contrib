@@ -13,6 +13,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -68,7 +69,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
                         boolean fieldHasRuntimeAnnotation = fieldHasRuntimeVisibleAnnotation(f);
                         if (!fieldHasRuntimeAnnotation) {
                             /* only report one of these, so as not to flood the report */
-                            if (!hasMethodInHierarchy(cls, "toString", "()Ljava/lang/String;")) {
+                            if (!hasMethodInHierarchy(cls, "toString", SignatureBuilder.SIG_VOID_TO_STRING)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_TOSTRING.name(), LOW_PRIORITY).addClass(cls));
                                 heStatus = HEStatus.NOT_NEEDED;
                                 break;
@@ -78,7 +79,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
                                 if (fieldSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                                     if (!fieldSig.startsWith("Ljava")) {
                                         JavaClass fieldClass = Repository.lookupClass(fieldSig.substring(1, fieldSig.length() - 1));
-                                        if (!hasMethodInHierarchy(fieldClass, "equals", "(Ljava/lang/Object)Z")) {
+                                        if (!hasMethodInHierarchy(fieldClass, "equals", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN)) {
                                             heStatus = HEStatus.NOT_NEEDED;
                                         }
                                     } else if (!fieldSig.startsWith("Ljava/lang/") && !fieldSig.startsWith("Ljava/util/")) {
@@ -95,9 +96,9 @@ public class ImmatureClass extends BytecodeScanningDetector {
                 }
 
                 if (!clsHasRuntimeAnnotation && (heStatus == HEStatus.NEEDED)) {
-                    if (!hasMethodInHierarchy(cls, "equals", "(Ljava/lang/Object;)Z")) {
+                    if (!hasMethodInHierarchy(cls, "equals", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY).addClass(cls));
-                    } else if (!hasMethodInHierarchy(cls, "hashCode", "()I")) {
+                    } else if (!hasMethodInHierarchy(cls, "hashCode", SignatureBuilder.SIG_VOID_TO_INT)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_HASHCODE.name(), LOW_PRIORITY).addClass(cls));
                     }
                 }
@@ -118,7 +119,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if ((seen == INVOKEVIRTUAL) && "printStackTrace".equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+        if ((seen == INVOKEVIRTUAL) && "printStackTrace".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())) {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLine(this));
         }

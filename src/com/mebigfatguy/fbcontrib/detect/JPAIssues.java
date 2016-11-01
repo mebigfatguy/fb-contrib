@@ -38,6 +38,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -285,8 +286,8 @@ public class JPAIssues extends BytecodeScanningDetector {
         for (Method m : cls.getMethods()) {
             catalogFieldOrMethod(m);
 
-            if (("equals".equals(m.getName()) && "(Ljava/lang/Object;)Z".equals(m.getSignature()))
-                    || ("hashCode".equals(m.getName()) && "()I".equals(m.getSignature()))) {
+            if (("equals".equals(m.getName()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(m.getSignature()))
+                    || ("hashCode".equals(m.getName()) && SignatureBuilder.SIG_VOID_TO_INT.equals(m.getSignature()))) {
                 hasHCEquals = true;
             }
         }

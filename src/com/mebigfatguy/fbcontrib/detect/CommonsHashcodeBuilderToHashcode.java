@@ -19,6 +19,8 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
 
@@ -75,7 +77,7 @@ public class CommonsHashcodeBuilderToHashcode extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         if (seen == INVOKEVIRTUAL) {
             String methodName = getNameConstantOperand();
-            if ("hashCode".equals(methodName) && "()I".equals(getSigConstantOperand()) && (stack.getStackDepth() > 0)) {
+            if ("hashCode".equals(methodName) && SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand()) && (stack.getStackDepth() > 0)) {
                 String calledClass = stack.getStackItem(0).getSignature();
                 if (LANG3_HASH_CODE_BUILDER.equals(calledClass) || LANG_HASH_CODE_BUILDER.equals(calledClass)) {
                     bugReporter.reportBug(new BugInstance(this, "CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE", HIGH_PRIORITY).addClass(this).addMethod(this)

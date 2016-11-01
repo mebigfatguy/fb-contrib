@@ -28,6 +28,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -128,7 +129,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         String methodName = getNameConstantOperand();
                         if (Values.CONSTRUCTOR.equals(methodName)) {
                             String signature = getSigConstantOperand();
-                            if ("()V".equals(signature)) {
+                            if (SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {
                                 sawAlloc = true;
                             }
                         }
