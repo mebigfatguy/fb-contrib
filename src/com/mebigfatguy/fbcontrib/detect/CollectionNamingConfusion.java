@@ -63,7 +63,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
             mapInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_MAP);
             setInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_SET);
             listInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_LIST);
-            queueInterface = Repository.lookupClass("java/util/Queue");
+            queueInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_QUEUE);
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
             mapInterface = null;
@@ -141,7 +141,8 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
                 String clsName = SignatureUtils.stripSignature(signature);
                 JavaClass cls = Repository.lookupClass(clsName);
                 if ((cls.implementationOf(mapInterface) && !name.endsWith("map")) || (cls.implementationOf(setInterface) && !name.endsWith("set"))
-                        || (cls.implementationOf(listInterface) && !name.endsWith("list")) || (cls.implementationOf(queueInterface) && !name.endsWith("queue"))) {
+                        || (cls.implementationOf(listInterface) && !name.endsWith("list"))
+                        || (cls.implementationOf(queueInterface) && !name.endsWith("queue"))) {
                     return true;
                 }
             }
