@@ -27,8 +27,10 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -57,7 +59,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
      *            the sync of bug reports
      */
     public UseAddAll(BugReporter bugReporter) {
-        super(bugReporter, "java/util/Collection");
+        super(bugReporter, Values.SLASHED_JAVA_UTIL_COLLECTION);
     }
 
     /**
@@ -114,7 +116,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
             if (seen == INVOKEINTERFACE) {
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
-                if ("get".equals(methodName) && "(I)Ljava/lang/Object;".equals(signature)) {
+                if ("get".equals(methodName) && SignatureBuilder.SIG_INT_TO_OBJECT.equals(signature)) {
                     if (stack.getStackDepth() > 1) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         int reg = isLocalCollection(itm);
@@ -145,7 +147,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                             }
                         }
                     }
-                } else if ("add".equals(methodName) && "(Ljava/lang/Object;)Z".equals(signature) && (stack.getStackDepth() > 1)) {
+                } else if ("add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature) && (stack.getStackDepth() > 1)) {
                     OpcodeStack.Item colItem = stack.getStackItem(1);
                     OpcodeStack.Item valueItem = stack.getStackItem(0);
                     int reg = isLocalCollection(colItem);

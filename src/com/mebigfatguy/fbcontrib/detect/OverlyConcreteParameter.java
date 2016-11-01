@@ -43,6 +43,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -86,7 +87,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     public OverlyConcreteParameter(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         try {
-            objectClass = Repository.lookupClass("java/lang/Object");
+            objectClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_OBJECT);
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
             objectClass = null;
@@ -152,7 +153,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
             }
             if (!methodSignatureIsConstrained) {
                 String parms = methodSig.split("\\(|\\)")[1];
-                if (parms.indexOf(';') >= 0) {
+                if (parms.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR) >= 0) {
 
                     outer: for (JavaClass cls : constrainingClasses) {
                         Method[] methods = cls.getMethods();
@@ -351,7 +352,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
      * @return if it is a well known baked in method
      */
     private static boolean methodIsSpecial(String methodName, String methodSig) {
-        return ("readObject".equals(methodName) && "(Ljava/io/ObjectInputStream;)V".equals(methodSig));
+        return "readObject".equals(methodName) && new SignatureBuilder().withParamTypes("java/io/ObjectInputStream").toString().equals(methodSig);
     }
 
     /**

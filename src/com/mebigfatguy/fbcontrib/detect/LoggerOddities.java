@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -56,6 +57,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class LoggerOddities extends BytecodeScanningDetector {
 
     private static final Set<String> LOGGER_METHODS = UnmodifiableSet.create("trace", "debug", "info", "warn", "error", "fatal");
+    private static final String COMMONS_LOGGER = "org/apache/commons/logging/Log";
+    private static final String LOG4J_LOGGER = "org/apache/log4j/Logger";
+    private static final String SLF4J_LOGGER = "org/slf4j/Logger";
 
     private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
     private static final Pattern BAD_STRING_FORMAT_PATTERN = Pattern
@@ -78,7 +82,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
 
         try {
-            throwableClass = Repository.lookupClass("java/lang/Throwable");
+            throwableClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_THROWABLE);
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }
@@ -114,7 +118,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
         Method m = getMethod();
         if (Values.CONSTRUCTOR.equals(m.getName())) {
             for (String parmSig : SignatureUtils.getParameterSignatures(m.getSignature())) {
-                if ("Lorg/slf4j/Logger;".equals(parmSig) || "Lorg/apache/log4j/Logger;".equals(parmSig) || "Lorg/apache/commons/logging/Log;".equals(parmSig)) {
+                if (SignatureUtils.classToSignature(SLF4J_LOGGER).equals(parmSig) || SignatureUtils.classToSignature(LOG4J_LOGGER).equals(parmSig) || SignatureUtils.classToSignature(COMMONS_LOGGER).equals(parmSig)) {
                     bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                 }
             }
@@ -258,7 +262,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
         String callingClsName = getClassConstantOperand();
         if (callingClsName.endsWith("Log") || (callingClsName.endsWith("Logger"))) {
             String sig = getSigConstantOperand();
-            if ("(Ljava/lang/String;Ljava/lang/Throwable;)V".equals(sig) || "(Ljava/lang/Object;Ljava/lang/Throwable;)V".equals(sig)) {
+            if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_THROWABLE).toString().equals(sig)
+                    || new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_THROWABLE).toString().equals(sig)) {
                 if (stack.getStackDepth() >= 2) {
                     OpcodeStack.Item exItem = stack.getStackItem(0);
                     OpcodeStack.Item msgItem = stack.getStackItem(1);
@@ -269,7 +274,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                 new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
-            } else if ("(Ljava/lang/Object;)V".equals(sig)) {
+            } else if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(sig)) {
                 if (stack.getStackDepth() > 0) {
                     final JavaClass clazz = stack.getStackItem(0).getJavaClass();
                     if ((clazz != null) && clazz.instanceOf(throwableClass)) {
@@ -277,11 +282,12 @@ public class LoggerOddities extends BytecodeScanningDetector {
                                 .addMethod(this).addSourceLine(this));
                     }
                 }
-            } else if ("org/slf4j/Logger".equals(callingClsName)) {
+            } else if (SLF4J_LOGGER.equals(callingClsName)) {
                 String signature = getSigConstantOperand();
-                if ("(Ljava/lang/String;)V".equals(signature) || "(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature)
-                        || "(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V".equals(signature)
-                        || "(Ljava/lang/String;[Ljava/lang/Object;)V".equals(signature)) {
+                if (SignatureBuilder.SIG_STRING_TO_VOID.equals(signature)
+                        || new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)
+                        || new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)
+                        || new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)) {
                     int numParms = SignatureUtils.getNumParameters(signature);
                     if (stack.getStackDepth() >= numParms) {
                         OpcodeStack.Item formatItem = stack.getStackItem(numParms - 1);
@@ -376,31 +382,19 @@ public class LoggerOddities extends BytecodeScanningDetector {
         if ("org/slf4j/LoggerFactory".equals(callingClsName) && "getLogger".equals(mthName)) {
             String signature = getSigConstantOperand();
 
-            if ("(Ljava/lang/Class;)Lorg/slf4j/Logger;".equals(signature)) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
-                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.CLASS_NAME)) {
-                        loggingClassName = uv.getValue();
-                    }
-                }
-            } else if ("(Ljava/lang/String;)Lorg/slf4j/Logger;".equals(signature) && (stack.getStackDepth() > 0)) {
+            if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(SLF4J_LOGGER).toString().equals(signature)) {
+                loggingClassName = getLoggingClassNameFromStackValue();
+            } else if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(SLF4J_LOGGER).toString().equals(signature) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 loggingClassName = (String) item.getConstant();
                 loggingPriority = LOW_PRIORITY;
             }
-        } else if ("org/apache/log4j/Logger".equals(callingClsName) && "getLogger".equals(mthName)) {
+        } else if (LOG4J_LOGGER.equals(callingClsName) && "getLogger".equals(mthName)) {
             String signature = getSigConstantOperand();
 
-            if ("(Ljava/lang/Class;)Lorg/apache/log4j/Logger;".equals(signature)) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
-                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.CLASS_NAME)) {
-                        loggingClassName = uv.getValue();
-                    }
-                }
-            } else if ("(Ljava/lang/String;)Lorg/apache/log4j/Logger;".equals(signature)) {
+            if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(LOG4J_LOGGER).toString().equals(signature)) {
+                loggingClassName = getLoggingClassNameFromStackValue();
+            } else if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(LOG4J_LOGGER).toString().equals(signature)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     loggingClassName = (String) item.getConstant();
@@ -418,7 +412,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if ("(Ljava/lang/String;Lorg/apache/log4j/spi/LoggerFactory;)Lorg/apache/log4j/Logger;".equals(signature) && (stack.getStackDepth() > 1)) {
+            } else if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, "org/apache/log4j/spi/LoggerFactory").withReturnType(LOG4J_LOGGER).toString().equals(signature) && (stack.getStackDepth() > 1)) {
                 OpcodeStack.Item item = stack.getStackItem(1);
                 loggingClassName = (String) item.getConstant();
                 loggingPriority = LOW_PRIORITY;
@@ -426,15 +420,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
         } else if ("org/apache/commons/logging/LogFactory".equals(callingClsName) && "getLog".equals(mthName)) {
             String signature = getSigConstantOperand();
 
-            if ("(Ljava/lang/Class;)Lorg/apache/commons/logging/Log;".equals(signature)) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
-                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.CLASS_NAME)) {
-                        loggingClassName = uv.getValue();
-                    }
-                }
-            } else if ("(Ljava/lang/String;)Lorg/apache/commons/logging/Log;".equals(signature) && (stack.getStackDepth() > 0)) {
+            if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(COMMONS_LOGGER).toString().equals(signature)) {
+                loggingClassName = getLoggingClassNameFromStackValue();
+            } else if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(COMMONS_LOGGER).toString().equals(signature) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 loggingClassName = (String) item.getConstant();
                 loggingPriority = LOW_PRIORITY;
@@ -448,6 +436,17 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         .addSourceLine(this).addString(loggingClassName).addString(nameOfThisClass));
             }
         }
+    }
+
+    private String getLoggingClassNameFromStackValue() {
+        if (stack.getStackDepth() > 0) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
+            if ((uv != null) && (uv.getType() == LOUserValue.LOType.CLASS_NAME)) {
+                return uv.getValue();
+            }
+        }
+        return null;
     }
 
     /**
@@ -478,10 +477,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
      */
     @SuppressWarnings("unchecked")
     private int getSLF4JParmCount(String signature) {
-        if ("(Ljava/lang/String;Ljava/lang/Object;)V".equals(signature)) {
+        if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)) {
             return 1;
         }
-        if ("(Ljava/lang/String;Ljava/lang/Object;Ljava/lang/Object;)V".equals(signature)) {
+        if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)) {
             return 2;
         }
 

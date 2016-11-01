@@ -32,8 +32,10 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -47,12 +49,12 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
     private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
             //@formatter:off
-            "<init>()V",
-            "toString()Ljava/lang/String;",
-            "hashCode()I",
+            new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
+            new SignatureBuilder().withMethodName("toString").withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString(),
+            new SignatureBuilder().withMethodName("hashCode").withReturnType(Values.SIG_PRIMITIVE_INT).toString(),
             "clone()",
             "values()",
-            "main([Ljava/lang/String;)V"
+            new SignatureBuilder().withMethodName("main").withParamTypes(Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_STRING).toString()
             //@formatter:on
     );
 

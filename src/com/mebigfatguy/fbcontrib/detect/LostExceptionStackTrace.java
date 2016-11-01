@@ -63,7 +63,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
 
     static {
         try {
-            throwableClass = Repository.lookupClass("java/lang/Throwable");
+            throwableClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_THROWABLE);
             assertionClass = Repository.lookupClass("java/lang/AssertionError");
         } catch (ClassNotFoundException cnfe) {
             throwableClass = null;

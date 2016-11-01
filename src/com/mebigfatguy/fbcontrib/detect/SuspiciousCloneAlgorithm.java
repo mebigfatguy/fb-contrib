@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -110,7 +111,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        if (!m.isStatic() && "clone".equals(m.getName()) && "()Ljava/lang/Object;".equals(m.getSignature())) {
+        if (!m.isStatic() && "clone".equals(m.getName()) && new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(m.getSignature())) {
             super.visitCode(obj);
         }
     }

@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -50,24 +51,25 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         int[] parm0N1 = new int[] { -1, 0 };
         int[] parm01N1 = new int[] { -1, 0, 1 };
 
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "contains", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "add", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "remove", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "set", "(ILjava/lang/Object;)Ljava/lang/Object;"), parm0N1);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "add", "(ILjava/lang/Object;)V"), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "indexOf", "(Ljava/lang/Object;)I"), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "lastIndexOf", "(Ljava/lang/Object;)I"), parm0);
+        String objectToInt = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Values.SIG_PRIMITIVE_INT).toString();
 
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "contains", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "add", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "remove", "(Ljava/lang/Object;)Z"), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "remove", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "set", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString()), parm0N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "add", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).toString()), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "indexOf", objectToInt), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "lastIndexOf", objectToInt), parm0);
 
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "containsKey", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "containsValue", "(Ljava/lang/Object;)Z"), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "get", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "put", "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;"), parm01N1);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "remove", "(Ljava/lang/Object;)Ljava/lang/Object;"), parm0N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_SET, "remove", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
+
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "containsKey", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "containsValue", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "get", SignatureBuilder.SIG_OBJECT_TO_OBJECT), parm0N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "put", SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT), parm01N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT), parm0N1);
     }
 
     private static final Map<String, Integer> STRING_PARSE_METHODS = new HashMap<>();
@@ -125,7 +127,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                     String sig = getSigConstantOperand();
                     boolean isStringBuilder = Values.isAppendableStringClassName(clsName);
 
-                    if (TO_STRING.equals(methodName) && "()Ljava/lang/String;".equals(sig)) {
+                    if (TO_STRING.equals(methodName) && SignatureBuilder.SIG_VOID_TO_STRING.equals(sig)) {
                         if (isStringBuilder) {
                             if (stackDepth > 0) {
                                 OpcodeStack.Item item = stack.getStackItem(0);

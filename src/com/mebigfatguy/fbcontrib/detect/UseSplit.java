@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -160,7 +161,7 @@ public class UseSplit extends BytecodeScanningDetector {
                 if ((seen == INVOKESPECIAL)
                         && "java/util/StringTokenizer".equals(getClassConstantOperand())
                         && Values.CONSTRUCTOR.equals(getNameConstantOperand())
-                        && "(Ljava/lang/String;Ljava/lang/String;)V".equals(getSigConstantOperand())) {
+                        && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING).toString().equals(getSigConstantOperand())) {
                     state = State.SEEN_STRINGTOKENIZER;
                 }
                 break;
@@ -169,7 +170,7 @@ public class UseSplit extends BytecodeScanningDetector {
                 if (seen == INVOKEVIRTUAL) {
                     String methodName = getNameConstantOperand();
                     String signature = getSigConstantOperand();
-                    if (("countTokens".equals(methodName)) && ("()I".equals(signature)))
+                    if ("countTokens".equals(methodName) && SignatureBuilder.SIG_VOID_TO_INT.equals(signature))
                         state = State.SEEN_COUNTTOKENS;
                     else if ("hasMoreTokens".equals(methodName) || "hasMoreElements".equals(methodName))
                         state = State.SEEN_HASMORE;

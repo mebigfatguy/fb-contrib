@@ -24,6 +24,7 @@ import org.apache.bcel.classfile.ConstantString;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -177,7 +178,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                     }
                 }
 
-                if (getSigConstantOperand().startsWith("(Ljava/lang/String;)")) {
+                if (getSigConstantOperand().startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("").toString())) {
                     if (userValue == null) {
                         userValue = new ISBUserValue(AppendType.CLEAR, true);
                     } else {
@@ -190,7 +191,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                     userValue = (ISBUserValue) itm.getUserValue();
                 }
             }
-        } else if ("toString".equals(getNameConstantOperand()) && "()Ljava/lang/String;".equals(getSigConstantOperand())
+        } else if ("toString".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())
         // calls to this.toString() are okay, some people like to be explicit
                 && (stack.getStackDepth() > 0) && (stack.getStackItem(0).getRegisterNumber() != 0)) {
             userValue = new ISBUserValue(AppendType.TOSTRING);
@@ -201,7 +202,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
     private void dealWithEmptyString() {
         String calledClass = getClassConstantOperand();
         if (Values.isAppendableStringClassName(calledClass) && "append".equals(getNameConstantOperand())
-                && getSigConstantOperand().startsWith("(Ljava/lang/String;)") && (stack.getStackDepth() > 1)) {
+                && getSigConstantOperand().startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("").toString()) && (stack.getStackDepth() > 1)) {
             OpcodeStack.Item sbItm = stack.getStackItem(1);
             if ((sbItm != null) && (sbItm.getUserValue() == null)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
@@ -221,12 +222,12 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         if (Values.isAppendableStringClassName(calledClass)
                 && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
             String signature = getSigConstantOperand();
-            if ("()V".equals(signature)) {
+            if (SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(2);
                 if (itm != null) {
                     userValue = new ISBUserValue(AppendType.NESTED);
                 }
-            } else if ("(Ljava/lang/String;)V".equals(signature) && (stack.getStackDepth() > 0)) {
+            } else if (SignatureBuilder.SIG_STRING_TO_VOID.equals(signature) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 userValue = (ISBUserValue) itm.getUserValue();
                 if ((userValue != null) && (userValue.getAppendType() == AppendType.NESTED)) {

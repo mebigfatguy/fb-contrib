@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -140,7 +141,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     private void sawOpcodeAfterNothing(int seen) {
         if ((seen == INVOKEVIRTUAL)
                 && "equals".equals(getNameConstantOperand())
-                && "(Ljava/lang/Object;)Z".equals(getSigConstantOperand())) {
+                && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
             state = State.SAW_EQUALS;
             equalsPos = getPC();
         }

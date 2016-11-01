@@ -48,6 +48,7 @@ import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -71,7 +72,7 @@ import edu.umd.cs.findbugs.visitclass.LVTHelper;
 @CustomUserValue
 public class SillynessPotPourri extends BytecodeScanningDetector {
 
-    private static final Set<String> collectionInterfaces = UnmodifiableSet.create("java/util/Collection", Values.SLASHED_JAVA_UTIL_LIST,
+    private static final Set<String> collectionInterfaces = UnmodifiableSet.create(Values.SLASHED_JAVA_UTIL_COLLECTION, Values.SLASHED_JAVA_UTIL_LIST,
             Values.SLASHED_JAVA_UTIL_SET, "java/util/SortedSet", Values.SLASHED_JAVA_UTIL_MAP, "java/util/SortedMap");
 
     private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create("java.lang.StringBuffer", "java.lang.StringBuilder");
@@ -95,12 +96,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private static Map<QMethod, Integer> methodsThatAreSillyOnStringLiterals = new HashMap<>();
 
     static {
-        methodsThatAreSillyOnStringLiterals.put(new QMethod("toLowerCase", "()Ljava/lang/String;"), Values.ZERO);
-        methodsThatAreSillyOnStringLiterals.put(new QMethod("toUpperCase", "()Ljava/lang/String;"), Values.ZERO);
-        methodsThatAreSillyOnStringLiterals.put(new QMethod("toLowerCase", "(Ljava/util/Locale;)Ljava/lang/String;"), Values.ONE);
-        methodsThatAreSillyOnStringLiterals.put(new QMethod("toUpperCase", "(Ljava/util/Locale;)Ljava/lang/String;"), Values.ONE);
-        methodsThatAreSillyOnStringLiterals.put(new QMethod("trim", "()Ljava/lang/String;"), Values.ZERO);
-        methodsThatAreSillyOnStringLiterals.put(new QMethod("isEmpty", "()Z"), Values.ZERO);
+        String localeToString = new SignatureBuilder().withParamTypes("java/util/Locale").withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("toLowerCase", SignatureBuilder.SIG_VOID_TO_STRING), Values.ZERO);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("toUpperCase", SignatureBuilder.SIG_VOID_TO_STRING), Values.ZERO);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("toLowerCase", localeToString), Values.ONE);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("toUpperCase", localeToString), Values.ONE);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("trim", SignatureBuilder.SIG_VOID_TO_STRING), Values.ZERO);
+        methodsThatAreSillyOnStringLiterals.put(new QMethod("isEmpty", SignatureBuilder.SIG_VOID_TO_BOOLEAN), Values.ZERO);
     }
 
     private final BugReporter bugReporter;
@@ -624,7 +626,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             }
         } else if ("org/apache/commons/lang3/builder/ToStringBuilder".equals(className)
                 || "org/apache/commons/lang/builder/ToStringBuilder".equals(className)) {
-            if ("reflectionToString".equals(methodName) && "(Ljava/lang/Object;)Ljava/lang/String;".equals(getSigConstantOperand())) {
+            if ("reflectionToString".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_STRING.equals(getSigConstantOperand())) {
                 if (stack.getStackDepth() >= 1) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     String toStringSig = itm.getSignature();
@@ -647,7 +649,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             return stringBufferSilliness(methodName);
         } else if (Values.SLASHED_JAVA_LANG_STRING.equals(className)) {
             return stringSilliness(methodName, getSigConstantOperand());
-        } else if ("equals(Ljava/lang/Object;)Z".equals(methodName + getSigConstantOperand())) {
+        } else if ("equals".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
             equalsSilliness(className);
         } else if ("java/lang/Boolean".equals(className) && "booleanValue".equals(methodName)) {
             booleanSilliness();
@@ -656,7 +658,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             calendarBeforeAfterSilliness();
         } else if ("java/util/Properties".equals(className)) {
             propertiesSilliness(methodName);
-        } else if ("toString".equals(methodName) && "java/lang/Object".equals(className)) {
+        } else if ("toString".equals(methodName) && Values.SLASHED_JAVA_LANG_OBJECT.equals(className)) {
             defaultToStringSilliness();
         }
         return null;
@@ -949,7 +951,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             String methodName = getNameConstantOperand();
             if (Values.CONSTRUCTOR.equals(methodName)) {
                 String signature = getSigConstantOperand();
-                if ("(I)V".equals(signature)) {
+                if (SignatureBuilder.SIG_INT_TO_VOID.equals(signature)) {
                     if ((lastOpcode == BIPUSH) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         Object o = item.getConstant();
@@ -961,7 +963,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                             }
                         }
                     }
-                } else if ("(Ljava/lang/String;)V".equals(signature) && (stack.getStackDepth() > 0)) {
+                } else if (SignatureBuilder.SIG_STRING_TO_VOID.equals(signature) && (stack.getStackDepth() > 0)) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     String con = (String) item.getConstant();
                     if ("".equals(con)) {
@@ -1008,7 +1010,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             return false;
         }
         for (Method m : cls.getMethods()) {
-            if ("toString".equals(m.getName()) && "()Ljava/lang/String;".equals(m.getSignature())) {
+            if ("toString".equals(m.getName()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(m.getSignature())) {
                 return true;
             }
         }

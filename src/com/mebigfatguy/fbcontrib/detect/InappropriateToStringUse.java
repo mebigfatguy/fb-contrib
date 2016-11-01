@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -165,7 +166,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
         String methodName = getNameConstantOperand();
         if ("toString".equals(methodName)) {
             String signature = getSigConstantOperand();
-            if ("()Ljava/lang/String;".equals(signature)) {
+            if (SignatureBuilder.SIG_VOID_TO_STRING.equals(signature)) {
                 String className = getClassConstantOperand();
                 if (!validToStringClasses.contains(className) && (stack.getStackDepth() > 0)) {
                     OpcodeStack.Item item = stack.getStackItem(0);

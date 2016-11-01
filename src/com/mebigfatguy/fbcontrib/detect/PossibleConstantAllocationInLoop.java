@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -130,7 +131,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                 break;
 
                 case INVOKESPECIAL:
-                    if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && "()V".equals(getSigConstantOperand())) {
+                    if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())) {
                         String clsName = getClassConstantOperand();
                         if (!SYNTHETIC_ALLOCATION_CLASSES.contains(clsName) && switchInfos.isEmpty()) {
                             sawAllocationNumber = Integer.valueOf(nextAllocationNumber);

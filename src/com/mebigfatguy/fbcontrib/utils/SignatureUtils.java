@@ -41,6 +41,12 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  */
 public final class SignatureUtils {
 
+    public static final Set<String> PRIMITIVE_TYPES = UnmodifiableSet.create(
+        Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG,
+        Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_FLOAT, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_BOOLEAN,
+        Values.SIG_VOID, "", null
+    );
+
     private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE);
 
     private static final Pattern CLASS_COMPONENT_DELIMITER = Pattern.compile("\\$");
@@ -198,7 +204,7 @@ public final class SignatureUtils {
             String parmSignature = null;
             if (c != '[') {
                 if (c == 'L') {
-                    int semiPos = methodSignature.indexOf(';', i + 1);
+                    int semiPos = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
                     parmSignature = methodSignature.substring(sigStart, semiPos + 1);
                     slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
                     i = semiPos;
@@ -238,9 +244,9 @@ public final class SignatureUtils {
         for (int i = start; i < limit; i++) {
             char c = methodSignature.charAt(i);
             String parmSignature;
-            if (c != '[') {
-                if (c == 'L') {
-                    int semiPos = methodSignature.indexOf(';', i + 1);
+            if (c != Values.SIG_ARRAY_PREFIX.charAt(0)) {
+                if (c == Values.SIG_QUALIFIED_CLASS_PREFIX_CHAR) {
+                    int semiPos = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
                     parmSignature = methodSignature.substring(sigStart, semiPos + 1);
                     parmSignatures.add(parmSignature);
                     i = semiPos;
@@ -294,9 +300,9 @@ public final class SignatureUtils {
         int numParms = 0;
         for (int i = start; i < limit; i++) {
             char c = methodSignature.charAt(i);
-            if (c != '[') {
-                if (c == 'L') {
-                    i = methodSignature.indexOf(';', i + 1);
+            if (c != Values.SIG_ARRAY_PREFIX.charAt(0)) {
+                if (c == Values.SIG_QUALIFIED_CLASS_PREFIX_CHAR) {
+                    i = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
                 } else if ((c == '!') || (c == '+')) {
                     // eclipse wonky classes
                     continue;
@@ -340,7 +346,7 @@ public final class SignatureUtils {
             String genSig = genIt.next();
             int bracketPos = genSig.indexOf('<');
             if (bracketPos >= 0) {
-                genSig = genSig.substring(0, bracketPos) + ';';
+                genSig = genSig.substring(0, bracketPos) + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
             }
 
             if (!regParm.getSignature().equals(genSig) && !genSig.startsWith(Values.SIG_GENERIC_TEMPLATE)) {
@@ -356,7 +362,7 @@ public final class SignatureUtils {
         String genReturnSig = genParser.getReturnTypeSignature();
         int bracketPos = genReturnSig.indexOf('<');
         if (bracketPos >= 0) {
-            genReturnSig = genReturnSig.substring(0, bracketPos) + ';';
+            genReturnSig = genReturnSig.substring(0, bracketPos) + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
         }
 
         return regReturnParms.getSignature().equals(genReturnSig) || genReturnSig.startsWith(Values.SIG_GENERIC_TEMPLATE);
@@ -387,7 +393,7 @@ public final class SignatureUtils {
      * @return the slashed class name
      */
     public static @SlashedClassName String trimSignature(String signature) {
-        if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(";")) {
+        if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
             return signature.substring(1, signature.length() - 1);
         }
 
@@ -402,7 +408,14 @@ public final class SignatureUtils {
      * @return the signature format of the class
      */
     public static String classToSignature(String className) {
-        return Values.SIG_QUALIFIED_CLASS_PREFIX + className.replace('.', '/') + ';';
+        if (PRIMITIVE_TYPES.contains(className) || className.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
+            return className;
+        } else if (className.startsWith(Values.SIG_ARRAY_PREFIX)) {
+            // convert the classname inside the array
+            return Values.SIG_ARRAY_PREFIX + classToSignature(className.substring(Values.SIG_ARRAY_PREFIX.length()));
+        } else {
+            return Values.SIG_QUALIFIED_CLASS_PREFIX_CHAR + className.replace('.', '/') + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+        }
     }
 
     /**

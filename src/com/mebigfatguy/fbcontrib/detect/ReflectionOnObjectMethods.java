@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -202,7 +203,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
                         String method = getNameConstantOperand();
                         if ("getMethod".equals(method)) {
                             String sig = getSigConstantOperand();
-                            if ("(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;".equals(sig) && (stack.getStackDepth() >= 2)) {
+                            if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_CLASS).withReturnType("java/lang/reflect/Method").toString().equals(sig) && (stack.getStackDepth() >= 2)) {
                                 OpcodeStack.Item clsArgs = stack.getStackItem(0);
                                 String[] arrayTypes = (String[]) clsArgs.getUserValue();
                                 if ((arrayTypes != null) || (clsArgs.isNull())) {
@@ -267,13 +268,13 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
             .append('(');
         if (parmTypes != null) {
             for (String type : parmTypes) {
-                sb.append('L');
+                sb.append(Values.SIG_QUALIFIED_CLASS_PREFIX_CHAR);
                 if (type == null) {
                     return "";
                 }
                 sb.append(type);
                 if ((type.length() > 1) || ("IJ".indexOf(type) < 0)) {
-                    sb.append(';');
+                    sb.append(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR);
                 }
             }
         }

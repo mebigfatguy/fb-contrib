@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -50,11 +51,11 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 
     private static final Set<QMethod> setMethods = UnmodifiableSet.create(
             //@formatter:off
-            new QMethod("contains", "(Ljava/lang/Object;)Z"),
-            new QMethod("containsAll", "(Ljava/util/Collection;)Z"),
-            new QMethod("remove", "(Ljava/lang/Object;)Ljava/lang/Object;"),
-            new QMethod("removeAll", "(Ljava/util/Collection;)Z"),
-            new QMethod("retainAll", "(Ljava/util/Collection;)Z")
+            new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
+            new QMethod("containsAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN),
+            new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT),
+            new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN),
+            new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN)
             //@formatter:on
     );
 

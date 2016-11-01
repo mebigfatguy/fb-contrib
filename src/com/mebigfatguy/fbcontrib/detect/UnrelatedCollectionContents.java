@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -46,7 +47,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * creating a separate class, which defines the different types required, and add an instance of that class to the collection, or array.
  */
 public class UnrelatedCollectionContents extends BytecodeScanningDetector {
-    private static final Set<String> COLLECTION_CLASSES = UnmodifiableSet.create("java/util/Collection", Values.SLASHED_JAVA_UTIL_LIST,
+    private static final Set<String> COLLECTION_CLASSES = UnmodifiableSet.create(Values.SLASHED_JAVA_UTIL_COLLECTION, Values.SLASHED_JAVA_UTIL_LIST,
             Values.SLASHED_JAVA_UTIL_MAP, Values.SLASHED_JAVA_UTIL_SET, "java/util/SortedMap", "java/util/SortedSet");
 
     private final BugReporter bugReporter;
@@ -131,13 +132,13 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
                 if (COLLECTION_CLASSES.contains(className)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if ("add".equals(methodName) && "(Ljava/lang/Object;)Z".equals(methodSig)) {
+                    if ("add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(methodSig)) {
                         if (stack.getStackDepth() > 1) {
                             OpcodeStack.Item colItm = stack.getStackItem(1);
                             OpcodeStack.Item addItm = stack.getStackItem(0);
                             checkAdd(colItm, addItm);
                         }
-                    } else if (("put".equals(methodName) && "(Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;".equals(methodSig)) && (stack.getStackDepth() > 2)) {
+                    } else if (("put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(methodSig)) && (stack.getStackDepth() > 2)) {
                         // For maps, just check the keys
                         OpcodeStack.Item colItm = stack.getStackItem(2);
                         OpcodeStack.Item addItm = stack.getStackItem(1);

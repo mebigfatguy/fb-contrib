@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -77,12 +78,12 @@ public class SpuriousThreadStates extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 0) {
                         String methodName = getNameConstantOperand();
                         String signature = getSigConstantOperand();
-                        if (("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) && "()V".equals(signature)) {
+                        if (("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) && SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {
                             itm = stack.getStackItem(0);
                         } else if ("wait".equals(methodName)) {
-                            if ("(J)V".equals(signature) && (stack.getStackDepth() > 1)) {
+                            if (new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).toString().equals(signature) && (stack.getStackDepth() > 1)) {
                                 itm = stack.getStackItem(1);
-                            } else if ("(JI)V".equals(signature) && (stack.getStackDepth() > 2)) {
+                            } else if (new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_INT).toString().equals(signature) && (stack.getStackDepth() > 2)) {
                                 itm = stack.getStackItem(2);
                             }
                         }

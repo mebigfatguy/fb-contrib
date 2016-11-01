@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -101,7 +102,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
                 return;
             }
 
-            if (obj.isStatic() && "main".equals(obj.getName()) && "([Ljava/lang/String;)V".equals(obj.getSignature())) {
+            if (obj.isStatic() && "main".equals(obj.getName()) && new SignatureBuilder().withParamTypes(Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_STRING).toString().equals(obj.getSignature())) {
                 return;
             }
 
@@ -132,6 +133,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
      *            the parameter signatures to check
      * @return whether the parameter are similar
      */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "LII_LIST_INDEXED_ITERATING", justification = "this doesn't iterate over every element, so we can't use a for-each loop")
     private static boolean hasSimilarParms(List<String> argTypes) {
 
         for (int i = 0; i < (argTypes.size() - 1); i++) {
