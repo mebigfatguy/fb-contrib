@@ -92,28 +92,28 @@ public class Section508Compliance extends BytecodeScanningDetector {
     private static final Map<FQMethod, Integer> displayTextMethods = new HashMap<>();
 
     static {
-        displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;Ljavax/swing/Icon;I)"), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;I)"), Values.TWO);
-        displayTextMethods.put(new FQMethod("javax/swing/JButton", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JButton", "<init>", "(Ljava/lang/String;Ljavax/swing/Icon;)"), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JFrame", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JFrame", "<init>", "(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)"), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;)"), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;Z)"), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)"),
+        displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;)V"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;Ljavax/swing/Icon;I)V"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JLabel", "<init>", "(Ljava/lang/String;I)V"), Values.TWO);
+        displayTextMethods.put(new FQMethod("javax/swing/JButton", "<init>", "(Ljava/lang/String;)V"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JButton", "<init>", "(Ljava/lang/String;Ljavax/swing/Icon;)V"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JFrame", "<init>", "(Ljava/lang/String;)V"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JFrame", "<init>", "(Ljava/lang/String;Ljava/awt/GraphicsConfiguration;)V"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;)V"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;Z)V"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Dialog;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)V"),
                 Values.TWO);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;)"), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;Z)"), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)"),
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;)V"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;Z)V"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", "<init>", "(Ljava/awt/Frame;Ljava/lang/String;ZLjava/awt/GraphicsConfiguration;)V"),
                 Values.TWO);
-        displayTextMethods.put(new FQMethod("java/awt/Dialog", "setTitle", "(Ljava/lang/String;)"), Values.ZERO);
-        displayTextMethods.put(new FQMethod("java/awt/Frame", "setTitle", "(Ljava/lang/String;)"), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenu", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenu", "<init>", "(Ljava/lang/String;Z)"), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", "<init>", "(Ljava/lang/String;)"), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", "<init>", "(Ljava/lang/String;Ljavax/swing/Icon;)"), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", "<init>", "(Ljava/lang/String;I)"), Values.ONE);
+        displayTextMethods.put(new FQMethod("java/awt/Dialog", "setTitle", "(Ljava/lang/String;)V"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("java/awt/Frame", "setTitle", "(Ljava/lang/String;)V"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenu", "<init>", "(Ljava/lang/String;)V"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenu", "<init>", "(Ljava/lang/String;Z)V"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", "<init>", "(Ljava/lang/String;)V"), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", "<init>", "(Ljava/lang/String;Ljavax/swing/Icon;)V"), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", "<init>", "(Ljava/lang/String;I)V"), Values.ONE);
     }
 
     private final BugReporter bugReporter;
