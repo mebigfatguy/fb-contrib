@@ -118,7 +118,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
             stage = Stage.FIND_LOOP_STAGE;
             super.visitCode(obj);
 
-            if (sawListSize) {
+            if (sawListSize && !possibleForLoops.isEmpty()) {
                 stack.resetForMethodEntry(this);
                 state = State.SAW_NOTHING;
                 stage = Stage.FIND_BUG_STAGE;
