@@ -32,6 +32,7 @@ import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -61,14 +62,14 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 
     private static final Set<QMethod> listMethods = UnmodifiableSet.create(
             //@formatter:off
-            new QMethod("add", "(ILjava/lang/Object;)V"),
-            new QMethod("addAll", "(ILjava/util/Collection;)Z"),
-            new QMethod("lastIndexOf", "(Ljava/lang/Object;)I"),
-            new QMethod("remove", "(I)Ljava/lang/Object;"),
-            new QMethod("set", "(ILjava/lang/Object;)Ljava/lang/Object;"),
-            new QMethod("subList", "(II)Ljava/util/List;"),
-            new QMethod("listIterator", "()Ljava/util/ListIterator;"),
-            new QMethod("listIterator", "(I)Ljava/util/ListIterator;")
+            new QMethod("add", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).toString()),
+            new QMethod("addAll", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION).withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()),
+            new QMethod("lastIndexOf", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
+            new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT),
+            new QMethod("set", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString()),
+            new QMethod("subList", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_INT).withReturnType(Values.SLASHED_JAVA_UTIL_LIST).toString()),
+            new QMethod("listIterator", new SignatureBuilder().withReturnType("java/util/ListIterator").toString()),
+            new QMethod("listIterator", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType("java/util/ListIterator").toString())
             // Theoretically get(i) and indexOf(Object) are list Methods but are so
             // abused, as to be meaningless
            //@formatter:on

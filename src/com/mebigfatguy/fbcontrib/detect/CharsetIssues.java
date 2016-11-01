@@ -91,7 +91,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
         unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, fileAndStringToVoid), Values.ZERO);
         unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/OutputStream", Values.SLASHED_JAVA_LANG_STRING, "java/util/Locale").toString()), Values.ONE);
         unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes("java/io/OutputStream", Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
-        unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, "(Ljava/lang/String;Ljava/lang/String;Ljava/util/Locale;)V"), Values.ONE);
+        unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING, "java/util/Locale").toString()), Values.ONE);
         unreplaceable.put(new FQMethod("java/util/Formatter", Values.CONSTRUCTOR, twoStringsToVoid), Values.ZERO);
         unreplaceable.put(new FQMethod("java/util/Formatter", "toCharset", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
         unreplaceable.put(new FQMethod("java/util/logging/Handler", "setEncoding", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);

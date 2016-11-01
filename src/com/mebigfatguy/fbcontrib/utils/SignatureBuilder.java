@@ -48,12 +48,26 @@ public class SignatureBuilder {
         return this;
     }
 
+    public SignatureBuilder withParamTypes(Class... types) {
+        for (Class type : types) {
+            paramTypes.add(SignatureUtils.classToSignature(type.getName()));
+        }
+        return this;
+    }
+
     public SignatureBuilder withReturnType(String type) {
         if ((type == null) || type.length() == 0) {
             throw new IllegalArgumentException("Missing return type; did you mean 'withoutReturnType'?");
         }
         returnType = SignatureUtils.classToSignature(type);
         return this;
+    }
+
+    public SignatureBuilder withReturnType(Class type) {
+        if (type == null) {
+            throw new IllegalArgumentException("Missing return type; did you mean 'withoutReturnType'?");
+        }
+        return withReturnType(type.getName());
     }
 
     public SignatureBuilder withoutReturnType() {
