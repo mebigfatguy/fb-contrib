@@ -54,7 +54,7 @@ public class SignatureBuilder {
      */
     public SignatureBuilder() {
         methodName = "";
-        paramTypes = new ArrayList<>();
+        paramTypes = null;
         returnType = Values.SIG_VOID;
     }
 
@@ -64,6 +64,10 @@ public class SignatureBuilder {
     }
 
     public SignatureBuilder withParamTypes(String... types) {
+        if (paramTypes == null) {
+            paramTypes = new ArrayList<>(types.length);
+        }
+
         for (String type : types) {
             paramTypes.add(SignatureUtils.classToSignature(type));
         }
@@ -71,6 +75,10 @@ public class SignatureBuilder {
     }
 
     public SignatureBuilder withParamTypes(Class... types) {
+        if (paramTypes == null) {
+            paramTypes = new ArrayList<>(types.length);
+        }
+
         for (Class type : types) {
             paramTypes.add(SignatureUtils.classToSignature(type.getName()));
         }
@@ -102,7 +110,11 @@ public class SignatureBuilder {
         return methodName + '(' + join(paramTypes) + ')' + returnType;
     }
 
-    private static String join(List<String> strings) {
+    private String join(List<String> strings) {
+        if (paramTypes == null) {
+            return "";
+        }
+
         StringBuilder returnValue = new StringBuilder();
         for (String s : strings) {
             returnValue.append(s);
