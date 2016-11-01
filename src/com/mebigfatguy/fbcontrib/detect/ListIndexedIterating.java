@@ -27,6 +27,8 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -197,10 +199,11 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
                 switch (fl.getLoopState()) {
                     case LOOP_NOT_STARTED:
                         if (getPC() == fl.getLoopStart()) {
-                            if ((seen == ILOAD) || (((seen >= ILOAD_0) && (seen <= ILOAD_3)) && (getReg(seen, ILOAD, ILOAD_0) == fl.getLoopReg()))) {
+                            if (OpcodeUtils.isILoad(seen) && (RegisterUtils.getLoadReg(this, seen) == fl.getLoopReg())) {
                                 fl.setLoopState(LoopState.LOOP_INDEX_LOADED_FOR_TEST);
                                 continue;
                             }
+
                             it.remove();
                         }
                     break;
@@ -237,8 +240,8 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
                             it.remove();
                         }
 
-                        if ((seen == ILOAD) || ((seen >= ILOAD_0) && (seen <= ILOAD_3))) {
-                            loopReg = getReg(seen, ILOAD, ILOAD_0);
+                        if (OpcodeUtils.isILoad(seen)) {
+                            loopReg = RegisterUtils.getLoadReg(this, seen);
                             if (loopReg == fl.getLoopReg()) {
                                 fl.setLoopRegLoaded(true);
                             }
@@ -270,25 +273,6 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
         } finally {
             stack.sawOpcode(this, seen);
         }
-    }
-
-    /**
-     * get the register operand from the passed in opcode
-     *
-     * @param seen
-     *            the currently parsed opcode
-     * @param generalOp
-     *            the standard non numbered operand
-     * @param zeroOp
-     *            the base opcode from which to calculate the register
-     *
-     * @return the register operand for the instruction
-     */
-    private int getReg(final int seen, final int generalOp, final int zeroOp) {
-        if (seen == generalOp) {
-            return getRegisterOperand();
-        }
-        return seen - zeroOp;
     }
 
     /**
