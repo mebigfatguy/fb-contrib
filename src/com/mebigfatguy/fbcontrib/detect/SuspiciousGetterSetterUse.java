@@ -190,7 +190,7 @@ public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
             return true;
         }
         String sig = getSigConstantOperand();
-        String noParams = new SignatureBuilder().withReturnType("").toString();
+        String noParams = new SignatureBuilder().withoutReturnType().toString();
         if (!sig.startsWith(noParams)) {
             return true;
         }

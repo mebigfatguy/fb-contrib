@@ -178,7 +178,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                     }
                 }
 
-                if (getSigConstantOperand().startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("").toString())) {
+                if (getSigConstantOperand().startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withoutReturnType().toString())) {
                     if (userValue == null) {
                         userValue = new ISBUserValue(AppendType.CLEAR, true);
                     } else {
@@ -202,7 +202,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
     private void dealWithEmptyString() {
         String calledClass = getClassConstantOperand();
         if (Values.isAppendableStringClassName(calledClass) && "append".equals(getNameConstantOperand())
-                && getSigConstantOperand().startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("").toString()) && (stack.getStackDepth() > 1)) {
+                && getSigConstantOperand().startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withoutReturnType().toString()) && (stack.getStackDepth() > 1)) {
             OpcodeStack.Item sbItm = stack.getStackItem(1);
             if ((sbItm != null) && (sbItm.getUserValue() == null)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);

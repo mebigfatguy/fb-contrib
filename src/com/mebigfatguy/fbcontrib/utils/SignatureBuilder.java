@@ -49,7 +49,15 @@ public class SignatureBuilder {
     }
 
     public SignatureBuilder withReturnType(String type) {
+        if ((type == null) || type.length() == 0) {
+            throw new IllegalArgumentException("Missing return type; did you mean 'withoutReturnType'?");
+        }
         returnType = SignatureUtils.classToSignature(type);
+        return this;
+    }
+
+    public SignatureBuilder withoutReturnType() {
+        returnType = "";
         return this;
     }
 
