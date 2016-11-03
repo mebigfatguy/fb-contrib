@@ -54,8 +54,8 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
 
     private static final Set<String> TOSTRINGBUILDER_CTOR_SIGS = UnmodifiableSet.create(
         new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).toString(),
-        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withParamTypes("org/apache/commons/lang/builder/ToStringStyle").toString(),
-        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withParamTypes("org/apache/commons/lang3/builder/ToStringStyle").toString()
+        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, "org/apache/commons/lang/builder/ToStringStyle").toString(),
+        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, "org/apache/commons/lang3/builder/ToStringStyle").toString()
     );
 
     private final BugReporter bugReporter;
