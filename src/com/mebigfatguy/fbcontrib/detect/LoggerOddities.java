@@ -285,9 +285,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
             } else if (SLF4J_LOGGER.equals(callingClsName)) {
                 String signature = getSigConstantOperand();
                 if (SignatureBuilder.SIG_STRING_TO_VOID.equals(signature)
-                        || new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)
-                        || new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)
-                        || new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)) {
+                        || SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID.equals(signature)
+                        || SIG_STRING_AND_TWO_OBJECTS_TO_VOID.equals(signature)
+                        || SIG_STRING_AND_OBJECT_ARRAY_TO_VOID.equals(signature)) {
                     int numParms = SignatureUtils.getNumParameters(signature);
                     if (stack.getStackDepth() >= numParms) {
                         OpcodeStack.Item formatItem = stack.getStackItem(numParms - 1);
@@ -477,10 +477,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
      */
     @SuppressWarnings("unchecked")
     private int getSLF4JParmCount(String signature) {
-        if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)) {
+        if (SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID.equals(signature)) {
             return 1;
         }
-        if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(signature)) {
+        if (SIG_STRING_AND_TWO_OBJECTS_TO_VOID.equals(signature)) {
             return 2;
         }
 

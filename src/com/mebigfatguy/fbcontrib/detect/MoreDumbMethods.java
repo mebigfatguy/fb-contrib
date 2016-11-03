@@ -109,9 +109,9 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         //
         // String checks
         //
-        dumbMethods.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).toString()),
+        dumbMethods.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(SignatureBuilder.SIG_BYTE_ARRAY).toString()),
                 new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
-        dumbMethods.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "getBytes", new SignatureBuilder().withReturnType(Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).toString()),
+        dumbMethods.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "getBytes", new SignatureBuilder().withReturnType(SignatureBuilder.SIG_BYTE_ARRAY).toString()),
                 new ReportInfo("MDM_STRING_BYTES_ENCODING", NORMAL_PRIORITY));
         dumbMethods.put(new FQMethod("java/util/Locale", "setDefault", new SignatureBuilder().withParamTypes("java/util/Locale").toString()), new ReportInfo("MDM_SETDEFAULTLOCALE", NORMAL_PRIORITY));
     }
@@ -128,8 +128,8 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        String byteArrayToVoid = new SignatureBuilder().withParamTypes(Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).toString();
-        String intToByteArray = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).toString();
+        String byteArrayToVoid = new SignatureBuilder().withParamTypes(SignatureBuilder.SIG_BYTE_ARRAY).toString();
+        String intToByteArray = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(SignatureBuilder.SIG_BYTE_ARRAY).toString();
         if (classContext.getJavaClass().getMajor() <= MAJOR_1_5) {
             dumbMethods.put(new FQMethod("java/security/SecureRandom", Values.CONSTRUCTOR, SignatureBuilder.SIG_VOID_TO_VOID), new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
             dumbMethods.put(new FQMethod("java/security/SecureRandom", Values.CONSTRUCTOR, byteArrayToVoid), new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));

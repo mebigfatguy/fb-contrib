@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -146,7 +147,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case NEWARRAY: {
                     if (!isTOS0()) {
                         int typeCode = getIntConstant();
-                        if ((typeCode != Constants.T_BYTE) && returnArraySig.equals('[' + SignatureUtils.getTypeCodeSignature(typeCode))) {
+                        if ((typeCode != Constants.T_BYTE) && returnArraySig.equals(SignatureUtils.toArraySignature(SignatureUtils.getTypeCodeSignature(typeCode)))) {
                             userValue = SUAUserValue.UNINIT_ARRAY;
                         }
                     }
@@ -155,7 +156,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
                 case ANEWARRAY: {
                     if (!isTOS0()) {
-                        String sig = '[' + SignatureUtils.classToSignature(getClassConstantOperand());
+                        String sig = SignatureUtils.toArraySignature(getClassConstantOperand());
                         if (returnArraySig.equals(sig)) {
                             userValue = SUAUserValue.UNINIT_ARRAY;
                         }
@@ -180,7 +181,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                     for (int t = 0; t < types.size(); t++) {
                         String parmSig = types.get(t);
                         if (returnArraySig.equals(parmSig) || Values.SIG_JAVA_LANG_OBJECT.equals(parmSig)
-                                || ('[' + Values.SIG_JAVA_LANG_OBJECT).equals(parmSig)) {
+                                || SignatureBuilder.SIG_OBJECT_ARRAY.equals(parmSig)) {
                             int parmIndex = types.size() - t - 1;
                             if (stack.getStackDepth() > parmIndex) {
                                 OpcodeStack.Item item = stack.getStackItem(parmIndex);

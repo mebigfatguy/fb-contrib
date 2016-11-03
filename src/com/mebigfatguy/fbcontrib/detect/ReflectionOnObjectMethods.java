@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -45,6 +46,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 @CustomUserValue
 public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
+
+    public static final String SIG_STRING_AND_CLASS_ARRAY_TO_METHOD = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, SignatureUtils.toArraySignature(Values.SLASHED_JAVA_LANG_CLASS))
+        .withReturnType(Method.class).toString();
 
     private static final Set<String> objectSigs = UnmodifiableSet.create(
             // "clone()", // clone is declared protected
@@ -203,7 +207,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
                         String method = getNameConstantOperand();
                         if ("getMethod".equals(method)) {
                             String sig = getSigConstantOperand();
-                            if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_CLASS).withReturnType("java/lang/reflect/Method").toString().equals(sig) && (stack.getStackDepth() >= 2)) {
+                            if (SIG_STRING_AND_CLASS_ARRAY_TO_METHOD.equals(sig) && (stack.getStackDepth() >= 2)) {
                                 OpcodeStack.Item clsArgs = stack.getStackItem(0);
                                 String[] arrayTypes = (String[]) clsArgs.getUserValue();
                                 if ((arrayTypes != null) || (clsArgs.isNull())) {

@@ -40,6 +40,9 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * for clients of this method to define this parameter as a vararg parameter.
  */
 public class UseVarArgs extends PreorderVisitor implements Detector {
+
+    public static final String SIG_STRING_ARRAY_TO_VOID = new SignatureBuilder().withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString();
+
     private final BugReporter bugReporter;
     private JavaClass javaClass;
 
@@ -93,8 +96,8 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
                 return;
             }
 
-            if ((Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE).equals(lastParmSig)
-                    || (Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_CHAR).equals(lastParmSig)) {
+            if (SignatureBuilder.SIG_BYTE_ARRAY.equals(lastParmSig)
+                    || SignatureBuilder.SIG_CHAR_ARRAY.equals(lastParmSig)) {
                 return;
             }
 
@@ -102,7 +105,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
                 return;
             }
 
-            if (obj.isStatic() && "main".equals(obj.getName()) && new SignatureBuilder().withParamTypes(Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_STRING).toString().equals(obj.getSignature())) {
+            if (obj.isStatic() && "main".equals(obj.getName()) && SIG_STRING_ARRAY_TO_VOID.equals(obj.getSignature())) {
                 return;
             }
 
