@@ -18,7 +18,7 @@
 	<property name="lib.dir" value="${basedir}/lib" />
 	<property name="etc.dir" value="${basedir}/etc" />
 	<property name="target.dir" value="${basedir}/target" />
-	<property name="samples.dir" value="${basedir}/samples" />
+	<property name="samples.dir" value="${basedir}/src/samples/java" />
 	<property name="main.classes.dir" value="${target.dir}/classes/main" />
 	<property name="samples.classes.dir" value="${target.dir}/classes/samples" />
 	<property name="javadoc.dir" value="${target.dir}/javadoc" />
