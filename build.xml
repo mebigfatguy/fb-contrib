@@ -14,7 +14,7 @@
     <property file="build.properties" />
     <property file="version.properties" />
 
-	<property name="src.dir" value="${basedir}/src" />
+	<property name="src.dir" value="${basedir}/src/main/java" />
 	<property name="lib.dir" value="${basedir}/lib" />
 	<property name="etc.dir" value="${basedir}/etc" />
 	<property name="target.dir" value="${basedir}/target" />
