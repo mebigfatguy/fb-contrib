@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class CharsetIssues extends BytecodeScanningDetector {
 
-    private static final String CHARSET_SIG = "Ljava/nio/charset/Charset;";
+    private static final String CHARSET_SIG = SignatureUtils.classToSignature("java/nio/charset/Charset");
 
     private static final Map<FQMethod, Integer> REPLACEABLE_ENCODING_METHODS;
     private static final Map<FQMethod, Integer> UNREPLACEABLE_ENCODING_METHODS;
