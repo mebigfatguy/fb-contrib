@@ -109,6 +109,8 @@ public final class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_BOOLEAN = "java/lang/Boolean";
     @SlashedClassName
+    public static final String SLASHED_JAVA_UTIL_COMPARATOR = "java/util/Comparator";
+    @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_COLLECTION = "java/util/Collection";
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_LIST = "java/util/List";
