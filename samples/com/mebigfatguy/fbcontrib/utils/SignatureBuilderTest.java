@@ -32,6 +32,11 @@ public class SignatureBuilderTest {
     }
 
     @Test
+    public void shouldAcceptClasses() {
+        assertEquals(new SignatureBuilder().withMethodName("classes").withParamTypes(String.class, Object.class).withReturnType(Integer.class).build(), "classes(Ljava/lang/String;Ljava/lang/Object;)Ljava/lang/Integer;");
+    }
+
+    @Test
     public void shouldBlankReturnTypeWhenNeeded() {
         assertEquals(new SignatureBuilder().withMethodName("noReturn").withParamTypes("java.lang.Object").withoutReturnType().build(), "noReturn(Ljava/lang/Object;)");
     }
