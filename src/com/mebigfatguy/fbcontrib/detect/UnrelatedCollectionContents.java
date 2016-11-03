@@ -282,7 +282,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
             return;
         }
 
-        if (itemSignature.charAt(0) == '[') {
+        if (itemSignature.startsWith(Values.SIG_ARRAY_PREFIX)) {
             supers.add(itemSignature);
             return;
         }

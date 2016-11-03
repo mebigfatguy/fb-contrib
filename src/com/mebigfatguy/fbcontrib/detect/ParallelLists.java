@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -66,12 +67,12 @@ public class ParallelLists extends BytecodeScanningDetector {
             Field[] flds = cls.getFields();
             for (Field f : flds) {
                 String sig = f.getSignature();
-                if (sig.charAt(0) == 'L') {
-                    sig = sig.substring(1, sig.length() - 1);
+                if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+                    sig = SignatureUtils.trimSignature(sig);
                     if (sig.startsWith("java/util/") && sig.endsWith("List")) {
                         listFields.add(f.getName());
                     }
-                } else if ((sig.charAt(0) == '[') && (sig.charAt(1) != '[')) {
+                } else if (sig.startsWith(Values.SIG_ARRAY_PREFIX) && !sig.startsWith(Values.SIG_ARRAY_OF_ARRAYS_PREFIX)) {
                     listFields.add(f.getName());
                 }
             }
