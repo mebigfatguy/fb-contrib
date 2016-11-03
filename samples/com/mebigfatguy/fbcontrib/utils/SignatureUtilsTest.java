@@ -26,6 +26,7 @@ public class SignatureUtilsTest {
             {"D", "D"},
             {"Z", "Z"},
             {"", ""},
+            {null, ""},
         };
     }
 
@@ -44,6 +45,7 @@ public class SignatureUtilsTest {
             {"D", "D"},
             {"Z", "Z"},
             {"", ""},
+            {null, ""},
         };
     }
 
@@ -63,6 +65,27 @@ public class SignatureUtilsTest {
             {"D", "D"},
             {"Z", "Z"},
             {"", ""},
+            {null, ""},
+        };
+    }
+
+    @DataProvider(name = "namesToArrays")
+    public Object[][] namesToArrays() {
+        String sigStringArray = "[Ljava/lang/String;";
+        return new Object[][] {
+            {"java.lang.String", sigStringArray},
+            {"java/lang/String", sigStringArray},
+            {sigStringArray, "[[Ljava/lang/String;"},
+            {"B", "[B"},
+            {"S", "[S"},
+            {"C", "[C"},
+            {"I", "[I"},
+            {"J", "[J"},
+            {"F", "[F"},
+            {"D", "[D"},
+            {"Z", "[Z"},
+            {"", ""},
+            {null, ""},
         };
     }
 
@@ -110,6 +133,11 @@ public class SignatureUtilsTest {
     @Test(dataProvider = "signaturesToDottedNames")
     public void shouldConvertSignaturesToDottedClassNames(String input, String expected) {
         assertEquals(SignatureUtils.stripSignature(input), expected);
+    }
+
+    @Test(dataProvider = "namesToArrays")
+    public void shouldConvertClassnamesToArrays(String input, String expected) {
+        assertEquals(SignatureUtils.toArraySignature(input), expected);
     }
 
 }
