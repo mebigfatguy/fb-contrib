@@ -44,7 +44,7 @@ public final class SignatureUtils {
     public static final Set<String> PRIMITIVE_TYPES = UnmodifiableSet.create(
         Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG,
         Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_FLOAT, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_BOOLEAN,
-        Values.SIG_VOID, "", null
+        Values.SIG_VOID, ""
     );
 
     private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE);
@@ -393,6 +393,9 @@ public final class SignatureUtils {
      * @return the slashed class name
      */
     public static @SlashedClassName String trimSignature(String signature) {
+        if (signature == null) {
+            return "";
+        }
         if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
             return signature.substring(1, signature.length() - 1);
         }
@@ -402,20 +405,36 @@ public final class SignatureUtils {
 
     /**
      * returns a slashed or dotted class name into a signature, like java/lang/String -- Ljava/lang/String;
+     * Primitives and arrays are accepted. An empty or null string will result in an empty string.
      *
      * @param className
      *            the class name to convert
      * @return the signature format of the class
      */
     public static String classToSignature(String className) {
+        if (className == null) {
+            return "";
+        }
         if (PRIMITIVE_TYPES.contains(className) || className.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
             return className;
         } else if (className.startsWith(Values.SIG_ARRAY_PREFIX)) {
             // convert the classname inside the array
             return Values.SIG_ARRAY_PREFIX + classToSignature(className.substring(Values.SIG_ARRAY_PREFIX.length()));
         } else {
-            return Values.SIG_QUALIFIED_CLASS_PREFIX_CHAR + className.replace('.', '/') + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+            return Values.SIG_QUALIFIED_CLASS_PREFIX + className.replace('.', '/') + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
         }
+    }
+
+    /**
+     * Converts a type name into an array signature.
+     * Accepts slashed or dotted classnames, or type signatures.
+     */
+    public static String toArraySignature(String typeName) {
+        String sig = classToSignature(typeName);
+        if (sig.length() == 0) {
+            return sig;
+        }
+        return Values.SIG_ARRAY_PREFIX + sig;
     }
 
     /**
