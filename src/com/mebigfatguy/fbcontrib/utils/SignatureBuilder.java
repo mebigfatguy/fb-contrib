@@ -105,9 +105,13 @@ public class SignatureBuilder {
         return this;
     }
 
+    public String build() {
+        return methodName + '(' + join(paramTypes) + ')' + returnType;
+    }
+
     @Override
     public String toString() {
-        return methodName + '(' + join(paramTypes) + ')' + returnType;
+        return build();
     }
 
     private String join(List<String> strings) {
