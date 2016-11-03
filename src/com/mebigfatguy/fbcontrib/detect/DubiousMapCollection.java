@@ -246,7 +246,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                 return false;
             }
 
-            sig = sig.substring(1, sig.length() - 1);
+            sig = SignatureUtils.trimSignature(sig);
             JavaClass fieldClass = Repository.lookupClass(sig);
             return fieldClass.implementationOf(mapInterface);
         } catch (ClassNotFoundException e) {

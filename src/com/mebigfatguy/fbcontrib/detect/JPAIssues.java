@@ -413,7 +413,7 @@ public class JPAIssues extends BytecodeScanningDetector {
                         Matcher m = annotationClassPattern.matcher(exNames);
                         while (m.find()) {
                             String exName = m.group(1);
-                            JavaClass exCls = Repository.lookupClass(exName.substring(1, exName.length() - 1));
+                            JavaClass exCls = Repository.lookupClass(SignatureUtils.trimSignature(exName));
                             if (!exCls.instanceOf(runtimeExceptionClass)) {
                                 rollbackExceptions.add(exCls);
                             }
