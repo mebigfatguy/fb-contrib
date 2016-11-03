@@ -26,7 +26,7 @@ public class SignatureUtilsTest {
             {"D", "D"},
             {"Z", "Z"},
             {"", ""},
-            {null, ""},
+            {null, null},
         };
     }
 
@@ -45,7 +45,7 @@ public class SignatureUtilsTest {
             {"D", "D"},
             {"Z", "Z"},
             {"", ""},
-            {null, ""},
+            {null, null},
         };
     }
 
@@ -65,7 +65,6 @@ public class SignatureUtilsTest {
             {"D", "D"},
             {"Z", "Z"},
             {"", ""},
-            {null, ""},
         };
     }
 
@@ -85,7 +84,7 @@ public class SignatureUtilsTest {
             {"D", "[D"},
             {"Z", "[Z"},
             {"", ""},
-            {null, ""},
+            {null, null},
         };
     }
 

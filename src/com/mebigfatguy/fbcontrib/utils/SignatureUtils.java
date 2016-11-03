@@ -44,7 +44,7 @@ public final class SignatureUtils {
     public static final Set<String> PRIMITIVE_TYPES = UnmodifiableSet.create(
         Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG,
         Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_FLOAT, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_BOOLEAN,
-        Values.SIG_VOID, ""
+        Values.SIG_VOID, "", null
     );
 
     private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE);
@@ -376,7 +376,7 @@ public final class SignatureUtils {
      * converts a signature, like Ljava/lang/String; into a dotted class name.
      *
      * @param signature
-     *            a class signature
+     *            a class signature, must not be null
      *
      * @return the dotted class name
      */
@@ -393,10 +393,7 @@ public final class SignatureUtils {
      * @return the slashed class name
      */
     public static @SlashedClassName String trimSignature(String signature) {
-        if (signature == null) {
-            return "";
-        }
-        if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
+        if ((signature != null) && signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
             return signature.substring(1, signature.length() - 1);
         }
 
@@ -412,9 +409,6 @@ public final class SignatureUtils {
      * @return the signature format of the class
      */
     public static String classToSignature(String className) {
-        if (className == null) {
-            return "";
-        }
         if (PRIMITIVE_TYPES.contains(className) || className.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
             return className;
         } else if (className.startsWith(Values.SIG_ARRAY_PREFIX)) {
@@ -431,7 +425,7 @@ public final class SignatureUtils {
      */
     public static String toArraySignature(String typeName) {
         String sig = classToSignature(typeName);
-        if (sig.length() == 0) {
+        if (sig == null || sig.length() == 0) {
             return sig;
         }
         return Values.SIG_ARRAY_PREFIX + sig;
