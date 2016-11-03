@@ -34,6 +34,11 @@ public class SignatureBuilder {
     public static final String SIG_INT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).toString();
     public static final String SIG_INT_TO_OBJECT = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT)
             .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+
+    public static final String SIG_LONG_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).toString();
+    public static final String SIG_LONG_AND_INT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG).toString();
+
+    public static final String SIG_OBJECT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).toString();
     public static final String SIG_OBJECT_TO_OBJECT = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT)
             .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
     public static final String SIG_OBJECT_TO_BOOLEAN = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT)
@@ -42,6 +47,9 @@ public class SignatureBuilder {
             .withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
     public static final String SIG_TWO_OBJECTS_TO_OBJECT = new SignatureBuilder()
             .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+
+    public static final String SIG_THROWABLE_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_THROWABLE).toString();
+
     public static final String SIG_STRING_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).toString();
     public static final String SIG_TWO_STRINGS_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING).toString();
     public static final String SIG_STRING_AND_OBJECT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT).toString();

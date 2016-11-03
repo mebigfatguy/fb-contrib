@@ -83,8 +83,8 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
         dumbMethods.put(new FQMethod("java/lang/Thread", "getPriority", SignatureBuilder.SIG_VOID_TO_INT), new ReportInfo("MDM_THREAD_PRIORITIES", LOW_PRIORITY));
         dumbMethods.put(new FQMethod("java/lang/Thread", "setPriority", SignatureBuilder.SIG_INT_TO_VOID), new ReportInfo("MDM_THREAD_PRIORITIES", LOW_PRIORITY));
 
-        dumbMethods.put(new FQMethod("java/lang/Thread", "sleep", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).toString()), new ReportInfo("MDM_THREAD_YIELD", LOW_PRIORITY));
-        dumbMethods.put(new FQMethod("java/lang/Thread", "sleep", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_INT).toString()),
+        dumbMethods.put(new FQMethod("java/lang/Thread", "sleep", SignatureBuilder.SIG_LONG_TO_VOID), new ReportInfo("MDM_THREAD_YIELD", LOW_PRIORITY));
+        dumbMethods.put(new FQMethod("java/lang/Thread", "sleep", SignatureBuilder.SIG_LONG_AND_INT_TO_VOID),
                 new ReportInfo("MDM_THREAD_YIELD", LOW_PRIORITY));
         dumbMethods.put(new FQMethod("java/lang/Thread", "yield", SignatureBuilder.SIG_VOID_TO_VOID), new ReportInfo("MDM_THREAD_YIELD", NORMAL_PRIORITY));
 
