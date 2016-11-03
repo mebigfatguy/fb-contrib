@@ -188,7 +188,6 @@
     </dependencies>
 
     <build>
-        <sourceDirectory>${basedir}/src</sourceDirectory>
         <testSourceDirectory>${basedir}/samples</testSourceDirectory>
         <outputDirectory>${basedir}/target/classes/main</outputDirectory>
         <resources>
