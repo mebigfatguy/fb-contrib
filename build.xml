@@ -17,10 +17,12 @@
 	<property name="src.dir" value="${basedir}/src/main/java" />
 	<property name="lib.dir" value="${basedir}/lib" />
 	<property name="etc.dir" value="${basedir}/etc" />
+	<property name="test.dir" value="${basedir}/src/test/java" />
 	<property name="target.dir" value="${basedir}/target" />
 	<property name="samples.dir" value="${basedir}/src/samples/java" />
 	<property name="main.classes.dir" value="${target.dir}/classes/main" />
 	<property name="samples.classes.dir" value="${target.dir}/classes/samples" />
+	<property name="test.classes.dir" value="${target.dir}/classes/test" />
 	<property name="javadoc.dir" value="${target.dir}/javadoc" />
 	<property name="htdocs.dir" value="${basedir}/htdocs" />
 	<property name="javac.source" value="1.7" />
@@ -92,6 +94,7 @@
 	<target name="-init" depends="yank">
 		<mkdir dir="${lib.dir}" />
 		<mkdir dir="${main.classes.dir}" />
+		<mkdir dir="${test.classes.dir}" />
 		<mkdir dir="${samples.classes.dir}" />
 		<mkdir dir="${javadoc.dir}" />
 		<path id="fb-contrib.classpath">
@@ -138,6 +141,12 @@
 
 	<target name="compile" depends="-init" description="compiles java files">
 		<javac srcdir="${src.dir}" destdir="${main.classes.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
+			<classpath refid="fb-contrib.classpath" />
+		</javac>
+	</target>
+	
+	<target name="compile_test" depends="compile" description="compiles java test files">
+		<javac srcdir="${test.dir}" destdir="${test.classes.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
 			<classpath refid="fb-contrib.classpath" />
 		</javac>
 	</target>
@@ -220,7 +229,7 @@
 		</javadoc>
 	</target>
 
-	<target name="build" depends="clean, -init, validate_xml, compile, compile_samples, jar" description="builds the plugin jar">
+	<target name="build" depends="clean, -init, validate_xml, compile, compile_test, compile_samples, jar" description="builds the plugin jar">
 	</target>
 
 	<target name="install" depends="build" description="installs the plugin into FindBugs">

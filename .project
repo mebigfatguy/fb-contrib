@@ -32,15 +32,4 @@
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>edu.umd.cs.findbugs.plugin.eclipse.findbugsNature</nature>
 	</natures>
-	<filteredResources>
-		<filter>
-			<id>1351977185587</id>
-			<name>samples</name>
-			<type>10</type>
-			<matcher>
-				<id>org.eclipse.ui.ide.multiFilter</id>
-				<arguments>1.0-name-matches-false-false-.svn</arguments>
-			</matcher>
-		</filter>
-	</filteredResources>
 </projectDescription>
