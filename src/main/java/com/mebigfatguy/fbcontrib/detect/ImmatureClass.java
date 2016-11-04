@@ -14,6 +14,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -78,7 +79,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
                                 String fieldSig = f.getSignature();
                                 if (fieldSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                                     if (!fieldSig.startsWith("Ljava")) {
-                                        JavaClass fieldClass = Repository.lookupClass(fieldSig.substring(1, fieldSig.length() - 1));
+                                        JavaClass fieldClass = Repository.lookupClass(SignatureUtils.trimSignature(fieldSig));
                                         if (!hasMethodInHierarchy(fieldClass, "equals", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN)) {
                                             heStatus = HEStatus.NOT_NEEDED;
                                         }

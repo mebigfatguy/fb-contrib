@@ -127,45 +127,41 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
         String className = getClassConstantOperand();
         String methodName = getNameConstantOperand();
         String methodSig = getSigConstantOperand();
-        boolean found = false;
-        List<BugInstance> bugList = null;
 
         if (Values.SLASHED_JAVA_UTIL_MAP.equals(className) && "put".equals(methodName)
                 && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(methodSig)) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item itm = stack.getStackItem(1);
                 String pushedSig = itm.getSignature();
-                if ((pushedSig.length() > 0) && (pushedSig.charAt(0) == '[')) {
-                    bugList = mapBugs;
-                    found = true;
+                if (pushedSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
+                    foundBugFor(mapBugs);
                 }
             }
         } else if (Values.SLASHED_JAVA_UTIL_SET.equals(className) && "add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(methodSig)) {
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 String pushedSig = itm.getSignature();
-                if (pushedSig.charAt(0) == '[') {
-                    bugList = setBugs;
-                    found = true;
+                if (pushedSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
+                    foundBugFor(setBugs);
                 }
             }
         } else if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "contains".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(methodSig)
                 && (stack.getStackDepth() > 0)) {
             OpcodeStack.Item itm = stack.getStackItem(0);
             String pushedSig = itm.getSignature();
-            if (pushedSig.charAt(0) == '[') {
-                found = true;
+            if (pushedSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
+                foundBugFor(null);
             }
         }
+    }
 
-        if (found) {
-            BugInstance bi = new BugInstance(this, BugType.ABC_ARRAY_BASED_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                    .addSourceLine(this);
-            if (bugList == null) {
-                bugReporter.reportBug(bi);
-            } else {
-                bugList.add(bi);
-            }
+    private void foundBugFor(List<BugInstance> bugList) {
+        BugInstance bi = new BugInstance(this, BugType.ABC_ARRAY_BASED_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                .addSourceLine(this);
+        if (bugList == null) {
+            bugReporter.reportBug(bi);
+        } else {
+            bugList.add(bi);
         }
     }
 
@@ -177,15 +173,19 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
             String sig = getSigConstantOperand();
             if (!hasMapComparator && "java/util/TreeMap".equals(className)) {
                 List<String> parmSignatures = SignatureUtils.getParameterSignatures(sig);
-                if ((parmSignatures.size() == 1) && "Ljava/util/Comparator;".equals(parmSignatures.get(0))) {
+                if (hasComparator(parmSignatures)) {
                     hasMapComparator = true;
                 }
             } else if (!hasSetComparator && "java/util/TreeSet".equals(className)) {
                 List<String> parmSignatures = SignatureUtils.getParameterSignatures(sig);
-                if ((parmSignatures.size() == 1) && "Ljava/util/Comparator;".equals(parmSignatures.get(0))) {
+                if (hasComparator(parmSignatures)) {
                     hasSetComparator = true;
                 }
             }
         }
+    }
+
+    private static boolean hasComparator(List<String> parmSignatures) {
+        return (parmSignatures.size() == 1) && SignatureUtils.classToSignature(Values.SLASHED_JAVA_UTIL_COMPARATOR).equals(parmSignatures.get(0));
     }
 }

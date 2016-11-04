@@ -352,7 +352,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
      * @return if it is a well known baked in method
      */
     private static boolean methodIsSpecial(String methodName, String methodSig) {
-        return "readObject".equals(methodName) && new SignatureBuilder().withParamTypes("java/io/ObjectInputStream").toString().equals(methodSig);
+        return SignatureBuilder.SIG_READ_OBJECT.equals(methodName + methodSig);
     }
 
     /**

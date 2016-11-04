@@ -45,6 +45,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
 
+    public static final String SIG_VOID_TO_OBJECT = new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+
     private static JavaClass cloneableClass;
     private static Map<String, Integer> changingMethods;
 
@@ -111,7 +113,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        if (!m.isStatic() && "clone".equals(m.getName()) && new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString().equals(m.getSignature())) {
+        if (!m.isStatic() && "clone".equals(m.getName()) && SIG_VOID_TO_OBJECT.equals(m.getSignature())) {
             super.visitCode(obj);
         }
     }

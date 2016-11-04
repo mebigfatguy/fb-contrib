@@ -280,7 +280,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                     } else {
                         String cls = itm.getSignature();
                         if ((cls != null) && cls.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
-                            cls = cls.substring(1, cls.length() - 1);
+                            cls = SignatureUtils.trimSignature(cls);
                             if (isCollection(cls) || "java/util/Iterator".equals(cls)) {
                                 int reg = RegisterUtils.getAStoreReg(this, seen);
                                 removeFromCollectionGroup(new OpcodeStack.Item(itm, reg));

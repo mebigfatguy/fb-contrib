@@ -242,11 +242,11 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     private boolean isMap(Field obj) {
         try {
             String sig = obj.getSignature();
-            if (sig.charAt(0) != 'L') {
+            if (!sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                 return false;
             }
 
-            sig = sig.substring(1, sig.length() - 1);
+            sig = SignatureUtils.trimSignature(sig);
             JavaClass fieldClass = Repository.lookupClass(sig);
             return fieldClass.implementationOf(mapInterface);
         } catch (ClassNotFoundException e) {

@@ -54,11 +54,11 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     private static final Set<FQMethod> ubiquitousMethods;
 
     static {
-        String stringToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_STRING).toString();
-        String stringAndCharToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_CHAR).withReturnType(Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_STRING).toString();
-        String stringAndIntToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_STRING).toString();
-        String twoStringsToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_STRING).toString();
-        String twoStringsAndIntToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_STRING).toString();
+        String stringToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+        String stringAndCharToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_CHAR).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+        String stringAndIntToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+        String twoStringsToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+        String twoStringsAndIntToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
 
         Set<FQMethod> um = new HashSet<>();
         um.add(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "split", stringToArray));

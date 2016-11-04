@@ -129,8 +129,8 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
                         String calledMethodSig = getSigConstantOperand();
 
                         if (("equals".equals(calledMethodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(calledMethodSig))
-                                || ("compareTo".equals(calledMethodName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_PRIMITIVE_INT).toString().equals(calledMethodSig))
-                                || ("equalsIgnoreCase".equals(calledMethodName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString().equals(calledMethodSig))) {
+                                || ("compareTo".equals(calledMethodName) && SignatureBuilder.SIG_STRING_TO_INT.equals(calledMethodSig))
+                                || ("equalsIgnoreCase".equals(calledMethodName) && SignatureBuilder.SIG_STRING_TO_BOOLEAN.equals(calledMethodSig))) {
 
                             if (stack.getStackDepth() > 0) {
                                 OpcodeStack.Item itm = stack.getStackItem(0);

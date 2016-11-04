@@ -51,6 +51,7 @@ public final class SignatureUtils {
 
     private static final Pattern CLASS_COMPONENT_DELIMITER = Pattern.compile("\\$");
     private static final Pattern ANONYMOUS_COMPONENT = Pattern.compile("^[1-9][0-9]{0,9}$");
+    private static final String ECLIPSE_WEIRD_SIG_CHARS = "!+";
 
     /**
      * private to reinforce the helper status of the class
@@ -200,16 +201,14 @@ public final class SignatureUtils {
         int slot = methodIsStatic ? 0 : 1;
         int sigStart = start;
         for (int i = start; i < limit; i++) {
-            char c = methodSignature.charAt(i);
-            String parmSignature = null;
-            if (c != '[') {
-                if (c == 'L') {
+            if (!methodSignature.startsWith(Values.SIG_ARRAY_PREFIX, i)) {
+                String parmSignature = null;
+                if (methodSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX, i)) {
                     int semiPos = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
                     parmSignature = methodSignature.substring(sigStart, semiPos + 1);
                     slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
                     i = semiPos;
-                } else if ((c == '!') || (c == '+')) {
-                    // eclipse wonky classes
+                } else if (isWonkyEclipseSignature(methodSignature, i)) {
                     sigStart++;
                 } else {
                     parmSignature = methodSignature.substring(sigStart, i + 1);
@@ -242,20 +241,15 @@ public final class SignatureUtils {
         List<String> parmSignatures = new ArrayList<>();
         int sigStart = start;
         for (int i = start; i < limit; i++) {
-            char c = methodSignature.charAt(i);
-            String parmSignature;
-            if (c != Values.SIG_ARRAY_PREFIX.charAt(0)) {
-                if (c == Values.SIG_QUALIFIED_CLASS_PREFIX_CHAR) {
+            if (!methodSignature.startsWith(Values.SIG_ARRAY_PREFIX, i)) {
+                if (methodSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX, i)) {
                     int semiPos = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
-                    parmSignature = methodSignature.substring(sigStart, semiPos + 1);
-                    parmSignatures.add(parmSignature);
+                    parmSignatures.add(methodSignature.substring(sigStart, semiPos + 1));
                     i = semiPos;
-                } else if ((c == '!') || (c == '+')) {
-                    // eclipse wonky classes
+                } else if (isWonkyEclipseSignature(methodSignature, i)) {
                     sigStart++;
                 } else {
-                    parmSignature = methodSignature.substring(sigStart, i + 1);
-                    parmSignatures.add(parmSignature);
+                    parmSignatures.add(methodSignature.substring(sigStart, i + 1));
                 }
                 sigStart = i + 1;
             }
@@ -299,12 +293,10 @@ public final class SignatureUtils {
 
         int numParms = 0;
         for (int i = start; i < limit; i++) {
-            char c = methodSignature.charAt(i);
-            if (c != Values.SIG_ARRAY_PREFIX.charAt(0)) {
-                if (c == Values.SIG_QUALIFIED_CLASS_PREFIX_CHAR) {
+            if (!methodSignature.startsWith(Values.SIG_ARRAY_PREFIX, i)) {
+                if (methodSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX, i)) {
                     i = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
-                } else if ((c == '!') || (c == '+')) {
-                    // eclipse wonky classes
+                } else if (isWonkyEclipseSignature(methodSignature, i)) {
                     continue;
                 }
                 numParms++;
@@ -402,7 +394,7 @@ public final class SignatureUtils {
 
     /**
      * returns a slashed or dotted class name into a signature, like java/lang/String -- Ljava/lang/String;
-     * Primitives and arrays are accepted.
+     * Primitives and arrays are accepted. An empty or null string will result in an empty string.
      *
      * @param className
      *            the class name to convert
@@ -444,6 +436,13 @@ public final class SignatureUtils {
             buffer.append('$').append(components[i]);
         }
         return buffer.toString();
+    }
+
+    /**
+     * Eclipse makes weird class signatures.
+     */
+    public static boolean isWonkyEclipseSignature(String sig, int startIndex) {
+        return (sig.length() > startIndex) && (ECLIPSE_WEIRD_SIG_CHARS.indexOf(sig.charAt(startIndex)) >= 0);
     }
 
 }

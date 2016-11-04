@@ -323,7 +323,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
         String sig = getSigConstantOperand();
         String returnSig = SignatureUtils.getReturnSignature(sig);
         if (returnSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
-            returnSig = returnSig.substring(1, returnSig.length() - 1);
+            returnSig = SignatureUtils.trimSignature(returnSig);
             JavaClass retCls = Repository.lookupClass(returnSig);
             if (retCls.instanceOf(throwableClass)) {
                 int numParms = SignatureUtils.getNumParameters(sig);

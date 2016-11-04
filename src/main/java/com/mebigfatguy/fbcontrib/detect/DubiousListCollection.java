@@ -101,7 +101,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
         Field[] flds = cls.getFields();
         for (Field f : flds) {
             String sig = f.getSignature();
-            if (sig.charAt(0) == 'L') {
+            if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                 if (sig.startsWith("Ljava/util/") && sig.endsWith("List;")) {
                     fieldsReported.put(f.getName(), new FieldInfo());
                 }

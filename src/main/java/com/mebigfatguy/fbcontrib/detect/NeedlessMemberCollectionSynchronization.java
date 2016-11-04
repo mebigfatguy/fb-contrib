@@ -136,7 +136,7 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
     public void visitField(Field obj) {
         if (obj.isPrivate()) {
             String signature = obj.getSignature();
-            if (signature.charAt(0) == 'L') {
+            if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                 try {
                     JavaClass cls = Repository.lookupClass(SignatureUtils.stripSignature(signature));
                     if (cls.implementationOf(collectionClass) || cls.implementationOf(mapClass)) {

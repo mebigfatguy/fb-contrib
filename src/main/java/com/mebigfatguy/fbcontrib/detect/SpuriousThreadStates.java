@@ -81,9 +81,9 @@ public class SpuriousThreadStates extends BytecodeScanningDetector {
                         if (("wait".equals(methodName) || "notify".equals(methodName) || "notifyAll".equals(methodName)) && SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {
                             itm = stack.getStackItem(0);
                         } else if ("wait".equals(methodName)) {
-                            if (new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).toString().equals(signature) && (stack.getStackDepth() > 1)) {
+                            if (SignatureBuilder.SIG_LONG_TO_VOID.equals(signature) && (stack.getStackDepth() > 1)) {
                                 itm = stack.getStackItem(1);
-                            } else if (new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_INT).toString().equals(signature) && (stack.getStackDepth() > 2)) {
+                            } else if (SignatureBuilder.SIG_LONG_AND_INT_TO_VOID.equals(signature) && (stack.getStackDepth() > 2)) {
                                 itm = stack.getStackItem(2);
                             }
                         }

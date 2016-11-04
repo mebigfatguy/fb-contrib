@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -101,7 +102,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
             if (!obj.isEnum()) {
                 String fieldClass = obj.getSignature();
                 if (fieldClass.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
-                    fieldClass = fieldClass.substring(1, fieldClass.length() - 1);
+                    fieldClass = SignatureUtils.trimSignature(fieldClass);
                     String clsClass = cls.getClassName();
                     if (fieldClass.equals(clsClass)) {
                         enumConstNames.add(obj.getName());
