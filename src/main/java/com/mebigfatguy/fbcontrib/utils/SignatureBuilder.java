@@ -64,23 +64,27 @@ public class SignatureBuilder {
     }
 
     public SignatureBuilder withParamTypes(String... types) {
-        if (paramTypes == null) {
+        if (types == null) {
+            paramTypes = null;
+        } else {
             paramTypes = new ArrayList<>(types.length);
-        }
 
-        for (String type : types) {
-            paramTypes.add(SignatureUtils.classToSignature(type));
+            for (String type : types) {
+                paramTypes.add(SignatureUtils.classToSignature(type));
+            }
         }
         return this;
     }
 
     public SignatureBuilder withParamTypes(Class<?>... types) {
-        if (paramTypes == null) {
+        if (types == null) {
+            paramTypes = null;
+        } else {
             paramTypes = new ArrayList<>(types.length);
-        }
 
-        for (Class<?> type : types) {
-            paramTypes.add(SignatureUtils.classToSignature(type.getName()));
+            for (Class<?> type : types) {
+                paramTypes.add(SignatureUtils.classToSignature(type.getName()));
+            }
         }
         return this;
     }

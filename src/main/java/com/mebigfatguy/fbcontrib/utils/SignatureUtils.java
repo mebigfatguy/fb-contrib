@@ -376,7 +376,7 @@ public final class SignatureUtils {
      * converts a signature, like Ljava/lang/String; into a dotted class name.
      *
      * @param signature
-     *            a class signature
+     *            a class signature, must not be null
      *
      * @return the dotted class name
      */
@@ -393,7 +393,7 @@ public final class SignatureUtils {
      * @return the slashed class name
      */
     public static @SlashedClassName String trimSignature(String signature) {
-        if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
+        if ((signature != null) && signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
             return signature.substring(1, signature.length() - 1);
         }
 
@@ -402,6 +402,7 @@ public final class SignatureUtils {
 
     /**
      * returns a slashed or dotted class name into a signature, like java/lang/String -- Ljava/lang/String;
+     * Primitives and arrays are accepted.
      *
      * @param className
      *            the class name to convert
@@ -414,8 +415,20 @@ public final class SignatureUtils {
             // convert the classname inside the array
             return Values.SIG_ARRAY_PREFIX + classToSignature(className.substring(Values.SIG_ARRAY_PREFIX.length()));
         } else {
-            return Values.SIG_QUALIFIED_CLASS_PREFIX_CHAR + className.replace('.', '/') + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+            return Values.SIG_QUALIFIED_CLASS_PREFIX + className.replace('.', '/') + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
         }
+    }
+
+    /**
+     * Converts a type name into an array signature.
+     * Accepts slashed or dotted classnames, or type signatures.
+     */
+    public static String toArraySignature(String typeName) {
+        String sig = classToSignature(typeName);
+        if (sig == null || sig.length() == 0) {
+            return sig;
+        }
+        return Values.SIG_ARRAY_PREFIX + sig;
     }
 
     /**
