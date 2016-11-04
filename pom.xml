@@ -188,7 +188,6 @@
     </dependencies>
 
     <build>
-        <testSourceDirectory>${basedir}/samples</testSourceDirectory>
         <outputDirectory>${basedir}/target/classes/main</outputDirectory>
         <resources>
             <resource>
