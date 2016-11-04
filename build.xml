@@ -29,6 +29,7 @@
 	<property name="javac.target" value="1.7" />
 	<property name="javac.deprecation" value="on" />
 	<property name="javac.debug" value="on" />
+	<property name="test_reports.dir" value="${target.dir}/reports/test"/>
 
 	<property name="fb-contrib.version" value="6.9.0-SNAPSHOT" />
 	
@@ -102,9 +103,11 @@
 			<pathelement location="${lib.dir}/bcel-findbugs-${bcel-findbugs.version}.jar" />
 			<pathelement location="${lib.dir}/annotations-${annotations.version}.jar" />
 			<pathelement location="${lib.dir}/asm-debug-all-${asm-debug-all.version}.jar" />
+			<pathelement location="${main.classes.dir}" />
 		</path>
 		<path id="fb-contrib.test.classpath">
 			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
+			<pathelement location="${lib.dir}/jcommander-${jcommander.version}.jar" />
 		</path>
 		<path id="fb-contrib.samples.classpath">
 			<pathelement location="${lib.dir}/javax.servlet.jsp-api-${javax.servlet.jsp-api.version}.jar" />
@@ -158,7 +161,6 @@
 	<target name="compile_samples" depends="-init" description="compiles sample problem files">
 		<javac srcdir="${samples.dir}" destdir="${samples.classes.dir}" source="1.7" target="1.7" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
         	<compilerarg value="-XDignore.symbol.file"/>
-        	<classpath refid="fb-contrib.classpath" />
 			<classpath refid="fb-contrib.samples.classpath" />
 		</javac>
 		<delete file="${samples.dir}/SJVU_Sample.class" />
@@ -167,6 +169,18 @@
 			<classpath refid="fb-contrib.classpath" />
 			<classpath refid="fb-contrib.samples.classpath" />
 		</javac>
+	</target>
+	
+	<target name="test" depends="compile_test" unless="no.test" description="runs unit tests">
+		<mkdir dir="${test_reports.dir}" />
+		<taskdef resource="testngtasks" classpath="${lib.dir}/testng-${testng.version}.jar"/>
+
+		<testng outputDir="${test_report.dir}">
+			<classfileset dir="${test.classes.dir}" includes="**/*.class"/>
+			<classpath refid="fb-contrib.classpath"/>
+			<classpath refid="fb-contrib.test.classpath"/>
+			<classpath location="${test.classes.dir}"/>
+		</testng>
 	</target>
 
 	<target name="jar" depends="compile" xmlns:vcs="antlib:com.mebigfatguy.vcsversion" description="produces the fb-contrib jar file">
@@ -233,7 +247,7 @@
 		</javadoc>
 	</target>
 
-	<target name="build" depends="clean, -init, validate_xml, compile, compile_test, compile_samples, jar" description="builds the plugin jar">
+	<target name="build" depends="-init, validate_xml, compile, compile_test, compile_samples, test, jar" description="builds the plugin jar">
 	</target>
 
 	<target name="install" depends="build" description="installs the plugin into FindBugs">
