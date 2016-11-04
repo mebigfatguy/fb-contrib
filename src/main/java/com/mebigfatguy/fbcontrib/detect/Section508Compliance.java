@@ -265,7 +265,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
                             }
                         }
                     }
-                } else if (Values.isAppendableStringClassName(className)) {
+                } else if (SignatureUtils.isAppendableStringClassName(className)) {
                     if ("append".equals(methodName)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item item = stack.getStackItem(0);

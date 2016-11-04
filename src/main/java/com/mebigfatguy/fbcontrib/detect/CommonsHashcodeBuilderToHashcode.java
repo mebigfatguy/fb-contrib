@@ -19,10 +19,10 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
-
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
+
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;

@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.ConstantString;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -141,7 +142,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         ISBUserValue userValue = null;
         String calledClass = getClassConstantOperand();
 
-        if (Values.isAppendableStringClassName(calledClass)) {
+        if (SignatureUtils.isAppendableStringClassName(calledClass)) {
             String methodName = getNameConstantOperand();
             if ("append".equals(methodName)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(1);
@@ -201,7 +202,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
 
     private void dealWithEmptyString() {
         String calledClass = getClassConstantOperand();
-        if (Values.isAppendableStringClassName(calledClass) && "append".equals(getNameConstantOperand())
+        if (SignatureUtils.isAppendableStringClassName(calledClass) && "append".equals(getNameConstantOperand())
                 && getSigConstantOperand().startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withoutReturnType().toString()) && (stack.getStackDepth() > 1)) {
             OpcodeStack.Item sbItm = stack.getStackItem(1);
             if ((sbItm != null) && (sbItm.getUserValue() == null)) {
@@ -219,7 +220,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         ISBUserValue userValue = null;
         String calledClass = getClassConstantOperand();
 
-        if (Values.isAppendableStringClassName(calledClass)
+        if (SignatureUtils.isAppendableStringClassName(calledClass)
                 && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
             String signature = getSigConstantOperand();
             if (SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {

@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -177,7 +178,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 }
             } else if (seen == INVOKEVIRTUAL) {
                 String clsName = getClassConstantOperand();
-                if (Values.isAppendableStringClassName(clsName)) {
+                if (SignatureUtils.isAppendableStringClassName(clsName)) {
                     sawSBToString = "toString".equals(getNameConstantOperand());
                 }
             } else if (((seen >= ISTORE) && (seen <= ASTORE_3)) || (seen == IINC)) {

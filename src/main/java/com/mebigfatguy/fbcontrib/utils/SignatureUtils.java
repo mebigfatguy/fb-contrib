@@ -41,11 +41,9 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
  */
 public final class SignatureUtils {
 
-    public static final Set<String> PRIMITIVE_TYPES = UnmodifiableSet.create(
-        Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG,
-        Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_FLOAT, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_BOOLEAN,
-        Values.SIG_VOID, "", null
-    );
+    public static final Set<String> PRIMITIVE_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_INT,
+            Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_FLOAT, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_BOOLEAN,
+            Values.SIG_VOID, "", null);
 
     private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE);
 
@@ -401,8 +399,7 @@ public final class SignatureUtils {
     }
 
     /**
-     * returns a slashed or dotted class name into a signature, like java/lang/String -- Ljava/lang/String;
-     * Primitives and arrays are accepted.
+     * returns a slashed or dotted class name into a signature, like java/lang/String -- Ljava/lang/String; Primitives and arrays are accepted.
      *
      * @param className
      *            the class name to convert
@@ -420,12 +417,11 @@ public final class SignatureUtils {
     }
 
     /**
-     * Converts a type name into an array signature.
-     * Accepts slashed or dotted classnames, or type signatures.
+     * Converts a type name into an array signature. Accepts slashed or dotted classnames, or type signatures.
      */
     public static String toArraySignature(String typeName) {
         String sig = classToSignature(typeName);
-        if (sig == null || sig.length() == 0) {
+        if ((sig == null) || (sig.length() == 0)) {
             return sig;
         }
         return Values.SIG_ARRAY_PREFIX + sig;
@@ -446,4 +442,7 @@ public final class SignatureUtils {
         return buffer.toString();
     }
 
+    public static boolean isAppendableStringClassName(String className) {
+        return Values.SLASHED_JAVA_LANG_STRINGBUILDER.equals(className) || Values.SLASHED_JAVA_LANG_STRINGBUFFER.equals(className);
+    }
 }
