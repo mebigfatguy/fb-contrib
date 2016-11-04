@@ -103,6 +103,9 @@
 			<pathelement location="${lib.dir}/annotations-${annotations.version}.jar" />
 			<pathelement location="${lib.dir}/asm-debug-all-${asm-debug-all.version}.jar" />
 		</path>
+		<path id="fb-contrib.test.classpath">
+			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
+		</path>
 		<path id="fb-contrib.samples.classpath">
 			<pathelement location="${lib.dir}/javax.servlet.jsp-api-${javax.servlet.jsp-api.version}.jar" />
 			<pathelement location="${lib.dir}/junit-${junit.version}.jar" />
@@ -148,6 +151,7 @@
 	<target name="compile_test" depends="compile" description="compiles java test files">
 		<javac srcdir="${test.dir}" destdir="${test.classes.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
 			<classpath refid="fb-contrib.classpath" />
+			<classpath refid="fb-contrib.test.classpath" />
 		</javac>
 	</target>
 
