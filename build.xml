@@ -175,7 +175,7 @@
 		<mkdir dir="${test_reports.dir}" />
 		<taskdef resource="testngtasks" classpath="${lib.dir}/testng-${testng.version}.jar"/>
 
-		<testng outputDir="${test_report.dir}">
+		<testng outputDir="${test_reports.dir}">
 			<classfileset dir="${test.classes.dir}" includes="**/*.class"/>
 			<classpath refid="fb-contrib.classpath"/>
 			<classpath refid="fb-contrib.test.classpath"/>
