@@ -69,7 +69,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
         try {
             currentClass = classContext.getJavaClass();
             stack = new OpcodeStack();
-            returnTypes = new HashMap<JavaClass, Integer>();
+            returnTypes = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             currentClass = null;
@@ -87,6 +87,11 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
+
+        if (m.isSynthetic()) {
+            return;
+        }
+
         String signature = m.getSignature();
         if (!signature.endsWith(")Ljava/lang/Object;")) {
             return;
@@ -162,10 +167,11 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
      *            the set of classes to look for a common super class or interface
      * @return the type that is the common interface or superclass (not Object, tho).
      *
-     * @throws ClassNotFoundException if a superclass or superinterface of one of the class is not found
+     * @throws ClassNotFoundException
+     *             if a superclass or superinterface of one of the class is not found
      */
     private static JavaClass findCommonType(Set<JavaClass> classes) throws ClassNotFoundException {
-        Set<JavaClass> possibleCommonTypes = new HashSet<JavaClass>();
+        Set<JavaClass> possibleCommonTypes = new HashSet<>();
 
         boolean populate = true;
         for (JavaClass cls : classes) {
@@ -185,7 +191,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
                 possibleCommonTypes.remove(Repository.lookupClass(Values.SLASHED_JAVA_LANG_OBJECT));
                 populate = false;
             } else {
-                Set<JavaClass> retain = new HashSet<JavaClass>();
+                Set<JavaClass> retain = new HashSet<>();
                 retain.addAll(Arrays.asList(infs));
                 retain.addAll(Arrays.asList(supers));
                 possibleCommonTypes.retainAll(retain);
