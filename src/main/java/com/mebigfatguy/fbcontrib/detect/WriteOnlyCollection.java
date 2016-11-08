@@ -22,7 +22,6 @@ import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.Deque;
 import java.util.EnumMap;
 import java.util.EnumSet;
@@ -160,7 +159,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
                 new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(LinkedHashSet.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet", noParamsReturnType(TreeSet.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet",
-                new SignatureBuilder().withParamTypes(Comparator.class).withReturnType(TreeSet.class).toString()));
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_UTIL_COMPARATOR).withReturnType(TreeSet.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newIdentityHashSet", noParamsReturnType(Set.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newCopyOnWriteArraySet", noParamsReturnType(CopyOnWriteArraySet.class)));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMap", noParamsReturnType(HashMap.class)));
@@ -170,7 +169,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newConcurrentMap", noParamsReturnType(ConcurrentHashMap.class)));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", noParamsReturnType(TreeMap.class)));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap",
-                new SignatureBuilder().withParamTypes(Comparator.class).withReturnType(TreeMap.class).toString()));
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_UTIL_COMPARATOR).withReturnType(TreeMap.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newIdentityHashMap", noParamsReturnType(IdentityHashMap.class)));
 
         collectionFactoryMethods = Collections.<FQMethod> unmodifiableSet(cfm);

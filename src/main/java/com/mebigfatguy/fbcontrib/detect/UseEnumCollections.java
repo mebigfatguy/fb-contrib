@@ -209,7 +209,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     private boolean isEnum(int stackPos) throws ClassNotFoundException {
         if (stack.getStackDepth() > stackPos) {
             OpcodeStack.Item item = stack.getStackItem(stackPos);
-            if (item.getSignature().charAt(0) != 'L') {
+            if (!item.getSignature().startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                 return false;
             }
 

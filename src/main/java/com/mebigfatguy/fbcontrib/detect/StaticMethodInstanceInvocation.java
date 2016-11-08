@@ -151,7 +151,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
             if ((seen == POP) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 String popSig = itm.getSignature();
-                if (popSig.charAt(0) == 'L') {
+                if (popSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                     int lineNumber = -1;
                     if (lineNumberTable != null) {
                         lineNumber = lineNumberTable.getSourceLine(getPC());

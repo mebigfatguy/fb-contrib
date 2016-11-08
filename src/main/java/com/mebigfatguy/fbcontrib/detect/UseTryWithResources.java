@@ -170,7 +170,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         }
 
         if ((((bugPC >= 0) && (seen == INVOKEVIRTUAL)) || (seen == INVOKEINTERFACE)) && "addSuppressed".equals(getNameConstantOperand())
-                && "Ljava/lang/Throwable;)V".equals(getSigConstantOperand())
+                && SignatureBuilder.SIG_THROWABLE_TO_VOID.equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).implementationOf(throwableClass)) {
             closePC = -1;
             bugPC = -1;

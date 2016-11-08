@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -178,8 +179,8 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
      */
     private void addType(Type t) {
         String signature = t.getSignature();
-        if (signature.charAt(0) == 'L') {
-            refClasses.add(signature.substring(1, signature.length() - 1));
+        if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+            refClasses.add(SignatureUtils.trimSignature(signature));
         }
     }
 }

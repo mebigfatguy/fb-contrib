@@ -57,6 +57,13 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
     );
 
     private static final String CBX_MIN_REPORTABLE_ITEMS = "fb-contrib.cbx.minxmlitems";
+
+    /**
+     * This builder can be reused with different return types to reduce object creation,
+     * provided that param types are unchanged.
+     */
+    private static final SignatureBuilder XML_SIG_BUILDER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING);
+
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private int xmlItemCount = 0;
@@ -135,7 +142,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if (SignatureUtils.isAppendableStringClassName(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(clsName).toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
+                    if (Values.CONSTRUCTOR.equals(methodName) && XML_SIG_BUILDER.withReturnType(clsName).toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         strCon = (String) itm.getConstant();
                     }
@@ -145,7 +152,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if (SignatureUtils.isAppendableStringClassName(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if ("append".equals(methodName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(clsName).toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
+                    if ("append".equals(methodName) && XML_SIG_BUILDER.withReturnType(clsName).toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         strCon = (String) itm.getConstant();
                     }

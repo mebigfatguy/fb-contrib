@@ -587,18 +587,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             if ("getProperties".equals(methodName)) {
                 userValue = new SPPUserValue(SPPMethod.GETPROPERTIES);
             } else if ("arraycopy".equals(methodName) && (stack.getStackDepth() >= 5)) {
-                OpcodeStack.Item item = stack.getStackItem(2);
-                String sig = item.getSignature();
-                if ((sig.charAt(0) != '[') && !Values.SIG_JAVA_LANG_OBJECT.equals(sig)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                }
-                item = stack.getStackItem(4);
-                sig = item.getSignature();
-                if ((sig.charAt(0) != '[') && !Values.SIG_JAVA_LANG_OBJECT.equals(sig)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                }
+                checkForArrayParameter(stack.getStackItem(2));
+                checkForArrayParameter(stack.getStackItem(4));
             }
         } else if ("java/lang/reflect/Array".equals(className)) {
             int offset = -1;
@@ -610,12 +600,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 offset = 2;
             }
             if ((offset >= 0) && (stack.getStackDepth() > offset)) {
-                OpcodeStack.Item item = stack.getStackItem(offset);
-                String sig = item.getSignature();
-                if ((sig.charAt(0) != '[') && !Values.SIG_JAVA_LANG_OBJECT.equals(sig)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                }
+                checkForArrayParameter(stack.getStackItem(offset));
             }
         } else if (Values.SLASHED_JAVA_LANG_STRING.equals(className) && "format".equals(methodName) && (stack.getStackDepth() >= 2)) {
             OpcodeStack.Item item = stack.getStackItem(1);
@@ -638,6 +623,14 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             }
         }
         return userValue;
+    }
+
+    private void checkForArrayParameter(OpcodeStack.Item item) {
+        String sig = item.getSignature();
+        if (!sig.startsWith(Values.SIG_ARRAY_PREFIX) && !Values.SIG_JAVA_LANG_OBJECT.equals(sig)) {
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+        }
     }
 
     private SPPUserValue sawInvokeVirtual() throws ClassNotFoundException {

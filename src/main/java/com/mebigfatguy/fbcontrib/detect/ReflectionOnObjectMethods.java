@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -46,6 +47,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 
+    public static final String SIG_STRING_AND_CLASS_ARRAY_TO_METHOD = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, SignatureUtils.toArraySignature(Values.SLASHED_JAVA_LANG_CLASS))
+        .withReturnType(Method.class).toString();
+
     private static final Set<String> objectSigs = UnmodifiableSet.create(
             // "clone()", // clone is declared protected
             "equals(Ljava/lang/Object;)", "finalize()", "getClass()", "hashCode()", "notify()", "notifyAll()", "toString()", "wait", "wait(J)", "wait(JI)");
@@ -54,6 +58,8 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private Map<Integer, String[]> localClassTypes;
     private Map<String, String[]> fieldClassTypes;
+    /** This object is not thread-safe, but can be reused, provided that all necessary fields are overwritten. */
+    private final SignatureBuilder sigWithoutReturn = new SignatureBuilder().withoutReturnType();
 
     /**
      * constructs a ROOM detector given the reporter to report bugs on
@@ -203,14 +209,14 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
                         String method = getNameConstantOperand();
                         if ("getMethod".equals(method)) {
                             String sig = getSigConstantOperand();
-                            if (new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_ARRAY_PREFIX + Values.SLASHED_JAVA_LANG_CLASS).withReturnType("java/lang/reflect/Method").toString().equals(sig) && (stack.getStackDepth() >= 2)) {
+                            if (SIG_STRING_AND_CLASS_ARRAY_TO_METHOD.equals(sig) && (stack.getStackDepth() >= 2)) {
                                 OpcodeStack.Item clsArgs = stack.getStackItem(0);
                                 String[] arrayTypes = (String[]) clsArgs.getUserValue();
-                                if ((arrayTypes != null) || (clsArgs.isNull())) {
+                                if ((arrayTypes != null) || clsArgs.isNull()) {
                                     OpcodeStack.Item methodItem = stack.getStackItem(1);
                                     String methodName = (String) methodItem.getConstant();
                                     if (methodName != null) {
-                                        String reflectionSig = buildReflectionSignature(methodName, arrayTypes);
+                                        String reflectionSig = sigWithoutReturn.withMethodName(methodName).withParamTypes(arrayTypes).build();
                                         if (objectSigs.contains(reflectionSig)) {
                                             loadedTypes = (arrayTypes == null) ? new String[0] : arrayTypes;
                                         }
@@ -250,36 +256,6 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
                 }
             }
         }
-    }
-
-    /**
-     * builds a string that represents the signature of the method call that is being executed though reflection.
-     *
-     * @param methodName
-     *            the method name
-     * @param parmTypes
-     *            the array of parameter types of the method
-     *
-     * @return a signature string minus the return type
-     */
-    private static String buildReflectionSignature(String methodName, String... parmTypes) {
-        StringBuilder sb = new StringBuilder(64)
-            .append(methodName)
-            .append('(');
-        if (parmTypes != null) {
-            for (String type : parmTypes) {
-                sb.append(Values.SIG_QUALIFIED_CLASS_PREFIX_CHAR);
-                if (type == null) {
-                    return "";
-                }
-                sb.append(type);
-                if ((type.length() > 1) || ("IJ".indexOf(type) < 0)) {
-                    sb.append(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR);
-                }
-            }
-        }
-        sb.append(')');
-        return sb.toString();
     }
 
     /**

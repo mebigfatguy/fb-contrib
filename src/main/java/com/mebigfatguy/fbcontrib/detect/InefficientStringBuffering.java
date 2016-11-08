@@ -42,6 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 @CustomUserValue
 public class InefficientStringBuffering extends BytecodeScanningDetector {
+
     private enum AppendType {
         CLEAR, NESTED, TOSTRING
     };
@@ -179,7 +180,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                     }
                 }
 
-                if (getSigConstantOperand().startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withoutReturnType().toString())) {
+                if (getSigConstantOperand().startsWith(SignatureBuilder.PARAM_STRING)) {
                     if (userValue == null) {
                         userValue = new ISBUserValue(AppendType.CLEAR, true);
                     } else {
@@ -203,7 +204,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
     private void dealWithEmptyString() {
         String calledClass = getClassConstantOperand();
         if (SignatureUtils.isAppendableStringClassName(calledClass) && "append".equals(getNameConstantOperand())
-                && getSigConstantOperand().startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withoutReturnType().toString()) && (stack.getStackDepth() > 1)) {
+                && getSigConstantOperand().startsWith(SignatureBuilder.PARAM_STRING) && (stack.getStackDepth() > 1)) {
             OpcodeStack.Item sbItm = stack.getStackItem(1);
             if ((sbItm != null) && (sbItm.getUserValue() == null)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
