@@ -31,7 +31,7 @@ public class RegisterUtilsTest {
 
         int[] regs = RegisterUtils.getParameterRegisters(method);
 
-        assertEquals(expected, regs);
+        assertEquals(regs, expected);
     }
 
     @Test
@@ -54,7 +54,7 @@ public class RegisterUtilsTest {
 
         int[] regs = RegisterUtils.getParameterRegisters(method);
 
-        assertEquals(expected, regs);
+        assertEquals(regs, expected);
 
     }
 }
