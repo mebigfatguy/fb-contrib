@@ -108,6 +108,7 @@
 		<path id="fb-contrib.test.classpath">
 			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
 			<pathelement location="${lib.dir}/jcommander-${jcommander.version}.jar" />
+			<pathelement location="${lib.dir}/mockito-all-${mockito-all.version}.jar" />
 		</path>
 		<path id="fb-contrib.samples.classpath">
 			<pathelement location="${lib.dir}/javax.servlet.jsp-api-${javax.servlet.jsp-api.version}.jar" />
