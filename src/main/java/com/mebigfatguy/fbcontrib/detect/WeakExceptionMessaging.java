@@ -164,7 +164,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
                         return;
                     }
                 }
-                if (Values.SLASHED_JAVA_LANG_EXCEPTION.equals(clsName) && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_THROWABLE).toString().equals(getSigConstantOperand())) {
+                if (Values.SLASHED_JAVA_LANG_EXCEPTION.equals(clsName) && SignatureBuilder.SIG_THROWABLE_TO_VOID.equals(getSigConstantOperand())) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }

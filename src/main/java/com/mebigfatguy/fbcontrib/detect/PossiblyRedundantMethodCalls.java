@@ -315,7 +315,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                     for (int i = 0; i < parmCount; i++) {
                         OpcodeStack.Item parm = stack.getStackItem(i);
                         parmConstants[i] = parm.getConstant();
-                        if (parm.getSignature().charAt(0) == '[') {
+                        if (parm.getSignature().startsWith(Values.SIG_ARRAY_PREFIX)) {
                             if (!Values.ZERO.equals(parm.getConstant())) {
                                 return;
                             }

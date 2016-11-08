@@ -29,9 +29,16 @@ public class SignatureBuilder {
     public static final String SIG_VOID_TO_VOID = new SignatureBuilder().toString();
     public static final String SIG_VOID_TO_BOOLEAN = new SignatureBuilder().withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString();
     public static final String SIG_VOID_TO_INT = new SignatureBuilder().withReturnType(Values.SIG_PRIMITIVE_INT).toString();
+    public static final String SIG_VOID_TO_STRING = new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
+
     public static final String SIG_INT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).toString();
     public static final String SIG_INT_TO_OBJECT = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT)
             .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+
+    public static final String SIG_LONG_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).toString();
+    public static final String SIG_LONG_AND_INT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG).toString();
+
+    public static final String SIG_OBJECT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).toString();
     public static final String SIG_OBJECT_TO_OBJECT = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT)
             .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
     public static final String SIG_OBJECT_TO_BOOLEAN = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT)
@@ -40,10 +47,27 @@ public class SignatureBuilder {
             .withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
     public static final String SIG_TWO_OBJECTS_TO_OBJECT = new SignatureBuilder()
             .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+
+    public static final String SIG_THROWABLE_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_THROWABLE).toString();
+
     public static final String SIG_STRING_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).toString();
-    public static final String SIG_VOID_TO_STRING = new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
+    public static final String SIG_TWO_STRINGS_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING).toString();
+    public static final String SIG_STRING_AND_OBJECT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT).toString();
+    public static final String SIG_STRING_TO_BOOLEAN = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString();
+    public static final String SIG_STRING_TO_INT = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_PRIMITIVE_INT).toString();
+
     public static final String SIG_COLLECTION_TO_BOOLEAN = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_UTIL_COLLECTION)
             .withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString();
+
+    public static final String SIG_READ_OBJECT = new SignatureBuilder().withMethodName("readObject").withParamTypes("java/io/ObjectInputStream").toString();
+
+    public static final String SIG_BYTE_ARRAY = SignatureUtils.toArraySignature(Values.SIG_PRIMITIVE_BYTE);
+    public static final String SIG_CHAR_ARRAY = SignatureUtils.toArraySignature(Values.SIG_PRIMITIVE_CHAR);
+    public static final String SIG_OBJECT_ARRAY = SignatureUtils.toArraySignature(Values.SLASHED_JAVA_LANG_OBJECT);
+    public static final String SIG_STRING_ARRAY = SignatureUtils.toArraySignature(Values.SLASHED_JAVA_LANG_STRING);
+
+    public static final String PARAM_NONE = new SignatureBuilder().withoutReturnType().toString();
+    public static final String PARAM_STRING = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withoutReturnType().toString();
 
     private String methodName;
     private List<String> paramTypes;

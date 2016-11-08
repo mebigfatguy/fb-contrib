@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -34,6 +35,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * stream parameter. As this is the standard behavior implementing these methods is not needed.
  */
 public class NeedlessCustomSerialization extends BytecodeScanningDetector {
+
+    public static final String SIG_WRITE_OBJECT = new SignatureBuilder().withMethodName("writeObject").withParamTypes("java/io/ObjectOutputStream").toString();
+
     enum State {
         SEEN_NOTHING, SEEN_ALOAD1, SEEN_INVOKEVIRTUAL, SEEN_RETURN, SEEN_INVALID
     }
@@ -82,10 +86,10 @@ public class NeedlessCustomSerialization extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         String nameAndSignature = getMethod().getName() + getMethod().getSignature();
-        if ("readObject(Ljava/io/ObjectInputStream;)V".equals(nameAndSignature)) {
+        if (SignatureBuilder.SIG_READ_OBJECT.equals(nameAndSignature)) {
             inReadObject = true;
             inWriteObject = false;
-        } else if ("writeObject(Ljava/io/ObjectOutputStream;)V".equals(nameAndSignature)) {
+        } else if (SIG_WRITE_OBJECT.equals(nameAndSignature)) {
             inReadObject = false;
             inWriteObject = true;
         }

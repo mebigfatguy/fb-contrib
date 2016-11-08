@@ -256,7 +256,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
         }
         OpcodeStack.Item itm = stack.getStackItem(0);
         String sig = itm.getSignature();
-        if ((sig.length() > 0) && (sig.charAt(0) == '[')) {
+        if (sig.startsWith(Values.SIG_ARRAY_PREFIX)) {
             int reg = RegisterUtils.getAStoreReg(this, seen);
             Integer elReg = (Integer) itm.getUserValue();
             if (elReg != null) {
@@ -312,7 +312,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
         if (stack.getStackDepth() >= args.size()) {
             for (int i = 0; i < args.size(); i++) {
                 String argSig = args.get(i);
-                if ((argSig.length() > 0) && (argSig.charAt(0) == '[')) {
+                if (argSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
                     OpcodeStack.Item itm = stack.getStackItem(args.size() - i - 1);
                     int arrayReg = itm.getRegisterNumber();
                     WrapperInfo wi = wrappers.get(Integer.valueOf(arrayReg));

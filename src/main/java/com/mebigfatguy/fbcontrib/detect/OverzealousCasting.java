@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2016 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -51,7 +53,7 @@ public class OverzealousCasting extends BytecodeScanningDetector {
 
     /**
      * constructs a OC detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -62,7 +64,7 @@ public class OverzealousCasting extends BytecodeScanningDetector {
     /**
      * implements the visitor to set the state on entry of the code block to
      * SAW_NOTHING, and to see if there is a local variable table
-     * 
+     *
      * @param obj
      *            the context object of the currently parsed code block
      */
@@ -76,7 +78,7 @@ public class OverzealousCasting extends BytecodeScanningDetector {
 
     /**
      * looks for methods that contain a checkcast instruction
-     * 
+     *
      * @param method
      *            the context object of the current method
      * @return if the class does checkcast instructions
@@ -89,7 +91,7 @@ public class OverzealousCasting extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for a checkcast followed by a astore,
      * where the types of the objects are different.
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
@@ -117,8 +119,8 @@ public class OverzealousCasting extends BytecodeScanningDetector {
                 LocalVariable lv = lvt.getLocalVariable(reg, getNextPC());
                 if (lv != null) {
                     String sig = lv.getSignature();
-                    if (sig.charAt(0) == 'L') {
-                        sig = sig.substring(1, sig.length() - 1);
+                    if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+                        sig = SignatureUtils.trimSignature(sig);
                     }
                     if (!sig.equals(castClass)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.OC_OVERZEALOUS_CASTING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
@@ -128,8 +130,8 @@ public class OverzealousCasting extends BytecodeScanningDetector {
             } else if (seen == PUTFIELD) {
                 FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
                 String sig = f.getFieldSignature();
-                if (sig.charAt(0) == 'L') {
-                    sig = sig.substring(1, sig.length() - 1);
+                if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+                    sig = SignatureUtils.trimSignature(sig);
                 }
                 if (!sig.equals(castClass)) {
                     bugReporter.reportBug(

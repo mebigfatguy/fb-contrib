@@ -161,7 +161,7 @@ public class UseSplit extends BytecodeScanningDetector {
                 if ((seen == INVOKESPECIAL)
                         && "java/util/StringTokenizer".equals(getClassConstantOperand())
                         && Values.CONSTRUCTOR.equals(getNameConstantOperand())
-                        && new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING).toString().equals(getSigConstantOperand())) {
+                        && SignatureBuilder.SIG_TWO_STRINGS_TO_VOID.equals(getSigConstantOperand())) {
                     state = State.SEEN_STRINGTOKENIZER;
                 }
                 break;

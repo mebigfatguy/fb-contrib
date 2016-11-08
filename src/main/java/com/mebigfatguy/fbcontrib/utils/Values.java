@@ -55,7 +55,6 @@ public final class Values {
     public static final String SIG_VOID = Type.VOID.getSignature();
     public static final String SIG_GENERIC_TEMPLATE = "T";
     public static final String SIG_QUALIFIED_CLASS_PREFIX = "L";
-    public static final char SIG_QUALIFIED_CLASS_PREFIX_CHAR = 'L';
     public static final String SIG_QUALIFIED_CLASS_SUFFIX = ";";
     public static final char SIG_QUALIFIED_CLASS_SUFFIX_CHAR = ';';
     public static final String SIG_ARRAY_PREFIX = "[";
@@ -76,10 +75,10 @@ public final class Values {
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
-    public static final String SIG_JAVA_LANG_OBJECT = SIG_QUALIFIED_CLASS_PREFIX_CHAR + SLASHED_JAVA_LANG_OBJECT + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_OBJECT = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_OBJECT + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRING = "java/lang/String";
-    public static final String SIG_JAVA_LANG_STRING = SIG_QUALIFIED_CLASS_PREFIX_CHAR + SLASHED_JAVA_LANG_STRING + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_STRING = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_STRING + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRINGBUILDER = "java/lang/StringBuilder";
     @SlashedClassName
@@ -108,6 +107,8 @@ public final class Values {
     public static final String SLASHED_JAVA_LANG_CHARACTER = "java/lang/Character";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_BOOLEAN = "java/lang/Boolean";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_UTIL_COMPARATOR = "java/util/Comparator";
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_COLLECTION = "java/util/Collection";
     @SlashedClassName

@@ -62,7 +62,6 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     }
 
     static {
-        String stringToInt = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SIG_PRIMITIVE_INT).toString();
         String stringAndIntToInt = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_PRIMITIVE_INT).toString();
 
         Map<FQMethod, Object> methodsMap = new HashMap<>();
@@ -70,9 +69,9 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         // example, a value of 0 means the String literal to check
         // was the last parameter, and a stack offset of 2 means it was the 3rd
         // to last.
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", stringToInt), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", SignatureBuilder.SIG_STRING_TO_INT), Values.ZERO);
         methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", stringAndIntToInt), Values.ONE);
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", stringToInt), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", SignatureBuilder.SIG_STRING_TO_INT), Values.ZERO);
         methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", stringAndIntToInt), Values.ONE);
         methodsMap.put(new FQMethod("java/io/PrintStream", "print", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
         methodsMap.put(new FQMethod("java/io/PrintStream", "println", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);

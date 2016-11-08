@@ -141,7 +141,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                     if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
                         bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_UNBOX.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
-                    } else if (getSigConstantOperand().startsWith(new SignatureBuilder().withoutReturnType().toString()) && getNameConstantOperand().endsWith("Value")) {
+                    } else if (getSigConstantOperand().startsWith(SignatureBuilder.PARAM_NONE) && getNameConstantOperand().endsWith("Value")) {
                         bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_CAST.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
                     }
@@ -216,7 +216,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                 if (boxSigs != null) {
                     if ("valueOf".equals(getNameConstantOperand())) {
                         String sig = getSigConstantOperand();
-                        if (sig.startsWith(new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withoutReturnType().toString())) {
+                        if (sig.startsWith(SignatureBuilder.PARAM_STRING)) {
                             if (!Values.SLASHED_JAVA_LANG_BOOLEAN.equals(boxClass) || (getClassContext().getJavaClass().getMajor() >= Constants.MAJOR_1_5)) {
                                 state = State.SEEN_VALUEOFSTRING;
                             }

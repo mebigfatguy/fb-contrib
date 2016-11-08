@@ -52,7 +52,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
             compareClasses = UnmodifiableList.create(
                 // @formatter:off
                 new CompareSpec("java/lang/Comparable", new MethodInfo("compareTo", 1, Values.SIG_PRIMITIVE_INT)),
-                new CompareSpec("java/util/Comparator", new MethodInfo("compare", 2, Values.SIG_PRIMITIVE_INT))
+                new CompareSpec(Values.SLASHED_JAVA_UTIL_COMPARATOR, new MethodInfo("compare", 2, Values.SIG_PRIMITIVE_INT))
                 // @formatter:on
             );
         } catch (ClassNotFoundException e) {

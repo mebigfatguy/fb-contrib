@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.ParameterAnnotationEntry;
 import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -69,7 +70,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     private static final Set<String> NATIVE_JAXRS_TYPES = UnmodifiableSet.create(
             //@formatter:off
             Values.SIG_JAVA_LANG_STRING,
-            Values.SIG_ARRAY_PREFIX + Values.SIG_PRIMITIVE_BYTE,
+            SignatureBuilder.SIG_BYTE_ARRAY,
             "Ljava/io/InputStream;",
             "Ljava/io/Reader;",
             "Ljava/io/File;",
