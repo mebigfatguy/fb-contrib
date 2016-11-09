@@ -50,7 +50,7 @@ public final class RegisterUtils {
         if (seen == Constants.ASTORE) {
             return dbc.getRegisterOperand();
         }
-        if ((seen >= Constants.ASTORE_0) && (seen <= Constants.ASTORE_3)) {
+        if (OpcodeUtils.isAStore(seen)) {
             return seen - Constants.ASTORE_0;
         }
         return -1;
@@ -69,7 +69,7 @@ public final class RegisterUtils {
         if (seen == Constants.ALOAD) {
             return dbc.getRegisterOperand();
         }
-        if ((seen >= Constants.ALOAD_0) && (seen <= Constants.ALOAD_3)) {
+        if (OpcodeUtils.isALoad(seen)) {
             return seen - Constants.ALOAD_0;
         }
         return -1;
@@ -89,15 +89,15 @@ public final class RegisterUtils {
                 || (seen == Constants.DSTORE)) {
             return dbc.getRegisterOperand();
         }
-        if ((seen >= Constants.ISTORE_0) && (seen <= Constants.ISTORE_3)) {
+        if (OpcodeUtils.isIStore(seen)) {
             return seen - Constants.ISTORE_0;
-        } else if (seen <= Constants.LSTORE_3) {
+        } else if (OpcodeUtils.isLStore(seen)) {
             return seen - Constants.LSTORE_0;
-        } else if (seen <= Constants.FSTORE_3) {
+        } else if (OpcodeUtils.isFStore(seen)) {
             return seen - Constants.FSTORE_0;
-        } else if (seen <= Constants.DSTORE_3) {
+        } else if (OpcodeUtils.isDStore(seen)) {
             return seen - Constants.DSTORE_0;
-        } else if (seen <= Constants.ASTORE_3) {
+        } else if (OpcodeUtils.isAStore(seen)) {
             return seen - Constants.ASTORE_0;
         }
         return -1;
@@ -116,15 +116,15 @@ public final class RegisterUtils {
         if ((seen == Constants.ALOAD) || (seen == Constants.ILOAD) || (seen == Constants.LLOAD) || (seen == Constants.FLOAD) || (seen == Constants.DLOAD)) {
             return dbc.getRegisterOperand();
         }
-        if ((seen >= Constants.ILOAD_0) && (seen <= Constants.ILOAD_3)) {
+        if (OpcodeUtils.isILoad(seen)) {
             return seen - Constants.ILOAD_0;
-        } else if (seen <= Constants.LLOAD_3) {
+        } else if (OpcodeUtils.isLLoad(seen)) {
             return seen - Constants.LLOAD_0;
-        } else if (seen <= Constants.FLOAD_3) {
+        } else if (OpcodeUtils.isFLoad(seen)) {
             return seen - Constants.FLOAD_0;
-        } else if (seen <= Constants.DLOAD_3) {
+        } else if (OpcodeUtils.isDLoad(seen)) {
             return seen - Constants.DLOAD_0;
-        } else if (seen <= Constants.ALOAD_3) {
+        } else if (OpcodeUtils.isALoad(seen)) {
             return seen - Constants.ALOAD_0;
         }
         return -1;
