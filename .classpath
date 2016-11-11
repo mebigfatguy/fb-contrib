@@ -38,5 +38,6 @@
 	<classpathentry kind="lib" path="lib/jena-shaded-guava-3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/findbugs-annotations-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.9.10.jar"/>
+	<classpathentry kind="lib" path="lib/jcommander-1.48.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
