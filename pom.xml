@@ -145,7 +145,7 @@
         </dependency>
         <dependency><scope>test</scope><groupId>backport-util-concurrent</groupId><artifactId>backport-util-concurrent</artifactId><version>3.1</version></dependency>
         <dependency><scope>test</scope><groupId>com.google.guava</groupId><artifactId>guava</artifactId><version>19.0</version></dependency>
-        <dependency><scope>test</scope><groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>1.6</version></dependency>
+        <dependency><scope>test</scope><groupId>commons-codec</groupId><artifactId>commons-codec</artifactId><version>1.10</version></dependency>
         <dependency><scope>test</scope><groupId>commons-io</groupId><artifactId>commons-io</artifactId><version>2.4</version></dependency>
         <dependency><scope>test</scope><groupId>commons-collections</groupId><artifactId>commons-collections</artifactId><version>3.2.1</version></dependency>
         <dependency><scope>test</scope><groupId>javax.persistence</groupId><artifactId>persistence-api</artifactId><version>1.0.2</version></dependency>
@@ -155,8 +155,8 @@
         <dependency><scope>test</scope><groupId>junit</groupId><artifactId>junit</artifactId><version>4.12</version></dependency>
         <dependency><scope>test</scope><groupId>log4j</groupId><artifactId>log4j</artifactId><version>1.2.17</version></dependency>
         <dependency><scope>test</scope><groupId>org.apache.commons</groupId><artifactId>commons-lang3</artifactId><version>3.3</version></dependency>
-        <dependency><scope>test</scope><groupId>org.apache.httpcomponents</groupId><artifactId>httpclient</artifactId><version>4.3.4</version></dependency>
-        <dependency><scope>test</scope><groupId>org.apache.httpcomponents</groupId><artifactId>httpcore</artifactId><version>4.3.2</version></dependency>
+        <dependency><scope>test</scope><groupId>org.apache.httpcomponents</groupId><artifactId>httpclient</artifactId><version>4.5.2</version></dependency>
+        <dependency><scope>test</scope><groupId>org.apache.httpcomponents</groupId><artifactId>httpcore</artifactId><version>4.4.5</version></dependency>
         <dependency><scope>test</scope><groupId>org.mockito</groupId><artifactId>mockito-all</artifactId><version>2.0.2-beta</version></dependency>
         <dependency><scope>test</scope><groupId>org.slf4j</groupId><artifactId>slf4j-api</artifactId><version>1.7.21</version></dependency>
         <dependency><scope>test</scope><groupId>org.springframework</groupId><artifactId>spring-tx</artifactId><version>4.3.3.RELEASE</version></dependency>
