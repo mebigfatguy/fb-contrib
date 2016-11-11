@@ -101,7 +101,7 @@
 		<path id="fb-contrib.classpath">
 			<pathelement location="${lib.dir}/findbugs-${findbugs.version}.jar" />
 			<pathelement location="${lib.dir}/bcel-findbugs-${bcel-findbugs.version}.jar" />
-			<pathelement location="${lib.dir}/annotations-${annotations.version}.jar" />
+			<pathelement location="${lib.dir}/findbugs-annotations-${findbugs-annotations.version}.jar" />
 			<pathelement location="${lib.dir}/asm-debug-all-${asm-debug-all.version}.jar" />
 			<pathelement location="${main.classes.dir}" />
 		</path>
