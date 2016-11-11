@@ -20,7 +20,7 @@
 	<classpathentry kind="lib" path="lib/jsr311-api-1.1.1.jar" sourcepath="lib/sources/jsr311-api-1.1.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/javax.persistence-2.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-1.3.2.jar" sourcepath="lib/sources/commons-io-1.3.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/mockito-all-2.0.2-beta.jar"/>
+	<classpathentry kind="lib" path="lib/mockito-all-2.0.2-beta.jar" sourcepath="/home/dave/.m2/repository/org/mockito/mockito-all/2.0.2-beta/mockito-all-2.0.2-beta-sources.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="lib" path="lib/threetenbp-1.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>

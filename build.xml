@@ -42,7 +42,7 @@
 	
 	<target name="infra_jars" description="pull jars needed to build fb-contrib to ${user.dir}/.ant/lib">
 		<mkdir dir="${user.home}/.ant/lib" />
-		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/1.6.1/yank-1.6.1.jar" dest="${user.home}/.ant/lib"/>
+		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/1.8.0/yank-1.8.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://bitbucket.org/kjlubick/bugrankcheckstyle/downloads/bug-rank-check-style-1.0.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/vcsversion/vcsversion/0.4.0/vcsversion-0.4.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/fb-delta/fb-delta/0.6.0/fb-delta-0.6.0.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
@@ -51,7 +51,7 @@
 	
 	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank" unless="no.yank">
         <mkdir dir="${lib.dir}" />
-        <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" proxyServer="${proxy.server}" source="true" separateClassifierTypes="true">
+        <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" proxyServer="${proxy.server}" source="true" separateClassifierTypes="true" checkSHADigests="true">
             <server url="http://repo1.maven.org/maven2" />
             <generateVersions propertyFileName="${basedir}/version.properties" />
         </yank:yank>
