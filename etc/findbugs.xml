@@ -2,7 +2,7 @@
 
 <!-- Plugin descriptor for fb-contrib plugin. This plugin is enabled by default. -->
 <FindbugsPlugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="findbugsplugin.xsd" pluginid="com.mebigfatguy.fbcontrib" defaultenabled="true"
-	provider="fb-contrib project" website="http://fb-contrib.sourceforge.net">
+	provider="fb-contrib project" website="http://github.com/mebigfatguy/fb-contrib">
 
 	<!-- Passes -->
 
