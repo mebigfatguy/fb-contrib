@@ -171,7 +171,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
 
         if ((((bugPC >= 0) && (seen == INVOKEVIRTUAL)) || (seen == INVOKEINTERFACE)) && "addSuppressed".equals(getNameConstantOperand())
                 && SignatureBuilder.SIG_THROWABLE_TO_VOID.equals(getSigConstantOperand())
-                && Repository.lookupClass(getClassConstantOperand()).implementationOf(throwableClass)) {
+                && Repository.lookupClass(getClassConstantOperand()).instanceOf(throwableClass)) {
             closePC = -1;
             bugPC = -1;
         }
@@ -190,7 +190,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterLoad(int seen, int pc) throws ClassNotFoundException {
-        if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && "close".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())
+        if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && "close".equals(getNameConstantOperand())
+                && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).implementationOf(autoCloseableClass)) {
             TryBlock tb = findEnclosingFinally(pc);
             if ((tb != null) && (stack.getStackDepth() > 0)) {
