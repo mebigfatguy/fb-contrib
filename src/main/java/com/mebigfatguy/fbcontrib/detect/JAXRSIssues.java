@@ -62,6 +62,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             "Ljavax/ws/rs/HeaderParam;",
             "Ljavax/ws/rs/MatrixParam;",
             "Ljavax/ws/rs/QueryParam;",
+            "Ljavax/ws/rs/BeanParam;",
             "Ljavax/ws/rs/core/Context;",
             "Lcom/wordnik/swagger/annotations/ApiParam;"
             //@formatter:on
