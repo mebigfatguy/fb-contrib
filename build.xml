@@ -238,6 +238,7 @@
                 <include name="**/*.md" />
                 <include name="**/*.xls" />
                 <include name="**/*.example" />
+                <include name="**/*.fbp" />
 			</fileset>
 		</zip>
 	</target>
