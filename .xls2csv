@@ -1,0 +1,4 @@
+#!/bin/bash
+soffice --headless --convert-to csv:"Text - txt - csv (StarCalc)":59,34,0,1,1 --outdir /tmp $1  > /dev/null
+base=`echo "$1" | cut -d'.' -f1`
+cat /tmp/$base.csv
