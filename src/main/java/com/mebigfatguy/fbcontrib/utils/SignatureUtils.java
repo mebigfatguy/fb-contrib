@@ -410,6 +410,11 @@ public final class SignatureUtils {
 
     /**
      * Converts a type name into an array signature. Accepts slashed or dotted classnames, or type signatures.
+     *
+     * @param typeName
+     *            the class name to generate an array signature from
+     * 
+     * @return the array signature
      */
     public static String toArraySignature(String typeName) {
         String sig = classToSignature(typeName);
@@ -440,6 +445,13 @@ public final class SignatureUtils {
 
     /**
      * Eclipse makes weird class signatures.
+     *
+     * @param sig
+     *            the signature in type table
+     * @param startIndex
+     *            the index into the signature where the wonkyness begins
+     *
+     * @return if this signature has eclipse meta chars
      */
     public static boolean isWonkyEclipseSignature(String sig, int startIndex) {
         return (sig.length() > startIndex) && (ECLIPSE_WEIRD_SIG_CHARS.indexOf(sig.charAt(startIndex)) >= 0);

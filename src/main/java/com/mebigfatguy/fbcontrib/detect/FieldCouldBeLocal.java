@@ -222,7 +222,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
      * localizableFields if the access is a GETFIELD. If any unchecked fields remain, this method is recursively called on all outgoing edges of this basic
      * block.
      *
-     * @param bb
+     * @param startBB
      *            this basic block
      * @param uncheckedFields
      *            the list of fields to look for
