@@ -83,14 +83,10 @@ public class RegisterUtilsTest {
 
     @BeforeMethod
     public void setUp() {
-        try {
-            MockitoAnnotations.initMocks(this);
 
-            when(dbc.getRegisterOperand()).thenReturn(OPERAND);
-        } catch (Throwable t) {
-            t.printStackTrace();
-            throw t;
-        }
+        MockitoAnnotations.initMocks(this);
+
+        when(dbc.getRegisterOperand()).thenReturn(OPERAND);
     }
 
     @DataProvider(name = "parameterRegisters")
