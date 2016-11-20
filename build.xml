@@ -109,6 +109,9 @@
 			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
 			<pathelement location="${lib.dir}/jcommander-${jcommander.version}.jar" />
 			<pathelement location="${lib.dir}/mockito-all-${mockito-all.version}.jar" />
+			<pathelement location="${findbugs.dir}/lib/dom4j-1.6.1.jar" />
+			<pathelement location="${findbugs.dir}/lib/jaxen-1.1.6.jar" />
+			
 		</path>
 		<path id="fb-contrib.samples.classpath">
 			<pathelement location="${lib.dir}/javax.servlet.jsp-api-${javax.servlet.jsp-api.version}.jar" />
