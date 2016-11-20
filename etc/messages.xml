@@ -1665,6 +1665,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
     	</Details>
     </Detector>
 
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UnsynchronizedSingletonFieldWrites">
+		<Details>
+			<![CDATA[
+			<p>Looks for writes to fields of classes that are believed to be classes used only as Singletons. These 
+			classes include Enums, as well as spring beans that are Singleton scoped.</p>
+			<p>It is a fast detector.</p>
+			]]>
+		</Details>
+	</Detector>
+	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
 	</Detector>
@@ -5679,6 +5689,17 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="USFW_UNSYNCHRONIZED_SINGLETON_FIELD_WRITES">
+    	<ShortDescription>Method of Singleton class writes to a field in an unsynchronized manner</ShortDescription>
+    	<LongDescription>Method {1} of Singleton class writes to a field in an unsynchronized manner</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method writes to a field of this class. Since this class is seen as a Singleton this can produce race
+    		conditions, or cause non-visible changes to other threads, because the field isn't accessed synchronously.
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5819,4 +5840,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="CCI">Concurrent Collection Issues</BugCode>
 	<BugCode abbrev="UTWR">Use Try With Resources</BugCode>
 	<BugCode abbrev="SSCU">Suspicious Shaded Class Use</BugCode>
+	<BugCode abbrev="USFW">Unsynchronous Singleton Field Writes</BugCode>
 </MessageCollection>
