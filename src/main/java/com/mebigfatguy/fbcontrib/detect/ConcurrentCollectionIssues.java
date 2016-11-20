@@ -112,7 +112,6 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for concurrent collection issue
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "We don't need or want to handle every opcode")
     @Override
     public void sawOpcode(int seen) {
         CCIUserValue userValue = null;

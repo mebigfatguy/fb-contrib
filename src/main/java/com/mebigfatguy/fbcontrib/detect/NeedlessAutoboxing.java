@@ -195,7 +195,6 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
         }
     }
 
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "We don't need or want to handle every opcode")
     private void sawOpcodeAfterNothing(int seen) {
         BoxParms boxSigs;
         switch (seen) {

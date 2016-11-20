@@ -1,8 +1,8 @@
 <FindBugsFilter>
     <!-- The sawOpcode method is just ugly. -->
     <Match>
-        <Method name="sawOpcode"/>
-        <Bug pattern="CC_CYCLOMATIC_COMPLEXITY"/>
+        <Method name="~sawOpcode(After\w*)?"/>
+        <Bug pattern="CC_CYCLOMATIC_COMPLEXITY,SF_SWITCH_NO_DEFAULT"/>
     </Match>
     <!-- https://github.com/mebigfatguy/fb-contrib/issues/130 -->
     <Match>
