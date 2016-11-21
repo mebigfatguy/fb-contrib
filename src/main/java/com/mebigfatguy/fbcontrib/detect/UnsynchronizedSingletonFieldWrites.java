@@ -168,6 +168,21 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
         return isSpringBean;
     }
 
+    /**
+     * looks for methods that should not be scanned for fields writes for a variety of reasons
+     * <ul>
+     * <li>Constructor</li>
+     * <li>Static Initializer</li>
+     * <li>static method</li>
+     * <li>Has a synchronized attribute</li>
+     * <li>Has a @PostConstruct annotation</li>
+     * <li>Has an @Autowired annotation</li>
+     * </ul>
+     *
+     * @param m
+     *            the method to check
+     * @return if the method should not be scanned
+     */
     public boolean isIgnorableMethod(Method m) {
         if (m.isStatic() || m.isSynchronized()) {
             return true;
