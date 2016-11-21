@@ -52,7 +52,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
         // @formatter:on
     );
 
-    private static final String SPRING_SCOPE_ANNOTATION = "Lorg.springframework/context/annotation/Scope;";
+    private static final String SPRING_SCOPE_ANNOTATION = "Lorg/springframework/context/annotation/Scope;";
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;

@@ -16,7 +16,7 @@ public class USFW_Sample {
 
 @Controller
 @Scope("singleton")
-class USFW2_Sample {
+class USFW1_Sample {
 
     private String s;
 
@@ -27,7 +27,7 @@ class USFW2_Sample {
 
 @Repository
 @Scope(scopeName = "singleton")
-class USFW3_Sample {
+class USFW2_Sample {
 
     private String s;
 
@@ -38,7 +38,7 @@ class USFW3_Sample {
 
 @Service
 @Scope("prototype")
-class USFW1_Sample {
+class USFW3_Sample {
 
     private String s;
 
