@@ -94,7 +94,6 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
      * @param seen
      *            the currently parse opcode
      */
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "We don't need or want to handle every opcode")
     @Override
     public void sawOpcode(int seen) {
         Integer userValue = null;

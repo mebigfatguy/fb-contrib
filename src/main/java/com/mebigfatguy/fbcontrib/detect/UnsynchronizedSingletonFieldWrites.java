@@ -155,7 +155,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
                         String propName = pair.getNameString();
                         if ("value".equals(propName) || "propName".equals(propName)) {
                             ElementValue value = pair.getValue();
-                            return ("singleton".equals(value));
+                            return "singleton".equals(value.stringifyValue());
                         }
                     }
                 }
