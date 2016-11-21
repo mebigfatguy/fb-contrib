@@ -14,17 +14,6 @@ public class USFW_Sample {
     }
 }
 
-@Service
-@Scope("prototype")
-class USFW1_Sample {
-
-    private String s;
-
-    public void fpWriteToField() {
-        s = "Hello";
-    }
-}
-
 @Controller
 @Scope("singleton")
 class USFW2_Sample {
@@ -39,6 +28,17 @@ class USFW2_Sample {
 @Repository
 @Scope(scopeName = "singleton")
 class USFW3_Sample {
+
+    private String s;
+
+    public void writeToField() {
+        s = "Hello";
+    }
+}
+
+@Service
+@Scope("prototype")
+class USFW1_Sample {
 
     private String s;
 
