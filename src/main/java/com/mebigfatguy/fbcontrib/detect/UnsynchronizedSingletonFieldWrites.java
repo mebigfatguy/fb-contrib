@@ -53,6 +53,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
     );
 
     private static final String SPRING_SCOPE_ANNOTATION = "Lorg/springframework/context/annotation/Scope;";
+    private static final String POST_CONSTRUCT_ANNOTATION = "Ljavax/annotation/PostConstruct;";
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
@@ -90,7 +91,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        if (m.isSynchronized()) {
+        if (m.isSynchronized() || m.isStatic()) {
             return;
         }
 
