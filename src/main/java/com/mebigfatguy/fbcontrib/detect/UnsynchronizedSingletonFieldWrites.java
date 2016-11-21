@@ -52,8 +52,14 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
         // @formatter:on
     );
 
+    private static final Set<String> IGNORABLE_METHOD_ANNOTATIONS = UnmodifiableSet.create(
+        // @formatter:off
+        "Ljavax/annotation/PostConstruct;",
+        "Lorg/springframework/beans/factory/annotation/Autowired;"
+        // @formatter:on
+    );
+
     private static final String SPRING_SCOPE_ANNOTATION = "Lorg/springframework/context/annotation/Scope;";
-    private static final String POST_CONSTRUCT_ANNOTATION = "Ljavax/annotation/PostConstruct;";
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
@@ -91,12 +97,8 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        if (m.isSynchronized() || m.isStatic()) {
-            return;
-        }
 
-        String name = m.getName();
-        if (Values.CONSTRUCTOR.equals(name) || Values.STATIC_INITIALIZER.equals(name)) {
+        if (isIgnorableMethod(m)) {
             return;
         }
 
@@ -164,5 +166,31 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
         }
 
         return isSpringBean;
+    }
+
+    public boolean isIgnorableMethod(Method m) {
+        if (m.isStatic() || m.isSynchronized()) {
+            return true;
+        }
+
+        String name = m.getName();
+        if (Values.CONSTRUCTOR.equals(name) || Values.STATIC_INITIALIZER.equals(name)) {
+            return true;
+        }
+
+        AnnotationEntry[] annotations = m.getAnnotationEntries();
+        if (CollectionUtils.isEmpty(annotations)) {
+            return false;
+        }
+
+        for (AnnotationEntry annotation : annotations) {
+            String type = annotation.getAnnotationType();
+
+            if (IGNORABLE_METHOD_ANNOTATIONS.contains(type)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
