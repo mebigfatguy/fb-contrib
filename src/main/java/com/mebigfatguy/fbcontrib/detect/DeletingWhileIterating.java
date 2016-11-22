@@ -90,12 +90,12 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     static {
         Map<QMethod, Integer> mm = new HashMap<>();
         mm.put(new QMethod("add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), Values.ONE);
-        mm.put(new QMethod("addAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN), Values.ONE);
+        mm.put(new QMethod("addAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
         mm.put(new QMethod("addAll", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION).withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.TWO);
         mm.put(new QMethod("clear", SignatureBuilder.SIG_VOID_TO_VOID), Values.ZERO);
         mm.put(new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT), Values.ONE);
-        mm.put(new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN), Values.ONE);
-        mm.put(new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN), Values.ONE);
+        mm.put(new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
+        mm.put(new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
         modifyingMethods = Collections.<QMethod, Integer> unmodifiableMap(mm);
     }
 

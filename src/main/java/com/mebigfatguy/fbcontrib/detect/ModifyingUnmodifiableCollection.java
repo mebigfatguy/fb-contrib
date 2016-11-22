@@ -53,9 +53,9 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
         Map<QMethod, Integer> mm = new HashMap<>();
         mm.put(new QMethod("add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), Values.ONE);
         mm.put(new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), Values.ONE);
-        mm.put(new QMethod("addAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN), Values.ONE);
-        mm.put(new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN), Values.ONE);
-        mm.put(new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN), Values.ONE);
+        mm.put(new QMethod("addAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
+        mm.put(new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
+        mm.put(new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
         mm.put(new QMethod("put", SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT), Values.TWO);
         mm.put(new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT), Values.ONE);
         mm.put(new QMethod("putAll", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_UTIL_MAP).toString()), Values.ONE);

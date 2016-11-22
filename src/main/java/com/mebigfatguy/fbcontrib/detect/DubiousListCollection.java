@@ -53,10 +53,10 @@ public class DubiousListCollection extends BytecodeScanningDetector {
     private static final Set<QMethod> setMethods = UnmodifiableSet.create(
             //@formatter:off
             new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
-            new QMethod("containsAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN),
+            new QMethod("containsAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN),
             new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT),
-            new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN),
-            new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_BOOLEAN)
+            new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN),
+            new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN)
             //@formatter:on
     );
 
