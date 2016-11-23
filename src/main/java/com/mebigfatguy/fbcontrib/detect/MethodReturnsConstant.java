@@ -246,7 +246,6 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
 
                 if (methods[i].getName().equals(methods[j].getName())) {
                     overloads.add(methods[j]);
-                    methods[j--] = methods[--numMethods];
                     foundOverload = true;
                 }
             }
