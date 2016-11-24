@@ -26,7 +26,7 @@ class USFW1_Sample {
 }
 
 @Repository
-@Scope(scopeName = "singleton")
+@Scope("singleton")
 class USFW2_Sample {
 
     private String s;
