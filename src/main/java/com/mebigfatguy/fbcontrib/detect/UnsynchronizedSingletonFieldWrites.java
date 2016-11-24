@@ -183,7 +183,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
      *            the method to check
      * @return if the method should not be scanned
      */
-    public boolean isIgnorableMethod(Method m) {
+    private boolean isIgnorableMethod(Method m) {
         if (m.isStatic() || m.isSynchronized()) {
             return true;
         }

@@ -413,7 +413,7 @@ public final class SignatureUtils {
      *
      * @param typeName
      *            the class name to generate an array signature from
-     * 
+     *
      * @return the array signature
      */
     public static String toArraySignature(String typeName) {
@@ -453,7 +453,7 @@ public final class SignatureUtils {
      *
      * @return if this signature has eclipse meta chars
      */
-    public static boolean isWonkyEclipseSignature(String sig, int startIndex) {
+    private static boolean isWonkyEclipseSignature(String sig, int startIndex) {
         return (sig.length() > startIndex) && (ECLIPSE_WEIRD_SIG_CHARS.indexOf(sig.charAt(startIndex)) >= 0);
     }
 
