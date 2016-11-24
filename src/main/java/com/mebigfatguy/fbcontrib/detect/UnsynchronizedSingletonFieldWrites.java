@@ -156,7 +156,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
                 if (!CollectionUtils.isEmpty(pairs)) {
                     for (ElementValuePair pair : pairs) {
                         String propName = pair.getNameString();
-                        if ("value".equals(propName) || "propName".equals(propName)) {
+                        if ("value".equals(propName) || "scopeName".equals(propName)) {
                             ElementValue value = pair.getValue();
                             return "singleton".equals(value.stringifyValue());
                         }
