@@ -236,10 +236,11 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
             if (isOverlyPermissive(declaredAccess)) {
                 try {
-                    if (!isDerived(Repository.lookupClass(key.getClassName()), key)) {
+                    String clsName = key.getClassName();
+                    if (!isDerived(Repository.lookupClass(clsName), key)) {
 
-                        BugInstance bi = new BugInstance(this, BugType.OPM_OVERLY_PERMISSIVE_METHOD.name(), LOW_PRIORITY).addClass(key.getClassName())
-                                .addMethod(key.getClassName(), key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0);
+                        BugInstance bi = new BugInstance(this, BugType.OPM_OVERLY_PERMISSIVE_METHOD.name(), LOW_PRIORITY).addClass(clsName).addMethod(clsName,
+                                key.getMethodName(), key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0);
 
                         String descr = String.format("- Method declared %s but could be declared %s", getDeclaredAccessValue(declaredAccess),
                                 getRequiredAccessValue(mi));
