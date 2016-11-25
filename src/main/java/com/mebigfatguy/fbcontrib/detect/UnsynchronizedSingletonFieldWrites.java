@@ -94,6 +94,12 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
         }
     }
 
+    /**
+     * implements the visitor to look for methods that could possibly be 'normal' methods where a field is written to
+     *
+     * @param obj
+     *            the currently parsed code block
+     */
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
