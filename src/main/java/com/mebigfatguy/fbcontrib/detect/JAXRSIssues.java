@@ -188,13 +188,13 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                             String parmPath = getDefaultAnnotationValue(a);
                             if ((parmPath != null) && (!path.matches(".*\\{" + parmPath + "\\b.*"))) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addString(parmPath));
+                                        .addMethod(this).addString("Path param: " + parmPath));
                             }
                         } else if ("Ljavax/ws/rs/core/Context;".equals(annotationType)) {
                             String parmSig = parmTypes[parmIndex].getSignature();
                             if (!VALID_CONTEXT_TYPES.contains(parmSig)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.JXI_INVALID_CONTEXT_PARAMETER_TYPE.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addString(parmSig));
+                                        .addMethod(this).addString("Parameter signature: " + parmSig));
                             }
                         }
                     }
