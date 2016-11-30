@@ -206,7 +206,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                         sawBareParm = true;
                     } else {
                         bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addString("Parameter " + parmIndex + 1));
+                                .addMethod(this).addString("Parameter " + (parmIndex + 1)));
                         break;
                     }
 
