@@ -64,10 +64,14 @@ public final class FQMethod {
         return className.equals(that.className) && methodName.equals(that.methodName) && signature.equals(that.signature);
     }
 
+    public String toFQMethodSignature() {
+        return className + '.' + methodName + signature;
+    }
+
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
     @Override
     public String toString() {
-        return className + '.' + methodName + signature;
+        return toFQMethodSignature();
     }
 
 }

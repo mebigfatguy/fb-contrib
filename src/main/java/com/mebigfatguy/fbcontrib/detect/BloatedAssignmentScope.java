@@ -38,6 +38,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
@@ -76,15 +77,15 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         //@formatter:on
     );
 
-    private static final Set<String> dangerousAssignmentMethodSources = UnmodifiableSet.create(
+    private static final Set<FQMethod> dangerousAssignmentMethodSources = UnmodifiableSet.create(
         //@formatter:off
-        "java/lang/System.currentTimeMillis()J",
-        "java/lang/System.nanoTime()J",
-        "java/util/Calendar.get(I)I",
-        "java/util/GregorianCalendar.get(I)I",
-        "java/util/Iterator.next()Ljava/lang/Object;",
-        "java/util/regex/Matcher.start()I",
-        "java/util/concurrent/TimeUnit.toMillis(J)J"
+        new FQMethod("java/lang/System", "currentTimeMillis", "()J"),
+        new FQMethod("java/lang/System", "nanoTime", "()J"),
+        new FQMethod("java/util/Calendar", "get", "(I)I"),
+        new FQMethod("java/util/GregorianCalendar", "get", "(I)I"),
+        new FQMethod("java/util/Iterator", "next", "()Ljava/lang/Object;"),
+        new FQMethod("java/util/regex/Matcher", "start", "()I"),
+        new FQMethod("java/util/concurrent/TimeUnit", "toMillis", "(J)J")
         //@formatter:on
     );
 
@@ -1174,13 +1175,14 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             return true;
         }
 
-        String key = clsName + '.' + getNameConstantOperand() + getSigConstantOperand();
+        FQMethod key = new FQMethod(clsName, getNameConstantOperand(), getSigConstantOperand());
         if (dangerousAssignmentMethodSources.contains(key)) {
             return true;
         }
 
+        String sig = key.toFQMethodSignature();
         for (Pattern p : dangerousAssignmentMethodPatterns) {
-            Matcher m = p.matcher(key);
+            Matcher m = p.matcher(sig);
             if (m.matches()) {
                 return true;
             }
