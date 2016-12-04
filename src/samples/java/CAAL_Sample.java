@@ -34,4 +34,8 @@ public class CAAL_Sample {
     public void testCAAL(boolean[] v) {
         List l = Arrays.asList(v);
     }
+
+    public void testFPTwoArrays(char[] a, char[] b) {
+        List l = Arrays.asList(a, b);
+    }
 }
