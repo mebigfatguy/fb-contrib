@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<BugCollection version="3.0.1" sequence="0" timestamp="1479928382089" analysisTimestamp="1479928382559" release="">
+<BugCollection version="3.0.1" sequence="0" timestamp="1480865638464" analysisTimestamp="1480865638551" release="">
   <Project projectName="Samples">
     <Jar>/home/dave/dev/fb-contrib/target/classes/samples</Jar>
     <AuxClasspathEntry>/home/dave/dev/fb-contrib/lib/javax.servlet.jsp-api-2.3.1.jar</AuxClasspathEntry>
@@ -2411,8 +2411,8 @@
     <ShortMessage>Method calls Array.asList on an array of primitive values</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(byte[]) calls Array.asList on an array of primitive values</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2428,8 +2428,8 @@
     <ShortMessage>Method calls Array.asList on an array of primitive values</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(char[]) calls Array.asList on an array of primitive values</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2445,8 +2445,8 @@
     <ShortMessage>Method calls Array.asList on an array of primitive values</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(double[]) calls Array.asList on an array of primitive values</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2462,8 +2462,8 @@
     <ShortMessage>Method calls Array.asList on an array of primitive values</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(float[]) calls Array.asList on an array of primitive values</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2479,8 +2479,8 @@
     <ShortMessage>Method calls Array.asList on an array of primitive values</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(int[]) calls Array.asList on an array of primitive values</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2496,8 +2496,8 @@
     <ShortMessage>Method calls Array.asList on an array of primitive values</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(long[]) calls Array.asList on an array of primitive values</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2513,8 +2513,8 @@
     <ShortMessage>Method calls Array.asList on an array of primitive values</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(short[]) calls Array.asList on an array of primitive values</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2530,8 +2530,8 @@
     <ShortMessage>Method calls Array.asList on an array of primitive values</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(boolean[]) calls Array.asList on an array of primitive values</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2547,8 +2547,8 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to l in CAAL_Sample.testCAAL(byte[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2570,8 +2570,8 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to l in CAAL_Sample.testCAAL(char[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2593,8 +2593,8 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to l in CAAL_Sample.testCAAL(double[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2616,8 +2616,8 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to l in CAAL_Sample.testCAAL(float[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2639,8 +2639,8 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to l in CAAL_Sample.testCAAL(int[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2662,8 +2662,8 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to l in CAAL_Sample.testCAAL(long[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2685,8 +2685,8 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to l in CAAL_Sample.testCAAL(short[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2708,8 +2708,8 @@
     <ShortMessage>Dead store to local variable</ShortMessage>
     <LongMessage>Dead store to l in CAAL_Sample.testCAAL(boolean[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2727,25 +2727,65 @@
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
     <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
   </BugInstance>
+  <BugInstance type="DLS_DEAD_LOCAL_STORE" priority="2" rank="17" abbrev="DLS" category="STYLE" instanceHash="1ab25098c41073065701f266e4d406e2" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="563">
+    <ShortMessage>Dead store to local variable</ShortMessage>
+    <LongMessage>Dead store to l in CAAL_Sample.testFPTwoArrays(char[], char[])</LongMessage>
+    <Class classname="CAAL_Sample" primary="true">
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
+      </SourceLine>
+      <Message>In class CAAL_Sample</Message>
+    </Class>
+    <Method classname="CAAL_Sample" name="testFPTwoArrays" signature="([C[C)V" isStatic="false" primary="true">
+      <SourceLine classname="CAAL_Sample" start="39" end="40" startBytecode="0" endBytecode="12" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java"/>
+      <Message>In method CAAL_Sample.testFPTwoArrays(char[], char[])</Message>
+    </Method>
+    <LocalVariable name="l" register="3" pc="16" role="LOCAL_VARIABLE_NAMED">
+      <Message>Local variable named l</Message>
+    </LocalVariable>
+    <SourceLine classname="CAAL_Sample" primary="true" start="39" end="39" startBytecode="15" endBytecode="15" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+      <Message>At CAAL_Sample.java:[line 39]</Message>
+    </SourceLine>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.LOCAL_NAME" value="l"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.METHOD_RESULT" value="true"/>
+    <Property name="edu.umd.cs.findbugs.detect.DeadLocalStoreProperty.NO_LOADS" value="true"/>
+  </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="19beeeeb2dfcc042c1566c86a435e725" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class CAAL_Sample id defined in the default package</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
-    <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java" synthetic="true">
-      <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+    <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java" synthetic="true">
+      <Message>At CAAL_Sample.java:[lines 4-40]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="UC_USELESS_VOID_METHOD" priority="2" rank="17" abbrev="UC" category="STYLE" instanceHash="c759550e89df4882282f9ca5ddfdd0ce" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Useless non-empty void method</ShortMessage>
+    <LongMessage>Method CAAL_Sample.testFPTwoArrays(char[], char[]) seems to be useless</LongMessage>
+    <Class classname="CAAL_Sample" primary="true">
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
+      </SourceLine>
+      <Message>In class CAAL_Sample</Message>
+    </Class>
+    <Method classname="CAAL_Sample" name="testFPTwoArrays" signature="([C[C)V" isStatic="false" primary="true">
+      <SourceLine classname="CAAL_Sample" start="39" end="40" startBytecode="0" endBytecode="92" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java"/>
+      <Message>In method CAAL_Sample.testFPTwoArrays(char[], char[])</Message>
+    </Method>
+    <SourceLine classname="CAAL_Sample" primary="true" start="40" end="40" startBytecode="16" endBytecode="16" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+      <Message>At CAAL_Sample.java:[line 40]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UC_USELESS_VOID_METHOD" priority="3" rank="20" abbrev="UC" category="STYLE" instanceHash="e92a7f41ad84b74f0eabea017d590ff9" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(byte[]) seems to be useless</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2761,8 +2801,8 @@
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(char[]) seems to be useless</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2778,8 +2818,8 @@
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(double[]) seems to be useless</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2795,8 +2835,8 @@
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(float[]) seems to be useless</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2812,8 +2852,8 @@
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(int[]) seems to be useless</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2829,8 +2869,8 @@
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(long[]) seems to be useless</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2846,8 +2886,8 @@
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(short[]) seems to be useless</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2863,8 +2903,8 @@
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(boolean[]) seems to be useless</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2880,8 +2920,8 @@
     <ShortMessage>Method defines parameter list with array as last argument, rather than vararg</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(double[]) defines parameter list with array as last argument, rather than vararg</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2897,8 +2937,8 @@
     <ShortMessage>Method defines parameter list with array as last argument, rather than vararg</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(float[]) defines parameter list with array as last argument, rather than vararg</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2914,8 +2954,8 @@
     <ShortMessage>Method defines parameter list with array as last argument, rather than vararg</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(int[]) defines parameter list with array as last argument, rather than vararg</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2931,8 +2971,8 @@
     <ShortMessage>Method defines parameter list with array as last argument, rather than vararg</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(long[]) defines parameter list with array as last argument, rather than vararg</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2948,8 +2988,8 @@
     <ShortMessage>Method defines parameter list with array as last argument, rather than vararg</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(short[]) defines parameter list with array as last argument, rather than vararg</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2965,8 +3005,8 @@
     <ShortMessage>Method defines parameter list with array as last argument, rather than vararg</ShortMessage>
     <LongMessage>Method CAAL_Sample.testCAAL(boolean[]) defines parameter list with array as last argument, rather than vararg</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -2982,8 +3022,8 @@
     <ShortMessage>Primitive array passed to function expecting a variable number of object arguments</ShortMessage>
     <LongMessage>byte[] passed to varargs method java.util.Arrays.asList(Object[]) in CAAL_Sample.testCAAL(byte[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -3006,8 +3046,8 @@
     <ShortMessage>Primitive array passed to function expecting a variable number of object arguments</ShortMessage>
     <LongMessage>char[] passed to varargs method java.util.Arrays.asList(Object[]) in CAAL_Sample.testCAAL(char[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -3030,8 +3070,8 @@
     <ShortMessage>Primitive array passed to function expecting a variable number of object arguments</ShortMessage>
     <LongMessage>double[] passed to varargs method java.util.Arrays.asList(Object[]) in CAAL_Sample.testCAAL(double[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -3054,8 +3094,8 @@
     <ShortMessage>Primitive array passed to function expecting a variable number of object arguments</ShortMessage>
     <LongMessage>float[] passed to varargs method java.util.Arrays.asList(Object[]) in CAAL_Sample.testCAAL(float[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -3078,8 +3118,8 @@
     <ShortMessage>Primitive array passed to function expecting a variable number of object arguments</ShortMessage>
     <LongMessage>int[] passed to varargs method java.util.Arrays.asList(Object[]) in CAAL_Sample.testCAAL(int[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -3102,8 +3142,8 @@
     <ShortMessage>Primitive array passed to function expecting a variable number of object arguments</ShortMessage>
     <LongMessage>long[] passed to varargs method java.util.Arrays.asList(Object[]) in CAAL_Sample.testCAAL(long[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -3126,8 +3166,8 @@
     <ShortMessage>Primitive array passed to function expecting a variable number of object arguments</ShortMessage>
     <LongMessage>short[] passed to varargs method java.util.Arrays.asList(Object[]) in CAAL_Sample.testCAAL(short[])</LongMessage>
     <Class classname="CAAL_Sample" primary="true">
-      <SourceLine classname="CAAL_Sample" start="4" end="36" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
-        <Message>At CAAL_Sample.java:[lines 4-36]</Message>
+      <SourceLine classname="CAAL_Sample" start="4" end="40" sourcefile="CAAL_Sample.java" sourcepath="CAAL_Sample.java">
+        <Message>At CAAL_Sample.java:[lines 4-40]</Message>
       </SourceLine>
       <Message>In class CAAL_Sample</Message>
     </Class>
@@ -10221,7 +10261,7 @@
       <Message>At JXI_Sample.java:[line 23]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="JXI_INVALID_CONTEXT_PARAMETER_TYPE" priority="2" rank="7" abbrev="JXI" category="CORRECTNESS" instanceHash="4b1009a33e61042fb3b4566101c82906" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+  <BugInstance type="JXI_INVALID_CONTEXT_PARAMETER_TYPE" priority="2" rank="7" abbrev="JXI" category="CORRECTNESS" instanceHash="298f091f09789a4ddc54546245159bc1" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JAX-RS Method specifies an invalid @Context parameter type</ShortMessage>
     <LongMessage>JAX-RS JXI_Sample.stuffWithBadContext(InputStream) Method specifies an invalid @Context parameter type</LongMessage>
     <Class classname="JXI_Sample" primary="true">
@@ -10234,14 +10274,14 @@
       <SourceLine classname="JXI_Sample" start="41" end="41" startBytecode="0" endBytecode="58" sourcefile="JXI_Sample.java" sourcepath="JXI_Sample.java"/>
       <Message>In method JXI_Sample.stuffWithBadContext(InputStream)</Message>
     </Method>
-    <String value="Ljava/io/InputStream;">
-      <Message>Value Ljava/io/InputStream;</Message>
+    <String value="Parameter signature: Ljava/io/InputStream;">
+      <Message>Value Parameter signature: Ljava/io/InputStream;</Message>
     </String>
     <SourceLine classname="JXI_Sample" start="41" end="41" startBytecode="0" endBytecode="58" sourcefile="JXI_Sample.java" sourcepath="JXI_Sample.java" synthetic="true">
       <Message>At JXI_Sample.java:[line 41]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="JXI_PARM_PARAM_NOT_FOUND_IN_PATH" priority="2" rank="7" abbrev="JXI" category="CORRECTNESS" instanceHash="eff341939209229399f87602d8a058ec" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+  <BugInstance type="JXI_PARM_PARAM_NOT_FOUND_IN_PATH" priority="2" rank="7" abbrev="JXI" category="CORRECTNESS" instanceHash="85815c88ab5fce47b3626c9bce6ee689" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JAX-RS Method specifies non-resolveable @PathParam</ShortMessage>
     <LongMessage>JAX-RS Method JXI_Sample.mismatchParm(String) specifies non-resolveable @PathParam</LongMessage>
     <Class classname="JXI_Sample" primary="true">
@@ -10254,14 +10294,14 @@
       <SourceLine classname="JXI_Sample" start="35" end="35" startBytecode="0" endBytecode="58" sourcefile="JXI_Sample.java" sourcepath="JXI_Sample.java"/>
       <Message>In method JXI_Sample.mismatchParm(String)</Message>
     </Method>
-    <String value="bad">
-      <Message>Value bad</Message>
+    <String value="Path param: bad">
+      <Message>Value Path param: bad</Message>
     </String>
     <SourceLine classname="JXI_Sample" start="35" end="35" startBytecode="0" endBytecode="58" sourcefile="JXI_Sample.java" sourcepath="JXI_Sample.java" synthetic="true">
       <Message>At JXI_Sample.java:[line 35]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" priority="2" rank="7" abbrev="JXI" category="CORRECTNESS" instanceHash="649996d3503c931e927e0f60fe9ae390" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+  <BugInstance type="JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT" priority="2" rank="7" abbrev="JXI" category="CORRECTNESS" instanceHash="ffc8e4034e0d3dc0fdd03414292cfcca" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>JAX-RS Method defines a parameter that has no @*Param or @Context annotation, or @Consumes method annotation</ShortMessage>
     <LongMessage>JAX-RS Method JXI_Sample.stufStuff(String, JXI_Sample$Stuff) defines a parameter that has no @*Param or @Context annotation, or @Consumes method annotation</LongMessage>
     <Class classname="JXI_Sample" primary="true">
@@ -10274,8 +10314,8 @@
       <SourceLine classname="JXI_Sample" start="29" end="29" startBytecode="0" endBytecode="68" sourcefile="JXI_Sample.java" sourcepath="JXI_Sample.java"/>
       <Message>In method JXI_Sample.stufStuff(String, JXI_Sample$Stuff)</Message>
     </Method>
-    <String value="Parameter 11">
-      <Message>Value Parameter 11</Message>
+    <String value="Parameter 2">
+      <Message>Value Parameter 2</Message>
     </String>
     <SourceLine classname="JXI_Sample" start="29" end="29" startBytecode="0" endBytecode="68" sourcefile="JXI_Sample.java" sourcepath="JXI_Sample.java" synthetic="true">
       <Message>At JXI_Sample.java:[line 29]</Message>
@@ -41346,7 +41386,7 @@ Common false-positive cases include:</p>
   <Errors errors="0" missingClasses="1">
     <MissingClass>org.objectweb.asm.AnnotationVisitor</MissingClass>
   </Errors>
-  <FindBugsSummary timestamp="Wed, 23 Nov 2016 14:13:02 -0500" total_classes="306" referenced_classes="927" total_bugs="1993" total_size="5934" num_packages="1" java_version="1.8.0_65" vm_version="25.65-b01" cpu_seconds="38.07" clock_seconds="97.04" peak_mbytes="150.06" alloc_mbytes="773.38" gc_seconds="4.49" priority_3="738" priority_2="1055" priority_1="200">
+  <FindBugsSummary timestamp="Sun, 4 Dec 2016 10:33:58 -0500" total_classes="306" referenced_classes="927" total_bugs="1995" total_size="5937" num_packages="1" java_version="1.8.0_65" vm_version="25.65-b01" cpu_seconds="36.42" clock_seconds="51.61" peak_mbytes="139.22" alloc_mbytes="773.38" gc_seconds="2.98" priority_3="738" priority_2="1057" priority_1="200">
     <FileStats path="ABC_Sample.java" bugCount="9" size="30" bugHash="3567e98a7d86cdd520bef8a5c52580d1"/>
     <FileStats path="ACEM_Sample.java" bugCount="4" size="11" bugHash="07f3b584e55eacb88503f0c723e779ac"/>
     <FileStats path="AFBR_Sample.java" bugCount="2" size="36" bugHash="bff5a21e84aa9e285e6a28e64feb8e45"/>
@@ -41358,7 +41398,7 @@ Common false-positive cases include:</p>
     <FileStats path="BL_Sample.java" bugCount="7" size="49" bugHash="30450605aae9f77f7a4f8ac75975e0a1"/>
     <FileStats path="BRPI_Sample.java" bugCount="7" size="11" bugHash="00eb953842e17023b031dc92437bcd75"/>
     <FileStats path="BSB_Sample.java" bugCount="9" size="50" bugHash="367d1455b19fe17fbf4c052dad5ea11f"/>
-    <FileStats path="CAAL_Sample.java" bugCount="38" size="27" bugHash="a25af5c6be8299d8d19d93b680ad14fb"/>
+    <FileStats path="CAAL_Sample.java" bugCount="40" size="30" bugHash="9c85165e1e62f896968dbced5208040a"/>
     <FileStats path="CAO_Sample.java" bugCount="13" size="34" bugHash="32447ffce48c036a4fe82b4620b7724c"/>
     <FileStats path="CBC_Sample.java" bugCount="9" size="47" bugHash="5c8e677589a74504ddb2d51f4d5a3673"/>
     <FileStats path="CBX_Sample.java" bugCount="2" size="9" bugHash="9b39244f9d8ab08fe7039af642b15179"/>
@@ -41402,7 +41442,7 @@ Common false-positive cases include:</p>
     <FileStats path="ITU_Sample.java" bugCount="5" size="15" bugHash="a14cad20fd0aafbfc30e7dfe745f225e"/>
     <FileStats path="JPAI_Sample.java" bugCount="19" size="66" bugHash="e6416992f5c5e6a643ad2029c108211c"/>
     <FileStats path="JVR_Sample.java" bugCount="5" size="36" bugHash="68b536a7d1438fd2ffa28fc9e208e38f"/>
-    <FileStats path="JXI_Sample.java" bugCount="6" size="24" bugHash="0d899a5879b81d285e7a2c2ba80487c1"/>
+    <FileStats path="JXI_Sample.java" bugCount="6" size="24" bugHash="e0d4b2efcb05d280c07c4e0f50ea3a53"/>
     <FileStats path="LEST_Sample.java" bugCount="21" size="87" bugHash="03d5458a83ec02e6ed78cd66b03e4cfb"/>
     <FileStats path="LGO_Sample.java" bugCount="7" size="22" bugHash="0e98e42b4f14ce2e812b40a170e51edc"/>
     <FileStats path="LII_Sample.java" bugCount="8" size="40" bugHash="c73e369c8a40f00f3795980dd93cd44c"/>
@@ -41484,7 +41524,7 @@ Common false-positive cases include:</p>
     <FileStats path="WEM_Sample.java" bugCount="7" size="28" bugHash="846fa06bcc5a3865edf77cab0813f22d"/>
     <FileStats path="WI_Sample.java" bugCount="6" size="14" bugHash="dab6926822536eb77d8355b3785c31fb"/>
     <FileStats path="WOC_Sample.java" bugCount="22" size="135" bugHash="fbedbc3eb199200af82f2180305bf851"/>
-    <PackageStats package="" total_bugs="1993" total_types="306" total_size="5934" priority_3="738" priority_2="1055" priority_1="200">
+    <PackageStats package="" total_bugs="1995" total_types="306" total_size="5937" priority_3="738" priority_2="1057" priority_1="200">
       <ClassStats class="A" sourceFile="SCR_Sample.java" interface="false" size="3" bugs="1" priority_3="1"/>
       <ClassStats class="ABC_Sample" sourceFile="ABC_Sample.java" interface="false" size="13" bugs="6" priority_3="3" priority_2="3"/>
       <ClassStats class="ABC_Sample$UseComparator" sourceFile="ABC_Sample.java" interface="false" size="9" bugs="1" priority_3="1"/>
@@ -41506,7 +41546,7 @@ Common false-positive cases include:</p>
       <ClassStats class="BL_Sample" sourceFile="BL_Sample.java" interface="false" size="49" bugs="7" priority_3="4" priority_2="3"/>
       <ClassStats class="BRPI_Sample" sourceFile="BRPI_Sample.java" interface="false" size="11" bugs="7" priority_3="1" priority_2="6"/>
       <ClassStats class="BSB_Sample" sourceFile="BSB_Sample.java" interface="false" size="50" bugs="9" priority_3="2" priority_2="3" priority_1="4"/>
-      <ClassStats class="CAAL_Sample" sourceFile="CAAL_Sample.java" interface="false" size="27" bugs="38" priority_3="15" priority_2="16" priority_1="7"/>
+      <ClassStats class="CAAL_Sample" sourceFile="CAAL_Sample.java" interface="false" size="30" bugs="40" priority_3="15" priority_2="18" priority_1="7"/>
       <ClassStats class="CAO_Sample" sourceFile="CAO_Sample.java" interface="false" size="34" bugs="13" priority_3="5" priority_2="8"/>
       <ClassStats class="CBC_Sample" sourceFile="CBC_Sample.java" interface="false" size="34" bugs="13" priority_3="5" priority_2="5" priority_1="3"/>
       <ClassStats class="CBC_Sample$Giant" sourceFile="CBC_Sample.java" interface="false" size="13" bugs="1" priority_3="1"/>
@@ -41793,60 +41833,74 @@ Common false-positive cases include:</p>
       <ClassStats class="s2" sourceFile="COM_Sample.java" interface="false" size="6" bugs="2" priority_3="2"/>
     </PackageStats>
     <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="19055" invocations="3037" avgMicrosecondsPerInvocation="6274" maxMicrosecondsPerInvocation="460937" standardDeviationMircosecondsPerInvocation="25291"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="4708" invocations="3002" avgMicrosecondsPerInvocation="1568" maxMicrosecondsPerInvocation="168219" standardDeviationMircosecondsPerInvocation="6882"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="3356" invocations="927" avgMicrosecondsPerInvocation="3620" maxMicrosecondsPerInvocation="372095" standardDeviationMircosecondsPerInvocation="16341"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="2463" invocations="927" avgMicrosecondsPerInvocation="2657" maxMicrosecondsPerInvocation="87089" standardDeviationMircosecondsPerInvocation="6868"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectStatistics" totalMilliseconds="2174" invocations="927" avgMicrosecondsPerInvocation="2345" maxMicrosecondsPerInvocation="63967" standardDeviationMircosecondsPerInvocation="6212"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="2148" invocations="1287" avgMicrosecondsPerInvocation="1669" maxMicrosecondsPerInvocation="515155" standardDeviationMircosecondsPerInvocation="14881"/>
-      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="1781" invocations="2697" avgMicrosecondsPerInvocation="660" maxMicrosecondsPerInvocation="68087" standardDeviationMircosecondsPerInvocation="2528"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.impl.ZipCodeBaseFactory" totalMilliseconds="1666" invocations="40" avgMicrosecondsPerInvocation="41666" maxMicrosecondsPerInvocation="214309" standardDeviationMircosecondsPerInvocation="51507"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="1367" invocations="1311" avgMicrosecondsPerInvocation="1042" maxMicrosecondsPerInvocation="123880" standardDeviationMircosecondsPerInvocation="4079"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="1147" invocations="1301" avgMicrosecondsPerInvocation="882" maxMicrosecondsPerInvocation="35812" standardDeviationMircosecondsPerInvocation="2283"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="1072" invocations="1349" avgMicrosecondsPerInvocation="794" maxMicrosecondsPerInvocation="35115" standardDeviationMircosecondsPerInvocation="2122"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="991" invocations="1367" avgMicrosecondsPerInvocation="725" maxMicrosecondsPerInvocation="59106" standardDeviationMircosecondsPerInvocation="2555"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="948" invocations="1311" avgMicrosecondsPerInvocation="723" maxMicrosecondsPerInvocation="53633" standardDeviationMircosecondsPerInvocation="2454"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="924" invocations="927" avgMicrosecondsPerInvocation="997" maxMicrosecondsPerInvocation="43209" standardDeviationMircosecondsPerInvocation="3110"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="842" invocations="1557" avgMicrosecondsPerInvocation="541" maxMicrosecondsPerInvocation="118726" standardDeviationMircosecondsPerInvocation="3647"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="793" invocations="1079" avgMicrosecondsPerInvocation="735" maxMicrosecondsPerInvocation="86087" standardDeviationMircosecondsPerInvocation="3104"/>
-      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="782" invocations="2912" avgMicrosecondsPerInvocation="268" maxMicrosecondsPerInvocation="217961" standardDeviationMircosecondsPerInvocation="4109"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="780" invocations="927" avgMicrosecondsPerInvocation="841" maxMicrosecondsPerInvocation="483860" standardDeviationMircosecondsPerInvocation="15905"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="703" invocations="927" avgMicrosecondsPerInvocation="758" maxMicrosecondsPerInvocation="66240" standardDeviationMircosecondsPerInvocation="3470"/>
-      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="592" invocations="80199" avgMicrosecondsPerInvocation="7" maxMicrosecondsPerInvocation="11099" standardDeviationMircosecondsPerInvocation="118"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="509" invocations="927" avgMicrosecondsPerInvocation="549" maxMicrosecondsPerInvocation="80349" standardDeviationMircosecondsPerInvocation="2994"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="499" invocations="927" avgMicrosecondsPerInvocation="538" maxMicrosecondsPerInvocation="18880" standardDeviationMircosecondsPerInvocation="1686"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="472" invocations="1311" avgMicrosecondsPerInvocation="360" maxMicrosecondsPerInvocation="55114" standardDeviationMircosecondsPerInvocation="2221"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="472" invocations="927" avgMicrosecondsPerInvocation="509" maxMicrosecondsPerInvocation="259206" standardDeviationMircosecondsPerInvocation="8536"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="459" invocations="927" avgMicrosecondsPerInvocation="495" maxMicrosecondsPerInvocation="79978" standardDeviationMircosecondsPerInvocation="3146"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="438" invocations="927" avgMicrosecondsPerInvocation="473" maxMicrosecondsPerInvocation="16042" standardDeviationMircosecondsPerInvocation="1412"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" totalMilliseconds="398" invocations="306" avgMicrosecondsPerInvocation="1302" maxMicrosecondsPerInvocation="42344" standardDeviationMircosecondsPerInvocation="3476"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="386" invocations="306" avgMicrosecondsPerInvocation="1261" maxMicrosecondsPerInvocation="29085" standardDeviationMircosecondsPerInvocation="3396"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" totalMilliseconds="365" invocations="927" avgMicrosecondsPerInvocation="393" maxMicrosecondsPerInvocation="20738" standardDeviationMircosecondsPerInvocation="1490"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="355" invocations="927" avgMicrosecondsPerInvocation="382" maxMicrosecondsPerInvocation="37404" standardDeviationMircosecondsPerInvocation="2468"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="321" invocations="1328" avgMicrosecondsPerInvocation="242" maxMicrosecondsPerInvocation="112877" standardDeviationMircosecondsPerInvocation="3144"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="307" invocations="306" avgMicrosecondsPerInvocation="1005" maxMicrosecondsPerInvocation="57340" standardDeviationMircosecondsPerInvocation="4163"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="299" invocations="306" avgMicrosecondsPerInvocation="977" maxMicrosecondsPerInvocation="53852" standardDeviationMircosecondsPerInvocation="3473"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="298" invocations="1287" avgMicrosecondsPerInvocation="232" maxMicrosecondsPerInvocation="16034" standardDeviationMircosecondsPerInvocation="942"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="290" invocations="306" avgMicrosecondsPerInvocation="948" maxMicrosecondsPerInvocation="16979" standardDeviationMircosecondsPerInvocation="2364"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" totalMilliseconds="280" invocations="306" avgMicrosecondsPerInvocation="916" maxMicrosecondsPerInvocation="19209" standardDeviationMircosecondsPerInvocation="2394"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="275" invocations="306" avgMicrosecondsPerInvocation="900" maxMicrosecondsPerInvocation="36644" standardDeviationMircosecondsPerInvocation="2896"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.CharsetIssues" totalMilliseconds="258" invocations="306" avgMicrosecondsPerInvocation="845" maxMicrosecondsPerInvocation="119078" standardDeviationMircosecondsPerInvocation="6922"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="250" invocations="306" avgMicrosecondsPerInvocation="819" maxMicrosecondsPerInvocation="36153" standardDeviationMircosecondsPerInvocation="2536"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="242" invocations="306" avgMicrosecondsPerInvocation="793" maxMicrosecondsPerInvocation="16996" standardDeviationMircosecondsPerInvocation="1871"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="240" invocations="306" avgMicrosecondsPerInvocation="786" maxMicrosecondsPerInvocation="14525" standardDeviationMircosecondsPerInvocation="1601"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" totalMilliseconds="237" invocations="306" avgMicrosecondsPerInvocation="775" maxMicrosecondsPerInvocation="40786" standardDeviationMircosecondsPerInvocation="2777"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="225" invocations="306" avgMicrosecondsPerInvocation="738" maxMicrosecondsPerInvocation="22858" standardDeviationMircosecondsPerInvocation="1991"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HangingExecutors" totalMilliseconds="225" invocations="306" avgMicrosecondsPerInvocation="737" maxMicrosecondsPerInvocation="12037" standardDeviationMircosecondsPerInvocation="1637"/>
-      <ClassProfile name="edu.umd.cs.findbugs.StackMapAnalyzer$StackMapAnalysisFactory" totalMilliseconds="221" invocations="1502" avgMicrosecondsPerInvocation="147" maxMicrosecondsPerInvocation="64422" standardDeviationMircosecondsPerInvocation="1980"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossiblyRedundantMethodCalls" totalMilliseconds="220" invocations="306" avgMicrosecondsPerInvocation="720" maxMicrosecondsPerInvocation="12267" standardDeviationMircosecondsPerInvocation="1847"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="217" invocations="19604" avgMicrosecondsPerInvocation="11" maxMicrosecondsPerInvocation="10704" standardDeviationMircosecondsPerInvocation="167"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" totalMilliseconds="214" invocations="306" avgMicrosecondsPerInvocation="700" maxMicrosecondsPerInvocation="11556" standardDeviationMircosecondsPerInvocation="1640"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ReflectionOnObjectMethods" totalMilliseconds="210" invocations="306" avgMicrosecondsPerInvocation="689" maxMicrosecondsPerInvocation="48986" standardDeviationMircosecondsPerInvocation="3151"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InvalidConstantArgument" totalMilliseconds="210" invocations="306" avgMicrosecondsPerInvocation="686" maxMicrosecondsPerInvocation="19881" standardDeviationMircosecondsPerInvocation="1913"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LoggerOddities" totalMilliseconds="209" invocations="306" avgMicrosecondsPerInvocation="684" maxMicrosecondsPerInvocation="44327" standardDeviationMircosecondsPerInvocation="3027"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindBadCast2" totalMilliseconds="198" invocations="306" avgMicrosecondsPerInvocation="647" maxMicrosecondsPerInvocation="65259" standardDeviationMircosecondsPerInvocation="4302"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossibleConstantAllocationInLoop" totalMilliseconds="197" invocations="306" avgMicrosecondsPerInvocation="647" maxMicrosecondsPerInvocation="15962" standardDeviationMircosecondsPerInvocation="1900"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" totalMilliseconds="196" invocations="306" avgMicrosecondsPerInvocation="641" maxMicrosecondsPerInvocation="16217" standardDeviationMircosecondsPerInvocation="1608"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="5663" invocations="3037" avgMicrosecondsPerInvocation="1864" maxMicrosecondsPerInvocation="249185" standardDeviationMircosecondsPerInvocation="10192"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="3107" invocations="3002" avgMicrosecondsPerInvocation="1035" maxMicrosecondsPerInvocation="254689" standardDeviationMircosecondsPerInvocation="5983"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="1956" invocations="927" avgMicrosecondsPerInvocation="2110" maxMicrosecondsPerInvocation="180965" standardDeviationMircosecondsPerInvocation="7736"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="1942" invocations="927" avgMicrosecondsPerInvocation="2095" maxMicrosecondsPerInvocation="81400" standardDeviationMircosecondsPerInvocation="5825"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectStatistics" totalMilliseconds="1678" invocations="927" avgMicrosecondsPerInvocation="1811" maxMicrosecondsPerInvocation="117172" standardDeviationMircosecondsPerInvocation="5576"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="1234" invocations="2698" avgMicrosecondsPerInvocation="457" maxMicrosecondsPerInvocation="28034" standardDeviationMircosecondsPerInvocation="1148"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="1010" invocations="1312" avgMicrosecondsPerInvocation="770" maxMicrosecondsPerInvocation="52567" standardDeviationMircosecondsPerInvocation="2273"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="996" invocations="1288" avgMicrosecondsPerInvocation="773" maxMicrosecondsPerInvocation="18209" standardDeviationMircosecondsPerInvocation="1544"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="963" invocations="1312" avgMicrosecondsPerInvocation="734" maxMicrosecondsPerInvocation="372918" standardDeviationMircosecondsPerInvocation="10393"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="840" invocations="1302" avgMicrosecondsPerInvocation="645" maxMicrosecondsPerInvocation="41900" standardDeviationMircosecondsPerInvocation="1933"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FormatStringChecker" totalMilliseconds="837" invocations="306" avgMicrosecondsPerInvocation="2736" maxMicrosecondsPerInvocation="734693" standardDeviationMircosecondsPerInvocation="41927"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="834" invocations="1350" avgMicrosecondsPerInvocation="618" maxMicrosecondsPerInvocation="44560" standardDeviationMircosecondsPerInvocation="1851"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="705" invocations="1368" avgMicrosecondsPerInvocation="516" maxMicrosecondsPerInvocation="25905" standardDeviationMircosecondsPerInvocation="1447"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="632" invocations="927" avgMicrosecondsPerInvocation="682" maxMicrosecondsPerInvocation="16930" standardDeviationMircosecondsPerInvocation="1650"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="585" invocations="1557" avgMicrosecondsPerInvocation="376" maxMicrosecondsPerInvocation="55387" standardDeviationMircosecondsPerInvocation="2094"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="579" invocations="927" avgMicrosecondsPerInvocation="625" maxMicrosecondsPerInvocation="182651" standardDeviationMircosecondsPerInvocation="7199"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="486" invocations="1080" avgMicrosecondsPerInvocation="450" maxMicrosecondsPerInvocation="13377" standardDeviationMircosecondsPerInvocation="966"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="475" invocations="2912" avgMicrosecondsPerInvocation="163" maxMicrosecondsPerInvocation="52677" standardDeviationMircosecondsPerInvocation="1217"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="449" invocations="927" avgMicrosecondsPerInvocation="485" maxMicrosecondsPerInvocation="30201" standardDeviationMircosecondsPerInvocation="1866"/>
+      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="432" invocations="80199" avgMicrosecondsPerInvocation="5" maxMicrosecondsPerInvocation="7483" standardDeviationMircosecondsPerInvocation="70"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="408" invocations="927" avgMicrosecondsPerInvocation="441" maxMicrosecondsPerInvocation="39443" standardDeviationMircosecondsPerInvocation="1650"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="401" invocations="927" avgMicrosecondsPerInvocation="432" maxMicrosecondsPerInvocation="36569" standardDeviationMircosecondsPerInvocation="1948"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="327" invocations="927" avgMicrosecondsPerInvocation="353" maxMicrosecondsPerInvocation="15466" standardDeviationMircosecondsPerInvocation="1000"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="313" invocations="927" avgMicrosecondsPerInvocation="338" maxMicrosecondsPerInvocation="64608" standardDeviationMircosecondsPerInvocation="2249"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="311" invocations="1329" avgMicrosecondsPerInvocation="234" maxMicrosecondsPerInvocation="123854" standardDeviationMircosecondsPerInvocation="3432"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="302" invocations="1312" avgMicrosecondsPerInvocation="230" maxMicrosecondsPerInvocation="56560" standardDeviationMircosecondsPerInvocation="1695"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.impl.ZipCodeBaseFactory" totalMilliseconds="296" invocations="40" avgMicrosecondsPerInvocation="7423" maxMicrosecondsPerInvocation="27871" standardDeviationMircosecondsPerInvocation="9065"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" totalMilliseconds="296" invocations="306" avgMicrosecondsPerInvocation="970" maxMicrosecondsPerInvocation="35149" standardDeviationMircosecondsPerInvocation="2887"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="267" invocations="927" avgMicrosecondsPerInvocation="288" maxMicrosecondsPerInvocation="19525" standardDeviationMircosecondsPerInvocation="1131"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" totalMilliseconds="259" invocations="927" avgMicrosecondsPerInvocation="279" maxMicrosecondsPerInvocation="10765" standardDeviationMircosecondsPerInvocation="869"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="258" invocations="306" avgMicrosecondsPerInvocation="843" maxMicrosecondsPerInvocation="39095" standardDeviationMircosecondsPerInvocation="2845"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="227" invocations="306" avgMicrosecondsPerInvocation="742" maxMicrosecondsPerInvocation="26945" standardDeviationMircosecondsPerInvocation="2011"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.CharsetIssues" totalMilliseconds="226" invocations="306" avgMicrosecondsPerInvocation="741" maxMicrosecondsPerInvocation="137740" standardDeviationMircosecondsPerInvocation="7876"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="215" invocations="306" avgMicrosecondsPerInvocation="704" maxMicrosecondsPerInvocation="29113" standardDeviationMircosecondsPerInvocation="2011"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="212" invocations="306" avgMicrosecondsPerInvocation="695" maxMicrosecondsPerInvocation="49230" standardDeviationMircosecondsPerInvocation="3048"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="206" invocations="1288" avgMicrosecondsPerInvocation="160" maxMicrosecondsPerInvocation="10009" standardDeviationMircosecondsPerInvocation="636"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="189" invocations="306" avgMicrosecondsPerInvocation="618" maxMicrosecondsPerInvocation="20604" standardDeviationMircosecondsPerInvocation="2274"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="188" invocations="229" avgMicrosecondsPerInvocation="821" maxMicrosecondsPerInvocation="35330" standardDeviationMircosecondsPerInvocation="2798"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="186" invocations="306" avgMicrosecondsPerInvocation="610" maxMicrosecondsPerInvocation="13998" standardDeviationMircosecondsPerInvocation="1391"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="185" invocations="19609" avgMicrosecondsPerInvocation="9" maxMicrosecondsPerInvocation="8255" standardDeviationMircosecondsPerInvocation="115"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="177" invocations="306" avgMicrosecondsPerInvocation="579" maxMicrosecondsPerInvocation="11167" standardDeviationMircosecondsPerInvocation="1281"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HangingExecutors" totalMilliseconds="176" invocations="306" avgMicrosecondsPerInvocation="575" maxMicrosecondsPerInvocation="15616" standardDeviationMircosecondsPerInvocation="1475"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="171" invocations="306" avgMicrosecondsPerInvocation="561" maxMicrosecondsPerInvocation="8528" standardDeviationMircosecondsPerInvocation="1097"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="171" invocations="306" avgMicrosecondsPerInvocation="561" maxMicrosecondsPerInvocation="11760" standardDeviationMircosecondsPerInvocation="1211"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" totalMilliseconds="170" invocations="306" avgMicrosecondsPerInvocation="557" maxMicrosecondsPerInvocation="21783" standardDeviationMircosecondsPerInvocation="2049"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="166" invocations="927" avgMicrosecondsPerInvocation="180" maxMicrosecondsPerInvocation="7342" standardDeviationMircosecondsPerInvocation="498"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SerializableIdiom" totalMilliseconds="163" invocations="306" avgMicrosecondsPerInvocation="533" maxMicrosecondsPerInvocation="59697" standardDeviationMircosecondsPerInvocation="3505"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" totalMilliseconds="161" invocations="306" avgMicrosecondsPerInvocation="526" maxMicrosecondsPerInvocation="7341" standardDeviationMircosecondsPerInvocation="985"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="160" invocations="306" avgMicrosecondsPerInvocation="524" maxMicrosecondsPerInvocation="12036" standardDeviationMircosecondsPerInvocation="1615"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindHEmismatch" totalMilliseconds="156" invocations="306" avgMicrosecondsPerInvocation="511" maxMicrosecondsPerInvocation="45034" standardDeviationMircosecondsPerInvocation="2714"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" totalMilliseconds="156" invocations="306" avgMicrosecondsPerInvocation="511" maxMicrosecondsPerInvocation="9360" standardDeviationMircosecondsPerInvocation="1109"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="150" invocations="306" avgMicrosecondsPerInvocation="492" maxMicrosecondsPerInvocation="7401" standardDeviationMircosecondsPerInvocation="1029"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison" totalMilliseconds="150" invocations="306" avgMicrosecondsPerInvocation="491" maxMicrosecondsPerInvocation="13596" standardDeviationMircosecondsPerInvocation="1270"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossiblyRedundantMethodCalls" totalMilliseconds="149" invocations="306" avgMicrosecondsPerInvocation="487" maxMicrosecondsPerInvocation="11875" standardDeviationMircosecondsPerInvocation="1240"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RepeatedConditionals" totalMilliseconds="147" invocations="306" avgMicrosecondsPerInvocation="480" maxMicrosecondsPerInvocation="31336" standardDeviationMircosecondsPerInvocation="1927"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" totalMilliseconds="140" invocations="306" avgMicrosecondsPerInvocation="460" maxMicrosecondsPerInvocation="7027" standardDeviationMircosecondsPerInvocation="886"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UseAddAll" totalMilliseconds="140" invocations="306" avgMicrosecondsPerInvocation="459" maxMicrosecondsPerInvocation="30752" standardDeviationMircosecondsPerInvocation="1865"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SpuriousThreadStates" totalMilliseconds="139" invocations="306" avgMicrosecondsPerInvocation="457" maxMicrosecondsPerInvocation="46605" standardDeviationMircosecondsPerInvocation="2743"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="137" invocations="306" avgMicrosecondsPerInvocation="448" maxMicrosecondsPerInvocation="9007" standardDeviationMircosecondsPerInvocation="969"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.JAXRSIssues" totalMilliseconds="136" invocations="306" avgMicrosecondsPerInvocation="445" maxMicrosecondsPerInvocation="129038" standardDeviationMircosecondsPerInvocation="7363"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.asm.ClassReaderAnalysisEngine" totalMilliseconds="135" invocations="3217" avgMicrosecondsPerInvocation="42" maxMicrosecondsPerInvocation="86701" standardDeviationMircosecondsPerInvocation="1548"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InefficientStringBuffering" totalMilliseconds="133" invocations="306" avgMicrosecondsPerInvocation="436" maxMicrosecondsPerInvocation="21014" standardDeviationMircosecondsPerInvocation="1506"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SuspiciousNullGuard" totalMilliseconds="127" invocations="306" avgMicrosecondsPerInvocation="417" maxMicrosecondsPerInvocation="12828" standardDeviationMircosecondsPerInvocation="1189"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="126" invocations="306" avgMicrosecondsPerInvocation="414" maxMicrosecondsPerInvocation="11082" standardDeviationMircosecondsPerInvocation="930"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.NeedlessAutoboxing" totalMilliseconds="124" invocations="306" avgMicrosecondsPerInvocation="408" maxMicrosecondsPerInvocation="14755" standardDeviationMircosecondsPerInvocation="1157"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents" totalMilliseconds="124" invocations="306" avgMicrosecondsPerInvocation="405" maxMicrosecondsPerInvocation="17629" standardDeviationMircosecondsPerInvocation="1229"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LoggerOddities" totalMilliseconds="123" invocations="306" avgMicrosecondsPerInvocation="403" maxMicrosecondsPerInvocation="10878" standardDeviationMircosecondsPerInvocation="922"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindFloatEquality" totalMilliseconds="122" invocations="306" avgMicrosecondsPerInvocation="400" maxMicrosecondsPerInvocation="9652" standardDeviationMircosecondsPerInvocation="1143"/>
     </FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>
