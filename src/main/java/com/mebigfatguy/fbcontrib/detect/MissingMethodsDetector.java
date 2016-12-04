@@ -25,6 +25,7 @@ import java.util.Map;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -162,6 +163,12 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         clearUserValue(item);
+                    } else {
+                        // bad findbugs bug, which clears the stack after an ALOAD, in some cases
+                        int prevOp = getPrevOpcode(1);
+                        if (OpcodeUtils.isALoad(prevOp)) {
+                            localSpecialObjects.clear();
+                        }
                     }
                 break;
 
