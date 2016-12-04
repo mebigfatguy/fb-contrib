@@ -34,23 +34,17 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  *
- * looks for calls to Arrays.asList where the parameter is a primitive array.
- * This does not produce a list that holds the primitive boxed value, but a list
- * of one item, the array itself.
+ * looks for calls to Arrays.asList where the parameter is a primitive array. This does not produce a list that holds the primitive boxed value, but a list of
+ * one item, the array itself.
  *
  */
 public class ConfusingArrayAsList extends BytecodeScanningDetector {
 
-    private static final Set<String> PRIMITIVE_ARRAYS = UnmodifiableSet.create(
-        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_BYTE,
-        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_CHAR,
-        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_SHORT,
-        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_INT,
-        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_LONG,
-        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_FLOAT,
-        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_DOUBLE,
-        Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_BOOLEAN
-    );
+    private static final Set<String> PRIMITIVE_ARRAYS = UnmodifiableSet.create(Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_BYTE,
+            Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_CHAR, Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_SHORT,
+            Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_INT, Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_LONG,
+            Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_FLOAT, Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_DOUBLE,
+            Values.SIG_ARRAY_OF_ARRAYS_PREFIX + Values.SIG_PRIMITIVE_BOOLEAN);
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -94,8 +88,7 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find calls to Arrays.asList with a primitive
-     * array
+     * implements the visitor to find calls to Arrays.asList with a primitive array
      *
      * @param seen
      *            the currently visitor opcode
@@ -113,8 +106,11 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         String sig = item.getSignature();
                         if (PRIMITIVE_ARRAYS.contains(sig)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CAAL_CONFUSING_ARRAY_AS_LIST.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            Object con = item.getConstant();
+                            if (!(con instanceof Integer) || (((Integer) con).intValue() <= 1)) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.CAAL_CONFUSING_ARRAY_AS_LIST.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                            }
                         }
                     }
                 }
