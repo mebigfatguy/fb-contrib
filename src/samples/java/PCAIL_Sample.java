@@ -19,8 +19,9 @@ public class PCAIL_Sample {
         for (int i = 0; i < 10; i++) {
             PCAIL_Sample sample = new PCAIL_Sample();
             URL u = sample.getClass().getResource("/foo");
-            if (i == 0)
+            if (i == 0) {
                 smpl = sample;
+            }
         }
     }
 
@@ -36,8 +37,9 @@ public class PCAIL_Sample {
         for (int i = 0; i < 10; i++) {
             PCAIL_Sample sample = new PCAIL_Sample();
             URL u = sample.getClass().getResource("/foo");
-            if (u != null)
+            if (u != null) {
                 return sample;
+            }
         }
 
         return null;
@@ -53,7 +55,7 @@ public class PCAIL_Sample {
     }
 
     public List<PCAIL_Sample> fpAnonymousMethodParm() {
-        List<PCAIL_Sample> col = new ArrayList<PCAIL_Sample>();
+        List<PCAIL_Sample> col = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             col.add(new PCAIL_Sample());
         }
@@ -62,7 +64,7 @@ public class PCAIL_Sample {
     }
 
     public List<PCAIL_Sample> fpAnonymousBuilder() {
-        List<PCAIL_Sample> col = new ArrayList<PCAIL_Sample>();
+        List<PCAIL_Sample> col = new ArrayList<>();
         for (int i = 0; i < 10; i++) {
             col.add(new PCAIL_Sample().builder());
         }
@@ -72,14 +74,16 @@ public class PCAIL_Sample {
 
     public void fpArrayStore() {
         PCAIL_Sample[] samples = new PCAIL_Sample[3];
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++) {
             samples[i] = new PCAIL_Sample();
+        }
     }
 
     public void fpThrow() {
         for (int i = 0; i < 3; i++) {
-            if (i == 3)
+            if (i == 3) {
                 throw new RuntimeException();
+            }
         }
     }
 
@@ -87,17 +91,18 @@ public class PCAIL_Sample {
         for (int i = 0; i < 10; i++) {
             Set<String> s;
 
-            if ((i % 2) == 0)
-                s = new HashSet<String>();
-            else
-                s = new TreeSet<String>();
+            if ((i % 2) == 0) {
+                s = new HashSet<>();
+            } else {
+                s = new TreeSet<>();
+            }
 
             s.add(String.valueOf(i));
         }
     }
 
     public void fpChaining() {
-        List<Foo> list = new ArrayList<Foo>();
+        List<Foo> list = new ArrayList<>();
         for (int i = 0; i <= 10; i++) {
             list.add(new Foo().withNumber(i));
         }
@@ -111,7 +116,7 @@ public class PCAIL_Sample {
                 return l;
             }
 
-            l = new ArrayList<String>();
+            l = new ArrayList<>();
             l.add("Foo");
 
             for (String s : l) {
@@ -123,20 +128,30 @@ public class PCAIL_Sample {
     public String fpSwitch(List<String> ss, int i) {
         for (String s : ss) {
             switch (i) {
-            case 0:
-                List<String> n = new ArrayList<String>();
-                n.add(s);
-                if (n.isEmpty()) {
-                    return "yup";
-                }
+                case 0:
+                    List<String> n = new ArrayList<>();
+                    n.add(s);
+                    if (n.isEmpty()) {
+                        return "yup";
+                    }
                 break;
 
-            case 1:
-                return null;
+                case 1:
+                    return null;
             }
         }
 
         return null;
+    }
+
+    public void fpFooBar(List<Bar> barList) {
+        List<Foo> fooList = new ArrayList<>();
+        Foo foo;
+        for (Bar bar : barList) {
+            foo = new Foo();
+            foo.setAny(bar.getAny());
+            fooList.add(foo);
+        }
     }
 
     private PCAIL_Sample builder() {
@@ -146,6 +161,15 @@ public class PCAIL_Sample {
     static class Foo {
         public Foo withNumber(int i) {
             return this;
+        }
+
+        public void setAny(String s) {
+        }
+    }
+
+    static class Bar {
+        public String getAny() {
+            return "";
         }
     }
 }

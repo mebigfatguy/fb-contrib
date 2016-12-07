@@ -167,6 +167,10 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                                 }
                             }
                         }
+                    } else if (numParameters > 0) {
+                        // bad findbugs bug that the stack isn't consistent with reality, so don't assume anything
+                        allocations.clear();
+                        storedAllocations.clear();
                     }
                 break;
 
