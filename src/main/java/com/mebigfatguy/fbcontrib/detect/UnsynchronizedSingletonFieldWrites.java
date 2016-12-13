@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -29,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -64,6 +67,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private int syncBlockCount;
+    private Map<Integer, Integer> syncBlockBranchResetValues;
 
     /**
      * constructs a USFW detector given the reporter to report bugs on
@@ -86,10 +90,12 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
         try {
             JavaClass cls = classContext.getJavaClass();
             if (isSingleton(cls)) {
+                syncBlockBranchResetValues = new HashMap<>();
                 stack = new OpcodeStack();
                 super.visitClassContext(classContext);
             }
         } finally {
+            syncBlockBranchResetValues = null;
             stack = null;
         }
     }
@@ -109,6 +115,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
         }
 
         stack.resetForMethodEntry(this);
+        syncBlockBranchResetValues.clear();
         syncBlockCount = 0;
         super.visitCode(obj);
     }
@@ -116,6 +123,12 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
     @Override
     public void sawOpcode(int seen) {
         try {
+            Integer pc = Integer.valueOf(getPC());
+            Integer count = syncBlockBranchResetValues.remove(pc);
+            if (count != null) {
+                syncBlockCount = count.intValue();
+            }
+
             switch (seen) {
                 case MONITORENTER:
                     syncBlockCount++;
@@ -123,6 +136,10 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
 
                 case MONITOREXIT:
                     syncBlockCount--;
+                    // javac stutters the exit in catch/finally blocks in a bolux of nastyness, so guard against it
+                    if (syncBlockCount < 0) {
+                        syncBlockCount = 0;
+                    }
                 break;
 
                 case PUTFIELD:
@@ -136,6 +153,13 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
                         }
                     }
                 break;
+
+                default:
+                    if (OpcodeUtils.isBranch(seen)) {
+                        if (syncBlockCount > 0) {
+                            syncBlockBranchResetValues.put(Integer.valueOf(getBranchTarget()), Integer.valueOf(syncBlockCount));
+                        }
+                    }
             }
         } finally {
             stack.sawOpcode(this, seen);
