@@ -6,6 +6,7 @@ public class SNG_Sample {
     private final Object f2 = null;
     private final File file = null;
     private final byte[] buffer = null;
+    private final SNG_Sample otherSample = null;
 
     public void badSNGFields() {
         if (f1 != null) {
@@ -43,9 +44,17 @@ public class SNG_Sample {
         }
     }
 
-    public void fpOtherObject(SNG_Sample s) {
+    public void fpOtherParmObject(SNG_Sample s) {
+
         if (s.f1 != null) {
             this.f1 = s.f1;
+        }
+    }
+
+    public void fpOtherFieldObject() {
+
+        if (otherSample.f1 != null) {
+            this.f1 = otherSample.f1;
         }
     }
 }
