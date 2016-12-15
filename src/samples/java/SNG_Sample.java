@@ -42,4 +42,10 @@ public class SNG_Sample {
             f1 = f1.toString();
         }
     }
+
+    public void fpOtherObject(SNG_Sample s) {
+        if (s.f1 != null) {
+            this.f1 = s.f1;
+        }
+    }
 }
