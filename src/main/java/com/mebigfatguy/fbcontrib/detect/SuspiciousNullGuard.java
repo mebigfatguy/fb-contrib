@@ -36,10 +36,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for code that checks to see if a field or local variable is not null,
- * before entering a code block either an if, or while statement, and reassigns
- * that field or variable. It seems that perhaps the guard should check if the
- * field or variable is null.
+ * looks for code that checks to see if a field or local variable is not null, before entering a code block either an if, or while statement, and reassigns that
+ * field or variable. It seems that perhaps the guard should check if the field or variable is null.
  */
 public class SuspiciousNullGuard extends BytecodeScanningDetector {
 
@@ -67,7 +65,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            nullGuards = new HashMap<Integer, NullGuard>();
+            nullGuards = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -95,6 +93,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
+        Integer sawALOADReg = null;
         try {
             stack.precomputation(this);
 
@@ -102,111 +101,123 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
             nullGuards.remove(pc);
 
             switch (seen) {
-            case IFNULL: {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    int reg = item.getRegisterNumber();
-                    Integer target = Integer.valueOf(getBranchTarget());
-                    if (reg >= 0) {
-                        nullGuards.put(target, new NullGuard(reg, pc.intValue(), item.getSignature()));
-                    } else {
-                        XField xf = item.getXField();
-                        if (xf != null) {
-                            nullGuards.put(target, new NullGuard(xf, pc.intValue(), item.getSignature()));
+                case IFNULL: {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        int reg = itm.getRegisterNumber();
+                        Integer target = Integer.valueOf(getBranchTarget());
+                        if (reg >= 0) {
+                            nullGuards.put(target, new NullGuard(reg, pc.intValue(), itm.getSignature()));
+                        } else {
+                            XField xf = itm.getXField();
+                            Integer sourceFieldReg = (Integer) itm.getUserValue();
+                            if ((xf != null) && (sourceFieldReg != null)) {
+                                nullGuards.put(target, new NullGuard(xf, sourceFieldReg.intValue(), pc.intValue(), itm.getSignature()));
+                            }
                         }
                     }
                 }
-            }
                 break;
 
-            case ASTORE:
-            case ASTORE_0:
-            case ASTORE_1:
-            case ASTORE_2:
-            case ASTORE_3: {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    if (!item.isNull()) {
-                        NullGuard guard = findNullGuardWithRegister(RegisterUtils.getAStoreReg(this, seen));
+                case ASTORE:
+                case ASTORE_0:
+                case ASTORE_1:
+                case ASTORE_2:
+                case ASTORE_3: {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (!itm.isNull()) {
+                            NullGuard guard = findNullGuardWithRegister(RegisterUtils.getAStoreReg(this, seen));
+                            if (guard != null) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_LOCAL_GUARD.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                                removeNullGuard(guard);
+                            }
+                        }
+                    }
+                }
+                break;
+
+                case ALOAD:
+                case ALOAD_0:
+                case ALOAD_1:
+                case ALOAD_2:
+                case ALOAD_3: {
+                    NullGuard guard = findNullGuardWithRegister(RegisterUtils.getALoadReg(this, seen));
+                    if (guard != null) {
+                        removeNullGuard(guard);
+                    }
+                    sawALOADReg = Integer.valueOf(RegisterUtils.getALoadReg(this, seen));
+                }
+                break;
+
+                case PUTFIELD: {
+                    if (stack.getStackDepth() <= 1) {
+                        break;
+                    }
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (itm.isNull()) {
+                        break;
+                    }
+                    XField xf = getXFieldOperand();
+                    itm = stack.getStackItem(1);
+                    Integer fieldSourceReg = (Integer) itm.getUserValue();
+                    if ((xf != null) && (fieldSourceReg != null)) {
+                        NullGuard guard = findNullGuardWithField(xf, fieldSourceReg.intValue());
                         if (guard != null) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_LOCAL_GUARD.name(), NORMAL_PRIORITY).addClass(this)
+                            bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_FIELD_GUARD.name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                             removeNullGuard(guard);
                         }
                     }
                 }
-            }
                 break;
 
-            case ALOAD:
-            case ALOAD_0:
-            case ALOAD_1:
-            case ALOAD_2:
-            case ALOAD_3: {
-                NullGuard guard = findNullGuardWithRegister(RegisterUtils.getALoadReg(this, seen));
-                if (guard != null) {
-                    removeNullGuard(guard);
-                }
-            }
-                break;
-
-            case PUTFIELD: {
-                if (stack.getStackDepth() <= 1) {
-                    break;
-                }
-                OpcodeStack.Item item = stack.getStackItem(0);
-                if (item.isNull()) {
-                    break;
-                }
-                XField xf = getXFieldOperand();
-                if (xf != null) {
-                    NullGuard guard = findNullGuardWithField(xf);
-                    if (guard != null) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_FIELD_GUARD.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                        removeNullGuard(guard);
-                    }
-                }
-            }
-                break;
-
-            case GETFIELD: {
-                if (stack.getStackDepth() > 0) {
-                    XField xf = getXFieldOperand();
-                    if (xf != null) {
-                        NullGuard guard = findNullGuardWithField(xf);
-                        if (guard != null) {
-                            removeNullGuard(guard);
+                case GETFIELD: {
+                    if (stack.getStackDepth() > 0) {
+                        XField xf = getXFieldOperand();
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        Integer fieldSourceReg = (Integer) itm.getUserValue();
+                        if ((xf != null) && (fieldSourceReg != null)) {
+                            NullGuard guard = findNullGuardWithField(xf, fieldSourceReg.intValue());
+                            if (guard != null) {
+                                removeNullGuard(guard);
+                            } else {
+                                sawALOADReg = (Integer) itm.getUserValue();
+                            }
                         }
                     }
                 }
-            }
                 break;
 
-            case IFEQ:
-            case IFNE:
-            case IFLT:
-            case IFGE:
-            case IFGT:
-            case IFLE:
-            case IF_ICMPEQ:
-            case IF_ICMPNE:
-            case IF_ICMPLT:
-            case IF_ICMPGE:
-            case IF_ICMPGT:
-            case IF_ICMPLE:
-            case IF_ACMPEQ:
-            case IF_ACMPNE:
-            case GOTO:
-            case GOTO_W:
-            case IFNONNULL:
-                nullGuards.clear();
+                case IFEQ:
+                case IFNE:
+                case IFLT:
+                case IFGE:
+                case IFGT:
+                case IFLE:
+                case IF_ICMPEQ:
+                case IF_ICMPNE:
+                case IF_ICMPLT:
+                case IF_ICMPGE:
+                case IF_ICMPGT:
+                case IF_ICMPLE:
+                case IF_ACMPEQ:
+                case IF_ACMPNE:
+                case GOTO:
+                case GOTO_W:
+                case IFNONNULL:
+                    nullGuards.clear();
                 break;
-            default:
+                default:
                 break;
             }
         } finally {
             stack.sawOpcode(this, seen);
+            if ((sawALOADReg != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(sawALOADReg);
+            }
         }
     }
 
@@ -220,9 +231,9 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
         return null;
     }
 
-    private NullGuard findNullGuardWithField(XField field) {
+    private NullGuard findNullGuardWithField(XField field, int fieldSourceReg) {
         for (NullGuard guard : nullGuards.values()) {
-            if (field.equals(guard.getField())) {
+            if (field.equals(guard.getField()) && (fieldSourceReg == guard.getFieldSourceReg())) {
                 return guard;
             }
         }
@@ -244,6 +255,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
     static class NullGuard {
         int register;
         XField field;
+        int fieldSourceReg;
         int location;
         String signature;
 
@@ -254,9 +266,10 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
             signature = guardSignature;
         }
 
-        NullGuard(XField xf, int start, String guardSignature) {
+        NullGuard(XField xf, int fieldSource, int start, String guardSignature) {
             register = -1;
             field = xf;
+            fieldSourceReg = fieldSource;
             location = start;
             signature = guardSignature;
         }
@@ -267,6 +280,10 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 
         XField getField() {
             return field;
+        }
+
+        int getFieldSourceReg() {
+            return fieldSourceReg;
         }
 
         int getLocation() {
