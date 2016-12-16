@@ -32,6 +32,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -39,6 +40,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * looks for code that checks to see if a field or local variable is not null, before entering a code block either an if, or while statement, and reassigns that
  * field or variable. It seems that perhaps the guard should check if the field or variable is null.
  */
+@CustomUserValue
 public class SuspiciousNullGuard extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
