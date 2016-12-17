@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -27,6 +28,8 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -55,7 +58,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
 
     private State state;
     private Set<String> memberCollections;
-    private Set<Integer> localCollections;
+    private BitSet localCollections;
     private List<Object> monitorObjects;
     private OpcodeStack stack;
     private Object collectionInfo = null;
@@ -74,7 +77,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
     public void visitClassContext(final ClassContext classContext) {
         try {
             memberCollections = new HashSet<>();
-            localCollections = new HashSet<>();
+            localCollections = new BitSet();
             monitorObjects = new ArrayList<>();
             stack = new OpcodeStack();
             super.visitClassContext(classContext);
@@ -142,16 +145,10 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
             if (synchCollectionNames.contains(getNameConstantOperand())) {
                 state = State.SEEN_SYNC;
             }
-        } else if (seen == ALOAD) {
-            Integer reg = Integer.valueOf(getRegisterOperand());
-            if (localCollections.contains(reg)) {
-                collectionInfo = reg;
-                state = State.SEEN_LOAD;
-            }
-        } else if ((seen >= ALOAD_0) && (seen <= ALOAD_3)) {
-            Integer reg = Integer.valueOf(seen - ALOAD_0);
-            if (localCollections.contains(reg)) {
-                collectionInfo = reg;
+        } else if (OpcodeUtils.isALoad(seen)) {
+            int reg = RegisterUtils.getALoadReg(this, seen);
+            if (localCollections.get(reg)) {
+                collectionInfo = Integer.valueOf(reg);
                 state = State.SEEN_LOAD;
             }
         } else if (seen == GETFIELD) {
@@ -167,10 +164,8 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterSync(int seen) {
-        if (seen == ASTORE) {
-            localCollections.add(getRegisterOperand());
-        } else if ((seen >= ASTORE_0) && (seen <= ASTORE_3)) {
-            localCollections.add(seen - ASTORE_0);
+        if (OpcodeUtils.isAStore(seen)) {
+            localCollections.set(RegisterUtils.getAStoreReg(this, seen));
         } else if (seen == PUTFIELD) {
             ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
             ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
