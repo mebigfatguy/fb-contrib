@@ -13,10 +13,12 @@ import javax.swing.JFrame;
 
 public class UCC_Sample {
     private Object[] arrayData;
-    private List<Object> listData = new ArrayList<Object>();
+    private List<Object> listData = new ArrayList<>();
+    private Bean1 b1;
+    private Bean2 b2;
 
     public void test0() {
-        TreeSet<Date> tm = new TreeSet<Date>();
+        TreeSet<Date> tm = new TreeSet<>();
         tm.add(new Date());
         tm.add(new Date());
     }
@@ -36,19 +38,32 @@ public class UCC_Sample {
     }
 
     public void test3() {
-        Set<Object> s = new HashSet<Object>();
+        Set<Object> s = new HashSet<>();
         s.add(new int[] { 3, 2 });
         s.add(new Color(0, 128, 255));
     }
 
     public void bug1678805() {
         final File[] files = new File[5];
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 5; i++) {
             files[i] = getPath();
+        }
+    }
 
+    public void fpTwoDifferentFieldSources() {
+        b1.data.add("Hello");
+        b2.data.add(5);
     }
 
     private File getPath() {
         return new File("c:\\temp");
+    }
+
+    static class Bean1 {
+        List<String> data;
+    }
+
+    static class Bean2 {
+        List<Integer> data;
     }
 }
