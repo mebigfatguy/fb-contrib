@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<BugCollection version="3.0.1" sequence="0" timestamp="1481844736533" analysisTimestamp="1481844736561" release="">
+<BugCollection version="3.0.1" sequence="0" timestamp="1482370136475" analysisTimestamp="1482370136584" release="">
   <Project projectName="Samples">
     <Jar>/home/dave/dev/fb-contrib/target/classes/samples</Jar>
     <AuxClasspathEntry>/home/dave/dev/fb-contrib/lib/javax.servlet.jsp-api-2.3.1.jar</AuxClasspathEntry>
@@ -33208,50 +33208,50 @@
     <ShortMessage>Method uses array as basis of collection</ShortMessage>
     <LongMessage>Method UCC_Sample.test3() uses array as basis of collection</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
     <Method classname="UCC_Sample" name="test3" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="UCC_Sample" start="39" end="42" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <SourceLine classname="UCC_Sample" start="41" end="44" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
       <Message>In method UCC_Sample.test3()</Message>
     </Method>
-    <SourceLine classname="UCC_Sample" primary="true" start="40" end="40" startBytecode="20" endBytecode="20" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 40]</Message>
+    <SourceLine classname="UCC_Sample" primary="true" start="42" end="42" startBytecode="20" endBytecode="20" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 42]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="DMI_HARDCODED_ABSOLUTE_FILENAME" priority="2" rank="17" abbrev="DMI" category="STYLE" instanceHash="a2351c86fcbf712ffecac605cfbc2929" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="440">
     <ShortMessage>Code contains a hard coded reference to an absolute pathname</ShortMessage>
     <LongMessage>Hard coded reference to an absolute pathname in UCC_Sample.getPath()</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
     <Method classname="UCC_Sample" name="getPath" signature="()Ljava/io/File;" isStatic="false" primary="true">
-      <SourceLine classname="UCC_Sample" start="52" end="52" startBytecode="0" endBytecode="4" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <SourceLine classname="UCC_Sample" start="59" end="59" startBytecode="0" endBytecode="4" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
       <Message>In method UCC_Sample.getPath()</Message>
     </Method>
     <String value="c:\\temp" role="FILE_NAME">
       <Message>File name c:\\temp</Message>
     </String>
-    <SourceLine classname="UCC_Sample" primary="true" start="52" end="52" startBytecode="6" endBytecode="6" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 52]</Message>
+    <SourceLine classname="UCC_Sample" primary="true" start="59" end="59" startBytecode="6" endBytecode="6" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 59]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="DM_NUMBER_CTOR" priority="2" rank="18" abbrev="Bx" category="PERFORMANCE" instanceHash="319e5117cb4b5a162a64f6348f20a7b3" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method invokes inefficient Number constructor; use static valueOf instead</ShortMessage>
     <LongMessage>UCC_Sample.test1() invokes inefficient new Integer(int) constructor; use Integer.valueOf(int) instead</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
     <Method classname="UCC_Sample" name="test1" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="UCC_Sample" start="25" end="31" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <SourceLine classname="UCC_Sample" start="27" end="33" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
       <Message>In method UCC_Sample.test1()</Message>
     </Method>
     <Method classname="java.lang.Integer" name="&lt;init&gt;" signature="(I)V" isStatic="false" role="METHOD_CALLED">
@@ -33262,95 +33262,155 @@
       <SourceLine classname="java.lang.Integer" start="830" end="832" startBytecode="0" endBytecode="72" sourcefile="Integer.java" sourcepath="java/lang/Integer.java"/>
       <Message>Should call Integer.valueOf(int) instead</Message>
     </Method>
-    <SourceLine classname="UCC_Sample" primary="true" start="26" end="26" startBytecode="18" endBytecode="18" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 26]</Message>
+    <SourceLine classname="UCC_Sample" primary="true" start="28" end="28" startBytecode="18" endBytecode="18" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 28]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="5b0baba98b36cf668a19bcf8c78db89e" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class UCC_Sample id defined in the default package</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
-    <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
-      <Message>At UCC_Sample.java:[lines 14-52]</Message>
+    <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
+      <Message>At UCC_Sample.java:[lines 14-59]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_TOSTRING" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="6e21d2d79a8e8b0bff2692c191fc6a44" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class does not implement a toString method</ShortMessage>
     <LongMessage>Class UCC_Sample does not implement a toString method</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
-    <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
-      <Message>At UCC_Sample.java:[lines 14-52]</Message>
+    <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
+      <Message>At UCC_Sample.java:[lines 14-59]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="UCC_UNRELATED_COLLECTION_CONTENTS" priority="2" rank="17" abbrev="UCC" category="STYLE" instanceHash="a87d7f7ab06f58cbb30ba5ad0ff5e24e" instanceOccurrenceNum="0" instanceOccurrenceMax="2">
-    <ShortMessage>Method adds unrelated types to collection or array</ShortMessage>
-    <LongMessage>Method UCC_Sample.java:[line 26] adds unrelated types to collection or array</LongMessage>
+  <BugInstance type="NP_UNWRITTEN_FIELD" priority="2" rank="8" abbrev="NP" category="CORRECTNESS" instanceHash="8ad98fd49ba8da77134e833fbad7f12e" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
+    <ShortMessage>Read of unwritten field</ShortMessage>
+    <LongMessage>Read of unwritten field b1 in UCC_Sample.fpTwoDifferentFieldSources()</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
-    <SourceLine classname="UCC_Sample" primary="true" start="26" end="26" startBytecode="21" endBytecode="21" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 26]</Message>
-    </SourceLine>
-    <SourceLine classname="UCC_Sample" start="27" end="27" startBytecode="36" endBytecode="36" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 27]</Message>
+    <Method classname="UCC_Sample" name="fpTwoDifferentFieldSources" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample" start="54" end="56" startBytecode="0" endBytecode="82" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <Message>In method UCC_Sample.fpTwoDifferentFieldSources()</Message>
+    </Method>
+    <Field classname="UCC_Sample" name="b1" signature="LUCC_Sample$Bean1;" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>In UCC_Sample.java</Message>
+      </SourceLine>
+      <Message>Field UCC_Sample.b1</Message>
+    </Field>
+    <SourceLine classname="UCC_Sample" primary="true" start="54" end="54" startBytecode="4" endBytecode="4" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 54]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="UCC_UNRELATED_COLLECTION_CONTENTS" priority="2" rank="17" abbrev="UCC" category="STYLE" instanceHash="a87d7f7ab06f58cbb30ba5ad0ff5e24e" instanceOccurrenceNum="1" instanceOccurrenceMax="2">
-    <ShortMessage>Method adds unrelated types to collection or array</ShortMessage>
-    <LongMessage>Method UCC_Sample.java:[line 29] adds unrelated types to collection or array</LongMessage>
+  <BugInstance type="NP_UNWRITTEN_FIELD" priority="2" rank="8" abbrev="NP" category="CORRECTNESS" instanceHash="44cb1ac6a537fe75244761bf8c730ae6" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
+    <ShortMessage>Read of unwritten field</ShortMessage>
+    <LongMessage>Read of unwritten field b2 in UCC_Sample.fpTwoDifferentFieldSources()</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
-    <SourceLine classname="UCC_Sample" primary="true" start="29" end="29" startBytecode="61" endBytecode="61" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 29]</Message>
-    </SourceLine>
-    <SourceLine classname="UCC_Sample" start="34" end="34" startBytecode="12" endBytecode="12" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 34]</Message>
+    <Method classname="UCC_Sample" name="fpTwoDifferentFieldSources" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample" start="54" end="56" startBytecode="0" endBytecode="82" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <Message>In method UCC_Sample.fpTwoDifferentFieldSources()</Message>
+    </Method>
+    <Field classname="UCC_Sample" name="b2" signature="LUCC_Sample$Bean2;" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>In UCC_Sample.java</Message>
+      </SourceLine>
+      <Message>Field UCC_Sample.b2</Message>
+    </Field>
+    <SourceLine classname="UCC_Sample" primary="true" start="55" end="55" startBytecode="19" endBytecode="19" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 55]</Message>
     </SourceLine>
   </BugInstance>
-  <BugInstance type="UCC_UNRELATED_COLLECTION_CONTENTS" priority="2" rank="17" abbrev="UCC" category="STYLE" instanceHash="a87d7f7ab06f58cbb30ba5ad0ff5e24e" instanceOccurrenceNum="2" instanceOccurrenceMax="2">
-    <ShortMessage>Method adds unrelated types to collection or array</ShortMessage>
-    <LongMessage>Method UCC_Sample.java:[line 41] adds unrelated types to collection or array</LongMessage>
+  <BugInstance type="NP_UNWRITTEN_FIELD" priority="2" rank="8" abbrev="NP" category="CORRECTNESS" instanceHash="395693d6923d64d1ef8e7146a2e8b755" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
+    <ShortMessage>Read of unwritten field</ShortMessage>
+    <LongMessage>Read of unwritten field data in UCC_Sample.fpTwoDifferentFieldSources()</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
-    <SourceLine classname="UCC_Sample" primary="true" start="41" end="41" startBytecode="41" endBytecode="41" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 41]</Message>
+    <Method classname="UCC_Sample" name="fpTwoDifferentFieldSources" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample" start="54" end="56" startBytecode="0" endBytecode="82" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <Message>In method UCC_Sample.fpTwoDifferentFieldSources()</Message>
+    </Method>
+    <Field classname="UCC_Sample$Bean1" name="data" signature="Ljava/util/List;" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample$Bean1" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>In UCC_Sample.java</Message>
+      </SourceLine>
+      <Message>Field UCC_Sample$Bean1.data</Message>
+    </Field>
+    <SourceLine classname="UCC_Sample" primary="true" start="54" end="54" startBytecode="9" endBytecode="9" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 54]</Message>
     </SourceLine>
-    <SourceLine classname="UCC_Sample" start="40" end="40" startBytecode="20" endBytecode="20" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 40]</Message>
+  </BugInstance>
+  <BugInstance type="NP_UNWRITTEN_FIELD" priority="2" rank="8" abbrev="NP" category="CORRECTNESS" instanceHash="69d38cb75b25482ab296945d389f9ce" instanceOccurrenceNum="0" instanceOccurrenceMax="0" cweid="476">
+    <ShortMessage>Read of unwritten field</ShortMessage>
+    <LongMessage>Read of unwritten field data in UCC_Sample.fpTwoDifferentFieldSources()</LongMessage>
+    <Class classname="UCC_Sample" primary="true">
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
+      </SourceLine>
+      <Message>In class UCC_Sample</Message>
+    </Class>
+    <Method classname="UCC_Sample" name="fpTwoDifferentFieldSources" signature="()V" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample" start="54" end="56" startBytecode="0" endBytecode="82" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <Message>In method UCC_Sample.fpTwoDifferentFieldSources()</Message>
+    </Method>
+    <Field classname="UCC_Sample$Bean2" name="data" signature="Ljava/util/List;" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample$Bean2" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>In UCC_Sample.java</Message>
+      </SourceLine>
+      <Message>Field UCC_Sample$Bean2.data</Message>
+    </Field>
+    <SourceLine classname="UCC_Sample" primary="true" start="55" end="55" startBytecode="26" endBytecode="26" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 55]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="UCC_UNRELATED_COLLECTION_CONTENTS" priority="2" rank="17" abbrev="UCC" category="STYLE" instanceHash="a87d7f7ab06f58cbb30ba5ad0ff5e24e" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Method adds unrelated types to collection or array</ShortMessage>
+    <LongMessage>Method UCC_Sample.java:[line 42] adds unrelated types to collection or array</LongMessage>
+    <Class classname="UCC_Sample" primary="true">
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
+      </SourceLine>
+      <Message>In class UCC_Sample</Message>
+    </Class>
+    <SourceLine classname="UCC_Sample" primary="true" start="42" end="42" startBytecode="20" endBytecode="20" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 42]</Message>
+    </SourceLine>
+    <SourceLine classname="UCC_Sample" start="43" end="43" startBytecode="41" endBytecode="41" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 43]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UC_USELESS_OBJECT" priority="2" rank="17" abbrev="UC" category="STYLE" instanceHash="38e0cf4ecfc61313c19d2ce44cd083db" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Useless object created</ShortMessage>
     <LongMessage>Useless object stored in variable files of method UCC_Sample.bug1678805()</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
     <Method classname="UCC_Sample" name="bug1678805" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="UCC_Sample" start="45" end="49" startBytecode="0" endBytecode="119" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <SourceLine classname="UCC_Sample" start="47" end="51" startBytecode="0" endBytecode="119" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
       <Message>In method UCC_Sample.bug1678805()</Message>
     </Method>
     <String value="files">
@@ -33359,21 +33419,21 @@
     <Type descriptor="[Ljava/io/File;">
       <Message>Type java.io.File[]</Message>
     </Type>
-    <SourceLine classname="UCC_Sample" primary="true" start="45" end="45" startBytecode="1" endBytecode="1" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 45]</Message>
+    <SourceLine classname="UCC_Sample" primary="true" start="47" end="47" startBytecode="1" endBytecode="1" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 47]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UC_USELESS_OBJECT" priority="2" rank="17" abbrev="UC" category="STYLE" instanceHash="1fe4bafec729cd10135218a9801e97a2" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Useless object created</ShortMessage>
     <LongMessage>Useless object stored in variable tm of method UCC_Sample.test0()</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
     <Method classname="UCC_Sample" name="test0" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="UCC_Sample" start="19" end="22" startBytecode="0" endBytecode="114" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <SourceLine classname="UCC_Sample" start="21" end="24" startBytecode="0" endBytecode="114" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
       <Message>In method UCC_Sample.test0()</Message>
     </Method>
     <String value="tm">
@@ -33385,21 +33445,21 @@
       </SourceLine>
       <Message>Type java.util.TreeSet</Message>
     </Type>
-    <SourceLine classname="UCC_Sample" primary="true" start="19" end="19" startBytecode="4" endBytecode="4" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 19]</Message>
+    <SourceLine classname="UCC_Sample" primary="true" start="21" end="21" startBytecode="4" endBytecode="4" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 21]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UC_USELESS_OBJECT" priority="2" rank="17" abbrev="UC" category="STYLE" instanceHash="6940ef4be6143c915a03b982fab57dd4" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Useless object created</ShortMessage>
     <LongMessage>Useless object stored in variable s of method UCC_Sample.test3()</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
     <Method classname="UCC_Sample" name="test3" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="UCC_Sample" start="39" end="42" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <SourceLine classname="UCC_Sample" start="41" end="44" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
       <Message>In method UCC_Sample.test3()</Message>
     </Method>
     <String value="s">
@@ -33411,33 +33471,71 @@
       </SourceLine>
       <Message>Type java.util.HashSet</Message>
     </Type>
-    <SourceLine classname="UCC_Sample" primary="true" start="39" end="39" startBytecode="4" endBytecode="4" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 39]</Message>
+    <SourceLine classname="UCC_Sample" primary="true" start="41" end="41" startBytecode="4" endBytecode="4" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 41]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="UC_USELESS_VOID_METHOD" priority="1" rank="15" abbrev="UC" category="STYLE" instanceHash="69bc08b99e5395d8e172fa96c3b3f954" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Useless non-empty void method</ShortMessage>
     <LongMessage>Method UCC_Sample.test3() seems to be useless</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
     <Method classname="UCC_Sample" name="test3" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="UCC_Sample" start="39" end="42" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <SourceLine classname="UCC_Sample" start="41" end="44" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
       <Message>In method UCC_Sample.test3()</Message>
     </Method>
-    <SourceLine classname="UCC_Sample" primary="true" start="42" end="42" startBytecode="47" endBytecode="47" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 42]</Message>
+    <SourceLine classname="UCC_Sample" primary="true" start="44" end="44" startBytecode="47" endBytecode="47" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 44]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="UWF_UNWRITTEN_FIELD" priority="2" rank="12" abbrev="UwF" category="CORRECTNESS" instanceHash="eb73ac2b3820b610fd31899fa00c6dbc" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unwritten field</ShortMessage>
+    <LongMessage>Unwritten field: UCC_Sample.b1</LongMessage>
+    <Class classname="UCC_Sample" primary="true">
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
+      </SourceLine>
+      <Message>In class UCC_Sample</Message>
+    </Class>
+    <Field classname="UCC_Sample" name="b1" signature="LUCC_Sample$Bean1;" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>In UCC_Sample.java</Message>
+      </SourceLine>
+      <Message>Field UCC_Sample.b1</Message>
+    </Field>
+    <SourceLine classname="UCC_Sample" primary="true" start="54" end="54" startBytecode="1" endBytecode="1" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 54]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="UWF_UNWRITTEN_FIELD" priority="2" rank="12" abbrev="UwF" category="CORRECTNESS" instanceHash="a1b2b81f1d16836c1223fab23fabca66" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unwritten field</ShortMessage>
+    <LongMessage>Unwritten field: UCC_Sample.b2</LongMessage>
+    <Class classname="UCC_Sample" primary="true">
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
+      </SourceLine>
+      <Message>In class UCC_Sample</Message>
+    </Class>
+    <Field classname="UCC_Sample" name="b2" signature="LUCC_Sample$Bean2;" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>In UCC_Sample.java</Message>
+      </SourceLine>
+      <Message>Field UCC_Sample.b2</Message>
+    </Field>
+    <SourceLine classname="UCC_Sample" primary="true" start="55" end="55" startBytecode="16" endBytecode="16" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 55]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="WOC_WRITE_ONLY_COLLECTION_FIELD" priority="2" rank="7" abbrev="WOC" category="CORRECTNESS" instanceHash="bb204744cf370fbd50e55f03768b52" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class creates and initializes a collection but never reads or gains information from it</ShortMessage>
     <LongMessage>Class UCC_Sample creates and initializes a collection but never reads or gains information from it</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
@@ -33455,60 +33553,124 @@
     <ShortMessage>Method creates and initializes a collection but never reads or gains information from it</ShortMessage>
     <LongMessage>Method UCC_Sample.test0() creates and initializes a collection but never reads or gains information from it</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
     <Method classname="UCC_Sample" name="test0" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="UCC_Sample" start="19" end="22" startBytecode="0" endBytecode="114" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <SourceLine classname="UCC_Sample" start="21" end="24" startBytecode="0" endBytecode="114" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
       <Message>In method UCC_Sample.test0()</Message>
     </Method>
-    <SourceLine classname="UCC_Sample" primary="true" start="19" end="19" startBytecode="7" endBytecode="7" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 19]</Message>
+    <SourceLine classname="UCC_Sample" primary="true" start="21" end="21" startBytecode="7" endBytecode="7" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 21]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="WOC_WRITE_ONLY_COLLECTION_LOCAL" priority="2" rank="7" abbrev="WOC" category="CORRECTNESS" instanceHash="d0528298b4496e6cebcfad8f55acad7c" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Method creates and initializes a collection but never reads or gains information from it</ShortMessage>
     <LongMessage>Method UCC_Sample.test3() creates and initializes a collection but never reads or gains information from it</LongMessage>
     <Class classname="UCC_Sample" primary="true">
-      <SourceLine classname="UCC_Sample" start="14" end="52" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 14-52]</Message>
+      <SourceLine classname="UCC_Sample" start="14" end="59" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 14-59]</Message>
       </SourceLine>
       <Message>In class UCC_Sample</Message>
     </Class>
     <Method classname="UCC_Sample" name="test3" signature="()V" isStatic="false" primary="true">
-      <SourceLine classname="UCC_Sample" start="39" end="42" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
+      <SourceLine classname="UCC_Sample" start="41" end="44" startBytecode="0" endBytecode="129" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java"/>
       <Message>In method UCC_Sample.test3()</Message>
     </Method>
-    <SourceLine classname="UCC_Sample" primary="true" start="39" end="39" startBytecode="7" endBytecode="7" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-      <Message>At UCC_Sample.java:[line 39]</Message>
+    <SourceLine classname="UCC_Sample" primary="true" start="41" end="41" startBytecode="7" endBytecode="7" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 41]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="85b9634fedee1e3683c566b1521a0a3" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Class is defined in the default package</ShortMessage>
     <LongMessage>Class UCC_Sample$1 id defined in the default package</LongMessage>
     <Class classname="UCC_Sample$1" primary="true">
-      <SourceLine classname="UCC_Sample$1" start="1" end="34" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 1-34]</Message>
+      <SourceLine classname="UCC_Sample$1" start="1" end="36" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 1-36]</Message>
       </SourceLine>
       <Message>In class UCC_Sample$1</Message>
     </Class>
-    <SourceLine classname="UCC_Sample$1" start="1" end="34" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
-      <Message>At UCC_Sample.java:[lines 1-34]</Message>
+    <SourceLine classname="UCC_Sample$1" start="1" end="36" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
+      <Message>At UCC_Sample.java:[lines 1-36]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="SIC_INNER_SHOULD_BE_STATIC_ANON" priority="3" rank="20" abbrev="SIC" category="PERFORMANCE" instanceHash="68d906eb15a3ecc3f5352d154b711ff9" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
     <ShortMessage>Could be refactored into a named static inner class</ShortMessage>
     <LongMessage>The class UCC_Sample$1 could be refactored into a named _static_ inner class</LongMessage>
     <Class classname="UCC_Sample$1" primary="true">
-      <SourceLine classname="UCC_Sample$1" start="1" end="34" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
-        <Message>At UCC_Sample.java:[lines 1-34]</Message>
+      <SourceLine classname="UCC_Sample$1" start="1" end="36" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[lines 1-36]</Message>
       </SourceLine>
       <Message>In class UCC_Sample$1</Message>
     </Class>
-    <SourceLine classname="UCC_Sample$1" start="1" end="34" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
-      <Message>At UCC_Sample.java:[lines 1-34]</Message>
+    <SourceLine classname="UCC_Sample$1" start="1" end="36" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
+      <Message>At UCC_Sample.java:[lines 1-36]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="6a7a4a05fdddd2a9e7b61c1ca58e8bf3" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class is defined in the default package</ShortMessage>
+    <LongMessage>Class UCC_Sample$Bean1 id defined in the default package</LongMessage>
+    <Class classname="UCC_Sample$Bean1" primary="true">
+      <SourceLine classname="UCC_Sample$Bean1" start="62" end="62" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[line 62]</Message>
+      </SourceLine>
+      <Message>In class UCC_Sample$Bean1</Message>
+    </Class>
+    <SourceLine classname="UCC_Sample$Bean1" start="62" end="62" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
+      <Message>At UCC_Sample.java:[line 62]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="UWF_UNWRITTEN_FIELD" priority="2" rank="12" abbrev="UwF" category="CORRECTNESS" instanceHash="edeadf0b0a506a4bd35b59ec78d54dbf" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unwritten field</ShortMessage>
+    <LongMessage>Unwritten field: UCC_Sample$Bean1.data</LongMessage>
+    <Class classname="UCC_Sample$Bean1" primary="true">
+      <SourceLine classname="UCC_Sample$Bean1" start="62" end="62" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[line 62]</Message>
+      </SourceLine>
+      <Message>In class UCC_Sample$Bean1</Message>
+    </Class>
+    <Field classname="UCC_Sample$Bean1" name="data" signature="Ljava/util/List;" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample$Bean1" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>In UCC_Sample.java</Message>
+      </SourceLine>
+      <Message>Field UCC_Sample$Bean1.data</Message>
+    </Field>
+    <SourceLine classname="UCC_Sample" primary="true" start="54" end="54" startBytecode="4" endBytecode="4" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 54]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="ed300bb028ddab00dff70512c8a38993" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Class is defined in the default package</ShortMessage>
+    <LongMessage>Class UCC_Sample$Bean2 id defined in the default package</LongMessage>
+    <Class classname="UCC_Sample$Bean2" primary="true">
+      <SourceLine classname="UCC_Sample$Bean2" start="66" end="66" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[line 66]</Message>
+      </SourceLine>
+      <Message>In class UCC_Sample$Bean2</Message>
+    </Class>
+    <SourceLine classname="UCC_Sample$Bean2" start="66" end="66" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java" synthetic="true">
+      <Message>At UCC_Sample.java:[line 66]</Message>
+    </SourceLine>
+  </BugInstance>
+  <BugInstance type="UWF_UNWRITTEN_FIELD" priority="2" rank="12" abbrev="UwF" category="CORRECTNESS" instanceHash="99f6093fa9b024d83be11014ba5ea789" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
+    <ShortMessage>Unwritten field</ShortMessage>
+    <LongMessage>Unwritten field: UCC_Sample$Bean2.data</LongMessage>
+    <Class classname="UCC_Sample$Bean2" primary="true">
+      <SourceLine classname="UCC_Sample$Bean2" start="66" end="66" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>At UCC_Sample.java:[line 66]</Message>
+      </SourceLine>
+      <Message>In class UCC_Sample$Bean2</Message>
+    </Class>
+    <Field classname="UCC_Sample$Bean2" name="data" signature="Ljava/util/List;" isStatic="false" primary="true">
+      <SourceLine classname="UCC_Sample$Bean2" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+        <Message>In UCC_Sample.java</Message>
+      </SourceLine>
+      <Message>Field UCC_Sample$Bean2.data</Message>
+    </Field>
+    <SourceLine classname="UCC_Sample" primary="true" start="55" end="55" startBytecode="19" endBytecode="19" sourcefile="UCC_Sample.java" sourcepath="UCC_Sample.java">
+      <Message>At UCC_Sample.java:[line 55]</Message>
     </SourceLine>
   </BugInstance>
   <BugInstance type="IMC_IMMATURE_CLASS_NO_PACKAGE" priority="3" rank="20" abbrev="IMC" category="STYLE" instanceHash="1af055d6075d77e3c24d75403636c514" instanceOccurrenceNum="0" instanceOccurrenceMax="0">
@@ -41494,7 +41656,7 @@ Common false-positive cases include:</p>
   <Errors errors="0" missingClasses="1">
     <MissingClass>org.objectweb.asm.AnnotationVisitor</MissingClass>
   </Errors>
-  <FindBugsSummary timestamp="Thu, 15 Dec 2016 18:32:16 -0500" total_classes="307" referenced_classes="928" total_bugs="2000" total_size="5962" num_packages="1" java_version="1.8.0_65" vm_version="25.65-b01" cpu_seconds="35.72" clock_seconds="40.21" peak_mbytes="138.67" alloc_mbytes="773.38" gc_seconds="2.66" priority_3="739" priority_2="1060" priority_1="201">
+  <FindBugsSummary timestamp="Wed, 21 Dec 2016 20:28:56 -0500" total_classes="309" referenced_classes="930" total_bugs="2008" total_size="5976" num_packages="1" java_version="1.8.0_65" vm_version="25.65-b01" cpu_seconds="35.77" clock_seconds="41.45" peak_mbytes="137.96" alloc_mbytes="773.38" gc_seconds="2.49" priority_3="741" priority_2="1066" priority_1="201">
     <FileStats path="ABC_Sample.java" bugCount="9" size="30" bugHash="3567e98a7d86cdd520bef8a5c52580d1"/>
     <FileStats path="ACEM_Sample.java" bugCount="4" size="11" bugHash="07f3b584e55eacb88503f0c723e779ac"/>
     <FileStats path="AFBR_Sample.java" bugCount="2" size="36" bugHash="bff5a21e84aa9e285e6a28e64feb8e45"/>
@@ -41615,7 +41777,7 @@ Common false-positive cases include:</p>
     <FileStats path="TBP_Sample.java" bugCount="4" size="7" bugHash="32c97bf91d018cfd5897aabff55fe5c1"/>
     <FileStats path="TR_Sample.java" bugCount="3" size="7" bugHash="481f7ecda46d11a45e59f495b8707297"/>
     <FileStats path="UAA_Sample.java" bugCount="4" size="67" bugHash="1718875c6f3e1ccfaff82af3b9f286af"/>
-    <FileStats path="UCC_Sample.java" bugCount="17" size="38" bugHash="384cf764e1f0746a0fc95693bc49d13b"/>
+    <FileStats path="UCC_Sample.java" bugCount="25" size="52" bugHash="a45555d381140a753a8f7447eb1edcb9"/>
     <FileStats path="UCPM_Sample.java" bugCount="11" size="31" bugHash="3aa6cf1de52be2453e2dca1d493409d5"/>
     <FileStats path="UEC_Sample.java" bugCount="18" size="77" bugHash="58d96d37ce9f02dcb2ec69d681486495"/>
     <FileStats path="UMTP_Sample.java" bugCount="6" size="24" bugHash="34696cd97b16780da212127a50f414d5"/>
@@ -41632,7 +41794,7 @@ Common false-positive cases include:</p>
     <FileStats path="WEM_Sample.java" bugCount="7" size="28" bugHash="846fa06bcc5a3865edf77cab0813f22d"/>
     <FileStats path="WI_Sample.java" bugCount="6" size="14" bugHash="dab6926822536eb77d8355b3785c31fb"/>
     <FileStats path="WOC_Sample.java" bugCount="22" size="135" bugHash="fbedbc3eb199200af82f2180305bf851"/>
-    <PackageStats package="" total_bugs="2000" total_types="307" total_size="5962" priority_3="739" priority_2="1060" priority_1="201">
+    <PackageStats package="" total_bugs="2008" total_types="309" total_size="5976" priority_3="741" priority_2="1066" priority_1="201">
       <ClassStats class="A" sourceFile="SCR_Sample.java" interface="false" size="3" bugs="1" priority_3="1"/>
       <ClassStats class="ABC_Sample" sourceFile="ABC_Sample.java" interface="false" size="13" bugs="6" priority_3="3" priority_2="3"/>
       <ClassStats class="ABC_Sample$UseComparator" sourceFile="ABC_Sample.java" interface="false" size="9" bugs="1" priority_3="1"/>
@@ -41902,8 +42064,10 @@ Common false-positive cases include:</p>
       <ClassStats class="TestRuntimeExceptionOnImplementingClass" sourceFile="DRE_Sample.java" interface="false" size="7" bugs="2" priority_3="2"/>
       <ClassStats class="ThrowsRuntimeException" sourceFile="DRE_Sample.java" interface="true" size="2" bugs="2" priority_3="2"/>
       <ClassStats class="UAA_Sample" sourceFile="UAA_Sample.java" interface="false" size="67" bugs="4" priority_3="4"/>
-      <ClassStats class="UCC_Sample" sourceFile="UCC_Sample.java" interface="false" size="33" bugs="15" priority_3="2" priority_2="12" priority_1="1"/>
+      <ClassStats class="UCC_Sample" sourceFile="UCC_Sample.java" interface="false" size="39" bugs="21" priority_3="2" priority_2="18" priority_1="1"/>
       <ClassStats class="UCC_Sample$1" sourceFile="UCC_Sample.java" interface="false" size="5" bugs="2" priority_3="2"/>
+      <ClassStats class="UCC_Sample$Bean1" sourceFile="UCC_Sample.java" interface="false" size="4" bugs="1" priority_3="1"/>
+      <ClassStats class="UCC_Sample$Bean2" sourceFile="UCC_Sample.java" interface="false" size="4" bugs="1" priority_3="1"/>
       <ClassStats class="UCPM_Sample" sourceFile="UCPM_Sample.java" interface="false" size="31" bugs="13" priority_3="2" priority_2="11"/>
       <ClassStats class="UEC_Sample" sourceFile="UEC_Sample.java" interface="false" size="39" bugs="14" priority_3="3" priority_2="11"/>
       <ClassStats class="UEC_Sample$EnumStub" sourceFile="UEC_Sample.java" interface="true" size="1" bugs="1" priority_3="1"/>
@@ -41942,82 +42106,81 @@ Common false-positive cases include:</p>
       <ClassStats class="s2" sourceFile="COM_Sample.java" interface="false" size="6" bugs="2" priority_3="2"/>
     </PackageStats>
     <FindBugsProfile>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="2763" invocations="3003" avgMicrosecondsPerInvocation="920" maxMicrosecondsPerInvocation="199175" standardDeviationMircosecondsPerInvocation="4998"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="1900" invocations="928" avgMicrosecondsPerInvocation="2047" maxMicrosecondsPerInvocation="102327" standardDeviationMircosecondsPerInvocation="5889"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="1821" invocations="928" avgMicrosecondsPerInvocation="1962" maxMicrosecondsPerInvocation="54612" standardDeviationMircosecondsPerInvocation="4718"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectStatistics" totalMilliseconds="1791" invocations="928" avgMicrosecondsPerInvocation="1930" maxMicrosecondsPerInvocation="159568" standardDeviationMircosecondsPerInvocation="6825"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="1353" invocations="1294" avgMicrosecondsPerInvocation="1045" maxMicrosecondsPerInvocation="352763" standardDeviationMircosecondsPerInvocation="9984"/>
-      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="1181" invocations="2705" avgMicrosecondsPerInvocation="436" maxMicrosecondsPerInvocation="15262" standardDeviationMircosecondsPerInvocation="1060"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="951" invocations="1318" avgMicrosecondsPerInvocation="721" maxMicrosecondsPerInvocation="51134" standardDeviationMircosecondsPerInvocation="2437"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="924" invocations="3038" avgMicrosecondsPerInvocation="304" maxMicrosecondsPerInvocation="16048" standardDeviationMircosecondsPerInvocation="731"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="806" invocations="1356" avgMicrosecondsPerInvocation="595" maxMicrosecondsPerInvocation="56673" standardDeviationMircosecondsPerInvocation="2197"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="746" invocations="1308" avgMicrosecondsPerInvocation="570" maxMicrosecondsPerInvocation="24547" standardDeviationMircosecondsPerInvocation="1376"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="714" invocations="1374" avgMicrosecondsPerInvocation="520" maxMicrosecondsPerInvocation="57567" standardDeviationMircosecondsPerInvocation="2167"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="638" invocations="928" avgMicrosecondsPerInvocation="688" maxMicrosecondsPerInvocation="16930" standardDeviationMircosecondsPerInvocation="1707"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="622" invocations="1318" avgMicrosecondsPerInvocation="472" maxMicrosecondsPerInvocation="74160" standardDeviationMircosecondsPerInvocation="2310"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="491" invocations="1082" avgMicrosecondsPerInvocation="454" maxMicrosecondsPerInvocation="41152" standardDeviationMircosecondsPerInvocation="1532"/>
-      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="486" invocations="80455" avgMicrosecondsPerInvocation="6" maxMicrosecondsPerInvocation="34498" standardDeviationMircosecondsPerInvocation="162"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="446" invocations="1558" avgMicrosecondsPerInvocation="286" maxMicrosecondsPerInvocation="42080" standardDeviationMircosecondsPerInvocation="1270"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="437" invocations="928" avgMicrosecondsPerInvocation="471" maxMicrosecondsPerInvocation="55510" standardDeviationMircosecondsPerInvocation="2431"/>
-      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="433" invocations="2913" avgMicrosecondsPerInvocation="148" maxMicrosecondsPerInvocation="33129" standardDeviationMircosecondsPerInvocation="980"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="414" invocations="928" avgMicrosecondsPerInvocation="446" maxMicrosecondsPerInvocation="16748" standardDeviationMircosecondsPerInvocation="1388"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="367" invocations="1335" avgMicrosecondsPerInvocation="275" maxMicrosecondsPerInvocation="205483" standardDeviationMircosecondsPerInvocation="5635"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="358" invocations="928" avgMicrosecondsPerInvocation="386" maxMicrosecondsPerInvocation="39257" standardDeviationMircosecondsPerInvocation="1620"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="315" invocations="928" avgMicrosecondsPerInvocation="340" maxMicrosecondsPerInvocation="25707" standardDeviationMircosecondsPerInvocation="1584"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="315" invocations="928" avgMicrosecondsPerInvocation="339" maxMicrosecondsPerInvocation="30022" standardDeviationMircosecondsPerInvocation="1260"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="303" invocations="928" avgMicrosecondsPerInvocation="327" maxMicrosecondsPerInvocation="59804" standardDeviationMircosecondsPerInvocation="2123"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="299" invocations="307" avgMicrosecondsPerInvocation="974" maxMicrosecondsPerInvocation="31986" standardDeviationMircosecondsPerInvocation="3036"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="297" invocations="928" avgMicrosecondsPerInvocation="320" maxMicrosecondsPerInvocation="34333" standardDeviationMircosecondsPerInvocation="2083"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" totalMilliseconds="269" invocations="928" avgMicrosecondsPerInvocation="290" maxMicrosecondsPerInvocation="42854" standardDeviationMircosecondsPerInvocation="1565"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" totalMilliseconds="248" invocations="307" avgMicrosecondsPerInvocation="810" maxMicrosecondsPerInvocation="17044" standardDeviationMircosecondsPerInvocation="1718"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="225" invocations="1318" avgMicrosecondsPerInvocation="171" maxMicrosecondsPerInvocation="9061" standardDeviationMircosecondsPerInvocation="586"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="206" invocations="307" avgMicrosecondsPerInvocation="671" maxMicrosecondsPerInvocation="14406" standardDeviationMircosecondsPerInvocation="1547"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="178" invocations="307" avgMicrosecondsPerInvocation="580" maxMicrosecondsPerInvocation="37138" standardDeviationMircosecondsPerInvocation="2515"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="178" invocations="307" avgMicrosecondsPerInvocation="580" maxMicrosecondsPerInvocation="9682" standardDeviationMircosecondsPerInvocation="1043"/>
-      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="163" invocations="19741" avgMicrosecondsPerInvocation="8" maxMicrosecondsPerInvocation="8050" standardDeviationMircosecondsPerInvocation="107"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="163" invocations="229" avgMicrosecondsPerInvocation="713" maxMicrosecondsPerInvocation="40927" standardDeviationMircosecondsPerInvocation="2870"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="162" invocations="307" avgMicrosecondsPerInvocation="530" maxMicrosecondsPerInvocation="14882" standardDeviationMircosecondsPerInvocation="1254"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" totalMilliseconds="159" invocations="307" avgMicrosecondsPerInvocation="520" maxMicrosecondsPerInvocation="20718" standardDeviationMircosecondsPerInvocation="1546"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="156" invocations="928" avgMicrosecondsPerInvocation="168" maxMicrosecondsPerInvocation="8219" standardDeviationMircosecondsPerInvocation="448"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="155" invocations="307" avgMicrosecondsPerInvocation="505" maxMicrosecondsPerInvocation="9784" standardDeviationMircosecondsPerInvocation="1094"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" totalMilliseconds="151" invocations="307" avgMicrosecondsPerInvocation="491" maxMicrosecondsPerInvocation="11153" standardDeviationMircosecondsPerInvocation="1054"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="150" invocations="307" avgMicrosecondsPerInvocation="489" maxMicrosecondsPerInvocation="13801" standardDeviationMircosecondsPerInvocation="1163"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="148" invocations="307" avgMicrosecondsPerInvocation="484" maxMicrosecondsPerInvocation="6026" standardDeviationMircosecondsPerInvocation="871"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="145" invocations="1294" avgMicrosecondsPerInvocation="112" maxMicrosecondsPerInvocation="8621" standardDeviationMircosecondsPerInvocation="350"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="143" invocations="307" avgMicrosecondsPerInvocation="467" maxMicrosecondsPerInvocation="9026" standardDeviationMircosecondsPerInvocation="1182"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HangingExecutors" totalMilliseconds="139" invocations="307" avgMicrosecondsPerInvocation="455" maxMicrosecondsPerInvocation="11321" standardDeviationMircosecondsPerInvocation="1003"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="135" invocations="307" avgMicrosecondsPerInvocation="442" maxMicrosecondsPerInvocation="12259" standardDeviationMircosecondsPerInvocation="1386"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="131" invocations="307" avgMicrosecondsPerInvocation="426" maxMicrosecondsPerInvocation="10939" standardDeviationMircosecondsPerInvocation="1005"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" totalMilliseconds="130" invocations="307" avgMicrosecondsPerInvocation="426" maxMicrosecondsPerInvocation="9199" standardDeviationMircosecondsPerInvocation="934"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ConcurrentCollectionIssues" totalMilliseconds="130" invocations="307" avgMicrosecondsPerInvocation="425" maxMicrosecondsPerInvocation="48775" standardDeviationMircosecondsPerInvocation="2837"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.Section508Compliance" totalMilliseconds="128" invocations="307" avgMicrosecondsPerInvocation="417" maxMicrosecondsPerInvocation="11954" standardDeviationMircosecondsPerInvocation="1075"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" totalMilliseconds="127" invocations="307" avgMicrosecondsPerInvocation="414" maxMicrosecondsPerInvocation="9050" standardDeviationMircosecondsPerInvocation="899"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.InfiniteLoop" totalMilliseconds="126" invocations="307" avgMicrosecondsPerInvocation="413" maxMicrosecondsPerInvocation="14234" standardDeviationMircosecondsPerInvocation="1221"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossiblyRedundantMethodCalls" totalMilliseconds="124" invocations="307" avgMicrosecondsPerInvocation="404" maxMicrosecondsPerInvocation="8840" standardDeviationMircosecondsPerInvocation="917"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="122" invocations="307" avgMicrosecondsPerInvocation="398" maxMicrosecondsPerInvocation="6594" standardDeviationMircosecondsPerInvocation="830"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="121" invocations="307" avgMicrosecondsPerInvocation="397" maxMicrosecondsPerInvocation="10166" standardDeviationMircosecondsPerInvocation="925"/>
-      <ClassProfile name="edu.umd.cs.findbugs.StackMapAnalyzer$StackMapAnalysisFactory" totalMilliseconds="120" invocations="1504" avgMicrosecondsPerInvocation="80" maxMicrosecondsPerInvocation="27264" standardDeviationMircosecondsPerInvocation="790"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindFloatEquality" totalMilliseconds="120" invocations="307" avgMicrosecondsPerInvocation="391" maxMicrosecondsPerInvocation="47703" standardDeviationMircosecondsPerInvocation="2747"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossibleConstantAllocationInLoop" totalMilliseconds="120" invocations="307" avgMicrosecondsPerInvocation="391" maxMicrosecondsPerInvocation="11139" standardDeviationMircosecondsPerInvocation="990"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindHEmismatch" totalMilliseconds="116" invocations="307" avgMicrosecondsPerInvocation="379" maxMicrosecondsPerInvocation="6540" standardDeviationMircosecondsPerInvocation="807"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.CommonsStringBuilderToString" totalMilliseconds="115" invocations="307" avgMicrosecondsPerInvocation="377" maxMicrosecondsPerInvocation="8715" standardDeviationMircosecondsPerInvocation="1009"/>
-      <ClassProfile name="edu.umd.cs.findbugs.NonReportingDetectorToDetector2Adapter" totalMilliseconds="115" invocations="14534" avgMicrosecondsPerInvocation="7" maxMicrosecondsPerInvocation="8037" standardDeviationMircosecondsPerInvocation="127"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.SerializableIdiom" totalMilliseconds="114" invocations="307" avgMicrosecondsPerInvocation="372" maxMicrosecondsPerInvocation="23997" standardDeviationMircosecondsPerInvocation="1782"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LoggerOddities" totalMilliseconds="112" invocations="307" avgMicrosecondsPerInvocation="367" maxMicrosecondsPerInvocation="9005" standardDeviationMircosecondsPerInvocation="819"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison" totalMilliseconds="111" invocations="307" avgMicrosecondsPerInvocation="364" maxMicrosecondsPerInvocation="6174" standardDeviationMircosecondsPerInvocation="755"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ImproperPropertiesUse" totalMilliseconds="110" invocations="307" avgMicrosecondsPerInvocation="361" maxMicrosecondsPerInvocation="39559" standardDeviationMircosecondsPerInvocation="2300"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PartiallyConstructedObjectAccess" totalMilliseconds="108" invocations="307" avgMicrosecondsPerInvocation="355" maxMicrosecondsPerInvocation="8262" standardDeviationMircosecondsPerInvocation="895"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ImmatureClass" totalMilliseconds="108" invocations="307" avgMicrosecondsPerInvocation="353" maxMicrosecondsPerInvocation="8427" standardDeviationMircosecondsPerInvocation="801"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InefficientStringBuffering" totalMilliseconds="108" invocations="307" avgMicrosecondsPerInvocation="351" maxMicrosecondsPerInvocation="11490" standardDeviationMircosecondsPerInvocation="907"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.RepeatedConditionals" totalMilliseconds="107" invocations="307" avgMicrosecondsPerInvocation="351" maxMicrosecondsPerInvocation="5677" standardDeviationMircosecondsPerInvocation="702"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InvalidConstantArgument" totalMilliseconds="106" invocations="307" avgMicrosecondsPerInvocation="348" maxMicrosecondsPerInvocation="10199" standardDeviationMircosecondsPerInvocation="813"/>
-      <ClassProfile name="edu.umd.cs.findbugs.detect.CrossSiteScripting" totalMilliseconds="106" invocations="307" avgMicrosecondsPerInvocation="348" maxMicrosecondsPerInvocation="8769" standardDeviationMircosecondsPerInvocation="830"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InappropriateToStringUse" totalMilliseconds="106" invocations="307" avgMicrosecondsPerInvocation="345" maxMicrosecondsPerInvocation="11715" standardDeviationMircosecondsPerInvocation="1012"/>
-      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="105" invocations="1287" avgMicrosecondsPerInvocation="82" maxMicrosecondsPerInvocation="7891" standardDeviationMircosecondsPerInvocation="339"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DubiousMapCollection" totalMilliseconds="103" invocations="307" avgMicrosecondsPerInvocation="335" maxMicrosecondsPerInvocation="6577" standardDeviationMircosecondsPerInvocation="700"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HttpClientProblems" totalMilliseconds="102" invocations="307" avgMicrosecondsPerInvocation="335" maxMicrosecondsPerInvocation="5900" standardDeviationMircosecondsPerInvocation="622"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents" totalMilliseconds="102" invocations="307" avgMicrosecondsPerInvocation="333" maxMicrosecondsPerInvocation="8699" standardDeviationMircosecondsPerInvocation="809"/>
-      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.JDBCVendorReliance" totalMilliseconds="101" invocations="307" avgMicrosecondsPerInvocation="330" maxMicrosecondsPerInvocation="8640" standardDeviationMircosecondsPerInvocation="727"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassDataAnalysisEngine" totalMilliseconds="3200" invocations="3040" avgMicrosecondsPerInvocation="1052" maxMicrosecondsPerInvocation="33218" standardDeviationMircosecondsPerInvocation="2702"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.ClassInfoAnalysisEngine" totalMilliseconds="2538" invocations="3005" avgMicrosecondsPerInvocation="844" maxMicrosecondsPerInvocation="199024" standardDeviationMircosecondsPerInvocation="4699"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNoSideEffectMethods" totalMilliseconds="1522" invocations="930" avgMicrosecondsPerInvocation="1637" maxMicrosecondsPerInvocation="74230" standardDeviationMircosecondsPerInvocation="4565"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectStatistics" totalMilliseconds="1477" invocations="930" avgMicrosecondsPerInvocation="1588" maxMicrosecondsPerInvocation="157195" standardDeviationMircosecondsPerInvocation="6213"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FieldItemSummary" totalMilliseconds="1440" invocations="930" avgMicrosecondsPerInvocation="1548" maxMicrosecondsPerInvocation="48451" standardDeviationMircosecondsPerInvocation="3753"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueNumberDataflowFactory" totalMilliseconds="1011" invocations="1377" avgMicrosecondsPerInvocation="734" maxMicrosecondsPerInvocation="394130" standardDeviationMircosecondsPerInvocation="10677"/>
+      <ClassProfile name="edu.umd.cs.findbugs.OpcodeStack$JumpInfoFactory" totalMilliseconds="983" invocations="2708" avgMicrosecondsPerInvocation="363" maxMicrosecondsPerInvocation="18929" standardDeviationMircosecondsPerInvocation="739"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.NullDerefAndRedundantComparisonFinder" totalMilliseconds="899" invocations="1297" avgMicrosecondsPerInvocation="693" maxMicrosecondsPerInvocation="14061" standardDeviationMircosecondsPerInvocation="1332"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.IsNullValueDataflowFactory" totalMilliseconds="833" invocations="1321" avgMicrosecondsPerInvocation="631" maxMicrosecondsPerInvocation="41196" standardDeviationMircosecondsPerInvocation="1788"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.TypeDataflowFactory" totalMilliseconds="732" invocations="1359" avgMicrosecondsPerInvocation="539" maxMicrosecondsPerInvocation="34120" standardDeviationMircosecondsPerInvocation="1747"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.UnconditionalValueDerefDataflowFactory" totalMilliseconds="692" invocations="1311" avgMicrosecondsPerInvocation="527" maxMicrosecondsPerInvocation="22851" standardDeviationMircosecondsPerInvocation="1222"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.NoteDirectlyRelevantTypeQualifiers" totalMilliseconds="595" invocations="930" avgMicrosecondsPerInvocation="640" maxMicrosecondsPerInvocation="31950" standardDeviationMircosecondsPerInvocation="1914"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.CFGFactory" totalMilliseconds="563" invocations="1321" avgMicrosecondsPerInvocation="426" maxMicrosecondsPerInvocation="37373" standardDeviationMircosecondsPerInvocation="1597"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison$SpecialTypeAnalysis" totalMilliseconds="503" invocations="1085" avgMicrosecondsPerInvocation="463" maxMicrosecondsPerInvocation="25419" standardDeviationMircosecondsPerInvocation="1266"/>
+      <ClassProfile name="edu.umd.cs.findbugs.DetectorToDetector2Adapter" totalMilliseconds="445" invocations="80967" avgMicrosecondsPerInvocation="5" maxMicrosecondsPerInvocation="11011" standardDeviationMircosecondsPerInvocation="80"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.JavaClassAnalysisEngine" totalMilliseconds="425" invocations="1560" avgMicrosecondsPerInvocation="272" maxMicrosecondsPerInvocation="41160" standardDeviationMircosecondsPerInvocation="1259"/>
+      <ClassProfile name="edu.umd.cs.findbugs.util.TopologicalSort" totalMilliseconds="414" invocations="2915" avgMicrosecondsPerInvocation="142" maxMicrosecondsPerInvocation="19756" standardDeviationMircosecondsPerInvocation="793"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FunctionsThatMightBeMistakenForProcedures" totalMilliseconds="353" invocations="930" avgMicrosecondsPerInvocation="379" maxMicrosecondsPerInvocation="32487" standardDeviationMircosecondsPerInvocation="1494"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildObligationPolicyDatabase" totalMilliseconds="328" invocations="930" avgMicrosecondsPerInvocation="352" maxMicrosecondsPerInvocation="34367" standardDeviationMircosecondsPerInvocation="1317"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.EqualsOperandShouldHaveClassCompatibleWithThis" totalMilliseconds="296" invocations="930" avgMicrosecondsPerInvocation="319" maxMicrosecondsPerInvocation="61519" standardDeviationMircosecondsPerInvocation="2401"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ExplicitSerialization" totalMilliseconds="286" invocations="930" avgMicrosecondsPerInvocation="308" maxMicrosecondsPerInvocation="40488" standardDeviationMircosecondsPerInvocation="2243"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.OverridingEqualsNotSymmetrical" totalMilliseconds="280" invocations="930" avgMicrosecondsPerInvocation="301" maxMicrosecondsPerInvocation="17977" standardDeviationMircosecondsPerInvocation="911"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.MethodGenFactory" totalMilliseconds="271" invocations="1338" avgMicrosecondsPerInvocation="203" maxMicrosecondsPerInvocation="103727" standardDeviationMircosecondsPerInvocation="2875"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.CalledMethods" totalMilliseconds="244" invocations="930" avgMicrosecondsPerInvocation="262" maxMicrosecondsPerInvocation="6418" standardDeviationMircosecondsPerInvocation="570"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ConstantDataflowFactory" totalMilliseconds="228" invocations="1321" avgMicrosecondsPerInvocation="172" maxMicrosecondsPerInvocation="8788" standardDeviationMircosecondsPerInvocation="590"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" totalMilliseconds="223" invocations="309" avgMicrosecondsPerInvocation="724" maxMicrosecondsPerInvocation="13404" standardDeviationMircosecondsPerInvocation="1456"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.BuildStringPassthruGraph" totalMilliseconds="218" invocations="930" avgMicrosecondsPerInvocation="234" maxMicrosecondsPerInvocation="9825" standardDeviationMircosecondsPerInvocation="770"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindDeadLocalStores" totalMilliseconds="217" invocations="309" avgMicrosecondsPerInvocation="704" maxMicrosecondsPerInvocation="30361" standardDeviationMircosecondsPerInvocation="2218"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" totalMilliseconds="214" invocations="930" avgMicrosecondsPerInvocation="230" maxMicrosecondsPerInvocation="8052" standardDeviationMircosecondsPerInvocation="634"/>
+      <ClassProfile name="edu.umd.cs.findbugs.ba.npe.TypeQualifierNullnessAnnotationDatabase" totalMilliseconds="198" invocations="19752" avgMicrosecondsPerInvocation="10" maxMicrosecondsPerInvocation="8171" standardDeviationMircosecondsPerInvocation="145"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DumbMethods" totalMilliseconds="181" invocations="309" avgMicrosecondsPerInvocation="588" maxMicrosecondsPerInvocation="10598" standardDeviationMircosecondsPerInvocation="1237"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.LoadOfKnownNullValue" totalMilliseconds="173" invocations="309" avgMicrosecondsPerInvocation="563" maxMicrosecondsPerInvocation="25356" standardDeviationMircosecondsPerInvocation="1812"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.MethodReturnCheck" totalMilliseconds="173" invocations="309" avgMicrosecondsPerInvocation="559" maxMicrosecondsPerInvocation="7295" standardDeviationMircosecondsPerInvocation="1137"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindOpenStream" totalMilliseconds="172" invocations="309" avgMicrosecondsPerInvocation="559" maxMicrosecondsPerInvocation="22086" standardDeviationMircosecondsPerInvocation="1985"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref$CheckCallSitesAndReturnInstructions" totalMilliseconds="170" invocations="1297" avgMicrosecondsPerInvocation="131" maxMicrosecondsPerInvocation="11851" standardDeviationMircosecondsPerInvocation="541"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.LiveLocalStoreDataflowFactory" totalMilliseconds="169" invocations="1290" avgMicrosecondsPerInvocation="131" maxMicrosecondsPerInvocation="33041" standardDeviationMircosecondsPerInvocation="1268"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.UnreadFields" totalMilliseconds="168" invocations="309" avgMicrosecondsPerInvocation="546" maxMicrosecondsPerInvocation="8921" standardDeviationMircosecondsPerInvocation="977"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DeletingWhileIterating" totalMilliseconds="164" invocations="309" avgMicrosecondsPerInvocation="532" maxMicrosecondsPerInvocation="12705" standardDeviationMircosecondsPerInvocation="1235"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindInconsistentSync2" totalMilliseconds="162" invocations="309" avgMicrosecondsPerInvocation="526" maxMicrosecondsPerInvocation="10157" standardDeviationMircosecondsPerInvocation="1123"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindUselessObjects" totalMilliseconds="154" invocations="309" avgMicrosecondsPerInvocation="499" maxMicrosecondsPerInvocation="12593" standardDeviationMircosecondsPerInvocation="1243"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.CustomBuiltXML" totalMilliseconds="151" invocations="309" avgMicrosecondsPerInvocation="489" maxMicrosecondsPerInvocation="38120" standardDeviationMircosecondsPerInvocation="2710"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.ReflectiveClasses" totalMilliseconds="149" invocations="930" avgMicrosecondsPerInvocation="161" maxMicrosecondsPerInvocation="4670" standardDeviationMircosecondsPerInvocation="386"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InvalidConstantArgument" totalMilliseconds="149" invocations="309" avgMicrosecondsPerInvocation="483" maxMicrosecondsPerInvocation="43501" standardDeviationMircosecondsPerInvocation="2575"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.DefaultEncodingDetector" totalMilliseconds="148" invocations="309" avgMicrosecondsPerInvocation="479" maxMicrosecondsPerInvocation="9477" standardDeviationMircosecondsPerInvocation="1367"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindNullDeref" totalMilliseconds="141" invocations="309" avgMicrosecondsPerInvocation="458" maxMicrosecondsPerInvocation="5563" standardDeviationMircosecondsPerInvocation="794"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.SillynessPotPourri" totalMilliseconds="136" invocations="309" avgMicrosecondsPerInvocation="441" maxMicrosecondsPerInvocation="20472" standardDeviationMircosecondsPerInvocation="1351"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" totalMilliseconds="136" invocations="309" avgMicrosecondsPerInvocation="440" maxMicrosecondsPerInvocation="57474" standardDeviationMircosecondsPerInvocation="3311"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HangingExecutors" totalMilliseconds="135" invocations="309" avgMicrosecondsPerInvocation="437" maxMicrosecondsPerInvocation="14078" standardDeviationMircosecondsPerInvocation="1037"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" totalMilliseconds="134" invocations="309" avgMicrosecondsPerInvocation="436" maxMicrosecondsPerInvocation="31476" standardDeviationMircosecondsPerInvocation="1964"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.Section508Compliance" totalMilliseconds="131" invocations="309" avgMicrosecondsPerInvocation="426" maxMicrosecondsPerInvocation="17305" standardDeviationMircosecondsPerInvocation="1289"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindPuzzlers" totalMilliseconds="129" invocations="309" avgMicrosecondsPerInvocation="420" maxMicrosecondsPerInvocation="8412" standardDeviationMircosecondsPerInvocation="980"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InefficientStringBuffering" totalMilliseconds="129" invocations="309" avgMicrosecondsPerInvocation="419" maxMicrosecondsPerInvocation="42814" standardDeviationMircosecondsPerInvocation="2471"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.StreamResourceTracker" totalMilliseconds="128" invocations="229" avgMicrosecondsPerInvocation="561" maxMicrosecondsPerInvocation="9468" standardDeviationMircosecondsPerInvocation="1181"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.RuntimeExceptionCapture" totalMilliseconds="125" invocations="309" avgMicrosecondsPerInvocation="407" maxMicrosecondsPerInvocation="9710" standardDeviationMircosecondsPerInvocation="956"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" totalMilliseconds="122" invocations="309" avgMicrosecondsPerInvocation="395" maxMicrosecondsPerInvocation="6060" standardDeviationMircosecondsPerInvocation="713"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.HttpClientProblems" totalMilliseconds="121" invocations="309" avgMicrosecondsPerInvocation="392" maxMicrosecondsPerInvocation="9429" standardDeviationMircosecondsPerInvocation="869"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindSelfComparison" totalMilliseconds="119" invocations="309" avgMicrosecondsPerInvocation="386" maxMicrosecondsPerInvocation="10183" standardDeviationMircosecondsPerInvocation="1003"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.SwitchFallthrough" totalMilliseconds="119" invocations="309" avgMicrosecondsPerInvocation="385" maxMicrosecondsPerInvocation="9527" standardDeviationMircosecondsPerInvocation="906"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.WriteOnlyCollection" totalMilliseconds="117" invocations="309" avgMicrosecondsPerInvocation="380" maxMicrosecondsPerInvocation="6539" standardDeviationMircosecondsPerInvocation="738"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.LoggerOddities" totalMilliseconds="116" invocations="309" avgMicrosecondsPerInvocation="377" maxMicrosecondsPerInvocation="9704" standardDeviationMircosecondsPerInvocation="899"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.IOIssues" totalMilliseconds="113" invocations="309" avgMicrosecondsPerInvocation="368" maxMicrosecondsPerInvocation="11658" standardDeviationMircosecondsPerInvocation="1094"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UnrelatedCollectionContents" totalMilliseconds="112" invocations="309" avgMicrosecondsPerInvocation="365" maxMicrosecondsPerInvocation="9582" standardDeviationMircosecondsPerInvocation="931"/>
+      <ClassProfile name="edu.umd.cs.findbugs.classfile.engine.bcel.ValueRangeAnalysisFactory" totalMilliseconds="111" invocations="1338" avgMicrosecondsPerInvocation="83" maxMicrosecondsPerInvocation="14685" standardDeviationMircosecondsPerInvocation="583"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FormatStringChecker" totalMilliseconds="110" invocations="309" avgMicrosecondsPerInvocation="356" maxMicrosecondsPerInvocation="9899" standardDeviationMircosecondsPerInvocation="1047"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.UseToArray" totalMilliseconds="109" invocations="309" avgMicrosecondsPerInvocation="355" maxMicrosecondsPerInvocation="16179" standardDeviationMircosecondsPerInvocation="1079"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PossiblyRedundantMethodCalls" totalMilliseconds="109" invocations="309" avgMicrosecondsPerInvocation="355" maxMicrosecondsPerInvocation="12379" standardDeviationMircosecondsPerInvocation="888"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindRefComparison" totalMilliseconds="109" invocations="309" avgMicrosecondsPerInvocation="354" maxMicrosecondsPerInvocation="6610" standardDeviationMircosecondsPerInvocation="757"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.DubiousMapCollection" totalMilliseconds="107" invocations="309" avgMicrosecondsPerInvocation="349" maxMicrosecondsPerInvocation="9366" standardDeviationMircosecondsPerInvocation="846"/>
+      <ClassProfile name="edu.umd.cs.findbugs.detect.FindHEmismatch" totalMilliseconds="105" invocations="309" avgMicrosecondsPerInvocation="340" maxMicrosecondsPerInvocation="6109" standardDeviationMircosecondsPerInvocation="651"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.CharsetIssues" totalMilliseconds="103" invocations="309" avgMicrosecondsPerInvocation="334" maxMicrosecondsPerInvocation="16049" standardDeviationMircosecondsPerInvocation="1177"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.PartiallyConstructedObjectAccess" totalMilliseconds="102" invocations="309" avgMicrosecondsPerInvocation="330" maxMicrosecondsPerInvocation="9739" standardDeviationMircosecondsPerInvocation="873"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.InconsistentKeyNameCasing" totalMilliseconds="101" invocations="309" avgMicrosecondsPerInvocation="329" maxMicrosecondsPerInvocation="28381" standardDeviationMircosecondsPerInvocation="1653"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.ConcurrentCollectionIssues" totalMilliseconds="100" invocations="309" avgMicrosecondsPerInvocation="326" maxMicrosecondsPerInvocation="13252" standardDeviationMircosecondsPerInvocation="1045"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod" totalMilliseconds="99" invocations="309" avgMicrosecondsPerInvocation="322" maxMicrosecondsPerInvocation="8042" standardDeviationMircosecondsPerInvocation="719"/>
+      <ClassProfile name="com.mebigfatguy.fbcontrib.detect.OverlyConcreteParameter" totalMilliseconds="99" invocations="309" avgMicrosecondsPerInvocation="321" maxMicrosecondsPerInvocation="6539" standardDeviationMircosecondsPerInvocation="749"/>
     </FindBugsProfile>
   </FindBugsSummary>
   <ClassFeatures></ClassFeatures>
