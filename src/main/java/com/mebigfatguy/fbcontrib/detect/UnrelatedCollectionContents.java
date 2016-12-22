@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQField;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -52,7 +53,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
-    private Map<String, Set<String>> memberCollections;
+    private Map<FQField, Set<String>> memberCollections;
     private Map<Integer, Set<String>> localCollections;
     private Map<Integer, Set<Integer>> localScopeEnds;
     private Map<String, Set<SourceLineAnnotation>> memberSourceLineAnnotations;
@@ -188,10 +189,11 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
                 memberSourceLineAnnotations.put(field.getName(), sla);
             }
             sla.add(SourceLineAnnotation.fromVisitedInstruction(this));
-            Set<String> commonSupers = memberCollections.get(field.getName());
+            FQField fqField = new FQField(field.getClassName(), field.getName(), field.getSignature());
+            Set<String> commonSupers = memberCollections.get(field);
             if (commonSupers == null) {
                 commonSupers = new HashSet<>();
-                memberCollections.put(field.getName(), commonSupers);
+                memberCollections.put(fqField, commonSupers);
                 addNewItem(commonSupers, addItm);
             } else {
                 mergeItem(commonSupers, sla, addItm);
