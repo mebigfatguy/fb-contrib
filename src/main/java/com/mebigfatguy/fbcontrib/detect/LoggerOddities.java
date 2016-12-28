@@ -60,22 +60,32 @@ public class LoggerOddities extends BytecodeScanningDetector {
     private static final String COMMONS_LOGGER = "org/apache/commons/logging/Log";
     private static final String LOG4J_LOGGER = "org/apache/log4j/Logger";
     private static final String SLF4J_LOGGER = "org/slf4j/Logger";
-    private static final String SIG_STRING_AND_TWO_OBJECTS_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).toString();
-    private static final String SIG_STRING_AND_OBJECT_ARRAY_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, SignatureBuilder.SIG_OBJECT_ARRAY).toString();
-    private static final String SIG_OBJECT_AND_THROWABLE_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_THROWABLE).toString();
-    private static final String SIG_STRING_AND_THROWABLE_TO_VOID = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_THROWABLE).toString();
-    private static final String SIG_CLASS_TO_COMMONS_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(COMMONS_LOGGER).toString();
-    private static final String SIG_CLASS_TO_LOG4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(LOG4J_LOGGER).toString();
-    private static final String SIG_CLASS_TO_SLF4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(SLF4J_LOGGER).toString();
-    private static final String SIG_STRING_TO_COMMONS_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(COMMONS_LOGGER).toString();
-    private static final String SIG_STRING_TO_LOG4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(LOG4J_LOGGER).toString();
-    private static final String SIG_STRING_TO_SLF4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(SLF4J_LOGGER).toString();
-    private static final String SIG_STRING_AND_FACTORY_TO_LOG4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, "org/apache/log4j/spi/LoggerFactory")
-            .withReturnType(LOG4J_LOGGER).toString();
+    private static final String SIG_STRING_AND_TWO_OBJECTS_TO_VOID = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).toString();
+    private static final String SIG_STRING_AND_OBJECT_ARRAY_TO_VOID = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, SignatureBuilder.SIG_OBJECT_ARRAY).toString();
+    private static final String SIG_OBJECT_AND_THROWABLE_TO_VOID = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_THROWABLE).toString();
+    private static final String SIG_STRING_AND_THROWABLE_TO_VOID = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_THROWABLE).toString();
+    private static final String SIG_CLASS_TO_COMMONS_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS)
+            .withReturnType(COMMONS_LOGGER).toString();
+    private static final String SIG_CLASS_TO_LOG4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(LOG4J_LOGGER)
+            .toString();
+    private static final String SIG_CLASS_TO_SLF4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(SLF4J_LOGGER)
+            .toString();
+    private static final String SIG_STRING_TO_COMMONS_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
+            .withReturnType(COMMONS_LOGGER).toString();
+    private static final String SIG_STRING_TO_LOG4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(LOG4J_LOGGER)
+            .toString();
+    private static final String SIG_STRING_TO_SLF4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(SLF4J_LOGGER)
+            .toString();
+    private static final String SIG_STRING_AND_FACTORY_TO_LOG4J_LOGGER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, "org/apache/log4j/spi/LoggerFactory").withReturnType(LOG4J_LOGGER).toString();
 
     private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
     private static final Pattern BAD_STRING_FORMAT_PATTERN = Pattern
-            .compile("%([0-9]*\\$)?(-|#|\\+| |0|,|\\(|)?[0-9]*(\\.[0-9]+)?(b|h|s|c|d|o|x|e|f|g|a|t|%|n)");
+            .compile("(?<![a-zA-Z0-9])%([0-9]*\\$)?(-|#|\\+| |0|,|\\(|)?[0-9]*(\\.[0-9]+)?(b|h|s|c|d|o|x|e|f|g|a|t|%|n)");
     private static final Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
     private static final Pattern NON_SIMPLE_FORMAT = Pattern.compile(".*\\%[^sdf].*", Pattern.CASE_INSENSITIVE);
 
@@ -130,7 +140,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
         Method m = getMethod();
         if (Values.CONSTRUCTOR.equals(m.getName())) {
             for (String parmSig : SignatureUtils.getParameterSignatures(m.getSignature())) {
-                if (SignatureUtils.classToSignature(SLF4J_LOGGER).equals(parmSig) || SignatureUtils.classToSignature(LOG4J_LOGGER).equals(parmSig) || SignatureUtils.classToSignature(COMMONS_LOGGER).equals(parmSig)) {
+                if (SignatureUtils.classToSignature(SLF4J_LOGGER).equals(parmSig) || SignatureUtils.classToSignature(LOG4J_LOGGER).equals(parmSig)
+                        || SignatureUtils.classToSignature(COMMONS_LOGGER).equals(parmSig)) {
                     bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                 }
             }
@@ -274,8 +285,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
         String callingClsName = getClassConstantOperand();
         if (callingClsName.endsWith("Log") || (callingClsName.endsWith("Logger"))) {
             String sig = getSigConstantOperand();
-            if (SIG_STRING_AND_THROWABLE_TO_VOID.equals(sig)
-                    || SIG_OBJECT_AND_THROWABLE_TO_VOID.equals(sig)) {
+            if (SIG_STRING_AND_THROWABLE_TO_VOID.equals(sig) || SIG_OBJECT_AND_THROWABLE_TO_VOID.equals(sig)) {
                 if (stack.getStackDepth() >= 2) {
                     OpcodeStack.Item exItem = stack.getStackItem(0);
                     OpcodeStack.Item msgItem = stack.getStackItem(1);
@@ -296,10 +306,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 }
             } else if (SLF4J_LOGGER.equals(callingClsName)) {
                 String signature = getSigConstantOperand();
-                if (SignatureBuilder.SIG_STRING_TO_VOID.equals(signature)
-                        || SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID.equals(signature)
-                        || SIG_STRING_AND_TWO_OBJECTS_TO_VOID.equals(signature)
-                        || SIG_STRING_AND_OBJECT_ARRAY_TO_VOID.equals(signature)) {
+                if (SignatureBuilder.SIG_STRING_TO_VOID.equals(signature) || SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID.equals(signature)
+                        || SIG_STRING_AND_TWO_OBJECTS_TO_VOID.equals(signature) || SIG_STRING_AND_OBJECT_ARRAY_TO_VOID.equals(signature)) {
                     int numParms = SignatureUtils.getNumParameters(signature);
                     if (stack.getStackDepth() >= numParms) {
                         OpcodeStack.Item formatItem = stack.getStackItem(numParms - 1);
