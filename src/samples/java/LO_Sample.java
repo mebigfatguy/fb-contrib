@@ -124,8 +124,8 @@ public class LO_Sample {
         l3.warn(sb.toString());
     }
 
-    public void fpOKPattern() {
-        l3.error("Specify the path with %TEMP%");
+    public void fpOKPattern(File f) {
+        l3.error("Specify the path to {} with %TEMP% or using system property", f);
     }
 
     public class Inner {
