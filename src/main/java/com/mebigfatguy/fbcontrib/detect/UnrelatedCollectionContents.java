@@ -190,7 +190,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
             }
             sla.add(SourceLineAnnotation.fromVisitedInstruction(this));
             FQField fqField = new FQField(field.getClassName(), field.getName(), field.getSignature());
-            Set<String> commonSupers = memberCollections.get(field);
+            Set<String> commonSupers = memberCollections.get(fqField);
             if (commonSupers == null) {
                 commonSupers = new HashSet<>();
                 memberCollections.put(fqField, commonSupers);
