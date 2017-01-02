@@ -155,11 +155,10 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
                 break;
 
                 default:
-                    if (OpcodeUtils.isBranch(seen)) {
-                        if (syncBlockCount > 0) {
-                            syncBlockBranchResetValues.put(Integer.valueOf(getBranchTarget()), Integer.valueOf(syncBlockCount));
-                        }
+                    if ((syncBlockCount > 0) && OpcodeUtils.isBranch(seen)) {
+                        syncBlockBranchResetValues.put(Integer.valueOf(getBranchTarget()), Integer.valueOf(syncBlockCount));
                     }
+                break;
             }
         } finally {
             stack.sawOpcode(this, seen);
