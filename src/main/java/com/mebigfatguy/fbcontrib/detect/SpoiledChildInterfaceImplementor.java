@@ -119,11 +119,15 @@ public class SpoiledChildInterfaceImplementor implements Detector {
      */
     private static Set<String> buildMethodSet(JavaClass cls) {
         Set<String> methods = new HashSet<String>();
+        
+        boolean isInterface = cls.isInterface();
 
         for (Method m : cls.getMethods()) {
-            String methodName = m.getName();
-            if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName) && (!"clone".equals(methodName))) {
-                methods.add(methodName + ':' + m.getSignature());
+            if (!isInterface || m.isAbstract()) {
+                String methodName = m.getName();
+                if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName) && (!"clone".equals(methodName))) {
+                    methods.add(methodName + ':' + m.getSignature());
+                }
             }
         }
 
