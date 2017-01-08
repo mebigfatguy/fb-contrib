@@ -1,7 +1,7 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
- * Copyright (C) 2005-2016 Dave Brosius
- * Copyright (C) 2016 - Juan Martin Sotuyo Dodero
+ * Copyright (C) 2005-2017 Dave Brosius
+ * Copyright (C) 2016-2017 Juan Martin Sotuyo Dodero
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -253,7 +253,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;
                             }
-                            if (Values.SIG_PRIMITIVE_DOUBLE.equals(argTypes.get(argTypes.size() - 1)) && Values.SIG_PRIMITIVE_DOUBLE.equals(argTypes.get(argTypes.size() - 2))
+                            if (Values.SIG_PRIMITIVE_DOUBLE.equals(argTypes.get(argTypes.size() - 1))
+                                    && Values.SIG_PRIMITIVE_DOUBLE.equals(argTypes.get(argTypes.size() - 2))
                                     && ((argTypes.size() < 3) || !Values.SIG_PRIMITIVE_DOUBLE.equals(argTypes.get(argTypes.size() - 3)))) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_JUNIT_ASSERTION_ODDITIES_INEXACT_DOUBLE.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
@@ -306,7 +307,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                             }
 
                             Object cons1 = expectedItem.getConstant();
-                            if ((cons1 != null) && Values.SIG_PRIMITIVE_BOOLEAN.equals(argTypes.get(0)) && Values.SIG_PRIMITIVE_BOOLEAN.equals(argTypes.get(1))) {
+                            if ((cons1 != null) && Values.SIG_PRIMITIVE_BOOLEAN.equals(argTypes.get(0))
+                                    && Values.SIG_PRIMITIVE_BOOLEAN.equals(argTypes.get(1))) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UTAO_TESTNG_ASSERTION_ODDITIES_BOOLEAN_ASSERT.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                                 return;

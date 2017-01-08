@@ -249,7 +249,7 @@
 	<target name="javadoc" depends="-init" description="build the javadoc for the project">
 		<javadoc packagenames="com.mebigfatguy.*" sourcepath="${src.dir}" classpathref="fb-contrib.classpath" destdir="${javadoc.dir}" windowtitle="fb-contrib api" access="private">
 			<doctitle><![CDATA[<h1>fb-contrib javadoc</h1>]]></doctitle>
-			<bottom><![CDATA[<i>Copyright &#169; 2005-2016 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
+			<bottom><![CDATA[<i>Copyright &#169; 2005-2017 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
 		</javadoc>
 	</target>
 
