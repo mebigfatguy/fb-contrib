@@ -73,6 +73,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private JavaClass mapInterface;
+    private JavaClass propertiesClass;
     private OpcodeStack stack;
     private Map<String, FieldAnnotation> mapFields;
     boolean isInSpecial;
@@ -82,6 +83,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
 
         try {
             mapInterface = Repository.lookupClass("java.util.Map");
+            propertiesClass = Repository.lookupClass("java.util.Properties");
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }
@@ -90,7 +92,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
 
-        if (mapInterface == null) {
+        if (mapInterface == null || propertiesClass == null) {
             return;
         }
 
@@ -248,7 +250,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
 
             sig = SignatureUtils.trimSignature(sig);
             JavaClass fieldClass = Repository.lookupClass(sig);
-            return fieldClass.implementationOf(mapInterface);
+            return fieldClass.implementationOf(mapInterface) && !fieldClass.instanceOf(propertiesClass);
         } catch (ClassNotFoundException e) {
             return false;
         }
