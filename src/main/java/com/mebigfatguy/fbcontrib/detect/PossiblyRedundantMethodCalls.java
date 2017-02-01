@@ -45,7 +45,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for calls of the same method on the same object when that object hasn't changed. This often is redundant, and the second call can be removed, or
@@ -275,6 +277,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
             } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
 
                 String className = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
                 int parmCount = SignatureUtils.getNumParameters(signature);
 
@@ -282,8 +285,13 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                 XField field = null;
                 MethodCall mc = null;
                 String fieldSource = null;
-
-                if ((seen != INVOKESTATIC) && (stack.getStackDepth() > parmCount)) {
+                if (seen == INVOKESTATIC) {
+                    XMethod xm = XFactory.createXMethod(className, methodName, signature, true);
+                    String genericSignature = xm.getSourceSignature();
+                    if ((genericSignature != null) && genericSignature.endsWith(">;")) {
+                        return;
+                    }
+                } else if (stack.getStackDepth() > parmCount) {
                     OpcodeStack.Item obj = stack.getStackItem(parmCount);
                     reg = obj.getRegisterNumber();
                     field = obj.getXField();
@@ -337,7 +345,6 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         return;
                     }
 
-                    String methodName = getNameConstantOperand();
                     if (mc != null) {
                         if (!signature.endsWith(Values.SIG_VOID) && methodName.equals(mc.getName()) && signature.equals(mc.getSignature())
                                 && !isRiskyName(className, methodName)) {
