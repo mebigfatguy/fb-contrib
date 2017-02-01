@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 
 import edu.emory.mathcs.backport.java.util.Collections;
@@ -137,6 +138,11 @@ public class PRMC_Sample {
         } finally {
             System.out.println(foo.toString());
         }
+    }
+    
+    public void fpWithGenericReturn() {
+        Set<String> s = ImmutableSet.of();
+        Set<Integer> i = ImmutableSet.of();
     }
 
     void willThrow() {
