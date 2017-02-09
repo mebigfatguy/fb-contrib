@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.ArrayDeque;
+import java.util.Deque;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -25,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -38,6 +42,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     private static final FQMethod OR_ELSE_GET = new FQMethod("java/util/Optional", "orElseGet", "(Ljava/util/function/Supplier;)Ljava/lang/Object;");
     private BugReporter bugReporter;
     private OpcodeStack stack;
+    private Deque<ActiveStackOp> activeStackOps;
 
     public OptionalIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -50,8 +55,10 @@ public class OptionalIssues extends BytecodeScanningDetector {
         if (cls.getMajor() >= Constants.MAJOR_1_8) {
             try {
                 stack = new OpcodeStack();
+                activeStackOps = new ArrayDeque<>();
                 super.visitClassContext(classContext);
             } finally {
+                activeStackOps = null;
                 stack = null;
             }
         }
@@ -60,11 +67,14 @@ public class OptionalIssues extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
+        activeStackOps.clear();
         super.visitCode(obj);
     }
 
     @Override
     public void sawOpcode(int seen) {
+        FQMethod curCalledMethod = null;
+
         try {
             switch (seen) {
                 case IFNULL:
@@ -79,17 +89,24 @@ public class OptionalIssues extends BytecodeScanningDetector {
                     }
                 break;
 
+                case INVOKESTATIC:
+                case INVOKEINTERFACE:
+                case INVOKESPECIAL:
+                    // case INVOKEDYNAMIC:
+                    curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                break;
+
                 case INVOKEVIRTUAL:
-                    FQMethod curMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-                    if (OR_ELSE.equals(curMethod)) {
+                    curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                    if (OR_ELSE.equals(curCalledMethod)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
-                            if (itm.getReturnValueOf() != null) {
+                            if ((itm.getReturnValueOf() != null) && !isTrivialStackOps()) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
-                    } else if (OR_ELSE_GET.equals(curMethod)) {
+                    } else if (OR_ELSE_GET.equals(curCalledMethod)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             JavaClass supplier = itm.getJavaClass();
@@ -114,7 +131,22 @@ public class OptionalIssues extends BytecodeScanningDetector {
             bugReporter.reportMissingClass(e);
         } finally {
             stack.sawOpcode(this, seen);
+            if (stack.getStackDepth() == 0) {
+                activeStackOps.clear();
+            } else {
+                activeStackOps.addLast(new ActiveStackOp(seen, curCalledMethod));
+            }
         }
+    }
+
+    /**
+     * returns whether the set of operations that contributed to the current stack form, are trivial or not, specifically boxing a primitive value, or appending
+     * to strings or such.
+     *
+     * @return
+     */
+    private boolean isTrivialStackOps() {
+        return false;
     }
 
     private Method getSupplierGetMethod(JavaClass supplier) {
@@ -135,5 +167,49 @@ public class OptionalIssues extends BytecodeScanningDetector {
         }
 
         return false;
+    }
+
+    static class ActiveStackOp {
+        private int opcode;
+        FQMethod method;
+
+        public ActiveStackOp(int op) {
+            opcode = op;
+        }
+
+        public ActiveStackOp(int op, FQMethod calledMethod) {
+            opcode = op;
+            method = calledMethod;
+        }
+
+        public int getOpcode() {
+            return opcode;
+        }
+
+        public FQMethod getMethod() {
+            return method;
+        }
+
+        @Override
+        public int hashCode() {
+            return opcode ^ ((method != null) ? method.hashCode() : -1);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof ActiveStackOp)) {
+                return false;
+            }
+
+            ActiveStackOp that = (ActiveStackOp) o;
+
+            return (opcode == that.opcode) && ((method == that.method) || ((method != null) && method.equals(that.method)));
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+
     }
 }
