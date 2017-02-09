@@ -54,7 +54,14 @@ public class OptionalIssues extends BytecodeScanningDetector {
     // @formatter:on
     );
 
-    private static final FQMethod OR_ELSE_GET = new FQMethod("java/util/Optional", "orElseGet", "(Ljava/util/function/Supplier;)Ljava/lang/Object;");
+    private static Set<FQMethod> OR_ELSE_GET_METHODS = UnmodifiableSet.create(
+    // @formatter:off
+        new FQMethod("java/util/Optional", "orElseGet", "(Ljava/util/function/Supplier;)Ljava/lang/Object;"),
+        new FQMethod("java/util/OptionalDouble", "orElseGet", "(Ljava/util/function/DoubleSupplier;)D"),
+        new FQMethod("java/util/OptionalInt", "orElseGet", "(Ljava/util/function/IntSupplier;)I"),
+        new FQMethod("java/util/OptionalLong", "orElseGet", "(Ljava/util/function/LongSupplier;)J")
+    // @formatter:on
+    );
     private static final BitSet INVOKE_OPS = new BitSet();
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -140,7 +147,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
-                    } else if (OR_ELSE_GET.equals(curCalledMethod)) {
+                    } else if (OR_ELSE_GET_METHODS.contains(curCalledMethod)) {
                         if (!activeStackOps.isEmpty()) {
                             ActiveStackOp op = activeStackOps.getLast();
 

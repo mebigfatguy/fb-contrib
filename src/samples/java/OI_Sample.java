@@ -1,5 +1,6 @@
 import java.util.Optional;
 import java.util.OptionalDouble;
+import java.util.OptionalInt;
 
 public class OI_Sample {
 
@@ -23,6 +24,10 @@ public class OI_Sample {
 
     public String useImmediateExecution(Optional<String> o, final String a) {
         return o.orElseGet(() -> a);
+    }
+
+    public int useImmediateExecutionWithInt(OptionalInt o) {
+        return o.orElseGet(() -> 0);
     }
 
     public String fpDelayedOK(Optional<String> o, String a, String b) {
