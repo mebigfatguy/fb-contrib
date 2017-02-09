@@ -1,7 +1,6 @@
 language: java
 install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dfindbugs.skip=true -B -V
 jdk:
-    - openjdk8
     - oraclejdk8
 cache:
     directories:
