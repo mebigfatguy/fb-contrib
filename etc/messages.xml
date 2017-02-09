@@ -1678,7 +1678,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OptionalIssues">
 		<Details>
 			<![CDATA[
-			<p>Looks for various issues with the use of the java.lang.Optional class.</p>
+			<p>Looks for various issues with the use of the java.util.Optional class.</p>
 			<p>It is a fast detector</p>
 			]]>
 		</Details>
@@ -5711,7 +5711,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
-    <BugPattern type="OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION">
+    <BugPattern type="OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION">
     	<ShortDescription>Method uses immediate execution of a block of code that is often not used</ShortDescription>
     	<LongDescription>Method {1} uses immediate execution of a block of code that is often not used</LongDescription>
     	<Details>

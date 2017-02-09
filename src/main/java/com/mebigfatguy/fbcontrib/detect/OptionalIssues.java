@@ -22,6 +22,9 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
+
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
@@ -59,6 +62,19 @@ public class OptionalIssues extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
+            switch (seen) {
+                case IFNULL:
+                case IFNONNULL:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if ("Ljava/util/Optional;".equals(itm.getSignature())) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_CHECKING_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
+
+                    }
+                break;
+            }
         } finally {
             stack.sawOpcode(this, seen);
         }
