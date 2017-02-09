@@ -5747,6 +5747,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED">
+    	<ShortDescription>Method uses a java.util.Optional when use of OptionalInt, OptionalLong, OptionalDouble would be more clear</ShortDescription>
+    	<LongDescription>Method {1} uses a java.util.Optional when use of OptionalInt, OptionalLong, OptionalDouble would be more clear</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method creates an Optional object to hold an int, double or long. In these cases it
+    		is more natural to use the Optional variants OptionalInt, OptionalDouble and OptionalLong.
+    		</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 

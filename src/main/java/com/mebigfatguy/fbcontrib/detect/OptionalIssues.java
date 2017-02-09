@@ -45,23 +45,31 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class OptionalIssues extends BytecodeScanningDetector {
 
-    private static Set<FQMethod> OR_ELSE_METHODS = UnmodifiableSet.create(
+    private Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("java/lang/Integer", "java/lang/Long", "java/lang/Double");
+
+    private static final FQMethod OPTIONAL_OR_ELSE_METHOD = new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    private static final FQMethod OPTIONAL_OR_ELSE_GET_METHOD = new FQMethod("java/util/Optional", "orElseGet",
+            "(Ljava/util/function/Supplier;)Ljava/lang/Object;");
+    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get", "()Ljava/lang/Object;");
+
+    private static final Set<FQMethod> OR_ELSE_METHODS = UnmodifiableSet.create(
     // @formatter:off
-        new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;"),
+        OPTIONAL_OR_ELSE_METHOD,
         new FQMethod("java/util/OptionalDouble", "orElse", "(D)D"),
         new FQMethod("java/util/OptionalInt", "orElse", "(I)I"),
         new FQMethod("java/util/OptionalLong", "orElse", "(J)J")
     // @formatter:on
     );
 
-    private static Set<FQMethod> OR_ELSE_GET_METHODS = UnmodifiableSet.create(
+    private static final Set<FQMethod> OR_ELSE_GET_METHODS = UnmodifiableSet.create(
     // @formatter:off
-        new FQMethod("java/util/Optional", "orElseGet", "(Ljava/util/function/Supplier;)Ljava/lang/Object;"),
+        OPTIONAL_OR_ELSE_GET_METHOD,
         new FQMethod("java/util/OptionalDouble", "orElseGet", "(Ljava/util/function/DoubleSupplier;)D"),
         new FQMethod("java/util/OptionalInt", "orElseGet", "(Ljava/util/function/IntSupplier;)I"),
         new FQMethod("java/util/OptionalLong", "orElseGet", "(Ljava/util/function/LongSupplier;)J")
     // @formatter:on
     );
+
     private static final BitSet INVOKE_OPS = new BitSet();
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -107,6 +115,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         FQMethod curCalledMethod = null;
+        Boolean sawPlainOptional = null;
 
         try {
             switch (seen) {
@@ -147,6 +156,9 @@ public class OptionalIssues extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
+                        if (OPTIONAL_OR_ELSE_METHOD.equals(curCalledMethod)) {
+                            sawPlainOptional = true;
+                        }
                     } else if (OR_ELSE_GET_METHODS.contains(curCalledMethod)) {
                         if (!activeStackOps.isEmpty()) {
                             ActiveStackOp op = activeStackOps.getLast();
@@ -163,6 +175,23 @@ public class OptionalIssues extends BytecodeScanningDetector {
                                 }
                             }
                         }
+                        if (OPTIONAL_OR_ELSE_GET_METHOD.equals(curCalledMethod)) {
+                            sawPlainOptional = true;
+                        }
+                    } else if (OPTIONAL_GET_METHOD.equals(curCalledMethod)) {
+                        sawPlainOptional = true;
+                    }
+                break;
+
+                case CHECKCAST:
+                    if (BOXED_OPTIONAL_TYPES.contains(getClassConstantOperand())) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (itm.getUserValue() != null) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(), LOW_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                            }
+                        }
                     }
                 break;
             }
@@ -172,6 +201,10 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 activeStackOps.clear();
             } else {
                 activeStackOps.addLast(new ActiveStackOp(seen, curCalledMethod));
+                if (sawPlainOptional != null) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    itm.setUserValue(sawPlainOptional);
+                }
             }
         }
     }

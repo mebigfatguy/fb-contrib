@@ -313,7 +313,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.UnsynchronizedSingletonFieldWrites" speed="fast" reports="USFW_UNSYNCHRONIZED_SINGLETON_FIELD_WRITES"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.OptionalIssues" speed="fast" reports="OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION,OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION,OI_OPTIONAL_ISSUES_CHECKING_REFERENCE"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.OptionalIssues" speed="fast" reports="OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION,OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION,OI_OPTIONAL_ISSUES_CHECKING_REFERENCE,OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -590,4 +590,5 @@
 	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_CHECKING_REFERENCE" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED" category="CORRECTNESS" experimental="true"/>
 </FindbugsPlugin>
