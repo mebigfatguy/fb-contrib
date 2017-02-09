@@ -24,6 +24,10 @@ import java.util.Deque;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -44,6 +48,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     private static final BitSet INVOKE_OPS = new BitSet();
     private BugReporter bugReporter;
     private OpcodeStack stack;
+    private JavaClass currentClass;
     private Deque<ActiveStackOp> activeStackOps;
 
     static {
@@ -60,9 +65,9 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        JavaClass cls = classContext.getJavaClass();
+        currentClass = classContext.getJavaClass();
 
-        if (cls.getMajor() >= Constants.MAJOR_1_8) {
+        if (currentClass.getMajor() >= Constants.MAJOR_1_8) {
             try {
                 stack = new OpcodeStack();
                 activeStackOps = new ArrayDeque<>();
@@ -72,6 +77,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 stack = null;
             }
         }
+        currentClass = null;
     }
 
     @Override
@@ -99,10 +105,18 @@ public class OptionalIssues extends BytecodeScanningDetector {
                     }
                 break;
 
+                case INVOKEDYNAMIC:
+                    // smells like a hack. Not sure how to do this better
+                    ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
+                    ConstantPool cp = getConstantPool();
+                    ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(id.getNameAndTypeIndex());
+                    ConstantUtf8 typeConstant = (ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex());
+                    curCalledMethod = new FQMethod(getClassName(), "lambda$" + id.getBootstrapMethodAttrIndex(), typeConstant.getBytes());
+                break;
+
                 case INVOKESTATIC:
                 case INVOKEINTERFACE:
                 case INVOKESPECIAL:
-                    // case INVOKEDYNAMIC:
                     curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 break;
 
@@ -117,19 +131,17 @@ public class OptionalIssues extends BytecodeScanningDetector {
                             }
                         }
                     } else if (OR_ELSE_GET.equals(curCalledMethod)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            JavaClass supplier = itm.getJavaClass();
-                            if (supplier.isClass()) {
-                                Method getMethod = getSupplierGetMethod(supplier);
-                                if (getMethod != null) {
-                                    byte[] byteCode = getMethod.getCode().getCode();
-                                    if (byteCode.length <= 4) {
-                                        // we are looking for ALOAD, GETFIELD, or LDC followed by ARETURN, that should fit in 4 bytes
-                                        if (!hasInvoke(byteCode)) {
-                                            bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION.name(), LOW_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
-                                        }
+                        if (!activeStackOps.isEmpty()) {
+                            ActiveStackOp op = activeStackOps.getLast();
+
+                            Method getMethod = getLambdaMethod(op.getMethod().getMethodName());
+                            if (getMethod != null) {
+                                byte[] byteCode = getMethod.getCode().getCode();
+                                if (byteCode.length <= 4) {
+                                    // we are looking for ALOAD, GETFIELD, or LDC followed by ARETURN, that should fit in 4 bytes
+                                    if (!hasInvoke(byteCode)) {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION.name(), LOW_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
                                     }
                                 }
                             }
@@ -137,8 +149,6 @@ public class OptionalIssues extends BytecodeScanningDetector {
                     }
                 break;
             }
-        } catch (ClassNotFoundException e) {
-            bugReporter.reportMissingClass(e);
         } finally {
             stack.sawOpcode(this, seen);
             if (stack.getStackDepth() == 0) {
@@ -176,9 +186,9 @@ public class OptionalIssues extends BytecodeScanningDetector {
         return false;
     }
 
-    private Method getSupplierGetMethod(JavaClass supplier) {
-        for (Method method : supplier.getMethods()) {
-            if ("get".equals(method.getName()) && "()Ljava/lang/Object;".equals(method.getSignature())) {
+    private Method getLambdaMethod(String methodName) {
+        for (Method method : currentClass.getMethods()) {
+            if (methodName.equals(method.getName())) {
                 return method;
             }
         }
@@ -188,7 +198,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
     private boolean hasInvoke(byte[] byteCode) {
         for (byte b : byteCode) {
-            if (INVOKE_OPS.get(b)) {
+            if (INVOKE_OPS.get(b & 0x00FF)) {
                 return true;
             }
         }
