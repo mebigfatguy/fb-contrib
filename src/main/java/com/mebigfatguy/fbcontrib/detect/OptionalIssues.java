@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
@@ -34,6 +35,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class OptionalIssues extends BytecodeScanningDetector {
 
     private static final FQMethod OR_ELSE = new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    private static final FQMethod OR_ELSE_GET = new FQMethod("java/util/Optional", "orElseGet", "(Ljava/util/function/Supplier;)Ljava/lang/Object;");
     private BugReporter bugReporter;
     private OpcodeStack stack;
 
@@ -87,11 +89,51 @@ public class OptionalIssues extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
+                    } else if (OR_ELSE_GET.equals(curMethod)) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            JavaClass supplier = itm.getJavaClass();
+                            if (supplier.isClass()) {
+                                Method getMethod = getSupplierGetMethod(supplier);
+                                if (getMethod != null) {
+                                    byte[] byteCode = getMethod.getCode().getCode();
+                                    if (byteCode.length <= 4) {
+                                        // we are looking for ALOAD, GETFIELD, or LDC followed by ARETURN, that should fit in 4 bytes
+                                        if (!hasInvoke(byteCode)) {
+                                            bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION.name(), LOW_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                        }
+                                    }
+                                }
+                            }
+                        }
                     }
                 break;
             }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
         } finally {
             stack.sawOpcode(this, seen);
         }
+    }
+
+    private Method getSupplierGetMethod(JavaClass supplier) {
+        for (Method method : supplier.getMethods()) {
+            if ("get".equals(method.getName()) && "()Ljava/lang/Object;".equals(method.getSignature())) {
+                return method;
+            }
+        }
+
+        return null;
+    }
+
+    private boolean hasInvoke(byte[] byteCode) {
+        for (byte b : byteCode) {
+            if ((b == INVOKEINTERFACE) || (b == INVOKEVIRTUAL) || (b == INVOKESTATIC) || (b == INVOKEDYNAMIC)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
