@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Deque;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
@@ -34,6 +35,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -43,7 +45,15 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class OptionalIssues extends BytecodeScanningDetector {
 
-    private static final FQMethod OR_ELSE = new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    private static Set<FQMethod> OR_ELSE_METHODS = UnmodifiableSet.create(
+    // @formatter:off
+        new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;"),
+        new FQMethod("java/util/OptionalDouble", "orElse", "(D)D"),
+        new FQMethod("java/util/OptionalInt", "orElse", "(I)I"),
+        new FQMethod("java/util/OptionalLong", "orElse", "(J)J")
+    // @formatter:on
+    );
+
     private static final FQMethod OR_ELSE_GET = new FQMethod("java/util/Optional", "orElseGet", "(Ljava/util/function/Supplier;)Ljava/lang/Object;");
     private static final BitSet INVOKE_OPS = new BitSet();
     private BugReporter bugReporter;
@@ -122,7 +132,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
                 case INVOKEVIRTUAL:
                     curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-                    if (OR_ELSE.equals(curCalledMethod)) {
+                    if (OR_ELSE_METHODS.contains(curCalledMethod)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             if ((itm.getReturnValueOf() != null) && !isTrivialStackOps()) {

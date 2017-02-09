@@ -1,10 +1,16 @@
 import java.util.Optional;
+import java.util.OptionalDouble;
 
 public class OI_Sample {
 
     public String useDelayedExecution(Optional<String> o, String a, String b) {
 
         return o.orElse(String.format("%s boo %s hiss", a, b));
+    }
+
+    public double useDelayedExecutionWithDouble(OptionalDouble o) {
+
+        return o.orElse(Math.pow(Math.PI, Math.exp(Math.E)));
     }
 
     public String checkingOptionalReference(Optional<String> o) {
