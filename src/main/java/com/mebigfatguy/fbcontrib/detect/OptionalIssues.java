@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -32,6 +33,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class OptionalIssues extends BytecodeScanningDetector {
 
+    private static final FQMethod OR_ELSE = new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
     private BugReporter bugReporter;
     private OpcodeStack stack;
 
@@ -72,6 +74,19 @@ public class OptionalIssues extends BytecodeScanningDetector {
                                     .addMethod(this).addSourceLine(this));
                         }
 
+                    }
+                break;
+
+                case INVOKEVIRTUAL:
+                    FQMethod curMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                    if (OR_ELSE.equals(curMethod)) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (itm.getReturnValueOf() != null) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                            }
+                        }
                     }
                 break;
             }
