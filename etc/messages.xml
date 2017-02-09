@@ -1675,6 +1675,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 		</Details>
 	</Detector>
 	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.OptionalIssues">
+		<Details>
+			<![CDATA[
+			<p>Looks for various issues with the use of the java.lang.Optional class.</p>
+			<p>It is a fast detector</p>
+			]]>
+		</Details>
+	</Detector>
+	
+	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
 	</Detector>
@@ -5700,6 +5710,43 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION">
+    	<ShortDescription>Method uses immediate execution of a block of code that is often not used</ShortDescription>
+    	<LongDescription>Method {1} uses immediate execution of a block of code that is often not used</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method uses the Optional.orElse() method passing in some code that will execute immediately, whether 
+    		or not the else case of the Optional is needed. This may cause incorrect side effects to happen, or at the 
+    		minimum, code to execute for no reason. It would be better to use Optional.orElseGet()
+    		]]>
+    	</Details>
+    </BugPattern>
+    
+    <BugPattern type="OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION">
+    	<ShortDescription>Method uses delayed execution of a block of code that is trivial</ShortDescription>
+    	<LongDescription>Method {1} uses immediate execution of a block of code that is trivial</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method uses the Optional.orElseGet() method passing in a simple variable or constant value.
+    		As this value takes not time to execute or causes no side effects, the use of Optional.orElseGet is
+    		unnecessary and potentially confusing. You can use Optional.orElse() instead.
+    		]]>
+    	</Details>
+    </BugPattern>
+    
+    <BugPattern type="OI_OPTIONAL_ISSUES_CHECKING_REFERENCE">
+    	<ShortDescription>Method checks an Optional reference for null</ShortDescription>
+    	<LongDescription>Method {1} checks an Optional reference for null</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method compares an Optional reference variable against null. As the whole point of the
+    		Optional class is to avoid the null pointer exception, this use pattern is highly suspect. 
+    		The code should always make sure the Optional reference is valid, and should count on the apis
+    		of this class to check for the held reference instead.
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5841,4 +5888,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="UTWR">Use Try With Resources</BugCode>
 	<BugCode abbrev="SSCU">Suspicious Shaded Class Use</BugCode>
 	<BugCode abbrev="USFW">Unsynchronous Singleton Field Writes</BugCode>
+	<BugCode abbrev="OI">Optional Issues</BugCode>
 </MessageCollection>
