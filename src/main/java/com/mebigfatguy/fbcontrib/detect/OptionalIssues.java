@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayDeque;
+import java.util.BitSet;
 import java.util.Deque;
 
 import org.apache.bcel.Constants;
@@ -40,9 +41,18 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
     private static final FQMethod OR_ELSE = new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
     private static final FQMethod OR_ELSE_GET = new FQMethod("java/util/Optional", "orElseGet", "(Ljava/util/function/Supplier;)Ljava/lang/Object;");
+    private static final BitSet INVOKE_OPS = new BitSet();
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Deque<ActiveStackOp> activeStackOps;
+
+    static {
+        INVOKE_OPS.set(INVOKEINTERFACE);
+        INVOKE_OPS.set(INVOKEVIRTUAL);
+        INVOKE_OPS.set(INVOKESTATIC);
+        INVOKE_OPS.set(INVOKESPECIAL);
+        INVOKE_OPS.set(INVOKEDYNAMIC);
+    }
 
     public OptionalIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -146,6 +156,23 @@ public class OptionalIssues extends BytecodeScanningDetector {
      * @return
      */
     private boolean isTrivialStackOps() {
+
+        int invokeCount = 0;
+        for (ActiveStackOp op : activeStackOps) {
+            if (INVOKE_OPS.get(op.getOpcode())) {
+                invokeCount++;
+            }
+        }
+
+        if (invokeCount == 1) {
+            FQMethod method = activeStackOps.getLast().getMethod();
+            if (method.getMethodName().equals("valueOf") && (method.getClassName().startsWith("java/lang/"))) {
+                return true;
+            }
+        }
+
+        // do simple string appending?
+
         return false;
     }
 
@@ -161,7 +188,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
     private boolean hasInvoke(byte[] byteCode) {
         for (byte b : byteCode) {
-            if ((b == INVOKEINTERFACE) || (b == INVOKEVIRTUAL) || (b == INVOKESTATIC) || (b == INVOKEDYNAMIC)) {
+            if (INVOKE_OPS.get(b)) {
                 return true;
             }
         }
