@@ -34,4 +34,8 @@ public class OI_Sample {
         return o.orElse(a + b);
     }
 
+    public Long fpBoxingIsTooCommon(Optional<Long> o) {
+        return o.orElse(0L);
+    }
+
 }
