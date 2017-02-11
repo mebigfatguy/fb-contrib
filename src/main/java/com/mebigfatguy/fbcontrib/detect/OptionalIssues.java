@@ -43,6 +43,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
+/**
+ * looks for various issues around use of java.util.Optional
+ */
 public class OptionalIssues extends BytecodeScanningDetector {
 
     private Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("java/lang/Integer", "java/lang/Long", "java/lang/Double");
@@ -84,10 +87,22 @@ public class OptionalIssues extends BytecodeScanningDetector {
         INVOKE_OPS.set(INVOKEDYNAMIC);
     }
 
+    /**
+     * constructs a OI detector given the reporter to report bugs on
+     *
+     * @param bugReporter
+     *            the sync of bug reports
+     */
     public OptionalIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
+    /**
+     * implements the visitor to filter out pre-1.8 classes, for 1.8+ classes, it creates the opcode stack and active stack ops
+     *
+     * @param classContext
+     *            the context object of the currently parsed class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         currentClass = classContext.getJavaClass();
@@ -105,6 +120,12 @@ public class OptionalIssues extends BytecodeScanningDetector {
         currentClass = null;
     }
 
+    /**
+     * implements the visitor clear the stacks
+     *
+     * @param obj
+     *            the context object of the currently parsed code block
+     */
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
@@ -112,6 +133,13 @@ public class OptionalIssues extends BytecodeScanningDetector {
         super.visitCode(obj);
     }
 
+    /**
+     * implements the visitor to look for reference compares of Optional, Optional use when more specific Optionals should be used, and use of orElse when
+     * orElseGet would be more appropriate
+     *
+     * @param seen
+     *            the opcode of the currently parsed instruction
+     */
     @Override
     public void sawOpcode(int seen) {
         FQMethod curCalledMethod = null;
@@ -240,6 +268,13 @@ public class OptionalIssues extends BytecodeScanningDetector {
         return false;
     }
 
+    /**
+     * finds the bootstrap method for a lambda (invokedynamic call. As findbugs doesn't support bcel 6, have to cheat a little here.
+     *
+     * @param methodName
+     *            the lambda name
+     * @return the method object if it exists
+     */
     private Method getLambdaMethod(String methodName) {
         for (Method method : currentClass.getMethods()) {
             if (methodName.equals(method.getName())) {
@@ -250,6 +285,13 @@ public class OptionalIssues extends BytecodeScanningDetector {
         return null;
     }
 
+    /**
+     * returns whether the byte code of a method has an invokeXXX statement in it
+     * 
+     * @param byteCode
+     *            the byte code of a method to check
+     * @return if there is an invokeXX method found
+     */
     private boolean hasInvoke(byte[] byteCode) {
         for (byte b : byteCode) {
             if (INVOKE_OPS.get(b & 0x00FF)) {
@@ -260,6 +302,9 @@ public class OptionalIssues extends BytecodeScanningDetector {
         return false;
     }
 
+    /**
+     * represents an opcode that was issued while there is still active elements on the stack.
+     */
     static class ActiveStackOp {
         private int opcode;
         FQMethod method;
