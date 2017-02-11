@@ -286,7 +286,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                 MethodCall mc = null;
                 String fieldSource = null;
                 if (seen == INVOKESTATIC) {
-                    XMethod xm = XFactory.createXMethod(className, methodName, signature, true);
+                    XMethod xm = XFactory.createXMethod(getDottedClassConstantOperand(), methodName, signature, true);
                     String genericSignature = xm.getSourceSignature();
                     if ((genericSignature != null) && genericSignature.endsWith(">;")) {
                         return;
