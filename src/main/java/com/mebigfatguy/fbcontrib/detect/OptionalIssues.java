@@ -197,10 +197,14 @@ public class OptionalIssues extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
-            if (stack.getStackDepth() == 0) {
+            int stackDepth = stack.getStackDepth();
+            if (stackDepth == 0) {
                 activeStackOps.clear();
             } else {
                 activeStackOps.addLast(new ActiveStackOp(seen, curCalledMethod));
+                while (activeStackOps.size() > stackDepth) {
+                    activeStackOps.removeFirst();
+                }
                 if (sawPlainOptional != null) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     itm.setUserValue(sawPlainOptional);
