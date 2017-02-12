@@ -185,7 +185,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                             }
                         }
                         if (OPTIONAL_OR_ELSE_METHOD.equals(curCalledMethod)) {
-                            sawPlainOptional = true;
+                            sawPlainOptional = Boolean.TRUE;
                         }
                     } else if (OR_ELSE_GET_METHODS.contains(curCalledMethod)) {
                         if (!activeStackOps.isEmpty()) {
@@ -204,10 +204,10 @@ public class OptionalIssues extends BytecodeScanningDetector {
                             }
                         }
                         if (OPTIONAL_OR_ELSE_GET_METHOD.equals(curCalledMethod)) {
-                            sawPlainOptional = true;
+                            sawPlainOptional = Boolean.TRUE;
                         }
                     } else if (OPTIONAL_GET_METHOD.equals(curCalledMethod)) {
-                        sawPlainOptional = true;
+                        sawPlainOptional = Boolean.TRUE;
                     }
                 break;
 
@@ -287,7 +287,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
     /**
      * returns whether the byte code of a method has an invokeXXX statement in it
-     * 
+     *
      * @param byteCode
      *            the byte code of a method to check
      * @return if there is an invokeXX method found
