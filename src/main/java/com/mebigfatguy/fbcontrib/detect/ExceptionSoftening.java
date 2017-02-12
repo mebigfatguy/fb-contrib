@@ -47,6 +47,7 @@ import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -82,7 +83,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
 
         try {
-            runtimeClass = Repository.lookupClass("java/lang/RuntimeException");
+            runtimeClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_RUNTIMEEXCEPTION);
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
         }

@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -46,13 +47,13 @@ public class RuntimeExceptionDeclared extends PreorderVisitor implements Detecto
 
     static {
         try {
-            runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
+            runtimeExceptionClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_RUNTIMEEXCEPTION);
         } catch (ClassNotFoundException cnfe) {
             runtimeExceptionClass = null;
         }
     }
 
-    private final Set<String> runtimeExceptions = new HashSet<String>();
+    private final Set<String> runtimeExceptions = new HashSet<>();
 
     /**
      * constructs a DRE detector given the reporter to report bugs on
@@ -62,7 +63,7 @@ public class RuntimeExceptionDeclared extends PreorderVisitor implements Detecto
      */
     public RuntimeExceptionDeclared(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        runtimeExceptions.add("java.lang.RuntimeException");
+        runtimeExceptions.add(Values.DOTTED_JAVA_LANG_RUNTIMEEXCEPTION);
     }
 
     /**
@@ -92,7 +93,7 @@ public class RuntimeExceptionDeclared extends PreorderVisitor implements Detecto
         ExceptionTable et = obj.getExceptionTable();
         if (et != null) {
             String[] exNames = et.getExceptionNames();
-            Set<String> methodRTExceptions = new HashSet<String>(6);
+            Set<String> methodRTExceptions = new HashSet<>(6);
             int priority = LOW_PRIORITY;
             boolean foundRuntime = false;
             for (String ex : exNames) {

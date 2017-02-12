@@ -69,6 +69,8 @@ public final class Values {
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_EXCEPTION = "java.lang.Exception";
     @DottedClassName
+    public static final String DOTTED_JAVA_LANG_RUNTIMEEXCEPTION = "java.lang.RuntimeException";
+    @DottedClassName
     public static final String DOTTED_JAVA_LANG_ERROR = "java.lang.Error";
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_INTEGER = "java.lang.Integer";
@@ -89,6 +91,8 @@ public final class Values {
     public static final String SLASHED_JAVA_LANG_THROWABLE = "java/lang/Throwable";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_EXCEPTION = "java/lang/Exception";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_RUNTIMEEXCEPTION = "java/lang/RuntimeException";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_ERROR = "java/lang/Error";
     @SlashedClassName

@@ -74,7 +74,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
 
         try {
-            runtimeExceptionClass = Repository.lookupClass("java/lang/RuntimeException");
+            runtimeExceptionClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_RUNTIMEEXCEPTION);
             exceptionClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_EXCEPTION);
 
         } catch (ClassNotFoundException cnfe) {
@@ -200,8 +200,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
      * @return whether this method is a ctor of an instance based anonymous inner class
      */
     private static boolean isAnonymousInnerCtor(Method m, JavaClass cls) {
-        return Values.CONSTRUCTOR.equals(m.getName())
-            && cls.getClassName().lastIndexOf('$') >= 0;
+        return Values.CONSTRUCTOR.equals(m.getName()) && (cls.getClassName().lastIndexOf('$') >= 0);
     }
 
     /**

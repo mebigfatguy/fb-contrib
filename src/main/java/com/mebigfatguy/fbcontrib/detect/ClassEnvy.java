@@ -339,7 +339,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
             for (JavaClass sup : sups) {
                 String supName = sup.getClassName();
                 if (Values.DOTTED_JAVA_LANG_OBJECT.equals(supName) || Values.DOTTED_JAVA_LANG_EXCEPTION.equals(supName)
-                        || "java.lang.RuntimeException".equals(supName) || "java.lang.Throwable".equals(supName)) {
+                        || Values.DOTTED_JAVA_LANG_RUNTIMEEXCEPTION.equals(supName) || "java.lang.Throwable".equals(supName)) {
                     continue;
                 }
                 if (supName.startsWith("java.lang.") || supName.startsWith("javax.lang.")) {

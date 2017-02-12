@@ -247,7 +247,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
 
             case GETSTATIC:
                 String clsName = getClassConstantOperand();
-                if ("java/lang/Boolean".equals(clsName)) {
+                if (Values.SLASHED_JAVA_LANG_BOOLEAN.equals(clsName)) {
                     String fldName = getNameConstantOperand();
                     if ("TRUE".equals(fldName) || "FALSE".equals(fldName)) {
                         state = State.SEEN_GETSTATIC;
