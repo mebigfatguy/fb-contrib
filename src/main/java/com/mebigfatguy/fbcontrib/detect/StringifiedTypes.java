@@ -56,8 +56,12 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
         COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
         COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "remove", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), parm0);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "set", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString()), parm0N1);
-        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "add", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).toString()), parm0);
+        COLLECTION_PARMS.put(
+                new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "set", new SignatureBuilder()
+                        .withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString()),
+                parm0N1);
+        COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "add",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).toString()), parm0);
         COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "indexOf", objectToInt), parm0);
         COLLECTION_PARMS.put(new FQMethod(Values.SLASHED_JAVA_UTIL_LIST, "lastIndexOf", objectToInt), parm0);
 
@@ -82,8 +86,6 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         STRING_PARSE_METHODS.put("startsWith", Values.LOW_BUG_PRIORITY);
         STRING_PARSE_METHODS.put("endsWith", Values.LOW_BUG_PRIORITY);
     }
-
-    private static final String TO_STRING = "toString";
     private static final String FROM_FIELD = "FROM_FIELD";
 
     private BugReporter bugReporter;
@@ -127,14 +129,14 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                     String sig = getSigConstantOperand();
                     boolean isStringBuilder = SignatureUtils.isAppendableStringClassName(clsName);
 
-                    if (TO_STRING.equals(methodName) && SignatureBuilder.SIG_VOID_TO_STRING.equals(sig)) {
+                    if (Values.TOSTRING.equals(methodName) && SignatureBuilder.SIG_VOID_TO_STRING.equals(sig)) {
                         if (isStringBuilder) {
                             if (stackDepth > 0) {
                                 OpcodeStack.Item item = stack.getStackItem(0);
                                 userValue = (String) item.getUserValue();
                             }
                         } else {
-                            userValue = TO_STRING;
+                            userValue = Values.TOSTRING;
                         }
                     } else if (isStringBuilder) {
                         if ("append".equals(methodName)) {
@@ -142,7 +144,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                                 OpcodeStack.Item item = stack.getStackItem(0);
                                 userValue = (String) item.getUserValue();
                                 if ((userValue == null) && !Values.SIG_JAVA_LANG_STRING.equals(item.getSignature())) {
-                                    userValue = TO_STRING;
+                                    userValue = Values.TOSTRING;
                                     if (stackDepth > 1) {
                                         item = stack.getStackItem(1);
                                         int reg = item.getRegisterNumber();
@@ -191,7 +193,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                                 checkParms = null;
                             } else {
                                 for (int parm : checkParms) {
-                                    if ((parm >= 0) && TO_STRING.equals(stack.getStackItem(parm).getUserValue())) {
+                                    if ((parm >= 0) && Values.TOSTRING.equals(stack.getStackItem(parm).getUserValue())) {
                                         bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this)
                                                 .addMethod(this).addSourceLine(this));
                                         break;
@@ -206,7 +208,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                 case PUTFIELD:
                     if (stackDepth > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
-                        if ("toString".equals(item.getUserValue())) {
+                        if (Values.TOSTRING.equals(item.getUserValue())) {
                             bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_STORED_IN_FIELD.name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                         }
@@ -220,7 +222,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                 case ALOAD_3: {
                     int reg = RegisterUtils.getALoadReg(this, seen);
                     if (toStringStringBuilders.get(reg)) {
-                        userValue = TO_STRING;
+                        userValue = Values.TOSTRING;
                     }
                 }
                 break;

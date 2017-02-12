@@ -436,7 +436,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private void checkForUselessTernaryReturn() {
         byte[] bytes = getCode().getCode();
         if ((lastPCs[0] != -1) && ((0x00FF & bytes[lastPCs[3]]) == ICONST_0) && ((0x00FF & bytes[lastPCs[2]]) == GOTO)
-                && ((0x00FF & bytes[lastPCs[1]]) == ICONST_1) && ((0x00FF & bytes[lastPCs[0]]) == IFEQ) && getMethod().getSignature().endsWith(Values.SIG_PRIMITIVE_BOOLEAN)) {
+                && ((0x00FF & bytes[lastPCs[1]]) == ICONST_1) && ((0x00FF & bytes[lastPCs[0]]) == IFEQ)
+                && getMethod().getSignature().endsWith(Values.SIG_PRIMITIVE_BOOLEAN)) {
             boolean bug = true;
             BitSet branchInsSet = branchTargets.get(Integer.valueOf(lastPCs[1]));
             if (branchInsSet != null) {
@@ -476,7 +477,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                         if ((c instanceof ConstantString) && ((ConstantString) c).getBytes(pool).isEmpty()) {
                             int nandtIndex = toStringMR.getNameAndTypeIndex();
                             ConstantNameAndType cnt = (ConstantNameAndType) pool.getConstant(nandtIndex);
-                            if ("toString".equals(cnt.getName(pool))) {
+                            if (Values.TOSTRING.equals(cnt.getName(pool))) {
                                 int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3] + 1);
                                 ConstantMethodref lengthMR = (ConstantMethodref) pool.getConstant(lengthIndex);
                                 nandtIndex = lengthMR.getNameAndTypeIndex();
@@ -503,7 +504,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             if (toStringCls.startsWith("java.lang.StringBu")) {
                 int nandtIndex = toStringMR.getNameAndTypeIndex();
                 ConstantNameAndType cnt = (ConstantNameAndType) pool.getConstant(nandtIndex);
-                if ("toString".equals(cnt.getName(pool))) {
+                if (Values.TOSTRING.equals(cnt.getName(pool))) {
                     int lengthIndex = CodeByteUtils.getshort(bytes, lastPCs[3] + 1);
                     ConstantMethodref lengthMR = (ConstantMethodref) pool.getConstant(lengthIndex);
                     nandtIndex = lengthMR.getNameAndTypeIndex();
@@ -628,8 +629,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private void checkForArrayParameter(OpcodeStack.Item item) {
         String sig = item.getSignature();
         if (!sig.startsWith(Values.SIG_ARRAY_PREFIX) && !Values.SIG_JAVA_LANG_OBJECT.equals(sig)) {
-            bugReporter.reportBug(
-                    new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+            bugReporter.reportBug(new BugInstance(this, BugType.SPP_NON_ARRAY_PARM.name(), HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 
@@ -651,7 +651,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             calendarBeforeAfterSilliness();
         } else if ("java/util/Properties".equals(className)) {
             propertiesSilliness(methodName);
-        } else if ("toString".equals(methodName) && Values.SLASHED_JAVA_LANG_OBJECT.equals(className)) {
+        } else if (Values.TOSTRING.equals(methodName) && Values.SLASHED_JAVA_LANG_OBJECT.equals(className)) {
             defaultToStringSilliness();
         }
         return null;
@@ -768,7 +768,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             if (stack.getStackDepth() > 1) {
                 checkForTrim(stack.getStackItem(1));
             }
-        } else if ("toString".equals(methodName)) {
+        } else if (Values.TOSTRING.equals(methodName)) {
             bugReporter.reportBug(
                     new BugInstance(this, BugType.SPP_TOSTRING_ON_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
@@ -1003,7 +1003,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             return false;
         }
         for (Method m : cls.getMethods()) {
-            if ("toString".equals(m.getName()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(m.getSignature())) {
+            if (Values.TOSTRING.equals(m.getName()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(m.getSignature())) {
                 return true;
             }
         }

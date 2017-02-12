@@ -209,7 +209,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     }
                 } else if (LOGGER_METHODS.contains(mthName)) {
                     checkForProblemsWithLoggerMethods();
-                } else if ("toString".equals(mthName)) {
+                } else if (Values.TOSTRING.equals(mthName)) {
                     String callingClsName = getClassConstantOperand();
                     if (SignatureUtils.isAppendableStringClassName(callingClsName) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
@@ -244,7 +244,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
                 if (uv != null) {
-                    if (((uv.getType() == LOUserValue.LOType.METHOD_NAME) && "toString".equals(uv.getValue()))
+                    if (((uv.getType() == LOUserValue.LOType.METHOD_NAME) && Values.TOSTRING.equals(uv.getValue()))
                             || (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT)) {
                         item.setUserValue(new LOUserValue<>(LOUserValue.LOType.NULL, null));
                     }
@@ -339,7 +339,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             }
                         } else {
                             LOUserValue<?> uv = (LOUserValue<?>) formatItem.getUserValue();
-                            if ((uv != null) && (uv.getType() == LOUserValue.LOType.METHOD_NAME) && "toString".equals(uv.getValue())) {
+                            if ((uv != null) && (uv.getType() == LOUserValue.LOType.METHOD_NAME) && Values.TOSTRING.equals(uv.getValue())) {
 
                                 bugReporter.reportBug(new BugInstance(this, BugType.LO_APPENDED_STRING_IN_FORMAT_STRING.name(), NORMAL_PRIORITY).addClass(this)
                                         .addMethod(this).addSourceLine(this));

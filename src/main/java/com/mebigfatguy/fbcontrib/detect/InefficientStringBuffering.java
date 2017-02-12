@@ -158,7 +158,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                         switch (uv.getAppendType()) {
                             case NESTED:
                                 bugReporter.reportBug(new BugInstance(this, BugType.ISB_INEFFICIENT_STRING_BUFFERING.name(),
-                                        "toString".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                        Values.TOSTRING.equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
                                                 .addSourceLine(this));
                             break;
                             case TOSTRING:
@@ -187,13 +187,13 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                         userValue = new ISBUserValue(userValue.getAppendType(), true);
                     }
                 }
-            } else if ("toString".equals(methodName)) {
+            } else if (Values.TOSTRING.equals(methodName)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(0);
                 if (itm != null) {
                     userValue = (ISBUserValue) itm.getUserValue();
                 }
             }
-        } else if ("toString".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())
+        } else if (Values.TOSTRING.equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())
         // calls to this.toString() are okay, some people like to be explicit
                 && (stack.getStackDepth() > 0) && (stack.getStackItem(0).getRegisterNumber() != 0)) {
             userValue = new ISBUserValue(AppendType.TOSTRING);
@@ -210,8 +210,8 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 Object cons = itm.getConstant();
                 if ((cons instanceof String) && (itm.getRegisterNumber() < 0) && ((String) cons).isEmpty()) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.ISB_EMPTY_STRING_APPENDING.name(), LOW_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.ISB_EMPTY_STRING_APPENDING.name(), LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
         }
@@ -221,8 +221,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         ISBUserValue userValue = null;
         String calledClass = getClassConstantOperand();
 
-        if (SignatureUtils.isAppendableStringClassName(calledClass)
-                && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+        if (SignatureUtils.isAppendableStringClassName(calledClass) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
             String signature = getSigConstantOperand();
             if (SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(2);

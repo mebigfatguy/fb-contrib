@@ -164,7 +164,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
 
     private String processInvokeVirtual() throws ClassNotFoundException {
         String methodName = getNameConstantOperand();
-        if ("toString".equals(methodName)) {
+        if (Values.TOSTRING.equals(methodName)) {
             String signature = getSigConstantOperand();
             if (SignatureBuilder.SIG_VOID_TO_STRING.equals(signature)) {
                 String className = getClassConstantOperand();

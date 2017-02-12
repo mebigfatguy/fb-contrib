@@ -70,7 +70,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
                         boolean fieldHasRuntimeAnnotation = fieldHasRuntimeVisibleAnnotation(f);
                         if (!fieldHasRuntimeAnnotation) {
                             /* only report one of these, so as not to flood the report */
-                            if (!hasMethodInHierarchy(cls, "toString", SignatureBuilder.SIG_VOID_TO_STRING)) {
+                            if (!hasMethodInHierarchy(cls, Values.TOSTRING, SignatureBuilder.SIG_VOID_TO_STRING)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_TOSTRING.name(), LOW_PRIORITY).addClass(cls));
                                 heStatus = HEStatus.NOT_NEEDED;
                                 break;
@@ -120,7 +120,8 @@ public class ImmatureClass extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if ((seen == INVOKEVIRTUAL) && "printStackTrace".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())) {
+        if ((seen == INVOKEVIRTUAL) && "printStackTrace".equals(getNameConstantOperand())
+                && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())) {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLine(this));
         }
@@ -224,8 +225,8 @@ public class ImmatureClass extends BytecodeScanningDetector {
     private void checkIDEGeneratedParmNames(JavaClass cls) {
         for (Method m : cls.getMethods()) {
             if (isIDEGeneratedMethodWithCode(m)) {
-                bugReporter.reportBug(
-                        new BugInstance(this, BugType.IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES.name(), NORMAL_PRIORITY).addClass(cls).addMethod(cls, m));
+                bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES.name(), NORMAL_PRIORITY).addClass(cls)
+                        .addMethod(cls, m));
                 return;
             }
         }

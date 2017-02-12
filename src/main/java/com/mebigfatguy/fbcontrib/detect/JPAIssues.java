@@ -40,6 +40,7 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -101,7 +102,7 @@ public class JPAIssues extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
 
         try {
-            runtimeExceptionClass = Repository.lookupClass("java.lang.RuntimeException");
+            runtimeExceptionClass = Repository.lookupClass(Values.SLASHED_JAVA_LANG_RUNTIMEEXCEPTION);
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }

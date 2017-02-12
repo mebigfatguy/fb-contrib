@@ -179,7 +179,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
             } else if (seen == INVOKEVIRTUAL) {
                 String clsName = getClassConstantOperand();
                 if (SignatureUtils.isAppendableStringClassName(clsName)) {
-                    sawSBToString = "toString".equals(getNameConstantOperand());
+                    sawSBToString = Values.TOSTRING.equals(getNameConstantOperand());
                 }
             } else if (((seen >= ISTORE) && (seen <= ASTORE_3)) || (seen == IINC)) {
                 Integer register = Integer.valueOf(getRegisterOperand());

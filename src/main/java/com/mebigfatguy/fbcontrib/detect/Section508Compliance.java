@@ -98,27 +98,43 @@ public class Section508Compliance extends BytecodeScanningDetector {
         String awtGraphics = "java/awt/GraphicsConfiguration";
         String swingIcon = "javax/swing/Icon";
         displayTextMethods.put(new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon, Values.SIG_PRIMITIVE_INT).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).toString()), Values.TWO);
+        displayTextMethods.put(new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon, Values.SIG_PRIMITIVE_INT).toString()), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).toString()), Values.TWO);
         displayTextMethods.put(new FQMethod("javax/swing/JButton", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JButton", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon).toString()), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JButton", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon).toString()), Values.ONE);
         displayTextMethods.put(new FQMethod("javax/swing/JFrame", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JFrame", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, awtGraphics).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN, awtGraphics).toString()),
+        displayTextMethods.put(new FQMethod("javax/swing/JFrame", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, awtGraphics).toString()), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
+                        new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()),
+                Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN, awtGraphics).toString()),
                 Values.TWO);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN, awtGraphics).toString()),
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.ONE);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
+                        new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN, awtGraphics).toString()),
                 Values.TWO);
         displayTextMethods.put(new FQMethod(awtDialog, "setTitle", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
         displayTextMethods.put(new FQMethod(awtFrame, "setTitle", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
         displayTextMethods.put(new FQMethod("javax/swing/JMenu", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenu", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenu", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.ONE);
         displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).toString()), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon).toString()), Values.ONE);
+        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR,
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).toString()), Values.ONE);
     }
 
     private final BugReporter bugReporter;
@@ -277,7 +293,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
                                 sawAppend = true;
                             }
                         }
-                    } else if ("toString".equals(methodName) && (stack.getStackDepth() > 0)) {
+                    } else if (Values.TOSTRING.equals(methodName) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         if (S508UserValue.APPENDED_STRING == item.getUserValue()) {
                             sawAppend = true;

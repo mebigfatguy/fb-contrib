@@ -50,7 +50,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
             //@formatter:off
             new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
-            new SignatureBuilder().withMethodName("toString").withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString(),
+            new SignatureBuilder().withMethodName(Values.TOSTRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString(),
             new SignatureBuilder().withMethodName("hashCode").withReturnType(Values.SIG_PRIMITIVE_INT).toString(),
             "clone()",
             "values()",
