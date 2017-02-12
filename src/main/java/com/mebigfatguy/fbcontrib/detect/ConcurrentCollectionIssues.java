@@ -120,7 +120,7 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
 
             switch (seen) {
                 case INVOKESPECIAL:
-                    if ("java/util/concurrent/ConcurrentHashMap".equals(getClassConstantOperand()) && "<init>".equals(getNameConstantOperand())) {
+                    if ("java/util/concurrent/ConcurrentHashMap".equals(getClassConstantOperand()) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
                         userValue = CCIUserValue.CONCURRENT_HASHMAP;
                     }
                 break;

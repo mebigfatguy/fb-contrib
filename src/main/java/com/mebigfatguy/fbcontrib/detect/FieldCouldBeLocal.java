@@ -193,7 +193,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         Method m = getMethod();
         if (prescreen(m)) {
             String methodName = m.getName();
-            if ("<clinit".equals(methodName) || Values.CONSTRUCTOR.equals(methodName)) {
+            if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName)) {
                 super.visitCode(obj);
             }
         }
