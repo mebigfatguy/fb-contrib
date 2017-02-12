@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for field writes to object that are non singletons, where the write is not synchronized
+ * looks for field writes to objects that are non singletons, where the write is not synchronized
  */
 public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector {
 

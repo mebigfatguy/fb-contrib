@@ -88,6 +88,12 @@ function toggleBlock(divId, imgId)
             	Looks for use of classes that have been shaded into 3rdparty jars, rather than using the 
             	real class, from the real jar.
             	</li>
+            	<li><b>[USFW] Unsynchronized Singleton Field Writes</b><br/>
+            	Looks for field writes to objects that are non singletons, where the write is not synchronized
+            	</li>
+            	<li><b>[OI] Optional Issues</b><br/>
+            	Looks for various issues around use of java.util.Optional
+            	</li>
             </ul>
         </div>  
         <hr/>        
