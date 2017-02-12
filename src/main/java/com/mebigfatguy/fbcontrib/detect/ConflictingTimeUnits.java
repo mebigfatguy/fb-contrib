@@ -65,16 +65,28 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toMinutes", longToLong), Units.MINUTES);
         tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toHours", longToLong), Units.HOURS);
         tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toDays", longToLong), Units.DAYS);
-        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "excessNanos", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG).withReturnType(Values.SIG_PRIMITIVE_INT).toString()), Units.NANOS);
-        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "convert", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, "java/util/concurrent/TimeUnit").withReturnType(Values.SIG_PRIMITIVE_LONG).toString()), Units.CALLER);
+        tugm.put(
+                new FQMethod("java/util/concurrent/TimeUnit", "excessNanos", new SignatureBuilder()
+                        .withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG).withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
+                Units.NANOS);
+        tugm.put(
+                new FQMethod("java/util/concurrent/TimeUnit", "convert", new SignatureBuilder()
+                        .withParamTypes(Values.SIG_PRIMITIVE_LONG, "java/util/concurrent/TimeUnit").withReturnType(Values.SIG_PRIMITIVE_LONG).toString()),
+                Units.CALLER);
         tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toNanos", longToLong), Units.NANOS);
         tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toMicros", longToLong), Units.MICROS);
         tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toSeconds", longToLong), Units.SECONDS);
         tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toMinutes", longToLong), Units.MINUTES);
         tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toHours", longToLong), Units.HOURS);
         tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toDays", longToLong), Units.DAYS);
-        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "excessNanos", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG).withReturnType(Values.SIG_PRIMITIVE_INT).toString()), Units.NANOS);
-        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "convert", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, "java/util/concurrent/TimeUnit").withReturnType(Values.SIG_PRIMITIVE_LONG).toString()), Units.CALLER);
+        tugm.put(
+                new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "excessNanos", new SignatureBuilder()
+                        .withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG).withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
+                Units.NANOS);
+        tugm.put(
+                new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "convert", new SignatureBuilder()
+                        .withParamTypes(Values.SIG_PRIMITIVE_LONG, "java/util/concurrent/TimeUnit").withReturnType(Values.SIG_PRIMITIVE_LONG).toString()),
+                Units.CALLER);
         tugm.put(new FQMethod("org/joda/time/base/BaseDuration", "getMillis", voidToLong), Units.MILLIS);
         tugm.put(new FQMethod("org/joda/time/base/BaseInterval", "getEndMillis", voidToLong), Units.MILLIS);
         tugm.put(new FQMethod("org/joda/time/base/BaseInterval", "getStartMillis", voidToLong), Units.MILLIS);
@@ -87,7 +99,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         tugm.put(new FQMethod("java/time/Duration", "toSeconds", voidToLong), Units.SECONDS);
         tugm.put(new FQMethod("java/time/Duration", "toNanos", voidToLong), Units.NANOS);
         tugm.put(new FQMethod("java/time/Instant", "getNano", SignatureBuilder.SIG_VOID_TO_INT), Units.NANOS);
-        tugm.put(new FQMethod("java/time/Instant", "toEpochMmilli", voidToLong), Units.MILLIS);
+        tugm.put(new FQMethod("java/time/Instant", "toEpochMilli", voidToLong), Units.MILLIS);
         tugm.put(new FQMethod("java/time/LocalDate", "getDayOfMonth", SignatureBuilder.SIG_VOID_TO_INT), Units.DAYS);
         tugm.put(new FQMethod("java/time/LocalDate", "getDayOfYear", SignatureBuilder.SIG_VOID_TO_INT), Units.DAYS);
         tugm.put(new FQMethod("java/time/LocalDate", "getEpochDay", voidToLong), Units.DAYS);
