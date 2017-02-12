@@ -261,6 +261,9 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                     ternaryPCs.set(getBranchTarget());
                 }
             break;
+
+            default:
+            break;
         }
     }
 
