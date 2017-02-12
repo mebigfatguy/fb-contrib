@@ -77,9 +77,9 @@ function toggleBlock(divId, imgId)
 		</div>
 
 		<hr/>
-        <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
+        <img id="git_image" src="flip2.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
         Detectors added in git<br/>
-        <div id="git" style="display:none;">
+        <div id="git" style="display:block;">
             <ul>
             	<li><b>[UTWR] Use Try With Resources</b><br/>
             	Looks for try/finally blocks that manage resources, without using try-with-resources.
@@ -97,9 +97,9 @@ function toggleBlock(divId, imgId)
             </ul>
         </div>  
         <hr/>        
-        <img id="git_image" src="flip2.gif" onClick="toggleBlock('v6_8_0', 'v6_8_0_image');" align="top"/>
+        <img id="git_image" src="flip1.gif" onClick="toggleBlock('v6_8_0', 'v6_8_0_image');" align="top"/>
         Detectors added in v6.8.0<br/>
-        <div id="v6_8_0" style="display:block;">
+        <div id="v6_8_0" style="display:none;">
             <ul>
             	<li><b>[DMC] Dubious Map Collection</b><br/>
             	Looks for fields that are implementations of java.util.Map, but that are only ever iterated over. This probably means that this
