@@ -39,6 +39,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
@@ -47,6 +48,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * List of some class that holds two values, or at the least Pair. Map was probably chosen as it was the easiest thing to use, but belies the point of the data
  * structure.
  */
+@CustomUserValue
 public class DubiousMapCollection extends BytecodeScanningDetector {
 
     private static final Set<String> SPECIAL_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR, Values.STATIC_INITIALIZER);
@@ -76,6 +78,8 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     private JavaClass propertiesClass;
     private OpcodeStack stack;
     private Map<String, FieldAnnotation> mapFields;
+    private XField ternaryAccessedField;
+    private int ternaryTarget;
     boolean isInSpecial;
 
     public DubiousMapCollection(BugReporter bugReporter) {
@@ -92,7 +96,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
 
-        if (mapInterface == null || propertiesClass == null) {
+        if ((mapInterface == null) || (propertiesClass == null)) {
             return;
         }
 
@@ -121,6 +125,8 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         isInSpecial = SPECIAL_METHODS.contains(getMethod().getName());
         stack.resetForMethodEntry(this);
+        ternaryAccessedField = null;
+        ternaryTarget = -1;
         try {
             super.visitCode(obj);
         } catch (StopOpcodeParsingException e) {
@@ -132,6 +138,17 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
 
+            if (getPC() >= ternaryTarget) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    XField xf = itm.getXField();
+                    if (xf != null) {
+                        itm.setUserValue(ternaryAccessedField);
+                    }
+                }
+                ternaryAccessedField = null;
+                ternaryTarget = -1;
+            }
             if ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL)) {
                 processNormalInvoke();
                 processMethodCall();
@@ -140,13 +157,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
             } else if ((seen == ARETURN) || (OpcodeUtils.isAStore(seen))) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    XField xf = item.getXField();
-                    if (xf != null) {
-                        mapFields.remove(xf.getName());
-                        if (mapFields.isEmpty()) {
-                            throw new StopOpcodeParsingException();
-                        }
-                    }
+                    removeField(item);
                 }
             } else if ((seen == PUTFIELD) || (seen == PUTSTATIC)) {
                 XField xf = getXFieldOperand();
@@ -157,8 +168,8 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                     } else {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item item = stack.getStackItem(0);
-                            if ((item.getRegisterNumber() >= 0) || (item.getXField() != null)) {
-                                mapFields.remove(xf.getName());
+                            if (item.getRegisterNumber() >= 0) {
+                                removeField(item);
                             }
                         }
                     }
@@ -166,6 +177,14 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                         throw new StopOpcodeParsingException();
                     }
 
+                }
+            } else if ((seen == GOTO) || (seen == GOTO_W)) {
+                if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    ternaryAccessedField = itm.getXField();
+                    if (ternaryAccessedField != null) {
+                        ternaryTarget = getBranchTarget();
+                    }
                 }
             }
 
@@ -194,11 +213,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
 
         String mName = getNameConstantOperand();
         if (MAP_METHODS.contains(mName)) {
-            mapFields.remove(fName);
-            if (mapFields.isEmpty()) {
-                throw new StopOpcodeParsingException();
-            }
-
+            removeField(item);
             return;
         }
 
@@ -208,11 +223,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         }
 
         if (MODIFYING_METHODS.contains(mName)) {
-            mapFields.remove(fName);
-            if (mapFields.isEmpty()) {
-                throw new StopOpcodeParsingException();
-            }
-
+            removeField(item);
             return;
         }
     }
@@ -229,11 +240,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(i);
                 XField xf = item.getXField();
                 if (xf != null) {
-                    mapFields.remove(xf.getName());
-                    if (mapFields.isEmpty()) {
-                        throw new StopOpcodeParsingException();
-                    }
-
+                    removeField(item);
                 }
             } else {
                 return;
@@ -253,6 +260,27 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
             return fieldClass.implementationOf(mapInterface) && !fieldClass.instanceOf(propertiesClass);
         } catch (ClassNotFoundException e) {
             return false;
+        }
+    }
+
+    /*
+     * removes a potential field that was accessed from the map fields
+     * if this field was retrieved from a ternary, the user value will hold the
+     * first variable, and that will be removed too.
+     *
+     * @param itm the stack item that may potentially be a map field to remove as it is used like a map
+     */
+    private void removeField(OpcodeStack.Item itm) {
+        XField xf = itm.getXField();
+        if (xf != null) {
+            mapFields.remove(xf.getName());
+            xf = (XField) itm.getUserValue();
+            if (xf != null) {
+                mapFields.remove(xf.getName());
+            }
+            if (mapFields.isEmpty()) {
+                throw new StopOpcodeParsingException();
+            }
         }
     }
 }

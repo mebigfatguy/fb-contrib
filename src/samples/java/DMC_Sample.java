@@ -7,7 +7,6 @@ public class DMC_Sample {
 
     private static Map<String, String> flim = new HashMap<>();
     private static Map<String, String> flam = new HashMap<>();
-    private static Map<String, String> flum = new HashMap<>();
 
     static {
         STUFF.put("this", Boolean.TRUE);
