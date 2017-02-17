@@ -49,8 +49,8 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
     private static final String BURY_LOGIC_LOW_RATIO_PROPERTY = "fb-contrib.bl.low_ratio";
     private static final String BURY_LOGIC_NORMAL_RATIO_PROPERTY = "fb-contrib.bl.normal_ratio";
-    private static final double LOW_BUG_RATIO_LIMIT = 12.0;
-    private static final double NORMAL_BUG_RATIO_LIMIT = 20.0;
+    private static final double LOW_BUG_RATIO_LIMIT = 16.0;
+    private static final double NORMAL_BUG_RATIO_LIMIT = 30.0;
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
