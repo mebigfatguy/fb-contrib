@@ -774,7 +774,8 @@ public void test(int i)
 			compiled. This can happen if you specify the <code>-source</code> and <code>-target</code> options of the javac compiler, and
 			specify a target that is less than the JDK version of the javac compiler.</p>
 			<p>It relies on the system property <code>-Dfb-contrib.sjvu.jdkhome=/path/to/older/jdk/to/check"</code> to specify
-			what JDK to compare against. If this property is not set, this detector does nothing.</p>
+			what JDK to compare against. On linux, you may need to give file permissions to findbugs to read these directories.
+			If this property is not set, this detector does nothing.</p>
 			<p>It is a slow detector.</p>
 			]]>
 		</Details>
