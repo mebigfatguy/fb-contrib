@@ -77,19 +77,26 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     private static final Set<String> oddMissingEqualsClasses = UnmodifiableSet.create("java.lang.StringBuffer", "java.lang.StringBuilder");
 
-    private static final Set<String> optionalClasses = UnmodifiableSet.create("java.util.Optional", "com.google.common.base.Optional",
-            "org.openjdk.jmh.util.Optional");
+    /**
+     * java.util.Optional is handled in the detector OptionalIssues
+     */
+    private static final Set<String> optionalClasses = UnmodifiableSet.create("com.google.common.base.Optional", "org.openjdk.jmh.util.Optional");
 
     private static final String LITERAL = "literal";
     private static final Pattern APPEND_PATTERN = Pattern.compile("([0-9]+):(.*)");
 
+    private static final Set<String> mapSets = UnmodifiableSet.create("keySet", "values", "entrySet");
+
     private static JavaClass calendarClass;
+    private static JavaClass mapClass;
 
     static {
         try {
             calendarClass = Repository.lookupClass("java/util/Calendar");
+            mapClass = Repository.lookupClass("java/util/Map");
         } catch (ClassNotFoundException cnfe) {
             calendarClass = null;
+            mapClass = null;
         }
     }
 
@@ -268,6 +275,19 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                         if ((cls != null) && optionalClasses.contains(cls.getClassName())) {
                             bugReporter.reportBug(new BugInstance(this, BugType.SPP_NULL_CHECK_ON_OPTIONAL.name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(this).addSourceLine(this));
+                        }
+
+                        XMethod method = itm.getReturnValueOf();
+                        if ((method != null) && (mapClass != null)) {
+                            if (mapSets.contains(method.getName())) {
+
+                                cls = Repository.lookupClass(method.getClassName());
+                                if (cls.implementationOf(mapClass)) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.SPP_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
+                                }
+
+                            }
                         }
                     }
                 break;

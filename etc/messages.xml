@@ -3432,13 +3432,25 @@ return "thisisaconstantstring";
 		<ShortDescription>Method does not pass an object to commons-lang's ToStringBuilder</ShortDescription>
 		<LongDescription>Method {1} does not pass an object to commons-lang's ToStringBuilder</LongDescription>
 		<Details>
-			<![CDATA[[
+			<![CDATA[
 			This method uses commons-lang, or commons-lang3's ToStringBuilder to attempt to output a representation of an object.
 			However, no object was passed, just the style specifier, and so the output will be of the ToStringStyle object itself.
 			Don't forget to include the object you wish to output as the first parameter, such as
 			<pre>
 			ToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
 			</pre>
+			]]>
+		</Details>
+	</BugPattern>
+	
+	<BugPattern type="SPP_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR">
+		<ShortDescription>Method checks whether the keySet(), entrySet() or values() collection of a Map is null</ShortDescription>
+		<LongDescription>Method {1} checks whether the keySet(), entrySet() or values() collection of a Map is null</LongDescription>
+		<Details>
+			<![CDATA[
+			This method checks to see if the return value from a keySet(), entrySet() or values() method call on a Map is null.
+			For any valid functioning Map these collections will always be non-null, and so the call is superfluous. Maybe you intended
+			to check whether those sets where empty() instead.
 			]]>
 		</Details>
 	</BugPattern>

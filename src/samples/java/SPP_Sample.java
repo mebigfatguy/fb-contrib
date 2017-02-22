@@ -133,6 +133,10 @@ public class SPP_Sample implements Serializable {
         return String.format("This string is not parameterized");
     }
 
+    public boolean testKeySetForNull(Map<String, String> s) {
+        return s.keySet() != null;
+    }
+
     public String testFPDoubleAppendListeralStatic() {
         StringBuilder sb = new StringBuilder();
         sb.append("literal").append(LIT).append("literal");
