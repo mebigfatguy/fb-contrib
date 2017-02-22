@@ -67,7 +67,8 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             "Ljavax/ws/rs/core/Context;",
             "Lcom/wordnik/swagger/annotations/ApiParam;",
             "Lio/swagger/annotations/ApiParam;",
-            "Lorg/glassfish/jersey/media/multipart/FormDataParam;"
+            "Lorg/glassfish/jersey/media/multipart/FormDataParam;",
+            "Lcom/sun/jersey/multipart/FormDataParam;"
             //@formatter:on
     );
 
