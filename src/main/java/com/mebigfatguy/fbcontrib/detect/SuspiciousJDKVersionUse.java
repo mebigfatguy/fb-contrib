@@ -41,6 +41,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -53,7 +54,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * options of the javac compiler, and specify a target that is less than the jdk version of the javac compiler.
  */
 public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
-    private static final Map<Integer, String> VER_REG_EX = new HashMap<Integer, String>();
+    private static final Map<Integer, String> VER_REG_EX = new HashMap<>();
 
     static {
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_1), "(jdk|j2?re)1.1");
@@ -66,7 +67,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_8), "((jdk|j2?re)1.8)|(java-8)");
     }
 
-    private static final Map<Integer, Integer> HUMAN_VERSIONS = new HashMap<Integer, Integer>();
+    private static final Map<Integer, Integer> HUMAN_VERSIONS = new HashMap<>();
 
     static {
         HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_1), Values.ONE);
@@ -78,6 +79,32 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_7), Values.SEVEN);
         HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_8), Values.EIGHT);
     }
+
+    private static Set<String> knownJDKJavaxPackageRoots = UnmodifiableSet.create(
+    // @formatter:off
+        "javax/accessibility/",
+        "javax/activation/",
+        "javax/activity/",
+        "javax/annotation/",
+        "javax/imageio/",
+        "javax/jws/",
+        "javax/lang/",
+        "javax/management/",
+        "javax/naming/",
+        "javax/net/",
+        "javax/print/",
+        "javax/rmi/",
+        "javax/script/",
+        "javax/security/",
+        "javax/smartcardio/",
+        "javax/sound/",
+        "javax/sql/",
+        "javax/swing/",
+        "javax/tools/",
+        "javax/transaction/",
+        "javax/xml/"
+    // @formatter:on
+    );
 
     private static final Pattern jarPattern = Pattern.compile("jar:file:/*([^!]*)");
     private static final String SJVU_JDKHOME = "fb-contrib.sjvu.jdkhome";
@@ -93,10 +120,10 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
 
     public SuspiciousJDKVersionUse(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        versionPaths = new HashMap<String, File>();
-        jdkZips = new HashMap<Integer, ZipFile>();
-        validMethodsByVersion = new HashMap<Integer, Map<String, Set<String>>>();
-        superNames = new HashMap<String, String>();
+        versionPaths = new HashMap<>();
+        jdkZips = new HashMap<>();
+        validMethodsByVersion = new HashMap<>();
+        superNames = new HashMap<>();
     }
 
     @Override
@@ -145,7 +172,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
 
                     Map<String, Set<String>> validMethods = validMethodsByVersion.get(clsMajorVersion);
                     if (validMethods == null) {
-                        validMethods = new HashMap<String, Set<String>>();
+                        validMethods = new HashMap<>();
                         validMethodsByVersion.put(clsMajorVersion, validMethods);
                     }
 
@@ -182,11 +209,16 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     }
 
     private boolean isValid(Map<String, Set<String>> validMethods, String clsName) throws IOException, ClassNotFoundException {
+
         Set<String> methodInfos = validMethods.get(clsName);
         if (methodInfos == null) {
 
             ZipEntry ze = jdkZip.getEntry(clsName + ".class");
             if (ze == null) {
+                if (isJavaXExternal(clsName)) {
+                    return true;
+                }
+
                 bugReporter.reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this).addClass(clsName));
             } else if (clsName.startsWith("java/")) {
@@ -199,7 +231,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
                 superNames.put(clsName, calledClass.getSuperclassName().replace('.', '/'));
                 Method[] methods = calledClass.getMethods();
 
-                methodInfos = new HashSet<String>(methods.length);
+                methodInfos = new HashSet<>(methods.length);
                 validMethods.put(clsName, methodInfos);
 
                 for (Method m : methods) {
@@ -219,6 +251,35 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         } else {
             return isValid(validMethods, superNames.get(clsName));
         }
+    }
+
+    /**
+     * checks to see if this class is a javax.xxxx.Foo class if so, looks to see if the package is at least in the jdk if a whole new package comes into javax
+     * in rt.jar, this will be missed. Need a better solution here.
+     *
+     * @param className
+     *            the slashed class in question
+     * @return whether it is in the default jdk rt.jar
+     */
+    private boolean isJavaXExternal(String className) {
+        if (!className.startsWith("javax/")) {
+            return false;
+        }
+
+        int lastSlashPos = className.lastIndexOf(className);
+        String packageName = className.substring(0, lastSlashPos);
+        ZipEntry ze = jdkZip.getEntry(packageName);
+        if (ze != null) {
+            return false;
+        }
+
+        for (String root : knownJDKJavaxPackageRoots) {
+            if (className.startsWith(root)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     private File getRTJarFile() {
