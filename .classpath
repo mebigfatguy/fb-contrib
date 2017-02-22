@@ -6,7 +6,7 @@
 	<classpathentry kind="src" output="target/classes/test" path="src/test/java"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/backport-util-concurrent-3.1.jar"/>
-	<classpathentry kind="lib" path="lib/javax.servlet-api-3.1.0.jar"/>
+	<classpathentry kind="lib" path="lib/javax.servlet-api-3.1.0.jar" sourcepath="lib/sources/javax.servlet-api-3.1.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/asm-debug-all-5.0.2.jar" sourcepath="lib/sources/asm-debug-all-5.0.2-sources.jar"/>
@@ -17,7 +17,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="lib/findbugs-3.0.1.jar" sourcepath="lib/sources/findbugs-3.0.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.12.jar"/>
-	<classpathentry kind="lib" path="lib/jsr311-api-1.1.1.jar" sourcepath="lib/sources/jsr311-api-1.1.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/javax.persistence-2.1.1.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-all-2.0.2-beta.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
@@ -39,5 +38,7 @@
 	<classpathentry kind="lib" path="lib/testng-6.9.10.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.48.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
+	<classpathentry kind="lib" path="lib/jersey-media-multipart-2.25.1.jar"/>
+	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
