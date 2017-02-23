@@ -27,6 +27,7 @@ import java.net.URL;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -111,7 +112,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
 
     static {
         String os = System.getProperty("os.name");
-        if (os.startsWith("Windows")) {
+        if (os.toLowerCase(Locale.getDefault()).startsWith("windows")) {
             jarPattern = Pattern.compile("jar:file:/*([^!]*)");
         } else {
             jarPattern = Pattern.compile("jar:file:([^!]*)");
