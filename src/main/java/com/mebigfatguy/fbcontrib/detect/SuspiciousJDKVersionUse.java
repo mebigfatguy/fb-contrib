@@ -106,8 +106,18 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     // @formatter:on
     );
 
-    private static final Pattern jarPattern = Pattern.compile("jar:file:/*([^!]*)");
+    private static Pattern jarPattern;
     private static final String SJVU_JDKHOME = "fb-contrib.sjvu.jdkhome";
+
+    static {
+        String os = System.getProperty("os.name");
+        if (os.startsWith("Windows")) {
+            jarPattern = Pattern.compile("jar:file:/*([^!]*)");
+        } else {
+            jarPattern = Pattern.compile("jar:file:([^!]*)");
+        }
+
+    }
 
     private final Map<String, File> versionPaths;
     private final Map<Integer, Map<String, Set<String>>> validMethodsByVersion;
@@ -266,7 +276,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
             return false;
         }
 
-        int lastSlashPos = className.lastIndexOf(className);
+        int lastSlashPos = className.lastIndexOf('/');
         String packageName = className.substring(0, lastSlashPos);
         ZipEntry ze = jdkZip.getEntry(packageName);
         if (ze != null) {
