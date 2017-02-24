@@ -107,7 +107,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     // @formatter:on
     );
 
-    private static Pattern jarPattern;
+    private static final Pattern jarPattern;
     private static final String SJVU_JDKHOME = "fb-contrib.sjvu.jdkhome";
 
     static {
