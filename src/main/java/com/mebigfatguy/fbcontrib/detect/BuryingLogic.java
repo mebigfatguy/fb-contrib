@@ -217,7 +217,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 int[] offsets = getSwitchOffsets();
                 int pc = getPC();
                 for (int offset : offsets) {
-                    casePositions.addFirst(Integer.valueOf(pc + offset));
+                    casePositions.addLast(Integer.valueOf(pc + offset));
                 }
             }
         } finally {
