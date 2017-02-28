@@ -77,6 +77,37 @@ public class BL_Sample {
         return null;
     }
 
+    public String fpSwitchInReturningIfChain(String s, int t) {
+        if (s.equals("foo")) {
+            return s + "bar";
+        } else if (s.equals("bar")) {
+            return s + "baz";
+        } else if (s.equals("baz")) {
+            switch (t) {
+                case 0:
+                    for (int i = 0; i < t; i++) {
+                        s += "0";
+                    }
+                    return s;
+
+                case 1:
+                    for (int i = 0; i < t; i++) {
+                        s += "1";
+                    }
+                    return s;
+
+                default:
+                    for (int i = 0; i < t; i++) {
+                        s += "1";
+                    }
+                    return s;
+            }
+        }
+
+        return null;
+
+    }
+
     private List<String> getDetails() {
         return null;
     }
