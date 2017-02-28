@@ -166,7 +166,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
             if (!casePositions.isEmpty() && (casePositions.getFirst().intValue() == getPC())) {
                 casePositions.removeFirst();
                 activeUnconditional = null;
-                lookingForResetOp = true;
+                lookingForResetOp = false;
             }
 
             if (lookingForResetOp) {
