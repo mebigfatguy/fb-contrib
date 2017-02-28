@@ -239,8 +239,8 @@ public class BuryingLogic extends BytecodeScanningDetector {
      * @return if this operation resets the looking for conditionals
      */
     private boolean isResetOp(int seen) {
-        return (seen == PUTFIELD) || (seen == PUTSTATIC) || (seen == POP) || (seen == POP2) || OpcodeUtils.isStore(seen)
-                || (OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")Z"));
+        return (seen == PUTFIELD) || (seen == PUTSTATIC) || (seen == POP) || (seen == POP2) || (seen == TABLESWITCH) || (seen == LOOKUPSWITCH)
+                || OpcodeUtils.isStore(seen) || (OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")Z"));
     }
 
     private void removeLoopBlocks(int target) {
