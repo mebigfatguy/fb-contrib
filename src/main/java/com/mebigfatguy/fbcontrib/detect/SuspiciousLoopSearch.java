@@ -128,6 +128,8 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                     sawOpcodeAfterAssignment(seen);
                 break;
             }
+
+            processLoop(seen);
         } finally {
             stack.sawOpcode(this, seen);
         }
@@ -164,22 +166,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterAssignment(int seen) {
-
-        if (isBranch(seen) && (getBranchOffset() < 0)) {
-            Iterator<IfBlock> it = ifBlocks.iterator();
-            int target = getBranchTarget();
-            while (it.hasNext()) {
-                IfBlock block = it.next();
-                if (target <= block.start) {
-                    if (block.storeRegs.size() == 1) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this, block.storeRegs.values().iterator().next().intValue()));
-                    }
-                    it.remove();
-                    state = State.SAW_NOTHING;
-                }
-            }
-        } else if (OpcodeUtils.isBranch(seen) || OpcodeUtils.isReturn(seen)) {
+        if (OpcodeUtils.isBranch(seen) || OpcodeUtils.isReturn(seen)) {
             state = State.SAW_NOTHING;
         } else if (!ifBlocks.isEmpty()) {
             IfBlock block = ifBlocks.get(ifBlocks.size() - 1);
@@ -206,6 +193,32 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                 block.loadRegs.set(reg);
             }
             state = State.SAW_ASSIGNMENT;
+        }
+    }
+
+    private void processLoop(int seen) {
+        if (isBranch(seen) && (getBranchOffset() < 0)) {
+            List<IfBlock> blocksInLoop = new ArrayList<>(4);
+
+            Iterator<IfBlock> it = ifBlocks.iterator();
+            int target = getBranchTarget();
+            while (it.hasNext()) {
+                IfBlock block = it.next();
+                if (target <= block.start) {
+                    if (block.storeRegs.size() == 1) {
+                        blocksInLoop.add(block);
+                    }
+                    it.remove();
+                    state = State.SAW_NOTHING;
+                } else {
+                    break;
+                }
+            }
+
+            if (blocksInLoop.size() == 1) {
+                bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(this, blocksInLoop.get(0).storeRegs.values().iterator().next().intValue()));
+            }
         }
     }
 
