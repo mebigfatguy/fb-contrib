@@ -30,6 +30,32 @@ public class SLS_Sample {
         return found;
     }
 
+    SLS_Sample fpBreak(List<SLS_Sample> l, String n) {
+
+        SLS_Sample found = null;
+        for (SLS_Sample s : l) {
+            if (s.name.equals(n)) {
+                found = s;
+                break;
+            }
+        }
+
+        return found;
+    }
+
+    SLS_Sample fpReturn(List<SLS_Sample> l, String n) {
+
+        SLS_Sample found = null;
+        for (SLS_Sample s : l) {
+            if (s.name.equals(n)) {
+                found = s;
+                return found;
+            }
+        }
+
+        return found;
+    }
+
     boolean fpSetFlag(Map<String, SLS_Sample> m, String name) {
         boolean found = false;
         for (SLS_Sample s : m.values()) {
