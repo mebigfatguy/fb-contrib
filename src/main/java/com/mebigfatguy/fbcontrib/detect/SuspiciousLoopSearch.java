@@ -52,7 +52,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 
     enum State {
-        SAW_NOTHING, SAW_EQUALS, SAW_IFEQ, SAW_ASSIGNMENT
+        SAW_NOTHING, SAW_EQUALS, SAW_IFEQ
     };
 
     private BugReporter bugReporter;
@@ -60,6 +60,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     private State state;
     private List<IfBlock> ifBlocks;
     private int equalsPos;
+    private Map<Integer, Integer> loadedRegs;
 
     /**
      * constructs an SLS detector given the reporter to report bugs on
@@ -81,10 +82,12 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             ifBlocks = new ArrayList<>();
+            loadedRegs = new HashMap<>();
             stack = new OpcodeStack();
             super.visitClassContext(classContext);
         } finally {
             ifBlocks = null;
+            loadedRegs = null;
             stack = null;
         }
     }
@@ -99,6 +102,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         if (prescreen(getMethod())) {
             ifBlocks.clear();
+            loadedRegs.clear();
             stack.resetForMethodEntry(this);
             state = State.SAW_NOTHING;
             super.visitCode(obj);
@@ -124,11 +128,11 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                 break;
 
                 case SAW_IFEQ:
-                case SAW_ASSIGNMENT:
-                    sawOpcodeAfterAssignment(seen);
+                    sawOpcodeAfterBranch(seen);
                 break;
             }
 
+            processStore(seen);
             processLoop(seen);
         } finally {
             stack.sawOpcode(this, seen);
@@ -165,14 +169,14 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
         }
     }
 
-    private void sawOpcodeAfterAssignment(int seen) {
+    private void sawOpcodeAfterBranch(int seen) {
         if (OpcodeUtils.isBranch(seen) || OpcodeUtils.isReturn(seen)) {
             state = State.SAW_NOTHING;
         } else if (!ifBlocks.isEmpty()) {
             IfBlock block = ifBlocks.get(ifBlocks.size() - 1);
             if (OpcodeUtils.isStore(seen)) {
                 int reg = RegisterUtils.getStoreReg(this, seen);
-                if (!block.loadRegs.get(reg)) {
+                if (!loadedRegs.containsKey(reg)) {
                     LocalVariableTable lvt = getMethod().getLocalVariableTable();
                     String sig = "";
                     if (lvt != null) {
@@ -187,12 +191,17 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                         block.storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
                     }
                 }
-            } else if (OpcodeUtils.isLoad(seen)) {
-                int reg = RegisterUtils.getLoadReg(this, seen);
-                block.storeRegs.remove(Integer.valueOf(reg));
-                block.loadRegs.set(reg);
             }
-            state = State.SAW_ASSIGNMENT;
+        }
+    }
+
+    private void processStore(int seen) {
+        if (OpcodeUtils.isLoad(seen)) {
+            int reg = RegisterUtils.getLoadReg(this, seen);
+            for (IfBlock block : ifBlocks) {
+                block.storeRegs.remove(Integer.valueOf(reg));
+            }
+            loadedRegs.put(reg, getPC());
         }
     }
 
@@ -219,6 +228,14 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                 bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this, blocksInLoop.get(0).storeRegs.values().iterator().next().intValue()));
             }
+
+            Iterator<Map.Entry<Integer, Integer>> loadedIt = loadedRegs.entrySet().iterator();
+            while (loadedIt.hasNext()) {
+                if (loadedIt.next().getValue() >= target) {
+                    loadedIt.remove();
+                }
+            }
+            loadedRegs.clear();
         }
     }
 
@@ -238,13 +255,11 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
         int start;
         int end;
         private Map<Integer, Integer> storeRegs;
-        private BitSet loadRegs;
 
         public IfBlock(int start, int end) {
             this.start = start;
             this.end = end;
             storeRegs = new HashMap<>(4);
-            loadRegs = new BitSet();
         }
 
         @Override
