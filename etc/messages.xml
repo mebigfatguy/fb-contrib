@@ -5912,6 +5912,6 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="CCI">Concurrent Collection Issues</BugCode>
 	<BugCode abbrev="UTWR">Use Try With Resources</BugCode>
 	<BugCode abbrev="SSCU">Suspicious Shaded Class Use</BugCode>
-	<BugCode abbrev="USFW">Unsynchronous Singleton Field Writes</BugCode>
+	<BugCode abbrev="USFW">Unsynchronized Singleton Field Writes</BugCode>
 	<BugCode abbrev="OI">Optional Issues</BugCode>
 </MessageCollection>
