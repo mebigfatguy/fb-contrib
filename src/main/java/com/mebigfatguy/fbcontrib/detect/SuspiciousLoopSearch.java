@@ -236,6 +236,15 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                 }
             }
             loadedRegs.clear();
+        } else if ((seen == GOTO) || (seen == GOTO_W)) {
+            if (!ifBlocks.isEmpty()) {
+                IfBlock block = ifBlocks.get(ifBlocks.size() - 1);
+                if (block.end >= getPC()) {
+                    for (Map.Entry<Integer, Integer> storeEntry : block.storeRegs.entrySet()) {
+                        loadedRegs.put(storeEntry.getKey(), storeEntry.getValue());
+                    }
+                }
+            }
         }
     }
 
