@@ -184,7 +184,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                 }
                 // ignore boolean flag stores, as this is a
                 // relatively normal occurrence
-                if (!Values.SIG_PRIMITIVE_BOOLEAN.equals(sig)) {
+                if (!Values.SIG_PRIMITIVE_BOOLEAN.equals(sig) && !Values.SIG_JAVA_LANG_BOOLEAN.equals(sig)) {
                     block.storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
                 }
             }

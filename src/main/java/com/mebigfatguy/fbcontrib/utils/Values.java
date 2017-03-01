@@ -112,6 +112,7 @@ public final class Values {
     public static final String SLASHED_JAVA_LANG_CHARACTER = "java/lang/Character";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_BOOLEAN = "java/lang/Boolean";
+    public static final String SIG_JAVA_LANG_BOOLEAN = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_BOOLEAN + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_COMPARATOR = "java/util/Comparator";
     @SlashedClassName
