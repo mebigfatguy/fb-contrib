@@ -241,6 +241,7 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
         for (Entry<String, Set<String>> entry : mapOfClassToMethods.entrySet()) {
             if (entry.getKey().equals(getClassConstantOperand()) && entry.getValue().contains(getNameConstantOperand())) {
                 tosIsSyncColReg = Values.NEGATIVE_ONE;
+                break;
             }
         }
         return tosIsSyncColReg;
