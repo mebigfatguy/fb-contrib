@@ -170,23 +170,31 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterBranch(int seen) {
-        if (!ifBlocks.isEmpty() && OpcodeUtils.isStore(seen)) {
+        if (!ifBlocks.isEmpty()) {
             IfBlock block = ifBlocks.get(ifBlocks.size() - 1);
-            int reg = RegisterUtils.getStoreReg(this, seen);
-            if (!loadedRegs.containsKey(reg)) {
-                LocalVariableTable lvt = getMethod().getLocalVariableTable();
-                String sig = "";
-                if (lvt != null) {
-                    LocalVariable lv = lvt.getLocalVariable(reg, getPC());
-                    if (lv != null) {
-                        sig = lv.getSignature();
+            if (OpcodeUtils.isStore(seen)) {
+                int reg = RegisterUtils.getStoreReg(this, seen);
+                if (!loadedRegs.containsKey(reg)) {
+                    LocalVariableTable lvt = getMethod().getLocalVariableTable();
+                    String sig = "";
+                    if (lvt != null) {
+                        LocalVariable lv = lvt.getLocalVariable(reg, getPC());
+                        if (lv != null) {
+                            sig = lv.getSignature();
+                        }
+                    }
+                    // ignore boolean flag stores, as this is a
+                    // relatively normal occurrence
+                    if (!Values.SIG_PRIMITIVE_BOOLEAN.equals(sig) && !Values.SIG_JAVA_LANG_BOOLEAN.equals(sig)) {
+                        block.storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
                     }
                 }
-                // ignore boolean flag stores, as this is a
-                // relatively normal occurrence
-                if (!Values.SIG_PRIMITIVE_BOOLEAN.equals(sig) && !Values.SIG_JAVA_LANG_BOOLEAN.equals(sig)) {
-                    block.storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
-                }
+            } else if (OpcodeUtils.isReturn(seen)) {
+                copyStoredIntoLoadedforBlock(block);
+            }
+
+            if (block.end <= getPC()) {
+                state = State.SAW_NOTHING;
             }
         }
     }
@@ -211,9 +219,8 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                         blocksInLoop.add(block);
                     }
                     it.remove();
-                } else {
-                    break;
                 }
+
             }
 
             if (blocksInLoop.size() == 1) {
@@ -234,16 +241,22 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
             }
             loadedRegs.clear();
             state = State.SAW_NOTHING;
-        } else if ((seen == GOTO) || (seen == GOTO_W)) {
+        } else if ((seen == GOTO) || (seen == GOTO_W))
+
+        {
             if (!ifBlocks.isEmpty()) {
                 IfBlock block = ifBlocks.get(ifBlocks.size() - 1);
-                if (block.end >= getPC()) {
-                    for (Map.Entry<Integer, Integer> storeEntry : block.storeRegs.entrySet()) {
-                        loadedRegs.put(storeEntry.getKey(), storeEntry.getValue());
-                    }
-                }
+                copyStoredIntoLoadedforBlock(block);
             }
             state = State.SAW_NOTHING;
+        }
+    }
+
+    private void copyStoredIntoLoadedforBlock(IfBlock block) {
+        if (block.end >= getPC()) {
+            for (Map.Entry<Integer, Integer> storeEntry : block.storeRegs.entrySet()) {
+                loadedRegs.put(storeEntry.getKey(), storeEntry.getValue());
+            }
         }
     }
 
