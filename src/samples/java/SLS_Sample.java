@@ -97,4 +97,35 @@ public class SLS_Sample {
         System.out.println("Found: " + n + " " + a + " " + h);
     }
 
+    enum State {
+        A, B, C
+    }
+
+    void fpStateMachine(char[] args, String val) {
+        State state = State.A;
+
+        for (char c : args) {
+            switch (state) {
+                case A:
+                    if (val.equals(String.valueOf(c))) {
+                        state = State.B;
+                    } else {
+                        return;
+                    }
+                break;
+                case B:
+                    if (val.equals(String.valueOf(c))) {
+                        state = State.C;
+                    }
+                break;
+
+                default:
+                    if (val.equals(String.valueOf(c))) {
+                        state = State.A;
+                    }
+                break;
+            }
+        }
+    }
+
 }
