@@ -1,6 +1,7 @@
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class STT_Sample {
 
@@ -8,7 +9,7 @@ public class STT_Sample {
         Hi, Lo
     };
 
-    Map<String, Object> map = new HashMap<String, Object>();
+    Map<String, Object> map = new HashMap<>();
 
     String val;
 
@@ -36,5 +37,9 @@ public class STT_Sample {
 
     public void fpTestToStringToFieldSB(String s) {
         val = s + "wow";
+    }
+
+    public void fpAllowUUID() {
+        val = UUID.randomUUID().toString();
     }
 }

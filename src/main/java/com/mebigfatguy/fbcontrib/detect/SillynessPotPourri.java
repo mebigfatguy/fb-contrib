@@ -658,7 +658,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         String methodName = getNameConstantOperand();
         if ("java/util/BitSet".equals(className)) {
             bitSetSilliness(methodName);
-        } else if (SignatureUtils.isAppendableStringClassName(className)) {
+        } else if (SignatureUtils.isPlainStringConvertableClass(className)) {
             return stringBufferSilliness(methodName);
         } else if (Values.SLASHED_JAVA_LANG_STRING.equals(className)) {
             return stringSilliness(methodName, getSigConstantOperand());
@@ -960,7 +960,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     private void sawInvokeSpecial() {
         String className = getClassConstantOperand();
-        if (SignatureUtils.isAppendableStringClassName(className)) {
+        if (SignatureUtils.isPlainStringConvertableClass(className)) {
             String methodName = getNameConstantOperand();
             if (Values.CONSTRUCTOR.equals(methodName)) {
                 String signature = getSigConstantOperand();

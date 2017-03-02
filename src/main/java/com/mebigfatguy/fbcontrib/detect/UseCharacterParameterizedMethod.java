@@ -217,7 +217,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
      * @return whether we are in an inline string append
      */
     private boolean isInlineAppend(FQMethod fqm) {
-        if (!SignatureUtils.isAppendableStringClassName(fqm.getClassName())) {
+        if (!SignatureUtils.isPlainStringConvertableClass(fqm.getClassName())) {
             return false;
         }
 

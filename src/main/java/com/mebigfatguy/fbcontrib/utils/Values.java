@@ -125,6 +125,8 @@ public final class Values {
     public static final String SLASHED_JAVA_UTIL_MAP = "java/util/Map";
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_QUEUE = "java/util/Queue";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_UTIL_UUID = "java/util/UUID";
 
     public static final Integer JAVA_1_1 = Integer.valueOf(Constants.MAJOR_1_1);
     public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);

@@ -127,7 +127,7 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                     String clsName = getClassConstantOperand();
                     String methodName = getNameConstantOperand();
                     String sig = getSigConstantOperand();
-                    boolean isStringBuilder = SignatureUtils.isAppendableStringClassName(clsName);
+                    boolean isStringBuilder = SignatureUtils.isPlainStringConvertableClass(clsName);
 
                     if (Values.TOSTRING.equals(methodName) && SignatureBuilder.SIG_VOID_TO_STRING.equals(sig)) {
                         if (isStringBuilder) {

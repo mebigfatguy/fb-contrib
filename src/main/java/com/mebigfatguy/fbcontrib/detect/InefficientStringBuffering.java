@@ -143,7 +143,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         ISBUserValue userValue = null;
         String calledClass = getClassConstantOperand();
 
-        if (SignatureUtils.isAppendableStringClassName(calledClass)) {
+        if (SignatureUtils.isPlainStringConvertableClass(calledClass)) {
             String methodName = getNameConstantOperand();
             if ("append".equals(methodName)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(1);
@@ -203,7 +203,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
 
     private void dealWithEmptyString() {
         String calledClass = getClassConstantOperand();
-        if (SignatureUtils.isAppendableStringClassName(calledClass) && "append".equals(getNameConstantOperand())
+        if (SignatureUtils.isPlainStringConvertableClass(calledClass) && "append".equals(getNameConstantOperand())
                 && getSigConstantOperand().startsWith(SignatureBuilder.PARAM_STRING) && (stack.getStackDepth() > 1)) {
             OpcodeStack.Item sbItm = stack.getStackItem(1);
             if ((sbItm != null) && (sbItm.getUserValue() == null)) {
@@ -221,7 +221,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         ISBUserValue userValue = null;
         String calledClass = getClassConstantOperand();
 
-        if (SignatureUtils.isAppendableStringClassName(calledClass) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+        if (SignatureUtils.isPlainStringConvertableClass(calledClass) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
             String signature = getSigConstantOperand();
             if (SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {
                 OpcodeStack.Item itm = getStringBufferItemAt(2);
