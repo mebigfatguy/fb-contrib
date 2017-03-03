@@ -231,7 +231,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                     state = State.SAW_NOTHING;
                     return;
                 }
-                loopPos = loopLocations.nextSetBit(loopPos);
+                loopPos = loopLocations.nextSetBit(loopPos + 1);
             }
 
             if (blocksInLoop.size() == 1) {
