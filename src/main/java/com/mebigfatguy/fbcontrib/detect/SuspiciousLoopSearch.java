@@ -60,6 +60,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     private State state;
     private List<IfBlock> ifBlocks;
     private Map<Integer, Integer> loadedRegs;
+    private BitSet loopLocations;
 
     /**
      * constructs an SLS detector given the reporter to report bugs on
@@ -82,11 +83,13 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
         try {
             ifBlocks = new ArrayList<>();
             loadedRegs = new HashMap<>();
+            loopLocations = new BitSet();
             stack = new OpcodeStack();
             super.visitClassContext(classContext);
         } finally {
             ifBlocks = null;
             loadedRegs = null;
+            loopLocations = null;
             stack = null;
         }
     }
@@ -102,6 +105,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
         if (prescreen(getMethod())) {
             ifBlocks.clear();
             loadedRegs.clear();
+            loopLocations.clear();
             stack.resetForMethodEntry(this);
             state = State.SAW_NOTHING;
             super.visitCode(obj);
@@ -206,6 +210,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 
     private void processLoop(int seen) {
         if (isBranch(seen) && (getBranchOffset() < 0)) {
+            loopLocations.set(getPC());
             List<IfBlock> blocksInLoop = new ArrayList<>(4);
 
             Iterator<IfBlock> it = ifBlocks.iterator();
@@ -218,7 +223,15 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                     }
                     it.remove();
                 }
+            }
 
+            int loopPos = loopLocations.nextSetBit(0);
+            while (loopPos >= 0) {
+                if ((loopPos > target) && (loopPos < getPC())) {
+                    state = State.SAW_NOTHING;
+                    return;
+                }
+                loopPos = loopLocations.nextSetBit(loopPos);
             }
 
             if (blocksInLoop.size() == 1) {
@@ -237,7 +250,6 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                     loadedIt.remove();
                 }
             }
-            loadedRegs.clear();
             state = State.SAW_NOTHING;
         } else if ((seen == GOTO) || (seen == GOTO_W))
 
