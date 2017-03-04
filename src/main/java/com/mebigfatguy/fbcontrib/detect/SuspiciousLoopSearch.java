@@ -217,7 +217,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
             int target = getBranchTarget();
             while (it.hasNext()) {
                 IfBlock block = it.next();
-                if (target <= block.start) {
+                if ((target <= block.start) && (getPC() >= block.end)) {
                     if (block.storeRegs.size() == 1) {
                         blocksInLoop.add(block);
                     }
