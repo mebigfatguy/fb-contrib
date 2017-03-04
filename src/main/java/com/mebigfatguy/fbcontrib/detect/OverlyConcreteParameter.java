@@ -382,35 +382,64 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     private void reportBugs() {
         Iterator<Map.Entry<Integer, Map<JavaClass, List<MethodInfo>>>> it = parameterDefiners.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry<Integer, Map<JavaClass, List<MethodInfo>>> entry = it.next();
+            try {
+                Map.Entry<Integer, Map<JavaClass, List<MethodInfo>>> entry = it.next();
 
-            Integer reg = entry.getKey();
-            if (!usedParameters.get(reg.intValue())) {
-                it.remove();
-                continue;
-            }
-            Map<JavaClass, List<MethodInfo>> definers = entry.getValue();
-            definers.remove(objectClass);
-            if (!definers.isEmpty()) {
-                String name = "";
-                LocalVariableTable lvt = getMethod().getLocalVariableTable();
-                if (lvt != null) {
-                    LocalVariable lv = lvt.getLocalVariable(reg.intValue(), 0);
-                    if (lv != null) {
-                        name = lv.getName();
+                Integer reg = entry.getKey();
+                if (!usedParameters.get(reg.intValue())) {
+                    it.remove();
+                    continue;
+                }
+                Map<JavaClass, List<MethodInfo>> definers = entry.getValue();
+                definers.remove(objectClass);
+                if (definers.size() > 1) {
+                    removeInheritedInterfaces(definers);
+                }
+
+                if (definers.size() == 1) {
+                    String name = "";
+                    LocalVariableTable lvt = getMethod().getLocalVariableTable();
+                    if (lvt != null) {
+                        LocalVariable lv = lvt.getLocalVariable(reg.intValue(), 0);
+                        if (lv != null) {
+                            name = lv.getName();
+                        }
                     }
-                }
-                int parm = reg.intValue();
-                if (!methodIsStatic) {
-                    parm--;
-                }
-                parm++; // users expect 1 based parameters
+                    int parm = reg.intValue();
+                    if (!methodIsStatic) {
+                        parm--;
+                    }
+                    parm++; // users expect 1 based parameters
 
-                String infName = definers.keySet().iterator().next().getClassName();
-                bugReporter.reportBug(new BugInstance(this, BugType.OCP_OVERLY_CONCRETE_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this, 0).addString(getCardinality(parm) + " parameter '" + name + "' could be declared as " + infName + " instead"));
+                    String infName = definers.keySet().iterator().next().getClassName();
+                    bugReporter.reportBug(new BugInstance(this, BugType.OCP_OVERLY_CONCRETE_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this, 0).addString(getCardinality(parm) + " parameter '" + name + "' could be declared as " + infName + " instead"));
+                }
+            } catch (ClassNotFoundException e) {
+                bugReporter.reportMissingClass(e);
             }
         }
+    }
+
+    private void removeInheritedInterfaces(Map<JavaClass, List<MethodInfo>> definers) throws ClassNotFoundException {
+        List<JavaClass> infs = new ArrayList<>(definers.keySet());
+        for (int i = 0; i < (infs.size() - 1); i++) {
+            for (int j = i + 1; j < infs.size(); j++) {
+                JavaClass inf1 = infs.get(i);
+                JavaClass inf2 = infs.get(j);
+                if (inf1.implementationOf(inf2)) {
+                    infs.remove(i);
+                    definers.remove(inf1);
+                    i--;
+                    j = infs.size();
+                } else if (inf2.implementationOf(inf1)) {
+                    infs.remove(j);
+                    definers.remove(inf2);
+                    j--;
+                }
+            }
+        }
+
     }
 
     /**
