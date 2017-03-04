@@ -73,6 +73,12 @@ public class OCP_Sample extends Z implements ActionListener, Serializable {
         return c;
     }
 
+    public void fpTooManyAbstractChoices(Legion l) {
+        if (l == null) {
+            return;
+        }
+    }
+
     public static interface A {
         public void test();
 
@@ -82,16 +88,47 @@ public class OCP_Sample extends Z implements ActionListener, Serializable {
     public static class B implements A {
         public int x = 0;
 
+        @Override
         public void test() {
 
         }
 
+        @Override
         public void fp() {
 
         }
     }
 
+    public static interface C {
+        public void cee();
+    }
+
+    public static interface D {
+        public void dee();
+    }
+
+    public static class Legion implements A, C, D {
+
+        @Override
+        public void dee() {
+        }
+
+        @Override
+        public void cee() {
+        }
+
+        @Override
+        public void test() {
+        }
+
+        @Override
+        public void fp() throws IOException {
+        }
+
+    }
+
     // no tag, we are overriding actionPerformed()
+    @Override
     public void actionPerformed(ActionEvent ae) {
 
     }
@@ -147,7 +184,7 @@ public class OCP_Sample extends Z implements ActionListener, Serializable {
             e.printStackTrace();
         }
     }
-    
+
     public Date fpParmAnnot(@NiftyParm GregorianCalendar g) {
         return g.getTime();
     }
@@ -175,9 +212,9 @@ class fpOverride {
     };
 }
 
-
 class fpGenericConstrainedInterface implements Comparator<GregorianCalendar> {
-    //this method is really suspect, but will ignore this case
+    // this method is really suspect, but will ignore this case
+    @Override
     public int compare(GregorianCalendar c1, GregorianCalendar c2) {
         if (c2.getGregorianChange() == null) {
             return (int) (c1.getTime().getTime() - c2.getTime().getTime());
