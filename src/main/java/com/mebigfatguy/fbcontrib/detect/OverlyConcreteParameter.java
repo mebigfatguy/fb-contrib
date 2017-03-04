@@ -436,6 +436,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     infs.remove(j);
                     definers.remove(inf2);
                     j--;
+                } else {
+                    return;
                 }
             }
         }
