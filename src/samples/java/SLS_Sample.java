@@ -1,3 +1,5 @@
+import java.io.BufferedReader;
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
@@ -126,6 +128,24 @@ public class SLS_Sample {
                 break;
             }
         }
+    }
+
+    public int fpContinue(BufferedReader reader) throws IOException {
+        String line;
+        int mode = 0;
+        while ((line = reader.readLine()) != null) {
+
+            if (line.equals("foo")) {
+                mode = 1;
+                continue;
+            }
+            if (line.equals("bar")) {
+                mode = 2;
+                continue;
+            }
+        }
+
+        return mode;
     }
 
 }
