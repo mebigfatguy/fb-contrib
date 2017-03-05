@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
+import org.springframework.ui.context.Theme;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
@@ -1100,9 +1101,11 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                             }
                         }
                         if (!inIgnoreSB && (childUseCount == 1)) {
-                            bugReporter.reportBug(new BugInstance(BloatedAssignmentScope.this, BugType.BAS_BLOATED_ASSIGNMENT_SCOPE.name(), NORMAL_PRIORITY)
-                                    .addClass(BloatedAssignmentScope.this).addMethod(BloatedAssignmentScope.this)
-                                    .addSourceLine(BloatedAssignmentScope.this, entry.getValue().intValue()));
+                            if (appearsToBeUserRegister(reg)) {
+                                bugReporter.reportBug(new BugInstance(BloatedAssignmentScope.this, BugType.BAS_BLOATED_ASSIGNMENT_SCOPE.name(), NORMAL_PRIORITY)
+                                        .addClass(BloatedAssignmentScope.this).addMethod(BloatedAssignmentScope.this)
+                                        .addSourceLine(BloatedAssignmentScope.this, entry.getValue().intValue()));
+                            }
                         }
                     }
                 }
@@ -1113,6 +1116,25 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                     child.findBugs(usedRegs);
                 }
             }
+        }
+
+        /**
+         * in some cases the java compiler synthesizes variable for its own purposes. Hopefully when it does this these, can not be found in the localvariable
+         * table. If we find this to be the case, don't report them
+         *
+         * @param reg
+         *            the register to check
+         *
+         * @return if {@link Theme} variable appears in the local variable table
+         */
+        private boolean appearsToBeUserRegister(int reg) {
+            LocalVariableTable lvt = getMethod().getLocalVariableTable();
+            if (lvt == null) {
+                return false;
+            }
+
+            LocalVariable lv = lvt.getLocalVariable(reg);
+            return lv != null;
         }
 
         /**
