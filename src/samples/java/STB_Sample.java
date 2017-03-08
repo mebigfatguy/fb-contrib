@@ -92,6 +92,27 @@ public class STB_Sample {
         }
     }
 
+    public int fpStackedAcrossCases(String val) throws STBException {
+
+        switch (val) {
+            case "A":
+                try {
+                    return Integer.parseInt(val + "0");
+                } catch (NumberFormatException e) {
+                    throw new STBException("The lotto machine is broken");
+                }
+
+            case "B":
+                try {
+                    return Integer.parseInt(val + "00");
+                } catch (NumberFormatException e) {
+                    throw new STBException("The lotto machine is broken");
+                }
+        }
+
+        return 0;
+    }
+
     static class STBException extends Exception {
 
         public STBException() {
