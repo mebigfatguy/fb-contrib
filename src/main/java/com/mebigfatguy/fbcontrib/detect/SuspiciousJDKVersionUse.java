@@ -277,6 +277,10 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
             return false;
         }
 
+        if (className.startsWith("javax/xml/")) {
+            return true;
+        }
+
         int lastSlashPos = className.lastIndexOf('/');
         String packageName = className.substring(0, lastSlashPos);
         ZipEntry ze = jdkZip.getEntry(packageName);
