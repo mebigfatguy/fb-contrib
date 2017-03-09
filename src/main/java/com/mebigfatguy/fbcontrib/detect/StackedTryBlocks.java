@@ -3,7 +3,6 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.BitSet;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -52,7 +51,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private List<TryBlock> blocks;
     private List<TryBlock> inBlocks;
-    private List<Integer> transitionPoints;
+    private BitSet transitionPoints;
     private OpcodeStack stack;
 
     public StackedTryBlocks(BugReporter bugReporter) {
@@ -95,7 +94,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
                 blocks = new ArrayList<>();
                 inBlocks = new ArrayList<>();
-                transitionPoints = new ArrayList<>();
+                transitionPoints = new BitSet();
 
                 CodeException[] ces = obj.getExceptionTable();
                 for (CodeException ce : ces) {
@@ -122,7 +121,6 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                     super.visitCode(obj);
 
                     if (blocks.size() > 1) {
-                        Collections.sort(transitionPoints);
 
                         TryBlock firstBlock = blocks.get(0);
                         for (int i = 1; i < blocks.size(); i++) {
@@ -164,9 +162,11 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+                int pc = getPC();
                 for (int offset : getSwitchOffsets()) {
-                    transitionPoints.add(Integer.valueOf(offset));
+                    transitionPoints.set(pc + offset);
                 }
+                transitionPoints.set(pc + getDefaultSwitchOffset());
             } else if (isBranch(seen) && (getBranchOffset() < 0)) {
                 // throw out try blocks in loops, this could cause false
                 // negatives
@@ -206,6 +206,12 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
             } else if (innerBlock.atEndHandlerPC(pc)) {
                 inBlocks.remove(inBlocks.size() - 1);
                 innerBlock.setState(TryBlock.State.AFTER);
+            }
+
+            if (transitionPoints.get(nextPC)) {
+                if (innerBlock.inCatch() && (innerBlock.getEndHandlerPC() > nextPC)) {
+                    innerBlock.setEndHandlerPC(nextPC);
+                }
             }
 
             if (innerBlock.inCatch()) {
@@ -276,14 +282,14 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
     private boolean blocksSplitAcrossTransitions(TryBlock firstBlock, TryBlock secondBlock) {
         if (!transitionPoints.isEmpty()) {
-            Iterator<Integer> it = transitionPoints.iterator();
-            while (it.hasNext()) {
-                Integer transitionPoint = it.next();
-                if (transitionPoint.intValue() < firstBlock.handlerPC) {
-                    it.remove();
+            int transitionPoint = transitionPoints.nextSetBit(0);
+            while (transitionPoint >= 0) {
+                if (transitionPoint < firstBlock.handlerPC) {
+                    transitionPoints.clear(transitionPoint);
                 } else {
-                    return transitionPoint.intValue() < secondBlock.handlerPC;
+                    return transitionPoint < secondBlock.handlerPC;
                 }
+                transitionPoint = transitionPoints.nextSetBit(transitionPoint + 1);
             }
         }
 
