@@ -213,6 +213,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd()) && !gotoAcrossPC(getNextPC())) {
                     activeUnconditional = ifBlocks.getFirst();
                 }
+                lookingForResetOp = true;
             } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
                 int[] offsets = getSwitchOffsets();
                 int pc = getPC();
