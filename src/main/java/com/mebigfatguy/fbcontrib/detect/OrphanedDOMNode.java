@@ -18,8 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.BitSet;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -96,19 +96,19 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
         nodeStores.clear();
         super.visitCode(obj);
 
-        Set<Integer> reportedPCs = new HashSet<>();
+        BitSet reportedPCs = new BitSet();
         for (Integer pc : nodeCreations.values()) {
-            if (!reportedPCs.contains(pc)) {
+            if (!reportedPCs.get(pc)) {
                 bugReporter.reportBug(new BugInstance(this, BugType.ODN_ORPHANED_DOM_NODE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this, pc.intValue()));
-                reportedPCs.add(pc);
+                reportedPCs.set(pc);
             }
         }
         for (Integer pc : nodeStores.values()) {
-            if (!reportedPCs.contains(pc)) {
+            if (!reportedPCs.get(pc)) {
                 bugReporter.reportBug(new BugInstance(this, BugType.ODN_ORPHANED_DOM_NODE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this, pc.intValue()));
-                reportedPCs.add(pc);
+                reportedPCs.set(pc);
             }
         }
     }
