@@ -122,6 +122,19 @@ public class BL_Sample {
         return null;
     }
 
+    public boolean fpIfAtEndOfLoop(int len, String a, String b) {
+        int sPos = 0;
+        int pPos = 0;
+
+        while (len-- > 0) {
+            if (a.charAt(sPos++) != b.charAt(pPos++)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private List<String> getDetails() {
         return null;
     }
