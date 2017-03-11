@@ -52,6 +52,18 @@ public class BuryingLogic extends BytecodeScanningDetector {
     private static final double LOW_BUG_RATIO_LIMIT = 16.0;
     private static final double NORMAL_BUG_RATIO_LIMIT = 30.0;
 
+    private final static BitSet resetOps = new BitSet();
+    static {
+        resetOps.set(PUTFIELD);
+        resetOps.set(PUTSTATIC);
+        resetOps.set(POP);
+        resetOps.set(POP2);
+        resetOps.set(TABLESWITCH);
+        resetOps.set(LOOKUPSWITCH);
+        resetOps.set(MONITORENTER);
+        resetOps.set(MONITOREXIT);
+    }
+
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Deque<IfBlock> ifBlocks;
@@ -240,9 +252,8 @@ public class BuryingLogic extends BytecodeScanningDetector {
      * @return if this operation resets the looking for conditionals
      */
     private boolean isResetOp(int seen) {
-        return (seen == PUTFIELD) || (seen == PUTSTATIC) || (seen == POP) || (seen == POP2) || (seen == TABLESWITCH) || (seen == LOOKUPSWITCH)
-                || (seen == MONITORENTER) || (seen == MONITOREXIT) || OpcodeUtils.isStore(seen)
-                || (OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")Z"));
+        return resetOps.get(seen) || OpcodeUtils.isStore(seen) || OpcodeUtils.isReturn(seen)
+                || (OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")V"));
     }
 
     private void removeLoopBlocks(int target) {
