@@ -102,7 +102,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         "javax/sql/",
         "javax/swing/",
         "javax/tools/",
-        "javax/transaction/",
+        "javax/transaction/"
         // "javax/xml/" // javax.xml might be internal or external, hard to tell, so just don't report it
     // @formatter:on
     );
