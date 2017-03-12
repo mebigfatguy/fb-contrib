@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for appending strings inside of calls to StringBuffer or StringBuilder append.
@@ -237,7 +238,12 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                 }
 
                 if (userValue == null) {
-                    userValue = new ISBUserValue(AppendType.CLEAR, true);
+                    XMethod m = itm.getReturnValueOf();
+                    if ((m != null) && ("valueOf".equals(m.getName()) && Values.DOTTED_JAVA_LANG_STRING.equals(m.getClassName()))) {
+                        userValue = new ISBUserValue(AppendType.CLEAR, false);
+                    } else {
+                        userValue = new ISBUserValue(AppendType.CLEAR, true);
+                    }
                 }
             }
         }
