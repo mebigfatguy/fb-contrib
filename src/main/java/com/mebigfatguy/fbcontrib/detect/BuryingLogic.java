@@ -253,7 +253,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
      */
     private boolean isResetOp(int seen) {
         return resetOps.get(seen) || OpcodeUtils.isStore(seen) || OpcodeUtils.isReturn(seen)
-                || (OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")V"));
+                || ((OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")V")) || (isBranch(seen) && (getBranchOffset() < 0)));
     }
 
     private void removeLoopBlocks(int target) {
