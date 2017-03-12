@@ -19,8 +19,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
-import java.util.HashSet;
-import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -105,8 +103,8 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     }
 
     private final BugReporter bugReporter;
-    private Set<Integer> branchTargets;
-    private Set<Integer> catchTargets;
+    private BitSet branchTargets;
+    private BitSet catchTargets;
     private OpcodeStack stack;
     private State state;
     private int storeReg;
@@ -130,8 +128,8 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            branchTargets = new HashSet<>();
-            catchTargets = new HashSet<>();
+            branchTargets = new BitSet();
+            catchTargets = new BitSet();
             stack = new OpcodeStack();
             super.visitClassContext(classContext);
         } finally {
@@ -159,7 +157,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
             stack.resetForMethodEntry(this);
             for (CodeException ce : ces) {
                 if (ce.getCatchType() != 0) {
-                    catchTargets.add(Integer.valueOf(ce.getHandlerPC()));
+                    catchTargets.set(ce.getHandlerPC());
                 }
             }
             super.visitCode(obj);
@@ -180,7 +178,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
 
             switch (state) {
                 case SEEN_NOTHING:
-                    if (!catchTargets.contains(Integer.valueOf(getPC())) && lookForStore(seen) && (stack.getStackDepth() >= 1)) {
+                    if (!catchTargets.get(getPC()) && lookForStore(seen) && (stack.getStackDepth() >= 1)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         Integer reg = (Integer) item.getUserValue();
                         if ((reg == null) || (reg.intValue() != storeReg)) {
@@ -190,7 +188,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
                 break;
 
                 case SEEN_STORE:
-                    if (branchTargets.contains(Integer.valueOf(getPC()))) {
+                    if (branchTargets.get(getPC())) {
                         state = State.SEEN_NOTHING;
                         break;
                     }
@@ -208,7 +206,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
             }
 
             if (branchInstructions.get(seen)) {
-                branchTargets.add(Integer.valueOf(getBranchTarget()));
+                branchTargets.set(getBranchTarget());
             }
 
             lhsReg = processBinOp(seen);
