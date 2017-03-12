@@ -20,7 +20,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE 
+<!-- COMMENT OUT FOR RELEASE --?
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -30,7 +30,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-     COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -305,7 +305,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ConcurrentCollectionIssues" speed="fast" reports="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY"/>
     
-    <!-- COMMENT OUT FOR POINT RELEASE 
+    <!-- COMMENT OUT FOR POINT RELEASE -->
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.UseTryWithResources" speed="fast" reports="UTWR_USE_TRY_WITH_RESOURCES"/>
     
@@ -315,7 +315,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.OptionalIssues" speed="fast" reports="OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION,OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION,OI_OPTIONAL_ISSUES_CHECKING_REFERENCE,OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
     
-         COMMENT OUT FOR POINT RELEASE -->
+    <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
