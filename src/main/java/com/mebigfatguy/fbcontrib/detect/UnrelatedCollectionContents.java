@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -55,7 +56,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private Map<FQField, Set<String>> memberCollections;
     private Map<Integer, Set<String>> localCollections;
-    private Map<Integer, Set<Integer>> localScopeEnds;
+    private Map<Integer, BitSet> localScopeEnds;
     private Map<String, Set<SourceLineAnnotation>> memberSourceLineAnnotations;
     private Map<Integer, Set<SourceLineAnnotation>> localSourceLineAnnotations;
 
@@ -121,11 +122,13 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            Set<Integer> regs = localScopeEnds.remove(Integer.valueOf(getPC()));
+            BitSet regs = localScopeEnds.remove(Integer.valueOf(getPC()));
             if (regs != null) {
-                for (Integer i : regs) {
+                int i = regs.nextSetBit(0);
+                while (i >= 0) {
                     localCollections.remove(i);
                     localSourceLineAnnotations.remove(i);
+                    i = regs.nextSetBit(i + 1);
                 }
             }
             if (seen == INVOKEINTERFACE) {
@@ -212,12 +215,12 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
                 localCollections.put(Integer.valueOf(reg), commonSupers);
                 addNewItem(commonSupers, addItm);
                 Integer scopeEnd = Integer.valueOf(RegisterUtils.getLocalVariableEndRange(getMethod().getLocalVariableTable(), reg, getNextPC()));
-                Set<Integer> regs = localScopeEnds.get(scopeEnd);
+                BitSet regs = localScopeEnds.get(scopeEnd);
                 if (regs == null) {
-                    regs = new HashSet<>();
+                    regs = new BitSet();
                     localScopeEnds.put(scopeEnd, regs);
                 }
-                regs.add(regNumber);
+                regs.set(regNumber);
             } else {
                 mergeItem(commonSupers, pcs, addItm);
             }
