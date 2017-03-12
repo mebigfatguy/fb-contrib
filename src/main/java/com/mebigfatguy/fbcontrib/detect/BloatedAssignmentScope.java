@@ -1124,7 +1124,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
          * @param reg
          *            the register to check
          *
-         * @return if {@link Theme} variable appears in the local variable table
+         * @return if reg variable appears in the local variable table
          */
         private boolean appearsToBeUserRegister(int reg) {
             LocalVariableTable lvt = getMethod().getLocalVariableTable();

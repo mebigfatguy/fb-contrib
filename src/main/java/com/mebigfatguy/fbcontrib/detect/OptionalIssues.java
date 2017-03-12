@@ -245,7 +245,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
      * returns whether the set of operations that contributed to the current stack form, are trivial or not, specifically boxing a primitive value, or appending
      * to strings or such.
      *
-     * @return
+     * @return the operations that caused the current stack to exist are trivial
      */
     private boolean isTrivialStackOps() {
 
