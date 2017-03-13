@@ -436,6 +436,10 @@ public class SPP_Sample implements Serializable {
     }
 }
 
+interface FPInterfaceWithSerialVer extends Serializable {
+    final long serialVersionUID = 1L;
+}
+
 class StringProducer {
     public String getString() {
         return "foo";
