@@ -53,6 +53,35 @@ For example, If you are using FindBugs with Eclipse (and you extracted Eclipse t
 2. Clone the Git repository, as per step 3 above.
 3. Run `mvn clean install` in the fb-contrib directory.
 
+##Usage - Maven##
+
+To include the fb-contrib detectors when checking your project with FindBugs, you can use the [FindBugs Maven plugin](https://gleclaire.github.io/findbugs-maven-plugin/usage.html).
+The group ID for fb-contrib is com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
+
+~~~~
+<plugin>
+    <groupId>org.codehaus.mojo</groupId>
+    <artifactId>findbugs-maven-plugin</artifactId>
+    <version>3.0.4</version>
+    <configuration>
+        <plugins>
+            <plugin>
+                <groupId>com.mebigfatguy.fb-contrib</groupId>
+                <artifactId>fb-contrib</artifactId>
+                <version>6.8.3</version>
+            </plugin>
+        </plugins>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>check</goal>
+            </goals>
+        </execution>
+    </execution>
+</plugin>
+~~~~
+
 ##Contributing##
 Once you have the dev environment set up, feel free to make changes and pull requests.
 Any edits are much appreciated, from finding typos, to adding examples in the [messages](https://github.com/mebigfatguy/fb-contrib/blob/master/etc/messages.xml), to creating new detectors, all help is welcome.
