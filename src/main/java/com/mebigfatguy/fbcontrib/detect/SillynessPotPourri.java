@@ -124,6 +124,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private Map<Integer, BitSet> branchTargets;
     private Set<String> staticConstants;
     private Map<SPPUserValue, Integer> trimLocations;
+    private boolean isInterface;
 
     /**
      * constructs a SPP detector given the reporter to report bugs on
@@ -138,7 +139,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     @Override
     public void visitField(Field field) {
-        if ("serialVersionUID".equals(field.getName()) && (field.isStatic()) && (!field.isPrivate())) {
+        if (!isInterface && "serialVersionUID".equals(field.getName()) && (field.isStatic()) && (!field.isPrivate())) {
             bugReporter.reportBug(new BugInstance(this, BugType.SPP_SERIALVER_SHOULD_BE_PRIVATE.name(), LOW_PRIORITY).addClass(this).addField(this));
         }
     }
@@ -150,6 +151,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             lastPCs = new int[4];
             branchTargets = new HashMap<>();
             trimLocations = new HashMap<>();
+            isInterface = classContext.getJavaClass().isInterface();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
