@@ -1224,6 +1224,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         return false;
     }
 
+    /**
+     * represents the source of an assignment to a variable, which could be a method call or a field
+     */
     static class UserObject {
         Comparable<?> caller;
         boolean isRisky;
