@@ -161,6 +161,9 @@ public class WiringIssues extends PreorderVisitor implements Detector {
         }
     }
 
+    /**
+     * represents the type of object that is to be wired in, including an optional qualifier name
+     */
     static class WiringType {
         String signature;
         String genericSignature;
