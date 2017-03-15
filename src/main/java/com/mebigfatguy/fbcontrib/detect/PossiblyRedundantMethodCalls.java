@@ -419,12 +419,12 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
      * @return the bug priority
      */
     private static int getBugPriority(String methodName, MethodInfo mi) {
-        if ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit)) {
-            return HIGH_PRIORITY;
-        }
-
         if (Values.STATIC_INITIALIZER.equals(methodName)) {
             return LOW_PRIORITY;
+        }
+
+        if ((mi.getNumBytes() >= highByteCountLimit) || (mi.getNumMethodCalls() >= highMethodCallLimit)) {
+            return HIGH_PRIORITY;
         }
 
         if ((mi.getNumBytes() >= normalByteCountLimit) || (mi.getNumMethodCalls() >= normalMethodCallLimit)) {
