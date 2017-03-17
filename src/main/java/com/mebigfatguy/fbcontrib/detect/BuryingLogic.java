@@ -67,12 +67,19 @@ public class BuryingLogic extends BytecodeScanningDetector {
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Deque<IfBlock> ifBlocks;
+    /**
+     * if an previous if block has been closed off with a return, hold onto it.
+     */
     private IfBlock activeUnconditional;
     private Deque<Integer> casePositions;
     private double lowBugRatioLimit;
     private double normalBugRatioLimit;
     private BitSet catchPCs;
     private BitSet gotoBranchPCs;
+    /**
+     * if we've processed an if block, we want to avoid else ifs, so don't start looking for a new if branch, until some instruction that can't be part of a
+     * conditional is found
+     */
     private boolean lookingForResetOp;
 
     public BuryingLogic(BugReporter bugReporter) {
@@ -238,6 +245,13 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * returns whether the last downward branching jump seen crosses over the current location
+     *
+     * @param pc
+     *            the current location
+     * @return if the last if statement branched over here
+     */
     private boolean gotoAcrossPC(int pc) {
 
         int target = gotoBranchPCs.previousSetBit(Integer.MAX_VALUE);
@@ -256,6 +270,12 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 || ((OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")V")) || (isBranch(seen) && (getBranchOffset() < 0)));
     }
 
+    /**
+     * remove all if blocks that are contained within a loop, once that loop has ended
+     *
+     * @param target
+     *            the start of the loop block
+     */
     private void removeLoopBlocks(int target) {
         Iterator<IfBlock> it = ifBlocks.descendingIterator();
         while (it.hasNext()) {
