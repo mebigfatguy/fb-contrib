@@ -71,7 +71,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
      * if an previous if block has been closed off with a return, hold onto it.
      */
     private IfBlock activeUnconditional;
-    private Deque<Integer> casePositions;
+    private BitSet casePositions;
     private double lowBugRatioLimit;
     private double normalBugRatioLimit;
     private BitSet catchPCs;
@@ -120,7 +120,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
             stack = new OpcodeStack();
             ifBlocks = new ArrayDeque<>();
             gotoBranchPCs = new BitSet();
-            casePositions = new ArrayDeque<>();
+            casePositions = new BitSet();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -182,10 +182,13 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 activeUnconditional = null;
             }
 
-            if (!casePositions.isEmpty() && (casePositions.getFirst().intValue() == getPC())) {
-                casePositions.removeFirst();
-                activeUnconditional = null;
-                lookingForResetOp = false;
+            if (!casePositions.isEmpty()) {
+                int firstCasePos = casePositions.nextSetBit(0);
+                if (firstCasePos == getPC()) {
+                    casePositions.clear(firstCasePos);
+                    activeUnconditional = null;
+                    lookingForResetOp = false;
+                }
             }
 
             if (lookingForResetOp) {
@@ -237,7 +240,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 int[] offsets = getSwitchOffsets();
                 int pc = getPC();
                 for (int offset : offsets) {
-                    casePositions.addLast(Integer.valueOf(pc + offset));
+                    casePositions.set(pc + offset);
                 }
             }
         } finally {
