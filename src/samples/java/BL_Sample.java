@@ -1,6 +1,9 @@
 import java.util.List;
+import java.util.Objects;
 
 public class BL_Sample {
+
+    private String f1, f2, f3, f4;
 
     public String testSimpleBurying() {
 
@@ -135,7 +138,18 @@ public class BL_Sample {
         return true;
     }
 
+    public boolean fpEqualsChain(Object o) {
+        if (!(o instanceof BL_Sample)) {
+            return false;
+        }
+
+        BL_Sample that = (BL_Sample) o;
+
+        return Objects.equals(f1, that.f1) && Objects.equals(f2, that.f2) && Objects.equals(f3, that.f3) && Objects.equals(f4, that.f4);
+    }
+
     private List<String> getDetails() {
         return null;
     }
+
 }
