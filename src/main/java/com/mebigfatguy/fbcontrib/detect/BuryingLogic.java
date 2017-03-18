@@ -162,6 +162,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * the difficult problem is to figure out when you are at the bottom of an if/else chain when all the above if/else blocks leave via returns. then there is
+     * only one branch target to the statement after the last else, which is indistinquishable from a simple if/else.
+     */
     @Override
     public void sawOpcode(int seen) {
 
@@ -180,6 +184,8 @@ public class BuryingLogic extends BytecodeScanningDetector {
             }
             if (removed > 1) {
                 activeUnconditional = null;
+            } else if (removed == 1) {
+
             }
 
             if (!casePositions.isEmpty()) {
