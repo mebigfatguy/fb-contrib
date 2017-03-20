@@ -381,6 +381,9 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
 
         public IfBlocks getSubIfBlocks() {
+            if (subBlocks == null) {
+                subBlocks = new IfBlocks();
+            }
             return subBlocks;
         }
 
