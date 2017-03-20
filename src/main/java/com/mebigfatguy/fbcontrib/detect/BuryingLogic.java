@@ -282,6 +282,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
         public void add(IfBlock block) {
             if (blocks.isEmpty()) {
                 blocks.addLast(block);
+                return;
             }
 
             IfBlock lastBlock = blocks.getLast();
