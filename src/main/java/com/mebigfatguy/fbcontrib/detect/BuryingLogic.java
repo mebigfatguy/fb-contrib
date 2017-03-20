@@ -319,7 +319,11 @@ public class BuryingLogic extends BytecodeScanningDetector {
             if (pc > lastBlock.getEnd()) {
                 return blocks.removeLast();
             } else {
-                return lastBlock.getSubIfBlocks().removeLast(pc);
+                if (lastBlock.hasSubBlocks()) {
+                    return lastBlock.getSubIfBlocks().removeLast(pc);
+                }
+
+                return null;
             }
         }
 
@@ -349,8 +353,13 @@ public class BuryingLogic extends BytecodeScanningDetector {
             Iterator<IfBlock> it = blocks.iterator();
             while (it.hasNext()) {
                 IfBlock block = it.next();
+                if (pc >= block.getStart()) {
+                    if (block.hasSubBlocks()) {
+                        removed += block.getSubIfBlocks().removeBlocksAtPC(pc);
+                    }
+                }
+
                 if (pc >= block.getEnd()) {
-                    removed += block.getSubIfBlocks().removeBlocksAtPC(pc);
                     it.remove();
                     removed++;
                 }
@@ -384,6 +393,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
         public int getEnd() {
             return end;
+        }
+
+        public boolean hasSubBlocks() {
+            return (subBlocks == null) || !subBlocks.isEmpty();
         }
 
         public IfBlocks getSubIfBlocks() {
