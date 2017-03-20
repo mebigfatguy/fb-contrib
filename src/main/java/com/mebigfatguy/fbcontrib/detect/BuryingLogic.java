@@ -199,7 +199,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 if (activeUnconditional != null) {
                     activeUnconditional = null;
                     if (!ifBlocks.isEmpty()) {
-                        ifBlocks.removeLast();
+                        ifBlocks.removeLast(getPC());
                     }
                     lookingForResetOp = true;
                 }
@@ -280,7 +280,17 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
 
         public void add(IfBlock block) {
-            blocks.addLast(block);
+            if (blocks.isEmpty()) {
+                blocks.addLast(block);
+            }
+
+            IfBlock lastBlock = blocks.getLast();
+
+            if (block.getStart() > lastBlock.getEnd()) {
+                blocks.addLast(block);
+            } else {
+                lastBlock.getSubIfBlocks().add(block);
+            }
         }
 
         public IfBlock getFirst() {
@@ -299,12 +309,17 @@ public class BuryingLogic extends BytecodeScanningDetector {
             return blocks.isEmpty();
         }
 
-        public IfBlock removeLast() {
+        public IfBlock removeLast(int pc) {
             if (blocks.isEmpty()) {
                 return null;
             }
 
-            return blocks.removeLast();
+            IfBlock lastBlock = blocks.getLast();
+            if (pc > lastBlock.getEnd()) {
+                return blocks.removeLast();
+            } else {
+                return lastBlock.getSubIfBlocks().removeLast(pc);
+            }
         }
 
         /**
