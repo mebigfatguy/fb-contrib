@@ -358,6 +358,11 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
             return removed;
         }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
     }
 
     /**
