@@ -175,7 +175,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
             if (removed > 1) {
                 activeUnconditional = null;
             } else if (removed == 1) {
-
+                lookingForResetOp = true;
             }
 
             if (!casePositions.isEmpty()) {
@@ -201,7 +201,6 @@ public class BuryingLogic extends BytecodeScanningDetector {
                     if (!ifBlocks.isEmpty()) {
                         ifBlocks.removeLast(getPC());
                     }
-                    lookingForResetOp = true;
                 }
 
                 int target = getBranchTarget();
