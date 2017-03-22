@@ -343,6 +343,13 @@ public class BuryingLogic extends BytecodeScanningDetector {
             }
         }
 
+        /**
+         * remove all blocks including nested block that are closed off before the current pc
+         *
+         * @param pc
+         *            the current pc
+         * @return how many blocks have been removed
+         */
         public int removeBlocksAtPC(int pc) {
             if (blocks.isEmpty()) {
                 return 0;
