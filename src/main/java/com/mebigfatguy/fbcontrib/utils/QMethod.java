@@ -56,6 +56,6 @@ public final class QMethod {
 
     @Override
     public String toString() {
-        return ToString.build(this);
+        return methodName + ":" + signature;
     }
 }

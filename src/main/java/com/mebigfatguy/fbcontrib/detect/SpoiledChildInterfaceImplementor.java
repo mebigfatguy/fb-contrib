@@ -19,13 +19,17 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -40,6 +44,19 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class SpoiledChildInterfaceImplementor implements Detector {
 
+    private static final Set<QMethod> OBJECT_METHODS = UnmodifiableSet.create(
+    // @formatter:off
+            new QMethod("equals", "(Ljava/lang/Object;)Z"),
+            new QMethod("hashCode", "()I"),
+            new QMethod("toString", "()Ljava/lang/String;"),
+            new QMethod("clone", "()Ljava/lang/Object;"),
+            new QMethod("notify", "()V"),
+            new QMethod("notifyAll", "()V"),
+            new QMethod("wait", "(J)V"),
+            new QMethod("wait", "(JI)V"),
+            new QMethod("wait", "()V")
+    // @formatter:on
+    );
     private final BugReporter bugReporter;
 
     /**
@@ -73,11 +90,12 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 
             JavaClass[] infs = cls.getInterfaces();
             if (infs.length > 0) {
-                Set<String> clsMethods = buildMethodSet(cls);
+                Set<QMethod> clsMethods = buildMethodSet(cls);
                 for (JavaClass inf : infs) {
-                    Set<String> infMethods = buildMethodSet(inf);
+                    Set<QMethod> infMethods = buildMethodSet(inf);
                     if (!infMethods.isEmpty()) {
                         infMethods.removeAll(clsMethods);
+
                         if (!infMethods.isEmpty()) {
                             JavaClass superCls = cls.getSuperClass();
                             filterSuperInterfaceMethods(inf, infMethods, superCls);
@@ -85,8 +103,8 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                                 int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
                                 BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
                                         .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
-                                for (String nameSig : infMethods) {
-                                    bi.addString('\t' + nameSig);
+                                for (QMethod methodInfo : infMethods) {
+                                    bi.addString('\t' + methodInfo.toString());
                                 }
 
                                 bugReporter.reportBug(bi);
@@ -111,22 +129,44 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     }
 
     /**
+     * removes all methods from the map that are synthetic
+     *
+     * @param methods
+     *            the methods to check
+     */
+    private void removeSyntheticMethods(Map<QMethod, Boolean> methods) {
+        Iterator<Map.Entry<QMethod, Boolean>> it = methods.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<QMethod, Boolean> entry = it.next();
+            if (entry.getValue().booleanValue()) {
+                it.remove();
+            }
+        }
+    }
+
+    /**
      * builds a set of all non constructor or static initializer method/signatures
      *
      * @param cls
      *            the class to build the method set from
      * @return a set of method names/signatures
      */
-    private static Set<String> buildMethodSet(JavaClass cls) {
-        Set<String> methods = new HashSet<String>();
-        
+    private static Set<QMethod> buildMethodSet(JavaClass cls) {
+        Set<QMethod> methods = new HashSet<>();
+
         boolean isInterface = cls.isInterface();
 
         for (Method m : cls.getMethods()) {
-            if (!isInterface || m.isAbstract()) {
+            boolean isDefaultInterfaceMethod = isInterface && !m.isAbstract();
+
+            if (!isDefaultInterfaceMethod) {
                 String methodName = m.getName();
-                if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName) && (!"clone".equals(methodName))) {
-                    methods.add(methodName + ':' + m.getSignature());
+                QMethod methodInfo = new QMethod(methodName, m.getSignature());
+
+                if (!OBJECT_METHODS.contains(methodInfo)) {
+                    if (!Values.CONSTRUCTOR.equals(methodName) && !Values.STATIC_INITIALIZER.equals(methodName)) {
+                        methods.add(methodInfo);
+                    }
                 }
             }
         }
@@ -145,7 +185,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
      * @param cls
      *            the super class to look for these methods in
      */
-    private void filterSuperInterfaceMethods(JavaClass inf, Set<String> infMethods, JavaClass cls) {
+    private void filterSuperInterfaceMethods(JavaClass inf, Set<QMethod> infMethods, JavaClass cls) {
         try {
             if (infMethods.isEmpty()) {
                 return;
@@ -154,7 +194,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
             JavaClass[] superInfs = inf.getInterfaces();
             for (JavaClass superInf : superInfs) {
                 if (cls.implementationOf(superInf)) {
-                    Set<String> superInfMethods = buildMethodSet(superInf);
+                    Set<QMethod> superInfMethods = buildMethodSet(superInf);
                     infMethods.removeAll(superInfMethods);
                     if (infMethods.isEmpty()) {
                         return;
