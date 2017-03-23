@@ -18,11 +18,13 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -159,7 +161,16 @@ public class SpoiledChildInterfaceImplementor implements Detector {
         for (Method m : cls.getMethods()) {
             boolean isDefaultInterfaceMethod = isInterface && !m.isAbstract();
 
-            if (!isDefaultInterfaceMethod) {
+            boolean isSyntheticForParentCall;
+
+            if (m.isSynthetic()) {
+                BitSet bytecodeSet = ClassContext.getBytecodeSet(cls, m);
+                isSyntheticForParentCall = (bytecodeSet != null) && bytecodeSet.get(Constants.INVOKESPECIAL);
+            } else {
+                isSyntheticForParentCall = false;
+            }
+
+            if (!isSyntheticForParentCall && !isDefaultInterfaceMethod) {
                 String methodName = m.getName();
                 QMethod methodInfo = new QMethod(methodName, m.getSignature());
 
