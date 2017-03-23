@@ -1,5 +1,6 @@
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.Comparator;
 
 public class SCII_Sample extends OverEndulgentParent implements MouseListener {
     @Override
@@ -59,4 +60,17 @@ class OverEndulgentParent {
     class CC extends BB implements C {
 
     }
+}
+
+enum FPInterfaceOverridesObject implements Comparator<FP> {
+    FPEXAMPLE;
+
+    @Override
+    public int compare(FP o1, FP o2) {
+        return o1.problem().compareTo(o2.problem());
+    }
+}
+
+interface FP {
+    String problem();
 }
