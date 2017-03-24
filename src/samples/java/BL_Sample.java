@@ -113,11 +113,11 @@ public class BL_Sample {
 
     public String fpDoublyNestedReturnInIf(String a, String b) {
         if (a.equals(b)) {
-            if (a.compareTo("foo") > 0) {
+            if ((b != null) && (a.compareTo("foo") > 0)) {
                 return a;
             }
         } else {
-            if (a.compareTo("bar") > 0) {
+            if ((b != null) && (a.compareTo("bar") > 0)) {
                 return a;
             }
         }
