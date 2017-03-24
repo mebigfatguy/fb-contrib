@@ -82,6 +82,12 @@ public class BuryingLogic extends BytecodeScanningDetector {
      */
     private boolean lookingForResetOp;
 
+    /**
+     * constructs a BL detector given the reporter to report bugs on
+     *
+     * @param bugReporter
+     *            the sync of bug reports
+     */
     public BuryingLogic(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
 
@@ -114,6 +120,12 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * implements the visitor to reset the opcode stack, and initialize if tracking collections
+     *
+     * @param classContext
+     *            the currently parsed java class
+     */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
