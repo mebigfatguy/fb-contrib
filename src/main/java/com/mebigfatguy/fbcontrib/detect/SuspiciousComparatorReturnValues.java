@@ -289,6 +289,9 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     }
 }
 
+/**
+ * represents patterns of methods to look for to find suspicious compares
+ */
 class CompareSpec {
 
     private final JavaClass compareClass;

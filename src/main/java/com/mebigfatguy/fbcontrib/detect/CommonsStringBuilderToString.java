@@ -155,6 +155,9 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
         return "Lorg/apache/commons/lang3/builder/ToStringBuilder;".equals(signature) || "Lorg/apache/commons/lang/builder/ToStringBuilder;".equals(signature);
     }
 
+    /**
+     * represents an stack item that is an append of a StringBuilder
+     */
     static final class StringBuilderInvokedStatus {
         public final int register;
         public final boolean appendInvoked;
