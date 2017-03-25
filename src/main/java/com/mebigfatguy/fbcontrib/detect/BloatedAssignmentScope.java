@@ -283,7 +283,13 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             if (sb != null) {
                 UserObject assoc = null;
                 if (stack.getStackDepth() > 0) {
-                    assoc = (UserObject) stack.getStackItem(0).getUserValue();
+                    OpcodeStack.Item srcItm = stack.getStackItem(0);
+                    assoc = (UserObject) srcItm.getUserValue();
+                    if (assoc == null) {
+                        if (srcItm.getRegisterNumber() >= 0) {
+                            assoc = new UserObject(srcItm.getRegisterNumber());
+                        }
+                    }
                 }
 
                 if ((assoc != null) && assoc.isRisky) {
