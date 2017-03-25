@@ -182,11 +182,11 @@ public class BuryingLogic extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
 
         try {
-            int removed = ifBlocks.removeBlocksAtPC(getPC());
+            int blockCount = ifBlocks.countBlockEndsAtPC(getPC());
 
-            if (removed > 1) {
+            if (blockCount > 1) {
                 activeUnconditional = null;
-            } else if (removed == 1) {
+            } else if (blockCount == 1) {
                 lookingForResetOp = true;
             }
 
@@ -210,9 +210,6 @@ public class BuryingLogic extends BytecodeScanningDetector {
             if (isBranch(seen)) {
                 if (activeUnconditional != null) {
                     activeUnconditional = null;
-                    if (!ifBlocks.isEmpty()) {
-                        ifBlocks.removeLast(getPC());
-                    }
                 }
 
                 int target = getBranchTarget();
@@ -230,7 +227,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 if ((activeUnconditional != null) && !gotoBranchPCs.get(activeUnconditional.getEnd())) {
 
                     int ifSize = activeUnconditional.getEnd() - activeUnconditional.getStart();
-                    int elseSize = getPC() - activeUnconditional.getEnd();
+                    int elseSize = (getPC() - activeUnconditional.getEnd()) + 1; // +1 for the return itself
 
                     double ratio = (double) ifSize / (double) elseSize;
                     if (ratio > lowBugRatioLimit) {
@@ -239,10 +236,13 @@ public class BuryingLogic extends BytecodeScanningDetector {
                                         .addClass(this).addMethod(this).addSourceLineRange(this, activeUnconditional.getStart(), activeUnconditional.getEnd()));
                         throw new StopOpcodeParsingException();
                     }
-                } else if (!ifBlocks.isEmpty() && (getNextPC() == ifBlocks.getFirst().getEnd()) && !gotoAcrossPC(getNextPC())) {
-                    activeUnconditional = ifBlocks.getFirst();
+                    activeUnconditional = null;
+                } else {
+                    IfBlock blockAtPC = ifBlocks.getBlockAt(getPC());
+                    if ((blockAtPC != null) && (getNextPC() == blockAtPC.getEnd()) && !gotoAcrossPC(getNextPC())) {
+                        activeUnconditional = blockAtPC;
+                    }
                 }
-                lookingForResetOp = true;
             } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
                 int[] offsets = getSwitchOffsets();
                 int pc = getPC();
@@ -305,12 +305,27 @@ public class BuryingLogic extends BytecodeScanningDetector {
             }
         }
 
-        public IfBlock getFirst() {
+        public IfBlock getBlockAt(int pc) {
             if (blocks.isEmpty()) {
                 return null;
             }
 
-            return blocks.getFirst();
+            Iterator<IfBlock> it = blocks.iterator();
+            while (it.hasNext()) {
+                IfBlock block = it.next();
+                if ((pc >= block.getStart()) && (pc <= block.getEnd())) {
+                    if (block.hasSubBlocks()) {
+                        IfBlock foundBlock = block.getSubIfBlocks().getBlockAt(pc);
+                        if (foundBlock != null) {
+                            return foundBlock;
+                        }
+                    }
+
+                    return block;
+                }
+            }
+
+            return null;
         }
 
         public void clear() {
@@ -319,23 +334,6 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
         public boolean isEmpty() {
             return blocks.isEmpty();
-        }
-
-        public IfBlock removeLast(int pc) {
-            if (blocks.isEmpty()) {
-                return null;
-            }
-
-            IfBlock lastBlock = blocks.getLast();
-            if (pc > lastBlock.getEnd()) {
-                return blocks.removeLast();
-            } else {
-                if (lastBlock.hasSubBlocks()) {
-                    return lastBlock.getSubIfBlocks().removeLast(pc);
-                }
-
-                return null;
-            }
         }
 
         /**
@@ -356,34 +354,33 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
 
         /**
-         * remove all blocks including nested block that are closed off before the current pc
+         * counts all blocks including nested block that are closed off at the current pc
          *
          * @param pc
          *            the current pc
-         * @return how many blocks have been removed
+         * @return how many blocks have ended at the pc
          */
-        public int removeBlocksAtPC(int pc) {
+        public int countBlockEndsAtPC(int pc) {
             if (blocks.isEmpty()) {
                 return 0;
             }
 
-            int removed = 0;
+            int count = 0;
             Iterator<IfBlock> it = blocks.iterator();
             while (it.hasNext()) {
                 IfBlock block = it.next();
                 if (pc >= block.getStart()) {
                     if (block.hasSubBlocks()) {
-                        removed += block.getSubIfBlocks().removeBlocksAtPC(pc);
+                        count += block.getSubIfBlocks().countBlockEndsAtPC(pc);
                     }
                 }
 
-                if (pc >= block.getEnd()) {
-                    it.remove();
-                    removed++;
+                if (pc == block.getEnd()) {
+                    count++;
                 }
             }
 
-            return removed;
+            return count;
         }
 
         @Override
