@@ -485,11 +485,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             return null;
         }
 
-        UserObject uo = new UserObject();
         MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassConstantOperand(), name, signature);
 
-        uo.isRisky = mi.getModifiesState() || isRiskyMethodCall();
-        uo.caller = getCallingObject();
+        UserObject uo = new UserObject(getCallingObject(), mi.getModifiesState() || isRiskyMethodCall());
 
         if (uo.caller != null) {
             ScopeBlock sb = findScopeBlock(rootScopeBlock, pc);
@@ -512,8 +510,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             return null;
         }
 
-        UserObject uo = new UserObject();
-        uo.isRisky = isRiskyMethodCall();
+        UserObject uo = new UserObject(isRiskyMethodCall());
         return uo;
     }
 
@@ -523,8 +520,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             int reg = itm.getRegisterNumber();
 
             if (reg >= 0) {
-                UserObject uo = new UserObject();
-                uo.fieldFromReg = reg;
+                UserObject uo = new UserObject(reg);
                 return uo;
             }
         }
@@ -1231,6 +1227,19 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         Comparable<?> caller;
         boolean isRisky;
         int fieldFromReg = -1;
+
+        public UserObject(Comparable<?> callerObj, boolean risky) {
+            caller = callerObj;
+            isRisky = risky;
+        }
+
+        public UserObject(boolean risky) {
+            isRisky = risky;
+        }
+
+        public UserObject(int reg) {
+            fieldFromReg = reg;
+        }
 
         @Override
         public int hashCode() {
