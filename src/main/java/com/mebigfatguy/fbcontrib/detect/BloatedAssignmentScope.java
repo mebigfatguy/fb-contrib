@@ -1039,11 +1039,11 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             }
         }
 
-        public void markFieldAssociatedWrites(int fieldFromReg) {
+        public void markFieldAssociatedWrites(int sourceReg) {
             if (assocs != null) {
                 for (Map.Entry<UserObject, Integer> entry : assocs.entrySet()) {
                     UserObject uo = entry.getKey();
-                    if ((uo.fieldFromReg == fieldFromReg) || ((uo.caller instanceof Integer) && (((Integer) uo.caller).intValue() == fieldFromReg))) {
+                    if ((uo.registerSource == sourceReg) || ((uo.caller instanceof Integer) && (((Integer) uo.caller).intValue() == sourceReg))) {
                         Integer preWrittenFromField = entry.getValue();
                         if ((preWrittenFromField != null) && (stores != null)) {
                             stores.remove(preWrittenFromField);
@@ -1226,7 +1226,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     static class UserObject {
         Comparable<?> caller;
         boolean isRisky;
-        int fieldFromReg = -1;
+        int registerSource = -1;
 
         public UserObject(Comparable<?> callerObj, boolean risky) {
             caller = callerObj;
@@ -1238,12 +1238,12 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         }
 
         public UserObject(int reg) {
-            fieldFromReg = reg;
+            registerSource = reg;
         }
 
         @Override
         public int hashCode() {
-            return ((caller == null) ? 0 : caller.hashCode()) | (isRisky ? 1 : 0) | fieldFromReg;
+            return ((caller == null) ? 0 : caller.hashCode()) | (isRisky ? 1 : 0) | registerSource;
         }
 
         @Override
@@ -1265,7 +1265,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
                 }
             }
 
-            return (isRisky == that.isRisky) && (fieldFromReg == that.fieldFromReg);
+            return (isRisky == that.isRisky) && (registerSource == that.registerSource);
         }
 
         @Override
