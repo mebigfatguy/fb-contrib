@@ -139,7 +139,7 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
                         stack.resetForMethodEntry(this);
                         super.visitCode(obj);
                         for (ParmUsage pu : possibleParmRegs.values()) {
-                            if ((pu.returnPC >= 0) && (pu.alteredPC >= 0)) {
+                            if ((pu.returnPC >= 0) && (pu.alteredPC >= 0) && (pu.returnPC > pu.alteredPC)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.CFS_CONFUSING_FUNCTION_SEMANTICS.name(), NORMAL_PRIORITY).addClass(this)
                                         .addMethod(this).addSourceLine(this, pu.returnPC).addSourceLine(this, pu.alteredPC));
                             }
