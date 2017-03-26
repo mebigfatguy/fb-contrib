@@ -208,6 +208,9 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * represents a method parameter, when it was first altered, and when it was last returned
+     */
     static class ParmUsage {
         int returnPC = -1;
         int alteredPC = -1;
