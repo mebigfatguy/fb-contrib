@@ -170,10 +170,10 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
-                if (Values.SLASHED_JAVA_UTIL_MAP.equals(clsName) && "put".equals(methodName)
-                        && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)) {
+                if (Values.SLASHED_JAVA_UTIL_MAP.equals(clsName) && "put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)) {
                     bug = isEnum(1) && !isEnumCollection(2) && !alreadyReported(2);
-                } else if (Values.SLASHED_JAVA_UTIL_SET.equals(clsName) && "add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature)) {
+                } else if (Values.SLASHED_JAVA_UTIL_SET.equals(clsName) && "add".equals(methodName)
+                        && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature)) {
                     bug = isEnum(0) && !isEnumCollection(1) && !alreadyReported(1);
                 }
 
@@ -207,22 +207,24 @@ public class UseEnumCollections extends BytecodeScanningDetector {
      *             if the class can not be loaded
      */
     private boolean isEnum(int stackPos) throws ClassNotFoundException {
-        if (stack.getStackDepth() > stackPos) {
-            OpcodeStack.Item item = stack.getStackItem(stackPos);
-            if (!item.getSignature().startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
-                return false;
-            }
+        if (stack.getStackDepth() <= stackPos) {
+            return false;
+        }
 
-            JavaClass cls = item.getJavaClass();
-            if ((cls == null) || !cls.isEnum()) {
-                return false;
-            }
+        OpcodeStack.Item item = stack.getStackItem(stackPos);
+        if (!item.getSignature().startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+            return false;
+        }
 
-            // If the cls implements any interface, it's possible the collection
-            // is based on that interface, so ignore
-            if (cls.getInterfaces().length == 0) {
-                return true;
-            }
+        JavaClass cls = item.getJavaClass();
+        if ((cls == null) || !cls.isEnum()) {
+            return false;
+        }
+
+        // If the cls implements any interface, it's possible the collection
+        // is based on that interface, so ignore
+        if (cls.getInterfaces().length == 0) {
+            return true;
         }
 
         return false;
