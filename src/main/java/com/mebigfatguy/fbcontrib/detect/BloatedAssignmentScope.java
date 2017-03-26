@@ -516,8 +516,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             return null;
         }
 
-        UserObject uo = new UserObject(isRiskyMethodCall());
-        return uo;
+        return new UserObject(isRiskyMethodCall());
     }
 
     private UserObject sawGetField() {
@@ -526,8 +525,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             int reg = itm.getRegisterNumber();
 
             if (reg >= 0) {
-                UserObject uo = new UserObject(reg);
-                return uo;
+                return new UserObject(reg);
             }
         }
 
