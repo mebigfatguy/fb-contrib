@@ -361,6 +361,10 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
         return true;
     }
 
+    /**
+     * represents of code bytes and access flag for a method
+     *
+     */
     static class CodeInfo {
         private Code code;
         private int access;
