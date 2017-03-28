@@ -81,7 +81,8 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         }
     }
 
-    private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(new QMethod("entrySet", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_SET).toString()),
+    private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(
+            new QMethod("entrySet", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_SET).toString()),
             new QMethod("keySet", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_SET).toString()),
             new QMethod("values", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_COLLECTION).toString()));
 
@@ -91,7 +92,8 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         Map<QMethod, Integer> mm = new HashMap<>();
         mm.put(new QMethod("add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), Values.ONE);
         mm.put(new QMethod("addAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
-        mm.put(new QMethod("addAll", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION).withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.TWO);
+        mm.put(new QMethod("addAll", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION)
+                .withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.TWO);
         mm.put(new QMethod("clear", SignatureBuilder.SIG_VOID_TO_VOID), Values.ZERO);
         mm.put(new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT), Values.ONE);
         mm.put(new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
@@ -523,6 +525,9 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         }
     }
 
+    /**
+     * represents a simple loop
+     */
     static class Loop {
         public int loopStart;
         public int loopFinish;
@@ -550,6 +555,9 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         }
     }
 
+    /**
+     * represents aliases of some kind to some sort of a collection, or a related object like a keySet, or an iterator
+     */
     static class GroupPair {
         private final Set<Comparable<?>> groupMembers;
         private final String colClass;
