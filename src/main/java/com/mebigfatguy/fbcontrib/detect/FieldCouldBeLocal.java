@@ -477,6 +477,9 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * a visitor that determines what methods write to what fields
+     */
     private static class FieldModifier extends BytecodeScanningDetector {
 
         private final Map<String, Set<String>> methodCallChain = new HashMap<>();
