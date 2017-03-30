@@ -5638,7 +5638,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		<![CDATA[
     		<p>Looks for relatively large if blocks of code, where you unconditionally return from them, and then follow that with an unconditional 
     		return of a small block. This places the bulk of the logic to the right indentation-wise, making it more difficult to read than needed. 
-    		It would be better to invert the logic of the if block, and immediately return, allowing the bulk of the logic to be move to the left, 
+    		It would be better to invert the logic of the if block, and immediately return, allowing the bulk of the logic to be move to the left 
     		for easier reading.</p>
     		]]>
     	</Details>
@@ -5649,9 +5649,9 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<LongDescription>Class {0} auto wires the same object into two separate fields in a class hierarchy</LongDescription>
     	<Details>
     		<![CDATA[
-    		<p>this class has two fields in either itself or a parent class which autowire (without specialization, the same object
-    		for both fields. This is likely caused by a developer just not being aware that the field already is available for you use, 
-    		and just causes wasted space, and confusing code access the same object through two different pathways.</p>
+    		<p>this class has two fields in either itself or a parent class which autowire (without specialization), the same object
+    		for both fields. This is likely caused by a developer just not being aware that the field already is available for your use, 
+    		and just causes wasted space, and confusing code access to the same object through two different pathways.</p>
     		]]>
     	</Details>
     </BugPattern>
@@ -5662,7 +5662,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<Details>
     		<![CDATA[
     		<p>This method retrieves the value of a key from a ConcurrentHashMap, where the value is itself a collection. It checks this
-    		value for null, and if it is so, creates a new collection and places in the map. This may cause thread race conditions
+    		value for null, and if it is so, creates a new collection and places it in the map. This may cause thread race conditions
     		where two threads overwrite each other's values. You should be using
     		<code>
     			ConcurrentHashMap.putIfAbsent(K, V)
@@ -5677,9 +5677,9 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<LongDescription>Method {1} manually handles closing an auto-closeable resource</LongDescription>
     	<Details>
     		<![CDATA[[
-    		<p>This method allocates and uses a auto closeable resources. However it manually closes the resource in a finally block.
+    		<p>This method allocates and uses an auto closeable resources. However it manually closes the resource in a finally block.
     		While this is correct management, it doesn't rely on the Idiomatic way available to JDK 7 and above, and allows for possible
-    		subtle problems, and complicates the reading of code, by developers expecting the use of try-with-resources. 
+    		subtle problems, and complicates the reading of code by developers expecting the use of try-with-resources. 
     		</p>
     		<p>Switch to using try with resources, as:
     		<pre>
