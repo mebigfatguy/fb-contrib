@@ -296,6 +296,9 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
         }
     }
 
+    /**
+     * represents a loop, and where an add was found in it
+     */
     static class LoopInfo {
         private final int start;
         private final int end;
