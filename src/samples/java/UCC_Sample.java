@@ -56,8 +56,12 @@ public class UCC_Sample {
     }
 
     public void fpTwoDifferentFieldSources2(Holder h) {
-        h.ic.ts.add(Integer.valueOf(1));
-        h.lc.ts.add(Long.valueOf(1L));
+        for (int i = 0; i < 10; i++) {
+            h.ic.ts.add(Integer.valueOf(i));
+        }
+        for (int i = 0; i < 10; i++) {
+            h.lc.ts.add(Long.valueOf(i));
+        }
     }
 
     private File getPath() {
