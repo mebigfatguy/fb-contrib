@@ -55,6 +55,11 @@ public class UCC_Sample {
         b2.data.add(5);
     }
 
+    public void fpTwoDifferentFieldSources2(Holder h) {
+        h.ic.ts.add(Integer.valueOf(1));
+        h.lc.ts.add(Long.valueOf(1L));
+    }
+
     private File getPath() {
         return new File("c:\\temp");
     }
@@ -65,5 +70,14 @@ public class UCC_Sample {
 
     static class Bean2 {
         List<Integer> data;
+    }
+
+    static class Holder {
+        public Container<Integer> ic;
+        public Container<Long> lc;
+    }
+
+    static class Container<T> {
+        public Set<T> ts;
     }
 }
