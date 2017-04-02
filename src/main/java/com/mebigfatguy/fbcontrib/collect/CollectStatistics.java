@@ -71,7 +71,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
      * @param bugReporter
      *            unused, but required by reflection contract
      */
-    public CollectStatistics(@SuppressWarnings("unused") BugReporter bugReporter) {
+    public CollectStatistics(BugReporter bugReporter) {
         Statistics.getStatistics().clear();
     }
 
