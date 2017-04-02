@@ -287,6 +287,9 @@ public class HangingExecutors extends BytecodeScanningDetector {
         }
     }
 
+    /**
+     * represents a field that is a executor
+     */
     private static class AnnotationPriority {
 
         int priority;
