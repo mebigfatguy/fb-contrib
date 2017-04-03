@@ -282,6 +282,9 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
         return (bytecodeSet != null) && bytecodeSet.get(Constants.GOTO);
     }
 
+    /**
+     * represents an if block and what registers are stored inside the block
+     */
     static class IfBlock {
         int start;
         int end;
