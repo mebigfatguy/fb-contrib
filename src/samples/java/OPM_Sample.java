@@ -3,6 +3,8 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class OPM_Sample extends OPMSuper implements Comparator<String> {
 
@@ -35,12 +37,16 @@ public class OPM_Sample extends OPMSuper implements Comparator<String> {
     @RT
     public void fpHasRTAnnotation() {
     }
-    
+
     public void setFPFoo(int x) {
     }
-    
+
     public int getFPFoo() {
         return 0;
+    }
+
+    public void doIt() {
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(Writer::fpFlush, 1L, 1L, TimeUnit.SECONDS);
     }
 }
 
@@ -54,11 +60,19 @@ abstract class OPMSuper {
 }
 
 enum FPEnumValueOf {
-    
+
     What, Where;
-    
+
     public static void fpWithValueOf() {
         FPEnumValueOf f = FPEnumValueOf.valueOf(String.valueOf("What"));
     }
 }
 
+class Writer {
+    public static void fpFlush() {
+    }
+
+    public void close() {
+        fpFlush();
+    }
+}
