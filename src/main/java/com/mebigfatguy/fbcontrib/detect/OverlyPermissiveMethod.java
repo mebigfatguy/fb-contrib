@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantMethodHandle;
 import org.apache.bcel.classfile.ConstantMethodref;
@@ -168,9 +169,14 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                         ConstantPool pool = getConstantPool();
                         ConstantMethodHandle mh = bm.getFirstMethodHandle(pool);
                         if (mh != null) {
-                            String sig = ((ConstantUtf8) pool.getConstant(mh.getReferenceKind())).getBytes();
                             ConstantMethodref mr = (ConstantMethodref) pool.getConstant(mh.getReferenceIndex());
+                            ConstantClass cc = (ConstantClass) pool.getConstant(mr.getClassIndex());
+                            String clz = ((ConstantUtf8) pool.getConstant(cc.getNameIndex())).getBytes();
                             ConstantNameAndType nameAndType = (ConstantNameAndType) pool.getConstant(mr.getNameAndTypeIndex());
+                            String sig = ((ConstantUtf8) pool.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                            String name = ((ConstantUtf8) pool.getConstant(nameAndType.getNameIndex())).getBytes();
+                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clz, name, sig);
+                            mi.addCallingAccess(Constants.ACC_PUBLIC);
                         }
                     }
 
