@@ -18,21 +18,32 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.nio.ByteBuffer;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
+import org.apache.bcel.classfile.ConstantMethodHandle;
+import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Unknown;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -112,7 +123,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                 case INVOKEVIRTUAL:
                 case INVOKEINTERFACE:
                 case INVOKESTATIC:
-                case INVOKESPECIAL:
+                case INVOKESPECIAL: {
                     String calledClass = getClassConstantOperand();
                     String sig = getSigConstantOperand();
                     MethodInfo mi = Statistics.getStatistics().getMethodStatistics(calledClass, getNameConstantOperand(), sig);
@@ -145,6 +156,24 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                             }
                         }
                     }
+                }
+                break;
+
+                case INVOKEDYNAMIC:
+                    // smells like a hack. Not sure how to do this better as bcel and findbugs are older than dirt
+                    ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
+
+                    BootstrapMethod bm = getBootstrapMethod(id.getBootstrapMethodAttrIndex());
+                    if (bm != null) {
+                        ConstantPool pool = getConstantPool();
+                        ConstantMethodHandle mh = bm.getFirstMethodHandle(pool);
+                        if (mh != null) {
+                            String sig = ((ConstantUtf8) pool.getConstant(mh.getReferenceKind())).getBytes();
+                            ConstantMethodref mr = (ConstantMethodref) pool.getConstant(mh.getReferenceIndex());
+                            ConstantNameAndType nameAndType = (ConstantNameAndType) pool.getConstant(mr.getNameAndTypeIndex());
+                        }
+                    }
+
                 break;
 
                 default:
@@ -320,5 +349,74 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             return "package private";
         }
         return "private";
+    }
+
+    private BootstrapMethod getBootstrapMethod(int bootstrapIndex) {
+        for (Attribute a : cls.getAttributes()) {
+            if ("BootstrapMethods".equals(a.getName())) {
+                if (a instanceof Unknown) {
+                    Unknown ua = (Unknown) a;
+                    byte[] data = ua.getBytes();
+                    ByteBuffer buffer = ByteBuffer.wrap(data, 0, data.length);
+                    int numMethods = buffer.getShort();
+                    if (bootstrapIndex >= numMethods) {
+                        return null;
+                    }
+
+                    for (int i = 0; i < numMethods; i++) {
+                        BootstrapMethod m = new BootstrapMethod(buffer);
+                        if (i == bootstrapIndex) {
+                            return m;
+                        }
+                    }
+                } else {
+                    throw new RuntimeException("Incompatible bcel version");
+                }
+                return null;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * represents a bootstrap method
+     */
+    class BootstrapMethod {
+        int bootstrapMethodRef;
+        int[] args;
+
+        public BootstrapMethod(ByteBuffer buffer) {
+            bootstrapMethodRef = buffer.getShort();
+            int numBootstrapArgs = buffer.getShort();
+            args = new int[numBootstrapArgs];
+            for (int a = 0; a < numBootstrapArgs; a++) {
+                args[a] = buffer.getShort();
+            }
+        }
+
+        public int getBootstrapMethodRef() {
+            return bootstrapMethodRef;
+        }
+
+        public int[] getArgs() {
+            return args;
+        }
+
+        public ConstantMethodHandle getFirstMethodHandle(ConstantPool pool) {
+            for (int arg : args) {
+                Constant c = pool.getConstant(arg);
+                if (c instanceof ConstantMethodHandle) {
+                    return ((ConstantMethodHandle) c);
+                }
+            }
+
+            return null;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
     }
 }
