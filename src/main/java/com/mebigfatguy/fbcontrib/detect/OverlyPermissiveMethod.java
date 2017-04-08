@@ -388,7 +388,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     /**
      * represents a bootstrap method
      */
-    class BootstrapMethod {
+    static class BootstrapMethod {
         int bootstrapMethodRef;
         int[] args;
 
