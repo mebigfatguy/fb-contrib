@@ -30,9 +30,9 @@ public class OI_Sample {
         return o.orElseGet(() -> 0);
     }
 
-    public void useWrongOptional(Optional<Double> d) {
+    public Optional<Double> useWrongOptional(Optional<Double> d) {
 
-        double dd = d.orElse(0.0);
+        return Optional.of(3.14);
     }
 
     public String fpDelayedOK(Optional<String> o, String a, String b) {

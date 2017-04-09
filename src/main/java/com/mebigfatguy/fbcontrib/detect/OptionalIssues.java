@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class OptionalIssues extends BytecodeScanningDetector {
 
-    private Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("java/lang/Integer", "java/lang/Long", "java/lang/Double");
+    private Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("Ljava/lang/Integer;", "Ljava/lang/Long;", "Ljava/lang/Double;");
 
     private static final FQMethod OPTIONAL_OR_ELSE_METHOD = new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
     private static final FQMethod OPTIONAL_OR_ELSE_GET_METHOD = new FQMethod("java/util/Optional", "orElseGet",
@@ -173,7 +173,20 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 case INVOKESTATIC:
                 case INVOKEINTERFACE:
                 case INVOKESPECIAL:
-                    curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                    String clsName = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
+                    curCalledMethod = new FQMethod(clsName, methodName, getSigConstantOperand());
+
+                    if ("java/util/Optional".equals(clsName) && "of".equals(methodName)) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            String itmSig = itm.getSignature();
+                            if (BOXED_OPTIONAL_TYPES.contains(itmSig)) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(), LOW_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                            }
+                        }
+                    }
                 break;
 
                 case INVOKEVIRTUAL:
@@ -210,18 +223,6 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         }
                     } else if (OPTIONAL_GET_METHOD.equals(curCalledMethod)) {
                         sawPlainOptional = Boolean.TRUE;
-                    }
-                break;
-
-                case CHECKCAST:
-                    if (BOXED_OPTIONAL_TYPES.contains(getClassConstantOperand())) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            if (itm.getUserValue() != null) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(), LOW_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
-                            }
-                        }
                     }
                 break;
             }
