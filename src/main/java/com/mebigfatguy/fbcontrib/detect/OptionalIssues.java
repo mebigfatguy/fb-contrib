@@ -41,11 +41,13 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
  * looks for various issues around use of java.util.Optional
  */
+@CustomUserValue
 public class OptionalIssues extends BytecodeScanningDetector {
 
     private Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("java/lang/Integer", "java/lang/Long", "java/lang/Double");
