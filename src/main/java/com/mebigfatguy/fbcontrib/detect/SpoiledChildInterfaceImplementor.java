@@ -20,8 +20,6 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
@@ -128,22 +126,6 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     @Override
     public void report() {
         // Unused, requirement of the Detector interface
-    }
-
-    /**
-     * removes all methods from the map that are synthetic
-     *
-     * @param methods
-     *            the methods to check
-     */
-    private void removeSyntheticMethods(Map<QMethod, Boolean> methods) {
-        Iterator<Map.Entry<QMethod, Boolean>> it = methods.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry<QMethod, Boolean> entry = it.next();
-            if (entry.getValue().booleanValue()) {
-                it.remove();
-            }
-        }
     }
 
     /**
