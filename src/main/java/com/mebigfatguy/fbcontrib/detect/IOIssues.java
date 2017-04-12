@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -73,6 +74,7 @@ public class IOIssues extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
+    private int clsVersion;
 
     /**
      * constructs a IOI detector given the reporter to report bugs on
@@ -102,6 +104,7 @@ public class IOIssues extends BytecodeScanningDetector {
 
         try {
             stack = new OpcodeStack();
+            clsVersion = clsContext.getJavaClass().getMajor();
             super.visitClassContext(clsContext);
         } finally {
             stack = null;
@@ -124,7 +127,8 @@ public class IOIssues extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for common api copy utilities to copy streams where the passed in Stream is Buffered. Since these libraries already handle
      * the buffering, you are just slowing them down by the extra copy. Also look for copies where the source is a Reader, as this is just wasteful. Can't wrap
-     * my head around whether a Writer output is sometime valid, might be, so for now ignoring that.
+     * my head around whether a Writer output is sometime valid, might be, so for now ignoring that. Also reports uses of java.io.FileInputStream and
+     * java.io.FileOutputStream on java >= 1.7 as those classes have finalize methods that junk up gc.
      *
      * @param seen
      *            the currently parsed opcode
@@ -164,6 +168,11 @@ public class IOIssues extends BytecodeScanningDetector {
             String clsName = getDottedClassConstantOperand();
             if (BUFFERED_CLASSES.contains(clsName)) {
                 return IOIUserValue.BUFFER;
+            } else if ("java.io.FileInputStream".equals(clsName) || "java.io.FileOutputStream".equals(clsName)) {
+                if (clsVersion >= Constants.MAJOR_1_7) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.IOI_USE_OF_FILE_STREAM_CONSTRUCTORS.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
+                }
             } else if (readerClass != null) {
                 JavaClass cls = Repository.lookupClass(clsName);
                 if (cls.instanceOf(readerClass)) {

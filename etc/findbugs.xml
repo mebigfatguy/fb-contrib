@@ -295,7 +295,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.SuboptimalExpressionOrder" speed="fast" reports="SEO_SUBOPTIMAL_EXPRESSION_ORDER"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.IOIssues" speed="fast" reports="IOI_DOUBLE_BUFFER_COPY,IOI_COPY_WITH_READER"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.IOIssues" speed="fast" reports="IOI_DOUBLE_BUFFER_COPY,IOI_COPY_WITH_READER,IOI_USE_OF_FILE_STREAM_CONSTRUCTORS"/>
         
     <Detector class="com.mebigfatguy.fbcontrib.detect.DubiousMapCollection" speed="fast" reports="DMC_DUBIOUS_MAP_COLLECTION"/>
     
@@ -581,6 +581,7 @@
 	<BugPattern abbrev="SEO" type="SEO_SUBOPTIMAL_EXPRESSION_ORDER" category="PERFORMANCE"/>
 	<BugPattern abbrev="IOI" type="IOI_DOUBLE_BUFFER_COPY" category="PERFORMANCE"/>
 	<BugPattern abbrev="IOI" type="IOI_COPY_WITH_READER" category="PERFORMANCE"/>
+	<BugPattern abbrev="IOI" type="IOI_USE_OF_FILE_STREAM_CONSTRUCTORS"/>
 	<BugPattern abbrev="DMC" type="DMC_DUBIOUS_MAP_COLLECTION" category="CORRECTNESS"/>
 	<BugPattern abbrev="BL" type="BL_BURYING_LOGIC" category="STYLE"/>
 	<BugPattern abbrev="WI" type="WI_DUPLICATE_WIRED_TYPES" category="CORRECTNESS"/>
