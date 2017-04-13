@@ -36,7 +36,12 @@ public class ImmatureClass extends BytecodeScanningDetector {
         NOT_NEEDED, UNKNOWN, NEEDED
     };
 
+    enum FieldStatus {
+        NONE, SAW_INSTANCE, REPORTED
+    }
+
     private BugReporter bugReporter;
+    private FieldStatus fieldStatus = FieldStatus.NONE;
 
     public ImmatureClass(BugReporter reporter) {
         bugReporter = reporter;
@@ -51,6 +56,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
+        fieldStatus = FieldStatus.NONE;
 
         if (cls.getPackageName().isEmpty()) {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_PACKAGE.name(), LOW_PRIORITY).addClass(cls));
@@ -110,6 +116,30 @@ public class ImmatureClass extends BytecodeScanningDetector {
         }
 
         super.visitClassContext(classContext);
+    }
+
+    @Override
+    public void visitField(Field f) {
+        if (!f.isSynthetic() && !f.getName().contains("$")) {
+            switch (fieldStatus) {
+                case NONE:
+                    if (!f.isStatic()) {
+                        fieldStatus = FieldStatus.SAW_INSTANCE;
+                    }
+                break;
+
+                case SAW_INSTANCE:
+                    if (f.isStatic()) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.IMC_IMMATURE_CLASS_WRONG_FIELD_ORDER.name(), LOW_PRIORITY).addClass(this).addField(this));
+                        fieldStatus = FieldStatus.REPORTED;
+                    }
+                break;
+
+                case REPORTED:
+                break;
+            }
+        }
     }
 
     /**

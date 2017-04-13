@@ -1,4 +1,5 @@
 package ex;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -17,6 +18,8 @@ public class IMC_Sample {
 
     private String reportMe;
 
+    private static final int OUT_OF_PLACE_STATIC = 0;
+
     @SuperSecret
     class FPClassIMC {
         private String dontReportMe;
@@ -26,7 +29,7 @@ public class IMC_Sample {
         @SuperSecret
         private String dontReportMe;
     }
-    
+
     public void psf(File f) {
         try (InputStream is = new FileInputStream(f)) {
             is.read();

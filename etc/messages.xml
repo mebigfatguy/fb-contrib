@@ -5415,6 +5415,20 @@ for (Person p : people) {
     	</Details>
     </BugPattern>
     
+    <BugPattern type="IMC_IMMATURE_CLASS_WRONG_FIELD_ORDER">
+    	<ShortDescription>Class orders instance fields before static fields</ShortDescription>
+    	<LongDescription>Class {0} orders instance fields before static fields</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This class adds fields to the class in an order that is confusing, and not expected by 
+    		other developers. The standard is for static fields to be listed first, followed by instance 
+    		fields. when fields are listed out of order, developers may make assumptions about their
+    		behaviour that is incorrect and lead to bugs.</p>
+    		]]> 
+    	</Details>
+    </BugPattern>
+    
+    
     <BugPattern type="JXI_GET_ENDPOINT_CONSUMES_CONTENT">
     	<ShortDescription>JAX-RS Method implements a GET request but consumes input</ShortDescription>
     	<LongDescription>JAX-RS Method {1} implements a GET request but consumes input</LongDescription>
