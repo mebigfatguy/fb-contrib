@@ -91,9 +91,6 @@ function toggleBlock(divId, imgId)
         Detectors added in v7.0.0<br/>
         <div id="v7_0_0" style="display:block;">
             <ul>
-            	<li><b>[UTWR] Use Try With Resources</b><br/>
-            	Looks for try/finally blocks that manage resources, without using try-with-resources.
-            	</li>
             	<li><b>[SSCU] Suspicious Shaded Class Use</b><br/>
             	Looks for use of classes that have been shaded into 3rdparty jars, rather than using the 
             	real class, from the real jar.
