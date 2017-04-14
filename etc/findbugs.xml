@@ -77,7 +77,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.NeedlessAutoboxing" speed="fast"
 		reports="NAB_NEEDLESS_AUTOBOXING_CTOR,NAB_NEEDLESS_BOXING_STRING_CTOR,NAB_NEEDLESS_AUTOBOXING_VALUEOF,NAB_NEEDLESS_BOXING_PARSE,NAB_NEEDLESS_BOXING_VALUEOF,NAB_NEEDLESS_BOX_TO_UNBOX,NAB_NEEDLESS_BOX_TO_CAST,NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryStoreBeforeReturn" speed="fast" reports="USBR_UNNECESSARY_STORE_BEFORE_RETURN" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryStoreBeforeReturn" speed="fast" reports="USBR_UNNECESSARY_STORE_BEFORE_RETURN,UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CopiedOverriddenMethod" speed="fast" reports="COM_COPIED_OVERRIDDEN_METHOD,COM_PARENT_DELEGATED_CALL" />
 
@@ -314,6 +314,8 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.UnsynchronizedSingletonFieldWrites" speed="fast" reports="USFW_UNSYNCHRONIZED_SINGLETON_FIELD_WRITES"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.OptionalIssues" speed="fast" reports="OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION,OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION,OI_OPTIONAL_ISSUES_CHECKING_REFERENCE,OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryApiConversion" speed="fast" reports="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT"/>
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -594,4 +596,6 @@
 	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_CHECKING_REFERENCE" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" category="CORRECTNESS" experimental="true"/>
 </FindbugsPlugin>

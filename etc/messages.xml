@@ -1685,6 +1685,17 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 		</Details>
 	</Detector>
 	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryApiConversion">
+		<Details>
+			<![CDATA[
+			<p>Looks for code that appears to be using two forms of similar apis, an older one, and a new one.
+			It finds code that creates newer api objects by first instantiating older api objects, and converting
+			them into the new form. It is simpler just to create the new object directly.</p>
+			<p>It is a fast detector</p>
+			]]>
+		</Details>
+	</Detector>
+	
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5806,6 +5817,32 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT">
+    	<ShortDescription>Method constructs a Date object, merely to convert it to an Instant object</ShortDescription>
+    	<LongDescription>Method {1} constructs a Date object, merely to convert it to an Instant object</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method creates a java.time.Instant object by first creating a java.util.Date object, and then calling
+    		toInstant() on it. It is simpler to just construct the Instant object directly, say by using
+    		{@code Instant.now()} to get the current time, of by using {@code Instant.parse(CharSequence)} to convert a String.
+    		</p>
+    		]]>
+    	</Details>
+    </BugPattern>
+    
+    <BugPattern type="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH">
+    	<ShortDescription>Method constructs a File object, merely to convert it to a Path object</ShortDescription>
+    	<LongDescription>Method {1} constructs a File object, merely to convert it to a Path object</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method creates a java.nio.file.Path object by first creating a java.io.File object, and then calling
+    		toPath() on it. It is simpler to just construct the Path object directly, say by using
+    		{@code Path.get(String...)}.
+    		</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -5948,4 +5985,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="SSCU">Suspicious Shaded Class Use</BugCode>
 	<BugCode abbrev="USFW">Unsynchronized Singleton Field Writes</BugCode>
 	<BugCode abbrev="OI">Optional Issues</BugCode>
+	<BugCode abbrev="UAC">Unnecessary Api Conversion</BugCode>
 </MessageCollection>
