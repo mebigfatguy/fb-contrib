@@ -33,6 +33,10 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
+/**
+ * looks for code that appears to be using two forms of similar apis, an older one, and a new one. It finds code that creates newer api objects by first
+ * instantiating older api objects, and converting them into the new form. It is simpler just to create the new object directly.
+ */
 public class UnnecessaryApiConversion extends BytecodeScanningDetector {
 
     private static Map<FQMethod, LegacyInfo> conversions = new HashMap<>();
