@@ -233,6 +233,9 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
         return removedClass;
     }
 
+    /**
+     * finds class dependency loops in a directed graph
+     */
     static class LoopFinder {
 
         private Map<String, Set<String>> dGraph = null;
