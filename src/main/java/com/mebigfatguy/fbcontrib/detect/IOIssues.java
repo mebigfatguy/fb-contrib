@@ -170,6 +170,16 @@ public class IOIssues extends BytecodeScanningDetector {
                 return IOIUserValue.BUFFER;
             } else if ("java.io.FileInputStream".equals(clsName) || "java.io.FileOutputStream".equals(clsName)) {
                 if (clsVersion >= Constants.MAJOR_1_7) {
+                    if (!getMethod().isStatic()) {
+                        String sig = getSigConstantOperand();
+                        int numParms = SignatureUtils.getNumParameters(sig);
+                        if (stack.getStackDepth() > numParms) {
+                            OpcodeStack.Item itm = stack.getStackItem(numParms);
+                            if (itm.getRegisterNumber() == 0) {
+                                return null;
+                            }
+                        }
+                    }
                     bugReporter.reportBug(new BugInstance(this, BugType.IOI_USE_OF_FILE_STREAM_CONSTRUCTORS.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this));
                 }
