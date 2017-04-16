@@ -44,4 +44,12 @@ public class IOI_Sample {
             }
         }
     }
+
+    class FPBofoStream extends FileInputStream {
+
+        public FPBofoStream(File f) throws IOException {
+            super(f);
+        }
+
+    }
 }
