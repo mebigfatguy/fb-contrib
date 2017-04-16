@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class OptionalIssues extends BytecodeScanningDetector {
 
-    private Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("Ljava/lang/Integer;", "Ljava/lang/Long;", "Ljava/lang/Double;");
+    private static Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("Ljava/lang/Integer;", "Ljava/lang/Long;", "Ljava/lang/Double;");
 
     private static final FQMethod OPTIONAL_OR_ELSE_METHOD = new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
     private static final FQMethod OPTIONAL_OR_ELSE_GET_METHOD = new FQMethod("java/util/Optional", "orElseGet",

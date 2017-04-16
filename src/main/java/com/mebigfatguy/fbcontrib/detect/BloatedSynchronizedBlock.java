@@ -45,8 +45,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * variables, and not member variables, or this.
  */
 public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
-    private final BugReporter bugReporter;
     private static final String BSB_MIN_SAFE_CODE_SIZE = "fb-contrib.bsb.minsize";
+
+    private final BugReporter bugReporter;
     private OpcodeStack stack;
     private BitSet unsafeAliases;
     private Map<Integer, Integer> branchInfo;

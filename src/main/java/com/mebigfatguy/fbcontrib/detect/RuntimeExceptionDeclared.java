@@ -42,7 +42,6 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * code, and not propagated.
  */
 public class RuntimeExceptionDeclared extends PreorderVisitor implements Detector {
-    private final BugReporter bugReporter;
     private static JavaClass runtimeExceptionClass;
 
     static {
@@ -53,6 +52,7 @@ public class RuntimeExceptionDeclared extends PreorderVisitor implements Detecto
         }
     }
 
+    private final BugReporter bugReporter;
     private final Set<String> runtimeExceptions = new HashSet<>();
 
     /**

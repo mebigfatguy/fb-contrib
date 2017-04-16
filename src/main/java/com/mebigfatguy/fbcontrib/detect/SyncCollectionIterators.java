@@ -46,7 +46,6 @@ import edu.umd.cs.findbugs.ba.XField;
  * unsafe. When iterators are to be used, synchronization should be done manually.
  */
 public class SyncCollectionIterators extends BytecodeScanningDetector {
-    private final BugReporter bugReporter;
     private static final Set<String> synchCollectionNames = UnmodifiableSet.create("synchronizedSet", "synchronizedMap", "synchronizedList",
             "synchronizedSortedSet", "synchronizedSortedMap");
 
@@ -56,6 +55,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
         SEEN_NOTHING, SEEN_SYNC, SEEN_LOAD
     }
 
+    private final BugReporter bugReporter;
     private State state;
     private Set<String> memberCollections;
     private BitSet localCollections;

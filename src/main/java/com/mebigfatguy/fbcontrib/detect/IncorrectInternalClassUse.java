@@ -38,7 +38,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * looks for classes that use objects from com.sun.xxx packages. As these are internal to sun and subject to change, this should not be done.
  */
 public class IncorrectInternalClassUse implements Detector {
-    private final BugReporter bugReporter;
 
     private static final Set<String> internalPackages = UnmodifiableSet.create(
         // @formatter:off
@@ -76,6 +75,8 @@ public class IncorrectInternalClassUse implements Detector {
         "org/apache/xalan/extensions"
         // @formatter:on
     );
+
+    private final BugReporter bugReporter;
 
     /**
      * constructs a IICU detector given the reporter to report bugs on
