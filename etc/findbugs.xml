@@ -311,7 +311,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.OptionalIssues" speed="fast" reports="OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION,OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION,OI_OPTIONAL_ISSUES_CHECKING_REFERENCE,OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryApiConversion" speed="fast" reports="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryApiConversion" speed="fast" reports="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT,UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH"/>
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
