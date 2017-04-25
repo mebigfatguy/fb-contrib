@@ -261,6 +261,10 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
         if (invokeCount == 1) {
             FQMethod method = activeStackOps.getLast().getMethod();
+            if (method == null) {
+                return false;
+            }
+
             if ("valueOf".equals(method.getMethodName()) && method.getClassName().startsWith("java/lang/")) {
                 return true;
             }
