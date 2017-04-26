@@ -20,11 +20,12 @@
 package com.mebigfatguy.fbcontrib.debug;
 
 import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 
 public final class Debug {
 
@@ -33,7 +34,7 @@ public final class Debug {
     static {
         try {
             out = new PrintStream(
-                    new BufferedOutputStream(new FileOutputStream(new File(System.getProperty("java.io.tmpdir"), "fb-contrib.txt").getPath(), true)), false,
+                    new BufferedOutputStream(Files.newOutputStream(Paths.get(System.getProperty("java.io.tmpdir"), "fb-contrib.txt"), StandardOpenOption.APPEND)), false,
                     StandardCharsets.UTF_8.name());
             out.println("===== fb-contrib console =====");
         } catch (IOException e) {

@@ -446,20 +446,21 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         }
 
         Comparable<?> groupElement = getGroupElement(itm);
-        if (groupElement != null) {
-            int numGroups = collectionGroups.size();
-            for (int i = 0; i < numGroups; i++) {
-                GroupPair groupPair = collectionGroups.get(i);
-                if (groupPair.containsMember(groupElement)) {
-                    return i;
-                }
+        if (groupElement == null) {
+            return -1;
+        }
+        int numGroups = collectionGroups.size();
+        for (int i = 0; i < numGroups; i++) {
+            GroupPair groupPair = collectionGroups.get(i);
+            if (groupPair.containsMember(groupElement)) {
+                return i;
             }
+        }
 
-            if (addIfNotFound) {
-                GroupPair groupPair = new GroupPair(groupElement, itm.getSignature());
-                collectionGroups.add(groupPair);
-                return collectionGroups.size() - 1;
-            }
+        if (addIfNotFound) {
+            GroupPair groupPair = new GroupPair(groupElement, itm.getSignature());
+            collectionGroups.add(groupPair);
+            return collectionGroups.size() - 1;
         }
 
         return -1;
