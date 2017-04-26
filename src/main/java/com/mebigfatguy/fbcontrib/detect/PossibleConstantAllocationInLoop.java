@@ -62,6 +62,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
     private Map<Integer, Integer> storedAllocations;
     private int nextAllocationNumber;
     private List<SwitchInfo> switchInfos;
+    private int nextTernaryTarget;
 
     public PossibleConstantAllocationInLoop(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -89,6 +90,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
         allocations.clear();
         storedAllocations.clear();
         nextAllocationNumber = 1;
+        nextTernaryTarget = -1;
         super.visitCode(obj);
 
         for (AllocationInfo info : allocations.values()) {
@@ -106,9 +108,30 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
         Integer sawAllocationNumber = null;
 
         try {
+            if ((nextTernaryTarget == getPC()) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                sawAllocationNumber = (Integer) itm.getUserValue();
+                sawAllocation = sawAllocationNumber != null;
+                nextTernaryTarget = -1;
+            }
+
             stack.precomputation(this);
 
+            if ((sawAllocation) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(sawAllocationNumber);
+                sawAllocationNumber = null;
+                sawAllocation = false;
+            }
+
             switch (seen) {
+                case GOTO:
+                case GOTO_W:
+                    if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
+                        // ternary
+                        nextTernaryTarget = getBranchTarget();
+                    }
+                    // $FALL-THROUGH$
                 case IFEQ:
                 case IFNE:
                 case IFLT:
@@ -125,11 +148,10 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                 case IF_ACMPNE:
                 case IFNULL:
                 case IFNONNULL:
-                case GOTO:
-                case GOTO_W:
+
                     processBranch();
                 break;
-                    
+
                 case INVOKESPECIAL:
                     if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())) {
                         String clsName = getClassConstantOperand();
