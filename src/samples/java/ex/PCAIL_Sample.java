@@ -1,8 +1,11 @@
 package ex;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Deque;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -153,6 +156,16 @@ public class PCAIL_Sample {
             foo.setAny(bar.getAny());
             fooList.add(foo);
         }
+    }
+    
+    public void fpLambdaWithTernary(Deque<String> stack, Map<String, List<String>> details) {
+        while (!stack.isEmpty()) {
+            String s = stack.pop();
+            List<String> detail = details.get(s);
+            detail = detail != null ? detail : new ArrayList<String>();
+            Collections.reverse(detail);
+            detail.forEach(stack::push); 
+        } 
     }
 
     private PCAIL_Sample builder() {
