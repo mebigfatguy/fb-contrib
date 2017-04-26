@@ -223,11 +223,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
 
         // If the cls implements any interface, it's possible the collection
         // is based on that interface, so ignore
-        if (cls.getInterfaces().length == 0) {
-            return true;
-        }
-
-        return false;
+        return cls.getInterfaces().length == 0;
     }
 
     /**
