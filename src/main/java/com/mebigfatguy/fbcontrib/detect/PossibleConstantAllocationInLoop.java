@@ -129,7 +129,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                 case GOTO_W:
                     processBranch();
                 break;
-
+                    
                 case INVOKESPECIAL:
                     if (Values.CONSTRUCTOR.equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())) {
                         String clsName = getClassConstantOperand();
@@ -144,6 +144,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                 case INVOKEINTERFACE:
                 case INVOKEVIRTUAL:
                 case INVOKESTATIC:
+                case INVOKEDYNAMIC:
                     String signature = getSigConstantOperand();
                     int numParameters = SignatureUtils.getNumParameters(signature);
                     if (stack.getStackDepth() >= numParameters) {
@@ -154,7 +155,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                                 allocations.remove(allocation);
                             }
                         }
-                        if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL))
+                        if (((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEDYNAMIC))
                                 // ignore possible method chaining
                                 && (stack.getStackDepth() > numParameters)) {
                             OpcodeStack.Item item = stack.getStackItem(numParameters);
