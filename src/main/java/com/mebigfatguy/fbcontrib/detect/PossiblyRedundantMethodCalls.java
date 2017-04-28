@@ -34,9 +34,11 @@ import org.apache.bcel.classfile.LineNumberTable;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -150,6 +152,27 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
             }
         }
     }
+
+    private static final Set<FQMethod> commonMethods = UnmodifiableSet.create(
+    // @formatter:off
+        new FQMethod("java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"),
+        new FQMethod("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;"),
+        new FQMethod("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;"),
+        new FQMethod("java/lang/Short", "valueOf", "(S)Ljava/lang/Short;"),
+        new FQMethod("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;"),
+        new FQMethod("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"),
+        new FQMethod("java/lang/Float", "valueOf", "(F)Ljava/lang/Float;"),
+        new FQMethod("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"),
+        new FQMethod("java/lang/Boolean", "booleanValue", "()Z"),
+        new FQMethod("java/lang/Byte", "byteValue", "()B"),
+        new FQMethod("java/lang/Character", "charValue", "()C"),
+        new FQMethod("java/lang/Short", "shortValue", "()S"),
+        new FQMethod("java/lang/Integer", "intValue", "()I"),
+        new FQMethod("java/lang/Long", "longValue", "()J"),
+        new FQMethod("java/lang/Float", "floatValue", "()F"),
+        new FQMethod("java/lang/Double", "doubleValue", "()D")
+    // @formatter:on
+    );
 
     private final BugReporter bugReporter;
     private OpcodeStack stack = null;
@@ -347,7 +370,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
                     if (mc != null) {
                         if (!signature.endsWith(Values.SIG_VOID) && methodName.equals(mc.getName()) && signature.equals(mc.getSignature())
-                                && !isRiskyName(className, methodName)) {
+                                && !isRiskyName(className, methodName)
+                                && !commonMethods.contains(new FQMethod(getClassConstantOperand(), methodName, signature))) {
                             Object[] parms = mc.getParms();
                             if (Arrays.equals(parms, parmConstants)) {
                                 int ln = getLineNumber(pc);

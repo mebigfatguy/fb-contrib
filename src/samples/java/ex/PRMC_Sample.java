@@ -1,4 +1,5 @@
 package ex;
+
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -140,7 +141,7 @@ public class PRMC_Sample {
             System.out.println(foo.toString());
         }
     }
-    
+
     public void fpWithGenericReturn() {
         Set<String> s = ImmutableSet.of();
         Set<Integer> i = ImmutableSet.of();
@@ -148,6 +149,13 @@ public class PRMC_Sample {
 
     void willThrow() {
         throw new RuntimeException("kaboom!");
+    }
+
+    public void fpIgnoreCommonBoxing(Integer i) {
+        setTwo(i, i);
+    }
+
+    public void setTwo(int i, int j) {
     }
 
     public void setValue(int i) {
