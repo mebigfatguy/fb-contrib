@@ -153,9 +153,13 @@ public class PRMC_Sample {
 
     public void fpIgnoreCommonBoxing(Integer i) {
         setTwo(i, i);
+        setTwo(3.1, 3.1);
     }
 
     public void setTwo(int i, int j) {
+    }
+
+    public void setTwo(Double d, Double e) {
     }
 
     public void setValue(int i) {
