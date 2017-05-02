@@ -75,8 +75,21 @@ public class SignatureUtilsTest {
     }
 
     @Test
+    public void shouldGetParameterSlotsAndSignaturesForWonkyEclipseMethod() {
+        Map<Integer, String> expected = new HashMap<>(2);
+        expected.put(0, "I");
+        expected.put(1, "Ljava/util/List;");
+        assertEquals(SignatureUtils.getParameterSlotAndSignatures(true, "add(I!+Ljava/util/List;)Ljava/lang/Object;"), expected);
+    }
+
+    @Test
     public void shouldGetParameterSignatures() {
         assertEquals(SignatureUtils.getParameterSignatures("add(ILjava/lang/Object;)Ljava/lang/Object;"), Arrays.asList("I", "Ljava/lang/Object;"));
+    }
+
+    @Test
+    public void shouldGetParameterSignaturesWithWonkyEclipseMethod() {
+        assertEquals(SignatureUtils.getParameterSignatures("add(I!+Ljava/util/List;)Ljava/lang/Object;"), Arrays.asList("I", "Ljava/util/List;"));
     }
 
     @Test

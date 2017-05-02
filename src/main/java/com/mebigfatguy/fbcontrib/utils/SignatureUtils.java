@@ -208,6 +208,7 @@ public final class SignatureUtils {
                     i = semiPos;
                 } else if (isWonkyEclipseSignature(methodSignature, i)) {
                     sigStart++;
+                    continue;
                 } else {
                     parmSignature = methodSignature.substring(sigStart, i + 1);
                     slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
@@ -244,9 +245,7 @@ public final class SignatureUtils {
                     int semiPos = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
                     parmSignatures.add(methodSignature.substring(sigStart, semiPos + 1));
                     i = semiPos;
-                } else if (isWonkyEclipseSignature(methodSignature, i)) {
-                    sigStart++;
-                } else {
+                } else if (!isWonkyEclipseSignature(methodSignature, i)) {
                     parmSignatures.add(methodSignature.substring(sigStart, i + 1));
                 }
                 sigStart = i + 1;
