@@ -169,7 +169,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             lastNullCheckedReg = -1;
         }
 
-        if ((((bugPC >= 0) && (seen == INVOKEVIRTUAL)) || (seen == INVOKEINTERFACE)) && "addSuppressed".equals(getNameConstantOperand())
+        if ((bugPC >= 0) && ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && "addSuppressed".equals(getNameConstantOperand())
                 && SignatureBuilder.SIG_THROWABLE_TO_VOID.equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).instanceOf(throwableClass)) {
             closePC = -1;
