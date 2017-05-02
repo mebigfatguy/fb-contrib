@@ -59,6 +59,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     private int lastNullCheckedReg;
     private int bugPC;
     private int closePC;
+    private int suppressedPC;
     private State state;
 
     public UseTryWithResources(BugReporter bugReporter) {
@@ -105,12 +106,23 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             lastNullCheckedReg = -1;
             bugPC = -1;
             closePC = -1;
+            suppressedPC = -1;
             super.visitCode(obj);
+
+            if ((closePC >= 0) && (suppressedPC < 0)) {
+                bugReporter.reportBug(new BugInstance(this, BugType.UTWR_USE_TRY_WITH_RESOURCES.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        .addSourceLine(this, bugPC));
+            }
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
+
+        if (suppressedPC >= 0) {
+            return;
+        }
+
         try {
             int pc = getPC();
             Iterator<TryBlock> it = finallyBlocks.values().iterator();
@@ -125,13 +137,6 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                 if (lastGotoPC > -1) {
                     tb.setHandlerEndPC(lastGotoPC);
                 }
-            }
-
-            if ((closePC >= 0) && (closePC <= pc)) {
-                bugReporter.reportBug(new BugInstance(this, BugType.UTWR_USE_TRY_WITH_RESOURCES.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this, bugPC));
-                closePC = -1;
-                bugPC = -1;
             }
 
             if (OpcodeUtils.isAStore(seen)) {
@@ -174,6 +179,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                 && Repository.lookupClass(getClassConstantOperand()).instanceOf(throwableClass)) {
             closePC = -1;
             bugPC = -1;
+            suppressedPC = getPC();
         }
     }
 
