@@ -376,7 +376,9 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                         }
                     }
                 } else {
-                    throw new RuntimeException("Incompatible bcel version");
+                    throw new RuntimeException(
+                            "Incompatible bcel version, apparently bcel has been upgraded to not use 'Unknown' for 'BootstrapMethods', but uses: "
+                                    + a.getName());
                 }
                 return null;
             }
