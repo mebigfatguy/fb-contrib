@@ -457,13 +457,13 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
             }
         }
 
-        if (addIfNotFound) {
-            GroupPair groupPair = new GroupPair(groupElement, itm.getSignature());
-            collectionGroups.add(groupPair);
-            return collectionGroups.size() - 1;
+        if (!addIfNotFound) {
+            return -1;
         }
 
-        return -1;
+        GroupPair groupPair = new GroupPair(groupElement, itm.getSignature());
+        collectionGroups.add(groupPair);
+        return collectionGroups.size() - 1;
     }
 
     private void removeFromCollectionGroup(OpcodeStack.Item itm) {
