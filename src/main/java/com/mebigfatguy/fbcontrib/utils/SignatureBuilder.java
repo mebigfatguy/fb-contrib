@@ -122,7 +122,7 @@ public class SignatureBuilder {
 
     public SignatureBuilder withReturnType(String type) {
         if ((type == null) || (type.length() == 0)) {
-            throw new IllegalArgumentException("Missing return type; did you mean 'withoutReturnType'?");
+            throw new IllegalArgumentException("Missing return type; did you mean 'withoutReturnType'? -- " + this);
         }
         returnType = SignatureUtils.classToSignature(type);
         return this;
@@ -130,7 +130,7 @@ public class SignatureBuilder {
 
     public SignatureBuilder withReturnType(Class<?> type) {
         if (type == null) {
-            throw new IllegalArgumentException("Missing return type; did you mean 'withoutReturnType'?");
+            throw new IllegalArgumentException("Missing return type; did you mean 'withoutReturnType'? -- " + this);
         }
         return withReturnType(type.getName());
     }
