@@ -42,6 +42,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private FieldStatus fieldStatus = FieldStatus.NONE;
+    private boolean classIsJPAEntity;
 
     public ImmatureClass(BugReporter reporter) {
         bugReporter = reporter;
@@ -66,6 +67,11 @@ public class ImmatureClass extends BytecodeScanningDetector {
 
             try {
                 boolean clsHasRuntimeAnnotation = classHasRuntimeVisibleAnnotation(cls);
+                if (clsHasRuntimeAnnotation) {
+                    classIsJPAEntity = classIsJPAEntity(cls);
+                } else {
+                    classIsJPAEntity = false;
+                }
                 HEStatus heStatus = HEStatus.UNKNOWN;
 
                 checkIDEGeneratedParmNames(cls);
@@ -76,7 +82,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
                         boolean fieldHasRuntimeAnnotation = fieldHasRuntimeVisibleAnnotation(f);
                         if (!fieldHasRuntimeAnnotation) {
                             /* only report one of these, so as not to flood the report */
-                            if (!hasMethodInHierarchy(cls, Values.TOSTRING, SignatureBuilder.SIG_VOID_TO_STRING)) {
+                            if (!classIsJPAEntity && !hasMethodInHierarchy(cls, Values.TOSTRING, SignatureBuilder.SIG_VOID_TO_STRING)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_TOSTRING.name(), LOW_PRIORITY).addClass(cls));
                                 heStatus = HEStatus.NOT_NEEDED;
                                 break;
@@ -197,6 +203,26 @@ public class ImmatureClass extends BytecodeScanningDetector {
         if (annotations != null) {
             for (AnnotationEntry annotation : annotations) {
                 if (annotation.isRuntimeVisible()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * returns whether this class is a JPA Entity, as such it shouldn't really have a toString()
+     *
+     * @param cls
+     *            the class to check
+     * @return if the class is a jpa entity
+     */
+    private static boolean classIsJPAEntity(JavaClass cls) {
+        AnnotationEntry[] annotations = cls.getAnnotationEntries();
+        if (annotations != null) {
+            for (AnnotationEntry annotation : annotations) {
+                if ("Ljavax/persistence/Entity;".equals(annotation.getAnnotationType())) {
                     return true;
                 }
             }
