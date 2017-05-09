@@ -9,6 +9,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import javax.persistence.Entity;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.objectweb.asm.AnnotationVisitor;
@@ -62,6 +64,12 @@ class FPIMCTestClass {
     public void doTest() {
         Assert.assertEquals(data1, data2);
     }
+}
+
+@Entity
+class FPIMCEntity {
+    private int id;
+    private String name;
 }
 
 class MyVisitor extends AnnotationVisitor {
