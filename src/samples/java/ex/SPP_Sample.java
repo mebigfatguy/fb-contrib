@@ -1,4 +1,5 @@
 package ex;
+
 import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.math.BigDecimal;
@@ -434,6 +435,10 @@ public class SPP_Sample implements Serializable {
         if ((name != null) && !(name = name.trim()).equals("")) {
             sqlQuery.setString(1, name + "%");
         }
+    }
+
+    public void fpIssue199SBWithNum() {
+        StringBuilder sb = new StringBuilder(48);
     }
 }
 
