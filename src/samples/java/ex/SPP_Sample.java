@@ -32,6 +32,7 @@ public class SPP_Sample implements Serializable {
     private static final double e = 2.72;
     public static final String FALSE_POSITIVE = "INTERN_OK_HERE".intern();
     private static final String LIT = "lit";
+    private static final int BIG_SIZE = 48;
 
     static enum Flap {
         Smack, Jack
@@ -438,7 +439,7 @@ public class SPP_Sample implements Serializable {
     }
 
     public void fpIssue199SBWithNum() {
-        StringBuilder sb = new StringBuilder(48);
+        StringBuilder sb = new StringBuilder(BIG_SIZE);
     }
 }
 
