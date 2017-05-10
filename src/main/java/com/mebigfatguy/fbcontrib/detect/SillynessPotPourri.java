@@ -972,7 +972,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                         Object o = item.getConstant();
                         if (o instanceof Integer) {
                             int parm = ((Integer) o).intValue();
-                            if ((parm > 32) && (parm < 127) && (parm != 64) && ((parm % 5) != 0)) {
+                            if ((parm > 32) && (parm < 127) && (parm != 64) && (parm != 48) && ((parm % 5) != 0)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.SPP_NO_CHAR_SB_CTOR.name(), LOW_PRIORITY).addClass(this).addMethod(this)
                                         .addSourceLine(this));
                             }
