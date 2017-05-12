@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -34,6 +35,12 @@ public class STT_Sample {
         String s = (String) map.get("foo");
         int colonPos = s.indexOf(":");
         return s.substring(0, colonPos);
+    }
+
+    public Map<String, String> testLocalMapKeyedByStringifiedType(String a, String b) {
+        Map<String, String> s = new HashMap<>();
+        s.put(a + b, b + a);
+        return s;
     }
 
     public void fpTestToStringToFieldSB(String s) {
