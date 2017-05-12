@@ -5310,6 +5310,36 @@ public String requestInfo(URI u) {
         </Details>
     </BugPattern>
     
+    <BugPattern type="STT_TOSTRING_MAP_KEYING">
+    	<ShortDescription>This method uses a concatenated String as a map key</ShortDescription>
+    	<LongDescription>This method {1} uses a concatenated String as a map key</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method builds a key for a map, using a StringBuilder, either implicitly or explicitly. This means the type
+    		of the key is something more t han a String constant, it is a properly formatted String. However, there is no
+    		type based verification that all uses of this key will follow this formatting. It is much better to use a proper, simple,
+    		bean class that holds two (or more fields) so that it is clear what is expected for key use.
+    		</p>
+    		<p>
+    		Example<br/>
+    			instead of 
+    			{@code
+    				V v = myMap.get(tableName + "-" + columnName);
+    			}
+    			use
+    			{@code
+    				V v = myMap.get(new ColumnSpec(tableName, columnName));
+    			}
+    			where ColumnSpec is a simple bean-like class of your creation. The advantages, are
+    			<ul>
+    				<li>The ColumnSpec fully describes what is expected, you need a tableName and columnName</li>
+    				<li>There is no guessing by the programmer what the format is, was it tableName + "_" + columnName?</li>
+    			</ul>
+    			</p>
+    		]]>
+    	</Details>
+    </BugPattern>
+    
     <BugPattern type="SLS_SUSPICIOUS_LOOP_SEARCH">
     	<ShortDescription>This method continues a loop after finding an equality condition</ShortDescription>
     	<LongDescription>This method {1} continues a loop after finding an equality condition</LongDescription>

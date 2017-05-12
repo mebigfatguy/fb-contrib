@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for string fields that appear to be built with parsing or calling toString() on another object, or from objects that are fields.
@@ -87,6 +88,8 @@ public class StringifiedTypes extends BytecodeScanningDetector {
         STRING_PARSE_METHODS.put("endsWith", Values.LOW_BUG_PRIORITY);
     }
     private static final String FROM_FIELD = "FROM_FIELD";
+
+    private static final FQMethod MAP_PUT = new FQMethod(Values.SLASHED_JAVA_UTIL_MAP, "put", SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT);
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -190,6 +193,16 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                         if (checkParms != null) {
                             OpcodeStack.Item item = stack.getStackItem(numParameters);
                             if (item.getXField() == null) {
+                                if (MAP_PUT.equals(cm)) {
+                                    OpcodeStack.Item itm = stack.getStackItem(1);
+                                    XMethod xm = itm.getReturnValueOf();
+                                    if (xm != null) {
+                                        if (Values.DOTTED_JAVA_LANG_STRINGBUILDER.equals(xm.getClassName())) {
+                                            bugReporter.reportBug(new BugInstance(this, BugType.STT_TOSTRING_MAP_KEYING.name(), NORMAL_PRIORITY).addClass(this)
+                                                    .addMethod(this).addSourceLine(this));
+                                        }
+                                    }
+                                }
                                 checkParms = null;
                             } else {
                                 for (int parm : checkParms) {

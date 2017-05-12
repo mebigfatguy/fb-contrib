@@ -283,7 +283,7 @@
     
 	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod" speed="fast" reports="OPM_OVERLY_PERMISSIVE_METHOD" />
 	
-	<Detector class="com.mebigfatguy.fbcontrib.detect.StringifiedTypes" speed="fast" reports="STT_STRING_PARSING_A_FIELD,STT_TOSTRING_STORED_IN_FIELD" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.StringifiedTypes" speed="fast" reports="STT_STRING_PARSING_A_FIELD,STT_TOSTRING_STORED_IN_FIELD,STT_TOSTRING_MAP_KEYING" />
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ImmatureClass" speed="moderate" reports="IMC_IMMATURE_CLASS_NO_EQUALS,IMC_IMMATURE_CLASS_NO_HASHCODE,IMC_IMMATURE_CLASS_NO_PACKAGE,IMC_IMMATURE_CLASS_NO_TOSTRING,IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES,IMC_IMMATURE_CLASS_PRINTSTACKTRACE,IMC_IMMATURE_CLASS_WRONG_FIELD_ORDER" />	
 	
@@ -561,6 +561,7 @@
 	<BugPattern abbrev="OPM" type="OPM_OVERLY_PERMISSIVE_METHOD" category="STYLE" />
 	<BugPattern abbrev="STT" type="STT_STRING_PARSING_A_FIELD" category="STYLE" />
 	<BugPattern abbrev="STT" type="STT_TOSTRING_STORED_IN_FIELD" category="STYLE" />
+	<BugPattern abbrev="STT" type="STT_TOSTRING_MAP_KEYING" category="STYLE" />
 	<BugPattern abbrev="SLS" type="SLS_SUSPICIOUS_LOOP_SEARCH" category="CORRECTNESS" />
 	<BugPattern abbrev="CRF" type="CRF_CONFLATING_RESOURCES_AND_FILES" category="CORRECTNESS" />
 	<BugPattern abbrev="IMC" type="IMC_IMMATURE_CLASS_IDE_GENERATED_PARAMETER_NAMES" category="STYLE" />
