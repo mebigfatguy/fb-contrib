@@ -203,7 +203,6 @@ public class StringifiedTypes extends BytecodeScanningDetector {
                                         }
                                     }
                                 }
-                                checkParms = null;
                             } else {
                                 for (int parm : checkParms) {
                                     if ((parm >= 0) && Values.TOSTRING.equals(stack.getStackItem(parm).getUserValue())) {
