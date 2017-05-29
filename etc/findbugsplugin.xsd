@@ -22,7 +22,7 @@
 
 	<xsd:simpleType name="IdentifierType">
 		<xsd:restriction base="xsd:string">
-			<xsd:pattern value="[A-Za-z0-9_]*"/>
+			<xsd:pattern value="[A-Za-z0-9_]+"/>
 		</xsd:restriction>
 	</xsd:simpleType>
 
