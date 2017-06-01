@@ -82,6 +82,27 @@ The group ID for fb-contrib is com.mebigfatguy.fb-contrib, and the artifact ID i
 </plugin>
 ~~~~
 
+
+##Usage - Gradle
+
+~~~~
+apply plugin: 'findbugs'
+
+dependencies {
+    // We need to manually set this first, or the plugin is not loaded
+    findbugs 'com.google.code.findbugs:findbugs:3.0.0'
+    findbugs configurations.findbugsPlugins.dependencies
+
+    // To keep everything tidy, we set these apart
+    findbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.0.2'
+}
+
+task findbugs(type: FindBugs) {
+   // Add all your config here ...
+
+   pluginClasspath = project.configurations.findbugsPlugins
+}
+~~~~
 ##Contributing
 Once you have the dev environment set up, feel free to make changes and pull requests.
 Any edits are much appreciated, from finding typos, to adding examples in the [messages](https://github.com/mebigfatguy/fb-contrib/blob/master/etc/messages.xml), to creating new detectors, all help is welcome.
