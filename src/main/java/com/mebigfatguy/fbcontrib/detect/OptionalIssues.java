@@ -194,7 +194,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                     if (OR_ELSE_METHODS.contains(curCalledMethod)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
-                            if ((itm.getReturnValueOf() != null) && !isTrivialStackOps()) {
+                            if ((itm.getRegisterNumber() < 0) && (itm.getReturnValueOf() != null) && !isTrivialStackOps()) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                             }
