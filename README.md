@@ -36,7 +36,7 @@ Contributors
 The master branch is the main branch of development currently targeting the new FindBugs 3 platform.
 
 
-##Setting up for Development - Ant
+## Setting up for Development - Ant
 1. Download/install [Eclipse](https://www.eclipse.org/home/index.php), ideally 4.3 (Kepler) or newer.  The standard release (for Java) will work fine.
 2. **Ant Dependencies** Download [yank, the dependency manager](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.mebigfatguy.yank%22%20AND%20a%3A%22yank%22) and [bug-rank-check-style](https://bitbucket.org/klubick/bugrankcheckstyle/downloads).  Both jars (v1.2.0+ and v1.0.0+) should go in your ~/.ant/lib folder, which you will have to make if it doesn't exist.  Windows people, this goes under [Username]/.ant/lib.
 Don't have more than one version of either jar in this folder, as it's not clear which one Ant will load, leading to annoying compatibility issues. This can be done using the ant target **ant infra_jars**
@@ -48,12 +48,12 @@ Don't have more than one version of either jar in this folder, as it's not clear
 For example, If you are using FindBugs with Eclipse (and you extracted Eclipse to C:\\), you'll set this to something like `findbugs.dir=/eclipse/plugins/edu.umd.cs.findbugs.plugin.eclipse_3.0.0.20140706-2cfb468`
 8. Finally, build fb-contrib by finding the [build.xml](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/build.xml) file in Eclipse, right-click it, and select Run As > Ant Build.  The dependencies needed should be downloaded to fb-contrib/lib and the fb-contrib-VERSION.jar should be built.
 
-##Setting up for Development - Maven
+## Setting up for Development - Maven
 1. Download/install [Maven](https://maven.apache.org), version 2.2.1 or newer.
 2. Clone the Git repository, as per step 3 above.
 3. Run `mvn clean install` in the fb-contrib directory.
 
-##Usage - Maven
+## Usage - Maven
 
 To include the fb-contrib detectors when checking your project with FindBugs, you can use the [FindBugs Maven plugin](https://gleclaire.github.io/findbugs-maven-plugin/usage.html).
 The group ID for fb-contrib is com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
@@ -83,7 +83,7 @@ The group ID for fb-contrib is com.mebigfatguy.fb-contrib, and the artifact ID i
 ~~~~
 
 
-##Usage - Gradle
+## Usage - Gradle
 
 ~~~~
 apply plugin: 'findbugs'
@@ -103,7 +103,7 @@ task findbugs(type: FindBugs) {
    pluginClasspath = project.configurations.findbugsPlugins
 }
 ~~~~
-##Contributing
+## Contributing
 Once you have the dev environment set up, feel free to make changes and pull requests.
 Any edits are much appreciated, from finding typos, to adding examples in the [messages](https://github.com/mebigfatguy/fb-contrib/blob/master/etc/messages.xml), to creating new detectors, all help is welcome.
 
