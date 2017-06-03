@@ -1,5 +1,10 @@
 package ex;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 public class FCCD_Sample {
     Child c = new Child();;
 
@@ -108,4 +113,18 @@ class Me {
 
 class Myself {
     Me m = new Me();
+}
+
+@AnnotationWithClass(cls = ChildAnnot.class)
+class Annot {
+}
+
+class ChildAnnot extends Annot {
+}
+
+@Target({ ElementType.TYPE })
+@Retention(RetentionPolicy.RUNTIME)
+@interface AnnotationWithClass {
+
+    Class cls();
 }

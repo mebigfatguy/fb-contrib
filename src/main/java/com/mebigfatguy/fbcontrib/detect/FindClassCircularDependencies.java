@@ -29,15 +29,18 @@ import java.util.regex.Pattern;
 
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
+import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * looks for classes that have dependencies on each other in a circular way. Class initialization can be compromised in this scenario, and usually points to a
@@ -64,6 +67,22 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     @Override
     public void visit(JavaClass obj) {
         clsName = obj.getClassName();
+    }
+
+    @Override
+    public void visitAnnotation(@DottedClassName String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+        if (!runtimeVisible) {
+            return;
+        }
+
+        for (ElementValue v : map.values()) {
+            if (v.getElementValueType() == ElementValue.CLASS) {
+                String annotationClsAttr = SignatureUtils.stripSignature(v.stringifyValue());
+
+                Set<String> dependencies = getDependenciesForClass(clsName);
+                dependencies.add(annotationClsAttr);
+            }
+        }
     }
 
     @Override
