@@ -78,7 +78,7 @@ The group ID for fb-contrib is com.mebigfatguy.fb-contrib, and the artifact ID i
                 <goal>check</goal>
             </goals>
         </execution>
-    </execution>
+    </executions>
 </plugin>
 ~~~~
 
