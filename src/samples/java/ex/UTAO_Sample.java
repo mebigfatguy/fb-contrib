@@ -1,4 +1,8 @@
 package ex;
+
+import java.lang.reflect.Method;
+import java.lang.reflect.Modifier;
+
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mock;
@@ -204,6 +208,16 @@ class GitHubIssue94 {
         org.testng.Assert.assertNotEquals(realObject, mockObject);
     }
 
+}
+
+class GitHubIssue207 {
+    @Test
+    public void testAssertTrueIsOK() throws ClassNotFoundException {
+        Class<?> clazz = Class.forName("java.lang.Object");
+        for (final Method method : clazz.getMethods()) {
+            Assert.assertTrue("method should be static:" + method, Modifier.isStatic(method.getModifiers()) || !method.getDeclaringClass().equals(clazz));
+        }
+    }
 }
 
 class GitHubIssue109 {
