@@ -3691,8 +3691,8 @@ return new String[0];<br/>
 	</BugPattern>
 
 	<BugPattern type="UTAO_JUNIT_ASSERTION_ODDITIES_BOOLEAN_ASSERT">
-		<ShortDescription>JUnit test method asserts that a value is true or false</ShortDescription>
-		<LongDescription>JUnit test method {1} asserts that a value is true or false</LongDescription>
+		<ShortDescription>JUnit test method asserts that a value is equal to true or false</ShortDescription>
+		<LongDescription>JUnit test method {1} asserts that a value is equal to true or false</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method asserts that a value is equal to true or false. It is simpler to just
