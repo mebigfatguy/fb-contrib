@@ -1,4 +1,9 @@
 package ex;
+
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.when;
+import static org.mockito.hamcrest.MockitoHamcrest.argThat;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.ArrayList;
@@ -6,6 +11,10 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+
+import org.junit.Test;
+
+import ex.opm.RuleMatcher;
 
 public class OPM_Sample extends OPMSuper implements Comparator<String> {
 
@@ -75,5 +84,20 @@ class Writer {
 
     public void close() {
         fpFlush();
+    }
+}
+
+class GitHubIssue206 {
+
+    GitHubIssue206 service;
+
+    @Test
+    public void testCustomMatcher() {
+
+        when(service.createRuleBatch(eq(""), argThat(new RuleMatcher("", "", 1)))).thenReturn(Boolean.TRUE);
+    }
+
+    public Boolean createRuleBatch(String s, String t) {
+        return null;
     }
 }
