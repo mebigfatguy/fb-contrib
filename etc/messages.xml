@@ -5469,6 +5469,17 @@ for (Person p : people) {
     	</Details>
     </BugPattern>
     
+    <BugPattern type="IMC_IMMATURE_CLASS_UPPER_PACKAGE">
+    	<ShortDescription>Class is defined in a package with upper case characters</ShortDescription>
+    	<LongDescription>Class {0} is defined in a package with upper case characters</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This class is defined within a package that uses upper case letters. Package names are
+    		expected to be in the form of alllowercase.</p>
+    		]]>
+    	</Details>
+    </BugPattern>
+    
     
     <BugPattern type="JXI_GET_ENDPOINT_CONSUMES_CONTENT">
     	<ShortDescription>JAX-RS Method implements a GET request but consumes input</ShortDescription>

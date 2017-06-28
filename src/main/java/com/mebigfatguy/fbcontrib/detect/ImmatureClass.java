@@ -59,8 +59,13 @@ public class ImmatureClass extends BytecodeScanningDetector {
         JavaClass cls = classContext.getJavaClass();
         fieldStatus = FieldStatus.NONE;
 
-        if (cls.getPackageName().isEmpty()) {
+        String packageName = cls.getPackageName();
+        if (packageName.isEmpty()) {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_PACKAGE.name(), LOW_PRIORITY).addClass(cls));
+        }
+
+        if (!packageName.equals(packageName.toLowerCase())) {
+            bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_UPPER_PACKAGE.name(), LOW_PRIORITY).addClass(cls));
         }
 
         if ((!cls.isAbstract()) && (!cls.isEnum()) && !cls.getClassName().contains("$") && !isTestClass(cls)) {
