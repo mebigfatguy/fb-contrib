@@ -494,9 +494,9 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                         continue;
                     }
 
-                    JavaClass cls = Repository.lookupClass(clsName);
-                    if (cls.isClass() && (!cls.isAbstract())) {
-                        Map<JavaClass, List<MethodInfo>> definers = getClassDefiners(cls);
+                    JavaClass clz = Repository.lookupClass(clsName);
+                    if (clz.isClass() && (!clz.isAbstract())) {
+                        Map<JavaClass, List<MethodInfo>> definers = getClassDefiners(clz);
 
                         if (!definers.isEmpty()) {
                             parameterDefiners.put(Integer.valueOf(i + (methodIsStatic ? 0 : 1)), definers);
@@ -675,18 +675,18 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     /**
      * returns whether this class is used to convert types of some sort, such that you don't want to suggest reducing the class specified to be more generic
      *
-     * @param cls
+     * @param conversionCls
      *            the class to check
      * @return whether this class is used in conversions
      */
-    private boolean isaConversionClass(JavaClass cls) {
-        for (AnnotationEntry entry : cls.getAnnotationEntries()) {
+    private boolean isaConversionClass(JavaClass conversionCls) {
+        for (AnnotationEntry entry : conversionCls.getAnnotationEntries()) {
             if (CONVERSION_ANNOTATIONS.contains(entry.getAnnotationType())) {
                 return true;
             }
 
             // this ignores the fact that this class might be a grand child, but meh
-            if (CONVERSION_SUPER_CLASSES.contains(cls.getSuperclassName())) {
+            if (CONVERSION_SUPER_CLASSES.contains(conversionCls.getSuperclassName())) {
                 return true;
             }
         }
