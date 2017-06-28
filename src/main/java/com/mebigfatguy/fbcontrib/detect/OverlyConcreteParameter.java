@@ -155,8 +155,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                 String parms = methodSig.split("\\(|\\)")[1];
                 if (parms.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR) >= 0) {
 
-                    outer: for (JavaClass cls : constrainingClasses) {
-                        Method[] methods = cls.getMethods();
+                    outer: for (JavaClass constrainCls : constrainingClasses) {
+                        Method[] methods = constrainCls.getMethods();
                         for (Method m : methods) {
                             if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
                                 methodSignatureIsConstrained = true;
