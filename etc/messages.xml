@@ -5480,6 +5480,18 @@ for (Person p : people) {
     	</Details>
     </BugPattern>
     
+    <BugPattern type="IMC_IMMATURE_CLASS_LOWER_CLASS">
+    	<ShortDescription>Class does not start with an upper case letter</ShortDescription>
+    	<LongDescription>Class {0} does not start with an upper case letter</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This class has been given a name that does not start with an upper case letter.
+    		Classes should follow a pattern of uppercasing the first letter of each word, AsAnExample</p>
+    		]]>
+    	</Details>
+    </BugPattern>
+    
+    
     
     <BugPattern type="JXI_GET_ENDPOINT_CONSUMES_CONTENT">
     	<ShortDescription>JAX-RS Method implements a GET request but consumes input</ShortDescription>

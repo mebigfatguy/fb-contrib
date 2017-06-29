@@ -68,6 +68,15 @@ public class ImmatureClass extends BytecodeScanningDetector {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_UPPER_PACKAGE.name(), LOW_PRIORITY).addClass(cls));
         }
 
+        String simpleClassName = cls.getClassName();
+        int dotPos = simpleClassName.lastIndexOf('.');
+        if (dotPos >= 0) {
+            simpleClassName = simpleClassName.substring(dotPos + 1);
+        }
+        if (!Character.isUpperCase(simpleClassName.charAt(0)) && !simpleClassName.contains("$")) {
+            bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_LOWER_CLASS.name(), LOW_PRIORITY).addClass(cls));
+        }
+
         if ((!cls.isAbstract()) && (!cls.isEnum()) && !cls.getClassName().contains("$") && !isTestClass(cls)) {
 
             try {
