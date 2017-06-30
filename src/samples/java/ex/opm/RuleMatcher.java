@@ -12,7 +12,11 @@ public class RuleMatcher implements Matcher<String> {
     }
 
     @Override
-    public void describeTo(Description arg0) {
+    public void describeTo(Description d) {
+    }
+
+    @Override
+    public void describeMismatch(Object o, Description d) {
     }
 
     @Override
