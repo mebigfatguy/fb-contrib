@@ -29,6 +29,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class ImmatureClass extends BytecodeScanningDetector {
 
     private static final Pattern ARG_PATTERN = Pattern.compile("(arg|parm|param)\\d");
+    private static final String PACKAGE_INFO = "package-info";
 
     private static final int MAX_EMPTY_METHOD_SIZE = 2; // ACONST_NULL, ARETURN
 
@@ -73,7 +74,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
         if (dotPos >= 0) {
             simpleClassName = simpleClassName.substring(dotPos + 1);
         }
-        if (!Character.isUpperCase(simpleClassName.charAt(0)) && !simpleClassName.contains("$")) {
+        if (!Character.isUpperCase(simpleClassName.charAt(0)) && !simpleClassName.contains("$") && !PACKAGE_INFO.equals(simpleClassName)) {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_LOWER_CLASS.name(), LOW_PRIORITY).addClass(cls));
         }
 
