@@ -14,10 +14,12 @@
         <maven>2.2.1</maven>
     </prerequisites>
 
+    <!-- TODO: Oss parent is obsolete, define items directly for releasing -->
     <parent>
         <groupId>org.sonatype.oss</groupId>
         <artifactId>oss-parent</artifactId>
-        <version>5</version>
+        <version>9</version>
+        <relativePath />
     </parent>
 
     <name>FindBugs Contrib plugin library</name>
