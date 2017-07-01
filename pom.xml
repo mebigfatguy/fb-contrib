@@ -207,17 +207,17 @@
     </dependencies>
 
     <build>
-        <outputDirectory>${basedir}/target/classes/main</outputDirectory>
+        <outputDirectory>${project.basedir}/target/classes/main</outputDirectory>
         <resources>
             <resource>
-                <directory>${basedir}</directory>
+                <directory>${project.basedir}</directory>
                 <includes>
                     <include>plugin.xml</include>
                     <include>license.txt</include>
                 </includes>
             </resource>
             <resource>
-                <directory>${basedir}/etc</directory>
+                <directory>${project.basedir}/etc</directory>
                 <excludes>
                     <exclude>*.xsd</exclude>
                     <exclude>*.xsl</exclude>
