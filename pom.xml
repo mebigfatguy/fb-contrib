@@ -8,8 +8,9 @@
     <artifactId>fb-contrib</artifactId>
     <version>7.1.0-SNAPSHOT</version>
 
+    <!-- TODO: Delete this and replace with enforcer plugin.  This is for maven plugins only!  Latest maven will through warnings. -->
     <prerequisites>
-        <maven>2.2.1</maven>
+        <maven>3.2.5</maven>
     </prerequisites>
 
     <!-- TODO: Oss parent is obsolete, define items directly for releasing -->
