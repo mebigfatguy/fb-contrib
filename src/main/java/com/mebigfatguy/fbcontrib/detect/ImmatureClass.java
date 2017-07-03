@@ -1,5 +1,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -65,7 +66,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_PACKAGE.name(), LOW_PRIORITY).addClass(cls));
         }
 
-        if (!packageName.equals(packageName.toLowerCase())) {
+        if (!packageName.equals(packageName.toLowerCase(Locale.ENGLISH))) {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_UPPER_PACKAGE.name(), LOW_PRIORITY).addClass(cls));
         }
 
