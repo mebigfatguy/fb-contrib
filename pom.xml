@@ -340,9 +340,9 @@
                     <version>1.9.1</version>
                 </plugin>
                 <plugin>
-                    <groupId>org.codehaus.mojo</groupId>
-                    <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>2.5.5</version>
+                    <groupId>com.github.hazendaz.spotbugs</groupId>
+                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <version>3.0.6</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -506,9 +506,8 @@
             </plugin>
 
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>findbugs-maven-plugin</artifactId>
-                <version>3.0.1</version>
+                <groupId>com.github.hazendaz.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
                 <dependencies>
                     <dependency>
                         <groupId>com.google.code.findbugs</groupId>
