@@ -1,6 +1,8 @@
 fb-contrib
 ==========
 
+[![Build Status](https://travis-ci.org/mebigfatguy/fb-contrib.svg?branch=master)](https://travis-ci.org/mebigfatguy/fb-contrib)
+
 a FindBugs plugin for doing static code analysis on java byte code.
 For information see http://fb-contrib.sf.net
 
@@ -56,14 +58,39 @@ For example, If you are using FindBugs with Eclipse (and you extracted Eclipse t
 
 ## Usage - Maven
 
-To include the fb-contrib detectors when checking your project with FindBugs, you can use the [FindBugs Maven plugin](https://gleclaire.github.io/findbugs-maven-plugin/usage.html).
-The group ID for fb-contrib is com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
+To include the fb-contrib detectors when checking your project with FindBugs/Spotbugs, you can use the [FindBugs Maven plugin](https://gleclaire.github.io/findbugs-maven-plugin/usage.html).
+Or [SpotBugs Maven plugin](https://www.github.com/hazendaz/spotbugs-maven-plugin) which is a fork of findbugs maven plugin to provide spotbugs integration.  The group ID for fb-contrib is
+com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
 
 ~~~~
 <plugin>
     <groupId>org.codehaus.mojo</groupId>
     <artifactId>findbugs-maven-plugin</artifactId>
     <version>3.0.4</version>
+    <configuration>
+        <plugins>
+            <plugin>
+                <groupId>com.mebigfatguy.fb-contrib</groupId>
+                <artifactId>fb-contrib</artifactId>
+                <version>7.0.2</version>
+            </plugin>
+        </plugins>
+    </configuration>
+    <executions>
+        <execution>
+            <goals>
+                <goal>check</goal>
+            </goals>
+        </execution>
+    </executions>
+</plugin>
+~~~~
+
+~~~~
+<plugin>
+    <groupId>com.github.hazendaz.spotbugs</groupId>
+    <artifactId>spotbugs-maven-plugin</artifactId>
+    <version>3.0.6</version>
     <configuration>
         <plugins>
             <plugin>
