@@ -1,4 +1,5 @@
 package ex;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -6,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.sql.SQLException;
 import java.util.Hashtable;
+import java.util.Optional;
 import java.util.zip.DataFormatException;
 
 import javax.naming.NamingException;
@@ -72,6 +74,10 @@ public class BED_Sample {
         if (!permissible) {
             throw e;
         }
+    }
+
+    private String getHashFromChecksum217(Optional<String> checksum) throws IOException {
+        return checksum.orElseThrow(() -> new IOException("Failed to get checksum..."));
     }
 
     public Object iAmCreatingAnObject() {
