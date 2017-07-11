@@ -48,7 +48,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
     private static final Set<String> safeClasses = UnmodifiableSet.create(
-            //@formatter:off
+    //@formatter:off
             Values.SLASHED_JAVA_LANG_OBJECT,
             Values.SLASHED_JAVA_LANG_STRING,
             Values.SLASHED_JAVA_LANG_INTEGER,
@@ -275,8 +275,8 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
      */
     private void removeThrownExceptionHierarchy(String thrownException) {
         try {
-            if (Values.DOTTED_JAVA_LANG_EXCEPTION.equals(thrownException)) {
-                // Exception can be thrown even tho the method isn't declared to throw Exception in the case of templated Exceptions
+            if (Values.DOTTED_JAVA_LANG_EXCEPTION.equals(thrownException) || Values.DOTTED_JAVA_LANG_THROWABLE.equals(thrownException)) {
+                // Exception/Throwable can be thrown even tho the method isn't declared to throw Exception/Throwable in the case of templated Exceptions
                 clearExceptions();
             } else {
                 removeException(thrownException);
