@@ -1696,6 +1696,15 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 		</Details>
 	</Detector>
 	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.ReflectionIssues">
+		<Details>
+			<![CDATA[
+			<p>Looks for issues around the use of java reflection.</p>
+			<p>It is a fast detector</p>
+			]]>
+		</Details>
+	</Detector>
+	
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5896,6 +5905,19 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="RFI_SET_ACCESSIBLE">
+    	<ShortDescription>Method uses AccessibleObject.setAccessible to modify accessibility of classes</ShortDescription>
+    	<LongDescription>Method {1} uses AccessibleObject.setAccessible to modify accessibility of classes</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method uses the reflective setAccessible method to alter the behavior of methods and fields in classes 
+    		in ways that were not expected to be accessed by the author. Doing so circumvents the protections that the author
+    		provided through the class definition, and may expose your application unexpected side effects and problems. This
+    		functionality is deprecated in Java 9, and in Java 10 it is expected that this functionality won't work at all.
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -6039,4 +6061,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="USFW">Unsynchronized Singleton Field Writes</BugCode>
 	<BugCode abbrev="OI">Optional Issues</BugCode>
 	<BugCode abbrev="UAC">Unnecessary Api Conversion</BugCode>
+	<BugCode abbrev="RFI">Reflection Issues</BugCode>
 </MessageCollection>

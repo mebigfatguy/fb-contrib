@@ -317,6 +317,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.UseTryWithResources" speed="fast" reports="UTWR_USE_TRY_WITH_RESOURCES"/>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ReflectionIssues" speed="fast" reports="RFI_SET_ACCESSIBLE"/>
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -593,12 +594,13 @@
 	<BugPattern abbrev="WI" type="WI_DUPLICATE_WIRED_TYPES" category="CORRECTNESS"/>
 	<BugPattern abbrev="CCI" type="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY" category="CORRECTNESS"/>
 	<BugPattern abbrev="UTWR" type="UTWR_USE_TRY_WITH_RESOURCES" category="STYLE" experimental="true"/>
-	<BugPattern abbrev="SSCU" type="SSCU_SUSPICIOUS_SHADED_CLASS_USE" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="USFW" type="USFW_UNSYNCHRONIZED_SINGLETON_FIELD_WRITES" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_CHECKING_REFERENCE" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="SSCU" type="SSCU_SUSPICIOUS_SHADED_CLASS_USE" category="CORRECTNESS"/>
+	<BugPattern abbrev="USFW" type="USFW_UNSYNCHRONIZED_SINGLETON_FIELD_WRITES" category="CORRECTNESS"/>
+	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION" category="CORRECTNESS"/>
+	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION" category="CORRECTNESS"/>
+	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_CHECKING_REFERENCE" category="CORRECTNESS"/>
+	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED" category="CORRECTNESS"/>
+	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT" category="CORRECTNESS"/>
+	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" category="CORRECTNESS"/>
+	<BugPattern abbrev="RFI" type="RFI_SET_ACCESSIBLE" category="CORRECTNESS" experimental="true"/>
 </FindbugsPlugin>
