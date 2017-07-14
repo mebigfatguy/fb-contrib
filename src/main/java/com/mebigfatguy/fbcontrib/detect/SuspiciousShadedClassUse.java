@@ -18,11 +18,13 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.List;
 import java.util.Set;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -36,6 +38,12 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
         "/org/",
         "/com/",
         "/edu/"
+    // @formatter:on
+    );
+
+    private static final List<String> KNOWN_EXCEPTIONS = UnmodifiableList.create(
+    // @formatter:off
+        "uk/org/lidalia/"
     // @formatter:on
     );
 
@@ -54,14 +62,34 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
             for (String suspiciousRoot : SUSPICIOUS_ROOTS) {
                 int rootPos = invokedCls.indexOf(suspiciousRoot);
                 if (rootPos >= 0) {
-                    String invokedPrefix = invokedCls.substring(0, rootPos);
-                    String[] parts = invokedPrefix.split("/");
-                    if (!SignatureUtils.similarPackages(invokedCls, getClassName(), Math.min(2, parts.length))) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.SSCU_SUSPICIOUS_SHADED_CLASS_USE.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
+                    if (!isKnownException(invokedCls)) {
+                        String invokedPrefix = invokedCls.substring(0, rootPos);
+                        String[] parts = invokedPrefix.split("/");
+                        if (!SignatureUtils.similarPackages(invokedCls, getClassName(), Math.min(2, parts.length))) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SSCU_SUSPICIOUS_SHADED_CLASS_USE.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
                     }
                 }
             }
         }
+    }
+
+    /**
+     * determines if a suspected class is actually one of the known classes that have taken a bad package form by putting a tld later on in the package
+     * structure
+     *
+     * @param clsName
+     *            the classname to check
+     * @return whether the classname is an exception
+     */
+    private boolean isKnownException(String clsName) {
+        for (String exceptionCls : KNOWN_EXCEPTIONS) {
+            if (clsName.startsWith(exceptionCls)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
