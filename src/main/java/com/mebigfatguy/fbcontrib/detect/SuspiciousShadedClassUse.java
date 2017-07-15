@@ -33,6 +33,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
 
+    private static final String SSCU_EXCEPTION_PACKAGES = "fb-contrib.sscu.exceptions";
+
     private static final Set<String> SUSPICIOUS_ROOTS = UnmodifiableSet.create(
     // @formatter:off
         "/org/",
@@ -41,7 +43,7 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
     // @formatter:on
     );
 
-    private static final List<String> KNOWN_EXCEPTIONS = UnmodifiableList.create(
+    private final List<String> knownExceptions = UnmodifiableList.create(
     // @formatter:off
         "uk/org/lidalia/"
     // @formatter:on
@@ -51,6 +53,13 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
 
     public SuspiciousShadedClassUse(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        String exceptions = System.getProperty(SSCU_EXCEPTION_PACKAGES, "");
+        for (String ex : exceptions.split("\\s,\\s*")) {
+            if (!ex.isEmpty()) {
+                knownExceptions.add(ex.replace('.', '/'));
+            }
+        }
     }
 
     @Override
@@ -84,7 +93,7 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
      * @return whether the classname is an exception
      */
     private boolean isKnownException(String clsName) {
-        for (String exceptionCls : KNOWN_EXCEPTIONS) {
+        for (String exceptionCls : knownExceptions) {
             if (clsName.startsWith(exceptionCls)) {
                 return true;
             }
