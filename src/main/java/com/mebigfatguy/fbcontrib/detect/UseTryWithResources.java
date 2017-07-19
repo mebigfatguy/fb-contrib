@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -82,7 +83,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         try {
             int majorVersion = classContext.getJavaClass().getMajor();
 
-            if (majorVersion >= MAJOR_1_7) {
+            if (majorVersion >= Const.MAJOR_1_7) {
                 stack = new OpcodeStack();
                 finallyBlocks = new HashMap<>();
                 regStoredPCs = new HashMap<>();

@@ -21,7 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.List;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.detect.BackportReusePublicIdentifiers.Backports.Library;
@@ -48,8 +48,8 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
 
     private static final List<Backports> BACKPORTS = UnmodifiableList.create(
     // @formatter:off
-        new Backports("edu/emory/mathcs/backport/", Constants.MAJOR_1_5, Library.EMORY),
-        new Backports("org/threeten/bp/", Constants.MAJOR_1_8, Library.THREETEN)
+        new Backports("edu/emory/mathcs/backport/", Const.MAJOR_1_5, Library.EMORY),
+        new Backports("org/threeten/bp/", Const.MAJOR_1_8, Library.THREETEN)
     // @formatter:on
     );
 

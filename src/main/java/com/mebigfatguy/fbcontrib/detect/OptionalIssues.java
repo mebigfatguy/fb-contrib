@@ -23,7 +23,7 @@ import java.util.BitSet;
 import java.util.Deque;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -109,7 +109,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         currentClass = classContext.getJavaClass();
 
-        if (currentClass.getMajor() >= Constants.MAJOR_1_8) {
+        if (currentClass.getMajor() >= Const.MAJOR_1_8) {
             try {
                 stack = new OpcodeStack();
                 activeStackOps = new ArrayDeque<>();

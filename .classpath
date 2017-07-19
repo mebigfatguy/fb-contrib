@@ -10,24 +10,12 @@
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
 	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
 	<classpathentry kind="lib" path="lib/asm-debug-all-5.0.2.jar" sourcepath="lib/sources/asm-debug-all-5.0.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/bcel-findbugs-6.0.jar" sourcepath="lib/sources/bcel-findbugs-6.0-sources.jar">
-		<attributes>
-			<attribute name="javadoc_location" value="http://commons.apache.org/proper/commons-bcel/apidocs/"/>
-		</attributes>
-	</classpathentry>
-	<classpathentry kind="lib" path="lib/findbugs-3.0.1.jar" sourcepath="lib/sources/findbugs-3.0.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.12.jar"/>
 	<classpathentry kind="lib" path="lib/javax.persistence-2.1.1.jar" sourcepath="/home/dave/.m2/repository/org/eclipse/persistence/javax.persistence/2.1.1/javax.persistence-2.1.1-sources.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/findbugs">
-		<accessrules>
-			<accessrule kind="nonaccessible" pattern="org/hamcrest/**"/>
-		</accessrules>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/threetenbp-1.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.4.jar"/>
-	<classpathentry kind="lib" path="lib/findbugs-ant-3.0.0.jar"/>
 	<classpathentry kind="lib" path="lib/guava-19.0.jar" sourcepath="lib/sources/guava-19.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-4.5.2.jar"/>
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.5.2.jar"/>
@@ -37,7 +25,6 @@
 	<classpathentry kind="lib" path="lib/spring-context-4.3.3.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/spring-tx-4.3.3.RELEASE.jar"/>
 	<classpathentry kind="lib" path="lib/jena-shaded-guava-3.1.0.jar"/>
-	<classpathentry kind="lib" path="lib/findbugs-annotations-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/testng-6.9.10.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.48.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.4.jar"/>
@@ -45,5 +32,10 @@
 	<classpathentry kind="lib" path="lib/javax.ws.rs-api-2.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-core-2.8.47.jar" sourcepath="/home/dave/.m2/repository/org/mockito/mockito-core/2.8.47/mockito-core-2.8.47-sources.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest-core-1.3.jar"/>
+	<classpathentry kind="lib" path="lib/bcel-6.0.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-3.1.0-RC3.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-annotations-3.1.0-RC3.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-ant-3.1.0-RC3.jar"/>
+	<classpathentry kind="lib" path="lib/jsr305-3.0.2.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>

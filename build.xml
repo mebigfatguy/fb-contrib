@@ -99,9 +99,9 @@
 		<mkdir dir="${samples.classes.dir}" />
 		<mkdir dir="${javadoc.dir}" />
 		<path id="fb-contrib.classpath">
-			<pathelement location="${lib.dir}/findbugs-${findbugs.version}.jar" />
-			<pathelement location="${lib.dir}/bcel-findbugs-${bcel-findbugs.version}.jar" />
-			<pathelement location="${lib.dir}/findbugs-annotations-${findbugs-annotations.version}.jar" />
+			<pathelement location="${lib.dir}/spotbugs-${spotbugs.version}.jar" />
+			<pathelement location="${lib.dir}/bcel-${bcel.version}.jar" />
+			<pathelement location="${lib.dir}/spotbugs-annotations-${spotbugs-annotations.version}.jar" />
 			<pathelement location="${lib.dir}/asm-debug-all-${asm-debug-all.version}.jar" />
 			<pathelement location="${main.classes.dir}" />
 		</path>

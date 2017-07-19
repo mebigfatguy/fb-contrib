@@ -20,7 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -169,7 +169,7 @@ public class IOIssues extends BytecodeScanningDetector {
             if (BUFFERED_CLASSES.contains(clsName)) {
                 return IOIUserValue.BUFFER;
             } else if ("java.io.FileInputStream".equals(clsName) || "java.io.FileOutputStream".equals(clsName)) {
-                if (clsVersion >= Constants.MAJOR_1_7) {
+                if (clsVersion >= Const.MAJOR_1_7) {
                     if (!getMethod().isStatic()) {
                         String sig = getSigConstantOperand();
                         int numParms = SignatureUtils.getNumParameters(sig);

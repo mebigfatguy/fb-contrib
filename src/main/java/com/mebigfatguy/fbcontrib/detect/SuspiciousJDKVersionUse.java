@@ -35,6 +35,7 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
@@ -58,27 +59,27 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     private static final Map<Integer, String> VER_REG_EX = new HashMap<>();
 
     static {
-        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_1), "(jdk|j2?re)1.1");
-        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_2), "(jdk|j2?re)1.2");
-        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_3), "(jdk|j2?re)1.3");
-        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_4), "(jdk|j2?re)1.4");
+        VER_REG_EX.put(Integer.valueOf(Const.MAJOR_1_1), "(jdk|j2?re)1.1");
+        VER_REG_EX.put(Integer.valueOf(Const.MAJOR_1_2), "(jdk|j2?re)1.2");
+        VER_REG_EX.put(Integer.valueOf(Const.MAJOR_1_3), "(jdk|j2?re)1.3");
+        VER_REG_EX.put(Integer.valueOf(Const.MAJOR_1_4), "(jdk|j2?re)1.4");
         VER_REG_EX.put(Values.JAVA_5, "((jdk|j2?re)1.5)|(java-5)");
-        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_6), "((jdk|j2?re)1.6)|(java-6)");
-        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_7), "((jdk|j2?re)1.7)|(java-7)");
-        VER_REG_EX.put(Integer.valueOf(Constants.MAJOR_1_8), "((jdk|j2?re)1.8)|(java-8)");
+        VER_REG_EX.put(Integer.valueOf(Const.MAJOR_1_6), "((jdk|j2?re)1.6)|(java-6)");
+        VER_REG_EX.put(Integer.valueOf(Const.MAJOR_1_7), "((jdk|j2?re)1.7)|(java-7)");
+        VER_REG_EX.put(Integer.valueOf(Const.MAJOR_1_8), "((jdk|j2?re)1.8)|(java-8)");
     }
 
     private static final Map<Integer, Integer> HUMAN_VERSIONS = new HashMap<>();
 
     static {
-        HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_1), Values.ONE);
-        HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_2), Values.TWO);
-        HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_3), Values.THREE);
-        HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_4), Values.FOUR);
+        HUMAN_VERSIONS.put(Integer.valueOf(Const.MAJOR_1_1), Values.ONE);
+        HUMAN_VERSIONS.put(Integer.valueOf(Const.MAJOR_1_2), Values.TWO);
+        HUMAN_VERSIONS.put(Integer.valueOf(Const.MAJOR_1_3), Values.THREE);
+        HUMAN_VERSIONS.put(Integer.valueOf(Const.MAJOR_1_4), Values.FOUR);
         HUMAN_VERSIONS.put(Values.JAVA_5, Values.FIVE);
-        HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_6), Values.SIX);
-        HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_7), Values.SEVEN);
-        HUMAN_VERSIONS.put(Integer.valueOf(Constants.MAJOR_1_8), Values.EIGHT);
+        HUMAN_VERSIONS.put(Integer.valueOf(Const.MAJOR_1_6), Values.SIX);
+        HUMAN_VERSIONS.put(Integer.valueOf(Const.MAJOR_1_7), Values.SEVEN);
+        HUMAN_VERSIONS.put(Integer.valueOf(Const.MAJOR_1_8), Values.EIGHT);
     }
 
     private static Set<String> knownJDKJavaxPackageRoots = UnmodifiableSet.create(
