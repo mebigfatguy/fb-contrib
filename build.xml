@@ -110,8 +110,8 @@
 			<pathelement location="${lib.dir}/jcommander-${jcommander.version}.jar" />
 			<pathelement location="${lib.dir}/mockito-core-${mockito-core.version}.jar" />
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
-			<pathelement location="${findbugs.dir}/lib/dom4j-1.6.1.jar" />
-			<pathelement location="${findbugs.dir}/lib/jaxen-1.1.6.jar" />
+			<pathelement location="${spotbugs.dir}/lib/dom4j-1.6.1.jar" />
+			<pathelement location="${spotbugs.dir}/lib/jaxen-1.1.6.jar" />
 			
 		</path>
 		<path id="fb-contrib.samples.classpath">
@@ -261,8 +261,8 @@
 	</target>
 
 	<target name="install" depends="build" description="installs the plugin into FindBugs">
-		<echo message="Findbugs: ${findbugs.dir}/plugin"/>		
-		<copy todir="${findbugs.dir}/plugin">
+		<echo message="Findbugs: ${spotbugs.dir}/plugin"/>		
+		<copy todir="${spotbugs.dir}/plugin">
 			<fileset dir="${target.dir}">
 				<include name="fb-contrib-${fb-contrib.version}.jar" />
 			</fileset>
@@ -271,7 +271,7 @@
 	
 	<target name="sample_delta" depends="install" xmlns:fbdelta="antlib:com.mebigfatguy.fbdelta" description="compares this runs reported bugs on the sample classes set, against the stored report">
 		<taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${lib.dir}/findbugs-ant-${findbugs-ant.version}.jar"/>
-		<findbugs reportlevel="low" home="${findbugs.dir}" auxClassPathRef="fb-contrib.samples.classpath" output="xml:withMessages" jvmargs="-ea -Xmx800m" projectName="Samples" outputFile="${target.dir}/samples.xml">
+		<findbugs reportlevel="low" home="${spotbugs.dir}" auxClassPathRef="fb-contrib.samples.classpath" output="xml:withMessages" jvmargs="-ea -Xmx800m" projectName="Samples" outputFile="${target.dir}/samples.xml">
 		      <class location="${samples.classes.dir}" />
 		</findbugs>
 		
