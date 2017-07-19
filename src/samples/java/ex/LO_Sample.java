@@ -1,4 +1,5 @@
 package ex;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
@@ -14,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public class LO_Sample {
     // tag LO_SUSPECT_LOG_CLASS
     private static Logger l1 = Logger.getLogger(String.class);
-    // tag LO_SUSPECT_LOG_CLASS
+    // no tag
     private static Logger l2 = Logger.getLogger("com.foo.LO_Sample");
     // no tag
     private static final org.slf4j.Logger l3 = LoggerFactory.getLogger(LO_Sample.class);

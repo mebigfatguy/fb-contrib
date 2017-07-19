@@ -430,6 +430,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             // to Foo.class.getName()
                             loggingClassName = (String) userValue;
                         }
+                    } else {
+                        return;
                     }
                 }
             } else if (SIG_STRING_AND_FACTORY_TO_LOG4J_LOGGER.equals(signature) && (stack.getStackDepth() > 1)) {
