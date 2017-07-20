@@ -26,18 +26,19 @@ import javax.swing.JOptionPane;
  */
 public final class FBContrib {
 
-    private FBContrib() {}
+	private FBContrib() {
+	}
 
-    /**
-     * shows the simple help
-     *
-     * @param args
-     *            standard command line args
-     */
-    public static void main(final String[] args) {
-        JOptionPane.showMessageDialog(null,
-                "To use fb-contrib, copy this jar file into your local FindBugs plugin directory, and use FindBugs as usual.\n\nfb-contrib is a trademark of MeBigFatGuy.com\nFindBugs is a trademark of the University of Maryland",
-                "fb-contrib: copyright 2005-2017", JOptionPane.INFORMATION_MESSAGE);
-        System.exit(0);
-    }
+	/**
+	 * shows the simple help
+	 *
+	 * @param args
+	 *            standard command line args
+	 */
+	public static void main(final String[] args) {
+		JOptionPane.showMessageDialog(null,
+				"To use fb-contrib, copy this jar file into your local SpotBugs plugin directory, and use SpotBugs as usual.\n\nfb-contrib is a trademark of MeBigFatGuy.com",
+				"fb-contrib: copyright 2005-2017", JOptionPane.INFORMATION_MESSAGE);
+		System.exit(0);
+	}
 }
