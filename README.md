@@ -3,18 +3,26 @@ fb-contrib
 
 [![Build Status](https://travis-ci.org/mebigfatguy/fb-contrib.svg?branch=master)](https://travis-ci.org/mebigfatguy/fb-contrib)
 
-a FindBugs plugin for doing static code analysis on java byte code.
+a FindBugs and SpotBugs plugin for doing static code analysis on java byte code.
 For information see http://fb-contrib.sf.net
 
 
 
 Available on [maven.org](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.mebigfatguy.fb-contrib%22%20AND%20a%3A%22fb-contrib%22)
 
+for FindBugs:
+
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
        Version: 7.0.3
+       
+For SpotBugs
 
-
+       GroupId: com.mebigfatguy.fb-contrib
+    ArtifactId: fb-contrib
+       Version: 7.0.3.sb
+       
+       
 Developer
 * Dave Brosius
 
