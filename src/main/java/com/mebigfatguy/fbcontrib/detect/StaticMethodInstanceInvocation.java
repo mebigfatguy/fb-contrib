@@ -23,7 +23,7 @@ import java.util.BitSet;
 import java.util.Iterator;
 import java.util.List;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -80,7 +80,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
      */
     private boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.INVOKESTATIC));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.INVOKESTATIC));
     }
 
     /**

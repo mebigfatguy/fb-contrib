@@ -20,7 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -67,7 +67,7 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
         try {
             JavaClass cls = classContext.getJavaClass();
             int major = cls.getMajor();
-            if (major >= Constants.MAJOR_1_5) {
+            if (major >= Const.MAJOR_1_5) {
                 stack = new OpcodeStack();
                 super.visitClassContext(classContext);
             }

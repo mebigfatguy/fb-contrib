@@ -28,7 +28,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
- * looks for creation of arrays where the contents are constants, or static
+ * looks for creation of arrays where the contents are Const, or static
  * fields, and the array isn't further modified. These arrays should probably be
  * defined as static fields so the method doesn't constantly recreate the array
  * each time it is called.

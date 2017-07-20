@@ -21,7 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.JavaClass;
@@ -203,16 +203,16 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     private boolean isExpectedParmInstruction(int seen, int parmOffset, Type type) {
 
         switch (getExpectedReturnInstruction(type)) {
-            case Constants.ARETURN:
-                return isExpectedParmInstruction(Constants.ALOAD_0, Constants.ALOAD, seen, parmOffset);
-            case Constants.DRETURN:
-                return isExpectedParmInstruction(Constants.DLOAD_0, Constants.DLOAD, seen, parmOffset);
-            case Constants.FRETURN:
-                return isExpectedParmInstruction(Constants.FLOAD_0, Constants.FLOAD, seen, parmOffset);
-            case Constants.LRETURN:
-                return isExpectedParmInstruction(Constants.LLOAD_0, Constants.LLOAD, seen, parmOffset);
+            case Const.ARETURN:
+                return isExpectedParmInstruction(Const.ALOAD_0, Const.ALOAD, seen, parmOffset);
+            case Const.DRETURN:
+                return isExpectedParmInstruction(Const.DLOAD_0, Const.DLOAD, seen, parmOffset);
+            case Const.FRETURN:
+                return isExpectedParmInstruction(Const.FLOAD_0, Const.FLOAD, seen, parmOffset);
+            case Const.LRETURN:
+                return isExpectedParmInstruction(Const.LLOAD_0, Const.LLOAD, seen, parmOffset);
             default:
-                return isExpectedParmInstruction(Constants.ILOAD_0, Constants.ILOAD, seen, parmOffset);
+                return isExpectedParmInstruction(Const.ILOAD_0, Const.ILOAD, seen, parmOffset);
         }
     }
 
@@ -226,16 +226,16 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     private static int getExpectedReturnInstruction(Type type) {
 
         if ((type == Type.OBJECT) || (type == Type.STRING) || (type == Type.STRINGBUFFER) || (type == Type.THROWABLE)) {
-            return Constants.ARETURN;
+            return Const.ARETURN;
         } else if (type == Type.DOUBLE) {
-            return Constants.DRETURN;
+            return Const.DRETURN;
         } else if (type == Type.FLOAT) {
-            return Constants.FRETURN;
+            return Const.FRETURN;
         } else if (type == Type.LONG) {
-            return Constants.LRETURN;
+            return Const.LRETURN;
         }
 
-        return Constants.IRETURN;
+        return Const.IRETURN;
     }
 
     /**
@@ -248,7 +248,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
      * @return whether the access modifiers are the same
      */
     private static boolean sameAccess(int parentAccess, int childAccess) {
-        return ((parentAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)) == (childAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)));
+        return ((parentAccess & (Const.ACC_PUBLIC | Const.ACC_PROTECTED)) == (childAccess & (Const.ACC_PUBLIC | Const.ACC_PROTECTED)));
     }
 
     /**

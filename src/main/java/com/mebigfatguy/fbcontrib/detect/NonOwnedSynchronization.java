@@ -22,7 +22,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -85,7 +85,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
      */
     public boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.MONITORENTER));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.MONITORENTER));
     }
 
     /**

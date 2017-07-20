@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -131,7 +131,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
         }
 
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && bytecodeSet.get(Constants.ATHROW);
+        return (bytecodeSet != null) && bytecodeSet.get(Const.ATHROW);
     }
 
     /**
@@ -348,7 +348,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
      * @return whether the class is compiled with a jdk less than 1.4
      */
     private static boolean isPre14Class(JavaClass cls) {
-        return (cls != null) && (cls.getMajor() < Constants.MAJOR_1_4);
+        return (cls != null) && (cls.getMajor() < Const.MAJOR_1_4);
     }
 
     private void removePreviousHandlers(int pc) {

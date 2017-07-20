@@ -89,7 +89,7 @@ public class IncorrectInternalClassUse implements Detector {
     }
 
     /**
-     * implements the visitor to look for classes that reference com.sun.xxx, or org.apache.xerces.xxx classes by looking for class constants in the constant
+     * implements the visitor to look for classes that reference com.sun.xxx, or org.apache.xerces.xxx classes by looking for class Const in the constant
      * pool
      *
      * @param context

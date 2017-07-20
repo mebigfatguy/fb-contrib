@@ -28,7 +28,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantPool;
@@ -178,7 +178,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
      */
     private boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.PUTFIELD) || bytecodeSet.get(Constants.GETFIELD));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.PUTFIELD) || bytecodeSet.get(Const.GETFIELD));
     }
 
     /**

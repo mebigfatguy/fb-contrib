@@ -20,7 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.List;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -60,7 +60,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
     public void visitClassContext(ClassContext classContext) {
         try {
             javaClass = classContext.getJavaClass();
-            if (javaClass.getMajor() >= Constants.MAJOR_1_5) {
+            if (javaClass.getMajor() >= Const.MAJOR_1_5) {
                 javaClass.accept(this);
             }
         } finally {
@@ -87,7 +87,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
                 return;
             }
 
-            if ((obj.getAccessFlags() & Constants.ACC_VARARGS) != 0) {
+            if ((obj.getAccessFlags() & Const.ACC_VARARGS) != 0) {
                 return;
             }
 

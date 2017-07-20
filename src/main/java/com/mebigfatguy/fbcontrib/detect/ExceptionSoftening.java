@@ -29,7 +29,7 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -481,7 +481,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
      */
     private boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.ATHROW));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.ATHROW));
     }
 
     /**

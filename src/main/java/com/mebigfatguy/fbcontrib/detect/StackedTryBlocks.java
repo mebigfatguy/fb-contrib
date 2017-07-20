@@ -8,7 +8,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -215,7 +215,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
             }
 
             if (innerBlock.inCatch()) {
-                if (((seen >= Constants.IFEQ) && ((seen <= Constants.RET))) || (seen == GOTO_W) || OpcodeUtils.isReturn(seen)) {
+                if (((seen >= Const.IFEQ) && ((seen <= Const.RET))) || (seen == GOTO_W) || OpcodeUtils.isReturn(seen)) {
                     blocks.remove(innerBlock);
                     inBlocks.remove(inBlocks.size() - 1);
                 } else if (seen == ATHROW) {

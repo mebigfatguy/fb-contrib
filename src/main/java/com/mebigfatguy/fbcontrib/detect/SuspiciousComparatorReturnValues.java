@@ -107,8 +107,8 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to check to see what constants were returned from a comparator. If no constants were returned it can't determine anything, however
-     * if only constants were returned, it looks to see if negative positive and zero was returned. It also looks to see if a non zero value is returned
+     * implements the visitor to check to see what Const were returned from a comparator. If no Const were returned it can't determine anything, however
+     * if only Const were returned, it looks to see if negative positive and zero was returned. It also looks to see if a non zero value is returned
      * unconditionally. While it is possible that later check is ok, it usually means something is wrong.
      *
      * @param obj
@@ -250,7 +250,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     }
 
     /**
-     * processes an IRETURN looking for constants and categorizes them as negative, zero or positive. it also records a unconditional return of a non zero value
+     * processes an IRETURN looking for Const and categorizes them as negative, zero or positive. it also records a unconditional return of a non zero value
      * Throws StopOpcodeParsingException if a return value (constant) is indeterminate
      *
      */

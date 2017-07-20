@@ -21,7 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.BitSet;
 import java.util.List;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -147,7 +147,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case NEWARRAY: {
                     if (!isTOS0()) {
                         int typeCode = getIntConstant();
-                        if ((typeCode != Constants.T_BYTE) && returnArraySig.equals(SignatureUtils.toArraySignature(SignatureUtils.getTypeCodeSignature(typeCode)))) {
+                        if ((typeCode != Const.T_BYTE) && returnArraySig.equals(SignatureUtils.toArraySignature(SignatureUtils.getTypeCodeSignature(typeCode)))) {
                             userValue = SUAUserValue.UNINIT_ARRAY;
                         }
                     }

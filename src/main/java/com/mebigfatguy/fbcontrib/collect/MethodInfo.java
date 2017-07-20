@@ -18,7 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
@@ -64,11 +64,11 @@ public class MethodInfo {
     }
 
     public void addCallingAccess(int access) {
-        if ((access & Constants.ACC_PUBLIC) != 0) {
+        if ((access & Const.ACC_PUBLIC) != 0) {
             isCalledType |= PUBLIC_USE;
-        } else if ((access & Constants.ACC_PROTECTED) != 0) {
+        } else if ((access & Const.ACC_PROTECTED) != 0) {
             isCalledType |= PROTECTED_USE;
-        } else if ((access & Constants.ACC_PRIVATE) != 0) {
+        } else if ((access & Const.ACC_PRIVATE) != 0) {
             isCalledType |= PRIVATE_USE;
         } else {
             isCalledType |= PACKAGE_USE;

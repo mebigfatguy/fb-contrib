@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -349,13 +349,13 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
 
         if (needsPop) {
             int popOp = CodeByteUtils.getbyte(code, nextPC++);
-            if (popOp != Constants.POP) {
+            if (popOp != Const.POP) {
                 return false;
             }
         }
 
         int gotoOp = CodeByteUtils.getbyte(code, nextPC);
-        if ((gotoOp == Constants.GOTO) || (gotoOp == Constants.GOTO_W)) {
+        if ((gotoOp == Const.GOTO) || (gotoOp == Const.GOTO_W)) {
             int target = nextPC + CodeByteUtils.getshort(code, nextPC + 1);
             if (target > loop.getLoopFinish()) {
                 return true;
@@ -382,17 +382,17 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
 
         int nextOp = CodeByteUtils.getbyte(code, nextPC++);
 
-        if ((nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN)) {
+        if ((nextOp >= Const.IRETURN) && (nextOp <= Const.RETURN)) {
             return true;
-        } else if ((couldSeePop) && (nextOp == Constants.POP)) {
+        } else if ((couldSeePop) && (nextOp == Const.POP)) {
             nextOp = CodeByteUtils.getbyte(code, nextPC++);
-            if ((nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN)) {
+            if ((nextOp >= Const.IRETURN) && (nextOp <= Const.RETURN)) {
                 return true;
             }
         }
 
         nextOp = CodeByteUtils.getbyte(code, nextPC++);
-        return (nextOp >= Constants.IRETURN) && (nextOp <= Constants.RETURN);
+        return (nextOp >= Const.IRETURN) && (nextOp <= Const.RETURN);
     }
 
     /**

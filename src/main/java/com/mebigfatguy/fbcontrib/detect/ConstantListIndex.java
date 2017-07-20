@@ -141,7 +141,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find accesses to lists or arrays using constants
+     * implements the visitor to find accesses to lists or arrays using Const
      *
      * @param seen
      *            the currently visitor opcode

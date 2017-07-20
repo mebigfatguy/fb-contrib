@@ -23,7 +23,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that pass single character string constants as parameters to methods that alternatively have an overridden method that accepts a character
+ * looks for methods that pass single character string Const as parameters to methods that alternatively have an overridden method that accepts a character
  * instead. It is more performant for the method to handle a single character than a String.
  */
 @CustomUserValue
@@ -122,7 +122,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
     private boolean prescreen(Method obj) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(obj);
-        return (bytecodeSet != null) && ((bytecodeSet.get(Constants.LDC) || (bytecodeSet.get(Constants.LDC_W))));
+        return (bytecodeSet != null) && ((bytecodeSet.get(Const.LDC) || (bytecodeSet.get(Const.LDC_W))));
     }
 
     /**

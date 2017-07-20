@@ -26,7 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
@@ -546,7 +546,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         List<MethodInfo> methodInfos = new ArrayList<>();
         Method[] methods = cls.getMethods();
         for (Method m : methods) {
-            if ((m.getAccessFlags() & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)) != 0) {
+            if ((m.getAccessFlags() & (Const.ACC_PUBLIC | Const.ACC_PROTECTED)) != 0) {
                 ExceptionTable et = m.getExceptionTable();
                 methodInfos.add(new MethodInfo(m.getName(), m.getSignature(), et == null ? null : et.getExceptionNames()));
             }
@@ -630,7 +630,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     if ((pc >= catchEx.getStartPC()) && (pc <= catchEx.getEndPC())) {
                         int type = catchEx.getCatchType();
                         if (type != 0) {
-                            String catchExName = getConstantPool().getConstantString(type, Constants.CONSTANT_Class);
+                            String catchExName = getConstantPool().getConstantString(type, Const.CONSTANT_Class);
                             JavaClass catchException = Repository.lookupClass(catchExName);
                             if (thrownEx.instanceOf(catchException)) {
                                 return true;

@@ -22,7 +22,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -212,7 +212,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                     if ("valueOf".equals(getNameConstantOperand())) {
                         String sig = getSigConstantOperand();
                         if (sig.startsWith(SignatureBuilder.PARAM_STRING)) {
-                            if (!Values.SLASHED_JAVA_LANG_BOOLEAN.equals(boxClass) || (getClassContext().getJavaClass().getMajor() >= Constants.MAJOR_1_5)) {
+                            if (!Values.SLASHED_JAVA_LANG_BOOLEAN.equals(boxClass) || (getClassContext().getJavaClass().getMajor() >= Const.MAJOR_1_5)) {
                                 state = State.SEEN_VALUEOFSTRING;
                             }
                         } else {

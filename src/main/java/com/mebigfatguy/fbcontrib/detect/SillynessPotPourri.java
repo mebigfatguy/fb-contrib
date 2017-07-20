@@ -27,7 +27,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -368,7 +368,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
      * trim uservalue that was left behind in the dupped stack object
      */
     private void checkTrimDupStore() {
-        if ((stack.getStackDepth() >= 2) && (getPrevOpcode(1) == Constants.DUP)) {
+        if ((stack.getStackDepth() >= 2) && (getPrevOpcode(1) == Const.DUP)) {
             OpcodeStack.Item item = stack.getStackItem(0);
             SPPUserValue uv = (SPPUserValue) item.getUserValue();
             if ((uv == null) || (uv.getMethod() != SPPMethod.TRIM)) {
@@ -1006,12 +1006,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
             Field[] fields = getClassContext().getJavaClass().getFields();
             for (Field f : fields) {
-                if (((f.getAccessFlags() & (Constants.ACC_FINAL | Constants.ACC_STATIC)) == (Constants.ACC_FINAL | Constants.ACC_STATIC))
+                if (((f.getAccessFlags() & (Const.ACC_FINAL | Const.ACC_STATIC)) == (Const.ACC_FINAL | Const.ACC_STATIC))
                         && Values.SIG_JAVA_LANG_STRING.equals(f.getSignature())) {
                     ConstantValue cv = f.getConstantValue();
                     if (cv != null) {
                         int cvIndex = cv.getConstantValueIndex();
-                        staticConstants.add(getConstantPool().getConstantString(cvIndex, Constants.CONSTANT_String));
+                        staticConstants.add(getConstantPool().getConstantString(cvIndex, Const.CONSTANT_String));
                     }
                 }
             }

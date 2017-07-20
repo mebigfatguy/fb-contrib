@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -102,7 +102,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
      */
     private boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.IINC)) && (bytecodeSet.get(Constants.GOTO) || bytecodeSet.get(Constants.GOTO_W));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.IINC)) && (bytecodeSet.get(Const.GOTO) || bytecodeSet.get(Const.GOTO_W));
     }
 
     /**

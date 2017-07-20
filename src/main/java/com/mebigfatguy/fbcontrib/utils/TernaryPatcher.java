@@ -21,7 +21,7 @@ package com.mebigfatguy.fbcontrib.utils;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 
 import edu.umd.cs.findbugs.OpcodeStack;
 
@@ -58,7 +58,7 @@ public final class TernaryPatcher {
         if (sawGOTO) {
             return;
         }
-        sawGOTO = (opcode == Constants.GOTO) || (opcode == Constants.GOTO_W);
+        sawGOTO = (opcode == Const.GOTO) || (opcode == Const.GOTO_W);
         if (sawGOTO) {
             int depth = stack.getStackDepth();
             if (depth > 0) {
@@ -82,7 +82,7 @@ public final class TernaryPatcher {
      *            the opcode currently seen
      */
     public static void post(OpcodeStack stack, int opcode) {
-        if (!sawGOTO || (opcode == Constants.GOTO) || (opcode == Constants.GOTO_W)) {
+        if (!sawGOTO || (opcode == Const.GOTO) || (opcode == Const.GOTO_W)) {
             return;
         }
         int depth = stack.getStackDepth();

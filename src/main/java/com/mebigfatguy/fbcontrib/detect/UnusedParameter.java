@@ -24,7 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -107,7 +107,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
         }
 
         int accessFlags = m.getAccessFlags();
-        if (((accessFlags & (Constants.ACC_STATIC | Constants.ACC_PRIVATE)) == 0) || ((accessFlags & Constants.ACC_SYNTHETIC) != 0)) {
+        if (((accessFlags & (Const.ACC_STATIC | Const.ACC_PRIVATE)) == 0) || ((accessFlags & Const.ACC_SYNTHETIC) != 0)) {
             return;
         }
 
@@ -117,7 +117,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
             return;
         }
         int firstReg = 0;
-        if ((accessFlags & Constants.ACC_STATIC) == 0) {
+        if ((accessFlags & Const.ACC_STATIC) == 0) {
             ++firstReg;
         }
 

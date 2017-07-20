@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -58,7 +58,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             JavaClass cls = classContext.getJavaClass();
-            if (cls.getMajor() >= Constants.MAJOR_1_5) {
+            if (cls.getMajor() >= Const.MAJOR_1_5) {
                 fieldValues = new HashMap<>();
                 nameToField = new HashMap<>();
                 for (Field f : cls.getFields()) {

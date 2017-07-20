@@ -22,7 +22,7 @@ import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.List;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -88,11 +88,11 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
      *
      * @param method
      *            the context object of the current method
-     * @return if the class loads constants
+     * @return if the class loads Const
      */
     public boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.LDC) || bytecodeSet.get(Constants.LDC_W));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.LDC) || bytecodeSet.get(Const.LDC_W));
     }
 
     /**

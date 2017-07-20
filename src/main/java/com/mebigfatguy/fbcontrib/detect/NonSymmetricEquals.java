@@ -22,7 +22,7 @@ import java.util.BitSet;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -101,7 +101,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
      */
     private boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.CHECKCAST));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.CHECKCAST));
     }
 
     /**

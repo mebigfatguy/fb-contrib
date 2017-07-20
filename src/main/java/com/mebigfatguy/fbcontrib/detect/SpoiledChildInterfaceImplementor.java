@@ -22,7 +22,7 @@ import java.util.BitSet;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -147,7 +147,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 
             if (m.isSynthetic()) {
                 BitSet bytecodeSet = ClassContext.getBytecodeSet(cls, m);
-                isSyntheticForParentCall = (bytecodeSet != null) && bytecodeSet.get(Constants.INVOKESPECIAL);
+                isSyntheticForParentCall = (bytecodeSet != null) && bytecodeSet.get(Const.INVOKESPECIAL);
             } else {
                 isSyntheticForParentCall = false;
             }

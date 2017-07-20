@@ -22,7 +22,7 @@ import java.util.BitSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantString;
@@ -105,7 +105,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
         }
 
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.ATHROW));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.ATHROW));
     }
 
     /**

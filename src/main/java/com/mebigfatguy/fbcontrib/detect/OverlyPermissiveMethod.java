@@ -22,7 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
@@ -64,9 +64,9 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 	private static Map<Integer, String> DECLARED_ACCESS = new HashMap<>();
 
 	static {
-		DECLARED_ACCESS.put(Integer.valueOf(Constants.ACC_PRIVATE), "private");
-		DECLARED_ACCESS.put(Integer.valueOf(Constants.ACC_PROTECTED), "protected");
-		DECLARED_ACCESS.put(Integer.valueOf(Constants.ACC_PUBLIC), "public");
+		DECLARED_ACCESS.put(Integer.valueOf(Const.ACC_PRIVATE), "private");
+		DECLARED_ACCESS.put(Integer.valueOf(Const.ACC_PROTECTED), "protected");
+		DECLARED_ACCESS.put(Integer.valueOf(Const.ACC_PUBLIC), "public");
 		DECLARED_ACCESS.put(Integer.valueOf(0), "package private");
 	}
 
@@ -109,7 +109,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
 		if (isAssumedPublic(methodName)) {
 			MethodInfo mi = Statistics.getStatistics().getMethodStatistics(cls.getClassName(), methodName, sig);
-			mi.addCallingAccess(Constants.ACC_PUBLIC);
+			mi.addCallingAccess(Const.ACC_PUBLIC);
 		} else if (!hasRuntimeAnnotations(m) && !isGetterSetter(methodName, sig)) {
 			stack.resetForMethodEntry(this);
 			super.visitCode(obj);
@@ -132,7 +132,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 						sig);
 				if (mi != null) {
 					if (seen == INVOKEINTERFACE) {
-						mi.addCallingAccess(Constants.ACC_PUBLIC);
+						mi.addCallingAccess(Const.ACC_PUBLIC);
 					} else {
 						String calledPackage;
 						int slashPos = calledClass.lastIndexOf('/');
@@ -145,16 +145,16 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 						boolean samePackage = calledPackage.equals(callingPackage);
 
 						if (sameClass) {
-							mi.addCallingAccess(Constants.ACC_PRIVATE);
+							mi.addCallingAccess(Const.ACC_PRIVATE);
 						} else if (samePackage) {
 							mi.addCallingAccess(0);
 						} else {
 							if (seen == INVOKESTATIC) {
-								mi.addCallingAccess(Constants.ACC_PUBLIC);
+								mi.addCallingAccess(Const.ACC_PUBLIC);
 							} else if (isCallingOnThis(sig)) {
-								mi.addCallingAccess(Constants.ACC_PROTECTED);
+								mi.addCallingAccess(Const.ACC_PROTECTED);
 							} else {
-								mi.addCallingAccess(Constants.ACC_PUBLIC);
+								mi.addCallingAccess(Const.ACC_PUBLIC);
 							}
 						}
 					}
@@ -259,7 +259,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 			MethodInfo mi = entry.getValue();
 
 			int declaredAccess = mi.getDeclaredAccess();
-			if ((declaredAccess & Constants.ACC_PRIVATE) != 0) {
+			if ((declaredAccess & Const.ACC_PRIVATE) != 0) {
 				continue;
 			}
 
@@ -281,7 +281,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
 						BugInstance bi = new BugInstance(this, BugType.OPM_OVERLY_PERMISSIVE_METHOD.name(),
 								LOW_PRIORITY).addClass(clsName).addMethod(clsName, key.getMethodName(),
-										key.getSignature(), (declaredAccess & Constants.ACC_STATIC) != 0);
+										key.getSignature(), (declaredAccess & Const.ACC_STATIC) != 0);
 
 						String descr = String.format("- Method declared %s but could be declared %s",
 								getDeclaredAccessValue(declaredAccess), getRequiredAccessValue(mi));
@@ -297,7 +297,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 	}
 
 	private static boolean isOverlyPermissive(int declaredAccess) {
-		return (declaredAccess & Constants.ACC_PUBLIC) != 0;
+		return (declaredAccess & Const.ACC_PUBLIC) != 0;
 	}
 
 	/**
@@ -354,7 +354,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
 	private static String getDeclaredAccessValue(int declaredAccess) {
 		return DECLARED_ACCESS.get(Integer
-				.valueOf(declaredAccess & (Constants.ACC_PRIVATE | Constants.ACC_PROTECTED | Constants.ACC_PUBLIC)));
+				.valueOf(declaredAccess & (Const.ACC_PRIVATE | Const.ACC_PROTECTED | Const.ACC_PUBLIC)));
 	}
 
 	private static Object getRequiredAccessValue(MethodInfo mi) {

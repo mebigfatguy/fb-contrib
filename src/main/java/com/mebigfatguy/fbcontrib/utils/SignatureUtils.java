@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -135,28 +135,28 @@ public final class SignatureUtils {
      */
     public static String getTypeCodeSignature(int typeCode) {
         switch (typeCode) {
-            case Constants.T_BOOLEAN:
+            case Const.T_BOOLEAN:
                 return Values.SIG_PRIMITIVE_BOOLEAN;
 
-            case Constants.T_CHAR:
+            case Const.T_CHAR:
                 return Values.SIG_PRIMITIVE_CHAR;
 
-            case Constants.T_FLOAT:
+            case Const.T_FLOAT:
                 return Values.SIG_PRIMITIVE_FLOAT;
 
-            case Constants.T_DOUBLE:
+            case Const.T_DOUBLE:
                 return Values.SIG_PRIMITIVE_DOUBLE;
 
-            case Constants.T_BYTE:
+            case Const.T_BYTE:
                 return Values.SIG_PRIMITIVE_BYTE;
 
-            case Constants.T_SHORT:
+            case Const.T_SHORT:
                 return Values.SIG_PRIMITIVE_SHORT;
 
-            case Constants.T_INT:
+            case Const.T_INT:
                 return Values.SIG_PRIMITIVE_INT;
 
-            case Constants.T_LONG:
+            case Const.T_LONG:
                 return Values.SIG_PRIMITIVE_LONG;
         }
 

@@ -27,7 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Const;
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -176,7 +176,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             classVersion = classContext.getJavaClass().getMajor();
-            if (classVersion >= Constants.MAJOR_1_4) {
+            if (classVersion >= Const.MAJOR_1_4) {
                 stack = new OpcodeStack();
                 super.visitClassContext(classContext);
             }

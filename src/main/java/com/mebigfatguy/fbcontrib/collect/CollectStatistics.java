@@ -24,7 +24,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -120,15 +120,15 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         int accessFlags = method.getAccessFlags();
         MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(), numMethodCalls);
         if (clsName.contains("$") || ((accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0)) {
-            mi.addCallingAccess(Constants.ACC_PUBLIC);
-        } else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
+            mi.addCallingAccess(Const.ACC_PUBLIC);
+        } else if ((accessFlags & Const.ACC_PRIVATE) == 0) {
             if (isAssociationedWithAnnotations(method)) {
-                mi.addCallingAccess(Constants.ACC_PUBLIC);
+                mi.addCallingAccess(Const.ACC_PUBLIC);
             } else {
                 String methodSig = getMethodName() + getMethodSig();
                 for (String sig : COMMON_METHOD_SIG_PREFIXES) {
                     if (methodSig.startsWith(sig)) {
-                        mi.addCallingAccess(Constants.ACC_PUBLIC);
+                        mi.addCallingAccess(Const.ACC_PUBLIC);
                         break;
                     }
                 }

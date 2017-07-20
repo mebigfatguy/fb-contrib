@@ -18,7 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
@@ -47,11 +47,11 @@ public final class RegisterUtils {
      * @return the register stored into
      */
     public static int getAStoreReg(final DismantleBytecode dbc, final int seen) {
-        if (seen == Constants.ASTORE) {
+        if (seen == Const.ASTORE) {
             return dbc.getRegisterOperand();
         }
         if (OpcodeUtils.isAStore(seen)) {
-            return seen - Constants.ASTORE_0;
+            return seen - Const.ASTORE_0;
         }
         return -1;
     }
@@ -66,11 +66,11 @@ public final class RegisterUtils {
      * @return the register loaded from
      */
     public static int getALoadReg(DismantleBytecode dbc, int seen) {
-        if (seen == Constants.ALOAD) {
+        if (seen == Const.ALOAD) {
             return dbc.getRegisterOperand();
         }
         if (OpcodeUtils.isALoad(seen)) {
-            return seen - Constants.ALOAD_0;
+            return seen - Const.ALOAD_0;
         }
         return -1;
     }
@@ -85,20 +85,20 @@ public final class RegisterUtils {
      * @return the register stored into
      */
     public static int getStoreReg(DismantleBytecode dbc, int seen) {
-        if ((seen == Constants.ASTORE) || (seen == Constants.ISTORE) || (seen == Constants.LSTORE) || (seen == Constants.FSTORE)
-                || (seen == Constants.DSTORE)) {
+        if ((seen == Const.ASTORE) || (seen == Const.ISTORE) || (seen == Const.LSTORE) || (seen == Const.FSTORE)
+                || (seen == Const.DSTORE)) {
             return dbc.getRegisterOperand();
         }
         if (OpcodeUtils.isIStore(seen)) {
-            return seen - Constants.ISTORE_0;
+            return seen - Const.ISTORE_0;
         } else if (OpcodeUtils.isLStore(seen)) {
-            return seen - Constants.LSTORE_0;
+            return seen - Const.LSTORE_0;
         } else if (OpcodeUtils.isFStore(seen)) {
-            return seen - Constants.FSTORE_0;
+            return seen - Const.FSTORE_0;
         } else if (OpcodeUtils.isDStore(seen)) {
-            return seen - Constants.DSTORE_0;
+            return seen - Const.DSTORE_0;
         } else if (OpcodeUtils.isAStore(seen)) {
-            return seen - Constants.ASTORE_0;
+            return seen - Const.ASTORE_0;
         }
         return -1;
     }
@@ -113,19 +113,19 @@ public final class RegisterUtils {
      * @return the register stored into
      */
     public static int getLoadReg(DismantleBytecode dbc, int seen) {
-        if ((seen == Constants.ALOAD) || (seen == Constants.ILOAD) || (seen == Constants.LLOAD) || (seen == Constants.FLOAD) || (seen == Constants.DLOAD)) {
+        if ((seen == Const.ALOAD) || (seen == Const.ILOAD) || (seen == Const.LLOAD) || (seen == Const.FLOAD) || (seen == Const.DLOAD)) {
             return dbc.getRegisterOperand();
         }
         if (OpcodeUtils.isILoad(seen)) {
-            return seen - Constants.ILOAD_0;
+            return seen - Const.ILOAD_0;
         } else if (OpcodeUtils.isLLoad(seen)) {
-            return seen - Constants.LLOAD_0;
+            return seen - Const.LLOAD_0;
         } else if (OpcodeUtils.isFLoad(seen)) {
-            return seen - Constants.FLOAD_0;
+            return seen - Const.FLOAD_0;
         } else if (OpcodeUtils.isDLoad(seen)) {
-            return seen - Constants.DLOAD_0;
+            return seen - Const.DLOAD_0;
         } else if (OpcodeUtils.isALoad(seen)) {
-            return seen - Constants.ALOAD_0;
+            return seen - Const.ALOAD_0;
         }
         return -1;
     }

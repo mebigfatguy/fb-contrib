@@ -20,7 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
@@ -85,7 +85,7 @@ public class OverzealousCasting extends BytecodeScanningDetector {
      */
     private boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.CHECKCAST));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.CHECKCAST));
     }
 
     /**

@@ -18,7 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.generic.Type;
 
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -26,7 +26,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * a class holding common constants used throughout fb-contrib
+ * a class holding common Const used throughout fb-contrib
  */
 public final class Values {
 
@@ -132,8 +132,8 @@ public final class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_UUID = "java/util/UUID";
 
-    public static final Integer JAVA_1_1 = Integer.valueOf(Constants.MAJOR_1_1);
-    public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
+    public static final Integer JAVA_1_1 = Integer.valueOf(Const.MAJOR_1_1);
+    public static final Integer JAVA_5 = Integer.valueOf(Const.MAJOR_1_5);
 
     public static final Integer NORMAL_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.NORMAL_PRIORITY);
     public static final Integer LOW_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.LOW_PRIORITY);

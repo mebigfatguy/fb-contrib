@@ -20,7 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 
@@ -197,6 +197,6 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector {
 
     private boolean prescreen() {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(getMethod());
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.NEW) || bytecodeSet.get(Constants.ANEWARRAY) || bytecodeSet.get(Constants.MULTIANEWARRAY));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.NEW) || bytecodeSet.get(Const.ANEWARRAY) || bytecodeSet.get(Const.MULTIANEWARRAY));
     }
 }

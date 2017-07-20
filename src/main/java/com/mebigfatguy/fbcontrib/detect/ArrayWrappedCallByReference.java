@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -89,7 +89,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
      */
     public boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.NEWARRAY) || bytecodeSet.get(Constants.ANEWARRAY));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.NEWARRAY) || bytecodeSet.get(Const.ANEWARRAY));
     }
 
     /**

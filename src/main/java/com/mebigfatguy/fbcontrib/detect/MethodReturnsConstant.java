@@ -23,7 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -66,7 +66,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to collect all methods that are overloads. These methods should be ignored, as you may differentiate constants based on parameter
+     * implements the visitor to collect all methods that are overloads. These methods should be ignored, as you may differentiate Const based on parameter
      * type, or value.
      *
      * @param classContext
@@ -101,7 +101,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
         }
 
         int aFlags = m.getAccessFlags();
-        if ((((aFlags & Constants.ACC_PRIVATE) != 0) || ((aFlags & Constants.ACC_STATIC) != 0)) && ((aFlags & Constants.ACC_SYNTHETIC) == 0)
+        if ((((aFlags & Const.ACC_PRIVATE) != 0) || ((aFlags & Const.ACC_STATIC) != 0)) && ((aFlags & Const.ACC_SYNTHETIC) == 0)
                 && (!m.getSignature().endsWith(")Z"))) {
             stack.resetForMethodEntry(this);
             returnRegister = Values.NEGATIVE_ONE;
@@ -113,7 +113,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 super.visitCode(obj);
                 if ((returnConstant != null)) {
                     BugInstance bi = new BugInstance(this, BugType.MRC_METHOD_RETURNS_CONSTANT.name(),
-                            ((aFlags & Constants.ACC_PRIVATE) != 0) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this);
+                            ((aFlags & Const.ACC_PRIVATE) != 0) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this);
                     if (returnPC >= 0) {
                         bi.addSourceLine(this, returnPC);
                     }

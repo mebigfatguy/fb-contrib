@@ -218,7 +218,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         }
 
         if (isInSpecial) {
-            // TODO: Really we have to make sure that items are added to the map as 'constants'
+            // TODO: Really we have to make sure that items are added to the map as 'Const'
             return;
         }
 

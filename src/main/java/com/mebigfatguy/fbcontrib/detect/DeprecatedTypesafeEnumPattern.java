@@ -21,7 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -71,7 +71,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext context) {
         try {
             JavaClass cls = context.getJavaClass();
-            if (!cls.isEnum() && (cls.getMajor() >= Constants.MAJOR_1_5)) {
+            if (!cls.isEnum() && (cls.getMajor() >= Const.MAJOR_1_5)) {
                 Method[] methods = cls.getMethods();
                 for (Method m : methods) {
                     if (Values.CONSTRUCTOR.equals(m.getName()) && !m.isPrivate()) {
@@ -128,7 +128,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find allocations of TypesafeEnum constants
+     * implements the visitor to find allocations of TypesafeEnum Const
      *
      * @param seen
      *            the currently parsed opcode
