@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -55,11 +56,11 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     /**
      * methodname:methodsig to type of setter methods
      */
-    private Map<String, String> attributes;
+    private Map<QMethod, String> attributes;
     /**
-     * methodname:methodsig to (fieldname:fieldtype)s
+     * QMethod to (fieldname:fieldtype)s
      */
-    private Map<String, Map<String, SourceLineAnnotation>> methodWrites;
+    private Map<QMethod, Map<String, SourceLineAnnotation>> methodWrites;
     private Map<String, FieldAnnotation> fieldAnnotations;
 
     /**
@@ -113,8 +114,8 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
      *            the class to look for setter methods to infer properties
      * @return the map of possible attributes/types
      */
-    private static Map<String, String> getAttributes(JavaClass cls) {
-        Map<String, String> atts = new HashMap<>();
+    private static Map<QMethod, String> getAttributes(JavaClass cls) {
+        Map<QMethod, String> atts = new HashMap<>();
         Method[] methods = cls.getMethods();
         for (Method m : methods) {
             String name = m.getName();
@@ -126,7 +127,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
                     if (validAttrTypes.contains(parmSig)) {
                         Code code = m.getCode();
                         if ((code != null) && (code.getCode().length < MAX_ATTRIBUTE_CODE_LENGTH)) {
-                            atts.put(name + ':' + sig, parmSig);
+                            atts.put(new QMethod(name, sig), parmSig);
                         }
                     }
                 }
@@ -158,7 +159,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         if (seen == PUTFIELD) {
-            String methodInfo = getMethodName() + ':' + getMethodSig();
+            QMethod methodInfo = new QMethod(getMethodName(), getMethodSig());
             Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
             if (fields == null) {
                 fields = new HashMap<>();
@@ -177,8 +178,8 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
      * generates all the bug reports for attributes that are not recycleable
      */
     private void reportBugs() {
-        for (Map.Entry<String, String> attEntry : attributes.entrySet()) {
-            String methodInfo = attEntry.getKey();
+        for (Map.Entry<QMethod, String> attEntry : attributes.entrySet()) {
+            QMethod methodInfo = attEntry.getKey();
             String attType = attEntry.getValue();
 
             Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
@@ -196,7 +197,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
             String fieldName = fieldInfo.substring(0, colonPos);
 
-            for (Map.Entry<String, Map<String, SourceLineAnnotation>> fwEntry : methodWrites.entrySet()) {
+            for (Map.Entry<QMethod, Map<String, SourceLineAnnotation>> fwEntry : methodWrites.entrySet()) {
                 if (fwEntry.getKey().equals(methodInfo)) {
                     continue;
                 }
