@@ -1,34 +1,34 @@
 package ex;
+
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeSet;
 
 public class PSC_Sample {
 
     public void testPSC(List<PSC_Sample> samples) {
-        Set<String> names = new HashSet<String>();
+        Set<String> names = new HashSet<>();
         for (PSC_Sample s : samples) {
             names.add(s.toString());
         }
     }
 
     public void testPSCMaps(Map<String, String> input) {
-        Map<String, String> output = new HashMap<String, String>();
+        Map<String, String> output = new HashMap<>();
         for (Map.Entry<String, String> entry : input.entrySet()) {
             output.put(entry.getKey().intern(), entry.getValue());
         }
     }
 
     public void testPSCEnumerated() {
-        Set<String> commonWords = new HashSet<String>();
+        Set<String> commonWords = new HashSet<>();
         commonWords.add("a");
         commonWords.add("an");
         commonWords.add("the");
@@ -49,7 +49,7 @@ public class PSC_Sample {
     }
 
     public List<String> testAddAllToCtor(List<String> l) {
-        List<String> ll = new ArrayList<String>();
+        List<String> ll = new ArrayList<>();
         ll.addAll(l);
 
         ll.add("FooBar");
@@ -57,14 +57,14 @@ public class PSC_Sample {
     }
 
     public void fpDontHaveCollectionForSizing(Iterator<Long> it) {
-        Deque<Long> ad = new ArrayDeque<Long>();
+        Set<Long> ad = new TreeSet<>();
         while (it.hasNext()) {
             ad.add(it.next());
         }
     }
 
     public void fpConditionalInLoop(Set<String> source) {
-        List<String> dest = new ArrayList<String>();
+        List<String> dest = new ArrayList<>();
         for (String s : source) {
             if (s.length() > 0) {
                 dest.add(s);
@@ -73,7 +73,7 @@ public class PSC_Sample {
     }
 
     public List<String> fpAddSubCollection(Map<String, Set<String>> s) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         for (Map.Entry<String, Set<String>> entry : s.entrySet()) {
             l.add(entry.getKey());
             l.addAll(entry.getValue());
@@ -82,32 +82,32 @@ public class PSC_Sample {
     }
 
     public void fpSwitchInLoop(Set<Integer> source) {
-        List<Integer> dest = new ArrayList<Integer>();
+        List<Integer> dest = new ArrayList<>();
         for (Integer s : source) {
             switch (s.intValue()) {
-            case 0:
-                dest.add(s);
+                case 0:
+                    dest.add(s);
                 break;
-            case 1:
-                dest.remove(s);
+                case 1:
+                    dest.remove(s);
                 break;
             }
         }
     }
 
     public void fpAllocationInLoop(Map<String, String> source) {
-        Map<String, List<String>> dest = new HashMap<String, List<String>>();
+        Map<String, List<String>> dest = new HashMap<>();
 
         for (Map.Entry<String, String> entry : source.entrySet()) {
 
-            List<String> l = new ArrayList<String>();
+            List<String> l = new ArrayList<>();
             l.add(entry.getValue());
             dest.put(entry.getKey(), l);
         }
     }
 
     public List<String> fpUnknownSrcSize(BufferedReader br) throws IOException {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         String line;
         while ((line = br.readLine()) != null) {
             l.add(line);
@@ -117,7 +117,7 @@ public class PSC_Sample {
     }
 
     public List<Exception> fpPSCInCatchBlock(List<String> src) {
-        List<Exception> exceptions = new ArrayList<Exception>();
+        List<Exception> exceptions = new ArrayList<>();
 
         for (String s : src) {
             try {
@@ -128,13 +128,14 @@ public class PSC_Sample {
             }
         }
 
-        List<Exception> exceptions2 = new ArrayList<Exception>();
+        List<Exception> exceptions2 = new ArrayList<>();
 
         for (String s : src) {
             try {
                 s = s.substring(1000, 1001);
-                if (s == null)
+                if (s == null) {
                     return null;
+                }
             } catch (IndexOutOfBoundsException e) {
                 exceptions2.add(e);
             }
