@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.CodeException;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
@@ -58,7 +60,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     private Map<Comparable<?>, Integer> storeToAllocNumber;
     private Map<Integer, Integer> allocLocation;
     private Map<Integer, List<Integer>> allocToAddPCs;
-    private List<DownBranch> downBranches;
+    private List<CodeRange> optionalRanges;
 
     public PresizeCollections(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -77,14 +79,14 @@ public class PresizeCollections extends BytecodeScanningDetector {
             storeToAllocNumber = new HashMap<>();
             allocLocation = new HashMap<>();
             allocToAddPCs = new HashMap<>();
-            downBranches = new ArrayList<>();
+            optionalRanges = new ArrayList<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
             storeToAllocNumber = null;
             allocLocation = null;
             allocToAddPCs = null;
-            downBranches = null;
+            optionalRanges = null;
         }
     }
 
@@ -101,7 +103,10 @@ public class PresizeCollections extends BytecodeScanningDetector {
         storeToAllocNumber.clear();
         allocLocation.clear();
         allocToAddPCs.clear();
-        downBranches.clear();
+        optionalRanges.clear();
+
+        addExceptionRanges(obj);
+
         super.visitCode(obj);
 
         for (List<Integer> pcs : allocToAddPCs.values()) {
@@ -188,10 +193,15 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case LOOKUPSWITCH:
                 case TABLESWITCH:
                     int[] offsets = getSwitchOffsets();
-                    if (offsets.length > 1) {
-                        int secondCase = offsets[1] + getPC();
-                        DownBranch db = new DownBranch(getPC(), secondCase);
-                        downBranches.add(db);
+                    if (offsets.length >= 2) {
+                        int pc = getPC();
+                        int thisOffset = pc + offsets[0];
+                        for (int o = 0; o < (offsets.length - 1); o++) {
+                            int nextOffset = offsets[o + 1] + pc;
+                            CodeRange db = new CodeRange(thisOffset, nextOffset);
+                            optionalRanges.add(db);
+                            thisOffset = nextOffset;
+                        }
                     }
                 break;
 
@@ -219,7 +229,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                                 List<Integer> pcs = entry.getValue();
                                 for (int pc : pcs) {
                                     if (pc > target) {
-                                        int numDownBranches = countDownBranches(target, pc);
+                                        int numDownBranches = countDownBranches(allocLoc.intValue(), pc);
                                         if (numDownBranches == 1) {
                                             bugReporter.reportBug(new BugInstance(this, BugType.PSC_PRESIZE_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this)
                                                     .addMethod(this).addSourceLine(this, pc));
@@ -231,8 +241,8 @@ public class PresizeCollections extends BytecodeScanningDetector {
                             }
                         }
                     } else {
-                        DownBranch db = new DownBranch(getPC(), getBranchTarget());
-                        downBranches.add(db);
+                        CodeRange db = new CodeRange(getPC(), getBranchTarget());
+                        optionalRanges.add(db);
                     }
                 break;
 
@@ -281,7 +291,9 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 }
 
             }
-        } finally {
+        } finally
+
+        {
             stack.sawOpcode(this, seen);
             if ((allocationNumber != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
@@ -293,10 +305,10 @@ public class PresizeCollections extends BytecodeScanningDetector {
         }
     }
 
-    private int countDownBranches(int loopTop, int addPC) {
+    private int countDownBranches(int allocationPos, int addPC) {
         int numDownBranches = 0;
-        for (DownBranch db : downBranches) {
-            if ((db.fromPC < addPC) && (db.toPC > addPC)) {
+        for (CodeRange db : optionalRanges) {
+            if ((db.fromPC > allocationPos) && (db.fromPC < addPC) && (db.toPC > addPC)) {
                 numDownBranches++;
             }
         }
@@ -304,13 +316,60 @@ public class PresizeCollections extends BytecodeScanningDetector {
         return numDownBranches;
     }
 
-    static class DownBranch {
+    /**
+     * adds optionalRanges for all try/catch blocks
+     *
+     * @param c
+     *            the currently parsed code object
+     */
+    private void addExceptionRanges(Code c) {
+
+        Map<CodeRange, List<Integer>> ranges = new HashMap<>();
+        CodeException[] ces = c.getExceptionTable();
+        if (ces != null) {
+            for (CodeException ce : c.getExceptionTable()) {
+                CodeRange range = new CodeRange(ce.getStartPC(), ce.getEndPC());
+                List<Integer> handlers = ranges.get(range);
+                if (handlers == null) {
+                    handlers = new ArrayList<>(6);
+                    ranges.put(range, handlers);
+                }
+                handlers.add(ce.getHandlerPC());
+            }
+        }
+
+        for (Map.Entry<CodeRange, List<Integer>> entry : ranges.entrySet()) {
+            optionalRanges.add(entry.getKey());
+            List<Integer> handlers = entry.getValue();
+            Collections.sort(handlers);
+            for (int h = 0; h < (handlers.size() - 1); h++) {
+                optionalRanges.add(new CodeRange(handlers.get(h), handlers.get(h + 1)));
+            }
+        }
+    }
+
+    static class CodeRange {
         public int fromPC;
         public int toPC;
 
-        DownBranch(int from, int to) {
+        CodeRange(int from, int to) {
             fromPC = from;
             toPC = to;
+        }
+
+        @Override
+        public int hashCode() {
+            return fromPC ^ toPC;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof CodeRange)) {
+                return false;
+            }
+
+            CodeRange that = (CodeRange) o;
+            return (fromPC == that.fromPC) && (toPC == that.toPC);
         }
 
         @Override
