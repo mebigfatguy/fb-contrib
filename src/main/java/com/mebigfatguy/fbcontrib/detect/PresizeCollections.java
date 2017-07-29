@@ -54,7 +54,8 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private int allocNumber;
+    private int nextAllocNumber;
+    private Map<Comparable<?>, Integer> storeToAllocNumber;
     private Map<Integer, Integer> allocLocation;
     private Map<Integer, List<Integer>> allocToAddPCs;
     private List<DownBranch> downBranches;
@@ -73,12 +74,14 @@ public class PresizeCollections extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
+            storeToAllocNumber = new HashMap<>();
             allocLocation = new HashMap<>();
             allocToAddPCs = new HashMap<>();
             downBranches = new ArrayList<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
+            storeToAllocNumber = null;
             allocLocation = null;
             allocToAddPCs = null;
             downBranches = null;
@@ -94,7 +97,8 @@ public class PresizeCollections extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
-        allocNumber = 0;
+        nextAllocNumber = 1;
+        storeToAllocNumber.clear();
         allocLocation.clear();
         allocToAddPCs.clear();
         downBranches.clear();
@@ -118,6 +122,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "CLI_CONSTANT_LIST_INDEX", justification = "Constrained by FindBugs API")
     @Override
     public void sawOpcode(int seen) {
+        Integer allocationNumber = null;
         boolean sawAlloc = false;
         try {
             stack.precomputation(this);
@@ -130,6 +135,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         if (Values.CONSTRUCTOR.equals(methodName)) {
                             String signature = getSigConstantOperand();
                             if (SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {
+                                allocationNumber = Integer.valueOf(nextAllocNumber++);
                                 sawAlloc = true;
                             }
                         }
@@ -236,14 +242,53 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case IFGT:
                 // null check and >, >= branches are hard to presize
                 break;
+
+                case ASTORE:
+                case ASTORE_0:
+                case ASTORE_1:
+                case ASTORE_2:
+                case ASTORE_3: {
+                    if (stack.getStackDepth() > 0) {
+                        Integer alloc = (Integer) stack.getStackItem(0).getUserValue();
+                        if (alloc != null) {
+                            storeToAllocNumber.put(getRegisterOperand(), alloc);
+                        }
+                    }
+                }
+                break;
+
+                case ALOAD:
+                case ALOAD_0:
+                case ALOAD_1:
+                case ALOAD_2:
+                case ALOAD_3: {
+                    allocationNumber = storeToAllocNumber.get(getRegisterOperand());
+                }
+                break;
+
+                case PUTFIELD: {
+                    if (stack.getStackDepth() > 0) {
+                        Integer alloc = (Integer) stack.getStackItem(0).getUserValue();
+                        if (alloc != null) {
+                            storeToAllocNumber.put(getNameConstantOperand(), alloc);
+                        }
+                    }
+                }
+                break;
+
+                case GETFIELD: {
+                    allocationNumber = storeToAllocNumber.get(getNameConstantOperand());
+                }
+
             }
         } finally {
             stack.sawOpcode(this, seen);
-            if (sawAlloc && (stack.getStackDepth() > 0)) {
+            if ((allocationNumber != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
-                ++allocNumber;
-                item.setUserValue(Integer.valueOf(allocNumber));
-                allocLocation.put(Integer.valueOf(allocNumber), Integer.valueOf(getPC()));
+                item.setUserValue(allocationNumber);
+                if (sawAlloc) {
+                    allocLocation.put(allocationNumber, Integer.valueOf(getPC()));
+                }
             }
         }
     }
@@ -251,7 +296,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     private int countDownBranches(int loopTop, int addPC) {
         int numDownBranches = 0;
         for (DownBranch db : downBranches) {
-            if ((db.fromPC > loopTop) && (db.fromPC < addPC) && (db.toPC > addPC)) {
+            if ((db.fromPC < addPC) && (db.toPC > addPC)) {
                 numDownBranches++;
             }
         }
