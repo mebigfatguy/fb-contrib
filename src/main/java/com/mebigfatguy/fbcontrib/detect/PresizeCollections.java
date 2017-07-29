@@ -188,10 +188,15 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case LOOKUPSWITCH:
                 case TABLESWITCH:
                     int[] offsets = getSwitchOffsets();
-                    if (offsets.length > 1) {
-                        int secondCase = offsets[1] + getPC();
-                        DownBranch db = new DownBranch(getPC(), secondCase);
-                        downBranches.add(db);
+                    if (offsets.length >= 2) {
+                        int pc = getPC();
+                        int thisOffset = pc + offsets[0];
+                        for (int o = 0; o < (offsets.length - 1); o++) {
+                            int nextOffset = offsets[o + 1] + pc;
+                            DownBranch db = new DownBranch(thisOffset, nextOffset);
+                            downBranches.add(db);
+                            thisOffset = nextOffset;
+                        }
                     }
                 break;
 
@@ -281,7 +286,9 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 }
 
             }
-        } finally {
+        } finally
+
+        {
             stack.sawOpcode(this, seen);
             if ((allocationNumber != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
