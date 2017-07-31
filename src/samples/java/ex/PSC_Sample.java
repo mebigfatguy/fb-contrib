@@ -143,4 +143,10 @@ public class PSC_Sample {
 
         return exceptions;
     }
+
+    public void fpNoAllocation(List<String> ss, List<Integer> ii) {
+        for (Integer i : ii) {
+            ss.add(ii + "");
+        }
+    }
 }
