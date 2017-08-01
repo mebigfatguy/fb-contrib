@@ -250,7 +250,11 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case IFNONNULL:
                 case IFGE:
                 case IFGT:
-                // null check and >, >= branches are hard to presize
+                    // null check and >, >= branches are hard to presize
+                    if (getBranchOffset() > 0) {
+                        CodeRange db = new CodeRange(getPC(), getBranchTarget());
+                        optionalRanges.add(db);
+                    }
                 break;
 
                 case ASTORE:
