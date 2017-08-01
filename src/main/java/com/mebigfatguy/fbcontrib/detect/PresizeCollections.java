@@ -295,9 +295,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 }
 
             }
-        } finally
-
-        {
+        } finally {
             stack.sawOpcode(this, seen);
             if ((allocationNumber != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
