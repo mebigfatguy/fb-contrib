@@ -268,6 +268,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                 for (int offset : offsets) {
                     branchTargets.set(offset + pc);
                 }
+                branchTargets.set(getDefaultSwitchOffset() + pc);
             } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
                 localMethodCalls.remove(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)));
             } else if (seen == PUTFIELD) {

@@ -249,6 +249,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 for (int offset : offsets) {
                     casePositions.set(pc + offset);
                 }
+                casePositions.set(pc + getDefaultSwitchOffset());
             }
         } finally {
             stack.sawOpcode(this, seen);
