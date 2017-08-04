@@ -75,7 +75,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            lookupSwitches = new ArrayList<LookupDetails>();
+            lookupSwitches = new ArrayList<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -173,6 +173,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
                             for (int offset : offsets) {
                                 bs.set(pc + offset);
                             }
+                            bs.set(pc + getDefaultSwitchOffset());
                             lookupSwitches.add(new LookupDetails(stringRef, bs));
                         }
                     }
