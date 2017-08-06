@@ -18,8 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.BitSet;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -54,7 +53,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private List<Integer> switchLocs;
+    private BitSet switchLocs;
     private State state;
     private int loadType;
     private String constType;
@@ -75,7 +74,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            switchLocs = new ArrayList<Integer>();
+            switchLocs = new BitSet();
             super.visitClassContext(classContext);
         } finally {
             switchLocs = null;
@@ -101,17 +100,18 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
+            int pc = getPC();
             if ((seen == LOOKUPSWITCH) || (seen == TABLESWITCH)) {
-                switchLocs.add(Integer.valueOf(getPC()));
+                switchLocs.set(pc);
                 for (int offset : getSwitchOffsets()) {
-                    switchLocs.add(Integer.valueOf(getPC() + offset));
+                    switchLocs.set(pc + offset);
                 }
+                switchLocs.set(pc + getDefaultSwitchOffset());
             }
 
-            if (!switchLocs.isEmpty() && (getPC() == switchLocs.get(0).intValue())) {
+            if (switchLocs.get(pc)) {
                 state = State.SAW_NOTHING;
-                switchLocs.remove(0);
-                return;
+                switchLocs.clear(pc);
             }
 
             switch (state) {
@@ -128,7 +128,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                             }
                         } else {
                             loadType = seen;
-                            bugPC = getPC();
+                            bugPC = pc;
                             state = State.SAW_LOAD;
                         }
                     } else {
@@ -175,7 +175,8 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                 break;
 
                 case SAW_CONST:
-                    if ((seen == INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
+                    if ((seen == INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand())
+                            && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
                         state = State.SAW_EQUALS;
                     } else if (seen == IF_ICMPEQ) {
                         conditionCount++;
