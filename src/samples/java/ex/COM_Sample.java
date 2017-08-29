@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -12,7 +13,7 @@ public class COM_Sample {
     }
 
     public Set<String> test3(String a, String b, String c) {
-        Set<String> ss = new HashSet<String>();
+        Set<String> ss = new HashSet<>();
         ss.add(a);
         ss.add(b);
         ss.add(c);
@@ -33,7 +34,7 @@ public class COM_Sample {
 
         @Override
         public Set<String> test3(String a, String b, String c) {
-            Set<String> ss = new HashSet<String>();
+            Set<String> ss = new HashSet<>();
             ss.add(a);
             ss.add(b);
             ss.add(c);
@@ -88,5 +89,18 @@ abstract class s2 extends s1 {
     @Override
     public String getFoo() {
         return FOO;
+    }
+}
+
+class NonSync {
+    public int comExtendedSync() {
+        return 42;
+    }
+}
+
+class Sync extends NonSync {
+    @Override
+    public synchronized int comExtendedSync() {
+        return super.comExtendedSync();
     }
 }
