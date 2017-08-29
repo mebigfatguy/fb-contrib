@@ -144,6 +144,10 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
                     return;
                 }
 
+                if ((getMethod().getAccessFlags() & ACC_SYNCHRONIZED) != (superCode.getAccess() & ACC_SYNCHRONIZED)) {
+                    return;
+                }
+
                 parmTypes = getMethod().getArgumentTypes();
                 nextParmIndex = 0;
                 nextParmOffset = getMethod().isStatic() ? 0 : 1;
@@ -248,7 +252,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
      * @return whether the access modifiers are the same
      */
     private static boolean sameAccess(int parentAccess, int childAccess) {
-        return ((parentAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)) == (childAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)));
+        return ((parentAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED)) == ((childAccess & (Constants.ACC_PUBLIC | Constants.ACC_PROTECTED))));
     }
 
     /**

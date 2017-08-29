@@ -93,14 +93,14 @@ abstract class s2 extends s1 {
 }
 
 class NonSync {
-    public int foo() {
+    public int comExtendedSync() {
         return 42;
     }
 }
 
 class Sync extends NonSync {
     @Override
-    public synchronized int foo() {
-        return super.foo();
+    public synchronized int comExtendedSync() {
+        return super.comExtendedSync();
     }
 }
