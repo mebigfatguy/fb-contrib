@@ -1,4 +1,5 @@
 package ex;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -159,5 +160,16 @@ public class LEST_Sample {
             r.addSuppressed(e);
             throw r;
         }
+    }
+
+    static Class<?> testFP226(final String clazz) {
+        if (clazz != null) {
+            try {
+                return Class.forName(clazz);
+            } catch (final ClassNotFoundException e) {
+                throw new UnsupportedOperationException(e);
+            }
+        }
+        throw new NullPointerException();
     }
 }
