@@ -264,6 +264,10 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                                     break;
                                 }
                             }
+                            if (catchInfo.getFinish() == Integer.MAX_VALUE) {
+                                catchInfo.setFinish(pc);
+                            }
+
                         } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
                             if (lastWasExitPoint) {
                                 // crazy jdk6 finally block injection -- shut
