@@ -76,6 +76,10 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         try {
             Method m = getMethod();
+            if (m.isSynthetic()) {
+                return;
+            }
+
             if (m.isStatic() || m.isPrivate() || Values.CONSTRUCTOR.equals(m.getName())) {
                 parmSigs = SignatureUtils.getParameterSlotAndSignatures(m.isStatic(), m.getSignature());
                 if (!parmSigs.isEmpty() && prescreen(m)) {

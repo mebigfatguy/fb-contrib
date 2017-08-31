@@ -1,4 +1,6 @@
 package ex;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +13,13 @@ public class PDP_Sample {
     }
 
     private void testFPCodeChecksType(List<String> l) {
-        if (l instanceof ArrayList)
+        if (l instanceof ArrayList) {
             al = (ArrayList<String>) l;
+        }
     }
 
     private void testFPNonParm(String s) {
-        List<String> l = new ArrayList<String>();
+        List<String> l = new ArrayList<>();
         al = (ArrayList<String>) l;
     }
 
@@ -54,29 +57,29 @@ public class PDP_Sample {
         String s = "";
 
         switch (type) {
-        case 0:
-            Number n = (Number) c;
-            s += n.intValue();
+            case 0:
+                Number n = (Number) c;
+                s += n.intValue();
             break;
 
-        case 1:
-            s += s;
+            case 1:
+                s += s;
             break;
 
-        case 2:
-            s += "0";
+            case 2:
+                s += "0";
             break;
 
-        case 3:
-            s += '3';
+            case 3:
+                s += '3';
             break;
 
-        case 4:
-            s = null;
+            case 4:
+                s = null;
             break;
 
-        case 5:
-            s = s.substring(0, 1);
+            case 5:
+                s = s.substring(0, 1);
             break;
         }
 
@@ -87,20 +90,35 @@ public class PDP_Sample {
         String s = "";
 
         switch (type) {
-        case 0:
-            Number n = (Number) c;
-            s += n.intValue();
+            case 0:
+                Number n = (Number) c;
+                s += n.intValue();
             break;
 
-        case 1000:
-            s += s;
+            case 1000:
+                s += s;
             break;
 
-        case 10000:
-            s += "0";
+            case 10000:
+                s += "0";
             break;
         }
 
         return s;
+    }
+
+    interface LambdaConstrained {
+        void doIt(Number n);
+    }
+
+    public void usesLambda(LambdaConstrained c) {
+    }
+
+    public void fpConstrainedByLambda() {
+        usesLambda((n) -> {
+            BigDecimal d = ((BigDecimal) n);
+            d = d.setScale(10);
+            System.out.println(d);
+        });
     }
 }
