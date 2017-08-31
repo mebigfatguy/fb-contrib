@@ -116,7 +116,9 @@ public class PDP_Sample {
 
     public void fpConstrainedByLambda() {
         usesLambda((n) -> {
-            System.out.println(((BigDecimal) n).setScale(10).toString());
+            BigDecimal d = ((BigDecimal) n);
+            d = d.setScale(10);
+            System.out.println(d);
         });
     }
 }
