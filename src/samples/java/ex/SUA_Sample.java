@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.Date;
 
 public class SUA_Sample {
@@ -73,6 +74,17 @@ public class SUA_Sample {
             result[i] = 0.0;
         }
         return result;
+    }
+
+    int[][] fpMultiArray() {
+        final int[][] a = new int[2][2];
+        for (int[] element : a) {
+            final int[] row = element;
+            for (int j = 0; j < row.length; ++j) {
+                row[j] = j;
+            }
+        }
+        return a;
     }
 
     static class ThreadLocalFP extends ThreadLocal<byte[]> {
