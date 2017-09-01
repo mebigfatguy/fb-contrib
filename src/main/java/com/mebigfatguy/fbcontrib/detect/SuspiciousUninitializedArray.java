@@ -63,6 +63,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     }
 
     private final BugReporter bugReporter;
+    private boolean isEnum;
     private OpcodeStack stack;
     private String returnArraySig;
     private BitSet uninitializedRegs;
@@ -87,6 +88,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
+            isEnum = classContext.getJavaClass().isEnum();
             stack = new OpcodeStack();
             uninitializedRegs = new BitSet();
             arrayAliases = new HashMap<>();
@@ -109,6 +111,10 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 
         Method m = getMethod();
         if (m.isSynthetic()) {
+            return;
+        }
+
+        if (isEnum && m.getName().equals("values")) {
             return;
         }
 
@@ -332,7 +338,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case DUP:
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
-                        SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                        userValue = (SUAUserValue) item.getUserValue();
                     }
                 break;
 
@@ -343,7 +349,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (stack.getStackDepth() > 0) {
+            if ((Constants.PRODUCE_STACK[seen] > 0) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 item.setUserValue(userValue);
             }
