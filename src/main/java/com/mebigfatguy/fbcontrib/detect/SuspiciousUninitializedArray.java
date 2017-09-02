@@ -20,8 +20,10 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
@@ -68,6 +70,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     private String returnArraySig;
     private BitSet uninitializedRegs;
     private Map<Integer, Integer> arrayAliases;
+    private Map<Integer, SUAUserValue> storedUVs;
 
     /**
      * constructs a SUA detector given the reporter to report bugs on
@@ -92,11 +95,13 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
             stack = new OpcodeStack();
             uninitializedRegs = new BitSet();
             arrayAliases = new HashMap<>();
+            storedUVs = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
             uninitializedRegs = null;
             arrayAliases = null;
+            storedUVs = null;
         }
     }
 
@@ -138,6 +143,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
         returnArraySig = sig.substring(sigPos + 1);
         uninitializedRegs.clear();
         arrayAliases.clear();
+        storedUVs.clear();
         super.visitCode(obj);
     }
 
@@ -208,11 +214,8 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                                     }
                                     item.setUserValue(null);
                                     if (reg >= 0) {
-                                        uninitializedRegs.clear(reg);
-                                        Integer targetReg = arrayAliases.get(reg);
-                                        if (targetReg != null) {
-                                            uninitializedRegs.clear(targetReg.intValue());
-                                        }
+                                        clearAliases(reg);
+                                        storedUVs.remove(reg);
                                     }
                                 }
                             }
@@ -251,11 +254,8 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                         }
                         item.setUserValue(null);
                         if (reg >= 0) {
-                            uninitializedRegs.clear(reg);
-                            Integer targetReg = arrayAliases.get(reg);
-                            if (targetReg != null) {
-                                uninitializedRegs.clear(targetReg.intValue());
-                            }
+                            clearAliases(reg);
+                            storedUVs.remove(reg);
                         }
                     } else {
                         // error condition - stack isn't right
@@ -273,6 +273,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                        storedUVs.put(Integer.valueOf(reg), uv);
                         uninitializedRegs.set(reg, (uv != null) && (uv.isUnitializedArray()));
                         Integer aliasReg = arrayAliases.get(reg);
                         if (aliasReg != null) {
@@ -282,15 +283,14 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                         int targetReg = item.getRegisterNumber();
                         if ((targetReg >= 0) && (targetReg != reg)) {
                             arrayAliases.put(reg, targetReg);
+                        } else if ((uv != null) && uv.isRegister()) {
+                            arrayAliases.put(reg, uv.getRegister());
                         } else {
                             arrayAliases.remove(reg);
                         }
                     } else {
-                        uninitializedRegs.clear(reg);
-                        Integer targetReg = arrayAliases.get(reg);
-                        if (targetReg != null) {
-                            uninitializedRegs.clear(targetReg.intValue());
-                        }
+                        clearAliases(reg);
+                        storedUVs.remove(Integer.valueOf(reg));
                     }
                 }
                 break;
@@ -301,9 +301,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 case ALOAD_2:
                 case ALOAD_3: {
                     int reg = RegisterUtils.getALoadReg(this, seen);
-                    if (uninitializedRegs.get(reg)) {
-                        userValue = SUAUserValue.UNINIT_ARRAY;
-                    }
+                    userValue = storedUVs.get(Integer.valueOf(reg));
                 }
                 break;
 
@@ -313,11 +311,8 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                         item.setUserValue(null);
                         int reg = item.getRegisterNumber();
                         if (reg >= 0) {
-                            uninitializedRegs.clear(reg);
-                            Integer targetReg = arrayAliases.get(reg);
-                            if (targetReg != null) {
-                                uninitializedRegs.clear(targetReg.intValue());
-                            }
+                            clearAliases(reg);
+                            storedUVs.remove(reg);
                         }
                     }
                 }
@@ -353,6 +348,31 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 item.setUserValue(userValue);
             }
+        }
+    }
+
+    private void clearAliases(Integer reg) {
+
+        uninitializedRegs.clear(reg);
+        if (uninitializedRegs.isEmpty()) {
+            return;
+        }
+
+        Integer targetReg = arrayAliases.get(reg);
+        if (targetReg != null) {
+            clearAliases(targetReg);
+        }
+
+        Set<Integer> clear = new HashSet<>();
+        for (Map.Entry<Integer, Integer> entry : arrayAliases.entrySet()) {
+            targetReg = entry.getValue();
+            if (targetReg.equals(reg)) {
+                clear.add(entry.getKey());
+            }
+        }
+
+        for (Integer cr : clear) {
+            clearAliases(cr);
         }
     }
 
