@@ -4,13 +4,4 @@
         <Method name="~sawOpcode(After\w*)?"/>
         <Bug pattern="CC_CYCLOMATIC_COMPLEXITY,SF_SWITCH_NO_DEFAULT"/>
     </Match>
-    <!-- https://github.com/mebigfatguy/fb-contrib/issues/130 -->
-    <Match>
-        <Or>
-            <Class name="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope"/>
-            <Class name="com.mebigfatguy.fbcontrib.detect.DubiousListCollection$FieldInfo"/>
-            <Class name="com.mebigfatguy.fbcontrib.detect.FloatingPointLoops$FloatForLoop"/>
-        </Or>
-        <Bug pattern="CD_CIRCULAR_DEPENDENCY"/>
-    </Match>
 </FindBugsFilter>
