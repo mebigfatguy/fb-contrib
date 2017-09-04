@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 /**
  * looks for tag libraries that are not recycleable because backing members of taglib attributes are set in areas besides the setter method for the attribute.
  */
+@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "STT_TOSTRING_MAP_KEYING", justification = "Well-defined String keys are appropriate here")
 public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     private static final int MAX_ATTRIBUTE_CODE_LENGTH = 60;
 
