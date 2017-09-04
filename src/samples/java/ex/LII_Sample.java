@@ -66,7 +66,7 @@ public class LII_Sample {
 
         private final List<String> a = new ArrayList<>();
 
-        int compare(final A b) {
+        int compare(final GH228 b) {
             for (int k = 0; k < a.size(); ++k) {
                 final int c = a.get(k).compareTo(b.a.get(k));
                 if (c != 0) {
