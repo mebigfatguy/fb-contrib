@@ -14,7 +14,7 @@ for FindBugs:
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 7.0.3
+       Version: 7.0.4 or 7.0.4.sb
        
 For SpotBugs
 
@@ -80,7 +80,7 @@ com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
             <plugin>
                 <groupId>com.mebigfatguy.fb-contrib</groupId>
                 <artifactId>fb-contrib</artifactId>
-                <version>7.0.3</version>
+                <version>7.0.4</version>
             </plugin>
         </plugins>
     </configuration>
@@ -104,7 +104,7 @@ com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
             <plugin>
                 <groupId>com.mebigfatguy.fb-contrib</groupId>
                 <artifactId>fb-contrib</artifactId>
-                <version>7.0.3</version>
+                <version>7.0.4</version>
             </plugin>
         </plugins>
     </configuration>
