@@ -406,15 +406,23 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
                     return true;
                 }
             } else {
+                XField newField = itm.getXField();
+                if (newField == null) {
+                    return true;
+                }
+
                 XField seenField = loopCollectionItem.getXField();
-                if (seenField != null) {
-                    if (itm.getRegisterNumber() >= 0) {
-                        return true;
-                    }
-                    XField newField = itm.getXField();
-                    if ((newField != null) && (!newField.getName().equals(seenField.getName()))) {
-                        return true;
-                    }
+                if (seenField == null) {
+                    return true;
+                }
+
+                if (itm.getRegisterNumber() >= 0) {
+                    return true;
+                }
+
+                if ((loopCollectionItem.getFieldLoadedFromRegister() != itm.getFieldLoadedFromRegister()) || (itm.getFieldLoadedFromRegister() == -1)
+                        || (!newField.getName().equals(seenField.getName()))) {
+                    return true;
                 }
             }
 

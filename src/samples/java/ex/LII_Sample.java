@@ -1,4 +1,6 @@
 package ex;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class LII_Sample {
@@ -45,8 +47,9 @@ public class LII_Sample {
 
     public String test6FP(List<String> l) {
         StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++) {
             sb.append(l.get(i));
+        }
 
         return sb.toString();
     }
@@ -56,6 +59,21 @@ public class LII_Sample {
         for (int i = 0; i < tokens.size(); i++) {
             editedIndexes.add(new Integer(index));
             index++;
+        }
+    }
+
+    class GH228 {
+
+        private final List<String> a = new ArrayList<>();
+
+        int compare(final GH228 b) {
+            for (int k = 0; k < a.size(); ++k) {
+                final int c = a.get(k).compareTo(b.a.get(k));
+                if (c != 0) {
+                    return c;
+                }
+            }
+            return 0;
         }
     }
 }
