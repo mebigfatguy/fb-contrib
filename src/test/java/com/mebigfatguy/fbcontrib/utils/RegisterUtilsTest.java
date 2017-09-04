@@ -78,7 +78,7 @@ public class RegisterUtilsTest {
 
     @BeforeSuite
     public void setUpClass() {
-        FindBugs.setHome("target/findbugs-3.0.1.jar");
+        FindBugs.setHome("target/spotbugs-3.1.0.RC3.jar");
     }
 
     @BeforeMethod
