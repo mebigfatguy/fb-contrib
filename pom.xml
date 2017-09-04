@@ -126,13 +126,14 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.build.timestamp.format>E MMM d hh:mm:ss yyyy XX</maven.build.timestamp.format>
+        <spotbugs.version>3.1.0-RC3</spotbugs.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>com.github.spotbugs</groupId>
             <artifactId>spotbugs</artifactId>
-            <version>3.1.0-RC3</version>
+            <version>${spotbugs.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -477,13 +478,13 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.google.code.findbugs</groupId>
-                                    <artifactId>findbugs</artifactId>
-                                    <version>3.0.1</version>
+                                    <groupId>com.github.spotbugs</groupId>
+                                    <artifactId>spotbugs</artifactId>
+                                    <version>${spotbugs.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>
-                                        ${project.build.directory}/findbugs-3.0.1.jar/plugin
+                                        ${project.build.directory}/spotbugs-${spotbugs.version}.jar/plugin
                                     </outputDirectory>
                                 </artifactItem>
                             </artifactItems>
