@@ -33,6 +33,7 @@ import org.apache.bcel.generic.InstructionHandle;
 import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.InvokeInstruction;
 import org.apache.bcel.generic.LDC;
+import org.apache.bcel.generic.LDC2_W;
 import org.apache.bcel.generic.ReferenceType;
 import org.apache.bcel.generic.Type;
 
@@ -366,6 +367,20 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
 					return false;
 				}
 				// TODO: Other Constant types
+            } else if (childin instanceof LDC2_W) {
+                Type childType = ((LDC2_W) childin).getType(childPoolGen);
+                Type parentType = ((LDC2_W) parentin).getType(parentPoolGen);
+                if (!childType.equals(parentType)) {
+                    return false;
+                }
+
+                Object childValue = ((LDC2_W) childin).getValue(childPoolGen);
+                Object parentValue = ((LDC2_W) parentin).getValue(parentPoolGen);
+
+                if (!childValue.equals(parentValue)) {
+                    return false;
+                }
+
 			} else {
 				if (!childin.equals(parentin)) {
 					return false;

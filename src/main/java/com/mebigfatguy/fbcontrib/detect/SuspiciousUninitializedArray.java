@@ -356,16 +356,26 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 		}
 	}
 
-	private void clearAliases(Integer reg) {
+    private void clearAliases(int reg) {
+
+        clearClosureAliases(reg, new BitSet());
+    }
+
+    private void clearClosureAliases(int reg, BitSet alreadyCleared) {
+
+        if (alreadyCleared.get(reg)) {
+            return;
+        }
 
 		uninitializedRegs.clear(reg);
+        alreadyCleared.set(reg);
 		if (uninitializedRegs.isEmpty()) {
 			return;
 		}
 
 		Integer targetReg = arrayAliases.get(reg);
 		if (targetReg != null) {
-			clearAliases(targetReg);
+            clearClosureAliases(targetReg, alreadyCleared);
 		}
 
 		Set<Integer> clear = new HashSet<>();
@@ -377,7 +387,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 		}
 
 		for (Integer cr : clear) {
-			clearAliases(cr);
+            clearClosureAliases(cr, alreadyCleared);
 		}
 	}
 
