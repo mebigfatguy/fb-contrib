@@ -14,13 +14,13 @@ for FindBugs:
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 7.0.4 or 7.0.4.sb
+       Version: 7.0.4
        
 For SpotBugs
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 7.0.3.sb
+       Version: 7.0.4.sb
        
        
 Developer
