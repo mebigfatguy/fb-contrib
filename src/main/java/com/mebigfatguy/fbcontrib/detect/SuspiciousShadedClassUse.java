@@ -39,7 +39,8 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
     // @formatter:off
         "/org/",
         "/com/",
-        "/edu/"
+        "/edu/",
+        "/net/"
     // @formatter:on
     );
 
