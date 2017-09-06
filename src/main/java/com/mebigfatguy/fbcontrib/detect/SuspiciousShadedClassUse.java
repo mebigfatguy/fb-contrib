@@ -45,7 +45,8 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
 
     private final List<String> knownExceptions = UnmodifiableList.create(
     // @formatter:off
-        "uk/org/lidalia/"
+        "uk/org/lidalia/",
+        "au/com/bytecode/"
     // @formatter:on
     );
 
