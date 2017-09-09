@@ -146,14 +146,14 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 	public void sawOpcode(int seen) {
 		try {
 			switch (seen) {
-			case INVOKEVIRTUAL:
-			case INVOKEINTERFACE:
-			case INVOKESPECIAL:
-			case INVOKESTATIC:
-			case INVOKEDYNAMIC:
+			case Const.INVOKEVIRTUAL:
+			case Const.INVOKEINTERFACE:
+			case Const.INVOKESPECIAL:
+			case Const.INVOKESTATIC:
+			case Const.INVOKEDYNAMIC:
 				numMethodCalls++;
 
-				if (seen != INVOKESTATIC) {
+				if (seen != Const.INVOKESTATIC) {
 					int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
 					if (stack.getStackDepth() > numParms) {
 						OpcodeStack.Item itm = stack.getStackItem(numParms);
@@ -170,14 +170,14 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
 							calledMethods.add(
 									new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()),
-											seen == INVOKESPECIAL));
+											seen == Const.INVOKESPECIAL));
 						}
 					}
 				}
 				break;
 
-			case PUTSTATIC:
-			case PUTFIELD:
+			case Const.PUTSTATIC:
+			case Const.PUTFIELD:
 				modifiesState = true;
 				break;
 
