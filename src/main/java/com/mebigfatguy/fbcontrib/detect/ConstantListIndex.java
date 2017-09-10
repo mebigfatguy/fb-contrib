@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantInteger;
@@ -42,208 +43,227 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for methods that access arrays or classes that implement java.util.List using a constant integer for the index. This is often a typo intented to be a
- * loop variable, but if specific indices mean certain things, perhaps a first class object would be a better choice for a container.
+ * looks for methods that access arrays or classes that implement java.util.List
+ * using a constant integer for the index. This is often a typo intented to be a
+ * loop variable, but if specific indices mean certain things, perhaps a first
+ * class object would be a better choice for a container.
  */
 public class ConstantListIndex extends BytecodeScanningDetector {
-    enum State {
-        SAW_NOTHING, SAW_CONSTANT_0, SAW_CONSTANT
-    }
+	enum State {
+		SAW_NOTHING, SAW_CONSTANT_0, SAW_CONSTANT
+	}
 
-    private static final String MAX_ICONST0_LOOP_DISTANCE_PROPERTY = "fb-contrib.cli.maxloopdistance";
-    private static final Set<FQMethod> ubiquitousMethods;
+	private static final String MAX_ICONST0_LOOP_DISTANCE_PROPERTY = "fb-contrib.cli.maxloopdistance";
+	private static final Set<FQMethod> ubiquitousMethods;
 
-    static {
-        String stringToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
-        String stringAndCharToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_CHAR).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
-        String stringAndIntToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
-        String twoStringsToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
-        String twoStringsAndIntToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+	static {
+		String stringToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
+				.withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+		String stringAndCharToArray = new SignatureBuilder()
+				.withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_CHAR)
+				.withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+		String stringAndIntToArray = new SignatureBuilder()
+				.withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT)
+				.withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+		String twoStringsToArray = new SignatureBuilder()
+				.withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING)
+				.withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+		String twoStringsAndIntToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING,
+				Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT)
+				.withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
 
-        Set<FQMethod> um = new HashSet<>();
-        um.add(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "split", stringToArray));
-        um.add(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "split", stringAndIntToArray));
-        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", stringToArray));
-        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", stringAndCharToArray));
-        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", twoStringsToArray));
-        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", twoStringsAndIntToArray));
-        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparator", twoStringsToArray));
-        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparator", twoStringsAndIntToArray));
-        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparatorPreserveAllTokens", twoStringsToArray));
-        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", stringToArray));
-        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", stringAndCharToArray));
-        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", twoStringsToArray));
-        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", twoStringsAndIntToArray));
-        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparator", twoStringsToArray));
-        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparator", twoStringsAndIntToArray));
-        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparatorPreserveAllTokens", twoStringsToArray));
-        ubiquitousMethods = Collections.unmodifiableSet(um);
-    }
+		Set<FQMethod> um = new HashSet<>();
+		um.add(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "split", stringToArray));
+		um.add(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "split", stringAndIntToArray));
+		um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", stringToArray));
+		um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", stringAndCharToArray));
+		um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", twoStringsToArray));
+		um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", twoStringsAndIntToArray));
+		um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparator", twoStringsToArray));
+		um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparator", twoStringsAndIntToArray));
+		um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparatorPreserveAllTokens",
+				twoStringsToArray));
+		um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", stringToArray));
+		um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", stringAndCharToArray));
+		um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", twoStringsToArray));
+		um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", twoStringsAndIntToArray));
+		um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparator", twoStringsToArray));
+		um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparator", twoStringsAndIntToArray));
+		um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparatorPreserveAllTokens",
+				twoStringsToArray));
+		ubiquitousMethods = Collections.unmodifiableSet(um);
+	}
 
-    private final BugReporter bugReporter;
-    private JavaClass invocationHandlerClass;
-    private State state;
-    private BitSet iConst0Looped;
-    private final int max_iConst0LoopDistance;
-    private OpcodeStack stack;
+	private final BugReporter bugReporter;
+	private JavaClass invocationHandlerClass;
+	private State state;
+	private BitSet iConst0Looped;
+	private final int max_iConst0LoopDistance;
+	private OpcodeStack stack;
 
-    /**
-     * constructs a CLI detector given the reporter to report bugs on
-     *
-     * @param bugReporter
-     *            the sync of bug reports
-     */
-    public ConstantListIndex(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
-        max_iConst0LoopDistance = Integer.getInteger(MAX_ICONST0_LOOP_DISTANCE_PROPERTY, 30).intValue();
+	/**
+	 * constructs a CLI detector given the reporter to report bugs on
+	 *
+	 * @param bugReporter
+	 *            the sync of bug reports
+	 */
+	public ConstantListIndex(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+		max_iConst0LoopDistance = Integer.getInteger(MAX_ICONST0_LOOP_DISTANCE_PROPERTY, 30).intValue();
 
-        try {
-            invocationHandlerClass = Repository.lookupClass("java/lang/reflect/InvocationHandler");
-        } catch (ClassNotFoundException cnfe) {
-            bugReporter.reportMissingClass(cnfe);
-        }
-    }
+		try {
+			invocationHandlerClass = Repository.lookupClass("java/lang/reflect/InvocationHandler");
+		} catch (ClassNotFoundException cnfe) {
+			bugReporter.reportMissingClass(cnfe);
+		}
+	}
 
-    /**
-     * implements the visitor to create and clear the const0loop set
-     *
-     * @param classContext
-     *            the context object of the currently parsed class
-     */
-    @Override
-    public void visitClassContext(ClassContext classContext) {
-        try {
-            if ((invocationHandlerClass != null) && classContext.getJavaClass().implementationOf(invocationHandlerClass)) {
-                return;
-            }
-            iConst0Looped = new BitSet();
-            stack = new OpcodeStack();
-            super.visitClassContext(classContext);
-        } catch (ClassNotFoundException cnfe) {
-            bugReporter.reportMissingClass(cnfe);
-        } finally {
-            iConst0Looped = null;
-            stack = null;
-        }
-    }
+	/**
+	 * implements the visitor to create and clear the const0loop set
+	 *
+	 * @param classContext
+	 *            the context object of the currently parsed class
+	 */
+	@Override
+	public void visitClassContext(ClassContext classContext) {
+		try {
+			if ((invocationHandlerClass != null)
+					&& classContext.getJavaClass().implementationOf(invocationHandlerClass)) {
+				return;
+			}
+			iConst0Looped = new BitSet();
+			stack = new OpcodeStack();
+			super.visitClassContext(classContext);
+		} catch (ClassNotFoundException cnfe) {
+			bugReporter.reportMissingClass(cnfe);
+		} finally {
+			iConst0Looped = null;
+			stack = null;
+		}
+	}
 
-    /**
-     * implements the visitor to reset the state
-     *
-     * @param obj
-     *            the context object for the currently parsed code block
-     */
-    @Override
-    public void visitMethod(Method obj) {
-        state = State.SAW_NOTHING;
-        iConst0Looped.clear();
-        stack.resetForMethodEntry(this);
-    }
+	/**
+	 * implements the visitor to reset the state
+	 *
+	 * @param obj
+	 *            the context object for the currently parsed code block
+	 */
+	@Override
+	public void visitMethod(Method obj) {
+		state = State.SAW_NOTHING;
+		iConst0Looped.clear();
+		stack.resetForMethodEntry(this);
+	}
 
-    /**
-     * implements the visitor to find accesses to lists or arrays using Const
-     *
-     * @param seen
-     *            the currently visitor opcode
-     */
-    @Override
-    public void sawOpcode(int seen) {
-        try {
-            stack.precomputation(this);
+	/**
+	 * implements the visitor to find accesses to lists or arrays using Const
+	 *
+	 * @param seen
+	 *            the currently visitor opcode
+	 */
+	@Override
+	public void sawOpcode(int seen) {
+		try {
+			stack.precomputation(this);
 
-            switch (state) {
-                case SAW_NOTHING:
-                    if (seen == ICONST_0) {
-                        state = State.SAW_CONSTANT_0;
-                    } else if ((seen >= ICONST_1) && (seen <= ICONST_5)) {
-                        state = State.SAW_CONSTANT;
-                    } else if ((seen == LDC) || (seen == LDC_W)) {
-                        Constant c = getConstantRefOperand();
-                        if (c instanceof ConstantInteger) {
-                            state = State.SAW_CONSTANT;
-                        }
-                    }
-                break;
+			switch (state) {
+			case SAW_NOTHING:
+				if (seen == Const.ICONST_0) {
+					state = State.SAW_CONSTANT_0;
+				} else if ((seen >= Const.ICONST_1) && (seen <= Const.ICONST_5)) {
+					state = State.SAW_CONSTANT;
+				} else if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
+					Constant c = getConstantRefOperand();
+					if (c instanceof ConstantInteger) {
+						state = State.SAW_CONSTANT;
+					}
+				}
+				break;
 
-                case SAW_CONSTANT_0:
-                case SAW_CONSTANT:
-                    switch (seen) {
-                        case AALOAD:
-                            if ("main".equals(this.getMethodName())) {
-                                break;
-                            }
-                            //$FALL-THROUGH$
-                        case IALOAD:
-                        case LALOAD:
-                        case FALOAD:
-                        case DALOAD:
-                            // case BALOAD: byte and char indexing seems prevalent, and
-                            // case CALOAD: usually harmless so ignore
-                        case SALOAD:
-                            if (stack.getStackDepth() > 1) {
-                                OpcodeStack.Item item = stack.getStackItem(1);
-                                if (!isArrayFromUbiquitousMethod(item)) {
-                                    if (state == State.SAW_CONSTANT_0) {
-                                        iConst0Looped.set(getPC());
-                                    } else {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this)
-                                                .addMethod(this).addSourceLine(this));
-                                    }
-                                }
-                            }
-                        break;
+			case SAW_CONSTANT_0:
+			case SAW_CONSTANT:
+				switch (seen) {
+				case Const.AALOAD:
+					if ("main".equals(this.getMethodName())) {
+						break;
+					}
+					//$FALL-THROUGH$
+				case Const.IALOAD:
+				case Const.LALOAD:
+				case Const.FALOAD:
+				case Const.DALOAD:
+					// case BALOAD: byte and char indexing seems prevalent, and
+					// case CALOAD: usually harmless so ignore
+				case Const.SALOAD:
+					if (stack.getStackDepth() > 1) {
+						OpcodeStack.Item item = stack.getStackItem(1);
+						if (!isArrayFromUbiquitousMethod(item)) {
+							if (state == State.SAW_CONSTANT_0) {
+								iConst0Looped.set(getPC());
+							} else {
+								bugReporter.reportBug(
+										new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY)
+												.addClass(this).addMethod(this).addSourceLine(this));
+							}
+						}
+					}
+					break;
 
-                        case INVOKEVIRTUAL:
-                            if (Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())) {
-                                String methodName = getNameConstantOperand();
-                                if ("get".equals(methodName)) {
-                                    if (state == State.SAW_CONSTANT_0) {
-                                        iConst0Looped.set(getPC());
-                                    } else {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this)
-                                                .addMethod(this).addSourceLine(this));
-                                    }
-                                }
-                            }
-                        break;
-                        default:
-                        break;
-                    }
-                    state = State.SAW_NOTHING;
-                break;
-            }
+				case Const.INVOKEVIRTUAL:
+					if (Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())) {
+						String methodName = getNameConstantOperand();
+						if ("get".equals(methodName)) {
+							if (state == State.SAW_CONSTANT_0) {
+								iConst0Looped.set(getPC());
+							} else {
+								bugReporter.reportBug(
+										new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY)
+												.addClass(this).addMethod(this).addSourceLine(this));
+							}
+						}
+					}
+					break;
+				default:
+					break;
+				}
+				state = State.SAW_NOTHING;
+				break;
+			}
 
-            if (((seen >= IFEQ) && (seen <= GOTO)) || (seen == GOTO_W)) {
-                int branchTarget = this.getBranchTarget();
-                for (int bugPC = iConst0Looped.nextSetBit(0); bugPC >= 0; bugPC = iConst0Looped.nextSetBit(bugPC + 1)) {
-                    if (branchTarget < bugPC) {
-                        if ((bugPC - branchTarget) < max_iConst0LoopDistance) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                    .addSourceLine(this, bugPC));
-                        }
-                        iConst0Looped.clear(bugPC);
-                    }
-                }
-            }
-        } finally {
-            stack.sawOpcode(this, seen);
-        }
-    }
+			if (((seen >= Const.IFEQ) && (seen <= Const.GOTO)) || (seen == Const.GOTO_W)) {
+				int branchTarget = this.getBranchTarget();
+				for (int bugPC = iConst0Looped.nextSetBit(0); bugPC >= 0; bugPC = iConst0Looped.nextSetBit(bugPC + 1)) {
+					if (branchTarget < bugPC) {
+						if ((bugPC - branchTarget) < max_iConst0LoopDistance) {
+							bugReporter.reportBug(
+									new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY)
+											.addClass(this).addMethod(this).addSourceLine(this, bugPC));
+						}
+						iConst0Looped.clear(bugPC);
+					}
+				}
+			}
+		} finally {
+			stack.sawOpcode(this, seen);
+		}
+	}
 
-    /**
-     * returns whether the array item was returned from a common method that the user can't do anything about and so don't report CLI in this case.
-     *
-     * @param item
-     *            the stack item representing the array
-     * @return if the array was returned from a common method
-     */
-    private static boolean isArrayFromUbiquitousMethod(OpcodeStack.Item item) {
-        XMethod method = item.getReturnValueOf();
-        if (method == null) {
-            return false;
-        }
+	/**
+	 * returns whether the array item was returned from a common method that the
+	 * user can't do anything about and so don't report CLI in this case.
+	 *
+	 * @param item
+	 *            the stack item representing the array
+	 * @return if the array was returned from a common method
+	 */
+	private static boolean isArrayFromUbiquitousMethod(OpcodeStack.Item item) {
+		XMethod method = item.getReturnValueOf();
+		if (method == null) {
+			return false;
+		}
 
-        FQMethod methodDesc = new FQMethod(method.getClassName().replace('.', '/'), method.getName(), method.getSignature());
-        return ubiquitousMethods.contains(methodDesc);
-    }
+		FQMethod methodDesc = new FQMethod(method.getClassName().replace('.', '/'), method.getName(),
+				method.getSignature());
+		return ubiquitousMethods.contains(methodDesc);
+	}
 }
