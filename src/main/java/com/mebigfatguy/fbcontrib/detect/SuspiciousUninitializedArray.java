@@ -167,7 +167,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			stack.precomputation(this);
 
 			switch (seen) {
-			case NEWARRAY: {
+			case Const.NEWARRAY: {
 				if (!isTOS0()) {
 					int typeCode = getIntConstant();
 					if ((typeCode != Const.T_BYTE) && returnArraySig
@@ -178,7 +178,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			}
 				break;
 
-			case ANEWARRAY: {
+			case Const.ANEWARRAY: {
 				if (!isTOS0()) {
 					String sig = SignatureUtils.toArraySignature(getClassConstantOperand());
 					if (returnArraySig.equals(sig)) {
@@ -188,18 +188,18 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			}
 				break;
 
-			case MULTIANEWARRAY: {
+			case Const.MULTIANEWARRAY: {
 				if (returnArraySig.equals(getClassConstantOperand())) {
 					userValue = SUAUserValue.UNINIT_ARRAY;
 				}
 			}
 				break;
 
-			case INVOKEVIRTUAL:
-			case INVOKEINTERFACE:
-			case INVOKESPECIAL:
-			case INVOKESTATIC:
-			case INVOKEDYNAMIC: {
+			case Const.INVOKEVIRTUAL:
+			case Const.INVOKEINTERFACE:
+			case Const.INVOKESPECIAL:
+			case Const.INVOKESTATIC:
+			case Const.INVOKEDYNAMIC: {
 				String methodSig = getSigConstantOperand();
 				List<String> types = SignatureUtils.getParameterSignatures(methodSig);
 				for (int t = 0; t < types.size(); t++) {
@@ -229,7 +229,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			}
 				break;
 
-			case AALOAD: {
+			case Const.AALOAD: {
 				if (stack.getStackDepth() >= 2) {
 					OpcodeStack.Item item = stack.getStackItem(1);
 					SUAUserValue uv = (SUAUserValue) item.getUserValue();
@@ -240,14 +240,14 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			}
 				break;
 
-			case IASTORE:
-			case LASTORE:
-			case FASTORE:
-			case DASTORE:
-			case AASTORE:
-			case BASTORE:
-			case CASTORE:
-			case SASTORE: {
+			case Const.IASTORE:
+			case Const.LASTORE:
+			case Const.FASTORE:
+			case Const.DASTORE:
+			case Const.AASTORE:
+			case Const.BASTORE:
+			case Const.CASTORE:
+			case Const.SASTORE: {
 				if (stack.getStackDepth() >= 3) {
 					OpcodeStack.Item item = stack.getStackItem(2);
 					SUAUserValue uv = (SUAUserValue) item.getUserValue();
@@ -269,11 +269,11 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			}
 				break;
 
-			case ASTORE:
-			case ASTORE_0:
-			case ASTORE_1:
-			case ASTORE_2:
-			case ASTORE_3: {
+			case Const.ASTORE:
+			case Const.ASTORE_0:
+			case Const.ASTORE_1:
+			case Const.ASTORE_2:
+			case Const.ASTORE_3: {
 				int reg = RegisterUtils.getAStoreReg(this, seen);
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
@@ -300,17 +300,17 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			}
 				break;
 
-			case ALOAD:
-			case ALOAD_0:
-			case ALOAD_1:
-			case ALOAD_2:
-			case ALOAD_3: {
+			case Const.ALOAD:
+			case Const.ALOAD_0:
+			case Const.ALOAD_1:
+			case Const.ALOAD_2:
+			case Const.ALOAD_3: {
 				int reg = RegisterUtils.getALoadReg(this, seen);
 				userValue = storedUVs.get(Integer.valueOf(reg));
 			}
 				break;
 
-			case PUTFIELD: {
+			case Const.PUTFIELD: {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					item.setUserValue(null);
@@ -323,7 +323,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			}
 				break;
 
-			case ARETURN: {
+			case Const.ARETURN: {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					SUAUserValue uv = (SUAUserValue) item.getUserValue();
@@ -335,7 +335,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			}
 				break;
 
-			case DUP:
+			case Const.DUP:
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					userValue = (SUAUserValue) item.getUserValue();
@@ -356,26 +356,26 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 		}
 	}
 
-    private void clearAliases(int reg) {
+	private void clearAliases(int reg) {
 
-        clearClosureAliases(reg, new BitSet());
-    }
+		clearClosureAliases(reg, new BitSet());
+	}
 
-    private void clearClosureAliases(int reg, BitSet alreadyCleared) {
+	private void clearClosureAliases(int reg, BitSet alreadyCleared) {
 
-        if (alreadyCleared.get(reg)) {
-            return;
-        }
+		if (alreadyCleared.get(reg)) {
+			return;
+		}
 
 		uninitializedRegs.clear(reg);
-        alreadyCleared.set(reg);
+		alreadyCleared.set(reg);
 		if (uninitializedRegs.isEmpty()) {
 			return;
 		}
 
 		Integer targetReg = arrayAliases.get(reg);
 		if (targetReg != null) {
-            clearClosureAliases(targetReg, alreadyCleared);
+			clearClosureAliases(targetReg, alreadyCleared);
 		}
 
 		Set<Integer> clear = new HashSet<>();
@@ -387,7 +387,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 		}
 
 		for (Integer cr : clear) {
-            clearClosureAliases(cr, alreadyCleared);
+			clearClosureAliases(cr, alreadyCleared);
 		}
 	}
 
