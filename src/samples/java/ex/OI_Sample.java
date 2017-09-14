@@ -1,4 +1,6 @@
 package ex;
+
+import java.util.Date;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -55,4 +57,7 @@ public class OI_Sample {
         return o.orElse(0L);
     }
 
+    public Date fpElseNull(Optional<Date> o) {
+        return o.orElse(null);
+    }
 }
