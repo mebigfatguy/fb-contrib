@@ -5880,6 +5880,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
+    <BugPattern type="OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL">
+    	<ShortDescription>Method uses Optional.orElseGet(null)</ShortDescription>
+    	<LongDescription>Method {1} uses Optional.orElseGet(null)</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method uses Optional.orElseGet(null). This method is supposed to to receive a lambda expression for what to execute
+    		when the Optional is not there. If you want to just return null, use Optional.orElse(null) instead.
+    		</p>
+    		]]>
+    	</Details>
+    </BugPattern>
+    
     <BugPattern type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT">
     	<ShortDescription>Method constructs a Date object, merely to convert it to an Instant object</ShortDescription>
     	<LongDescription>Method {1} constructs a Date object, merely to convert it to an Instant object</LongDescription>

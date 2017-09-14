@@ -206,14 +206,20 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         if (!activeStackOps.isEmpty()) {
                             ActiveStackOp op = activeStackOps.getLast();
 
-                            Method getMethod = getLambdaMethod(op.getMethod().getMethodName());
-                            if (getMethod != null) {
-                                byte[] byteCode = getMethod.getCode().getCode();
-                                if (byteCode.length <= 4) {
-                                    // we are looking for ALOAD, GETFIELD, or LDC followed by ARETURN, that should fit in 4 bytes
-                                    if (!hasInvoke(byteCode)) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION.name(), LOW_PRIORITY)
-                                                .addClass(this).addMethod(this).addSourceLine(this));
+                            FQMethod method = op.getMethod();
+                            if (method == null) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL.name(), LOW_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                            } else {
+                                Method getMethod = getLambdaMethod(method.getMethodName());
+                                if (getMethod != null) {
+                                    byte[] byteCode = getMethod.getCode().getCode();
+                                    if (byteCode.length <= 4) {
+                                        // we are looking for ALOAD, GETFIELD, or LDC followed by ARETURN, that should fit in 4 bytes
+                                        if (!hasInvoke(byteCode)) {
+                                            bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION.name(), LOW_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                        }
                                     }
                                 }
                             }
