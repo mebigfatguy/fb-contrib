@@ -1,4 +1,6 @@
 package ex;
+
+import java.util.Date;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
@@ -36,6 +38,10 @@ public class OI_Sample {
         return Optional.of(3.14);
     }
 
+    public Date orElseGetNull(Optional<Date> o) {
+        return o.orElseGet(null);
+    }
+
     public String fpDelayedOK(Optional<String> o, String a, String b) {
 
         return o.orElseGet(() -> String.format("%s boo %s hiss", a, b));
@@ -54,5 +60,4 @@ public class OI_Sample {
     public Long fpBoxingIsTooCommon(Optional<Long> o) {
         return o.orElse(0L);
     }
-
 }
