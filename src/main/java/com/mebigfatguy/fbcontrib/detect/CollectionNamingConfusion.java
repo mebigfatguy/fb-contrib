@@ -141,8 +141,8 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
                 String clsName = SignatureUtils.stripSignature(signature);
                 JavaClass cls = Repository.lookupClass(clsName);
                 if ((cls.implementationOf(mapInterface) && !name.endsWith("map")) || (cls.implementationOf(setInterface) && !name.endsWith("set"))
-                        || (cls.implementationOf(listInterface) && !name.endsWith("list"))
-                        || (cls.implementationOf(queueInterface) && !name.endsWith("queue"))) {
+                        || ((cls.implementationOf(listInterface) || cls.implementationOf(queueInterface)) && !name.endsWith("list")
+                                && !name.endsWith("queue"))) {
                     return true;
                 }
             }
