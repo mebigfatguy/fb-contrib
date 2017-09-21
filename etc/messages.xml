@@ -4126,7 +4126,8 @@ return new String[0];<br/>
 			the log level does not meet the needed level. However, one or more of the parameters passed to the logging 
 			method uses .toString() to present a String representation for the parameter. This is unneeded as the logger
 			will do this for you, and because it is explicitly done, will always be called even if the log statement is 
-			not actually written. Just pass the variable name as a parameter instead.
+			not actually written. Also, by dropping the '.toString()' you may avoid unnecessary NPEs.
+			Just pass the variable name as a parameter instead.
 			]]>
 		</Details>
 	</BugPattern>
