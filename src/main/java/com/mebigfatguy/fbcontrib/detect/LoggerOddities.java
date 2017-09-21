@@ -49,6 +49,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for uses of log4j or slf4j where the class specified when creating the
@@ -381,6 +382,23 @@ public class LoggerOddities extends BytecodeScanningDetector {
 																	.addSourceLine(this));
 								}
 							}
+                        }
+
+                        boolean foundToString = false;
+                        for (int i = 0; i < (numParms - 1); i++) {
+                            OpcodeStack.Item itm = stack.getStackItem(i);
+                            XMethod xm = itm.getReturnValueOf();
+                            if (xm != null) {
+                                foundToString = "toString".equals(xm.getName()) && "()Ljava/lang/String;".equals(xm.getSignature());
+                                if (foundToString) {
+                                    break;
+                                }
+                            }
+                        }
+
+                        if (foundToString) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.LO_TOSTRING_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                    .addSourceLine(this));
 						}
 					}
 				}
