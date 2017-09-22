@@ -4119,15 +4119,15 @@ return new String[0];<br/>
 	
 	<BugPattern type="LO_TOSTRING_PARAMETER">
 		<ShortDescription>Method explicitly calls toString() on a logger parameter</ShortDescription>
-		<LongDescription>Method {1} explicitly calls toString90 on a logger parameter</LongDescription>
+		<LongDescription>Method {1} explicitly calls toString() on a logger parameter</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method uses a parameterized logging to avoid the cost of string concatenation in the case that
+			<p>This method uses parameterized logging to avoid the cost of string concatenation in the case that
 			the log level does not meet the needed level. However, one or more of the parameters passed to the logging 
 			method uses .toString() to present a String representation for the parameter. This is unneeded as the logger
 			will do this for you, and because it is explicitly done, will always be called even if the log statement is 
 			not actually written. Also, by dropping the '.toString()' you may avoid unnecessary NPEs.
-			Just pass the variable name as a parameter instead.
+			Just pass the variable as a parameter instead.
 			]]>
 		</Details>
 	</BugPattern>
