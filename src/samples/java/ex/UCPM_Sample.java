@@ -2,6 +2,8 @@ package ex;
 
 public class UCPM_Sample {
 
+    private static final String A = "A";
+
     private StringBuffer sb; // made this a field to avoid "unnecessary use of
                              // synchronized class"
 
@@ -66,5 +68,11 @@ public class UCPM_Sample {
     public String okIssue95(int value) {
         StringBuilder sb = new StringBuilder();
         return sb.append("(").append(value).append(")").toString();
+    }
+
+    public String fpStaticFinalField236() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(A);
+        return sb.toString();
     }
 }
