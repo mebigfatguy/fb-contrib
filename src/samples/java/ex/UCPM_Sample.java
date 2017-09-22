@@ -2,7 +2,11 @@ package ex;
 
 public class UCPM_Sample {
 
-    private static final String A = "A";
+    private static final String A;
+
+    static {
+        A = "A";
+    }
 
     private StringBuffer sb; // made this a field to avoid "unnecessary use of
                              // synchronized class"

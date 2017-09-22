@@ -4119,7 +4119,7 @@ return new String[0];<br/>
 	
 	<BugPattern type="LO_TOSTRING_PARAMETER">
 		<ShortDescription>Method explicitly calls toString() on a logger parameter</ShortDescription>
-		<LongDescription>Method {1} explicitly calls toString90 on a logger parameter</LongDescription>
+		<LongDescription>Method {1} explicitly calls toString() on a logger parameter</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method uses parameterized logging to avoid the cost of string concatenation in the case that
