@@ -2,7 +2,10 @@ language: java
 sudo: false
 install: mvn install -DskipTests=true -Dmaven.javadoc.skip=true -Dfindbugs.skip=true -B -V
 jdk:
+    - oraclejdk9
     - oraclejdk8
+    - openjdk8
+
 cache:
     directories:
         - $HOME/.m2
