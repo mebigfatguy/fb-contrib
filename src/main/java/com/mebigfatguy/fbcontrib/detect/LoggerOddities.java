@@ -48,7 +48,6 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for uses of log4j or slf4j where the class specified when creating the logger is not the same as the class in which this logger is used. Also looks for
@@ -161,9 +160,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         String ldcClassName = null;
         String seenMethodName = null;
+        boolean seenToString = false;
         int exMessageReg = -1;
         Integer arraySize = null;
-        Boolean simpleFormat = null;
+        boolean simpleFormat = false;
 
         try {
             stack.precomputation(this);
@@ -183,7 +183,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     if (format != null) {
                         Matcher m = NON_SIMPLE_FORMAT.matcher(format);
                         if (!m.matches()) {
-                            simpleFormat = Boolean.TRUE;
+                            simpleFormat = true;
                         }
                     }
                 }
@@ -219,6 +219,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             seenMethodName = mthName;
                         }
                     }
+
+                    if (seenMethodName == null) {
+                        seenToString = true;
+                    }
                 }
             } else if (seen == INVOKESPECIAL) {
                 checkForLoggerParam();
@@ -246,7 +250,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
                 if (uv != null) {
                     if (((uv.getType() == LOUserValue.LOType.METHOD_NAME) && Values.TOSTRING.equals(uv.getValue()))
-                            || (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT)) {
+                            || (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT) || (uv.getType() == LOUserValue.LOType.TOSTRING)) {
                         item.setUserValue(new LOUserValue<>(LOUserValue.LOType.NULL, null));
                     }
                 }
@@ -268,8 +272,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     item.setUserValue(new LOUserValue<>(LOUserValue.LOType.MESSAGE_REG, Integer.valueOf(exMessageReg)));
                 } else if (arraySize != null) {
                     item.setUserValue(new LOUserValue<>(LOUserValue.LOType.ARRAY_SIZE, arraySize));
-                } else if (simpleFormat != null) {
-                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.SIMPLE_FORMAT, simpleFormat));
+                } else if (simpleFormat) {
+                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.SIMPLE_FORMAT, Boolean.TRUE));
+                } else if (seenToString) {
+                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.TOSTRING, null));
                 }
             }
         }
@@ -357,12 +363,11 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         boolean foundToString = false;
                         for (int i = 0; i < (numParms - 1); i++) {
                             OpcodeStack.Item itm = stack.getStackItem(i);
-                            XMethod xm = itm.getReturnValueOf();
-                            if (xm != null) {
-                                foundToString = "toString".equals(xm.getName()) && "()Ljava/lang/String;".equals(xm.getSignature());
-                                if (foundToString) {
-                                    break;
-                                }
+                            LOUserValue<?> uv = (LOUserValue<?>) itm.getUserValue();
+                            foundToString = ((uv != null)
+                                    && ((uv.getType() == LOUserValue.LOType.TOSTRING) || (uv.getType() == LOUserValue.LOType.METHOD_NAME)));
+                            if (foundToString) {
+                                break;
                             }
                         }
 
@@ -375,6 +380,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
             }
         }
+
     }
 
     /**
@@ -571,7 +577,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
     static class LOUserValue<T> {
         enum LOType {
-            CLASS_NAME, METHOD_NAME, MESSAGE_REG, ARRAY_SIZE, SIMPLE_FORMAT, NULL
+            CLASS_NAME, METHOD_NAME, MESSAGE_REG, ARRAY_SIZE, SIMPLE_FORMAT, TOSTRING, NULL
         };
 
         LOType type;

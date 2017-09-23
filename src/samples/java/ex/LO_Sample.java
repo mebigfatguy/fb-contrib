@@ -106,6 +106,12 @@ public class LO_Sample {
         l3.info("This is a parm: {}", data.toString());
     }
 
+    public String testReuseToStringInParm(List<Long> data) {
+        String info = data.toString();
+        l3.info("This is a parm: {}", info);
+        return info;
+    }
+
     public void testFPReuseofSimpleFormatter(String poo) {
         String s = String.format("The error was %s", poo);
         l3.error(s);
