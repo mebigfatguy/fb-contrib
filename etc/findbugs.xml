@@ -20,7 +20,7 @@
 
 	<!-- Detectors -->
 
-<!-- COMMENT OUT FOR RELEASE -->
+<!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -30,7 +30,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-<!-- COMMENT OUT FOR RELEASE -->
+     COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -313,13 +313,13 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.UnnecessaryApiConversion" speed="fast" reports="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT,UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH"/>
     
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+    <!-- COMMENT OUT FOR POINT RELEASE
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.UseTryWithResources" speed="fast" reports="UTWR_USE_TRY_WITH_RESOURCES"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ReflectionIssues" speed="fast" reports="RFI_SET_ACCESSIBLE"/>
     
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+         COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
