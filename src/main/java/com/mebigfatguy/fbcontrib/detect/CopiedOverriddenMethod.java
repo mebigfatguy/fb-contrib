@@ -94,7 +94,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
                 Method[] methods = superCls.getMethods();
                 for (Method m : methods) {
                     String methodName = m.getName();
-                    if ((m.isPublic() || m.isProtected()) && !m.isAbstract() && !m.isSynthetic() && !Values.CONSTRUCTOR.equals(methodName)
+                    if (m.isPublic() && !m.isAbstract() && !m.isSynthetic() && !Values.CONSTRUCTOR.equals(methodName)
                             && !Values.STATIC_INITIALIZER.equals(methodName)) {
                         String methodInfo = methodName + ':' + m.getSignature();
                         superclassCode.put(methodInfo, new CodeInfo(m.getCode(), m.getAccessFlags()));
