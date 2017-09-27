@@ -176,7 +176,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
 
     private void sawOpcodeAfterCheckCast(int seen) {
         state = State.SAW_NOTHING;
-        if (!((seen == PUTFIELD) || (seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)))) {
+        if (!((seen == PUTFIELD) || OpcodeUtils.isAStore(seen))) {
             return;
         }
         String parmName = null;

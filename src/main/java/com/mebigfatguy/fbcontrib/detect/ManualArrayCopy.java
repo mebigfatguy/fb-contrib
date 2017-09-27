@@ -23,6 +23,8 @@ import java.util.BitSet;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -106,7 +108,7 @@ public class ManualArrayCopy extends BytecodeScanningDetector {
             break;
 
             case SAW_ICMP:
-                if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+                if (OpcodeUtils.isALoad(seen)) {
                     state = State.SAW_ARRAY1_LOAD;
                 }
             break;
@@ -124,7 +126,7 @@ public class ManualArrayCopy extends BytecodeScanningDetector {
             break;
 
             case SAW_ARRAY1_INDEX:
-                if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+                if (OpcodeUtils.isALoad(seen)) {
                     state = State.SAW_ARRAY2_LOAD;
                 } else {
                     state = State.SAW_NOTHING;
@@ -191,13 +193,8 @@ public class ManualArrayCopy extends BytecodeScanningDetector {
      * @return whether the type of the load and store are the same
      */
     private static boolean similarArrayInstructions(int load, int store) {
-        return ((load == AALOAD) && (store == AASTORE))
-            || ((load == IALOAD) && (store == IASTORE))
-            || ((load == DALOAD) && (store == DASTORE))
-            || ((load == LALOAD) && (store == LASTORE))
-            || ((load == FALOAD) && (store == FASTORE))
-            || ((load == BALOAD) && (store == BASTORE))
-            || ((load == CALOAD) && (store == CASTORE))
-            || ((load == SALOAD) && (store == SASTORE));
+        return ((load == AALOAD) && (store == AASTORE)) || ((load == IALOAD) && (store == IASTORE)) || ((load == DALOAD) && (store == DASTORE))
+                || ((load == LALOAD) && (store == LASTORE)) || ((load == FALOAD) && (store == FASTORE)) || ((load == BALOAD) && (store == BASTORE))
+                || ((load == CALOAD) && (store == CASTORE)) || ((load == SALOAD) && (store == SASTORE));
     }
 }

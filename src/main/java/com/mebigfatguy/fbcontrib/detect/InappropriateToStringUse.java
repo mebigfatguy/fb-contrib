@@ -51,7 +51,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 public class InappropriateToStringUse extends BytecodeScanningDetector {
 
     private static final Set<String> validToStringClasses = UnmodifiableSet.create(
-            // @formatter:off
+    // @formatter:off
             Values.SLASHED_JAVA_LANG_OBJECT, // too many fps
             Values.SLASHED_JAVA_LANG_BYTE,
             Values.SLASHED_JAVA_LANG_CHARACTER,
@@ -130,7 +130,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
             if (seen == INVOKEVIRTUAL) {
                 methodPackage = processInvokeVirtual();
 
-            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+            } else if (OpcodeUtils.isAStore(seen)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));

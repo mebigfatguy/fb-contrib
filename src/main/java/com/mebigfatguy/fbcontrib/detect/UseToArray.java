@@ -24,6 +24,7 @@ import java.util.Map;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -113,12 +114,12 @@ public class UseToArray extends AbstractCollectionScanningDetector {
                         sawAlias = true;
                     }
                 }
-            } else if (((seen == ISTORE) || ((seen >= ISTORE_0) && (seen <= ISTORE_3))) || ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)))) {
+            } else if (OpcodeUtils.isIStore(seen) || OpcodeUtils.isAStore(seen)) {
                 if (stack.getStackDepth() > 0) {
                     uValue = stack.getStackItem(0).getUserValue();
                     userValues.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), uValue);
                 }
-            } else if (((seen == ILOAD) || ((seen >= ILOAD_0) && (seen <= ILOAD_3))) || ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3)))) {
+            } else if (OpcodeUtils.isILoad(seen) || OpcodeUtils.isALoad(seen)) {
                 sawLoad = true;
             } else if (seen == ANEWARRAY) {
                 if (stack.getStackDepth() > 0) {

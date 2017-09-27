@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -116,7 +117,7 @@ public class ParallelLists extends BytecodeScanningDetector {
                 }
             } else if ((seen >= IFEQ) && (seen <= RETURN)) {
                 indexToFieldMap.clear();
-            } else if ((seen == ISTORE) || (seen == IINC) || ((seen >= ISTORE_0) && (seen <= ISTORE_3))) {
+            } else if ((seen == IINC) || OpcodeUtils.isIStore(seen)) {
                 int reg = getIntOpRegister(seen);
                 indexToFieldMap.remove(Integer.valueOf(reg));
             } else if ((seen >= IALOAD) && (seen <= SALOAD)) {

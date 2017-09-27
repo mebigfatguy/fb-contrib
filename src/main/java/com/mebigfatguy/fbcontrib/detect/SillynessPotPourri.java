@@ -544,7 +544,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         byte[] bytes = getCode().getCode();
         if ((lastPCs[0] != -1) && (CodeByteUtils.getbyte(bytes, lastPCs[1]) == IFNULL) && (CodeByteUtils.getbyte(bytes, lastPCs[3]) == INSTANCEOF)) {
             int ins0 = CodeByteUtils.getbyte(bytes, lastPCs[0]);
-            if ((ins0 == ALOAD) || (ins0 == ALOAD_0) || (ins0 == ALOAD_1) || (ins0 == ALOAD_2) || (ins0 == ALOAD_3)) {
+            if (OpcodeUtils.isALoad(ins0)) {
                 int ins2 = CodeByteUtils.getbyte(bytes, lastPCs[2]);
                 if ((ins0 == ins2) && ((ins0 != ALOAD) || (CodeByteUtils.getbyte(bytes, lastPCs[0] + 1) == CodeByteUtils.getbyte(bytes, lastPCs[2] + 1)))) {
                     int ifNullTarget = lastPCs[1] + CodeByteUtils.getshort(bytes, lastPCs[1] + 1);

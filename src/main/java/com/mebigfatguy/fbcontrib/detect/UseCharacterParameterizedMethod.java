@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -62,7 +63,8 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     }
 
     static {
-        String stringAndIntToInt = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_PRIMITIVE_INT).toString();
+        String stringAndIntToInt = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT)
+                .withReturnType(Values.SIG_PRIMITIVE_INT).toString();
 
         Map<FQMethod, Object> methodsMap = new HashMap<>();
         // The values are where the parameter will be on the stack - For
@@ -76,11 +78,19 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         methodsMap.put(new FQMethod("java/io/PrintStream", "print", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
         methodsMap.put(new FQMethod("java/io/PrintStream", "println", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
         methodsMap.put(new FQMethod("java/io/StringWriter", "write", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUFFER, "append", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuffer").toString()), Values.ZERO);
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUILDER, "append", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuilder").toString()), Values.ZERO);
+        methodsMap.put(
+                new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUFFER, "append",
+                        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuffer").toString()),
+                Values.ZERO);
+        methodsMap.put(
+                new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUILDER, "append",
+                        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuilder").toString()),
+                Values.ZERO);
 
         // same thing as above, except now with two params
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace", new SignatureBuilder().withParamTypes("java/lang/CharSequence", "java/lang/CharSequence").withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString()),
+        methodsMap.put(
+                new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace", new SignatureBuilder()
+                        .withParamTypes("java/lang/CharSequence", "java/lang/CharSequence").withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString()),
                 new IntPair(0, 1));
 
         characterMethods = Collections.unmodifiableMap(methodsMap);
@@ -169,8 +179,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                         itm.setUserValue(UCPMUserValue.INLINE);
                     }
                 }
-            } else if (((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == PUTSTATIC))
-                    && (stack.getStackDepth() > 0)) {
+            } else if ((seen == PUTFIELD) || (((seen == PUTSTATIC) || OpcodeUtils.isAStore(seen)) && (stack.getStackDepth() > 0))) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(null);
             }

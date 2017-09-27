@@ -259,8 +259,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                         parameterDefiners.clear();
                     }
                 }
-            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == GETFIELD) || (seen == PUTSTATIC)
-                    || (seen == GETSTATIC)) {
+            } else if (OpcodeUtils.isAStore(seen) || (seen == PUTFIELD) || (seen == GETFIELD) || (seen == PUTSTATIC) || (seen == GETSTATIC)) {
                 // Don't check parameters that are aliased
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
