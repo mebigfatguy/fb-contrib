@@ -26,6 +26,7 @@ import java.util.regex.Pattern;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -129,7 +130,7 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
                         }
                     }
                 }
-            } else if (((seen >= ALOAD_0) && (seen <= ALOAD_3)) || (seen == ALOAD)) {
+            } else if (OpcodeUtils.isALoad(seen)) {
                 int reg = RegisterUtils.getALoadReg(this, seen);
                 attributeName = savedAttributes.get(Integer.valueOf(reg));
                 sawGetAttribute = attributeName != null;

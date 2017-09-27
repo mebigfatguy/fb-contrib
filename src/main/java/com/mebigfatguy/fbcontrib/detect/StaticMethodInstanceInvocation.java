@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -139,7 +140,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                 }
             }
 
-            if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3)) || (seen == PUTFIELD) || (seen == ATHROW) || (seen == GOTO) || (seen == GOTO_W)
+            if (OpcodeUtils.isAStore(seen) || (seen == PUTFIELD) || (seen == ATHROW) || (seen == GOTO) || (seen == GOTO_W)
                     || ((seen >= IFEQ) && (seen <= IF_ACMPNE))) {
                 popStack.clear();
             } else if ((seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC)) {

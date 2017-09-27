@@ -35,6 +35,7 @@ import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -269,7 +270,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                     branchTargets.set(offset + pc);
                 }
                 branchTargets.set(getDefaultSwitchOffset() + pc);
-            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+            } else if (OpcodeUtils.isAStore(seen)) {
                 localMethodCalls.remove(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)));
             } else if (seen == PUTFIELD) {
                 String fieldSource = "";

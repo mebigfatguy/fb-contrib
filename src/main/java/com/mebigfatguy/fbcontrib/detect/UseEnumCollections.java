@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
@@ -137,7 +138,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 } else if (clsName.startsWith("java/util/") && (clsName.endsWith("Map") || clsName.endsWith("Set"))) {
                     sawEnumCollectionCreation = Boolean.FALSE;
                 }
-            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+            } else if (OpcodeUtils.isAStore(seen)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
@@ -148,7 +149,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                         enumRegs.put(reg, uv);
                     }
                 }
-            } else if ((seen == ALOAD) || ((seen >= ALOAD_0) && (seen <= ALOAD_3))) {
+            } else if ((seen == ALOAD) || OpcodeUtils.isALoad(seen)) {
                 Integer reg = Integer.valueOf(RegisterUtils.getALoadReg(this, seen));
                 sawEnumCollectionCreation = enumRegs.get(reg);
             } else if (seen == PUTFIELD) {

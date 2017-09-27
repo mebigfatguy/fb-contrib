@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -239,7 +240,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+            if (OpcodeUtils.isAStore(seen)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     if ("Ljavax/swing/JLabel;".equals(item.getSignature()) && (S508UserValue.SAW_TEXT_LABEL == item.getUserValue())) {

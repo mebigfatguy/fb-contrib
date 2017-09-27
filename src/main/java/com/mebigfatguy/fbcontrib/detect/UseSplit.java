@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -39,8 +40,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for code that builds an array by using a StringTokenizer to break up a
- * string and place individual elements into an array. It is simpler to use
+ * looks for code that builds an array by using a StringTokenizer to break up a string and place individual elements into an array. It is simpler to use
  * String.split instead.
  */
 @CustomUserValue
@@ -119,7 +119,7 @@ public class UseSplit extends BytecodeScanningDetector {
 				regValueType.clear();
 			}
 
-			if ((seen == Const.ALOAD) || ((seen >= Const.ALOAD_0) && (seen <= Const.ALOAD_3))) {
+            if (OpcodeUtils.isALoad(seen)) {
 				int reg = RegisterUtils.getALoadReg(this, seen);
 				State type = regValueType.get(Integer.valueOf(reg));
 				if (type == null) {
@@ -129,7 +129,7 @@ public class UseSplit extends BytecodeScanningDetector {
 				}
 				return;
 			}
-			if ((seen == Const.ASTORE) || ((seen >= Const.ASTORE_0) && (seen <= Const.ASTORE_3))) {
+            if (OpcodeUtils.isAStore(seen)) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					int reg = RegisterUtils.getAStoreReg(this, seen);
@@ -138,7 +138,7 @@ public class UseSplit extends BytecodeScanningDetector {
 				state = State.SEEN_NOTHING;
 				return;
 			}
-			if ((seen == Const.ILOAD) || ((seen >= Const.ILOAD_0) && (seen <= Const.ILOAD_3))) {
+            if (OpcodeUtils.isILoad(seen)) {
 				int reg = RegisterUtils.getLoadReg(this, seen);
 				State type = regValueType.get(Integer.valueOf(reg));
 				if (type == null) {
@@ -148,7 +148,7 @@ public class UseSplit extends BytecodeScanningDetector {
 				}
 				return;
 			}
-			if ((seen == Const.ISTORE) || ((seen >= Const.ISTORE_0) && (seen <= Const.ISTORE_3))) {
+            if (OpcodeUtils.isIStore(seen)) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					int reg = RegisterUtils.getStoreReg(this, seen);
@@ -182,6 +182,7 @@ public class UseSplit extends BytecodeScanningDetector {
 							state = State.SEEN_NEXT;
 					}
 				}
+                    }
 				break;
 
 			case SEEN_COUNTTOKENS:

@@ -268,7 +268,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                                 catchInfo.setFinish(pc);
                             }
 
-                        } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+                        } else if (OpcodeUtils.isAStore(seen)) {
                             if (lastWasExitPoint) {
                                 // crazy jdk6 finally block injection -- shut
                                 // off detection
@@ -391,7 +391,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
      * @return whether the catch block is empty
      */
     private boolean updateExceptionRegister(CatchInfo ci, int seen, int pc) {
-        if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+        if (OpcodeUtils.isAStore(seen)) {
             int reg = RegisterUtils.getAStoreReg(this, seen);
             ci.setReg(reg);
             exReg.put(Integer.valueOf(reg), Boolean.TRUE);

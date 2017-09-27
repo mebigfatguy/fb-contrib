@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -37,9 +38,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 
 /**
- * looks for manual casts of objects that are more specific then needed as the
- * value is assigned to a class or interface higher up in the inheritance chain.
- * You only need to cast to that class or interface.
+ * looks for manual casts of objects that are more specific then needed as the value is assigned to a class or interface higher up in the inheritance chain. You
+ * only need to cast to that class or interface.
  */
 public class OverzealousCasting extends BytecodeScanningDetector {
     enum State {
@@ -62,8 +62,7 @@ public class OverzealousCasting extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to set the state on entry of the code block to
-     * SAW_NOTHING, and to see if there is a local variable table
+     * implements the visitor to set the state on entry of the code block to SAW_NOTHING, and to see if there is a local variable table
      *
      * @param obj
      *            the context object of the currently parsed code block
@@ -72,8 +71,9 @@ public class OverzealousCasting extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         state = State.SAW_NOTHING;
         lvt = obj.getLocalVariableTable();
-        if (lvt != null && prescreen(getMethod()))
+        if ((lvt != null) && prescreen(getMethod())) {
             super.visitCode(obj);
+        }
     }
 
     /**
@@ -89,8 +89,7 @@ public class OverzealousCasting extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for a checkcast followed by a astore,
-     * where the types of the objects are different.
+     * implements the visitor to look for a checkcast followed by a astore, where the types of the objects are different.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -98,27 +97,38 @@ public class OverzealousCasting extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         switch (state) {
-        case SAW_NOTHING:
-            if (seen == CHECKCAST) {
-                castClass = getClassConstantOperand();
-                state = State.SAW_CHECKCAST;
-            } else if (seen == INVOKEINTERFACE) {
-                // enhanced for loops add an incorrect checkcast instruction, so
-                // ignore checkcasts after iterator.next()
-                String clsName = getClassConstantOperand();
-                String methodName = getNameConstantOperand();
-                if ("java/util/Iterator".equals(clsName) && "next".equals(methodName)) {
-                    state = State.SAW_NEXT;
+            case SAW_NOTHING:
+                if (seen == CHECKCAST) {
+                    castClass = getClassConstantOperand();
+                    state = State.SAW_CHECKCAST;
+                } else if (seen == INVOKEINTERFACE) {
+                    // enhanced for loops add an incorrect checkcast instruction, so
+                    // ignore checkcasts after iterator.next()
+                    String clsName = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
+                    if ("java/util/Iterator".equals(clsName) && "next".equals(methodName)) {
+                        state = State.SAW_NEXT;
+                    }
                 }
-            }
             break;
 
-        case SAW_CHECKCAST:
-            if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
-                int reg = RegisterUtils.getAStoreReg(this, seen);
-                LocalVariable lv = lvt.getLocalVariable(reg, getNextPC());
-                if (lv != null) {
-                    String sig = lv.getSignature();
+            case SAW_CHECKCAST:
+                if (OpcodeUtils.isAStore(seen)) {
+                    int reg = RegisterUtils.getAStoreReg(this, seen);
+                    LocalVariable lv = lvt.getLocalVariable(reg, getNextPC());
+                    if (lv != null) {
+                        String sig = lv.getSignature();
+                        if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+                            sig = SignatureUtils.trimSignature(sig);
+                        }
+                        if (!sig.equals(castClass)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.OC_OVERZEALOUS_CASTING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                    .addSourceLine(this));
+                        }
+                    }
+                } else if (seen == PUTFIELD) {
+                    FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
+                    String sig = f.getFieldSignature();
                     if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                         sig = SignatureUtils.trimSignature(sig);
                     }
@@ -127,23 +137,12 @@ public class OverzealousCasting extends BytecodeScanningDetector {
                                 .addSourceLine(this));
                     }
                 }
-            } else if (seen == PUTFIELD) {
-                FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
-                String sig = f.getFieldSignature();
-                if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
-                    sig = SignatureUtils.trimSignature(sig);
-                }
-                if (!sig.equals(castClass)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.OC_OVERZEALOUS_CASTING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                }
-            }
-            state = State.SAW_NOTHING;
+                state = State.SAW_NOTHING;
             break;
 
-        case SAW_NEXT:
-        default:
-            state = State.SAW_NOTHING;
+            case SAW_NEXT:
+            default:
+                state = State.SAW_NOTHING;
             break;
         }
     }

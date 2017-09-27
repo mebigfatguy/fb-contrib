@@ -24,6 +24,8 @@ import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -109,7 +111,7 @@ public class ManualArrayCopy extends BytecodeScanningDetector {
 			break;
 
 		case SAW_ICMP:
-			if ((seen == Const.ALOAD) || ((seen >= Const.ALOAD_0) && (seen <= Const.ALOAD_3))) {
+                if (OpcodeUtils.isALoad(seen)) {
 				state = State.SAW_ARRAY1_LOAD;
 			}
 			break;
@@ -127,7 +129,7 @@ public class ManualArrayCopy extends BytecodeScanningDetector {
 			break;
 
 		case SAW_ARRAY1_INDEX:
-			if ((seen == Const.ALOAD) || ((seen >= Const.ALOAD_0) && (seen <= Const.ALOAD_3))) {
+                if (OpcodeUtils.isALoad(seen)) {
 				state = State.SAW_ARRAY2_LOAD;
 			} else {
 				state = State.SAW_NOTHING;

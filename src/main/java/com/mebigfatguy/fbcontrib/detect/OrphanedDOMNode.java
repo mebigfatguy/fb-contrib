@@ -134,7 +134,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
                     sawCreate = true;
                     itemPC = Integer.valueOf(getPC());
                 }
-            } else if ((seen == ASTORE) || ((seen >= ASTORE_0) && (seen <= ASTORE_3))) {
+            } else if (OpcodeUtils.isAStore(seen)) {
                 Integer pc = findDOMNodeCreationPoint(0);
                 int reg = RegisterUtils.getAStoreReg(this, seen);
                 if (pc != null) {
