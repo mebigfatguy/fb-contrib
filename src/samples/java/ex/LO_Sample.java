@@ -33,6 +33,11 @@ public class LO_Sample {
             someLocalLogger.info("Why am I using a local logger?");
         }
 
+        // tag LO_SUSPECT_LOG_PARAMETER
+        public Slf4j(org.slf4j.Logger someLogger) {
+            this.someLocalLogger = someLogger;
+        }
+
         public void testStutter() throws IOException {
             InputStream is = null;
             try {
