@@ -909,7 +909,7 @@ public void test(int i)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LoggerOddities">
 		<Details>
 			<![CDATA[
-			<p>Looks for odd patterns of use of Logger classes from either log4j, SLF4J or Commons Logging.</p>
+			<p>Looks for odd patterns of use of Logger classes from either Log4j, Log4j2, SLF4J or Commons Logging.</p>
 			<p>It is a fast detector.</p>
 			]]>
 		</Details>
@@ -4030,8 +4030,8 @@ return new String[0];<br/>
 		<LongDescription>Method {1} attempts to log using numbered formatting anchors</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method attempts to use an SLF4J logger to log a parameterized expression using formatting anchors.
-			However, SLF4J uses simple non numbered anchors such as {}, rather than anchors with digits in them as the
+			<p>This method attempts to use an SLF4J or Log4j2 logger to log a parameterized expression using formatting anchors.
+			However, SLF4J and Log4j2 use simple non numbered anchors such as {}, rather than anchors with digits in them as the
 			code uses. Thus no parameter replacement will occur.</p>
 			<p>This pattern is invalid:
 			<code>LOGGER.error("{0} is broken", theThing);</code>
@@ -4047,8 +4047,8 @@ return new String[0];<br/>
 		<LongDescription>Method {1} attempts to log using String.format notation</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method attempts to use an SLF4J logger to log a parameterized expression using String.format notation.
-			However, SLF4J uses simple non numbered anchors such as {}, rather than anchors with percent signs in them as the
+			<p>This method attempts to use an SLF4J or Log4j2 logger to log a parameterized expression using String.format notation.
+			However, SLF4J and Log4j2 uses simple non numbered anchors such as {}, rather than anchors with percent signs in them as the
 			code uses. Thus no parameter replacement will occur.</p>
 			<p>This pattern is invalid:
 			<code>LOGGER.error("%s is broken", theThing);</code>
@@ -4060,11 +4060,11 @@ return new String[0];<br/>
 	</BugPattern>
 
 	<BugPattern type="LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS">
-		<ShortDescription>Method passes an incorrect number of parameters to an SLF4J logging statement</ShortDescription>
-		<LongDescription>Method {1} passes an incorrect number of parameters to an SLF4J logging statement</LongDescription>
+		<ShortDescription>Method passes an incorrect number of parameters to an SLF4J or Log4j2 logging statement</ShortDescription>
+		<LongDescription>Method {1} passes an incorrect number of parameters to an SLF4J or Log4j2 logging statement</LongDescription>
 		<Details>
 			<![CDATA[
-			<p>This method passes the wrong number of parameters to an SLF4J logging method (error, warn, info, debug) based on the number of anchors {} in the
+			<p>This method passes the wrong number of parameters to an SLF4J or Log4j2 logging method (error, warn, info, debug) based on the number of anchors {} in the
 			format string. An additional exception argument is allowed if found.</p>
 			]]>
 		</Details>
@@ -4076,7 +4076,7 @@ return new String[0];<br/>
 	   <Details>
 	       <![CDATA[
 	       <p>This method passes a standard exception as a logger parameter, and expects this exception to be substituted in
-	        an SLF4J style parameter marker '{}'. This marker will not be translated as SLF4J doesn't process the Exception
+	        an SLF4J or Log4j style parameter marker '{}'. This marker will not be translated as SLF4J or Log4j2 doesn't process the Exception
 	        class for markers.
 	       </p>
 	       ]]>
@@ -4084,11 +4084,11 @@ return new String[0];<br/>
 	</BugPattern>
 	
 	<BugPattern type="LO_APPENDED_STRING_IN_FORMAT_STRING">
-	   <ShortDescription>Method passes a concatenated string to SLF4J's format string</ShortDescription>
-	   <LongDescription>Method {1} passes a concatenated string to SLF4J's format string</LongDescription>
+	   <ShortDescription>Method passes a concatenated string to SLF4J's or Log4j2's format string</ShortDescription>
+	   <LongDescription>Method {1} passes a concatenated string to SLF4J's or Log4j2's format string</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This method uses an SLF4J logger to log a string, where the first (format) string is created using concatenation.
+	       <p>This method uses an SLF4J or Log4j2 logger to log a string, where the first (format) string is created using concatenation.
 	       You should use {} markers to inject dynamic content into the string, so that String building is delayed until the
 	       actual log string is needed. If the log level is high enough that this log statement isn't used, then the appends
 	       will never be executed.</p>
@@ -4098,13 +4098,13 @@ return new String[0];<br/>
 	
 	
 	<BugPattern type="LO_EMBEDDED_SIMPLE_STRING_FORMAT_IN_FORMAT_STRING">
-	   <ShortDescription>Method passes a simple String.format result to an SLF4J's format string</ShortDescription>
-	   <LongDescription>Method {1} passes a simple String.format result to an SLF4J's format string</LongDescription>
+	   <ShortDescription>Method passes a simple String.format result to an SLF4J's or Log4j2's format string</ShortDescription>
+	   <LongDescription>Method {1} passes a simple String.format result to an SLF4J's or Log4j2's format string</LongDescription>
 	   <Details>
 	       <![CDATA[
-	       <p>This method uses an SLF4J logger to log a string, which was produced through a call to String.format, where
+	       <p>This method uses an SLF4J or Log4j2 logger to log a string, which was produced through a call to String.format, where
 	       the format string passed was a constant string containing only simple format markers that could be directly handled
-	       by slf4j. Rather than doing
+	       by slf4j or Log4j. Rather than doing
 	       <pre>
 	          logger.error("String.format("This %s is an error", s));
 	       <pre>
