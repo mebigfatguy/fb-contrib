@@ -246,8 +246,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 	}
 
 	private void handleTernary(int seen) {
-        if (((seen == GETFIELD) || OpcodeUtils.isALoad(seen)) && (stack.getStackDepth() > 0)) {
-				&& (stack.getStackDepth() > 0)) {
+		if (((seen == GETFIELD) || OpcodeUtils.isALoad(seen)) && (stack.getStackDepth() > 0)) {
 			OpcodeStack.Item item = stack.getStackItem(0);
 			clearUserValue(item);
 		}

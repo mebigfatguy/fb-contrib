@@ -40,7 +40,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for code that builds an array by using a StringTokenizer to break up a string and place individual elements into an array. It is simpler to use
+ * looks for code that builds an array by using a StringTokenizer to break up a
+ * string and place individual elements into an array. It is simpler to use
  * String.split instead.
  */
 @CustomUserValue
@@ -119,7 +120,7 @@ public class UseSplit extends BytecodeScanningDetector {
 				regValueType.clear();
 			}
 
-            if (OpcodeUtils.isALoad(seen)) {
+			if (OpcodeUtils.isALoad(seen)) {
 				int reg = RegisterUtils.getALoadReg(this, seen);
 				State type = regValueType.get(Integer.valueOf(reg));
 				if (type == null) {
@@ -129,7 +130,7 @@ public class UseSplit extends BytecodeScanningDetector {
 				}
 				return;
 			}
-            if (OpcodeUtils.isAStore(seen)) {
+			if (OpcodeUtils.isAStore(seen)) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					int reg = RegisterUtils.getAStoreReg(this, seen);
@@ -138,7 +139,7 @@ public class UseSplit extends BytecodeScanningDetector {
 				state = State.SEEN_NOTHING;
 				return;
 			}
-            if (OpcodeUtils.isILoad(seen)) {
+			if (OpcodeUtils.isILoad(seen)) {
 				int reg = RegisterUtils.getLoadReg(this, seen);
 				State type = regValueType.get(Integer.valueOf(reg));
 				if (type == null) {
@@ -148,7 +149,7 @@ public class UseSplit extends BytecodeScanningDetector {
 				}
 				return;
 			}
-            if (OpcodeUtils.isIStore(seen)) {
+			if (OpcodeUtils.isIStore(seen)) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					int reg = RegisterUtils.getStoreReg(this, seen);
@@ -182,7 +183,6 @@ public class UseSplit extends BytecodeScanningDetector {
 							state = State.SEEN_NEXT;
 					}
 				}
-                    }
 				break;
 
 			case SEEN_COUNTTOKENS:

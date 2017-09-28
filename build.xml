@@ -121,6 +121,7 @@
 			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
 			<pathelement location="${lib.dir}/javax.servlet-api-${javax.servlet-api.version}.jar" />
 			<pathelement location="${lib.dir}/log4j-${log4j.version}.jar" />
+			<pathelement location="${lib.dir}/log4j-api-${log4j-api.version}.jar" />
 			<pathelement location="${lib.dir}/commons-lang3-${commons-lang3.version}.jar" />
 			<pathelement location="${lib.dir}/commons-io-${commons-io.version}.jar" />
 			<pathelement location="${lib.dir}/backport-util-concurrent-${backport-util-concurrent.version}.jar" />
