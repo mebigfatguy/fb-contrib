@@ -8,6 +8,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
@@ -440,6 +441,14 @@ public class SPP_Sample implements Serializable {
 
     public void fpIssue199SBWithNum() {
         StringBuilder sb = new StringBuilder(BIG_SIZE);
+    }
+
+    public void fpGitHubIssue238SizeReused(Collection<String> c) {
+
+        int size = c.size();
+        if (size != 0) {
+            List<String> l = new ArrayList<>(size);
+        }
     }
 }
 

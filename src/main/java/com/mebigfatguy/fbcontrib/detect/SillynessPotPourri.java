@@ -954,7 +954,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         if (collectionInterfaces.contains(className)) {
             String method = getNameConstantOperand();
             if ("size".equals(method)) {
-                userValue = new SPPUserValue(SPPMethod.SIZE);
+                if (!OpcodeUtils.isIStore(getNextOpcode())) {
+                    userValue = new SPPUserValue(SPPMethod.SIZE);
+                }
             }
         }
         return userValue;
