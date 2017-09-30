@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
@@ -55,7 +56,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     private static final FQMethod OPTIONAL_OR_ELSE_METHOD = new FQMethod("java/util/Optional", "orElse", "(Ljava/lang/Object;)Ljava/lang/Object;");
     private static final FQMethod OPTIONAL_OR_ELSE_GET_METHOD = new FQMethod("java/util/Optional", "orElseGet",
             "(Ljava/util/function/Supplier;)Ljava/lang/Object;");
-    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get", "()Ljava/lang/Object;");
+    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get", SignatureBuilder.SIG_VOID_TO_OBJECT);
 
     private static final Set<FQMethod> OR_ELSE_METHODS = UnmodifiableSet.create(
     // @formatter:off
