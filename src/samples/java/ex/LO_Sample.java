@@ -8,6 +8,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 
+import javax.swing.text.DateFormatter;
+
 @SuppressWarnings("all")
 public class LO_Sample {
 
@@ -135,6 +137,10 @@ public class LO_Sample {
 
         public void fpOKPattern(File f) {
             l3.error("Specify the path to {} with %TEMP% or using system property", f);
+        }
+
+        public void fpFalseToString(FunnyToString fts) {
+            l3.error("Whoops", fts.toString(null));
         }
 
         public class Inner {
@@ -386,6 +392,12 @@ public class LO_Sample {
                     }
                 };
             }
+        }
+    }
+
+    class FunnyToString {
+        public String toString(DateFormatter df) {
+            return "";
         }
     }
 }
