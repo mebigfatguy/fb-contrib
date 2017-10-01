@@ -217,7 +217,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     }
                 } else if (LOGGER_METHODS.contains(mthName)) {
                     checkForProblemsWithLoggerMethods();
-                } else if (Values.TOSTRING.equals(mthName)) {
+                } else if (Values.TOSTRING.equals(mthName) && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())) {
                     String callingClsName = getClassConstantOperand();
                     if (SignatureUtils.isPlainStringConvertableClass(callingClsName) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
