@@ -1,4 +1,5 @@
 package ex;
+
 import java.awt.Component;
 import java.util.Collection;
 import java.util.Iterator;
@@ -6,6 +7,9 @@ import java.util.List;
 
 @SuppressWarnings("all")
 public class MRC_Sample {
+    private static String PART1 = "Part1";
+    private static String PART2 = "Part2";
+
     private Component[] components;
 
     private int getValue() {
@@ -123,5 +127,9 @@ public class MRC_Sample {
 
     private int fpOverload(short s) {
         return 2;
+    }
+
+    private String fpAppend() {
+        return PART1 + PART2;
     }
 }
