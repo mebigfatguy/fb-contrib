@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 
@@ -137,7 +138,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
 			stack.precomputation(this);
 
 			switch (seen) {
-			case INVOKESPECIAL:
+			case Const.INVOKESPECIAL:
 				String clsName = getClassConstantOperand();
 				if (PRESIZEABLE_COLLECTIONS.contains(clsName)) {
 					String methodName = getNameConstantOperand();
@@ -151,7 +152,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
 				}
 				break;
 
-			case INVOKEINTERFACE:
+			case Const.INVOKEINTERFACE:
 				String methodName = getNameConstantOperand();
 				if ("add".equals(methodName) || "addAll".equals(methodName)) {
 					String signature = getSigConstantOperand();
@@ -194,8 +195,8 @@ public class PresizeCollections extends BytecodeScanningDetector {
 				}
 				break;
 
-			case LOOKUPSWITCH:
-			case TABLESWITCH:
+			case Const.LOOKUPSWITCH:
+			case Const.TABLESWITCH:
 				int[] offsets = getSwitchOffsets();
 				if (offsets.length >= 2) {
 					int pc = getPC();
@@ -209,20 +210,20 @@ public class PresizeCollections extends BytecodeScanningDetector {
 				}
 				break;
 
-			case IFEQ:
-			case IFNE:
-			case IFLT:
-			case IFLE:
-			case IF_ICMPEQ:
-			case IF_ICMPNE:
-			case IF_ICMPLT:
-			case IF_ICMPGE:
-			case IF_ICMPGT:
-			case IF_ICMPLE:
-			case IF_ACMPEQ:
-			case IF_ACMPNE:
-			case GOTO:
-			case GOTO_W:
+			case Const.IFEQ:
+			case Const.IFNE:
+			case Const.IFLT:
+			case Const.IFLE:
+			case Const.IF_ICMPEQ:
+			case Const.IF_ICMPNE:
+			case Const.IF_ICMPLT:
+			case Const.IF_ICMPGE:
+			case Const.IF_ICMPGT:
+			case Const.IF_ICMPLE:
+			case Const.IF_ACMPEQ:
+			case Const.IF_ACMPNE:
+			case Const.GOTO:
+			case Const.GOTO_W:
 				if (getBranchOffset() < 0) {
 					int target = getBranchTarget();
 					Iterator<Map.Entry<Integer, List<Integer>>> it = allocToAddPCs.entrySet().iterator();
@@ -251,10 +252,10 @@ public class PresizeCollections extends BytecodeScanningDetector {
 				}
 				break;
 
-			case IFNULL:
-			case IFNONNULL:
-			case IFGE:
-			case IFGT:
+			case Const.IFNULL:
+			case Const.IFNONNULL:
+			case Const.IFGE:
+			case Const.IFGT:
 				// null check and >, >= branches are hard to presize
 				if (getBranchOffset() > 0) {
 					CodeRange db = new CodeRange(getPC(), getBranchTarget());
@@ -262,11 +263,11 @@ public class PresizeCollections extends BytecodeScanningDetector {
 				}
 				break;
 
-			case ASTORE:
-			case ASTORE_0:
-			case ASTORE_1:
-			case ASTORE_2:
-			case ASTORE_3: {
+			case Const.ASTORE:
+			case Const.ASTORE_0:
+			case Const.ASTORE_1:
+			case Const.ASTORE_2:
+			case Const.ASTORE_3: {
 				if (stack.getStackDepth() > 0) {
 					Integer alloc = (Integer) stack.getStackItem(0).getUserValue();
 					if (alloc != null) {
@@ -276,16 +277,16 @@ public class PresizeCollections extends BytecodeScanningDetector {
 			}
 				break;
 
-			case ALOAD:
-			case ALOAD_0:
-			case ALOAD_1:
-			case ALOAD_2:
-			case ALOAD_3: {
+			case Const.ALOAD:
+			case Const.ALOAD_0:
+			case Const.ALOAD_1:
+			case Const.ALOAD_2:
+			case Const.ALOAD_3: {
 				allocationNumber = storeToAllocNumber.get(getRegisterOperand());
 			}
 				break;
 
-			case PUTFIELD: {
+			case Const.PUTFIELD: {
 				if (stack.getStackDepth() > 0) {
 					Integer alloc = (Integer) stack.getStackItem(0).getUserValue();
 					if (alloc != null) {
@@ -295,7 +296,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
 			}
 				break;
 
-			case GETFIELD: {
+			case Const.GETFIELD: {
 				allocationNumber = storeToAllocNumber.get(getNameConstantOperand());
 			}
 
