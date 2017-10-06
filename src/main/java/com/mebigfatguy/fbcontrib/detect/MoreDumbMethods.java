@@ -26,6 +26,7 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -181,7 +182,7 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL) || (seen == INVOKESTATIC)) {
+        if (OpcodeUtils.isStandardInvoke(seen)) {
             final ReportInfo info = dumbMethods.get(getFQMethod());
             if ((info != null) && ((assertionEnd < getPC()) || !assertableReports.contains(info))) {
                 reportBug(info);
