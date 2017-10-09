@@ -217,22 +217,21 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 							callerMi.setModifiesState(true);
 							foundNewCall = true;
 							break;
-						} else {
-							MethodInfo calleeMi = statistics.getMethodStatistics(clsName,
-									calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
-							if (calleeMi == null) {
-								// a super or sub class probably implements this method so just assume it
-								// modifies state
-								callerMi.setModifiesState(true);
-								foundNewCall = true;
-								break;
-							}
+						}
+						MethodInfo calleeMi = statistics.getMethodStatistics(clsName,
+								calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
+						if (calleeMi == null) {
+							// a super or sub class probably implements this method so just assume it
+							// modifies state
+							callerMi.setModifiesState(true);
+							foundNewCall = true;
+							break;
+						}
 
-							if (calleeMi.getModifiesState()) {
-								callerMi.setModifiesState(true);
-								foundNewCall = true;
-								break;
-							}
+						if (calleeMi.getModifiesState()) {
+							callerMi.setModifiesState(true);
+							foundNewCall = true;
+							break;
 						}
 					}
 				}
