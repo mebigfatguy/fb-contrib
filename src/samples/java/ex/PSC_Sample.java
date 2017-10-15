@@ -11,6 +11,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
+import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import com.google.common.collect.Sets;
+
 public class PSC_Sample {
 
     public void testPSC(List<PSC_Sample> samples) {
@@ -54,6 +58,36 @@ public class PSC_Sample {
 
         ll.add("FooBar");
         return ll;
+    }
+
+    public List<String> testGuavaLists(List<Integer> ii) {
+        List<String> ss = Lists.newArrayList();
+
+        for (Integer i : ii) {
+            ss.add(String.valueOf(i));
+        }
+
+        return ss;
+    }
+
+    public Set<String> testGuavaSets(List<Integer> ii) {
+        Set<String> ss = Sets.newHashSet();
+
+        for (Integer i : ii) {
+            ss.add(String.valueOf(i));
+        }
+
+        return ss;
+    }
+
+    public Map<String, Integer> testGuavaMaps(List<Integer> ii) {
+        Map<String, Integer> ss = Maps.newHashMap();
+
+        for (Integer i : ii) {
+            ss.put(String.valueOf(i), i);
+        }
+
+        return ss;
     }
 
     public void fpDontHaveCollectionForSizing(Iterator<Long> it) {

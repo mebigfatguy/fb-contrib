@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -57,6 +58,14 @@ public class PresizeCollections extends BytecodeScanningDetector {
 			"java/util/ArrayDeque", "java/util/ArrayList", "java/util/HashMap", "java/util/HashSet",
 			"java/util/LinkedBlockingQueue", "java/util/LinkedHashMap", "java/util/LinkedHashSet",
 			"java/util/PriorityBlockingQueue", "java/util/PriorityQueue", "java/util/Vector");
+
+	private static final Set<FQMethod> STATIC_COLLECTION_FACTORIES = UnmodifiableSet.create(
+			// @formatter:off
+			new FQMethod("com/google/common/collect/Lists", "newArrayList", "()Ljava/util/ArrayList;"),
+			new FQMethod("com/google/common/collect/Sets", "newHashSet", "()Ljava/util/HashSet;"),
+			new FQMethod("com/google/common/collect/Maps", "newHashMap", "()Ljava/util/HashMap;")
+	// @formatter:on
+	);
 
 	private BugReporter bugReporter;
 	private OpcodeStack stack;
@@ -192,6 +201,15 @@ public class PresizeCollections extends BytecodeScanningDetector {
 							}
 						}
 					}
+				}
+				break;
+
+			case Const.INVOKESTATIC:
+				FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+						getSigConstantOperand());
+				if (STATIC_COLLECTION_FACTORIES.contains(fqm)) {
+					allocationNumber = Integer.valueOf(nextAllocNumber++);
+					sawAlloc = true;
 				}
 				break;
 
