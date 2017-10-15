@@ -109,7 +109,11 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
         if (isAssumedPublic(methodName)) {
             MethodInfo mi = Statistics.getStatistics().getMethodStatistics(cls.getClassName(), methodName, sig);
             mi.addCallingAccess(Constants.ACC_PUBLIC);
-        } else if (!hasRuntimeAnnotations(m) && !isGetterSetter(methodName, sig)) {
+        } else {
+            if (!hasRuntimeAnnotations(m) && !isGetterSetter(methodName, sig)) {
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(cls.getClassName(), methodName, sig);
+                mi.addCallingAccess(Constants.ACC_PUBLIC);
+            }
             stack.resetForMethodEntry(this);
             super.visitCode(obj);
         }
