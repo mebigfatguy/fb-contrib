@@ -109,7 +109,11 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		if (isAssumedPublic(methodName)) {
 			MethodInfo mi = Statistics.getStatistics().getMethodStatistics(cls.getClassName(), methodName, sig);
 			mi.addCallingAccess(Const.ACC_PUBLIC);
-		} else if (!hasRuntimeAnnotations(m) && !isGetterSetter(methodName, sig)) {
+		} else {
+			if (!hasRuntimeAnnotations(m) && !isGetterSetter(methodName, sig)) {
+				MethodInfo mi = Statistics.getStatistics().getMethodStatistics(cls.getClassName(), methodName, sig);
+				mi.addCallingAccess(Const.ACC_PUBLIC);
+			}
 			stack.resetForMethodEntry(this);
 			super.visitCode(obj);
 		}
@@ -352,8 +356,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 	}
 
 	private static String getDeclaredAccessValue(int declaredAccess) {
-		return DECLARED_ACCESS.get(Integer
-				.valueOf(declaredAccess & (Const.ACC_PRIVATE | Const.ACC_PROTECTED | Const.ACC_PUBLIC)));
+		return DECLARED_ACCESS
+				.get(Integer.valueOf(declaredAccess & (Const.ACC_PRIVATE | Const.ACC_PROTECTED | Const.ACC_PUBLIC)));
 	}
 
 	private static Object getRequiredAccessValue(MethodInfo mi) {
@@ -377,10 +381,9 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 					}
 
 					return methods[bootstrapIndex];
-				} else {
-					throw new RuntimeException(
-							"Incompatible bcel version, the bcel that is in use, is too old and doesn't have attribute 'BootstrapMethods'");
 				}
+				throw new RuntimeException(
+						"Incompatible bcel version, the bcel that is in use, is too old and doesn't have attribute 'BootstrapMethods'");
 			}
 		}
 
