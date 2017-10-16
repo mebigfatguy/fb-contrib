@@ -281,7 +281,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ConflatingResourcesAndFiles" speed="fast" reports="CRF_CONFLATING_RESOURCES_AND_FILES" />
     
-	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod" speed="fast" reports="OPM_OVERLY_PERMISSIVE_METHOD" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyPermissiveMethod" speed="moderate" reports="OPM_OVERLY_PERMISSIVE_METHOD" />
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.StringifiedTypes" speed="fast" reports="STT_STRING_PARSING_A_FIELD,STT_TOSTRING_STORED_IN_FIELD,STT_TOSTRING_MAP_KEYING" />
 	
