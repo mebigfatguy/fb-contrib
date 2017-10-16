@@ -273,7 +273,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                 continue;
             }
 
-            if (isOverlyPermissive(declaredAccess)) {
+            if (isOverlyPermissive(declaredAccess) && !isConstrainedByInterface(key)) {
                 try {
                     String clsName = key.getClassName();
                     if (!isDerived(Repository.lookupClass(clsName), key)) {
@@ -296,6 +296,29 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
     private static boolean isOverlyPermissive(int declaredAccess) {
         return (declaredAccess & Constants.ACC_PUBLIC) != 0;
+    }
+
+    private boolean isConstrainedByInterface(FQMethod fqMethod) {
+
+        try {
+            JavaClass cls = Repository.lookupClass(fqMethod.getClassName());
+            if (cls.isInterface()) {
+                return true;
+            }
+
+            for (JavaClass inf : cls.getAllInterfaces()) {
+                for (Method method : inf.getMethods()) {
+                    if (method.getName().equals(fqMethod.getMethodName()) && method.getSignature().equals(fqMethod.getSignature())) {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+            return true;
+        }
     }
 
     /**
