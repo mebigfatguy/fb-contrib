@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.nio.ByteBuffer;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.bcel.Constants;
@@ -298,6 +299,13 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
         return (declaredAccess & Constants.ACC_PUBLIC) != 0;
     }
 
+    /**
+     * looks to see if this method is an implementation of a method in an interface, including generic specified interface methods.
+     *
+     * @param fqMethod
+     *            the method to check
+     * @return if this method is constrained by an interface method
+     */
     private boolean isConstrainedByInterface(FQMethod fqMethod) {
 
         try {
@@ -307,9 +315,41 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             }
 
             for (JavaClass inf : cls.getAllInterfaces()) {
-                for (Method method : inf.getMethods()) {
-                    if (method.getName().equals(fqMethod.getMethodName()) && method.getSignature().equals(fqMethod.getSignature())) {
-                        return true;
+                for (Method infMethod : inf.getMethods()) {
+                    if (infMethod.getName().equals(fqMethod.getMethodName())) {
+                        String infMethodSig = infMethod.getSignature();
+                        String fqMethodSig = fqMethod.getSignature();
+                        if (infMethodSig.equals(fqMethodSig)) {
+                            return true;
+                        }
+
+                        List<String> infTypes = SignatureUtils.getParameterSignatures(infMethodSig);
+                        List<String> fqTypes = SignatureUtils.getParameterSignatures(fqMethodSig);
+
+                        if (infTypes.size() == fqTypes.size()) {
+                            boolean matches = true;
+                            for (int i = 0; i < infTypes.size(); i++) {
+                                String infParmType = infTypes.get(i);
+                                String fqParmType = fqTypes.get(i);
+                                if (infParmType != fqParmType) {
+                                    if ((infParmType.charAt(0) != 'L') || (fqParmType.charAt(0) != 'L')) {
+                                        matches = false;
+                                        break;
+                                    }
+
+                                    JavaClass infParmClass = Repository.lookupClass(infTypes.get(i));
+                                    JavaClass fqParmClass = Repository.lookupClass(fqTypes.get(i));
+                                    if (!fqParmClass.instanceOf(infParmClass)) {
+                                        matches = false;
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if (matches) {
+                                return true;
+                            }
+                        }
                     }
                 }
             }
