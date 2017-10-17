@@ -26,16 +26,17 @@ import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
+import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
  * looks for various issues around @Autowired/@Inject fields in DI classes
@@ -43,10 +44,11 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
  * <li>Injecting the same bean twice into the same class hierarchy, even with different field names</li>
  * </ul>
  */
-public class WiringIssues extends PreorderVisitor implements Detector {
+public class WiringIssues extends BytecodeScanningDetector implements Detector {
 
     private static final String SPRING_AUTOWIRED = "Lorg/springframework/beans/factory/annotation/Autowired;";
     private static final String SPRING_QUALIFIER = "Lorg/springframework/beans/factory/annotation/Qualifier;";
+
     private BugReporter bugReporter;
 
     /**
@@ -105,14 +107,23 @@ public class WiringIssues extends PreorderVisitor implements Detector {
                     }
                 }
             }
+
+            super.visitClassContext(classContext);
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }
     }
 
     @Override
-    public void report() {
-        // required by the interface, but not used
+    public void sawOpcode(int seen) {
+        if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+            String clsName = getClassConstantOperand();
+            if (Statistics.getStatistics().isAutowiredBean(clsName.replace('/', '.'))) {
+                bugReporter.reportBug(new BugInstance(this, BugType.WI_MANUALLY_ALLOCATING_AN_AUTOWIRED_BEAN.name(), NORMAL_PRIORITY).addClass(this)
+                        .addMethod(this).addSourceLine(this));
+
+            }
+        }
     }
 
     /**

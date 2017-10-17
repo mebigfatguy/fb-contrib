@@ -1,6 +1,8 @@
 package ex;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Component;
 
 public class WI_Sample extends Parent {
     @Autowired
@@ -15,6 +17,10 @@ public class WI_Sample extends Parent {
 
     @Autowired
     GenerifiedBean<Integer> fpIntBean;
+
+    public void foo() {
+        MyBean b = new MyBean();
+    }
 }
 
 class Parent {
@@ -31,4 +37,8 @@ interface SingletonBean {
 }
 
 interface GenerifiedBean<T> {
+}
+
+@Component
+class MyBean {
 }
