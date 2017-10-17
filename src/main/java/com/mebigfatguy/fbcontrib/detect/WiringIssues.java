@@ -99,7 +99,7 @@ public class WiringIssues extends PreorderVisitor implements Detector {
                             wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
                         } else {
                             bugReporter.reportBug(new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY).addClass(cls)
-                                    .addField(existingAnnotation).addField(FieldAnnotation.fromBCELField(cls, field)));
+                                    .addField(FieldAnnotation.fromBCELField(cls, field)).addField(existingAnnotation));
                             wiredFields.remove(wt);
                         }
                     }
