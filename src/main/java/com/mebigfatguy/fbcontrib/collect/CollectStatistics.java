@@ -26,6 +26,7 @@ import java.util.Set;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Annotations;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -44,12 +45,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * a first pass detector to collect various statistics used in second pass
- * detectors.
+ * a first pass detector to collect various statistics used in second pass detectors.
  */
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
-	private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
-			// @formatter:off
+    private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
+    // @formatter:off
 			new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
 			new SignatureBuilder().withMethodName(Values.TOSTRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING)
 					.toString(),
@@ -57,228 +57,241 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 			"clone()", "values()",
 			new SignatureBuilder().withMethodName("main").withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString()
 	// @formatter:on
-	);
+    );
 
-	private int numMethodCalls;
-	private boolean modifiesState;
-	private boolean classHasAnnotation;
-	private OpcodeStack stack;
-	private Map<QMethod, Set<CalledMethod>> selfCallTree;
-	private QMethod curMethod;
+    private static final Set<String> BEAN_ANNOTATIONS = UnmodifiableSet.create(
+    // @formatter:off
+            "Lorg/springframework/stereotype/Component;",
+            "Lorg/springframework/stereotype/Controller;",
+            "Lorg/springframework/stereotype/Repository;",
+            "Lorg/springframework/stereotype/Service;"
+    // @formatter:on
+    );
 
-	/**
-	 * constructs a CollectStatistics detector which clears the singleton that holds
-	 * the statistics for all classes parsed in the first pass.
-	 *
-	 * @param bugReporter
-	 *            unused, but required by reflection contract
-	 */
-	// required for reflection
-	@SuppressWarnings("PMD.UnusedFormalParameter")
-	public CollectStatistics(BugReporter bugReporter) {
-		Statistics.getStatistics().clear();
-	}
+    private int numMethodCalls;
+    private boolean modifiesState;
+    private boolean classHasAnnotation;
+    private OpcodeStack stack;
+    private Map<QMethod, Set<CalledMethod>> selfCallTree;
+    private QMethod curMethod;
 
-	/**
-	 * implements the visitor to collect statistics on this class
-	 *
-	 * @param classContext
-	 *            the currently class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			JavaClass cls = classContext.getJavaClass();
-			AnnotationEntry[] annotations = cls.getAnnotationEntries();
-			classHasAnnotation = !CollectionUtils.isEmpty(annotations);
-			stack = new OpcodeStack();
-			selfCallTree = new HashMap<>();
-			super.visitClassContext(classContext);
+    /**
+     * constructs a CollectStatistics detector which clears the singleton that holds the statistics for all classes parsed in the first pass.
+     *
+     * @param bugReporter
+     *            unused, but required by reflection contract
+     */
+    // required for reflection
+    @SuppressWarnings("PMD.UnusedFormalParameter")
+    public CollectStatistics(BugReporter bugReporter) {
+        Statistics.getStatistics().clear();
+    }
 
-			performModifyStateClosure(classContext.getJavaClass());
+    /**
+     * implements the visitor to collect statistics on this class
+     *
+     * @param classContext
+     *            the currently class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            JavaClass cls = classContext.getJavaClass();
+            AnnotationEntry[] annotations = cls.getAnnotationEntries();
+            classHasAnnotation = !CollectionUtils.isEmpty(annotations);
+            stack = new OpcodeStack();
+            selfCallTree = new HashMap<>();
+            super.visitClassContext(classContext);
 
-		} finally {
-			stack = null;
-			selfCallTree = null;
-			curMethod = null;
-		}
-	}
+            performModifyStateClosure(classContext.getJavaClass());
 
-	@Override
-	public void visitCode(Code obj) {
+        } finally {
+            stack = null;
+            selfCallTree = null;
+            curMethod = null;
+        }
+    }
 
-		numMethodCalls = 0;
-		modifiesState = false;
+    @Override
+    public void visitAnnotation(Annotations annotations) {
+        for (AnnotationEntry entry : annotations.getAnnotationEntries()) {
+            String annotationType = entry.getAnnotationType();
+            if (BEAN_ANNOTATIONS.contains(annotationType)) {
+                Statistics.getStatistics().addAutowiredBean(getDottedClassName());
+            }
+        }
+    }
 
-		byte[] code = obj.getCode();
-		if (code == null) {
-			return;
-		}
-		stack.resetForMethodEntry(this);
-		curMethod = null;
-		super.visitCode(obj);
-		String clsName = getClassName();
-		Method method = getMethod();
-		int accessFlags = method.getAccessFlags();
-		MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(),
-				accessFlags, obj.getLength(), numMethodCalls);
-		if (clsName.contains("$") || ((accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0)) {
-			mi.addCallingAccess(Constants.ACC_PUBLIC);
-		} else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
-			if (isAssociationedWithAnnotations(method)) {
-				mi.addCallingAccess(Constants.ACC_PUBLIC);
-			} else {
-				String methodSig = getMethodName() + getMethodSig();
-				for (String sig : COMMON_METHOD_SIG_PREFIXES) {
-					if (methodSig.startsWith(sig)) {
-						mi.addCallingAccess(Constants.ACC_PUBLIC);
-						break;
-					}
-				}
-			}
-		}
+    @Override
+    public void visitCode(Code obj) {
 
-		mi.setModifiesState(modifiesState);
-	}
+        numMethodCalls = 0;
+        modifiesState = false;
 
-	@Override
-	public void sawOpcode(int seen) {
-		try {
-			switch (seen) {
-			case INVOKEVIRTUAL:
-			case INVOKEINTERFACE:
-			case INVOKESPECIAL:
-			case INVOKESTATIC:
-			case INVOKEDYNAMIC:
-				numMethodCalls++;
+        byte[] code = obj.getCode();
+        if (code == null) {
+            return;
+        }
+        stack.resetForMethodEntry(this);
+        curMethod = null;
+        super.visitCode(obj);
+        String clsName = getClassName();
+        Method method = getMethod();
+        int accessFlags = method.getAccessFlags();
+        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(), numMethodCalls);
+        if (clsName.contains("$") || ((accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0)) {
+            mi.addCallingAccess(Constants.ACC_PUBLIC);
+        } else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
+            if (isAssociationedWithAnnotations(method)) {
+                mi.addCallingAccess(Constants.ACC_PUBLIC);
+            } else {
+                String methodSig = getMethodName() + getMethodSig();
+                for (String sig : COMMON_METHOD_SIG_PREFIXES) {
+                    if (methodSig.startsWith(sig)) {
+                        mi.addCallingAccess(Constants.ACC_PUBLIC);
+                        break;
+                    }
+                }
+            }
+        }
 
-				if (seen != INVOKESTATIC) {
-					int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
-					if (stack.getStackDepth() > numParms) {
-						OpcodeStack.Item itm = stack.getStackItem(numParms);
-						if (itm.getRegisterNumber() == 0) {
-							Set<CalledMethod> calledMethods;
+        mi.setModifiesState(modifiesState);
+    }
 
-							if (curMethod == null) {
-								curMethod = new QMethod(getMethodName(), getMethodSig());
-								calledMethods = new HashSet<>();
-								selfCallTree.put(curMethod, calledMethods);
-							} else {
-								calledMethods = selfCallTree.get(curMethod);
-							}
+    @Override
+    public void sawOpcode(int seen) {
+        try {
+            switch (seen) {
+                case INVOKEVIRTUAL:
+                case INVOKEINTERFACE:
+                case INVOKESPECIAL:
+                case INVOKESTATIC:
+                case INVOKEDYNAMIC:
+                    numMethodCalls++;
 
-							calledMethods.add(
-									new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()),
-											seen == INVOKESPECIAL));
-						}
-					}
-				}
-				break;
+                    if (seen != INVOKESTATIC) {
+                        int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
+                        if (stack.getStackDepth() > numParms) {
+                            OpcodeStack.Item itm = stack.getStackItem(numParms);
+                            if (itm.getRegisterNumber() == 0) {
+                                Set<CalledMethod> calledMethods;
 
-			case PUTSTATIC:
-			case PUTFIELD:
-				modifiesState = true;
-				break;
+                                if (curMethod == null) {
+                                    curMethod = new QMethod(getMethodName(), getMethodSig());
+                                    calledMethods = new HashSet<>();
+                                    selfCallTree.put(curMethod, calledMethods);
+                                } else {
+                                    calledMethods = selfCallTree.get(curMethod);
+                                }
 
-			default:
-				break;
-			}
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
-	}
+                                calledMethods.add(new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()), seen == INVOKESPECIAL));
+                            }
+                        }
+                    }
+                break;
 
-	private void performModifyStateClosure(JavaClass cls) {
-		boolean foundNewCall = true;
-		Statistics statistics = Statistics.getStatistics();
+                case PUTSTATIC:
+                case PUTFIELD:
+                    modifiesState = true;
+                break;
 
-		String clsName = cls.getClassName();
-		while (foundNewCall && !selfCallTree.isEmpty()) {
-			foundNewCall = false;
+                default:
+                break;
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
+        }
+    }
 
-			Iterator<Map.Entry<QMethod, Set<CalledMethod>>> callerIt = selfCallTree.entrySet().iterator();
-			while (callerIt.hasNext()) {
-				Map.Entry<QMethod, Set<CalledMethod>> callerEntry = callerIt.next();
-				QMethod caller = callerEntry.getKey();
+    private void performModifyStateClosure(JavaClass cls) {
+        boolean foundNewCall = true;
+        Statistics statistics = Statistics.getStatistics();
 
-				MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(),
-						caller.getSignature());
-				if (callerMi == null) {
-					// odd, shouldn't happen
-					foundNewCall = true;
-				} else if (callerMi.getModifiesState()) {
-					foundNewCall = true;
-				} else {
+        String clsName = cls.getClassName();
+        while (foundNewCall && !selfCallTree.isEmpty()) {
+            foundNewCall = false;
 
-					for (CalledMethod calledMethod : callerEntry.getValue()) {
+            Iterator<Map.Entry<QMethod, Set<CalledMethod>>> callerIt = selfCallTree.entrySet().iterator();
+            while (callerIt.hasNext()) {
+                Map.Entry<QMethod, Set<CalledMethod>> callerEntry = callerIt.next();
+                QMethod caller = callerEntry.getKey();
 
-						if (calledMethod.isSuper) {
-							callerMi.setModifiesState(true);
-							foundNewCall = true;
-							break;
-						}
+                MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(), caller.getSignature());
+                if (callerMi == null) {
+                    // odd, shouldn't happen
+                    foundNewCall = true;
+                } else if (callerMi.getModifiesState()) {
+                    foundNewCall = true;
+                } else {
 
-						MethodInfo calleeMi = statistics.getMethodStatistics(clsName,
-								calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
-						if (calleeMi == null) {
-							// a super or sub class probably implements this method so just assume it
-							// modifies state
-							callerMi.setModifiesState(true);
-							foundNewCall = true;
-							break;
-						}
+                    for (CalledMethod calledMethod : callerEntry.getValue()) {
 
-						if (calleeMi.getModifiesState()) {
-							callerMi.setModifiesState(true);
-							foundNewCall = true;
-							break;
-						}
-					}
-				}
+                        if (calledMethod.isSuper) {
+                            callerMi.setModifiesState(true);
+                            foundNewCall = true;
+                            break;
+                        }
 
-				if (foundNewCall) {
-					callerIt.remove();
-				}
-			}
-		}
+                        MethodInfo calleeMi = statistics.getMethodStatistics(clsName, calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
+                        if (calleeMi == null) {
+                            // a super or sub class probably implements this method so just assume it
+                            // modifies state
+                            callerMi.setModifiesState(true);
+                            foundNewCall = true;
+                            break;
+                        }
 
-		selfCallTree.clear();
-	}
+                        if (calleeMi.getModifiesState()) {
+                            callerMi.setModifiesState(true);
+                            foundNewCall = true;
+                            break;
+                        }
+                    }
+                }
 
-	private boolean isAssociationedWithAnnotations(Method m) {
-		if (classHasAnnotation) {
-			return true;
-		}
+                if (foundNewCall) {
+                    callerIt.remove();
+                }
+            }
+        }
 
-		return !CollectionUtils.isEmpty(m.getAnnotationEntries());
-	}
+        selfCallTree.clear();
+    }
 
-	/**
-	 * represents a method that is called, and whether it is in the super class
-	 */
-	static class CalledMethod {
-		private QMethod callee;
-		private boolean isSuper;
+    private boolean isAssociationedWithAnnotations(Method m) {
+        if (classHasAnnotation) {
+            return true;
+        }
 
-		public CalledMethod(QMethod c, boolean s) {
-			callee = c;
-			isSuper = s;
-		}
+        return !CollectionUtils.isEmpty(m.getAnnotationEntries());
+    }
 
-		@Override
-		public int hashCode() {
-			return callee.hashCode() & (isSuper ? 0 : 1);
-		}
+    /**
+     * represents a method that is called, and whether it is in the super class
+     */
+    static class CalledMethod {
+        private QMethod callee;
+        private boolean isSuper;
 
-		@Override
-		public boolean equals(Object obj) {
-			if (!(obj instanceof CalledMethod)) {
-				return false;
-			}
+        public CalledMethod(QMethod c, boolean s) {
+            callee = c;
+            isSuper = s;
+        }
 
-			CalledMethod that = (CalledMethod) obj;
+        @Override
+        public int hashCode() {
+            return callee.hashCode() & (isSuper ? 0 : 1);
+        }
 
-			return (isSuper == that.isSuper) && callee.equals(that.callee);
-		}
-	}
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof CalledMethod)) {
+                return false;
+            }
+
+            CalledMethod that = (CalledMethod) obj;
+
+            return (isSuper == that.isSuper) && callee.equals(that.callee);
+        }
+    }
 }

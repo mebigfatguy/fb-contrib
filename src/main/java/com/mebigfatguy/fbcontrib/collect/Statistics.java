@@ -19,11 +19,15 @@
 package com.mebigfatguy.fbcontrib.collect;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * holds statistics about classes and methods collected in the first pass.
@@ -34,6 +38,8 @@ public final class Statistics implements Iterable<Map.Entry<FQMethod, MethodInfo
     private static final MethodInfo NOT_FOUND_METHOD_INFO = new MethodInfo();
 
     private final Map<FQMethod, MethodInfo> methodStatistics = new HashMap<>();
+
+    private final Set<String> autowiredBeans = new HashSet<>();
 
     private Statistics() {
     }
@@ -82,6 +88,14 @@ public final class Statistics implements Iterable<Map.Entry<FQMethod, MethodInfo
         }
 
         mi.setImmutabilityType(imType);
+    }
+
+    public void addAutowiredBean(@DottedClassName String beanClass) {
+        autowiredBeans.add(beanClass);
+    }
+
+    public boolean isAutowiredBean(@DottedClassName String beanClass) {
+        return autowiredBeans.contains(beanClass);
     }
 
     @Override
