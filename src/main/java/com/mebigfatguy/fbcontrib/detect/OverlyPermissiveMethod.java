@@ -342,8 +342,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                                         break;
                                     }
 
-                                    JavaClass infParmClass = Repository.lookupClass(infTypes.get(i));
-                                    JavaClass fqParmClass = Repository.lookupClass(fqTypes.get(i));
+                                    JavaClass infParmClass = Repository.lookupClass(SignatureUtils.stripSignature(infTypes.get(i)));
+                                    JavaClass fqParmClass = Repository.lookupClass(SignatureUtils.stripSignature(fqTypes.get(i)));
                                     if (!fqParmClass.instanceOf(infParmClass)) {
                                         matches = false;
                                         break;
