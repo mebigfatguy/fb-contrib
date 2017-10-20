@@ -1,12 +1,15 @@
 package ex;
+
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 //Expected bug count: 13
-//5 HE_EXECUTOR_NEVER_SHUTDOWN 
+//5 HE_EXECUTOR_NEVER_SHUTDOWN
 //4 HE_LOCAL_EXECUTOR_SERVICE
 //3 HE_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN
 public class HES_Sample {
@@ -28,8 +31,9 @@ class SampleExecutable implements Runnable {
     // Dummy method with throws to simulate something potentially throwing
     // exception
     public static void methodThrows() throws Exception {
-        if (Math.random() < .5)
+        if (Math.random() < .5) {
             throw new Exception("There was a problem with the RNG");
+        }
     }
 
 }
@@ -401,4 +405,14 @@ class LocalExecutorProblem3 {
         executor.shutdown();
     }
 
+}
+
+class ExecutorAsBean {
+
+    private ExecutorService executorService;
+
+    @Autowired
+    public ExecutorAsBean(ExecutorService executorService) {
+        this.executorService = executorService;
+    }
 }

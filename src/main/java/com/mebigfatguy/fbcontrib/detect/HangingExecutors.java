@@ -229,13 +229,21 @@ public class HangingExecutors extends BytecodeScanningDetector {
                                 this.hangingFieldCandidates.put(f, ap);
                             }
                         }
+                    } else {
+                        // if the object is initialized from parameter, it's not this class's job to close it
+                        int reg = stack.getStackItem(0).getRegisterNumber();
+                        if (reg >= 0) {
+                            Map<Integer, String> ctorParmInfo = SignatureUtils.getParameterSlotAndSignatures(false, getMethod().getSignature());
+                            if (ctorParmInfo.containsKey(Integer.valueOf(reg))) {
+                                hangingFieldCandidates.remove(f);
+                            }
+                        }
                     }
                 }
             }
         } finally {
             stack.sawOpcode(this, seen);
         }
-
     }
 
     private void reportOverwrittenField(XField f) {
