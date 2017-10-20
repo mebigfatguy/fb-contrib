@@ -23,11 +23,13 @@ import java.util.Map;
 import java.util.Objects;
 
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -36,6 +38,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.Detector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -50,6 +53,7 @@ public class WiringIssues extends BytecodeScanningDetector implements Detector {
     private static final String SPRING_QUALIFIER = "Lorg/springframework/beans/factory/annotation/Qualifier;";
 
     private BugReporter bugReporter;
+    private OpcodeStack stack;
 
     /**
      * constructs a WI detector given the reporter to report bugs on
@@ -108,21 +112,40 @@ public class WiringIssues extends BytecodeScanningDetector implements Detector {
                 }
             }
 
+            stack = new OpcodeStack();
             super.visitClassContext(classContext);
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
+        } finally {
+            stack = null;
         }
     }
 
     @Override
-    public void sawOpcode(int seen) {
-        if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
-            String clsName = getClassConstantOperand();
-            if (Statistics.getStatistics().isAutowiredBean(clsName.replace('/', '.'))) {
-                bugReporter.reportBug(new BugInstance(this, BugType.WI_MANUALLY_ALLOCATING_AN_AUTOWIRED_BEAN.name(), NORMAL_PRIORITY).addClass(this)
-                        .addMethod(this).addSourceLine(this));
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        super.visitCode(obj);
+    }
 
+    @Override
+    public void sawOpcode(int seen) {
+        try {
+            if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+                String clsName = getClassConstantOperand();
+                if (Statistics.getStatistics().isAutowiredBean(clsName.replace('/', '.'))) {
+                    String signature = getSigConstantOperand();
+                    int numParms = SignatureUtils.getNumParameters(signature);
+                    if (stack.getStackDepth() > numParms) {
+                        OpcodeStack.Item itm = stack.getStackItem(numParms);
+                        if (itm.getRegisterNumber() != 0) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.WI_MANUALLY_ALLOCATING_AN_AUTOWIRED_BEAN.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
+                    }
+                }
             }
+        } finally {
+            stack.sawOpcode(this, seen);
         }
     }
 
