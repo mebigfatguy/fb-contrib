@@ -96,8 +96,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
 				Method[] methods = superCls.getMethods();
 				for (Method m : methods) {
 					String methodName = m.getName();
-					if (m.isPublic() && !m.isAbstract() && !m.isSynthetic()
-							&& !Values.CONSTRUCTOR.equals(methodName)
+					if (m.isPublic() && !m.isAbstract() && !m.isSynthetic() && !Values.CONSTRUCTOR.equals(methodName)
 							&& !Values.STATIC_INITIALIZER.equals(methodName)) {
 						String methodInfo = methodName + ':' + m.getSignature();
 						superclassCode.put(methodInfo, new CodeInfo(m.getCode(), m.getAccessFlags()));
@@ -181,7 +180,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
 	public void sawOpcode(int seen) {
 
 		if (!sawAload0) {
-			if (seen == ALOAD_0) {
+			if (seen == Const.ALOAD_0) {
 				sawAload0 = true;
 			} else {
 				throw new StopOpcodeParsingException();
@@ -196,7 +195,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
 
 		} else if (!sawParentCall) {
 
-			if ((seen == INVOKESPECIAL) && getNameConstantOperand().equals(getMethod().getName())
+			if ((seen == Const.INVOKESPECIAL) && getNameConstantOperand().equals(getMethod().getName())
 					&& getSigConstantOperand().equals(getMethod().getSignature())) {
 				sawParentCall = true;
 			} else {
@@ -276,7 +275,6 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
 	 *
 	 * @return whether the code blocks are the same
 	 */
-	@SuppressWarnings("deprecation")
 	private boolean codeEquals(Code child, Code parent) {
 
 		if (parent == null) {
@@ -367,19 +365,19 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
 					return false;
 				}
 				// TODO: Other Constant types
-            } else if (childin instanceof LDC2_W) {
-                Type childType = ((LDC2_W) childin).getType(childPoolGen);
-                Type parentType = ((LDC2_W) parentin).getType(parentPoolGen);
-                if (!childType.equals(parentType)) {
-                    return false;
-                }
+			} else if (childin instanceof LDC2_W) {
+				Type childType = ((LDC2_W) childin).getType(childPoolGen);
+				Type parentType = ((LDC2_W) parentin).getType(parentPoolGen);
+				if (!childType.equals(parentType)) {
+					return false;
+				}
 
-                Object childValue = ((LDC2_W) childin).getValue(childPoolGen);
-                Object parentValue = ((LDC2_W) parentin).getValue(parentPoolGen);
+				Object childValue = ((LDC2_W) childin).getValue(childPoolGen);
+				Object parentValue = ((LDC2_W) parentin).getValue(parentPoolGen);
 
-                if (!childValue.equals(parentValue)) {
-                    return false;
-                }
+				if (!childValue.equals(parentValue)) {
+					return false;
+				}
 
 			} else {
 				if (!childin.equals(parentin)) {
