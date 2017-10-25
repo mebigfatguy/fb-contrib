@@ -47,8 +47,8 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     private static final Set<QMethod> OBJECT_METHODS = UnmodifiableSet.create(
     // @formatter:off
             new QMethod("equals", "(Ljava/lang/Object;)Z"),
-            new QMethod("hashCode", "()I"),
-            new QMethod("toString", "()Ljava/lang/String;"),
+            new QMethod(Values.HASHCODE, "()I"),
+            new QMethod(Values.TOSTRING, "()Ljava/lang/String;"),
             new QMethod("clone", "()Ljava/lang/Object;"),
             new QMethod("notify", "()V"),
             new QMethod("notifyAll", "()V"),

@@ -44,6 +44,7 @@ public final class Values {
     public static final String CONSTRUCTOR = "<init>";
     public static final String STATIC_INITIALIZER = "<clinit>";
     public static final String TOSTRING = "toString";
+    public static final String HASHCODE = "hashCode";
 
     public static final String SIG_PRIMITIVE_BOOLEAN = Type.BOOLEAN.getSignature();
     public static final String SIG_PRIMITIVE_CHAR = Type.CHAR.getSignature();

@@ -98,17 +98,17 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
 
         BitSet reportedPCs = new BitSet();
         for (Integer pc : nodeCreations.values()) {
-            if (!reportedPCs.get(pc)) {
+            if (!reportedPCs.get(pc.intValue())) {
                 bugReporter.reportBug(new BugInstance(this, BugType.ODN_ORPHANED_DOM_NODE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this, pc.intValue()));
-                reportedPCs.set(pc);
+                reportedPCs.set(pc.intValue());
             }
         }
         for (Integer pc : nodeStores.values()) {
-            if (!reportedPCs.get(pc)) {
+            if (!reportedPCs.get(pc.intValue())) {
                 bugReporter.reportBug(new BugInstance(this, BugType.ODN_ORPHANED_DOM_NODE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                         .addSourceLine(this, pc.intValue()));
-                reportedPCs.set(pc);
+                reportedPCs.set(pc.intValue());
             }
         }
     }

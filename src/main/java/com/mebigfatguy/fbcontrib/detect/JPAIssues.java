@@ -288,7 +288,7 @@ public class JPAIssues extends BytecodeScanningDetector {
             catalogFieldOrMethod(m);
 
             if (("equals".equals(m.getName()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(m.getSignature()))
-                    || ("hashCode".equals(m.getName()) && SignatureBuilder.SIG_VOID_TO_INT.equals(m.getSignature()))) {
+                    || (Values.HASHCODE.equals(m.getName()) && SignatureBuilder.SIG_VOID_TO_INT.equals(m.getSignature()))) {
                 hasHCEquals = true;
             }
         }

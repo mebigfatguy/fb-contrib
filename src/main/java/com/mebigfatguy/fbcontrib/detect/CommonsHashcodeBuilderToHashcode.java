@@ -23,6 +23,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -30,8 +31,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 
 /**
- * Find usage of HashCodeBuilder from Apache commons, where the code invokes
- * hashCode() on the constructed object rather than toHashCode()
+ * Find usage of HashCodeBuilder from Apache commons, where the code invokes hashCode() on the constructed object rather than toHashCode()
  *
  * <pre>
  * new HashCodeBuilder().append(this.name).hashCode();
@@ -56,10 +56,8 @@ public class CommonsHashcodeBuilderToHashcode extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to pass through constructors and static
-     * initializers to the byte code scanning code. These methods are not
-     * reported, but are used to build SourceLineAnnotations for fields, if
-     * accessed.
+     * implements the visitor to pass through constructors and static initializers to the byte code scanning code. These methods are not reported, but are used
+     * to build SourceLineAnnotations for fields, if accessed.
      *
      * @param obj
      *            the context object of the currently parsed code attribute
@@ -77,7 +75,7 @@ public class CommonsHashcodeBuilderToHashcode extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         if (seen == INVOKEVIRTUAL) {
             String methodName = getNameConstantOperand();
-            if ("hashCode".equals(methodName) && SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand()) && (stack.getStackDepth() > 0)) {
+            if (Values.HASHCODE.equals(methodName) && SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand()) && (stack.getStackDepth() > 0)) {
                 String calledClass = stack.getStackItem(0).getSignature();
                 if (LANG3_HASH_CODE_BUILDER.equals(calledClass) || LANG_HASH_CODE_BUILDER.equals(calledClass)) {
                     bugReporter.reportBug(new BugInstance(this, "CHTH_COMMONS_HASHCODE_BUILDER_TOHASHCODE", HIGH_PRIORITY).addClass(this).addMethod(this)
