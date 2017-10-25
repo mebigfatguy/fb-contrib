@@ -141,7 +141,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                 }
                             }
-                        } else if ("hashCode".equals(calledMethodName) && (stack.getStackDepth() > 0)) {
+                        } else if (Values.HASHCODE.equals(calledMethodName) && (stack.getStackDepth() > 0)) {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             int reg = item.getRegisterNumber();
                             if (reg >= 0) {

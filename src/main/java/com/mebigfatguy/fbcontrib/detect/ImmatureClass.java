@@ -127,7 +127,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
                 if (!clsHasRuntimeAnnotation && (heStatus == HEStatus.NEEDED)) {
                     if (!hasMethodInHierarchy(cls, "equals", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_EQUALS.name(), LOW_PRIORITY).addClass(cls));
-                    } else if (!hasMethodInHierarchy(cls, "hashCode", SignatureBuilder.SIG_VOID_TO_INT)) {
+                    } else if (!hasMethodInHierarchy(cls, Values.HASHCODE, SignatureBuilder.SIG_VOID_TO_INT)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_NO_HASHCODE.name(), LOW_PRIORITY).addClass(cls));
                     }
                 }

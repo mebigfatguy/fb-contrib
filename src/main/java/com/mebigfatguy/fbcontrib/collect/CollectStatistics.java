@@ -53,7 +53,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 			new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
 			new SignatureBuilder().withMethodName(Values.TOSTRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING)
 					.toString(),
-			new SignatureBuilder().withMethodName("hashCode").withReturnType(Values.SIG_PRIMITIVE_INT).toString(),
+			new SignatureBuilder().withMethodName(Values.HASHCODE).withReturnType(Values.SIG_PRIMITIVE_INT).toString(),
 			"clone()", "values()",
 			new SignatureBuilder().withMethodName("main").withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString()
 	// @formatter:on
