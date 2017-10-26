@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -29,8 +30,8 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
- * looks for creation of arrays where the contents are Const, or static
- * defined as static fields so the method doesn't constantly recreate the array each time it is called.
+ * looks for creation of arrays where the contents are Const, or static defined as static fields so the method doesn't constantly recreate the array each time
+ * it is called.
  */
 public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
     enum State {
@@ -72,13 +73,13 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
 
         switch (state) {
             case SEEN_NOTHING:
-                if (seen == BIPUSH) {
+                if (seen == Const.BIPUSH) {
                     arraySize = getIntConstant();
                     if (arraySize > 0) {
                         state = State.SEEN_ARRAY_SIZE;
                     }
-                } else if ((seen >= ICONST_M1) && (seen <= ICONST_5)) {
-                    arraySize = seen - ICONST_M1 - 1;
+                } else if ((seen >= Const.ICONST_M1) && (seen <= Const.ICONST_5)) {
+                    arraySize = seen - Const.ICONST_M1 - 1;
                     if (arraySize > 0) {
                         state = State.SEEN_ARRAY_SIZE;
                     }
@@ -86,7 +87,7 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
             break;
 
             case SEEN_ARRAY_SIZE:
-                if ((seen == ANEWARRAY) || (seen == NEWARRAY)) {
+                if ((seen == Const.ANEWARRAY) || (seen == Const.NEWARRAY)) {
                     state = State.SEEN_NEWARRAY;
                     storeCount = 0;
                 } else {
@@ -95,7 +96,7 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
             break;
 
             case SEEN_NEWARRAY:
-                if (seen == DUP) {
+                if (seen == Const.DUP) {
                     state = State.SEEN_DUP;
                 } else {
                     state = State.SEEN_NOTHING;
@@ -103,10 +104,10 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
             break;
 
             case SEEN_DUP:
-                if (seen == BIPUSH) {
+                if (seen == Const.BIPUSH) {
                     index = getIntConstant();
-                } else if ((seen >= ICONST_M1) && (seen <= ICONST_5)) {
-                    index = seen - ICONST_M1 - 1;
+                } else if ((seen >= Const.ICONST_M1) && (seen <= Const.ICONST_5)) {
+                    index = seen - Const.ICONST_M1 - 1;
                 } else {
                     state = State.SEEN_NOTHING;
                     return;
@@ -119,7 +120,7 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
             break;
 
             case SEEN_INDEX:
-                if ((seen == LDC) || (seen == LDC_W)) {
+                if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
                     state = State.SEEN_LDC;
                 } else {
                     state = State.SEEN_NOTHING;
@@ -127,7 +128,7 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
             break;
 
             case SEEN_LDC:
-                if ((seen >= IASTORE) && (seen <= SASTORE)) {
+                if ((seen >= Const.IASTORE) && (seen <= Const.SASTORE)) {
                     if ((++storeCount) == arraySize) {
                         state = State.SEEN_INDEX_STORE;
                     } else {
