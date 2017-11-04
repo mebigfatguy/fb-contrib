@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -127,7 +128,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEINTERFACE) {
+            if (seen == Const.INVOKEINTERFACE) {
                 String className = getClassConstantOperand();
                 String methodInfo = getNameConstantOperand() + ':' + getSigConstantOperand();
                 if ("org/w3c/dom/Document".equals(className) && domCreationMethods.contains(methodInfo)) {
@@ -142,7 +143,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
                 } else {
                     nodeStores.remove(Integer.valueOf(reg));
                 }
-            } else if (seen == PUTFIELD) {
+            } else if (seen == Const.PUTFIELD) {
                 // Stores to member variables are assumed ok
                 findDOMNodeCreationPoint(0);
             } else if (OpcodeUtils.isALoad(seen)) {
@@ -151,14 +152,15 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
                 if (itemPC != null) {
                     sawCreate = true;
                 }
-            } else if ((seen == ARETURN) && (stack.getStackDepth() > 0)) {
+            } else if ((seen == Const.ARETURN) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 int reg = itm.getRegisterNumber();
                 nodeCreations.remove(itm);
                 nodeStores.remove(Integer.valueOf(reg));
             }
 
-            if (!sawCreate && ((seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL))) {
+            if (!sawCreate
+                    && ((seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESTATIC) || (seen == Const.INVOKESPECIAL))) {
                 String methodSig = getSigConstantOperand();
                 int argCount = SignatureUtils.getNumParameters(methodSig);
                 if (stack.getStackDepth() >= argCount) {
@@ -170,7 +172,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
                             nodeStores.remove(Integer.valueOf(reg));
                         }
                     }
-                    if ((seen != INVOKESTATIC) && (stack.getStackDepth() > argCount)) {
+                    if ((seen != Const.INVOKESTATIC) && (stack.getStackDepth() > argCount)) {
                         nodeCreations.remove(stack.getStackItem(argCount));
                     }
                 }
