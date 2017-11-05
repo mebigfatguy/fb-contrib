@@ -4139,9 +4139,7 @@ return new String[0];<br/>
 			<![CDATA[
 				<p>This class defines a static logger as non private. It does so by passing the name of a 
 				class such as
-				<code>
-					public static final Logger LOG = LoggerFactory.getLogger(Foo.class);
-				</code>
+				<code><pre>public static final Logger LOG = LoggerFactory.getLogger(Foo.class);</pre></code>
 				Since this class is public it may be used in other classes, but doing so, will provide the incorrect
 				class reference as the class is hard coded.
 				</p>
@@ -4151,9 +4149,7 @@ return new String[0];<br/>
 				<p>
 				<p>If you wish to have a base class define the logger, and have derived classes use that logger, you can
 				potentially use instance based logging, such as
-				<code>
-					protected final Logger LOG = LoggerFactory.getLogger(getClass());
-				</code>
+				<code><pre>protected final Logger LOG = LoggerFactory.getLogger(getClass());</pre></code>
 				However this has the downside of being an instance based logger, and creating a logger object in each instance
 				of the class where it is used.
 				</p>
