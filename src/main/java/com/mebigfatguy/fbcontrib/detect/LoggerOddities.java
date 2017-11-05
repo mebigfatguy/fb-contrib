@@ -29,6 +29,7 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
+import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -48,6 +49,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for uses of log4j or slf4j where the class specified when creating the logger is not the same as the class in which this logger is used. Also looks for
@@ -99,6 +101,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     private JavaClass throwableClass;
     private OpcodeStack stack;
     private String nameOfThisClass;
+    private boolean isStaticInitializer;
 
     /**
      * constructs a LO detector given the reporter to report bugs on.
@@ -152,6 +155,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 }
             }
         }
+
+        isStaticInitializer = Values.STATIC_INITIALIZER.equals(m.getName());
         super.visitCode(obj);
     }
 
@@ -251,6 +256,16 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         }
                     }
                 }
+            } else if (seen == PUTSTATIC) {
+                if (isStaticInitializer && isNonPrivateLogField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand())) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    XMethod m = itm.getReturnValueOf();
+                    if ((m != null) && isLoggerWithClassParm(m)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.LO_NON_PRIVATE_STATIC_LOGGER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                .addSourceLine(this));
+                    }
+                }
+
             } else if (OpcodeUtils.isAStore(seen) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
@@ -285,6 +300,53 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 }
             }
         }
+    }
+
+    /**
+     * looks to see if this field is a logger, and declared non privately
+     *
+     * @param fieldClsName
+     * @param fieldName
+     * @param fieldSig
+     * @return if the field is a logger and not private
+     */
+    private boolean isNonPrivateLogField(String fieldClsName, String fieldName, String fieldSig) {
+
+        String fieldType = SignatureUtils.trimSignature(fieldSig);
+        if (!SLF4J_LOGGER.equals(fieldType) && !COMMONS_LOGGER.equals(fieldType) && !LOG4J_LOGGER.equals(fieldType) && !LOG4J2_LOGGER.equals(fieldType)) {
+            return false;
+        }
+
+        JavaClass cls = getClassContext().getJavaClass();
+        if (!cls.getClassName().equals(fieldClsName.replace('/', '.'))) {
+            return false;
+        }
+
+        for (Field f : getClassContext().getJavaClass().getFields()) {
+            if (f.getName().equals(fieldName)) {
+                return !f.isPrivate();
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * returns whether this method class is a standard logger instantiation that takes a java/lang/Class parameter
+     *
+     * @param m
+     * @return if the method is a logger factory method that takes a Class object
+     */
+    private boolean isLoggerWithClassParm(XMethod m) {
+        String signature = m.getSignature();
+        if (!SIG_CLASS_TO_SLF4J_LOGGER.equals(signature) && !SIG_CLASS_TO_LOG4J_LOGGER.equals(signature) && !SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature)
+                && !SIG_CLASS_TO_COMMONS_LOGGER.equals(signature)) {
+            return false;
+        }
+
+        // check the calling class?
+        return true;
+
     }
 
     /**

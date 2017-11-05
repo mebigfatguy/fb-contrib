@@ -4132,6 +4132,35 @@ return new String[0];<br/>
 		</Details>
 	</BugPattern>
 	
+	<BugPattern type="LO_NON_PRIVATE_STATIC_LOGGER">
+		<ShortDescription>Class defines non private logger using a static class context</ShortDescription>
+		<LongDescription>Class {0} defines a non private logger using a static class context</LongDescription>
+		<Details>
+			<![CDATA[
+				<p>This class defines a static logger as non private. It does so by passing the name of a 
+				class such as
+				<code>
+					public static final Logger LOG = LoggerFactory.getLogger(Foo.class);
+				</code>
+				Since this class is public it may be used in other classes, but doing so, will provide the incorrect
+				class reference as the class is hard coded.
+				</p>
+				<p>
+				It is recommend to define static loggers as private, and just redefine a new logger in any class
+				that you need to have logging done.
+				<p>
+				<p>If you wish to have a base class define the logger, and have derived classes use that logger, you can
+				potentially use instance based logging, such as
+				<code>
+					protected final Logger LOG = LoggerFactory.getLogger(getClass());
+				</code>
+				However this has the downside of being an instance based logger, and creating a logger object in each instance
+				of the class where it is used.
+				</p>
+				]]>
+		</Details>
+	</BugPattern>
+	
 	<BugPattern type="IICU_INCORRECT_INTERNAL_CLASS_USE">
 		<ShortDescription>Class relies on internal API classes</ShortDescription>
 		<LongDescription>Class {0} relies on internal API classes</LongDescription>
