@@ -27,6 +27,8 @@ public class LO_Sample {
         // no tag
         private static org.slf4j.Logger l6 = org.slf4j.LoggerFactory.getLogger("my.nasty.logger.LOGGER");
 
+        public static org.slf4j.Logger l7 = org.slf4j.LoggerFactory.getLogger(Slf4j.class);
+
         // no tag
         private org.slf4j.Logger someLocalLogger;
 
@@ -172,6 +174,8 @@ public class LO_Sample {
         // no tag
         private static org.apache.log4j.Logger l6 = org.apache.log4j.Logger.getLogger("my.nasty.logger.LOGGER");
 
+        public static org.apache.log4j.Logger l7 = org.apache.log4j.Logger.getLogger(Log4j.class);
+
         // no tag
         private org.apache.log4j.Logger someLocalLogger;
 
@@ -265,6 +269,8 @@ public class LO_Sample {
         private static org.apache.logging.log4j.Logger l5 = org.apache.logging.log4j.LogManager.getLogger(LO_Sample.class.getName());
         // no tag
         private static org.apache.logging.log4j.Logger l6 = org.apache.logging.log4j.LogManager.getLogger("my.nasty.logger.LOGGER");
+
+        public static org.apache.logging.log4j.Logger l7 = org.apache.logging.log4j.LogManager.getLogger(Log4j2.class);
 
         // no tag
         private org.apache.logging.log4j.Logger someLocalLogger;
