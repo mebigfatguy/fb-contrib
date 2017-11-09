@@ -321,7 +321,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
 					return false;
 				}
 
-				if (childFSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+                if (childFSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) || childFSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
 					ReferenceType childRefType = ((FieldInstruction) childin).getReferenceType(childPoolGen);
 					ReferenceType parentRefType = ((FieldInstruction) parentin).getReferenceType(parentPoolGen);
 					if (!childRefType.getSignature().equals(parentRefType.getSignature())) {
