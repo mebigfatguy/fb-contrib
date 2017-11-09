@@ -124,7 +124,7 @@ class ChildGH232 extends ParentGH232 {
 class GH241 {
     private static final String[] STRINGS = new String[] { "" };
 
-    protected String[] getStrings() {
+    public String[] getStrings() {
         return STRINGS;
     }
 }
@@ -133,7 +133,7 @@ class Child241 extends GH241 {
     private static final String[] STRINGS = new String[] { "Bar's string" };
 
     @Override
-    protected String[] getStrings() {
+    public String[] getStrings() {
         return STRINGS;
     }
 }
