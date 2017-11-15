@@ -53,6 +53,7 @@ public final class RegisterUtils {
         if (OpcodeUtils.isAStore(seen)) {
             return seen - Constants.ASTORE_0;
         }
+
         return -1;
     }
 
@@ -156,8 +157,7 @@ public final class RegisterUtils {
      * gets the set of registers used for parameters
      *
      * @param obj
-     *            the context object for the method to find the parameter
-     *            registers of
+     *            the context object for the method to find the parameter registers of
      *
      * @return the set of registers that parameters are using
      */

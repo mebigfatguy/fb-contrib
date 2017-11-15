@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQField;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -155,7 +156,7 @@ public class UnrelatedCollectionContents extends BytecodeScanningDetector {
                     OpcodeStack.Item addItm = stack.getStackItem(0);
                     checkAdd(arrayItm, addItm);
                 }
-            } else if (seen == ASTORE) {
+            } else if (OpcodeUtils.isAStore(seen)) {
                 Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
                 localCollections.remove(reg);
                 localSourceLineAnnotations.remove(reg);
