@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.util.Set;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.Type;
 
@@ -132,6 +134,16 @@ public final class Values {
     public static final String SLASHED_JAVA_UTIL_QUEUE = "java/util/Queue";
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_UUID = "java/util/UUID";
+
+    public static final Set<String> NULLABLE_ANNOTATIONS = UnmodifiableSet.create(
+    // @formatter:off
+        "org/jetbrains/annotations/Nullable",
+        "javax/annotation/Nullable",
+        "javax/annotation/CheckForNull",
+        "edu/umd/cs/findbugs/annotations/Nullable",
+        "android/support/annotations/Nullable"
+    // @formatter:on
+    );
 
     public static final Integer JAVA_1_1 = Integer.valueOf(Constants.MAJOR_1_1);
     public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);

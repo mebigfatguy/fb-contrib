@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.collect;
 
 import java.util.Set;
 
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -34,6 +35,7 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * collects methods that return a collection that could be created thru an immutable method such as Arrays.aslist, etc.
@@ -42,7 +44,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class CollectMethodsReturningImmutableCollections extends BytecodeScanningDetector implements NonReportingDetector {
 
     private static final Set<String> IMMUTABLE_PRODUCING_METHODS = UnmodifiableSet.create(
-            //@formatter:off
+    //@formatter:off
             "com/google/common/Collect/Maps.immutableEnumMap",
             "com/google/common/Collect/Maps.unmodifiableMap",
             "com/google/common/Collect/Sets.immutableEnumSet",
@@ -66,6 +68,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
     private OpcodeStack stack;
     private String clsName;
     private ImmutabilityType imType;
+    private boolean methodIsNullable;
 
     /**
      * constructs a CMRIC detector given the reporter to report bugs on
@@ -101,6 +104,17 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
             if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && CollectionUtils.isListSetMap(SignatureUtils.stripSignature(signature))) {
                 stack.resetForMethodEntry(this);
                 imType = ImmutabilityType.UNKNOWN;
+
+                Method method = getMethod();
+                methodIsNullable = false;
+
+                if (methodHasNullableAnnotation(method)) {
+                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName, method.getName(), method.getSignature());
+                    if (mi != null) {
+                        mi.setCanReturnNull(true);
+                        methodIsNullable = true;
+                    }
+                }
                 super.visitCode(obj);
 
                 if ((imType == ImmutabilityType.IMMUTABLE) || (imType == ImmutabilityType.POSSIBLY_IMMUTABLE)) {
@@ -146,11 +160,47 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                     if (seenImmutable == ImmutabilityType.UNKNOWN) {
                         seenImmutable = null;
                     }
+
+                    if (!methodIsNullable) {
+                        if (mi.getCanReturnNull()) {
+                            Method thisMethod = getMethod();
+                            mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
+                            if (mi != null) {
+                                mi.setCanReturnNull(true);
+                            }
+                            methodIsNullable = true;
+                        }
+                    }
                 }
                 break;
 
                 case ARETURN: {
                     processARreturn();
+
+                    if (!methodIsNullable) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (itm.isNull()) {
+                            Method thisMethod = getMethod();
+                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
+                            if (mi != null) {
+                                mi.setCanReturnNull(true);
+                            }
+                            methodIsNullable = true;
+                        } else {
+                            XMethod xm = itm.getReturnValueOf();
+                            if (xm != null) {
+                                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName(), xm.getName(), xm.getSignature());
+                                if ((mi != null) && mi.getCanReturnNull()) {
+                                    Method thisMethod = getMethod();
+                                    mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
+                                    if (mi != null) {
+                                        mi.setCanReturnNull(true);
+                                    }
+                                    methodIsNullable = true;
+                                }
+                            }
+                        }
+                    }
                     break;
                 }
                 default:
@@ -206,5 +256,16 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                 break;
             }
         }
+    }
+
+    private boolean methodHasNullableAnnotation(Method m) {
+        for (AnnotationEntry entry : m.getAnnotationEntries()) {
+            String annotationType = entry.getAnnotationType();
+            if (Values.NULLABLE_ANNOTATIONS.contains(annotationType)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

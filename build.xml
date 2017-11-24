@@ -118,6 +118,7 @@
 			<pathelement location="${lib.dir}/asm-debug-all-${asm-debug-all.version}.jar" />
 			<pathelement location="${lib.dir}/javax.servlet.jsp-api-${javax.servlet.jsp-api.version}.jar" />
 			<pathelement location="${lib.dir}/junit-${junit.version}.jar" />
+			<pathelement location="${lib.dir}/jsr305-${jsr305.version}.jar" />
 			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
 			<pathelement location="${lib.dir}/javax.servlet-api-${javax.servlet-api.version}.jar" />
 			<pathelement location="${lib.dir}/log4j-${log4j.version}.jar" />
