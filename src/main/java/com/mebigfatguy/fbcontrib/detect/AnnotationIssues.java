@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -57,8 +58,10 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            stack = new OpcodeStack();
-            super.visitClassContext(classContext);
+            if (classContext.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
+                stack = new OpcodeStack();
+                super.visitClassContext(classContext);
+            }
         } finally {
             stack = null;
         }

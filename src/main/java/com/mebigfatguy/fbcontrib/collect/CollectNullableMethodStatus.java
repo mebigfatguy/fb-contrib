@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -46,8 +47,10 @@ public class CollectNullableMethodStatus extends BytecodeScanningDetector implem
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            stack = new OpcodeStack();
-            super.visitClassContext(classContext);
+            if (classContext.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
+                stack = new OpcodeStack();
+                super.visitClassContext(classContext);
+            }
         } finally {
             stack = null;
         }
