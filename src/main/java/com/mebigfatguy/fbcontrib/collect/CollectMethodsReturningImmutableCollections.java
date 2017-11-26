@@ -45,7 +45,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
 		implements NonReportingDetector {
 
 	private static final Set<String> IMMUTABLE_PRODUCING_METHODS = UnmodifiableSet.create(
-			// @formatter:off
+        //@formatter:off
 			"com/google/common/Collect/Maps.immutableEnumMap", "com/google/common/Collect/Maps.unmodifiableMap",
 			"com/google/common/Collect/Sets.immutableEnumSet", "com/google/common/Collect/Sets.immutableCopy",
 			"java/util/Arrays.asList", "java/util/Collections.unmodifiableCollection",
@@ -101,6 +101,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
 					&& CollectionUtils.isListSetMap(SignatureUtils.stripSignature(signature))) {
 				stack.resetForMethodEntry(this);
 				imType = ImmutabilityType.UNKNOWN;
+
 				super.visitCode(obj);
 
 				if ((imType == ImmutabilityType.IMMUTABLE) || (imType == ImmutabilityType.POSSIBLY_IMMUTABLE)) {

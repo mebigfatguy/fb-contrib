@@ -38,6 +38,7 @@ public class MethodInfo {
     private byte declaredAccess;
     private byte isCalledType;
     private boolean modifiesState;
+    private boolean canReturnNull;
 
     public int getNumBytes() {
         return 0x0000FFFF & numMethodBytes;
@@ -109,6 +110,14 @@ public class MethodInfo {
 
     public void setModifiesState(boolean modifiesState) {
         this.modifiesState = modifiesState;
+    }
+
+    public boolean getCanReturnNull() {
+        return canReturnNull;
+    }
+
+    public void setCanReturnNull(boolean canReturnNull) {
+        this.canReturnNull = canReturnNull;
     }
 
     @Override
