@@ -30,15 +30,19 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for common problems with the application of annotations
  */
+@CustomUserValue
 public class AnnotationIssues extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
+    private boolean methodIsNullable;
 
     /**
      * constructs a AI detector given the reporter to report bugs on
@@ -65,16 +69,55 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
         Method method = getMethod();
         MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
-        if (methodInfo.getCanReturnNull() && AnnotationUtils.methodHasNullableAnnotation(method)) {
+        if (AnnotationUtils.methodHasNullableAnnotation(method)) {
+            return;
+        }
+        if (methodInfo.getCanReturnNull()) {
             bugReporter.reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
         } else {
+            methodIsNullable = false;
             stack.resetForMethodEntry(this);
             super.visitCode(obj);
+            if (methodIsNullable) {
+                bugReporter.reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
+            }
         }
     }
 
     @Override
     public void sawOpcode(int seen) {
+        if (methodIsNullable) {
+            return;
+        }
 
+        switch (seen) {
+            case ARETURN: {
+                if (!methodIsNullable) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (itm.isNull()) {
+                        Method thisMethod = getMethod();
+                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
+                        if (mi != null) {
+                            mi.setCanReturnNull(true);
+                        }
+                        methodIsNullable = true;
+                    } else {
+                        XMethod xm = itm.getReturnValueOf();
+                        if (xm != null) {
+                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName(), xm.getName(), xm.getSignature());
+                            if ((mi != null) && mi.getCanReturnNull()) {
+                                Method thisMethod = getMethod();
+                                mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
+                                if (mi != null) {
+                                    mi.setCanReturnNull(true);
+                                }
+                                methodIsNullable = true;
+                            }
+                        }
+                    }
+                }
+                break;
+            }
+        }
     }
 }
