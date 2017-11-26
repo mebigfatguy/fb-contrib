@@ -5993,7 +5993,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
-    <BugPattern type="AI_ANNOTATION_ISSUE_NEEDS_NULLABLE">
+    <BugPattern type="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE">
     	<ShortDescription>Method that can return null, is missing a @Nullable annotation</ShortDescription>
     	<LongDescription>Method {1} that can return null, is missing a @Nullable annotation</LongDescription>
     	<Details>
