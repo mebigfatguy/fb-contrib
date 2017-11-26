@@ -160,17 +160,6 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                     if (seenImmutable == ImmutabilityType.UNKNOWN) {
                         seenImmutable = null;
                     }
-
-                    if (!methodIsNullable) {
-                        if (mi.getCanReturnNull()) {
-                            Method thisMethod = getMethod();
-                            mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
-                            if (mi != null) {
-                                mi.setCanReturnNull(true);
-                            }
-                            methodIsNullable = true;
-                        }
-                    }
                 }
                 break;
 
