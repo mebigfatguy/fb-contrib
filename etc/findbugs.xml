@@ -319,6 +319,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ReflectionIssues" speed="fast" reports="RFI_SET_ACCESSIBLE"/>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.AnnotationIssues" speed="fast" reports="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE"/>
+    
          COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -608,4 +610,5 @@
 	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT" category="CORRECTNESS"/>
 	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" category="CORRECTNESS"/>
 	<BugPattern abbrev="RFI" type="RFI_SET_ACCESSIBLE" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="AI" type="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE" category="CORRECTNESS" experimental="true"/>
 </FindbugsPlugin>

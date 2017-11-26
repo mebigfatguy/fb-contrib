@@ -1705,6 +1705,15 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 		</Details>
 	</Detector>
 	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.AnnotationIssues">
+		<Details>
+			<![CDATA[
+			<p>Looks for issues around use of standard anntations</p>
+			<p>It is a fast detector</p>
+			]]>
+		</Details>
+	</Detector>
+	
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -5983,6 +5992,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="AI_ANNOTATION_ISSUE_NEEDS_NULLABLE">
+    	<ShortDescription>Method that can return null, is missing a @Nullable annotation</ShortDescription>
+    	<LongDescription>Method {1} that can return null, is missing a @Nullable annotation</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method can return null, but is not annotated with an @Nullable annotation. Without this annotation,
+    		various IDEs, and static analysis tools may not be able to fully discover possible NullPointerExceptions in
+    		your code. By Adding these annotations, you will discover problems around null-ness, more easily.
+    		]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -6127,4 +6148,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="OI">Optional Issues</BugCode>
 	<BugCode abbrev="UAC">Unnecessary Api Conversion</BugCode>
 	<BugCode abbrev="RFI">Reflection Issues</BugCode>
+	<BugCode abbrev="AI">Annotation Issues</BugCode>
 </MessageCollection>

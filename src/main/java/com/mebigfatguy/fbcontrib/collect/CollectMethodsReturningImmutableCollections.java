@@ -20,10 +20,10 @@ package com.mebigfatguy.fbcontrib.collect;
 
 import java.util.Set;
 
-import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.utils.AnnotationUtils;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -108,7 +108,7 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                 Method method = getMethod();
                 methodIsNullable = false;
 
-                if (methodHasNullableAnnotation(method)) {
+                if (AnnotationUtils.methodHasNullableAnnotation(method)) {
                     MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName, method.getName(), method.getSignature());
                     if (mi != null) {
                         mi.setCanReturnNull(true);
@@ -256,16 +256,5 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                 break;
             }
         }
-    }
-
-    private boolean methodHasNullableAnnotation(Method m) {
-        for (AnnotationEntry entry : m.getAnnotationEntries()) {
-            String annotationType = entry.getAnnotationType();
-            if (Values.NULLABLE_ANNOTATIONS.contains(annotationType)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
