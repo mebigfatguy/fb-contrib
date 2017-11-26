@@ -30,6 +30,14 @@
             ]]>
         </Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.collect.CollectNullableMethodStatus">
+    	<Details>
+    		<![CDATA[
+    		<p>Collects method calls that can return null</p>
+    		]]>
+    	</Details>
+    </Detector>
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.InefficientStringBuffering">
 		<Details>

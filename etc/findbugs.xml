@@ -15,7 +15,10 @@
             <Earlier class="com.mebigfatguy.fbcontrib.collect.CollectMethodsReturningImmutableCollections" />
             <LaterCategory name="reporting" spanplugins="true" />
         </SplitPass>
-		
+        <SplitPass>
+            <Earlier class="com.mebigfatguy.fbcontrib.collect.CollectNullableMethodStatus" />
+            <LaterCategory name="reporting" spanplugins="true" />
+        </SplitPass>
 	</OrderingConstraints>
 
 	<!-- Detectors -->
@@ -320,6 +323,9 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.ReflectionIssues" speed="fast" reports="RFI_SET_ACCESSIBLE"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.AnnotationIssues" speed="fast" reports="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE"/>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.collect.CollectNullableMethodStatus" speed="fast" reports="" hidden="true" />
+    
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     

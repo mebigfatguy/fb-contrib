@@ -27,11 +27,11 @@ public class AnnotationUtils {
 
     public static final Set<String> NULLABLE_ANNOTATIONS = UnmodifiableSet.create(
     // @formatter:off
-        "org/jetbrains/annotations/Nullable",
-        "javax/annotation/Nullable",
-        "javax/annotation/CheckForNull",
-        "edu/umd/cs/findbugs/annotations/Nullable",
-        "android/support/annotations/Nullable"
+        "Lorg/jetbrains/annotations/Nullable;",
+        "Ljavax/annotation/Nullable;",
+        "Ljavax/annotation/CheckForNull;",
+        "Ledu/umd/cs/findbugs/annotations/Nullable;",
+        "Landroid/support/annotations/Nullable;"
     // @formatter:on
     );
 

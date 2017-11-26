@@ -16,42 +16,31 @@
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-package com.mebigfatguy.fbcontrib.detect;
+package com.mebigfatguy.fbcontrib.collect;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
-import com.mebigfatguy.fbcontrib.collect.MethodInfo;
-import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.AnnotationUtils;
-import com.mebigfatguy.fbcontrib.utils.BugType;
 
-import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
-/**
- * looks for common problems with the application of annotations
- */
 @CustomUserValue
-public class AnnotationIssues extends BytecodeScanningDetector {
-
-    private BugReporter bugReporter;
+public class CollectNullableMethodStatus extends BytecodeScanningDetector implements NonReportingDetector {
     private OpcodeStack stack;
     private boolean methodIsNullable;
 
     /**
-     * constructs a AI detector given the reporter to report bugs on
-     *
      * @param bugReporter
-     *            the sync of bug reports
+     *            unused
      */
-    public AnnotationIssues(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
+    public CollectNullableMethodStatus(BugReporter bugReporter) {
     }
 
     @Override
@@ -69,20 +58,13 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
         Method method = getMethod();
         if (AnnotationUtils.methodHasNullableAnnotation(method)) {
+            MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
+            methodInfo.setCanReturnNull(true);
             return;
         }
-
-        MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
-        if (methodInfo.getCanReturnNull()) {
-            bugReporter.reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
-        } else {
-            methodIsNullable = false;
-            stack.resetForMethodEntry(this);
-            super.visitCode(obj);
-            if (methodIsNullable) {
-                bugReporter.reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
-            }
-        }
+        methodIsNullable = false;
+        stack.resetForMethodEntry(this);
+        super.visitCode(obj);
     }
 
     @Override

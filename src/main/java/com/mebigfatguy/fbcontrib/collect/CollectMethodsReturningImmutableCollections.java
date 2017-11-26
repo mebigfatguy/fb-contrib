@@ -23,7 +23,6 @@ import java.util.Set;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
-import com.mebigfatguy.fbcontrib.utils.AnnotationUtils;
 import com.mebigfatguy.fbcontrib.utils.CollectionUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -35,7 +34,6 @@ import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * collects methods that return a collection that could be created thru an immutable method such as Arrays.aslist, etc.
@@ -68,7 +66,6 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
     private OpcodeStack stack;
     private String clsName;
     private ImmutabilityType imType;
-    private boolean methodIsNullable;
 
     /**
      * constructs a CMRIC detector given the reporter to report bugs on
@@ -105,16 +102,6 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
                 stack.resetForMethodEntry(this);
                 imType = ImmutabilityType.UNKNOWN;
 
-                Method method = getMethod();
-                methodIsNullable = false;
-
-                if (AnnotationUtils.methodHasNullableAnnotation(method)) {
-                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName, method.getName(), method.getSignature());
-                    if (mi != null) {
-                        mi.setCanReturnNull(true);
-                        methodIsNullable = true;
-                    }
-                }
                 super.visitCode(obj);
 
                 if ((imType == ImmutabilityType.IMMUTABLE) || (imType == ImmutabilityType.POSSIBLY_IMMUTABLE)) {
@@ -165,31 +152,6 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
 
                 case ARETURN: {
                     processARreturn();
-
-                    if (!methodIsNullable) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (itm.isNull()) {
-                            Method thisMethod = getMethod();
-                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
-                            if (mi != null) {
-                                mi.setCanReturnNull(true);
-                            }
-                            methodIsNullable = true;
-                        } else {
-                            XMethod xm = itm.getReturnValueOf();
-                            if (xm != null) {
-                                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName(), xm.getName(), xm.getSignature());
-                                if ((mi != null) && mi.getCanReturnNull()) {
-                                    Method thisMethod = getMethod();
-                                    mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
-                                    if (mi != null) {
-                                        mi.setCanReturnNull(true);
-                                    }
-                                    methodIsNullable = true;
-                                }
-                            }
-                        }
-                    }
                     break;
                 }
                 default:

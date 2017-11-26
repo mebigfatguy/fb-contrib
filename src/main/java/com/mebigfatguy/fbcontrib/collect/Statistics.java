@@ -28,6 +28,7 @@ import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * holds statistics about classes and methods collected in the first pass.
@@ -66,7 +67,7 @@ public final class Statistics implements Iterable<Map.Entry<FQMethod, MethodInfo
         return mi;
     }
 
-    public MethodInfo getMethodStatistics(String className, String methodName, String signature) {
+    public MethodInfo getMethodStatistics(@SlashedClassName String className, String methodName, String signature) {
         MethodInfo mi = methodStatistics.get(new FQMethod(className, methodName, signature));
         if (mi == null) {
             return NOT_FOUND_METHOD_INFO;
