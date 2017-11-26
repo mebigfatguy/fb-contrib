@@ -71,6 +71,12 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
 
         Method method = getMethod();
+        String sig = method.getSignature();
+        char returnTypeChar = sig.charAt(sig.indexOf(')') + 1);
+        if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
+            return;
+        }
+
         if (AnnotationUtils.methodHasNullableAnnotation(method)) {
             return;
         }
