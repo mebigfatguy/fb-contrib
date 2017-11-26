@@ -6011,11 +6011,11 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		your code. By Adding these annotations, you will discover problems around null-ness, more easily.</p>
     		<p>Unfortunately there isn't just one @Nullable annotation, but this detector will recognize:</p>
     		<ul>
-    		<li>org.jetbrains.annotations.Nullable<.li>
-	        <li>javax.annotation.Nullable<.li>
-	        <li>javax.annotation.CheckForNull<.li>
-	        <li>edu.umd.cs.findbugs.annotations.Nullable<.li>
-	        <li>android.support.annotations.Nullable<.li>
+    		<li>org.jetbrains.annotations.Nullable</li>
+	        <li>javax.annotation.Nullable</li>
+	        <li>javax.annotation.CheckForNull</li>
+	        <li>edu.umd.cs.findbugs.annotations.Nullable</li>
+	        <li>android.support.annotations.Nullable</li>
     		</ul>
     		]]>
     	</Details>
