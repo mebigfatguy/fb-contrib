@@ -90,34 +90,38 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             return;
         }
 
-        switch (seen) {
-            case ARETURN: {
-                if (!methodIsNullable) {
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    if (itm.isNull()) {
-                        Method thisMethod = getMethod();
-                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
-                        if (mi != null) {
-                            mi.setCanReturnNull(true);
-                        }
-                        methodIsNullable = true;
-                    } else {
-                        XMethod xm = itm.getReturnValueOf();
-                        if (xm != null) {
-                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName(), xm.getName(), xm.getSignature());
-                            if ((mi != null) && mi.getCanReturnNull()) {
-                                Method thisMethod = getMethod();
-                                mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
-                                if (mi != null) {
-                                    mi.setCanReturnNull(true);
+        try {
+            switch (seen) {
+                case ARETURN: {
+                    if (!methodIsNullable) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (itm.isNull()) {
+                            Method thisMethod = getMethod();
+                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
+                            if (mi != null) {
+                                mi.setCanReturnNull(true);
+                            }
+                            methodIsNullable = true;
+                        } else {
+                            XMethod xm = itm.getReturnValueOf();
+                            if (xm != null) {
+                                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName(), xm.getName(), xm.getSignature());
+                                if ((mi != null) && mi.getCanReturnNull()) {
+                                    Method thisMethod = getMethod();
+                                    mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
+                                    if (mi != null) {
+                                        mi.setCanReturnNull(true);
+                                    }
+                                    methodIsNullable = true;
                                 }
-                                methodIsNullable = true;
                             }
                         }
                     }
+                    break;
                 }
-                break;
             }
+        } finally {
+            stack.sawOpcode(this, seen);
         }
     }
 }
