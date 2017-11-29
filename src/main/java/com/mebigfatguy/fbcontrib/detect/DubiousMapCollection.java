@@ -56,6 +56,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     // @formatter:off
         "computeIfAbsent",
         "containsKey",
+        "equals",
         "get",
         "getOrDefault",
         "remove",
