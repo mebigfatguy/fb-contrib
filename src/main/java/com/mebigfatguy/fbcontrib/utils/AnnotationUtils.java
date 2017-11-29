@@ -30,6 +30,7 @@ public class AnnotationUtils {
         "Lorg/jetbrains/annotations/Nullable;",
         "Ljavax/annotation/Nullable;",
         "Ljavax/annotation/CheckForNull;",
+        "Lcom/sun/istack/Nullable;",
         "Ledu/umd/cs/findbugs/annotations/Nullable;",
         "Landroid/support/annotations/Nullable;"
     // @formatter:on
