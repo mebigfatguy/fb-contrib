@@ -23,6 +23,12 @@ import java.util.Set;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
+import com.mebigfatguy.fbcontrib.collect.Statistics;
+
+import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.ba.XMethod;
+
 public class AnnotationUtils {
 
     public static final Set<String> NULLABLE_ANNOTATIONS = UnmodifiableSet.create(
@@ -44,6 +50,30 @@ public class AnnotationUtils {
             String annotationType = entry.getAnnotationType();
             if (NULLABLE_ANNOTATIONS.contains(annotationType)) {
                 return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isStackElementNullable(String className, Method method, OpcodeStack.Item itm) {
+        if (itm.isNull()) {
+            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(), method.getSignature());
+            if (mi != null) {
+                mi.setCanReturnNull(true);
+            }
+            return true;
+        } else {
+            XMethod xm = itm.getReturnValueOf();
+            if (xm != null) {
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
+                if ((mi != null) && mi.getCanReturnNull()) {
+                    mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(), method.getSignature());
+                    if (mi != null) {
+                        mi.setCanReturnNull(true);
+                    }
+                    return true;
+                }
             }
         }
 

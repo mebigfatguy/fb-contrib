@@ -33,7 +33,6 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for common problems with the application of annotations
@@ -105,28 +104,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 case ARETURN: {
                     if (!methodIsNullable) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (itm.isNull()) {
-                            Method thisMethod = getMethod();
-                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
-                            if (mi != null) {
-                                mi.setCanReturnNull(true);
-                            }
-                            methodIsNullable = true;
-                        } else {
-                            XMethod xm = itm.getReturnValueOf();
-                            if (xm != null) {
-                                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName().replace('.', '/'), xm.getName(),
-                                        xm.getSignature());
-                                if ((mi != null) && mi.getCanReturnNull()) {
-                                    Method thisMethod = getMethod();
-                                    mi = Statistics.getStatistics().getMethodStatistics(getClassName(), thisMethod.getName(), thisMethod.getSignature());
-                                    if (mi != null) {
-                                        mi.setCanReturnNull(true);
-                                    }
-                                    methodIsNullable = true;
-                                }
-                            }
-                        }
+                        methodIsNullable = AnnotationUtils.isStackElementNullable(getClassName(), getMethod(), itm);
                     }
                     break;
                 }
