@@ -81,6 +81,8 @@ public class CollectNullableMethodStatus extends BytecodeScanningDetector implem
             return;
         }
 
+        boolean resultIsNullable = false;
+
         try {
             switch (seen) {
                 case ARETURN: {
@@ -90,9 +92,21 @@ public class CollectNullableMethodStatus extends BytecodeScanningDetector implem
                     }
                     break;
                 }
+
+                case INVOKESTATIC:
+                case INVOKEINTERFACE:
+                case INVOKEVIRTUAL: {
+                    resultIsNullable = (AnnotationUtils.isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
+                    break;
+                }
+
             }
         } finally {
             stack.sawOpcode(this, seen);
+            if ((resultIsNullable) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(AnnotationUtils.NULLABLE.TRUE);
+            }
         }
     }
 }

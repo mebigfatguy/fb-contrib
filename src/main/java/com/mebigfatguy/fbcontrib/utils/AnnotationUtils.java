@@ -28,6 +28,7 @@ import com.mebigfatguy.fbcontrib.collect.Statistics;
 
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 public class AnnotationUtils {
 
@@ -41,6 +42,10 @@ public class AnnotationUtils {
         "Landroid/support/annotations/Nullable;"
     // @formatter:on
     );
+
+    public enum NULLABLE {
+        TRUE
+    };
 
     private AnnotationUtils() {
     }
@@ -57,7 +62,7 @@ public class AnnotationUtils {
     }
 
     public static boolean isStackElementNullable(String className, Method method, OpcodeStack.Item itm) {
-        if (itm.isNull()) {
+        if (itm.isNull() || (itm.getUserValue() instanceof NULLABLE)) {
             MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(), method.getSignature());
             if (mi != null) {
                 mi.setCanReturnNull(true);
@@ -78,5 +83,16 @@ public class AnnotationUtils {
         }
 
         return false;
+    }
+
+    public static boolean isMethodNullable(@SlashedClassName String className, String methodName, String methodSignature) {
+        char returnTypeChar = methodSignature.charAt(methodSignature.indexOf(')') + 1);
+        if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
+            return false;
+        }
+        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, methodSignature);
+        return ((mi != null) && mi.getCanReturnNull());
+
+        // can we check if it has @Nullable on it? hmm need to convert to Method
     }
 }
