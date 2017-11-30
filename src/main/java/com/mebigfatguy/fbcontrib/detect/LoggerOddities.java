@@ -339,14 +339,11 @@ public class LoggerOddities extends BytecodeScanningDetector {
      */
     private boolean isLoggerWithClassParm(XMethod m) {
         String signature = m.getSignature();
-        if (!SIG_CLASS_TO_SLF4J_LOGGER.equals(signature) && !SIG_CLASS_TO_LOG4J_LOGGER.equals(signature) && !SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature)
-                && !SIG_CLASS_TO_COMMONS_LOGGER.equals(signature)) {
-            return false;
-        }
-
-        // check the calling class?
-        return true;
-
+        return SIG_CLASS_TO_SLF4J_LOGGER.equals(signature)
+            || SIG_CLASS_TO_LOG4J_LOGGER.equals(signature)
+            || SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature)
+            || SIG_CLASS_TO_COMMONS_LOGGER.equals(signature);
+        // otherwise check the calling class?
     }
 
     /**
@@ -501,12 +498,12 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 loggingClassName = (String) item.getConstant();
                 loggingPriority = LOW_PRIORITY;
             }
-        } else if (LOG4J_LOGGER.equals(callingClsName) && "getLogger".equals(mthName)) {
+        } else if ((LOG4J_LOGGER.equals(callingClsName) || LOG4J2_LOGMANAGER.equals(callingClsName)) && "getLogger".equals(mthName)) {
             String signature = getSigConstantOperand();
 
-            if (SIG_CLASS_TO_LOG4J_LOGGER.equals(signature)) {
+            if (SIG_CLASS_TO_LOG4J_LOGGER.equals(signature) || SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature)) {
                 loggingClassName = getLoggingClassNameFromStackValue();
-            } else if (SIG_STRING_TO_LOG4J_LOGGER.equals(signature)) {
+            } else if (SIG_STRING_TO_LOG4J_LOGGER.equals(signature) || SIG_STRING_TO_LOG4J2_LOGGER.equals(signature)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     loggingClassName = (String) item.getConstant();
@@ -530,32 +527,6 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(1);
                 loggingClassName = (String) item.getConstant();
                 loggingPriority = LOW_PRIORITY;
-            }
-        } else if (LOG4J2_LOGMANAGER.equals(callingClsName) && "getLogger".equals(mthName)) {
-            String signature = getSigConstantOperand();
-
-            if (SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature)) {
-                loggingClassName = getLoggingClassNameFromStackValue();
-            } else if (SIG_STRING_TO_LOG4J2_LOGGER.equals(signature)) {
-                if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    loggingClassName = (String) item.getConstant();
-                    LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
-                    if (uv != null) {
-                        Object userValue = uv.getValue();
-
-                        if (loggingClassName != null) {
-                            // first look at the constant passed in
-                            loggingPriority = LOW_PRIORITY;
-                        } else if (userValue instanceof String) {
-                            // try the user value, which may have been set by a call
-                            // to Foo.class.getName()
-                            loggingClassName = (String) userValue;
-                        }
-                    } else {
-                        return;
-                    }
-                }
             }
         } else if ("org/apache/commons/logging/LogFactory".equals(callingClsName) && "getLog".equals(mthName)) {
             String signature = getSigConstantOperand();
