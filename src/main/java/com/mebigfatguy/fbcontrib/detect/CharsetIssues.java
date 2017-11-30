@@ -311,7 +311,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
      */
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
     public static Map<String, Integer> getUnreplaceableCharsetEncodings() {
-        Map<String, Integer> encodings = new HashMap<>();
+        Map<String, Integer> encodings = new HashMap<>(UNREPLACEABLE_ENCODING_METHODS.size());
         for (Map.Entry<FQMethod, Integer> entry : UNREPLACEABLE_ENCODING_METHODS.entrySet()) {
             encodings.put(entry.getKey().toString(), entry.getValue());
         }
@@ -325,7 +325,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
      */
     @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
     public static Map<String, Integer> getReplaceableCharsetEncodings() {
-        Map<String, Integer> encodings = new HashMap<>();
+        Map<String, Integer> encodings = new HashMap<>(REPLACEABLE_ENCODING_METHODS.size());
         for (Map.Entry<FQMethod, Integer> entry : REPLACEABLE_ENCODING_METHODS.entrySet()) {
             encodings.put(entry.getKey().toString(), entry.getValue());
         }

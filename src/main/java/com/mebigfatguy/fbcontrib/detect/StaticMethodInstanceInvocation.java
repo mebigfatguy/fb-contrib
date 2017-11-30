@@ -140,8 +140,9 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                 }
             }
 
-            if (OpcodeUtils.isAStore(seen) || (seen == PUTFIELD) || (seen == ATHROW) || (seen == GOTO) || (seen == GOTO_W)
-                    || ((seen >= IFEQ) && (seen <= IF_ACMPNE))) {
+            if ((seen == PUTFIELD) || (seen == ATHROW) || (seen == GOTO) || (seen == GOTO_W)
+                    || ((seen >= IFEQ) && (seen <= IF_ACMPNE))
+                    || OpcodeUtils.isAStore(seen)) {
                 popStack.clear();
             } else if ((seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC)) {
                 if (Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(getSigConstantOperand()))) {
