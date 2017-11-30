@@ -30,7 +30,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
-public class AnnotationUtils {
+public final class AnnotationUtils {
 
     public static final Set<String> NULLABLE_ANNOTATIONS = UnmodifiableSet.create(
     // @formatter:off
