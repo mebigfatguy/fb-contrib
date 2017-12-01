@@ -32,6 +32,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 @CustomUserValue
+// this class is WIP
+@SuppressWarnings({"PMD", "CPD-START"})
 public class CollectNullableMethodStatus extends BytecodeScanningDetector implements NonReportingDetector {
     private OpcodeStack stack;
     private boolean methodIsNullable;
@@ -104,6 +106,7 @@ public class CollectNullableMethodStatus extends BytecodeScanningDetector implem
         } finally {
             stack.sawOpcode(this, seen);
             if ((resultIsNullable) && (stack.getStackDepth() > 0)) {
+                @SuppressWarnings("CPD-END")
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(AnnotationUtils.NULLABLE.TRUE);
             }

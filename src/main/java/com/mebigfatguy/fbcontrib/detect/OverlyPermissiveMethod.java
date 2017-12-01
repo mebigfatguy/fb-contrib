@@ -331,14 +331,14 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                             for (int i = 0; i < infTypes.size(); i++) {
                                 String infParmType = infTypes.get(i);
                                 String fqParmType = fqTypes.get(i);
-                                if (infParmType != fqParmType) {
+                                if (infParmType.equals(fqParmType)) {
                                     if ((infParmType.charAt(0) != 'L') || (fqParmType.charAt(0) != 'L')) {
                                         matches = false;
                                         break;
                                     }
 
-                                    JavaClass infParmClass = Repository.lookupClass(SignatureUtils.stripSignature(infTypes.get(i)));
-                                    JavaClass fqParmClass = Repository.lookupClass(SignatureUtils.stripSignature(fqTypes.get(i)));
+                                    JavaClass infParmClass = Repository.lookupClass(SignatureUtils.stripSignature(infParmType));
+                                    JavaClass fqParmClass = Repository.lookupClass(SignatureUtils.stripSignature(fqParmType));
                                     if (!fqParmClass.instanceOf(infParmClass)) {
                                         matches = false;
                                         break;
