@@ -122,7 +122,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
 			return;
 		}
 
-		if (isEnum && "values".equals(m.getName())) {
+        if (isEnum && "values".equals(m.getName())) {
 			return;
 		}
 

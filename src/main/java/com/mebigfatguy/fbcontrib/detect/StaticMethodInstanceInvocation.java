@@ -144,8 +144,9 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
 				}
 			}
 
-			if (OpcodeUtils.isAStore(seen) || (seen == Const.PUTFIELD) || (seen == Const.ATHROW) || (seen == Const.GOTO)
-					|| (seen == Const.GOTO_W) || ((seen >= Const.IFEQ) && (seen <= Const.IF_ACMPNE))) {
+            if ((seen == Const.PUTFIELD) || (seen == Const.ATHROW) || (seen == Const.GOTO) || (seen == Const.GOTO_W)
+                    || ((seen >= Const.IFEQ) && (seen <= Const.IF_ACMPNE))
+                    || OpcodeUtils.isAStore(seen)) {
 				popStack.clear();
 			} else if ((seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKEVIRTUAL)
 					|| (seen == Const.INVOKESTATIC)) {

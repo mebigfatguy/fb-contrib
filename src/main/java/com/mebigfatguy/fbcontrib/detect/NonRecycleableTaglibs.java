@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,7 +62,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     /**
      * QMethod to (fieldname:fieldtype)s
      */
-    private Map<QMethod, Map<String, SourceLineAnnotation>> methodWrites;
+    private Map<QMethod, Map<Map.Entry<String, String>, SourceLineAnnotation>> methodWrites;
     private Map<String, FieldAnnotation> fieldAnnotations;
 
     /**
@@ -161,7 +162,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         if (seen == PUTFIELD) {
             QMethod methodInfo = new QMethod(getMethodName(), getMethodSig());
-            Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
+            Map<Map.Entry<String, String>, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
             if (fields == null) {
                 fields = new HashMap<>();
                 methodWrites.put(methodInfo, fields);
@@ -171,7 +172,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
             FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), fieldName, fieldSig, false);
             fieldAnnotations.put(fieldName, fa);
-            fields.put(fieldName + ':' + fieldSig, SourceLineAnnotation.fromVisitedInstruction(this));
+            fields.put(new AbstractMap.SimpleImmutableEntry(fieldName, fieldSig), SourceLineAnnotation.fromVisitedInstruction(this));
         }
     }
 
@@ -183,22 +184,21 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
             QMethod methodInfo = attEntry.getKey();
             String attType = attEntry.getValue();
 
-            Map<String, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
+            Map<Map.Entry<String, String>, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
             if ((fields == null) || (fields.size() != 1)) {
                 continue;
             }
 
-            String fieldInfo = fields.keySet().iterator().next();
-            int colonPos = fieldInfo.indexOf(':');
-            String fieldType = fieldInfo.substring(colonPos + 1);
+            Map.Entry<String, String> fieldInfo = fields.keySet().iterator().next();
+            String fieldType = fieldInfo.getValue();
 
             if (!attType.equals(fieldType)) {
                 continue;
             }
 
-            String fieldName = fieldInfo.substring(0, colonPos);
+            String fieldName = fieldInfo.getKey();
 
-            for (Map.Entry<QMethod, Map<String, SourceLineAnnotation>> fwEntry : methodWrites.entrySet()) {
+            for (Map.Entry<QMethod, Map<Map.Entry<String, String>, SourceLineAnnotation>> fwEntry : methodWrites.entrySet()) {
                 if (fwEntry.getKey().equals(methodInfo)) {
                     continue;
                 }
