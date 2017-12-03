@@ -58,8 +58,10 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             if (classContext.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
-                stack = new OpcodeStack();
-                super.visitClassContext(classContext);
+                if (!classContext.getJavaClass().isAnonymous()) {
+                    stack = new OpcodeStack();
+                    super.visitClassContext(classContext);
+                }
             }
         } finally {
             stack = null;
