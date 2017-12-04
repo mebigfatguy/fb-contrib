@@ -24,4 +24,18 @@ public class AI_Sample {
 
         return is;
     }
+
+    public String fpAnon() {
+
+        return new Stringer() {
+            @Override
+            public String get() {
+                return null;
+            }
+        }.get();
+    }
+
+    interface Stringer {
+        String get();
+    }
 }
