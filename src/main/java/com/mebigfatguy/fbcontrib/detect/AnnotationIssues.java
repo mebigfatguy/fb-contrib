@@ -106,7 +106,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         try {
             switch (seen) {
                 case ARETURN: {
-                    if (!methodIsNullable) {
+                    if (!methodIsNullable && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         methodIsNullable = AnnotationUtils.isStackElementNullable(getClassName(), getMethod(), itm);
                     }
