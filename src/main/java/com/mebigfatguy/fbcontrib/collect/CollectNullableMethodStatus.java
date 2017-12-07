@@ -18,7 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -48,7 +48,7 @@ public class CollectNullableMethodStatus extends BytecodeScanningDetector implem
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            if (classContext.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
+            if (classContext.getJavaClass().getMajor() >= Const.MAJOR_1_5) {
                 stack = new OpcodeStack();
                 super.visitClassContext(classContext);
             }
@@ -87,7 +87,7 @@ public class CollectNullableMethodStatus extends BytecodeScanningDetector implem
 
         try {
             switch (seen) {
-                case ARETURN: {
+                case Const.ARETURN: {
                     if (!methodIsNullable && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         methodIsNullable = AnnotationUtils.isStackElementNullable(getClassName(), getMethod(), itm);
@@ -95,9 +95,9 @@ public class CollectNullableMethodStatus extends BytecodeScanningDetector implem
                     break;
                 }
 
-                case INVOKESTATIC:
-                case INVOKEINTERFACE:
-                case INVOKEVIRTUAL: {
+                case Const.INVOKESTATIC:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKEVIRTUAL: {
                     resultIsNullable = (AnnotationUtils.isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
                     break;
                 }

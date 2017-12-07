@@ -18,7 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -57,7 +57,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            if (classContext.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
+            if (classContext.getJavaClass().getMajor() >= Const.MAJOR_1_5) {
                 if (!classContext.getJavaClass().isAnonymous()) {
                     stack = new OpcodeStack();
                     super.visitClassContext(classContext);
@@ -105,7 +105,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case ARETURN: {
+                case Const.ARETURN: {
                     if (!methodIsNullable && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         methodIsNullable = AnnotationUtils.isStackElementNullable(getClassName(), getMethod(), itm);
@@ -113,9 +113,9 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     break;
                 }
 
-                case INVOKESTATIC:
-                case INVOKEINTERFACE:
-                case INVOKEVIRTUAL: {
+                case Const.INVOKESTATIC:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKEVIRTUAL: {
                     resultIsNullable = (AnnotationUtils.isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
                     break;
                 }
