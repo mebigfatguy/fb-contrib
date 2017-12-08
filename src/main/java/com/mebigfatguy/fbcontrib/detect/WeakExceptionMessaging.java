@@ -136,13 +136,13 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == ATHROW) {
+            if (seen == Const.ATHROW) {
                 checkForWEM();
-            } else if ((seen == LDC) || (seen == LDC_W)) {
+            } else if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
                 if (getConstantRefOperand() instanceof ConstantString) {
                     sawConstant = true;
                 }
-            } else if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+            } else if ((seen == Const.INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
                 String clsName = getClassConstantOperand();
                 if (clsName.indexOf("Exception") < 0) {
                     return;
