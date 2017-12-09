@@ -18,98 +18,22 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
-import org.apache.bcel.Const;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
-import com.mebigfatguy.fbcontrib.utils.AnnotationUtils;
+import com.mebigfatguy.fbcontrib.detect.AnnotationIssues;
 
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
-import edu.umd.cs.findbugs.ba.ClassContext;
 
 @CustomUserValue
 // this class is WIP
 @SuppressWarnings({ "PMD", "CPD-START" })
-public class CollectNullableMethodStatus extends BytecodeScanningDetector implements NonReportingDetector {
-    private OpcodeStack stack;
-    private boolean methodIsNullable;
+public class CollectNullableMethodStatus extends AnnotationIssues implements NonReportingDetector {
 
-    /**
-     * @param bugReporter
-     *            unused
-     */
     public CollectNullableMethodStatus(BugReporter bugReporter) {
+        super(null);
     }
 
-    @Override
-    public void visitClassContext(ClassContext classContext) {
-        try {
-            if (classContext.getJavaClass().getMajor() >= Const.MAJOR_1_5) {
-                stack = new OpcodeStack();
-                super.visitClassContext(classContext);
-            }
-        } finally {
-            stack = null;
-        }
-    }
-
-    @Override
-    public void visitCode(Code obj) {
-
-        Method method = getMethod();
-        String sig = method.getSignature();
-        char returnTypeChar = sig.charAt(sig.indexOf(')') + 1);
-        if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
-            return;
-        }
-
-        if (AnnotationUtils.methodHasNullableAnnotation(method)) {
-            MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
-            methodInfo.setCanReturnNull(true);
-            return;
-        }
-        methodIsNullable = false;
-        stack.resetForMethodEntry(this);
-        super.visitCode(obj);
-    }
-
-    @Override
-    public void sawOpcode(int seen) {
-        if (methodIsNullable) {
-            return;
-        }
-
-        boolean resultIsNullable = false;
-
-        try {
-            switch (seen) {
-                case Const.ARETURN: {
-                    if (!methodIsNullable && (stack.getStackDepth() > 0)) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        methodIsNullable = AnnotationUtils.isStackElementNullable(getClassName(), getMethod(), itm);
-                    }
-                    break;
-                }
-
-                case Const.INVOKESTATIC:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKEVIRTUAL: {
-                    resultIsNullable = (AnnotationUtils.isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
-                    break;
-                }
-
-            }
-        } finally {
-            stack.sawOpcode(this, seen);
-            if ((resultIsNullable) && (stack.getStackDepth() > 0)) {
-                @SuppressWarnings("CPD-END")
-                OpcodeStack.Item itm = stack.getStackItem(0);
-                itm.setUserValue(AnnotationUtils.NULLABLE.TRUE);
-            }
-        }
+    public boolean isCollecting() {
+        return true;
     }
 }
