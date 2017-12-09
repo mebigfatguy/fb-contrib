@@ -1,7 +1,6 @@
 package ex;
 
 import java.io.IOException;
-import java.io.InputStream;
 
 import javax.annotation.Nullable;
 
@@ -16,13 +15,22 @@ public class AI_Sample {
         return getFoo();
     }
 
-    public InputStream fpNullChecked() throws IOException {
-        InputStream is = AI_Sample.class.getResourceAsStream("/foo");
-        if (is == null) {
+    public String nullEvenWithConditional() throws IOException {
+        String f = getFoo();
+        if (f == null) {
+            return f;
+        }
+
+        return "";
+    }
+
+    public String fpNullChecked() throws IOException {
+        String f = getFoo();
+        if (f == null) {
             throw new IOException();
         }
 
-        return is;
+        return f;
     }
 
     public String fpAnon() {
