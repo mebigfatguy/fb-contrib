@@ -77,6 +77,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     private BugReporter bugReporter;
     private Map<Integer, Integer> assumedNullTill;
     private Map<Integer, Integer> assumedNonNullTill;
+    private Set<Integer> noAssumptionsPossible;
     private OpcodeStack stack;
     private boolean methodIsNullable;
 
@@ -98,10 +99,11 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             if (classContext.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
-                if (!classContext.getJavaClass().isAnonymous()) {
+                if (isCollecting() || !classContext.getJavaClass().isAnonymous()) {
                     stack = new OpcodeStack();
                     assumedNullTill = new HashMap<>();
                     assumedNonNullTill = new HashMap<>();
+                    noAssumptionsPossible = new HashSet<>();
                     super.visitClassContext(classContext);
                 }
             }
@@ -109,6 +111,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             stack = null;
             assumedNullTill = null;
             assumedNonNullTill = null;
+            noAssumptionsPossible = null;
         }
     }
 
@@ -122,12 +125,12 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             return;
         }
 
-        if (methodHasNullableAnnotation(method)) {
-            if (isCollecting()) {
+        if (isCollecting()) {
+            if (methodHasNullableAnnotation(method)) {
                 MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
                 methodInfo.setCanReturnNull(true);
+                return;
             }
-            return;
         }
 
         MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
@@ -139,6 +142,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             stack.resetForMethodEntry(this);
             assumedNullTill.clear();
             assumedNonNullTill.clear();
+            noAssumptionsPossible.clear();
             super.visitCode(obj);
 
             if (methodIsNullable) {
@@ -169,8 +173,8 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     if (!methodIsNullable && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         Integer reg = Integer.valueOf(itm.getRegisterNumber());
-                        methodIsNullable = (assumedNullTill.containsKey(reg) && !assumedNonNullTill.containsKey(reg))
-                                || isStackElementNullable(getClassName(), getMethod(), itm);
+                        methodIsNullable = !noAssumptionsPossible.contains(reg) && ((assumedNullTill.containsKey(reg) && !assumedNonNullTill.containsKey(reg))
+                                || isStackElementNullable(getClassName(), getMethod(), itm));
                     }
                     break;
                 }
@@ -203,6 +207,12 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 case INVOKEINTERFACE:
                 case INVOKEVIRTUAL: {
                     resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
+                    break;
+                }
+
+                case ATHROW: {
+                    removeAssumptions(assumedNonNullTill);
+                    removeAssumptions(assumedNullTill);
                     break;
                 }
 
@@ -269,7 +279,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
      * @param assumptionTill
      *            the map of assumptions
      * @param pc
-     *            the current pc
+     *            // * the current pc
      */
     public static void clearAssumptions(Map<Integer, Integer> assumptionTill, int pc) {
         Iterator<Integer> it = assumptionTill.values().iterator();
@@ -278,5 +288,9 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 it.remove();
             }
         }
+    }
+
+    public void removeAssumptions(Map<Integer, Integer> assumptionsTill) {
+        noAssumptionsPossible.addAll(assumptionsTill.keySet());
     }
 }
