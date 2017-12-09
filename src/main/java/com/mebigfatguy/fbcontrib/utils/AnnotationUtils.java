@@ -39,6 +39,7 @@ public final class AnnotationUtils {
         "Ljavax/annotation/CheckForNull;",
         "Lcom/sun/istack/Nullable;",
         "Ledu/umd/cs/findbugs/annotations/Nullable;",
+        "Lorg/springframework/lang/Nullable;",
         "Landroid/support/annotations/Nullable;"
     // @formatter:on
     );

@@ -6015,6 +6015,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	        <li>javax.annotation.Nullable</li>
 	        <li>javax.annotation.CheckForNull</li>
 	        <li>edu.umd.cs.findbugs.annotations.Nullable</li>
+	        <li>org.springframework.lang.Nullable</li>
 	        <li>android.support.annotations.Nullable</li>
     		</ul>
     		]]>
