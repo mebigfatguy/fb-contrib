@@ -19,6 +19,8 @@
 package com.mebigfatguy.fbcontrib.utils;
 
 import java.util.HashSet;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -107,5 +109,23 @@ public final class AnnotationUtils {
         return ((mi != null) && mi.getCanReturnNull());
 
         // can we check if it has @Nullable on it? hmm need to convert to Method
+    }
+
+    /**
+     * the map is keyed by register, and value by when an assumption holds to a byte offset if we have passed when the assumption holds, clear the item from the
+     * map
+     *
+     * @param assumptionTill
+     *            the map of assumptions
+     * @param pc
+     *            the current pc
+     */
+    public static void clearAssumptions(Map<Integer, Integer> assumptionTill, int pc) {
+        Iterator<Integer> it = assumptionTill.values().iterator();
+        while (it.hasNext()) {
+            if (it.next().intValue() <= pc) {
+                it.remove();
+            }
+        }
     }
 }

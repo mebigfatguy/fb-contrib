@@ -15,8 +15,12 @@ public class AI_Sample {
         return getFoo();
     }
 
-    public String nullEvenWithConditional() throws IOException {
-        String f = getFoo();
+    public String getFoo3() {
+        return "";
+    }
+
+    public String nullBecauseOfConditional() throws IOException {
+        String f = getFoo3();
         if (f == null) {
             return f;
         }

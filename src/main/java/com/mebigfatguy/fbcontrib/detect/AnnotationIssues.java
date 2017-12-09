@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
@@ -41,6 +44,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class AnnotationIssues extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
+    private Map<Integer, Integer> assumedNullTill;
+    private Map<Integer, Integer> assumedNonNullTill;
     private OpcodeStack stack;
     private boolean methodIsNullable;
 
@@ -60,11 +65,15 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             if (classContext.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
                 if (!classContext.getJavaClass().isAnonymous()) {
                     stack = new OpcodeStack();
+                    assumedNullTill = new HashMap<>();
+                    assumedNonNullTill = new HashMap<>();
                     super.visitClassContext(classContext);
                 }
             }
         } finally {
             stack = null;
+            assumedNullTill = null;
+            assumedNonNullTill = null;
         }
     }
 
@@ -88,6 +97,8 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         } else {
             methodIsNullable = false;
             stack.resetForMethodEntry(this);
+            assumedNullTill.clear();
+            assumedNonNullTill.clear();
             super.visitCode(obj);
             if (methodIsNullable) {
                 bugReporter.reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
@@ -103,15 +114,44 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
         boolean resultIsNullable = false;
 
+        AnnotationUtils.clearAssumptions(assumedNullTill, getPC());
+        AnnotationUtils.clearAssumptions(assumedNonNullTill, getPC());
+
         try {
             switch (seen) {
                 case ARETURN: {
                     if (!methodIsNullable && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
-                        methodIsNullable = AnnotationUtils.isStackElementNullable(getClassName(), getMethod(), itm);
+                        Integer reg = Integer.valueOf(itm.getRegisterNumber());
+                        methodIsNullable = (assumedNullTill.containsKey(reg) && !assumedNonNullTill.containsKey(reg))
+                                || AnnotationUtils.isStackElementNullable(getClassName(), getMethod(), itm);
                     }
                     break;
                 }
+
+                case IFNONNULL:
+                    if (getBranchOffset() > 0) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            int reg = itm.getRegisterNumber();
+                            if (reg >= 0) {
+                                assumedNullTill.put(reg, getBranchTarget());
+                            }
+                        }
+                    }
+                break;
+
+                case IFNULL:
+                    if (getBranchOffset() > 0) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            int reg = itm.getRegisterNumber();
+                            if (reg >= 0) {
+                                assumedNonNullTill.put(reg, getBranchTarget());
+                            }
+                        }
+                    }
+                break;
 
                 case INVOKESTATIC:
                 case INVOKEINTERFACE:
