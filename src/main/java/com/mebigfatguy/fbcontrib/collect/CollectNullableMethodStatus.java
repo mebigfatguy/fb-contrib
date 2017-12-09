@@ -18,139 +18,22 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.apache.bcel.Constants;
-import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.Method;
-
-import com.mebigfatguy.fbcontrib.utils.AnnotationUtils;
+import com.mebigfatguy.fbcontrib.detect.AnnotationIssues;
 
 import edu.umd.cs.findbugs.BugReporter;
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
-import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
-import edu.umd.cs.findbugs.ba.ClassContext;
 
 @CustomUserValue
 // this class is WIP
 @SuppressWarnings({ "PMD", "CPD-START" })
-public class CollectNullableMethodStatus extends BytecodeScanningDetector implements NonReportingDetector {
+public class CollectNullableMethodStatus extends AnnotationIssues implements NonReportingDetector {
 
-    private OpcodeStack stack;
-    private Map<Integer, Integer> assumedNullTill;
-    private Map<Integer, Integer> assumedNonNullTill;
-    private boolean methodIsNullable;
-
-    /**
-     * @param bugReporter
-     *            unused
-     */
     public CollectNullableMethodStatus(BugReporter bugReporter) {
+        super(null);
     }
 
-    @Override
-    public void visitClassContext(ClassContext classContext) {
-        try {
-            if (classContext.getJavaClass().getMajor() >= Constants.MAJOR_1_5) {
-                stack = new OpcodeStack();
-                assumedNullTill = new HashMap<>();
-                assumedNonNullTill = new HashMap<>();
-                super.visitClassContext(classContext);
-            }
-        } finally {
-            stack = null;
-            assumedNullTill = null;
-            assumedNonNullTill = null;
-        }
-    }
-
-    @Override
-    public void visitCode(Code obj) {
-
-        Method method = getMethod();
-        String sig = method.getSignature();
-        char returnTypeChar = sig.charAt(sig.indexOf(')') + 1);
-        if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
-            return;
-        }
-
-        if (AnnotationUtils.methodHasNullableAnnotation(method)) {
-            MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
-            methodInfo.setCanReturnNull(true);
-            return;
-        }
-        methodIsNullable = false;
-        stack.resetForMethodEntry(this);
-        assumedNullTill.clear();
-        assumedNonNullTill.clear();
-        super.visitCode(obj);
-    }
-
-    @Override
-    public void sawOpcode(int seen) {
-        if (methodIsNullable) {
-            return;
-        }
-
-        boolean resultIsNullable = false;
-
-        AnnotationUtils.clearAssumptions(assumedNullTill, getPC());
-        AnnotationUtils.clearAssumptions(assumedNonNullTill, getPC());
-
-        try {
-            switch (seen) {
-                case ARETURN: {
-                    if (!methodIsNullable && (stack.getStackDepth() > 0)) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        Integer reg = Integer.valueOf(itm.getRegisterNumber());
-                        methodIsNullable = (assumedNullTill.containsKey(reg) && !assumedNonNullTill.containsKey(reg))
-                                || AnnotationUtils.isStackElementNullable(getClassName(), getMethod(), itm);
-                    }
-                    break;
-                }
-
-                case IFNONNULL:
-                    if (getBranchOffset() > 0) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            int reg = itm.getRegisterNumber();
-                            if (reg >= 0) {
-                                assumedNullTill.put(reg, getBranchTarget());
-                            }
-                        }
-                    }
-                break;
-
-                case IFNULL:
-                    if (getBranchOffset() > 0) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            int reg = itm.getRegisterNumber();
-                            if (reg >= 0) {
-                                assumedNonNullTill.put(reg, getBranchTarget());
-                            }
-                        }
-                    }
-                break;
-
-                case INVOKESTATIC:
-                case INVOKEINTERFACE:
-                case INVOKEVIRTUAL: {
-                    resultIsNullable = (AnnotationUtils.isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
-                    break;
-                }
-
-            }
-        } finally {
-            stack.sawOpcode(this, seen);
-            if ((resultIsNullable) && (stack.getStackDepth() > 0)) {
-                @SuppressWarnings("CPD-END")
-                OpcodeStack.Item itm = stack.getStackItem(0);
-                itm.setUserValue(AnnotationUtils.NULLABLE.TRUE);
-            }
-        }
+    public boolean isCollecting() {
+        return true;
     }
 }

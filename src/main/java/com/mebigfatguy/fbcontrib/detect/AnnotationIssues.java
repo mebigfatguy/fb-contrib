@@ -59,6 +59,10 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
     }
 
+    public boolean isCollecting() {
+        return false;
+    }
+
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
@@ -88,20 +92,31 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         }
 
         if (AnnotationUtils.methodHasNullableAnnotation(method)) {
+            if (isCollecting()) {
+                MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
+                methodInfo.setCanReturnNull(true);
+            }
             return;
         }
 
         MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
-        if (methodInfo.getCanReturnNull()) {
+        if (!isCollecting() && methodInfo.getCanReturnNull()) {
             bugReporter.reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
         } else {
+
             methodIsNullable = false;
             stack.resetForMethodEntry(this);
             assumedNullTill.clear();
             assumedNonNullTill.clear();
             super.visitCode(obj);
+
             if (methodIsNullable) {
-                bugReporter.reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
+                if (isCollecting()) {
+                    methodInfo.setCanReturnNull(true);
+                } else {
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
+                }
             }
         }
     }
