@@ -6015,8 +6015,12 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	        <li>javax.annotation.Nullable</li>
 	        <li>javax.annotation.CheckForNull</li>
 	        <li>edu.umd.cs.findbugs.annotations.Nullable</li>
+	        <li>org.springframework.lang.Nullable</li>
 	        <li>android.support.annotations.Nullable</li>
     		</ul>
+    		<p>
+    		You can supply a comma separated list of classes that are custom Nullable Annotations if you desire, by using the
+    		system property -Dfb-contrib.ai.annotations="com.acme.Foo,com.acme.Boo" when run.
     		]]>
     	</Details>
     </BugPattern>

@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import org.apache.bcel.classfile.AnnotationEntry;
@@ -32,22 +33,34 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 public final class AnnotationUtils {
 
-    public static final Set<String> NULLABLE_ANNOTATIONS = UnmodifiableSet.create(
-    // @formatter:off
-        "Lorg/jetbrains/annotations/Nullable;",
-        "Ljavax/annotation/Nullable;",
-        "Ljavax/annotation/CheckForNull;",
-        "Lcom/sun/istack/Nullable;",
-        "Ledu/umd/cs/findbugs/annotations/Nullable;",
-        "Landroid/support/annotations/Nullable;"
-    // @formatter:on
-    );
+    private static final String USER_NULLABLE_ANNOTATIONS = "fb-contrib.ai.annotations";
+
+    public static final Set<String> NULLABLE_ANNOTATIONS = new HashSet<>();
+
+    static {
+        NULLABLE_ANNOTATIONS.add("Lorg/jetbrains/annotations/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Ljavax/annotation/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Ljavax/annotation/CheckForNull;");
+        NULLABLE_ANNOTATIONS.add("Lcom/sun/istack/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Ledu/umd/cs/findbugs/annotations/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Lorg/springframework/lang/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Landroid/support/annotations/Nullable");
+
+        String userAnnotations = System.getProperty(USER_NULLABLE_ANNOTATIONS);
+        if ((userAnnotations != null) && userAnnotations.isEmpty()) {
+            String[] annotations = userAnnotations.split("\\s*,\\s*");
+            for (String annotation : annotations) {
+                NULLABLE_ANNOTATIONS.add("L" + annotation.replace('.', '/') + ";");
+            }
+        }
+    }
 
     public enum NULLABLE {
         TRUE
     };
 
     private AnnotationUtils() {
+
     }
 
     public static boolean methodHasNullableAnnotation(Method m) {
