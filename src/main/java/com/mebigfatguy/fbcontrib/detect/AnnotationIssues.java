@@ -19,15 +19,18 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
-import com.mebigfatguy.fbcontrib.utils.AnnotationUtils;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -36,12 +39,40 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * looks for common problems with the application of annotations
  */
 @CustomUserValue
 public class AnnotationIssues extends BytecodeScanningDetector {
+
+    private static final String USER_NULLABLE_ANNOTATIONS = "fb-contrib.ai.annotations";
+
+    public static final Set<String> NULLABLE_ANNOTATIONS = new HashSet<>();
+
+    static {
+        NULLABLE_ANNOTATIONS.add("Lorg/jetbrains/annotations/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Ljavax/annotation/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Ljavax/annotation/CheckForNull;");
+        NULLABLE_ANNOTATIONS.add("Lcom/sun/istack/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Ledu/umd/cs/findbugs/annotations/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Lorg/springframework/lang/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Landroid/support/annotations/Nullable");
+
+        String userAnnotations = System.getProperty(USER_NULLABLE_ANNOTATIONS);
+        if ((userAnnotations != null) && userAnnotations.isEmpty()) {
+            String[] annotations = userAnnotations.split("\\s*,\\s*");
+            for (String annotation : annotations) {
+                NULLABLE_ANNOTATIONS.add("L" + annotation.replace('.', '/') + ";");
+            }
+        }
+    }
+
+    public enum NULLABLE {
+        TRUE
+    };
 
     private BugReporter bugReporter;
     private Map<Integer, Integer> assumedNullTill;
@@ -91,7 +122,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             return;
         }
 
-        if (AnnotationUtils.methodHasNullableAnnotation(method)) {
+        if (methodHasNullableAnnotation(method)) {
             if (isCollecting()) {
                 MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
                 methodInfo.setCanReturnNull(true);
@@ -129,8 +160,8 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
         boolean resultIsNullable = false;
 
-        AnnotationUtils.clearAssumptions(assumedNullTill, getPC());
-        AnnotationUtils.clearAssumptions(assumedNonNullTill, getPC());
+        clearAssumptions(assumedNullTill, getPC());
+        clearAssumptions(assumedNonNullTill, getPC());
 
         try {
             switch (seen) {
@@ -139,7 +170,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         Integer reg = Integer.valueOf(itm.getRegisterNumber());
                         methodIsNullable = (assumedNullTill.containsKey(reg) && !assumedNonNullTill.containsKey(reg))
-                                || AnnotationUtils.isStackElementNullable(getClassName(), getMethod(), itm);
+                                || isStackElementNullable(getClassName(), getMethod(), itm);
                     }
                     break;
                 }
@@ -171,7 +202,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 case INVOKESTATIC:
                 case INVOKEINTERFACE:
                 case INVOKEVIRTUAL: {
-                    resultIsNullable = (AnnotationUtils.isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
+                    resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
                     break;
                 }
 
@@ -180,7 +211,71 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             stack.sawOpcode(this, seen);
             if ((resultIsNullable) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
-                itm.setUserValue(AnnotationUtils.NULLABLE.TRUE);
+                itm.setUserValue(NULLABLE.TRUE);
+            }
+        }
+    }
+
+    public static boolean methodHasNullableAnnotation(Method m) {
+        for (AnnotationEntry entry : m.getAnnotationEntries()) {
+            String annotationType = entry.getAnnotationType();
+            if (NULLABLE_ANNOTATIONS.contains(annotationType)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isStackElementNullable(String className, Method method, OpcodeStack.Item itm) {
+        if (itm.isNull() || (itm.getUserValue() instanceof NULLABLE)) {
+            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(), method.getSignature());
+            if (mi != null) {
+                mi.setCanReturnNull(true);
+            }
+            return true;
+        } else {
+            XMethod xm = itm.getReturnValueOf();
+            if (xm != null) {
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
+                if ((mi != null) && mi.getCanReturnNull()) {
+                    mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(), method.getSignature());
+                    if (mi != null) {
+                        mi.setCanReturnNull(true);
+                    }
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
+
+    public static boolean isMethodNullable(@SlashedClassName String className, String methodName, String methodSignature) {
+        char returnTypeChar = methodSignature.charAt(methodSignature.indexOf(')') + 1);
+        if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
+            return false;
+        }
+        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, methodSignature);
+        return ((mi != null) && mi.getCanReturnNull());
+
+        // can we check if it has @Nullable on it? hmm need to convert to Method
+    }
+
+    /**
+     * the map is keyed by register, and value by when an assumption holds to a byte offset if we have passed when the assumption holds, clear the item from the
+     * map
+     *
+     * @param assumptionTill
+     *            the map of assumptions
+     * @param pc
+     *            the current pc
+     */
+    public static void clearAssumptions(Map<Integer, Integer> assumptionTill, int pc) {
+        Iterator<Integer> it = assumptionTill.values().iterator();
+        while (it.hasNext()) {
+            if (it.next().intValue() <= pc) {
+                it.remove();
             }
         }
     }
