@@ -46,7 +46,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private Map<String, Map<String, BugInstance>> possibleBugs = new HashMap<String, Map<String, BugInstance>>();
+    private Map<String, Map<String, BugInstance>> possibleBugs = new HashMap<>();
 
     /**
      * constructs a NSE detector given the reporter to report bugs on
@@ -115,7 +115,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if ((seen == CHECKCAST) && (stack.getStackDepth() > 0)) {
+            if ((seen == Const.CHECKCAST) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (item.getRegisterNumber() == 1) {
                     String thisCls = getClassName();
@@ -129,7 +129,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
                                 .addClass(this).addMethod(this).addSourceLine(this).addString(equalsCls);
                         Map<String, BugInstance> bugs = possibleBugs.get(thisCls);
                         if (bugs == null) {
-                            bugs = new HashMap<String, BugInstance>();
+                            bugs = new HashMap<>();
                             possibleBugs.put(thisCls, bugs);
                         }
                         bugs.put(equalsCls, bug);
