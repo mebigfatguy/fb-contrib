@@ -18,13 +18,13 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import org.apache.bcel.Const;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
@@ -179,7 +179,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     break;
                 }
 
-                case IFNONNULL:
+                case Const.IFNONNULL:
                     if (getBranchOffset() > 0) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
@@ -191,7 +191,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     }
                 break;
 
-                case IFNULL:
+                case Const.IFNULL:
                     if (getBranchOffset() > 0) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
@@ -210,7 +210,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     break;
                 }
 
-                case ATHROW: {
+                case Const.ATHROW: {
                     removeAssumptions(assumedNonNullTill);
                     removeAssumptions(assumedNullTill);
                     break;
