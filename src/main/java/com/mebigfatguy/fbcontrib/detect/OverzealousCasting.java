@@ -98,10 +98,10 @@ public class OverzealousCasting extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         switch (state) {
             case SAW_NOTHING:
-                if (seen == CHECKCAST) {
+                if (seen == Const.CHECKCAST) {
                     castClass = getClassConstantOperand();
                     state = State.SAW_CHECKCAST;
-                } else if (seen == INVOKEINTERFACE) {
+                } else if (seen == Const.INVOKEINTERFACE) {
                     // enhanced for loops add an incorrect checkcast instruction, so
                     // ignore checkcasts after iterator.next()
                     String clsName = getClassConstantOperand();
@@ -126,7 +126,7 @@ public class OverzealousCasting extends BytecodeScanningDetector {
                                     .addSourceLine(this));
                         }
                     }
-                } else if (seen == PUTFIELD) {
+                } else if (seen == Const.PUTFIELD) {
                     FieldAnnotation f = FieldAnnotation.fromReferencedField(this);
                     String sig = f.getFieldSignature();
                     if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
