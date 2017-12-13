@@ -84,6 +84,12 @@ function toggleBlock(divId, imgId)
             	<li><b>[UTWR] Use Try With Resources</b><br/>
             	Looks for try/finally blocks that manage resources, without using try-with-resources.
             	</li>
+            	<li><b>[RFI} Reflection Issues</b><br/>
+            	Looks for issues around reflection, especially in light of java 9 and 10.
+            	</li>
+            	<li><b>[AI] Annotation Issues</b><br/>
+            	Looks for issues around use of common annotations
+            	</li>
             </ul>
         </div>
         <hr/>        
