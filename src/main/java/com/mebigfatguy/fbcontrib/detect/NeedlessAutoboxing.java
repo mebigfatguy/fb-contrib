@@ -132,7 +132,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
 
             case SEEN_CTOR:
             case SEEN_VALUEOFPRIMITIVE:
-                if (seen == INVOKEVIRTUAL) {
+                if (seen == Const.INVOKEVIRTUAL) {
                     BoxParms boxSigs = boxClasses.get(boxClass);
                     if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
                         bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_UNBOX.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
@@ -146,7 +146,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             break;
 
             case SEEN_VALUEOFSTRING:
-                if (seen == INVOKEVIRTUAL) {
+                if (seen == Const.INVOKEVIRTUAL) {
                     BoxParms boxSigs = boxClasses.get(boxClass);
                     if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
                         bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_PARSE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
@@ -157,12 +157,12 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             break;
 
             case SEEN_PARSE:
-                if (seen == INVOKESTATIC) {
+                if (seen == Const.INVOKESTATIC) {
                     if (boxClass.equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())) {
                         bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_VALUEOF.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
                     }
-                } else if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand()) && boxClass.equals(getClassConstantOperand())) {
+                } else if ((seen == Const.INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand()) && boxClass.equals(getClassConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_STRING_CTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                             .addSourceLine(this));
                 }
@@ -170,8 +170,8 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             break;
 
             case SEEN_ICONST:
-                if ((seen == INVOKESTATIC) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())
-                        && SignatureBuilder.SIG_PRIMITIVE_BOOLEAN_TO_BOOLEAN.equals(getSigConstantOperand())) {
+                if ((seen == Const.INVOKESTATIC) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand())
+                        && "valueOf".equals(getNameConstantOperand()) && SignatureBuilder.SIG_PRIMITIVE_BOOLEAN_TO_BOOLEAN.equals(getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this));
                 }
@@ -180,7 +180,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
             break;
 
             case SEEN_GETSTATIC:
-                if ((seen == INVOKEVIRTUAL) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand())
+                if ((seen == Const.INVOKEVIRTUAL) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand())
                         && "booleanValue".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_BOOLEAN.equals(getSigConstantOperand())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
                             .addMethod(this).addSourceLine(this));
@@ -194,7 +194,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
     private void sawOpcodeAfterNothing(int seen) {
         BoxParms boxSigs;
         switch (seen) {
-            case INVOKEVIRTUAL:
+            case Const.INVOKEVIRTUAL:
                 boxClass = getClassConstantOperand();
                 boxSigs = boxClasses.get(boxClass);
                 if (boxSigs != null) {
@@ -205,7 +205,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                 }
             break;
 
-            case INVOKESTATIC:
+            case Const.INVOKESTATIC:
                 boxClass = getClassConstantOperand();
                 boxSigs = boxClasses.get(boxClass);
                 if (boxSigs != null) {
@@ -230,7 +230,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                 }
             break;
 
-            case INVOKESPECIAL:
+            case Const.INVOKESPECIAL:
                 boxClass = getClassConstantOperand();
                 boxSigs = boxClasses.get(boxClass);
                 if ((boxSigs != null) && Values.CONSTRUCTOR.equals(getNameConstantOperand()) && boxSigs.getCtorSignature().equals(getSigConstantOperand())) {
@@ -238,14 +238,14 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                 }
             break;
 
-            case ICONST_0:
-            case ICONST_1:
+            case Const.ICONST_0:
+            case Const.ICONST_1:
                 if (state == State.SEEN_NOTHING) {
                     state = State.SEEN_ICONST;
                 }
             break;
 
-            case GETSTATIC:
+            case Const.GETSTATIC:
                 String clsName = getClassConstantOperand();
                 if (Values.SLASHED_JAVA_LANG_BOOLEAN.equals(clsName)) {
                     String fldName = getNameConstantOperand();
@@ -255,8 +255,8 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                 }
             break;
 
-            case GOTO:
-            case GOTO_W:
+            case Const.GOTO:
+            case Const.GOTO_W:
                 if (stack.getStackDepth() > 0) {
                     ternaryPCs.set(getBranchTarget());
                 }
@@ -268,7 +268,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
     }
 
     private void sawOpcodeAfterValue(int seen) {
-        if (seen == INVOKESPECIAL) {
+        if (seen == Const.INVOKESPECIAL) {
             if (boxClass.equals(getClassConstantOperand())) {
                 String methodName = getNameConstantOperand();
                 if (Values.CONSTRUCTOR.equals(methodName)) {
@@ -280,7 +280,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                     }
                 }
             }
-        } else if ((seen == INVOKESTATIC) && boxClass.equals(getClassConstantOperand())) {
+        } else if ((seen == Const.INVOKESTATIC) && boxClass.equals(getClassConstantOperand())) {
             String methodName = getNameConstantOperand();
             if ("valueOf".equals(methodName)) {
                 String boxSig = boxClasses.get(boxClass).getValueOfSignature();
