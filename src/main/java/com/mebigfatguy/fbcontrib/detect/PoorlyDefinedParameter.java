@@ -130,12 +130,12 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
             }
 
             int insTarget = -1;
-            if (((seen >= IFEQ) && (seen <= IF_ACMPNE)) || (seen == GOTO) || (seen == GOTO_W)) {
+            if (((seen >= Const.IFEQ) && (seen <= Const.IF_ACMPNE)) || (seen == Const.GOTO) || (seen == Const.GOTO_W)) {
                 insTarget = getBranchTarget();
                 if (insTarget < getPC()) {
                     insTarget = -1;
                 }
-            } else if ((seen == LOOKUPSWITCH) || (seen == TABLESWITCH)) {
+            } else if ((seen == Const.LOOKUPSWITCH) || (seen == Const.TABLESWITCH)) {
                 insTarget = this.getDefaultSwitchOffset() + getPC();
             }
 
@@ -161,13 +161,13 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterLoad(int seen) {
-        if (seen == CHECKCAST) {
+        if (seen == Const.CHECKCAST) {
             castClass = SignatureUtils.classToSignature(getClassConstantOperand());
             if (!castClass.equals(parmSig)) {
                 state = State.SAW_CHECKCAST;
                 return;
             }
-        } else if (seen == INSTANCEOF) {
+        } else if (seen == Const.INSTANCEOF) {
             // probably an if guard... assume the code is reasonable
             parmSigs.remove(Integer.valueOf(loadedReg));
         }
@@ -176,7 +176,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
 
     private void sawOpcodeAfterCheckCast(int seen) {
         state = State.SAW_NOTHING;
-        if (!((seen == PUTFIELD) || OpcodeUtils.isAStore(seen))) {
+        if (!((seen == Const.PUTFIELD) || OpcodeUtils.isAStore(seen))) {
             return;
         }
         String parmName = null;
