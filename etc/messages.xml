@@ -6045,19 +6045,23 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	    containsKey is correct. This detector attempts to notice when null values are stored.</p>
     	    <p>As an example, instead of using
     	    <code>
+    	    <pre>
     	    	Map<String, String> myMap = getSomeMap();
     	    	if (myMap.containsKey("foo")) {
     	    		String value = myMap.get("foo");
     	    		....
     	    	}
+    	    </pre>
     	    </code>
     	    convert this to
     	    <code>
+    	    <pre>
      	    	Map<String, String> myMap = getSomeMap();
      	    	String value = myMap.get("foo");
     	    	if (value != null) {
     	    		....
     	    	}
+    	    </pre>
     	    </code>
     	    </p>
     	    ]]>

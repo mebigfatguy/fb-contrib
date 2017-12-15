@@ -40,4 +40,19 @@ public class MUP_Sample {
             return "Bar";
         }
     }
+
+    public String testGetAfterContainsKeyFromMethodCall() {
+
+        if (fieldMap.containsKey(getAValue())) {
+            String v = fieldMap.get(getAValue());
+            return v + "Bar";
+        } else {
+            return "Bar";
+        }
+    }
+
+    public String getAValue() {
+        return MUP_Sample.class.getName();
+    }
+
 }

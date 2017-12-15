@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for odd usage patterns when using Maps
@@ -107,7 +108,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         ContainsKey ck = mapContainsKeyUsed.remove(new MapRef(itm));
                         if (ck != null) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.MUP_CONTAINSKEY_BEFORE_GET.name(), NORMAL_PRIORITY).addClass(this)
+                            bugReporter.reportBug(new BugInstance(this, BugType.MUP_CONTAINSKEY_BEFORE_GET.name(), ck.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                         }
                     }
@@ -121,21 +122,30 @@ public class MapUsageIssues extends BytecodeScanningDetector {
     static class ContainsKey {
         private Object keyValue;
         private int scopeEnd;
+        private int reportLevel;
 
         public ContainsKey(OpcodeStack.Item itm, int ifEnd) {
             scopeEnd = ifEnd;
             int reg = itm.getRegisterNumber();
             if (reg >= 0) {
                 keyValue = Integer.valueOf(reg);
+                reportLevel = NORMAL_PRIORITY;
             } else {
                 XField xf = itm.getXField();
                 if (xf != null) {
                     keyValue = xf;
+                    reportLevel = NORMAL_PRIORITY;
                 } else {
                     Object cons = itm.getConstant();
                     if (cons != null) {
                         keyValue = cons;
+                        reportLevel = NORMAL_PRIORITY;
                     } else {
+                        XMethod xm = itm.getReturnValueOf();
+                        if (xm != null) {
+                            keyValue = xm;
+                            reportLevel = LOW_PRIORITY;
+                        }
                         keyValue = null;
                     }
                 }
@@ -144,6 +154,10 @@ public class MapUsageIssues extends BytecodeScanningDetector {
 
         public boolean outOfScope(int pc) {
             return pc >= scopeEnd;
+        }
+
+        public int getReportLevel() {
+            return reportLevel;
         }
 
         @Override
