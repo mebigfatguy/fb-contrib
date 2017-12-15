@@ -1722,6 +1722,15 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 		</Details>
 	</Detector>
 	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.MapUsageIssues">
+		<Details>
+			<![CDATA[
+			<p>Looks for dubious usage patterns around the Map interface</p>
+			<p>It is a fast detector</p>
+			]]>
+		</Details>
+	</Detector>
+	
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -6024,6 +6033,36 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="MUP_CONTAINSKEY_BEFORE_GET">
+    	<ShortDescription>Method check a map with containsKey(), before using get()</ShortDescription>
+    	<LongDescription>Method {1} checks a map with containsKey(), before using get()</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method checks for the presense of a key in a map using containsKey(), before attempting to fetch the value of the key
+    	    using get(). This equates to doing two map lookups in a row. It is much simpler to just fetch the value with get, and checking for non null
+    	    instead. The only caveat to this is that if you use a null value in a map to represent a third state for the key, then in which case using 
+    	    containsKey is correct. This detector attempts to notice when null values are stored.</p>
+    	    <p>As an example, instead of using
+    	    <code>
+    	    	Map<String, String> myMap = getSomeMap();
+    	    	if (myMap.containsKey("foo")) {
+    	    		String value = myMap.get("foo");
+    	    		....
+    	    	}
+    	    </code>
+    	    convert this to
+    	    <code>
+     	    	Map<String, String> myMap = getSomeMap();
+     	    	String value = myMap.get("foo");
+    	    	if (value != null) {
+    	    		....
+    	    	}
+    	    </code>
+    	    </p>
+    	    ]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -6169,4 +6208,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="UAC">Unnecessary Api Conversion</BugCode>
 	<BugCode abbrev="RFI">Reflection Issues</BugCode>
 	<BugCode abbrev="AI">Annotation Issues</BugCode>
+	<BugCode abbrev="MUP">Map Usage Issues</BugCode>
 </MessageCollection>

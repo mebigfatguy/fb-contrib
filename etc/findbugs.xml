@@ -324,6 +324,8 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.AnnotationIssues" speed="fast" reports="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE"/>
     
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MapUsageIssues" speed="fast" reports="MUP_CONTAINSKEY_BEFORE_GET"/>
+    
     <Detector class="com.mebigfatguy.fbcontrib.collect.CollectNullableMethodStatus" speed="fast" reports="" hidden="true" />
     
     
@@ -616,5 +618,6 @@
 	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT" category="CORRECTNESS"/>
 	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" category="CORRECTNESS"/>
 	<BugPattern abbrev="RFI" type="RFI_SET_ACCESSIBLE" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="AI" type="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE" category="CORRECTNESS" experimental="true"/>
+	<BugPattern abbrev="AI" type="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="MUP" type="MUP_CONTAINSKEY_BEFORE_GET" category="STYLE" experimental="true" />
 </FindbugsPlugin>
