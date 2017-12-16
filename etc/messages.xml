@@ -6040,8 +6040,8 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<Details>
     		<![CDATA[
     		<p>This method checks for the presense of a key in a map using containsKey(), before attempting to fetch the value of the key
-    	    using get(). This equates to doing two map lookups in a row. It is much simpler to just fetch the value with get, and checking for non null
-    	    instead.</p>
+    	    using get(). This equates to doing two map lookups in a row. It is much simpler to just fetch the value with get, and checking
+    	    for non null instead.</p>
     	    <p>As an example, instead of using
     	    <code>
     	    <pre>
@@ -6063,10 +6063,10 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	    </pre>
     	    </code>
     	    </p>
-    	    <p>The only caveat to this is that if you use a null value in a map to represent a third state for the key, then in this case using 
-    	    containsKey is 'correct'. This means if an entry found in the map with a null value is taken differently then no entry at all. However this
-    	    is a very subtle programming paradigm, and likely to cause problems. If you wish to mark an entry as not being present, it is better to use
-    	    a named 'sentinel' value to denote this, so instead of:
+    	    <p>The only caveat to this is that if you use a null value in a map to represent a third state for the key, then in this case 
+    	    using containsKey is 'correct'. This means if an entry found in the map with a null value is taken differently then no entry 
+    	    at all. However this is a very subtle programming paradigm, and likely to cause problems. If you wish to mark an entry as 
+    	    not being present, it is better to use a named 'sentinel' value to denote this, so instead of:
     	    <code>
     	    <pre>
     	    	Map<String, String> myMap = getSomeMap();
@@ -6084,8 +6084,8 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	    	if (NOT_FOUND.equals(value)) {
     	    		....
     	    	}
-    	    	where NOT_FOUND is some constant that denotes this special status. Of course you will need to find a special sentinel value for each type 
-    	    	you are using that isn't possible to have normally.
+    	    	where NOT_FOUND is some constant that denotes this special status. Of course you will need to find a special 
+    	    	sentinel value for each type you are using that isn't possible to have normally.
     	    	</p>
     	    </pre>
     	    </code>
