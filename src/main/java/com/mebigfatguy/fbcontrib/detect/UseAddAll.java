@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -114,7 +115,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                 }
             }
 
-            if (seen == INVOKEINTERFACE) {
+            if (seen == Const.INVOKEINTERFACE) {
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
                 if ("get".equals(methodName) && SignatureBuilder.SIG_INT_TO_OBJECT.equals(signature)) {
@@ -157,7 +158,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                         uValue = (Comparable<?>) valueItem.getUserValue();
                         if (uValue != null) {
                             LoopInfo loop = loops.get(uValue);
-                            if ((loop != null) && loop.isInLoop(pc) && (this.getCodeByte(getNextPC()) == POP)) {
+                            if ((loop != null) && loop.isInLoop(pc) && (this.getCodeByte(getNextPC()) == Const.POP)) {
                                 loop.foundAdd(pc);
                             }
                         }
@@ -168,7 +169,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                             uValue = (Comparable<?>) valueItem.getUserValue();
                             if (uValue != null) {
                                 LoopInfo loop = loops.get(uValue);
-                                if ((loop != null) && loop.isInLoop(pc) && (this.getCodeByte(getNextPC()) == POP)) {
+                                if ((loop != null) && loop.isInLoop(pc) && (this.getCodeByte(getNextPC()) == Const.POP)) {
                                     loop.foundAdd(pc);
                                 }
                             }
@@ -182,12 +183,12 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                 }
             } else if (OpcodeUtils.isILoad(seen) || OpcodeUtils.isALoad(seen)) {
                 sawLoad = true;
-            } else if (seen == IFEQ) {
+            } else if (seen == Const.IFEQ) {
                 boolean loopFound = false;
                 if ((stack.getStackDepth() > 0) && (getBranchOffset() > 0)) {
                     int gotoPos = getBranchTarget() - 3;
                     byte[] code = getCode().getCode();
-                    if ((0x00FF & code[gotoPos]) == GOTO) {
+                    if ((0x00FF & code[gotoPos]) == Const.GOTO) {
                         short brOffset = (short) (0x0FF & code[gotoPos + 1]);
                         brOffset <<= 8;
                         brOffset |= (0x0FF & code[gotoPos + 2]);
@@ -206,7 +207,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                         removeLoop(pc);
                     }
                 }
-            } else if (isInstanceMethod && (seen == PUTFIELD)) {
+            } else if (isInstanceMethod && (seen == Const.PUTFIELD)) {
                 if (stack.getStackDepth() > 1) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     if (item.getRegisterNumber() == 0) {
@@ -214,16 +215,16 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                         userValues.put(getNameConstantOperand(), uValue);
                     }
                 }
-            } else if (isInstanceMethod && (seen == GETFIELD)) {
+            } else if (isInstanceMethod && (seen == Const.GETFIELD)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     if (item.getRegisterNumber() == 0) {
                         sawLoad = true;
                     }
                 }
-            } else if (((seen > IFEQ) && (seen <= GOTO)) || (seen == IFNULL) || (seen == IFNONNULL)) {
+            } else if (((seen > Const.IFEQ) && (seen <= Const.GOTO)) || (seen == Const.IFNULL) || (seen == Const.IFNONNULL)) {
                 removeLoop(pc);
-            } else if ((seen == CHECKCAST) && (stack.getStackDepth() > 0)) {
+            } else if ((seen == Const.CHECKCAST) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 uValue = (Comparable<?>) itm.getUserValue();
                 if (uValue != null) {
