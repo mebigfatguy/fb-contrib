@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
@@ -109,19 +110,19 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
         public boolean sawOpcode(final int seen) {
             switch (state) {
                 case SAW_LOAD:
-                    if ((seen == FCMPG) || (seen == FCMPL) || (seen == DCMPG) || (seen == DCMPL)) {
+                    if ((seen == Const.FCMPG) || (seen == Const.FCMPL) || (seen == Const.DCMPG) || (seen == Const.DCMPL)) {
                         state = State.SAW_CMPX;
                         return true;
                     } else if (OpcodeUtils.isInvoke(seen)) {
                         String methodSig = FloatingPointLoops.this.getSigConstantOperand();
                         return !Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(methodSig));
-                    } else if ((seen < ISTORE) || (seen > SASTORE)) {
+                    } else if ((seen < Const.ISTORE) || (seen > Const.SASTORE)) {
                         return true;
                     }
                 break;
 
                 case SAW_CMPX:
-                    if ((seen >= IFEQ) && (seen <= IFLE)) {
+                    if ((seen >= Const.IFEQ) && (seen <= Const.IFLE)) {
                         state = State.SAW_IFX;
                         gotoPC = getBranchTarget() - 3;
                         return (gotoPC > getPC());
@@ -147,7 +148,7 @@ public class FloatingPointLoops extends BytecodeScanningDetector {
                     return storeReg == loopReg;
 
                 case SAW_STORE:
-                    if (((seen == GOTO) || (seen == GOTO_W)) && (getBranchTarget() == loopPC)) {
+                    if (((seen == Const.GOTO) || (seen == Const.GOTO_W)) && (getBranchTarget() == loopPC)) {
                         bugReporter.reportBug(new BugInstance(FloatingPointLoops.this, "FPL_FLOATING_POINT_LOOPS", NORMAL_PRIORITY)
                                 .addClass(FloatingPointLoops.this).addMethod(FloatingPointLoops.this).addSourceLine(FloatingPointLoops.this, loopPC));
                     }
