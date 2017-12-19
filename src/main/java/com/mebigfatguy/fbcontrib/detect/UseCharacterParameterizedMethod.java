@@ -159,7 +159,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+            if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
                 FQMethod key = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
 
                 Object posObject = characterMethods.get(key);
@@ -171,7 +171,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                     reportBug();
                 }
 
-            } else if (seen == DUP) {
+            } else if (seen == Const.DUP) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     String duppedSig = itm.getSignature();
@@ -179,7 +179,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                         itm.setUserValue(UCPMUserValue.INLINE);
                     }
                 }
-            } else if ((seen == PUTFIELD) || (((seen == PUTSTATIC) || OpcodeUtils.isAStore(seen)) && (stack.getStackDepth() > 0))) {
+            } else if ((seen == Const.PUTFIELD) || (((seen == Const.PUTSTATIC) || OpcodeUtils.isAStore(seen)) && (stack.getStackDepth() > 0))) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(null);
             }
@@ -247,7 +247,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
      *
      */
     private UCPMUserValue callHasInline(int seen) {
-        if (seen != INVOKEVIRTUAL) {
+        if (seen != Const.INVOKEVIRTUAL) {
             return null;
         }
 
