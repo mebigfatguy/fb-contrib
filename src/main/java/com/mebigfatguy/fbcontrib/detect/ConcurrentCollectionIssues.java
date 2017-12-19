@@ -22,6 +22,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -119,14 +120,14 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case INVOKESPECIAL:
+                case Const.INVOKESPECIAL:
                     if ("java/util/concurrent/ConcurrentHashMap".equals(getClassConstantOperand()) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
                         userValue = CCIUserValue.CONCURRENT_HASHMAP;
                     }
                 break;
 
-                case INVOKEINTERFACE:
-                case INVOKEVIRTUAL:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKEVIRTUAL:
                     if ("get".equals(getNameConstantOperand())) {
                         if (stack.getStackDepth() >= 2) {
                             OpcodeStack.Item itm = stack.getStackItem(1);
@@ -149,8 +150,8 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
                     }
                 break;
 
-                case PUTFIELD:
-                case PUTSTATIC:
+                case Const.PUTFIELD:
+                case Const.PUTSTATIC:
                     if (stack.getStackDepth() >= 1) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         CCIUserValue uv = (CCIUserValue) itm.getUserValue();
@@ -162,12 +163,12 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
                     }
                 break;
 
-                case GETFIELD:
-                case GETSTATIC:
+                case Const.GETFIELD:
+                case Const.GETSTATIC:
                     userValue = fieldUserValues.get(getNameConstantOperand());
                 break;
 
-                case IFNONNULL:
+                case Const.IFNONNULL:
                     if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         if (itm.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP_VALUE) {
