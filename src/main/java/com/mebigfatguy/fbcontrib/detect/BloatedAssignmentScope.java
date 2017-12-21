@@ -29,6 +29,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.LocalVariable;
@@ -63,7 +65,7 @@ import edu.umd.cs.findbugs.ba.XField;
 @CustomUserValue
 public class BloatedAssignmentScope extends BytecodeScanningDetector {
     private static final Set<String> dangerousAssignmentClassSources = UnmodifiableSet.create(
-        //@formatter:off
+    //@formatter:off
         "java/io/BufferedInputStream",
         "java/io/DataInput",
         "java/io/DataInputStream",
@@ -78,7 +80,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     );
 
     private static final Set<FQMethod> dangerousAssignmentMethodSources = UnmodifiableSet.create(
-        //@formatter:off
+    //@formatter:off
         new FQMethod("java/lang/System", "currentTimeMillis", "()J"),
         new FQMethod("java/lang/System", "nanoTime", "()J"),
         new FQMethod("java/util/Calendar", "get", "(I)I"),
@@ -90,7 +92,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
     );
 
     private static final Set<Pattern> dangerousAssignmentMethodPatterns = UnmodifiableSet.create(
-        //@formatter:off
+    //@formatter:off
             Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE),
             Pattern.compile(".*\\.read[^.]*", Pattern.CASE_INSENSITIVE),
             Pattern.compile(".*\\.create[^.]*", Pattern.CASE_INSENSITIVE)
@@ -478,6 +480,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      *
      * @return a user object to place on the return value's OpcodeStack item
      */
+    @Nullable
     private UserObject sawInstanceCall(int pc) {
         String signature = getSigConstantOperand();
         String name = getNameConstantOperand();
@@ -510,6 +513,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      *
      * @return the user object to place on the OpcodeStack
      */
+    @Nullable
     private UserObject sawStaticCall() {
 
         if (getSigConstantOperand().endsWith(Values.SIG_VOID)) {
@@ -519,6 +523,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         return new UserObject(isRiskyMethodCall());
     }
 
+    @Nullable
     private UserObject sawGetField() {
         if (stack.getStackDepth() > 0) {
             OpcodeStack.Item itm = stack.getStackItem(0);
@@ -582,6 +587,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      *
      * @return either an Integer for a register, or a String for the field name, or null
      */
+    @Nullable
     private Comparable<?> getCallingObject() {
         String sig = getSigConstantOperand();
         if (Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(sig))) {
@@ -624,6 +630,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      *            the current program counter
      * @return the scope block or null if not found
      */
+    @Nullable
     private ScopeBlock findScopeBlock(ScopeBlock sb, int pc) {
 
         if ((pc <= sb.getStart()) || (pc >= sb.getFinish())) {
@@ -678,6 +685,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      *            the scope block to look for the previous scope block
      * @return the previous sibling scope block, or null if doesn't exist
      */
+    @Nullable
     private ScopeBlock findPreviousSiblingScopeBlock(ScopeBlock sb) {
         ScopeBlock parent = sb.getParent();
         if (parent == null) {

@@ -23,6 +23,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
@@ -276,6 +278,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
      *
      * @return the user value representing the stored register value
      */
+    @Nullable
     private Integer processArrayElementStore() {
         if (stack.getStackDepth() >= 2) {
             OpcodeStack.Item itm = stack.getStackItem(2);

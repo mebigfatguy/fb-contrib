@@ -25,6 +25,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -143,6 +145,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
         }
     }
 
+    @Nullable
     private static Method findMethod(final JavaClass cls, final String methodName, final String methodSig) {
         Method[] methods = cls.getMethods();
         for (Method m : methods) {
@@ -175,6 +178,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
         }
     }
 
+    @Nullable
     private Deque<SourceLineAnnotation> foundPrivateInChain(Method m, Set<Method> checkedMethods) {
         Map<Method, SourceLineAnnotation> calledMethods = methodToCalledMethods.get(m);
         if (calledMethods != null) {

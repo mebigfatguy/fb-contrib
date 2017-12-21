@@ -23,6 +23,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -553,6 +555,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
         }
     }
 
+    @Nullable
     private String getLoggingClassNameFromStackValue() {
         if (stack.getStackDepth() > 0) {
             OpcodeStack.Item item = stack.getStackItem(0);

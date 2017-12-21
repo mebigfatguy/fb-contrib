@@ -20,6 +20,8 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
@@ -161,6 +163,7 @@ public class IOIssues extends BytecodeScanningDetector {
         }
     }
 
+    @Nullable
     private IOIUserValue processInvokeSpecial() throws ClassNotFoundException {
         String methodName = getNameConstantOperand();
 

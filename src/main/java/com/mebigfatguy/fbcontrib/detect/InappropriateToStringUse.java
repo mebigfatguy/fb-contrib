@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -162,6 +164,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
         }
     }
 
+    @Nullable
     private String processInvokeVirtual() throws ClassNotFoundException {
         String methodName = getNameConstantOperand();
         if (Values.TOSTRING.equals(methodName)) {
