@@ -207,7 +207,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if ((seen == GETFIELD) || (seen == PUTFIELD)) {
+        if ((seen == Const.GETFIELD) || (seen == Const.PUTFIELD)) {
             String fieldName = getNameConstantOperand();
             FieldInfo fi = localizableFields.get(fieldName);
             if (fi != null) {
@@ -527,7 +527,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
         @Override
         public void sawOpcode(int seen) {
-            if (seen == PUTFIELD) {
+            if (seen == Const.PUTFIELD) {
                 if (clsName.equals(getClassConstantOperand())) {
                     String methodDesc = getMethodName() + getMethodSig();
                     Set<String> fields = mfModifiers.get(methodDesc);
@@ -537,7 +537,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                     }
                     fields.add(getNameConstantOperand());
                 }
-            } else if ((seen == INVOKEVIRTUAL) && clsName.equals(getClassConstantOperand())) {
+            } else if ((seen == Const.INVOKEVIRTUAL) && clsName.equals(getClassConstantOperand())) {
                 String methodDesc = getMethodName() + getMethodSig();
                 Set<String> methods = methodCallChain.get(methodDesc);
                 if (methods == null) {
