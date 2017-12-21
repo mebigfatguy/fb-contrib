@@ -113,6 +113,10 @@ public class LO_Sample {
             return info;
         }
 
+        public void testParmInNonParmError246(Exception e) {
+            l6.error("Lookie an error->{}", e);
+        }
+
         public void testFPReuseofSimpleFormatter(String poo) {
             String s = String.format("The error was %s", poo);
             l3.error(s);
