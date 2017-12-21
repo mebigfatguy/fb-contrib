@@ -339,10 +339,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
      */
     private boolean isLoggerWithClassParm(XMethod m) {
         String signature = m.getSignature();
-        return SIG_CLASS_TO_SLF4J_LOGGER.equals(signature)
-            || SIG_CLASS_TO_LOG4J_LOGGER.equals(signature)
-            || SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature)
-            || SIG_CLASS_TO_COMMONS_LOGGER.equals(signature);
+        return SIG_CLASS_TO_SLF4J_LOGGER.equals(signature) || SIG_CLASS_TO_LOG4J_LOGGER.equals(signature) || SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature)
+                || SIG_CLASS_TO_COMMONS_LOGGER.equals(signature);
         // otherwise check the calling class?
     }
 
@@ -366,6 +364,12 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     if ((uv != null) && (uv.getType() == LOUserValue.LOType.MESSAGE_REG) && (uv.getValue().intValue() == exItem.getRegisterNumber())) {
                         bugReporter.reportBug(
                                 new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                    } else {
+                        Object cons = msgItem.getConstant();
+                        if ((cons instanceof String) && ((String) cons).contains("{}")) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
                     }
                 }
             } else if (SignatureBuilder.SIG_OBJECT_TO_VOID.equals(sig)) {
