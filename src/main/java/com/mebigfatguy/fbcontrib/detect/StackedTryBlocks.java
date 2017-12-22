@@ -8,7 +8,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -281,6 +283,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 	 *            the current program counter
 	 * @return the tryblock if this statement starts it, else null
 	 */
+    @Nullable
 	private TryBlock findBlockWithStart(int pc) {
 
 		for (TryBlock block : blocks) {

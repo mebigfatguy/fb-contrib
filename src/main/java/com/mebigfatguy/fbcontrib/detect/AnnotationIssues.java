@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
@@ -98,8 +99,9 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            if (classContext.getJavaClass().getMajor() >= Const.MAJOR_1_5) {
-                if (isCollecting() || !classContext.getJavaClass().isAnonymous()) {
+            JavaClass cls = classContext.getJavaClass();
+            if (cls.getMajor() >= Const.MAJOR_1_5) {
+                if (isCollecting() || !cls.isAnonymous()) {
                     stack = new OpcodeStack();
                     assumedNullTill = new HashMap<>();
                     assumedNonNullTill = new HashMap<>();

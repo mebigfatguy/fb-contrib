@@ -23,7 +23,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -193,6 +195,7 @@ public class OrphanedDOMNode extends BytecodeScanningDetector {
      *
      * @return the pc where this NODE was created, or null
      */
+    @Nullable
     private Integer findDOMNodeCreationPoint(int index) {
         if (stack.getStackDepth() <= index) {
             return null;

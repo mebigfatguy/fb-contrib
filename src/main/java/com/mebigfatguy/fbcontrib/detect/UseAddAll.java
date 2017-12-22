@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -270,6 +272,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
      * @throws ClassNotFoundException
      *             if the items class cannot be found
      */
+    @Nullable
     private String isFieldCollection(OpcodeStack.Item item) throws ClassNotFoundException {
         Comparable<?> aliasReg = (Comparable<?>) item.getUserValue();
         if (aliasReg instanceof String) {

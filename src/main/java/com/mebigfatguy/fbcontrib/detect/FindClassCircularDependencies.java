@@ -27,6 +27,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ElementValue;
@@ -130,6 +132,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
         }
     }
 
+    @Nullable
     private String normalizeArrayClass(String clsName) {
         if (!clsName.startsWith(Values.SIG_ARRAY_PREFIX)) {
             return clsName;
@@ -262,6 +265,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
         private Set<String> visited = null;
         private Set<String> loop = null;
 
+        @Nullable
         public Set<String> findLoop(Map<String, Set<String>> dependencyGraph, String startCls) {
             dGraph = dependencyGraph;
             startClass = startCls;

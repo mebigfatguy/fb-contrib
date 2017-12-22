@@ -23,6 +23,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -122,6 +124,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
      *            the signature attribute
      * @return a template signature if there are templates defined, otherwise null
      */
+    @Nullable
     private static TemplateSignature parseSignatureAttribute(Signature signatureAttribute) {
 
         Matcher m = TEMPLATED_SIGNATURE.matcher(signatureAttribute.getSignature());
@@ -133,7 +136,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
         ts.signature = m.group(2);
 
         m = TEMPLATE.matcher(m.group(1));
-        List<TemplateItem> templates = new ArrayList<TemplateItem>(4);
+        List<TemplateItem> templates = new ArrayList<>(4);
         while (m.find()) {
             templates.add(new TemplateItem(m.group(1), m.group(2)));
         }

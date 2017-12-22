@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -54,7 +56,7 @@ import edu.umd.cs.findbugs.ba.XField;
 public class DubiousListCollection extends BytecodeScanningDetector {
 
 	private static final Set<QMethod> setMethods = UnmodifiableSet.create(
-			// @formatter:off
+    //@formatter:off
 			new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
 			new QMethod("containsAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN),
 			new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT),
@@ -64,7 +66,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 	);
 
 	private static final Set<QMethod> listMethods = UnmodifiableSet.create(
-			// @formatter:off
+    //@formatter:off
 			new QMethod("add",
 					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT)
 							.toString()),
@@ -213,6 +215,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 	 *
 	 * @return the field annotation for the field whose method was executed
 	 */
+    @Nullable
 	private static XField getFieldFromStack(final OpcodeStack stk, final String signature) {
 		int parmCount = SignatureUtils.getNumParameters(signature);
 		if (stk.getStackDepth() > parmCount) {
@@ -252,6 +255,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 	 *
 	 * @return the field annotation of the specified field
 	 */
+    @Nullable
 	private FieldAnnotation getFieldAnnotation(final String fieldName) {
 		JavaClass cls = getClassContext().getJavaClass();
 		Field[] fields = cls.getFields();

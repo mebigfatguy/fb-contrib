@@ -23,6 +23,8 @@ import java.util.BitSet;
 import java.util.Deque;
 import java.util.Iterator;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Method;
@@ -306,6 +308,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
             }
         }
 
+        @Nullable
         public IfBlock getBlockAt(int pc) {
             if (blocks.isEmpty()) {
                 return null;

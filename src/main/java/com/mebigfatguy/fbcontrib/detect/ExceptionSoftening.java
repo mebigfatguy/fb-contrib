@@ -29,7 +29,9 @@ import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -392,6 +394,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 	 *             if a super class or super interface can't be loaded from the
 	 *             repository
 	 */
+    @Nullable
 	private Map<String, Set<String>> getConstrainingInfo(JavaClass cls, Method m) throws ClassNotFoundException {
 		String methodName = m.getName();
 		String methodSig = m.getSignature();
@@ -443,6 +446,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 	 *
 	 * @return the method or null
 	 */
+    @Nullable
 	private static Method findMethod(JavaClass cls, String methodName, String methodSig) {
 		Method[] methods = cls.getMethods();
 		for (Method method : methods) {

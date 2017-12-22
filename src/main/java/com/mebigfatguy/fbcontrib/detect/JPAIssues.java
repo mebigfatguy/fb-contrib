@@ -26,6 +26,8 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
@@ -236,9 +238,9 @@ public class JPAIssues extends BytecodeScanningDetector {
                 itm.setUserValue(userValue);
             }
         }
-
     }
 
+    @Nullable
     private JPAUserValue processInvoke() {
         String dottedCls = getDottedClassConstantOperand();
         String methodName = getNameConstantOperand();

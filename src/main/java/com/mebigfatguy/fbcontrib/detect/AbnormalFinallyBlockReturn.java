@@ -21,7 +21,9 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -210,6 +212,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
 	 *
 	 * @return the Method object for the specified information
 	 */
+    @Nullable
 	private static Method findMethod(JavaClass cls, String name, String sig) {
 		Method[] methods = cls.getMethods();
 		for (Method m : methods) {

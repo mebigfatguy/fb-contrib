@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
@@ -48,9 +50,11 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     private static final String GET_ATTRIBUTE = "getAttribute";
     private static final String SET_ATTRIBUTE = "setAttribute";
     private static final String GET_PARAMETER = "getParameter";
-    private static final String GET_ATTRIBUTE_SIG = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+    private static final String GET_ATTRIBUTE_SIG = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
+            .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
     private static final String SET_ATTRIBUTE_SIG = SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID;
-    private static final String GET_PARAMETER_SIG = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
+    private static final String GET_PARAMETER_SIG = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
+            .withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
 
     enum KeyType {
         ATTRIBUTE("IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING"), PARAMETER("IKNC_INCONSISTENT_HTTP_PARAM_CASING");
@@ -191,6 +195,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
      *            the currently parsed opcode
      * @return if it is one of these special methods
      */
+    @Nullable
     private KeyType isKeyAccessMethod(int seen) {
         if (seen == INVOKEINTERFACE) {
             String clsName = getClassConstantOperand();

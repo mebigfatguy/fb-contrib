@@ -176,6 +176,11 @@ public class MapUsageIssues extends BytecodeScanningDetector {
         }
 
         @Override
+        public int hashCode() {
+            return keyValue == null ? 0 : keyValue.hashCode();
+        }
+
+        @Override
         public String toString() {
             return ToString.build(this);
         }

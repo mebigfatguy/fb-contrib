@@ -23,7 +23,9 @@ import java.util.BitSet;
 import java.util.Deque;
 import java.util.Set;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -289,6 +291,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
      *            the lambda name
      * @return the method object if it exists
      */
+    @Nullable
     private Method getLambdaMethod(String methodName) {
         for (Method method : currentClass.getMethods()) {
             if (methodName.equals(method.getName())) {

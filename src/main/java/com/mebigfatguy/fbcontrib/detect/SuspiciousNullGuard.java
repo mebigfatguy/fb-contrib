@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -228,6 +230,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 		}
 	}
 
+    @Nullable
 	private NullGuard findNullGuardWithRegister(int reg) {
 		for (NullGuard guard : nullGuards.values()) {
 			if (guard.getRegister() == reg) {
@@ -238,6 +241,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 		return null;
 	}
 
+    @Nullable
 	private NullGuard findNullGuardWithField(XField field, int fieldSourceReg) {
 		for (NullGuard guard : nullGuards.values()) {
 			if (field.equals(guard.getField()) && (fieldSourceReg == guard.getFieldSourceReg())) {

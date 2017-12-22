@@ -27,7 +27,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -351,6 +353,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 		}
 	}
 
+    @Nullable
 	private SPPUserValue sawIntConst() {
 		if (stack.getStackDepth() > 0) {
 			OpcodeStack.Item item = stack.getStackItem(0);
@@ -685,6 +688,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 		}
 	}
 
+    @Nullable
 	private SPPUserValue sawInvokeVirtual() throws ClassNotFoundException {
 		String className = getClassConstantOperand();
 		String methodName = getNameConstantOperand();
@@ -722,6 +726,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 		}
 	}
 
+    @Nullable
 	private SPPUserValue stringBufferSilliness(String methodName) {
 		if ("append".equals(methodName) && (stack.getStackDepth() > 1)) {
 			OpcodeStack.Item valItem = stack.getStackItem(0);
@@ -1076,6 +1081,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 		return hasToString(cls.getSuperClass());
 	}
 
+    @Nullable
 	private SPPUserValue getTrimUserValue() {
 		if (stack.getStackDepth() == 0) {
 			return null;

@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantString;
@@ -250,6 +252,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         return userValue;
     }
 
+    @Nullable
     private OpcodeStack.Item getStringBufferItemAt(int depth) {
         if (stack.getStackDepth() > depth) {
             OpcodeStack.Item itm = stack.getStackItem(depth);

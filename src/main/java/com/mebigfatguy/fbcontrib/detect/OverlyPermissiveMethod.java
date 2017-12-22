@@ -22,7 +22,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
 import org.apache.bcel.Const;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
@@ -433,6 +435,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 		return "private";
 	}
 
+    @Nullable
 	private BootstrapMethod getBootstrapMethod(int bootstrapIndex) {
 		for (Attribute a : cls.getAttributes()) {
 			if ("BootstrapMethods".equals(a.getName())) {
@@ -455,6 +458,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
 	private ConstantMethodHandle getFirstMethodHandle(ConstantPool pool, BootstrapMethod bm) {
 		for (int arg : bm.getBootstrapArguments()) {
+        @Nullable
 			Constant c = pool.getConstant(arg);
 			if (c instanceof ConstantMethodHandle) {
 				return ((ConstantMethodHandle) c);

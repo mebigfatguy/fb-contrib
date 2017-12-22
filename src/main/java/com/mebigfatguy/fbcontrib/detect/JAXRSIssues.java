@@ -20,6 +20,8 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.JavaClass;
@@ -44,7 +46,7 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class JAXRSIssues extends PreorderVisitor implements Detector {
 
     private static final Set<String> METHOD_ANNOTATIONS = UnmodifiableSet.create(
-            //@formatter:off
+    //@formatter:off
             "Ljavax/ws/rs/HEAD;",
             "Ljavax/ws/rs/GET;",
             "Ljavax/ws/rs/PUT;",
@@ -55,7 +57,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     );
 
     private static final Set<String> PARAM_ANNOTATIONS = UnmodifiableSet.create(
-            //@formatter:off
+    //@formatter:off
             "Ljavax/ws/rs/PathParam;",
             "Ljavax/ws/rs/CookieParam;",
             "Ljavax/ws/rs/FormParam;",
@@ -73,7 +75,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     );
 
     private static final Set<String> NATIVE_JAXRS_TYPES = UnmodifiableSet.create(
-            //@formatter:off
+    //@formatter:off
             Values.SIG_JAVA_LANG_STRING,
             SignatureBuilder.SIG_BYTE_ARRAY,
             "Ljava/io/InputStream;",
@@ -87,7 +89,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     );
 
     private static final Set<String> VALID_CONTEXT_TYPES = UnmodifiableSet.create(
-            //@formatter:off
+    //@formatter:off
             "Ljavax/ws/rs/core/Application;",
             "Ljavax/ws/rs/core/UriInfo;",
             "Ljavax/ws/rs/core/HttpHeaders;",
@@ -221,6 +223,7 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         }
     }
 
+    @Nullable
     private String getDefaultAnnotationValue(AnnotationEntry entry) {
         int numPairs = entry.getNumElementValuePairs();
         if (numPairs > 0) {
