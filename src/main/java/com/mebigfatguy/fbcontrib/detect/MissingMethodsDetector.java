@@ -264,6 +264,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         }
     }
 
+    // TODO: returning two types of objects, this awful, need to fix at some point
     private Object sawGetStatic(Object userObject) {
         XField field = getXFieldOperand();
         if (field != null) {
@@ -296,6 +297,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         return userObject;
     }
 
+    // TODO: returning two types of objects, this awful, need to fix at some point
     private Object sawLoad(int seen, Object userObject) {
         int reg = RegisterUtils.getALoadReg(this, seen);
         if (localSpecialObjects.containsKey(Integer.valueOf(reg))) {
