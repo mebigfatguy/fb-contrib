@@ -172,17 +172,20 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         int numArguments = SignatureUtils.getNumParameters(signature);
                         if ((numArguments == 1) && (stack.getStackDepth() > 1)) {
                             OpcodeStack.Item item = stack.getStackItem(1);
-                            Integer allocNum = (Integer) item.getUserValue();
-                            if (allocNum != null) {
-                                if ("addAll".equals(methodName)) {
-                                    allocToAddPCs.remove(allocNum);
-                                } else {
-                                    List<Integer> lines = allocToAddPCs.get(allocNum);
-                                    if (lines == null) {
-                                        lines = new ArrayList<>();
-                                        allocToAddPCs.put(allocNum, lines);
+                            PSCUserValue uv = (PSCUserValue) item.getUserValue();
+                            if (uv != null) {
+                                Integer allocNum = uv.getAllocationNumber();
+                                if (allocNum != null) {
+                                    if ("addAll".equals(methodName)) {
+                                        allocToAddPCs.remove(allocNum);
+                                    } else {
+                                        List<Integer> lines = allocToAddPCs.get(allocNum);
+                                        if (lines == null) {
+                                            lines = new ArrayList<>();
+                                            allocToAddPCs.put(allocNum, lines);
+                                        }
+                                        lines.add(Integer.valueOf(getPC()));
                                     }
-                                    lines.add(Integer.valueOf(getPC()));
                                 }
                             }
                         }
@@ -191,17 +194,20 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         int numArguments = SignatureUtils.getNumParameters(signature);
                         if ((numArguments == 2) && (stack.getStackDepth() > 2)) {
                             OpcodeStack.Item item = stack.getStackItem(2);
-                            Integer allocNum = (Integer) item.getUserValue();
-                            if (allocNum != null) {
-                                if ("putAll".equals(methodName)) {
-                                    allocToAddPCs.remove(allocNum);
-                                } else {
-                                    List<Integer> lines = allocToAddPCs.get(allocNum);
-                                    if (lines == null) {
-                                        lines = new ArrayList<>();
-                                        allocToAddPCs.put(allocNum, lines);
+                            PSCUserValue uv = (PSCUserValue) item.getUserValue();
+                            if (uv != null) {
+                                Integer allocNum = uv.getAllocationNumber();
+                                if (allocNum != null) {
+                                    if ("putAll".equals(methodName)) {
+                                        allocToAddPCs.remove(allocNum);
+                                    } else {
+                                        List<Integer> lines = allocToAddPCs.get(allocNum);
+                                        if (lines == null) {
+                                            lines = new ArrayList<>();
+                                            allocToAddPCs.put(allocNum, lines);
+                                        }
+                                        lines.add(Integer.valueOf(getPC()));
                                     }
-                                    lines.add(Integer.valueOf(getPC()));
                                 }
                             }
                         }
@@ -294,9 +300,12 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case ASTORE_2:
                 case ASTORE_3: {
                     if (stack.getStackDepth() > 0) {
-                        Integer alloc = (Integer) stack.getStackItem(0).getUserValue();
-                        if (alloc != null) {
-                            storeToAllocNumber.put(getRegisterOperand(), alloc);
+                        PSCUserValue uv = (PSCUserValue) stack.getStackItem(0).getUserValue();
+                        if (uv != null) {
+                            Integer alloc = uv.getAllocationNumber();
+                            if (alloc != null) {
+                                storeToAllocNumber.put(getRegisterOperand(), alloc);
+                            }
                         }
                     }
                 }
@@ -313,9 +322,12 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
                 case PUTFIELD: {
                     if (stack.getStackDepth() > 0) {
-                        Integer alloc = (Integer) stack.getStackItem(0).getUserValue();
-                        if (alloc != null) {
-                            storeToAllocNumber.put(getNameConstantOperand(), alloc);
+                        PSCUserValue uv = (PSCUserValue) stack.getStackItem(0).getUserValue();
+                        if (uv != null) {
+                            Integer alloc = uv.getAllocationNumber();
+                            if (alloc != null) {
+                                storeToAllocNumber.put(getNameConstantOperand(), alloc);
+                            }
                         }
                     }
                 }
@@ -330,7 +342,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
             stack.sawOpcode(this, seen);
             if ((allocationNumber != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
-                item.setUserValue(allocationNumber);
+                item.setUserValue(new PSCUserValue(allocationNumber));
                 if (sawAlloc) {
                     allocLocation.put(allocationNumber, Integer.valueOf(getPC()));
                 }
@@ -426,6 +438,33 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
             CodeRange that = (CodeRange) o;
             return (fromPC == that.fromPC) && (toPC == that.toPC);
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    }
+
+    class PSCUserValue {
+
+        private Integer allocationNumber;
+        private boolean hasSizedSource;
+
+        public PSCUserValue(Integer allocNumber) {
+            allocationNumber = allocNumber;
+        }
+
+        public PSCUserValue(boolean sizedSource) {
+            hasSizedSource = sizedSource;
+        }
+
+        public Integer getAllocationNumber() {
+            return allocationNumber;
+        }
+
+        public boolean isHasSizedSource() {
+            return hasSizedSource;
         }
 
         @Override
