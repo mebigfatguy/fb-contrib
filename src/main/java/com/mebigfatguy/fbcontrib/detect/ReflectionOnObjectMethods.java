@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -47,8 +49,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 
-    public static final String SIG_STRING_AND_CLASS_ARRAY_TO_METHOD = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, SignatureUtils.toArraySignature(Values.SLASHED_JAVA_LANG_CLASS))
-        .withReturnType(Method.class).toString();
+    public static final String SIG_STRING_AND_CLASS_ARRAY_TO_METHOD = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, SignatureUtils.toArraySignature(Values.SLASHED_JAVA_LANG_CLASS)).withReturnType(Method.class)
+            .toString();
 
     private static final Set<String> objectSigs = UnmodifiableSet.create(
             // "clone()", // clone is declared protected
@@ -81,8 +84,8 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            localClassTypes = new HashMap<Integer, String[]>();
-            fieldClassTypes = new HashMap<String, String[]>();
+            localClassTypes = new HashMap<>();
+            fieldClassTypes = new HashMap<>();
             JavaClass cls = classContext.getJavaClass();
             Method staticInit = findStaticInitializer(cls);
             if (staticInit != null) {
@@ -266,6 +269,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
      *
      * @return the Method of the static initializer or null if this class has none
      */
+    @Nullable
     private static Method findStaticInitializer(JavaClass cls) {
         Method[] methods = cls.getMethods();
         for (Method m : methods) {

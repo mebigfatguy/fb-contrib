@@ -22,6 +22,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -239,6 +241,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
         return hasFinally;
     }
 
+    @Nullable
     private TryBlock findEnclosingFinally(int pc) {
         if (finallyBlocks.isEmpty()) {
             return null;

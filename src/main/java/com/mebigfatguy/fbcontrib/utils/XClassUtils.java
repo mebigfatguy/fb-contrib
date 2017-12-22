@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import javax.annotation.Nullable;
+
 import edu.umd.cs.findbugs.ba.XClass;
 import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.classfile.CheckedAnalysisException;
@@ -79,6 +81,7 @@ public final class XClassUtils {
      *            the signature of the method to look for
      * @return the method
      */
+    @Nullable
     public static XMethod getXMethod(final XClass xClass, final String methodName, final String methodSig) {
         if (xClass == null) {
             return null;
@@ -106,6 +109,7 @@ public final class XClassUtils {
      *            the signature of the method to look for
      * @return the method
      */
+    @Nullable
     public static XMethod getXMethod(String slashedClassName, String methodName, String methodSig) {
         final XClass xClass = getXClass(slashedClassName);
         return getXMethod(xClass, methodName, methodSig);

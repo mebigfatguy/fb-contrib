@@ -24,6 +24,8 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -170,6 +172,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
      * @throws ClassNotFoundException
      *             if a superclass or superinterface of one of the class is not found
      */
+    @Nullable
     private static JavaClass findCommonType(Set<JavaClass> classes) throws ClassNotFoundException {
         Set<JavaClass> possibleCommonTypes = new HashSet<>();
 

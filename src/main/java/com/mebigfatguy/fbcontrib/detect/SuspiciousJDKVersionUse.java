@@ -35,6 +35,8 @@ import java.util.regex.Pattern;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.ClassParser;
@@ -200,6 +202,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         }
     }
 
+    @Nullable
     private Method findCalledMethod() {
         try {
             JavaClass clss = Repository.lookupClass(getClassConstantOperand());
@@ -297,6 +300,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         return true;
     }
 
+    @Nullable
     private File getRTJarFile() {
         String versionStr = VER_REG_EX.get(clsMajorVersion);
         if (versionStr == null) {
@@ -369,6 +373,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         return null;
     }
 
+    @Nullable
     private static File getRTJarFromProperty(Integer requestedVersion) {
         String jdkHome = System.getProperty(SJVU_JDKHOME + '.' + HUMAN_VERSIONS.get(requestedVersion));
         if (jdkHome == null) {

@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -163,6 +165,7 @@ public final class SignatureUtils {
         return Values.SIG_JAVA_LANG_OBJECT;
     }
 
+    @Nullable
     private static JavaClass findInheritedMethod(JavaClass[] classes, String methodName, String signature) {
         for (JavaClass cls : classes) {
             if (cls != null) {

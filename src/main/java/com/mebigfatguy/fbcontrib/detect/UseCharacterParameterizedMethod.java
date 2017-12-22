@@ -23,6 +23,8 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
@@ -246,6 +248,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
      * @return whether the caller has an INLINE tag on it
      *
      */
+    @Nullable
     private UCPMUserValue callHasInline(int seen) {
         if (seen != INVOKEVIRTUAL) {
             return null;
