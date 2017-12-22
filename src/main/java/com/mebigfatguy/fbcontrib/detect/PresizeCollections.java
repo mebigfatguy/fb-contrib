@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * finds methods that create and populate collections, and while knowing the end size of those collections, does not pre allocate the collection to be big
@@ -62,6 +63,8 @@ public class PresizeCollections extends BytecodeScanningDetector {
             new FQMethod("com/google/common/collect/Maps", "newHashMap", "()Ljava/util/HashMap;")
     // @formatter:on
     );
+
+    private static final FQMethod ENUMERATION_HASMOREELEMENTS = new FQMethod("java/util/Enumeration", "hasMoreElements", "()Z");
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -237,6 +240,11 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case GOTO:
                 case GOTO_W:
                     if (getBranchOffset() < 0) {
+
+                        if (branchBasedOnUnsizedObject(seen)) {
+                            break;
+                        }
+
                         int target = getBranchTarget();
                         Iterator<Map.Entry<Integer, List<Integer>>> it = allocToAddPCs.entrySet().iterator();
                         while (it.hasNext()) {
@@ -365,6 +373,29 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 optionalRanges.add(new CodeRange(handlers.get(h), handlers.get(h + 1)));
             }
         }
+    }
+
+    /**
+     * returns if the conditional is based on a method call from an object that has no sizing to determine what presize should be.
+     *
+     * @param seen
+     *            the current visited opcode
+     * @return whether this conditional is based on a unsized object
+     */
+    private boolean branchBasedOnUnsizedObject(int seen) {
+        if ((seen != IFNE) || (stack.getStackDepth() == 0)) {
+            return false;
+        }
+
+        OpcodeStack.Item itm = stack.getStackItem(0);
+        XMethod xm = itm.getReturnValueOf();
+        if (xm == null) {
+            return false;
+        }
+
+        FQMethod fqm = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
+
+        return ENUMERATION_HASMOREELEMENTS.equals(fqm);
     }
 
     static class CodeRange {
