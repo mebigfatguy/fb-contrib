@@ -64,7 +64,13 @@ public class PresizeCollections extends BytecodeScanningDetector {
     // @formatter:on
     );
 
-    private static final FQMethod ENUMERATION_HASMOREELEMENTS = new FQMethod("java/util/Enumeration", "hasMoreElements", "()Z");
+    private static final Set<FQMethod> UNSIZED_SOURCES = UnmodifiableSet.create(
+    // @formatter:off
+            new FQMethod("java/util/Enumeration", "hasMoreElements", "()Z"),
+            new FQMethod("java/util/StringTokenizer", "hasMoreElements", "()Z"),
+            new FQMethod("java/util/StringTokenizer", "hasMoreTokens", "()Z")
+    // @formatter:on
+    );
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -395,7 +401,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
         FQMethod fqm = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
 
-        return ENUMERATION_HASMOREELEMENTS.equals(fqm);
+        return UNSIZED_SOURCES.contains(fqm);
     }
 
     static class CodeRange {
