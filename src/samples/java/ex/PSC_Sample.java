@@ -3,6 +3,7 @@ package ex;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -182,5 +183,14 @@ public class PSC_Sample {
         for (Integer i : ii) {
             ss.add(ii + "");
         }
+    }
+
+    public List<String> fpWithEnumeration247(Enumeration<String> e) {
+        List<String> result = new ArrayList<>();
+        while (e.hasMoreElements()) {
+            result.add("A" + e.nextElement());
+        }
+
+        return result;
     }
 }
