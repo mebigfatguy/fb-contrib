@@ -26,11 +26,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
+import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -72,16 +75,27 @@ public class PresizeCollections extends BytecodeScanningDetector {
     // @formatter:on
     );
 
+    private static final FQMethod ITERATOR_HASNEXT = new FQMethod("java/util/Iterator", "hasNext", "()Z");
+
+    private static final QMethod ITERATOR_METHOD = new QMethod("iterator", "()Ljava/util/Iterator;");
+
     private BugReporter bugReporter;
+    private JavaClass collectionClass;
     private OpcodeStack stack;
     private int nextAllocNumber;
-    private Map<Comparable<?>, Integer> storeToAllocNumber;
+    private Map<Comparable<?>, PSCUserValue> storeToUserValue;
     private Map<Integer, Integer> allocLocation;
     private Map<Integer, List<Integer>> allocToAddPCs;
     private List<CodeRange> optionalRanges;
 
     public PresizeCollections(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            collectionClass = Repository.lookupClass("java/util/Collection");
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
     }
 
     /**
@@ -94,14 +108,14 @@ public class PresizeCollections extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             stack = new OpcodeStack();
-            storeToAllocNumber = new HashMap<>();
+            storeToUserValue = new HashMap<>();
             allocLocation = new HashMap<>();
             allocToAddPCs = new HashMap<>();
             optionalRanges = new ArrayList<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
-            storeToAllocNumber = null;
+            storeToUserValue = null;
             allocLocation = null;
             allocToAddPCs = null;
             optionalRanges = null;
@@ -118,7 +132,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         nextAllocNumber = 1;
-        storeToAllocNumber.clear();
+        storeToUserValue.clear();
         allocLocation.clear();
         allocToAddPCs.clear();
         optionalRanges.clear();
@@ -145,8 +159,10 @@ public class PresizeCollections extends BytecodeScanningDetector {
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "CLI_CONSTANT_LIST_INDEX", justification = "Constrained by FindBugs API")
     @Override
     public void sawOpcode(int seen) {
-        Integer allocationNumber = null;
+
+        PSCUserValue userValue = null;
         boolean sawAlloc = false;
+
         try {
             stack.precomputation(this);
 
@@ -158,7 +174,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         if (Values.CONSTRUCTOR.equals(methodName)) {
                             String signature = getSigConstantOperand();
                             if (SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {
-                                allocationNumber = Integer.valueOf(nextAllocNumber++);
+                                userValue = new PSCUserValue(Integer.valueOf(nextAllocNumber++));
                                 sawAlloc = true;
                             }
                         }
@@ -167,7 +183,18 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
                 case INVOKEINTERFACE:
                     String methodName = getNameConstantOperand();
-                    if ("add".equals(methodName) || "addAll".equals(methodName)) {
+
+                    if (ITERATOR_METHOD.equals(new QMethod(methodName, getSigConstantOperand()))) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            userValue = isSizedSource(itm);
+                        }
+                    } else if (ITERATOR_HASNEXT.equals(new FQMethod(getClassConstantOperand(), methodName, getSigConstantOperand()))) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            userValue = (PSCUserValue) itm.getUserValue();
+                        }
+                    } else if ("add".equals(methodName) || "addAll".equals(methodName)) {
                         String signature = getSigConstantOperand();
                         int numArguments = SignatureUtils.getNumParameters(signature);
                         if ((numArguments == 1) && (stack.getStackDepth() > 1)) {
@@ -217,7 +244,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case INVOKESTATIC:
                     FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                     if (STATIC_COLLECTION_FACTORIES.contains(fqm)) {
-                        allocationNumber = Integer.valueOf(nextAllocNumber++);
+                        userValue = new PSCUserValue(Integer.valueOf(nextAllocNumber++));
                         sawAlloc = true;
                     }
                 break;
@@ -302,10 +329,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 0) {
                         PSCUserValue uv = (PSCUserValue) stack.getStackItem(0).getUserValue();
                         if (uv != null) {
-                            Integer alloc = uv.getAllocationNumber();
-                            if (alloc != null) {
-                                storeToAllocNumber.put(getRegisterOperand(), alloc);
-                            }
+                            storeToUserValue.put(getRegisterOperand(), uv);
                         }
                     }
                 }
@@ -316,7 +340,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case ALOAD_1:
                 case ALOAD_2:
                 case ALOAD_3: {
-                    allocationNumber = storeToAllocNumber.get(getRegisterOperand());
+                    userValue = storeToUserValue.get(getRegisterOperand());
                 }
                 break;
 
@@ -324,27 +348,24 @@ public class PresizeCollections extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 0) {
                         PSCUserValue uv = (PSCUserValue) stack.getStackItem(0).getUserValue();
                         if (uv != null) {
-                            Integer alloc = uv.getAllocationNumber();
-                            if (alloc != null) {
-                                storeToAllocNumber.put(getNameConstantOperand(), alloc);
-                            }
+                            storeToUserValue.put(getNameConstantOperand(), uv);
                         }
                     }
                 }
                 break;
 
                 case GETFIELD: {
-                    allocationNumber = storeToAllocNumber.get(getNameConstantOperand());
+                    userValue = storeToUserValue.get(getNameConstantOperand());
                 }
 
             }
         } finally {
             stack.sawOpcode(this, seen);
-            if ((allocationNumber != null) && (stack.getStackDepth() > 0)) {
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
-                item.setUserValue(new PSCUserValue(allocationNumber));
+                item.setUserValue(userValue);
                 if (sawAlloc) {
-                    allocLocation.put(allocationNumber, Integer.valueOf(getPC()));
+                    allocLocation.put(userValue.getAllocationNumber(), Integer.valueOf(getPC()));
                 }
             }
         }
@@ -413,7 +434,31 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
         FQMethod fqm = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
 
+        if (ITERATOR_HASNEXT.equals(fqm)) {
+            PSCUserValue uv = (PSCUserValue) itm.getUserValue();
+            if (uv == null) {
+                return true;
+            }
+
+            return !uv.hasSizedSource();
+        }
+
         return UNSIZED_SOURCES.contains(fqm);
+    }
+
+    private PSCUserValue isSizedSource(OpcodeStack.Item itm) {
+        try {
+            String sig = itm.getSignature();
+            JavaClass cls = Repository.lookupClass(sig.substring(1, sig.length() - 1));
+            if (cls.instanceOf(collectionClass)) {
+                return new PSCUserValue(true);
+            }
+
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
+
+        return null;
     }
 
     static class CodeRange {
@@ -463,7 +508,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
             return allocationNumber;
         }
 
-        public boolean isHasSizedSource() {
+        public boolean hasSizedSource() {
             return hasSizedSource;
         }
 

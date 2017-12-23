@@ -203,4 +203,13 @@ public class PSC_Sample {
 
         return result;
     }
+
+    public List<String> fpNoSizedSource(Iterator<String> it) {
+        List<String> result = new ArrayList<>();
+        while (it.hasNext()) {
+            result.add(it.next());
+        }
+
+        return result;
+    }
 }
