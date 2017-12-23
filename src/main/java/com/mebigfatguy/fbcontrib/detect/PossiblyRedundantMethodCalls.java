@@ -26,6 +26,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.LineNumber;
@@ -262,9 +263,9 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                 branchTargets.clear(pc);
             }
 
-            if (((seen >= IFEQ) && (seen <= GOTO)) || ((seen >= IFNULL) && (seen <= GOTO_W))) {
+            if (((seen >= Const.IFEQ) && (seen <= Const.GOTO)) || ((seen >= Const.IFNULL) && (seen <= Const.GOTO_W))) {
                 branchTargets.set(getBranchTarget());
-            } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+            } else if ((seen == Const.TABLESWITCH) || (seen == Const.LOOKUPSWITCH)) {
                 int[] offsets = getSwitchOffsets();
                 for (int offset : offsets) {
                     branchTargets.set(offset + pc);
@@ -272,7 +273,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                 branchTargets.set(getDefaultSwitchOffset() + pc);
             } else if (OpcodeUtils.isAStore(seen)) {
                 localMethodCalls.remove(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)));
-            } else if (seen == PUTFIELD) {
+            } else if (seen == Const.PUTFIELD) {
                 String fieldSource = "";
 
                 if (stack.getStackDepth() > 0) {
@@ -283,7 +284,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                     }
                 }
                 fieldMethodCalls.remove(new FieldInfo(fieldSource, getNameConstantOperand()));
-            } else if (seen == GETFIELD) {
+            } else if (seen == Const.GETFIELD) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     userValue = (String) item.getUserValue();
@@ -299,7 +300,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESTATIC)) {
+            } else if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKESTATIC)) {
 
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
@@ -310,7 +311,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                 XField field = null;
                 MethodCall mc = null;
                 String fieldSource = null;
-                if (seen == INVOKESTATIC) {
+                if (seen == Const.INVOKESTATIC) {
                     XMethod xm = XFactory.createXMethod(getDottedClassConstantOperand(), methodName, signature, true);
                     String genericSignature = xm.getSourceSignature();
                     if ((genericSignature != null) && genericSignature.endsWith(">;")) {
@@ -342,7 +343,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                     }
                 }
 
-                int neededStackSize = parmCount + ((seen == INVOKESTATIC) ? 0 : 1);
+                int neededStackSize = parmCount + ((seen == Const.INVOKESTATIC) ? 0 : 1);
                 if (stack.getStackDepth() >= neededStackSize) {
                     Object[] parmConstants = new Object[parmCount];
                     for (int i = 0; i < parmCount; i++) {
@@ -364,7 +365,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         }
                     }
 
-                    if (seen == INVOKESTATIC) {
+                    if (seen == Const.INVOKESTATIC) {
                         mc = staticMethodCalls.get(className);
                     } else if ((reg < 0) && (field == null)) {
                         return;
@@ -389,7 +390,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                             }
                         }
 
-                        if (seen == INVOKESTATIC) {
+                        if (seen == Const.INVOKESTATIC) {
                             staticMethodCalls.remove(className);
                         } else {
                             if (reg >= 0) {
@@ -400,7 +401,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         }
                     } else {
                         int ln = getLineNumber(pc);
-                        if (seen == INVOKESTATIC) {
+                        if (seen == Const.INVOKESTATIC) {
                             staticMethodCalls.put(className, new MethodCall(methodName, signature, parmConstants, pc, ln));
                         } else {
                             if (reg >= 0) {
