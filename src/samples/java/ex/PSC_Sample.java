@@ -3,12 +3,14 @@ package ex;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.TreeSet;
 
 import com.google.common.collect.Lists;
@@ -182,5 +184,32 @@ public class PSC_Sample {
         for (Integer i : ii) {
             ss.add(ii + "");
         }
+    }
+
+    public List<String> fpWithEnumeration247(Enumeration<String> e) {
+        List<String> result = new ArrayList<>();
+        while (e.hasMoreElements()) {
+            result.add("A" + e.nextElement());
+        }
+
+        return result;
+    }
+
+    public List<String> fpTokenizer(StringTokenizer st) {
+        List<String> result = new ArrayList<>();
+        while (st.hasMoreTokens()) {
+            result.add(st.nextToken());
+        }
+
+        return result;
+    }
+
+    public List<String> fpNoSizedSource(Iterator<String> it) {
+        List<String> result = new ArrayList<>();
+        while (it.hasNext()) {
+            result.add(it.next());
+        }
+
+        return result;
     }
 }
