@@ -311,12 +311,12 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     private boolean isConstrainedByInterface(FQMethod fqMethod) {
 
         try {
-            JavaClass cls = Repository.lookupClass(fqMethod.getClassName());
-            if (cls.isInterface()) {
+            JavaClass fqCls = Repository.lookupClass(fqMethod.getClassName());
+            if (fqCls.isInterface()) {
                 return true;
             }
 
-            for (JavaClass inf : cls.getAllInterfaces()) {
+            for (JavaClass inf : fqCls.getAllInterfaces()) {
                 for (Method infMethod : inf.getMethods()) {
                     if (infMethod.getName().equals(fqMethod.getMethodName())) {
                         String infMethodSig = infMethod.getSignature();
@@ -366,15 +366,15 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     /**
      * looks to see if this method described by key is derived from a superclass or interface
      *
-     * @param cls
+     * @param fqCls
      *            the class that the method is defined in
      * @param key
      *            the information about the method
      * @return whether this method derives from something or not
      */
-    private boolean isDerived(JavaClass cls, FQMethod key) {
+    private boolean isDerived(JavaClass fqCls, FQMethod key) {
         try {
-            for (JavaClass infCls : cls.getInterfaces()) {
+            for (JavaClass infCls : fqCls.getInterfaces()) {
                 for (Method infMethod : infCls.getMethods()) {
                     if (key.getMethodName().equals(infMethod.getName())) {
                         if (infMethod.getGenericSignature() != null) {
@@ -388,7 +388,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                 }
             }
 
-            JavaClass superClass = cls.getSuperClass();
+            JavaClass superClass = fqCls.getSuperClass();
             if ((superClass == null) || Values.DOTTED_JAVA_LANG_OBJECT.equals(superClass.getClassName())) {
                 return false;
             }
