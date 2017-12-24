@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantFieldref;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -119,7 +120,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
                 break;
             }
 
-            if (seen == MONITORENTER) {
+            if (seen == Const.MONITORENTER) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     int reg = item.getRegisterNumber();
@@ -132,7 +133,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if ((seen == MONITOREXIT) && !monitorObjects.isEmpty()) {
+            } else if ((seen == Const.MONITOREXIT) && !monitorObjects.isEmpty()) {
                 monitorObjects.remove(monitorObjects.size() - 1);
             }
         } finally {
@@ -141,7 +142,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterNothing(int seen) {
-        if ((seen == INVOKESTATIC) && "java/util/Collections".equals(getClassConstantOperand())) {
+        if ((seen == Const.INVOKESTATIC) && "java/util/Collections".equals(getClassConstantOperand())) {
             if (synchCollectionNames.contains(getNameConstantOperand())) {
                 state = State.SEEN_SYNC;
             }
@@ -151,7 +152,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
                 collectionInfo = Integer.valueOf(reg);
                 state = State.SEEN_LOAD;
             }
-        } else if (seen == GETFIELD) {
+        } else if (seen == Const.GETFIELD) {
             ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
             ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
 
@@ -166,7 +167,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
     private void sawOpcodeAfterSync(int seen) {
         if (OpcodeUtils.isAStore(seen)) {
             localCollections.set(RegisterUtils.getAStoreReg(this, seen));
-        } else if (seen == PUTFIELD) {
+        } else if (seen == Const.PUTFIELD) {
             ConstantFieldref ref = (ConstantFieldref) getConstantRefOperand();
             ConstantNameAndType nandt = (ConstantNameAndType) getConstantPool().getConstant(ref.getNameAndTypeIndex());
             memberCollections.add(nandt.getName(getConstantPool()));
@@ -175,7 +176,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterLoad(int seen) {
-        if (seen != INVOKEINTERFACE) {
+        if (seen != Const.INVOKEINTERFACE) {
             state = State.SEEN_NOTHING;
             return;
         }
