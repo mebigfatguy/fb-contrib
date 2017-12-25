@@ -307,9 +307,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * looks to see if this field is a logger, and declared non privately
      *
-     * @param fieldClsName
-     * @param fieldName
-     * @param fieldSig
+     * @param fieldClsName the owning class type of the field
+     * @param fieldName the name of the field
+     * @param fieldSig the signature of the field
      * @return if the field is a logger and not private
      */
     private boolean isNonPrivateLogField(String fieldClsName, String fieldName, String fieldSig) {
@@ -336,7 +336,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * returns whether this method class is a standard logger instantiation that takes a java/lang/Class parameter
      *
-     * @param m
+     * @param m the method to check
      * @return if the method is a logger factory method that takes a Class object
      */
     private boolean isLoggerWithClassParm(XMethod m) {
