@@ -122,7 +122,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
 
             if ((seen == INVOKESTATIC) && !popStack.isEmpty()) {
                 String method = getNameConstantOperand();
-                if (method.indexOf('$') < 0) {
+                if (method.indexOf(Values.SYNTHETIC_MEMBER_CHAR) < 0) {
                     PopInfo pInfo = popStack.get(0);
                     int numArguments = SignatureUtils.getNumParameters(getSigConstantOperand());
                     if (((numArguments > 0) || (pInfo.popPC == (getPC() - 1))) && (numArguments == (stack.getStackDepth() - pInfo.popDepth))
@@ -140,8 +140,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                 }
             }
 
-            if ((seen == PUTFIELD) || (seen == ATHROW) || (seen == GOTO) || (seen == GOTO_W)
-                    || ((seen >= IFEQ) && (seen <= IF_ACMPNE))
+            if ((seen == PUTFIELD) || (seen == ATHROW) || (seen == GOTO) || (seen == GOTO_W) || ((seen >= IFEQ) && (seen <= IF_ACMPNE))
                     || OpcodeUtils.isAStore(seen)) {
                 popStack.clear();
             } else if ((seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE) || (seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC)) {

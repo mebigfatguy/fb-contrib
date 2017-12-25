@@ -33,9 +33,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for serialization of non-static inner classes. As this serializes the
- * enclosing class, it may unintentially bring in more to the serialization than
- * is wanted
+ * looks for serialization of non-static inner classes. As this serializes the enclosing class, it may unintentially bring in more to the serialization than is
+ * wanted
  */
 public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
 
@@ -81,8 +80,7 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for serialization of an object that is an
-     * non-static inner class.
+     * implements the visitor to look for serialization of an object that is an non-static inner class.
      *
      * @param seen
      *            the context object of the currently parsed instruction
@@ -100,9 +98,9 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         JavaClass cls = item.getJavaClass();
 
-                        if ((cls != null) && cls.getClassName().contains("$") && hasOuterClassSyntheticReference(cls)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION.name(), NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this));
+                        if ((cls != null) && (cls.getClassName().indexOf(Values.INNER_CLASS_SEPARATOR) >= 0) && hasOuterClassSyntheticReference(cls)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
                         }
                     }
                 }

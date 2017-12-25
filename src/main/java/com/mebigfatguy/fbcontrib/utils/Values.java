@@ -133,6 +133,9 @@ public final class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_UUID = "java/util/UUID";
 
+    public static final char INNER_CLASS_SEPARATOR = '$';
+    public static final char SYNTHETIC_MEMBER_CHAR = '$';
+
     public static final Integer JAVA_1_1 = Integer.valueOf(Constants.MAJOR_1_1);
     public static final Integer JAVA_5 = Integer.valueOf(Constants.MAJOR_1_5);
 

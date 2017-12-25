@@ -75,11 +75,12 @@ public class ImmatureClass extends BytecodeScanningDetector {
         if (dotPos >= 0) {
             simpleClassName = simpleClassName.substring(dotPos + 1);
         }
-        if (!Character.isUpperCase(simpleClassName.charAt(0)) && !simpleClassName.contains("$") && !PACKAGE_INFO.equals(simpleClassName)) {
+        if (!Character.isUpperCase(simpleClassName.charAt(0)) && (simpleClassName.indexOf(Values.INNER_CLASS_SEPARATOR) < 0)
+                && !PACKAGE_INFO.equals(simpleClassName)) {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_LOWER_CLASS.name(), LOW_PRIORITY).addClass(cls));
         }
 
-        if ((!cls.isAbstract()) && (!cls.isEnum()) && !cls.getClassName().contains("$") && !isTestClass(cls)) {
+        if ((!cls.isAbstract()) && (!cls.isEnum()) && (cls.getClassName().indexOf(Values.INNER_CLASS_SEPARATOR) < 0) && !isTestClass(cls)) {
 
             try {
                 boolean clsHasRuntimeAnnotation = classHasRuntimeVisibleAnnotation(cls);
@@ -142,7 +143,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
 
     @Override
     public void visitField(Field f) {
-        if (!f.isSynthetic() && !f.getName().contains("$")) {
+        if (!f.isSynthetic() && (f.getName().indexOf(Values.SYNTHETIC_MEMBER_CHAR) < 0)) {
             switch (fieldStatus) {
                 case NONE:
                     if (!f.isStatic()) {

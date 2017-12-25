@@ -489,7 +489,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
             }
         }
 
-        return methodName.contains("$");
+        return methodName.indexOf(Values.SYNTHETIC_MEMBER_CHAR) >= 0;
     }
 
     /**
