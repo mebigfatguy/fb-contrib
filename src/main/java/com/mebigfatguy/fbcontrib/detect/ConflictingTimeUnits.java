@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -182,37 +183,37 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case INVOKEVIRTUAL:
-                case INVOKEINTERFACE:
-                case INVOKESTATIC:
+                case Const.INVOKEVIRTUAL:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKESTATIC:
                     unit = processInvoke();
                 break;
 
-                case GETSTATIC:
+                case Const.GETSTATIC:
                     String clsName = getClassConstantOperand();
                     if ("java/util/concurrent/TimeUnit".equals(clsName) || "edu/emory/matchcs/backport/java/util/concurrent/TimeUnit".equals(clsName)) {
                         unit = TIMEUNIT_TO_UNITS.get(getNameConstantOperand());
                     }
                 break;
 
-                case L2I:
-                case I2L:
+                case Const.L2I:
+                case Const.I2L:
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         unit = (Units) item.getUserValue();
                     }
                 break;
 
-                case IADD:
-                case ISUB:
-                case IMUL:
-                case IDIV:
-                case IREM:
-                case LADD:
-                case LSUB:
-                case LMUL:
-                case LDIV:
-                case LREM:
+                case Const.IADD:
+                case Const.ISUB:
+                case Const.IMUL:
+                case Const.IDIV:
+                case Const.IREM:
+                case Const.LADD:
+                case Const.LSUB:
+                case Const.LMUL:
+                case Const.LDIV:
+                case Const.LREM:
                     processArithmetic();
                 break;
 
