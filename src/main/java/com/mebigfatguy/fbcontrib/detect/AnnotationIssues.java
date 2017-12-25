@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -64,7 +65,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
         String userAnnotations = System.getProperty(USER_NULLABLE_ANNOTATIONS);
         if ((userAnnotations != null) && userAnnotations.isEmpty()) {
-            String[] annotations = userAnnotations.split("\\s*,\\s*");
+            String[] annotations = userAnnotations.split(Values.WHITESPACE_COMMA_SPLIT);
             for (String annotation : annotations) {
                 NULLABLE_ANNOTATIONS.add("L" + annotation.replace('.', '/') + ";");
             }

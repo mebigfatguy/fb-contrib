@@ -142,6 +142,8 @@ public final class Values {
     public static final Integer NORMAL_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.NORMAL_PRIORITY);
     public static final Integer LOW_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.LOW_PRIORITY);
 
+    public static final String WHITESPACE_COMMA_SPLIT = "\\s*,\\s*";
+
     private Values() {
     }
 }

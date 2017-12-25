@@ -26,6 +26,7 @@ import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableList;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -56,7 +57,7 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
 
         String exceptions = System.getProperty(SSCU_EXCEPTION_PACKAGES, "");
-        for (String ex : exceptions.split("\\s,\\s*")) {
+        for (String ex : exceptions.split(Values.WHITESPACE_COMMA_SPLIT)) {
             if (!ex.isEmpty()) {
                 knownExceptions.add(ex.replace('.', '/'));
             }
