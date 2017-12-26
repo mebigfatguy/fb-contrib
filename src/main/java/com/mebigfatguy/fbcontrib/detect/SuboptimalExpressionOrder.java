@@ -277,6 +277,16 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         userValue = (Integer) itm.getUserValue();
                     }
                 break;
+
+                case GETFIELD:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (itm.getReturnValueOf() != null) {
+                            sawMethodWeight = 0;
+                            conditionalTarget = -1;
+                        }
+                    }
+                break;
             }
         } finally {
             stack.sawOpcode(this, seen);
