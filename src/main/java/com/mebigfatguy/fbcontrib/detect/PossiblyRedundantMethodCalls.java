@@ -110,7 +110,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
         String userNameProp = System.getProperty(PRMC_RISKY_FIELD_USER_KEY);
         if (userNameProp != null) {
-            String[] userNames = userNameProp.split("\\s*,\\s*");
+            String[] userNames = userNameProp.split(Values.WHITESPACE_COMMA_SPLIT);
             for (String name : userNames) {
                 riskyMethodNameContents.add(name);
             }
@@ -148,7 +148,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
         String userNameProp = System.getProperty(PRMC_RISKY_CLASS_USER_KEY);
         if (userNameProp != null) {
-            String[] userNames = userNameProp.split("\\s*,\\s*");
+            String[] userNames = userNameProp.split(Values.WHITESPACE_COMMA_SPLIT);
             for (String name : userNames) {
                 riskyClassNames.add(name);
             }
@@ -490,7 +490,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
             }
         }
 
-        return methodName.contains("$");
+        return methodName.indexOf(Values.SYNTHETIC_MEMBER_CHAR) >= 0;
     }
 
     /**

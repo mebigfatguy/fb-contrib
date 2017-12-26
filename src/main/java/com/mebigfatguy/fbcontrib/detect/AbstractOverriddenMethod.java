@@ -31,8 +31,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * finds methods that are declared abstract but override concrete methods in a
- * superclass.
+ * finds methods that are declared abstract but override concrete methods in a superclass.
  */
 public class AbstractOverriddenMethod extends PreorderVisitor implements Detector {
     private BugReporter bugReporter;
@@ -73,8 +72,7 @@ public class AbstractOverriddenMethod extends PreorderVisitor implements Detecto
     }
 
     /**
-     * overrides the visitor to find abstract methods that override concrete
-     * ones
+     * overrides the visitor to find abstract methods that override concrete ones
      * 
      * @param obj
      *            the context object of the currently parsed method

@@ -57,7 +57,8 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class ConfusingAutoboxedOverloading extends PreorderVisitor implements Detector {
     private static final int JDK15_MAJOR = 49;
 
-    private static final Set<String> primitiveSigs = UnmodifiableSet.create(Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_FLOAT);
+    private static final Set<String> primitiveSigs = UnmodifiableSet.create(Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE,
+            Values.SIG_PRIMITIVE_FLOAT);
 
     private final BugReporter bugReporter;
 

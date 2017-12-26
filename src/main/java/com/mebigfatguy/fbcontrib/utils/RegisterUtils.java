@@ -86,8 +86,7 @@ public final class RegisterUtils {
      * @return the register stored into
      */
     public static int getStoreReg(DismantleBytecode dbc, int seen) {
-        if ((seen == Const.ASTORE) || (seen == Const.ISTORE) || (seen == Const.LSTORE) || (seen == Const.FSTORE)
-                || (seen == Const.DSTORE)) {
+        if ((seen == Const.ASTORE) || (seen == Const.ISTORE) || (seen == Const.LSTORE) || (seen == Const.FSTORE) || (seen == Const.DSTORE)) {
             return dbc.getRegisterOperand();
         }
         if (OpcodeUtils.isIStore(seen)) {

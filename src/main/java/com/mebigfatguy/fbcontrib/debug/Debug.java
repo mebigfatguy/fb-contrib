@@ -34,8 +34,9 @@ public final class Debug {
     static {
         try {
             out = new PrintStream(
-                    new BufferedOutputStream(Files.newOutputStream(Paths.get(System.getProperty("java.io.tmpdir"), "fb-contrib.txt"), StandardOpenOption.APPEND)), false,
-                    StandardCharsets.UTF_8.name());
+                    new BufferedOutputStream(
+                            Files.newOutputStream(Paths.get(System.getProperty("java.io.tmpdir"), "fb-contrib.txt"), StandardOpenOption.APPEND)),
+                    false, StandardCharsets.UTF_8.name());
             out.println("===== fb-contrib console =====");
         } catch (IOException e) {
             throw new RuntimeException(e);

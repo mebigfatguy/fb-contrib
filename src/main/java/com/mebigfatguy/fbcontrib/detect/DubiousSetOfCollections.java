@@ -122,8 +122,8 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
                                     .addMethod(this).addSourceLine(this));
                         }
                     }
-                } else if ("put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)
-                        && isImplementationOf(clsName, setCls) && (stack.getStackDepth() > 2)) {
+                } else if ("put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature) && isImplementationOf(clsName, setCls)
+                        && (stack.getStackDepth() > 2)) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     JavaClass entryCls = item.getJavaClass();
                     if (isImplementationOf(entryCls, collectionCls)) {

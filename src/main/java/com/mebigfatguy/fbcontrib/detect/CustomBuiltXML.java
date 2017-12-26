@@ -42,7 +42,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class CustomBuiltXML extends BytecodeScanningDetector {
     private static final List<XMLPattern> xmlPatterns = UnmodifiableList.create(
-        // @formatter:off
+    // @formatter:off
         new XMLPattern(Pattern.compile(".*<[a-zA-Z_](\\w)*>[^=]?.*"), true),
         new XMLPattern(Pattern.compile(".*</[a-zA-Z_](\\w)*>[^=]?.*"), true),
         new XMLPattern(Pattern.compile(".*<[a-zA-Z_](\\w)*/>[^=]?.*"), true),
@@ -59,8 +59,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
     private static final String CBX_MIN_REPORTABLE_ITEMS = "fb-contrib.cbx.minxmlitems";
 
     /**
-     * This builder can be reused with different return types to reduce object creation,
-     * provided that param types are unchanged.
+     * This builder can be reused with different return types to reduce object creation, provided that param types are unchanged.
      */
     private static final SignatureBuilder XML_SIG_BUILDER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING);
 
@@ -142,7 +141,8 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if (SignatureUtils.isPlainStringConvertableClass(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && XML_SIG_BUILDER.withReturnType(clsName).toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
+                    if (Values.CONSTRUCTOR.equals(methodName) && XML_SIG_BUILDER.withReturnType(clsName).toString().equals(methodSig)
+                            && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         strCon = (String) itm.getConstant();
                     }

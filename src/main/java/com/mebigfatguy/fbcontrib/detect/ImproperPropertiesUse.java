@@ -31,12 +31,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for java.util.Properties use where values other than String are placed
- * in the properties object. As the Properties object was intended to be a
- * String to String only collection, putting other types in the Properties
- * object is incorrect, and takes advantage of a poor design decision by the
- * original Properties class designers to derive from Hashtable, rather than
- * using aggregation.
+ * looks for java.util.Properties use where values other than String are placed in the properties object. As the Properties object was intended to be a String
+ * to String only collection, putting other types in the Properties object is incorrect, and takes advantage of a poor design decision by the original
+ * Properties class designers to derive from Hashtable, rather than using aggregation.
  */
 public class ImproperPropertiesUse extends BytecodeScanningDetector {
 
@@ -82,9 +79,8 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls to java.utils.Properties.put,
-     * where the value is a non String. Reports both cases, where if it is a
-     * string, at a lower lever.
+     * implements the visitor to look for calls to java.utils.Properties.put, where the value is a non String. Reports both cases, where if it is a string, at a
+     * lower lever.
      *
      * @param seen
      *            the currently parsed op code
@@ -105,8 +101,8 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
                             OpcodeStack.Item valueItem = stack.getStackItem(0);
                             String valueSig = valueItem.getSignature();
                             if (Values.SIG_JAVA_LANG_STRING.equals(valueSig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(), LOW_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(), LOW_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
                             } else if (Values.SIG_JAVA_LANG_OBJECT.equals(valueSig)) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(), NORMAL_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));

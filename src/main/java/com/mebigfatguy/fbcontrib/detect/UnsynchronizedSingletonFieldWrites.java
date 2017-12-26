@@ -47,7 +47,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector {
 
     private static final Set<String> SPRING_CLASS_ANNOTATIONS = UnmodifiableSet.create(
-        // @formatter:off
+    // @formatter:off
         "Lorg/springframework/stereotype/Component;",
         "Lorg/springframework/stereotype/Repository;",
         "Lorg/springframework/stereotype/Service;",
@@ -56,7 +56,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
     );
 
     private static final Set<String> IGNORABLE_METHOD_ANNOTATIONS = UnmodifiableSet.create(
-        // @formatter:off
+    // @formatter:off
         "Ljavax/annotation/PostConstruct;",
         "Lorg/springframework/beans/factory/annotation/Autowired;"
         // @formatter:on

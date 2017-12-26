@@ -34,18 +34,11 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for the execution of sql queries inside a loop. This pattern tends to
- * be inefficient, and often can be improved upon, by collecting all the keys
- * needed for the query and issuing just one query using an in clause with all
- * the keys for all the queries previously needed in the loop.
+ * looks for the execution of sql queries inside a loop. This pattern tends to be inefficient, and often can be improved upon, by collecting all the keys needed
+ * for the query and issuing just one query using an in clause with all the keys for all the queries previously needed in the loop.
  */
 public class SQLInLoop extends BytecodeScanningDetector {
-    private static final Set<String> queryClasses = UnmodifiableSet.create(
-        "java/sql/Statement",
-        "java/sql/PreparedStatement",
-        "java/sql/CallableStatement"
-    );
-    
+    private static final Set<String> queryClasses = UnmodifiableSet.create("java/sql/Statement", "java/sql/PreparedStatement", "java/sql/CallableStatement");
 
     private static final Set<String> queryMethods = UnmodifiableSet.create("execute", "executeQuery");
 
@@ -64,8 +57,7 @@ public class SQLInLoop extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to create and clear the query locations and loops
-     * collections
+     * implements the visitor to create and clear the query locations and loops collections
      * 
      * @param classContext
      *            the context object for the currently parsed java class
@@ -83,8 +75,7 @@ public class SQLInLoop extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to clear the collections, and report the query
-     * locations that are in loops
+     * implements the visitor to clear the collections, and report the query locations that are in loops
      * 
      * @param obj
      *            the context object for the currently parsed code block

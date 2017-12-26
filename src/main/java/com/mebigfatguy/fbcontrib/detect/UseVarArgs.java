@@ -96,8 +96,7 @@ public class UseVarArgs extends PreorderVisitor implements Detector {
                 return;
             }
 
-            if (SignatureBuilder.SIG_BYTE_ARRAY.equals(lastParmSig)
-                    || SignatureBuilder.SIG_CHAR_ARRAY.equals(lastParmSig)) {
+            if (SignatureBuilder.SIG_BYTE_ARRAY.equals(lastParmSig) || SignatureBuilder.SIG_CHAR_ARRAY.equals(lastParmSig)) {
                 return;
             }
 

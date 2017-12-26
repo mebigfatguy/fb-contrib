@@ -36,8 +36,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 
 /**
- * Finds contravariant array assignments. Since arrays are mutable data
- * structures, their use must be restricted to covariant or invariant usage
+ * Finds contravariant array assignments. Since arrays are mutable data structures, their use must be restricted to covariant or invariant usage
  *
  * <pre>
  * class A {
@@ -50,124 +49,119 @@ import edu.umd.cs.findbugs.OpcodeStack;
  * a[0] = new A(); // results in ArrayStoreException (Runtime)
  * </pre>
  *
- * Contravariant array assignments are reported as low or normal priority bugs.
- * In cases where the detector can determine an ArrayStoreException the bug is
+ * Contravariant array assignments are reported as low or normal priority bugs. In cases where the detector can determine an ArrayStoreException the bug is
  * reported with high priority.
  *
  */
 public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
-	private final BugReporter bugReporter;
-	private final OpcodeStack stack;
+    private final BugReporter bugReporter;
+    private final OpcodeStack stack;
 
-	/**
-	 * constructs a CVAA detector given the reporter to report bugs on.
-	 *
-	 * @param bugReporter
-	 *            the sync of bug reports
-	 */
-	public ContraVariantArrayAssignment(final BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-		stack = new OpcodeStack();
-	}
+    /**
+     * constructs a CVAA detector given the reporter to report bugs on.
+     *
+     * @param bugReporter
+     *            the sync of bug reports
+     */
+    public ContraVariantArrayAssignment(final BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+        stack = new OpcodeStack();
+    }
 
-	/**
-	 * implements the visitor to pass through constructors and static initializers
-	 * to the byte code scanning code. These methods are not reported, but are used
-	 * to build SourceLineAnnotations for fields, if accessed.
-	 *
-	 * @param obj
-	 *            the context object of the currently parsed code attribute
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		stack.resetForMethodEntry(this);
-		LocalVariableTable lvt = getMethod().getLocalVariableTable();
-		if (lvt != null) {
-			super.visitCode(obj);
-		}
-	}
+    /**
+     * implements the visitor to pass through constructors and static initializers to the byte code scanning code. These methods are not reported, but are used
+     * to build SourceLineAnnotations for fields, if accessed.
+     *
+     * @param obj
+     *            the context object of the currently parsed code attribute
+     */
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        LocalVariableTable lvt = getMethod().getLocalVariableTable();
+        if (lvt != null) {
+            super.visitCode(obj);
+        }
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		try {
-			stack.precomputation(this);
+    @Override
+    public void sawOpcode(int seen) {
+        try {
+            stack.precomputation(this);
 
-			switch (seen) {
-			case Const.ASTORE:
-			case Const.ASTORE_0:
-			case Const.ASTORE_1:
-			case Const.ASTORE_2:
-			case Const.ASTORE_3:
-				if (stack.getStackDepth() > 0) {
-					LocalVariable lv = getMethod().getLocalVariableTable()
-							.getLocalVariable(RegisterUtils.getAStoreReg(this, seen), getNextPC());
-					if (lv != null) {
-						OpcodeStack.Item item = stack.getStackItem(0);
-						String sourceSignature = item.getSignature();
-						String targetSignature = lv.getSignature();
-						checkSignatures(sourceSignature, targetSignature);
-					}
-				}
-				break;
-			case Const.PUTFIELD:
-			case Const.PUTSTATIC:
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					String sourceSignature = item.getSignature();
-					String targetSignature = getSigConstantOperand();
-					checkSignatures(sourceSignature, targetSignature);
-				}
-				break;
-			case Const.AASTORE:
-				/*
-				 * OpcodeStack.Item arrayref = stack.getStackItem(2); OpcodeStack.Item value =
-				 * stack.getStackItem(0);
-				 *
-				 * if(!value.isNull()) { String sourceSignature = value.getSignature(); String
-				 * targetSignature = arrayref.getSignature(); if
-				 * (!"Ljava/lang/Object;".equals(targetSignature)) { try{
-				 * if(Type.getType(sourceSignature) instanceof ObjectType ) { ObjectType
-				 * sourceType = (ObjectType) Type.getType(sourceSignature); ObjectType
-				 * targetType = (ObjectType) ((ArrayType)
-				 * Type.getType(targetSignature)).getBasicType();
-				 * if(!sourceType.equals(targetType) && !sourceType.subclassOf(targetType)){
-				 * bugReporter.reportBug(new BugInstance(this,
-				 * BugType.CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT.name(), HIGH_PRIORITY)
-				 * .addClass(this) .addMethod(this) .addSourceLine(this)); } } } catch
-				 * (ClassNotFoundException cnfe) { bugReporter.reportMissingClass(cnfe); } } }
-				 */
-				break;
-			}
-			super.sawOpcode(seen);
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
-	}
+            switch (seen) {
+                case Const.ASTORE:
+                case Const.ASTORE_0:
+                case Const.ASTORE_1:
+                case Const.ASTORE_2:
+                case Const.ASTORE_3:
+                    if (stack.getStackDepth() > 0) {
+                        LocalVariable lv = getMethod().getLocalVariableTable().getLocalVariable(RegisterUtils.getAStoreReg(this, seen), getNextPC());
+                        if (lv != null) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            String sourceSignature = item.getSignature();
+                            String targetSignature = lv.getSignature();
+                            checkSignatures(sourceSignature, targetSignature);
+                        }
+                    }
+                break;
+                case Const.PUTFIELD:
+                case Const.PUTSTATIC:
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        String sourceSignature = item.getSignature();
+                        String targetSignature = getSigConstantOperand();
+                        checkSignatures(sourceSignature, targetSignature);
+                    }
+                break;
+                case Const.AASTORE:
+                /*
+                 * OpcodeStack.Item arrayref = stack.getStackItem(2); OpcodeStack.Item value =
+                 * stack.getStackItem(0);
+                 *
+                 * if(!value.isNull()) { String sourceSignature = value.getSignature(); String
+                 * targetSignature = arrayref.getSignature(); if
+                 * (!"Ljava/lang/Object;".equals(targetSignature)) { try{
+                 * if(Type.getType(sourceSignature) instanceof ObjectType ) { ObjectType
+                 * sourceType = (ObjectType) Type.getType(sourceSignature); ObjectType
+                 * targetType = (ObjectType) ((ArrayType)
+                 * Type.getType(targetSignature)).getBasicType();
+                 * if(!sourceType.equals(targetType) && !sourceType.subclassOf(targetType)){
+                 * bugReporter.reportBug(new BugInstance(this,
+                 * BugType.CVAA_CONTRAVARIANT_ARRAY_ASSIGNMENT.name(), HIGH_PRIORITY)
+                 * .addClass(this) .addMethod(this) .addSourceLine(this)); } } } catch
+                 * (ClassNotFoundException cnfe) { bugReporter.reportMissingClass(cnfe); } } }
+                 */
+                break;
+            }
+            super.sawOpcode(seen);
+        } finally {
+            stack.sawOpcode(this, seen);
+        }
+    }
 
-	private static boolean isObjectType(Type type) {
-		return ((ArrayType) type).getBasicType() instanceof ObjectType;
-	}
+    private static boolean isObjectType(Type type) {
+        return ((ArrayType) type).getBasicType() instanceof ObjectType;
+    }
 
-	private void checkSignatures(String sourceSignature, String targetSignature) {
-		try {
-			if (Values.SIG_JAVA_LANG_OBJECT.equals(targetSignature)) {
-				return;
-			}
+    private void checkSignatures(String sourceSignature, String targetSignature) {
+        try {
+            if (Values.SIG_JAVA_LANG_OBJECT.equals(targetSignature)) {
+                return;
+            }
 
-			Type sourceType = Type.getType(sourceSignature);
-			Type targetType = Type.getType(targetSignature);
-			if (sourceType instanceof ArrayType && targetType instanceof ArrayType && isObjectType(sourceType)
-					&& isObjectType(targetType)) {
-				ObjectType sourceElementType = (ObjectType) ((ArrayType) sourceType).getBasicType();
-				ObjectType targetElementType = (ObjectType) ((ArrayType) targetType).getBasicType();
-				if (!targetElementType.isCastableTo(sourceElementType)) {
-					bugReporter.reportBug(
-							new BugInstance(this, BugType.CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT.name(), NORMAL_PRIORITY)
-									.addClass(this).addMethod(this).addSourceLine(this));
-				}
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		}
-	}
+            Type sourceType = Type.getType(sourceSignature);
+            Type targetType = Type.getType(targetSignature);
+            if (sourceType instanceof ArrayType && targetType instanceof ArrayType && isObjectType(sourceType) && isObjectType(targetType)) {
+                ObjectType sourceElementType = (ObjectType) ((ArrayType) sourceType).getBasicType();
+                ObjectType targetElementType = (ObjectType) ((ArrayType) targetType).getBasicType();
+                if (!targetElementType.isCastableTo(sourceElementType)) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.CVAA_CONTRAVARIANT_ELEMENT_ASSIGNMENT.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+    }
 }

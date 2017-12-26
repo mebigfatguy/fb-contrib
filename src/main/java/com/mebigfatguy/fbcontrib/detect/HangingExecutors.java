@@ -52,329 +52,322 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for executors that are never shutdown, which will not allow the
- * application to terminate
+ * looks for executors that are never shutdown, which will not allow the application to terminate
  */
 public class HangingExecutors extends BytecodeScanningDetector {
 
-	private static final Set<String> hangableSig = UnmodifiableSet.create("Ljava/util/concurrent/ExecutorService;",
-			"Ljava/util/concurrent/AbstractExecutorService;", "Ljava/util/concurrent/ForkJoinPool;",
-			"Ljava/util/concurrent/ScheduledThreadPoolExecutor;", "Ljava/util/concurrent/ThreadPoolExecutor;");
+    private static final Set<String> hangableSig = UnmodifiableSet.create("Ljava/util/concurrent/ExecutorService;",
+            "Ljava/util/concurrent/AbstractExecutorService;", "Ljava/util/concurrent/ForkJoinPool;", "Ljava/util/concurrent/ScheduledThreadPoolExecutor;",
+            "Ljava/util/concurrent/ThreadPoolExecutor;");
 
-	private static final Set<String> shutdownMethods = UnmodifiableSet.create("shutdown", "shutdownNow");
+    private static final Set<String> shutdownMethods = UnmodifiableSet.create("shutdown", "shutdownNow");
 
-	private final BugReporter bugReporter;
-	private Map<XField, AnnotationPriority> hangingFieldCandidates;
-	private Map<XField, Integer> exemptExecutors;
-	private OpcodeStack stack;
-	private String methodName;
-	private boolean isInitializer;
+    private final BugReporter bugReporter;
+    private Map<XField, AnnotationPriority> hangingFieldCandidates;
+    private Map<XField, Integer> exemptExecutors;
+    private OpcodeStack stack;
+    private String methodName;
+    private boolean isInitializer;
 
-	private final LocalHangingExecutor localHEDetector;
+    private final LocalHangingExecutor localHEDetector;
 
-	public HangingExecutors(BugReporter reporter) {
-		this.bugReporter = reporter;
-		this.localHEDetector = new LocalHangingExecutor(this, reporter);
-	}
+    public HangingExecutors(BugReporter reporter) {
+        this.bugReporter = reporter;
+        this.localHEDetector = new LocalHangingExecutor(this, reporter);
+    }
 
-	/**
-	 * finds ExecutorService objects that don't get a call to the terminating
-	 * methods, and thus, never appear to be shutdown properly (the threads exist
-	 * until shutdown is called)
-	 *
-	 * @param classContext
-	 *            the class context object of the currently parsed java class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		localHEDetector.visitClassContext(classContext);
-		try {
-			hangingFieldCandidates = new HashMap<>();
-			exemptExecutors = new HashMap<>();
-			parseFieldsForHangingCandidates(classContext);
+    /**
+     * finds ExecutorService objects that don't get a call to the terminating methods, and thus, never appear to be shutdown properly (the threads exist until
+     * shutdown is called)
+     *
+     * @param classContext
+     *            the class context object of the currently parsed java class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        localHEDetector.visitClassContext(classContext);
+        try {
+            hangingFieldCandidates = new HashMap<>();
+            exemptExecutors = new HashMap<>();
+            parseFieldsForHangingCandidates(classContext);
 
-			if (!hangingFieldCandidates.isEmpty()) {
-				stack = new OpcodeStack();
-				super.visitClassContext(classContext);
+            if (!hangingFieldCandidates.isEmpty()) {
+                stack = new OpcodeStack();
+                super.visitClassContext(classContext);
 
-				reportHangingExecutorFieldBugs();
-			}
-		} finally {
-			stack = null;
-			hangingFieldCandidates = null;
-			exemptExecutors = null;
-		}
+                reportHangingExecutorFieldBugs();
+            }
+        } finally {
+            stack = null;
+            hangingFieldCandidates = null;
+            exemptExecutors = null;
+        }
 
-	}
+    }
 
-	private void parseFieldsForHangingCandidates(ClassContext classContext) {
-		JavaClass cls = classContext.getJavaClass();
-		Field[] fields = cls.getFields();
-		for (Field f : fields) {
-			String sig = f.getSignature();
-			if (hangableSig.contains(sig)) {
-				hangingFieldCandidates.put(
-						XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()),
-						new AnnotationPriority(FieldAnnotation.fromBCELField(cls, f), NORMAL_PRIORITY));
-			}
-		}
-	}
+    private void parseFieldsForHangingCandidates(ClassContext classContext) {
+        JavaClass cls = classContext.getJavaClass();
+        Field[] fields = cls.getFields();
+        for (Field f : fields) {
+            String sig = f.getSignature();
+            if (hangableSig.contains(sig)) {
+                hangingFieldCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()),
+                        new AnnotationPriority(FieldAnnotation.fromBCELField(cls, f), NORMAL_PRIORITY));
+            }
+        }
+    }
 
-	private void reportHangingExecutorFieldBugs() {
-		for (Entry<XField, AnnotationPriority> entry : hangingFieldCandidates.entrySet()) {
-			AnnotationPriority fieldAn = entry.getValue();
-			if (fieldAn != null) {
-				bugReporter
-						.reportBug(new BugInstance(this, BugType.HES_EXECUTOR_NEVER_SHUTDOWN.name(), fieldAn.priority)
-								.addClass(this).addField(fieldAn.annotation).addField(entry.getKey()));
-			}
-		}
-	}
+    private void reportHangingExecutorFieldBugs() {
+        for (Entry<XField, AnnotationPriority> entry : hangingFieldCandidates.entrySet()) {
+            AnnotationPriority fieldAn = entry.getValue();
+            if (fieldAn != null) {
+                bugReporter.reportBug(new BugInstance(this, BugType.HES_EXECUTOR_NEVER_SHUTDOWN.name(), fieldAn.priority).addClass(this)
+                        .addField(fieldAn.annotation).addField(entry.getKey()));
+            }
+        }
+    }
 
-	/**
-	 * implements the visitor to reset the opcode stack
-	 *
-	 * @param obj
-	 *            the context object of the currently parsed code block
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		stack.resetForMethodEntry(this);
-		exemptExecutors.clear();
+    /**
+     * implements the visitor to reset the opcode stack
+     *
+     * @param obj
+     *            the context object of the currently parsed code block
+     */
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        exemptExecutors.clear();
 
-		if (!hangingFieldCandidates.isEmpty()) {
-			isInitializer = (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName));
-			super.visitCode(obj);
-		}
-	}
+        if (!hangingFieldCandidates.isEmpty()) {
+            isInitializer = (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName));
+            super.visitCode(obj);
+        }
+    }
 
-	/**
-	 * implements the visitor to collect the method name
-	 *
-	 * @param obj
-	 *            the context object of the currently parsed method
-	 */
-	@Override
-	public void visitMethod(Method obj) {
-		methodName = obj.getName();
-	}
+    /**
+     * implements the visitor to collect the method name
+     *
+     * @param obj
+     *            the context object of the currently parsed method
+     */
+    @Override
+    public void visitMethod(Method obj) {
+        methodName = obj.getName();
+    }
 
-	/**
-	 * Browses for calls to shutdown() and shutdownNow(), and if they happen, remove
-	 * the hanging candidate, as there is a chance it will be called.
-	 *
-	 * @param seen
-	 *            the opcode of the currently parsed instruction
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		if (isInitializer) {
-			lookForCustomThreadFactoriesInConstructors(seen);
-			return;
-		}
+    /**
+     * Browses for calls to shutdown() and shutdownNow(), and if they happen, remove the hanging candidate, as there is a chance it will be called.
+     *
+     * @param seen
+     *            the opcode of the currently parsed instruction
+     */
+    @Override
+    public void sawOpcode(int seen) {
+        if (isInitializer) {
+            lookForCustomThreadFactoriesInConstructors(seen);
+            return;
+        }
 
-		try {
-			stack.precomputation(this);
+        try {
+            stack.precomputation(this);
 
-			if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
-				processInvoke();
-			}
-			// TODO Should not include private methods
-			else if (seen == Const.ARETURN) {
-				removeFieldsThatGetReturned();
-			} else if (seen == Const.PUTFIELD) {
-				XField f = getXFieldOperand();
-				if (f != null) {
-					reportOverwrittenField(f);
-				}
-			} else if (seen == Const.IFNONNULL) {
-				// indicates a null check, which means that we get an exemption
-				// until the end of the branch
-				OpcodeStack.Item nullCheckItem = stack.getStackItem(0);
-				XField fieldWhichWasNullChecked = nullCheckItem.getXField();
-				if (fieldWhichWasNullChecked != null) {
-					exemptExecutors.put(fieldWhichWasNullChecked, Integer.valueOf(getPC() + getBranchOffset()));
-				}
-			}
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
-	}
+            if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
+                processInvoke();
+            }
+            // TODO Should not include private methods
+            else if (seen == Const.ARETURN) {
+                removeFieldsThatGetReturned();
+            } else if (seen == Const.PUTFIELD) {
+                XField f = getXFieldOperand();
+                if (f != null) {
+                    reportOverwrittenField(f);
+                }
+            } else if (seen == Const.IFNONNULL) {
+                // indicates a null check, which means that we get an exemption
+                // until the end of the branch
+                OpcodeStack.Item nullCheckItem = stack.getStackItem(0);
+                XField fieldWhichWasNullChecked = nullCheckItem.getXField();
+                if (fieldWhichWasNullChecked != null) {
+                    exemptExecutors.put(fieldWhichWasNullChecked, Integer.valueOf(getPC() + getBranchOffset()));
+                }
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
+        }
+    }
 
-	private void processInvoke() {
-		String sig = getSigConstantOperand();
-		int argCount = SignatureUtils.getNumParameters(sig);
-		if (stack.getStackDepth() > argCount) {
-			OpcodeStack.Item invokeeItem = stack.getStackItem(argCount);
-			XField fieldOnWhichMethodIsInvoked = invokeeItem.getXField();
-			if (fieldOnWhichMethodIsInvoked != null) {
-				removeCandidateIfShutdownCalled(fieldOnWhichMethodIsInvoked);
-				addExemptionIfShutdownCalled(fieldOnWhichMethodIsInvoked);
-			}
-		}
-	}
+    private void processInvoke() {
+        String sig = getSigConstantOperand();
+        int argCount = SignatureUtils.getNumParameters(sig);
+        if (stack.getStackDepth() > argCount) {
+            OpcodeStack.Item invokeeItem = stack.getStackItem(argCount);
+            XField fieldOnWhichMethodIsInvoked = invokeeItem.getXField();
+            if (fieldOnWhichMethodIsInvoked != null) {
+                removeCandidateIfShutdownCalled(fieldOnWhichMethodIsInvoked);
+                addExemptionIfShutdownCalled(fieldOnWhichMethodIsInvoked);
+            }
+        }
+    }
 
-	private void lookForCustomThreadFactoriesInConstructors(int seen) {
-		try {
-			stack.precomputation(this);
-			if (seen == Const.PUTFIELD) {
-				XField f = getXFieldOperand();
-				if ((f != null) && hangableSig.contains(f.getSignature())) {
-					// look at the top of the stack, get the arguments passed
-					// into the function that was called
-					// and then pull out the types.
-					// if the last type is a ThreadFactory, set the priority to
-					// low
-					XMethod method = stack.getStackItem(0).getReturnValueOf();
-					if (method != null) {
-						List<String> argumentTypes = SignatureUtils.getParameterSignatures(method.getSignature());
-						if ((!argumentTypes.isEmpty()) && "Ljava/util/concurrent/ThreadFactory;"
-								.equals(argumentTypes.get(argumentTypes.size() - 1))) {
-							AnnotationPriority ap = this.hangingFieldCandidates.get(f);
-							if (ap != null) {
-								ap.priority = LOW_PRIORITY;
-								this.hangingFieldCandidates.put(f, ap);
-							}
-						}
-					} else {
-						// if the object is initialized from parameter, it's not this class's job to
-						// close it
-						int reg = stack.getStackItem(0).getRegisterNumber();
-						if (reg >= 0) {
-							Map<Integer, String> ctorParmInfo = SignatureUtils.getParameterSlotAndSignatures(false,
-									getMethod().getSignature());
-							if (ctorParmInfo.containsKey(Integer.valueOf(reg))) {
-								hangingFieldCandidates.remove(f);
-							}
-						}
-					}
-				}
-			}
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
-	}
+    private void lookForCustomThreadFactoriesInConstructors(int seen) {
+        try {
+            stack.precomputation(this);
+            if (seen == Const.PUTFIELD) {
+                XField f = getXFieldOperand();
+                if ((f != null) && hangableSig.contains(f.getSignature())) {
+                    // look at the top of the stack, get the arguments passed
+                    // into the function that was called
+                    // and then pull out the types.
+                    // if the last type is a ThreadFactory, set the priority to
+                    // low
+                    XMethod method = stack.getStackItem(0).getReturnValueOf();
+                    if (method != null) {
+                        List<String> argumentTypes = SignatureUtils.getParameterSignatures(method.getSignature());
+                        if ((!argumentTypes.isEmpty()) && "Ljava/util/concurrent/ThreadFactory;".equals(argumentTypes.get(argumentTypes.size() - 1))) {
+                            AnnotationPriority ap = this.hangingFieldCandidates.get(f);
+                            if (ap != null) {
+                                ap.priority = LOW_PRIORITY;
+                                this.hangingFieldCandidates.put(f, ap);
+                            }
+                        }
+                    } else {
+                        // if the object is initialized from parameter, it's not this class's job to
+                        // close it
+                        int reg = stack.getStackItem(0).getRegisterNumber();
+                        if (reg >= 0) {
+                            Map<Integer, String> ctorParmInfo = SignatureUtils.getParameterSlotAndSignatures(false, getMethod().getSignature());
+                            if (ctorParmInfo.containsKey(Integer.valueOf(reg))) {
+                                hangingFieldCandidates.remove(f);
+                            }
+                        }
+                    }
+                }
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
+        }
+    }
 
-	private void reportOverwrittenField(XField f) {
-		if ("Ljava/util/concurrent/ExecutorService;".equals(f.getSignature()) && !checkException(f)) {
-			bugReporter.reportBug(new BugInstance(this, BugType.HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN.name(),
-					Priorities.NORMAL_PRIORITY).addClass(this).addMethod(this).addField(f).addSourceLine(this));
-		}
-		// after it's been replaced, it no longer uses its exemption.
-		exemptExecutors.remove(f);
-	}
+    private void reportOverwrittenField(XField f) {
+        if ("Ljava/util/concurrent/ExecutorService;".equals(f.getSignature()) && !checkException(f)) {
+            bugReporter.reportBug(new BugInstance(this, BugType.HES_EXECUTOR_OVERWRITTEN_WITHOUT_SHUTDOWN.name(), Priorities.NORMAL_PRIORITY).addClass(this)
+                    .addMethod(this).addField(f).addSourceLine(this));
+        }
+        // after it's been replaced, it no longer uses its exemption.
+        exemptExecutors.remove(f);
+    }
 
-	private boolean checkException(XField f) {
-		if (!exemptExecutors.containsKey(f)) {
-			return false;
-		}
-		int i = exemptExecutors.get(f).intValue();
+    private boolean checkException(XField f) {
+        if (!exemptExecutors.containsKey(f)) {
+            return false;
+        }
+        int i = exemptExecutors.get(f).intValue();
 
-		return (i == -1) || (getPC() < i);
-	}
+        return (i == -1) || (getPC() < i);
+    }
 
-	private void removeFieldsThatGetReturned() {
-		if (stack.getStackDepth() > 0) {
-			OpcodeStack.Item returnItem = stack.getStackItem(0); // top thing on
-																	// the stack
-																	// was the
-																	// variable
-																	// being
-																	// returned
-			XField field = returnItem.getXField();
-			if (field != null) {
-				hangingFieldCandidates.remove(field);
-			}
-		}
-	}
+    private void removeFieldsThatGetReturned() {
+        if (stack.getStackDepth() > 0) {
+            OpcodeStack.Item returnItem = stack.getStackItem(0); // top thing on
+                                                                 // the stack
+                                                                 // was the
+                                                                 // variable
+                                                                 // being
+                                                                 // returned
+            XField field = returnItem.getXField();
+            if (field != null) {
+                hangingFieldCandidates.remove(field);
+            }
+        }
+    }
 
-	private void addExemptionIfShutdownCalled(XField fieldOnWhichMethodIsInvoked) {
-		String methodBeingInvoked = getNameConstantOperand();
-		if (shutdownMethods.contains(methodBeingInvoked)) {
-			exemptExecutors.put(fieldOnWhichMethodIsInvoked, Values.NEGATIVE_ONE);
-		}
-	}
+    private void addExemptionIfShutdownCalled(XField fieldOnWhichMethodIsInvoked) {
+        String methodBeingInvoked = getNameConstantOperand();
+        if (shutdownMethods.contains(methodBeingInvoked)) {
+            exemptExecutors.put(fieldOnWhichMethodIsInvoked, Values.NEGATIVE_ONE);
+        }
+    }
 
-	private void removeCandidateIfShutdownCalled(XField fieldOnWhichMethodIsInvoked) {
-		if (hangingFieldCandidates.containsKey(fieldOnWhichMethodIsInvoked)) {
-			String methodBeingInvoked = getNameConstantOperand();
-			if (shutdownMethods.contains(methodBeingInvoked)) {
-				hangingFieldCandidates.remove(fieldOnWhichMethodIsInvoked);
-			}
-		}
-	}
+    private void removeCandidateIfShutdownCalled(XField fieldOnWhichMethodIsInvoked) {
+        if (hangingFieldCandidates.containsKey(fieldOnWhichMethodIsInvoked)) {
+            String methodBeingInvoked = getNameConstantOperand();
+            if (shutdownMethods.contains(methodBeingInvoked)) {
+                hangingFieldCandidates.remove(fieldOnWhichMethodIsInvoked);
+            }
+        }
+    }
 
-	/**
-	 * represents a field that is a executor
-	 */
-	private static class AnnotationPriority {
+    /**
+     * represents a field that is a executor
+     */
+    private static class AnnotationPriority {
 
-		int priority;
-		FieldAnnotation annotation;
+        int priority;
+        FieldAnnotation annotation;
 
-		AnnotationPriority(FieldAnnotation annotation, int priority) {
-			this.annotation = annotation;
-			this.priority = priority;
-		}
+        AnnotationPriority(FieldAnnotation annotation, int priority) {
+            this.annotation = annotation;
+            this.priority = priority;
+        }
 
-		@Override
-		public String toString() {
-			return ToString.build(this);
-		}
-	}
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    }
 }
 
 class LocalHangingExecutor extends LocalTypeDetector {
 
-	private static final Map<String, Set<String>> watchedClassMethods;
-	private static final Map<String, Integer> syncCtors;
+    private static final Map<String, Set<String>> watchedClassMethods;
+    private static final Map<String, Integer> syncCtors;
 
-	static {
-		Set<String> forExecutors = new HashSet<>();
-		forExecutors.add("newCachedThreadPool");
-		forExecutors.add("newFixedThreadPool");
-		forExecutors.add("newScheduledThreadPool");
-		forExecutors.add("newSingleThreadExecutor");
+    static {
+        Set<String> forExecutors = new HashSet<>();
+        forExecutors.add("newCachedThreadPool");
+        forExecutors.add("newFixedThreadPool");
+        forExecutors.add("newScheduledThreadPool");
+        forExecutors.add("newSingleThreadExecutor");
 
-		Map<String, Set<String>> wcm = new HashMap<>();
-		wcm.put("java/util/concurrent/Executors", forExecutors);
-		watchedClassMethods = Collections.unmodifiableMap(wcm);
+        Map<String, Set<String>> wcm = new HashMap<>();
+        wcm.put("java/util/concurrent/Executors", forExecutors);
+        watchedClassMethods = Collections.unmodifiableMap(wcm);
 
-		Map<String, Integer> sc = new HashMap<>();
-		sc.put("java/util/concurrent/ThreadPoolExecutor", Values.JAVA_5);
-		sc.put("java/util/concurrent/ScheduledThreadPoolExecutor", Values.JAVA_5);
-		syncCtors = Collections.unmodifiableMap(sc);
-	}
+        Map<String, Integer> sc = new HashMap<>();
+        sc.put("java/util/concurrent/ThreadPoolExecutor", Values.JAVA_5);
+        sc.put("java/util/concurrent/ScheduledThreadPoolExecutor", Values.JAVA_5);
+        syncCtors = Collections.unmodifiableMap(sc);
+    }
 
-	private final BugReporter bugReporter;
-	private final Detector delegatingDetector;
+    private final BugReporter bugReporter;
+    private final Detector delegatingDetector;
 
-	public LocalHangingExecutor(Detector delegatingDetector, BugReporter reporter) {
-		this.bugReporter = reporter;
-		this.delegatingDetector = delegatingDetector;
-	}
+    public LocalHangingExecutor(Detector delegatingDetector, BugReporter reporter) {
+        this.bugReporter = reporter;
+        this.delegatingDetector = delegatingDetector;
+    }
 
-	@Override
-	protected Map<String, Integer> getWatchedConstructors() {
-		return syncCtors;
-	}
+    @Override
+    protected Map<String, Integer> getWatchedConstructors() {
+        return syncCtors;
+    }
 
-	@Override
-	protected Map<String, Set<String>> getWatchedClassMethods() {
-		return watchedClassMethods;
-	}
+    @Override
+    protected Map<String, Set<String>> getWatchedClassMethods() {
+        return watchedClassMethods;
+    }
 
-	@Override
-	protected Set<String> getSelfReturningMethods() {
-		return Collections.emptySet();
-	}
+    @Override
+    protected Set<String> getSelfReturningMethods() {
+        return Collections.emptySet();
+    }
 
-	@Override
-	protected void reportBug(RegisterInfo cri) {
-		// very important to report the bug under the top, parent detector,
-		// otherwise it gets filtered out
-		bugReporter.reportBug(new BugInstance(delegatingDetector, "HES_LOCAL_EXECUTOR_SERVICE", LOW_PRIORITY)
-				.addClass(this).addMethod(this).addSourceLine(cri.getSourceLineAnnotation()));
+    @Override
+    protected void reportBug(RegisterInfo cri) {
+        // very important to report the bug under the top, parent detector,
+        // otherwise it gets filtered out
+        bugReporter.reportBug(new BugInstance(delegatingDetector, "HES_LOCAL_EXECUTOR_SERVICE", LOW_PRIORITY).addClass(this).addMethod(this)
+                .addSourceLine(cri.getSourceLineAnnotation()));
 
-	}
+    }
 }

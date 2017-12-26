@@ -37,15 +37,13 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * collects methods that return a collection that could be created thru an
- * immutable method such as Arrays.aslist, etc.
+ * collects methods that return a collection that could be created thru an immutable method such as Arrays.aslist, etc.
  */
 @CustomUserValue
-public class CollectMethodsReturningImmutableCollections extends BytecodeScanningDetector
-		implements NonReportingDetector {
+public class CollectMethodsReturningImmutableCollections extends BytecodeScanningDetector implements NonReportingDetector {
 
-	private static final Set<String> IMMUTABLE_PRODUCING_METHODS = UnmodifiableSet.create(
-        //@formatter:off
+    private static final Set<String> IMMUTABLE_PRODUCING_METHODS = UnmodifiableSet.create(
+    //@formatter:off
 			"com/google/common/Collect/Maps.immutableEnumMap", "com/google/common/Collect/Maps.unmodifiableMap",
 			"com/google/common/Collect/Sets.immutableEnumSet", "com/google/common/Collect/Sets.immutableCopy",
 			"java/util/Arrays.asList", "java/util/Collections.unmodifiableCollection",
@@ -58,155 +56,152 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
 			"edu/emory/mathcs/backport/java/util/Collections.unmodifiableMap",
 			"edu/emory/mathcs/backport/java/util/Collections.unmodifiableList"
 	// @formatter:on
-	);
+    );
 
-	private BugReporter bugReporter;
-	private OpcodeStack stack;
-	private String clsName;
-	private ImmutabilityType imType;
+    private BugReporter bugReporter;
+    private OpcodeStack stack;
+    private String clsName;
+    private ImmutabilityType imType;
 
-	/**
-	 * constructs a CMRIC detector given the reporter to report bugs on
-	 *
-	 * @param reporter
-	 *            the sync of bug reports
-	 */
-	public CollectMethodsReturningImmutableCollections(BugReporter reporter) {
-		bugReporter = reporter;
-	}
+    /**
+     * constructs a CMRIC detector given the reporter to report bugs on
+     *
+     * @param reporter
+     *            the sync of bug reports
+     */
+    public CollectMethodsReturningImmutableCollections(BugReporter reporter) {
+        bugReporter = reporter;
+    }
 
-	@Override
-	public void visitClassContext(ClassContext context) {
-		try {
-			stack = new OpcodeStack();
-			clsName = context.getJavaClass().getClassName();
-			super.visitClassContext(context);
-		} finally {
-			stack = null;
-		}
-	}
+    @Override
+    public void visitClassContext(ClassContext context) {
+        try {
+            stack = new OpcodeStack();
+            clsName = context.getJavaClass().getClassName();
+            super.visitClassContext(context);
+        } finally {
+            stack = null;
+        }
+    }
 
-	/**
-	 * overrides the visitor to reset the stack for the new method, then checks if
-	 * the immutability field is set to immutable and if so reports it
-	 *
-	 * @param obj
-	 *            the context object of the currently parsed method
-	 */
-	@Override
-	public void visitCode(Code obj) {
-		try {
-			String signature = SignatureUtils.getReturnSignature(getMethod().getSignature());
-			if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)
-					&& CollectionUtils.isListSetMap(SignatureUtils.stripSignature(signature))) {
-				stack.resetForMethodEntry(this);
-				imType = ImmutabilityType.UNKNOWN;
+    /**
+     * overrides the visitor to reset the stack for the new method, then checks if the immutability field is set to immutable and if so reports it
+     *
+     * @param obj
+     *            the context object of the currently parsed method
+     */
+    @Override
+    public void visitCode(Code obj) {
+        try {
+            String signature = SignatureUtils.getReturnSignature(getMethod().getSignature());
+            if (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && CollectionUtils.isListSetMap(SignatureUtils.stripSignature(signature))) {
+                stack.resetForMethodEntry(this);
+                imType = ImmutabilityType.UNKNOWN;
 
-				super.visitCode(obj);
+                super.visitCode(obj);
 
-				if ((imType == ImmutabilityType.IMMUTABLE) || (imType == ImmutabilityType.POSSIBLY_IMMUTABLE)) {
-					Method m = getMethod();
-					Statistics.getStatistics().addImmutabilityStatus(clsName, m.getName(), m.getSignature(), imType);
-				}
-			}
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		}
-	}
+                if ((imType == ImmutabilityType.IMMUTABLE) || (imType == ImmutabilityType.POSSIBLY_IMMUTABLE)) {
+                    Method m = getMethod();
+                    Statistics.getStatistics().addImmutabilityStatus(clsName, m.getName(), m.getSignature(), imType);
+                }
+            }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+    }
 
-	/**
-	 * overrides the visitor to look for calls to static methods that are known to
-	 * return immutable collections It records those variables, and documents if
-	 * what the method returns is one of those objects.
-	 */
-	@Override
-	public void sawOpcode(int seen) {
-		ImmutabilityType seenImmutable = null;
-		try {
-			stack.precomputation(this);
+    /**
+     * overrides the visitor to look for calls to static methods that are known to return immutable collections It records those variables, and documents if
+     * what the method returns is one of those objects.
+     */
+    @Override
+    public void sawOpcode(int seen) {
+        ImmutabilityType seenImmutable = null;
+        try {
+            stack.precomputation(this);
 
-			switch (seen) {
-			case Const.INVOKESTATIC: {
-				String className = getClassConstantOperand();
-				String methodName = getNameConstantOperand();
+            switch (seen) {
+                case Const.INVOKESTATIC: {
+                    String className = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
 
-				if (IMMUTABLE_PRODUCING_METHODS.contains(className + '.' + methodName)) {
-					seenImmutable = ImmutabilityType.IMMUTABLE;
-					break;
-				}
-			}
-			//$FALL-THROUGH$
-			case Const.INVOKEINTERFACE:
-			case Const.INVOKESPECIAL:
-			case Const.INVOKEVIRTUAL: {
-				String className = getClassConstantOperand();
-				String methodName = getNameConstantOperand();
-				String signature = getSigConstantOperand();
+                    if (IMMUTABLE_PRODUCING_METHODS.contains(className + '.' + methodName)) {
+                        seenImmutable = ImmutabilityType.IMMUTABLE;
+                        break;
+                    }
+                }
+                //$FALL-THROUGH$
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKESPECIAL:
+                case Const.INVOKEVIRTUAL: {
+                    String className = getClassConstantOperand();
+                    String methodName = getNameConstantOperand();
+                    String signature = getSigConstantOperand();
 
-				MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
-				seenImmutable = mi.getImmutabilityType();
-				if (seenImmutable == ImmutabilityType.UNKNOWN) {
-					seenImmutable = null;
-				}
-			}
-				break;
+                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
+                    seenImmutable = mi.getImmutabilityType();
+                    if (seenImmutable == ImmutabilityType.UNKNOWN) {
+                        seenImmutable = null;
+                    }
+                }
+                break;
 
-			case Const.ARETURN: {
-				processARreturn();
-				break;
-			}
-			default:
-				break;
-			}
+                case Const.ARETURN: {
+                    processARreturn();
+                    break;
+                }
+                default:
+                break;
+            }
 
-		} finally {
-			stack.sawOpcode(this, seen);
-			if ((seenImmutable != null) && (stack.getStackDepth() > 0)) {
-				OpcodeStack.Item item = stack.getStackItem(0);
-				item.setUserValue(seenImmutable);
-			}
-		}
-	}
+        } finally {
+            stack.sawOpcode(this, seen);
+            if ((seenImmutable != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item item = stack.getStackItem(0);
+                item.setUserValue(seenImmutable);
+            }
+        }
+    }
 
-	private void processARreturn() {
-		if (stack.getStackDepth() > 0) {
-			OpcodeStack.Item item = stack.getStackItem(0);
-			ImmutabilityType type = (ImmutabilityType) item.getUserValue();
-			if (type == null) {
-				type = ImmutabilityType.UNKNOWN;
-			}
+    private void processARreturn() {
+        if (stack.getStackDepth() > 0) {
+            OpcodeStack.Item item = stack.getStackItem(0);
+            ImmutabilityType type = (ImmutabilityType) item.getUserValue();
+            if (type == null) {
+                type = ImmutabilityType.UNKNOWN;
+            }
 
-			switch (imType) {
-			case UNKNOWN:
+            switch (imType) {
+                case UNKNOWN:
 
-				switch (type) {
-				case IMMUTABLE:
-					imType = ImmutabilityType.IMMUTABLE;
-					break;
-				case POSSIBLY_IMMUTABLE:
-					imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
-					break;
-				default:
-					imType = ImmutabilityType.MUTABLE;
-					break;
-				}
-				break;
+                    switch (type) {
+                        case IMMUTABLE:
+                            imType = ImmutabilityType.IMMUTABLE;
+                        break;
+                        case POSSIBLY_IMMUTABLE:
+                            imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
+                        break;
+                        default:
+                            imType = ImmutabilityType.MUTABLE;
+                        break;
+                    }
+                break;
 
-			case IMMUTABLE:
-				if (type != ImmutabilityType.IMMUTABLE) {
-					imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
-				}
-				break;
+                case IMMUTABLE:
+                    if (type != ImmutabilityType.IMMUTABLE) {
+                        imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
+                    }
+                break;
 
-			case POSSIBLY_IMMUTABLE:
-				break;
+                case POSSIBLY_IMMUTABLE:
+                break;
 
-			case MUTABLE:
-				if (type == ImmutabilityType.IMMUTABLE) {
-					imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
-				}
-				break;
-			}
-		}
-	}
+                case MUTABLE:
+                    if (type == ImmutabilityType.IMMUTABLE) {
+                        imType = ImmutabilityType.POSSIBLY_IMMUTABLE;
+                    }
+                break;
+            }
+        }
+    }
 }

@@ -34,14 +34,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for calls to the wait method on mutexes defined in the
- * java.util.concurrent package where it is likely that await was intended.
+ * looks for calls to the wait method on mutexes defined in the java.util.concurrent package where it is likely that await was intended.
  */
 public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
-    private static final Set<String> concurrentAwaitClasses = UnmodifiableSet.create(
-        "java.util.concurrent.CountDownLatch",
-        "java.util.concurrent.CyclicBarrier"
-    );
+    private static final Set<String> concurrentAwaitClasses = UnmodifiableSet.create("java.util.concurrent.CountDownLatch",
+            "java.util.concurrent.CyclicBarrier");
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -88,8 +85,7 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls to wait, on java.util.concurrent
-     * classes that define await.
+     * implements the visitor to look for calls to wait, on java.util.concurrent classes that define await.
      *
      * @param seen
      *            the opcode of the currently visited instruction
@@ -99,17 +95,15 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if ((seen != INVOKEVIRTUAL)
-                    || !"wait".equals(getNameConstantOperand())
-                    || stack.getStackDepth() == 0) {
+            if ((seen != INVOKEVIRTUAL) || !"wait".equals(getNameConstantOperand()) || stack.getStackDepth() == 0) {
                 return;
             }
             JavaClass cls = stack.getStackItem(0).getJavaClass();
             if (cls != null) {
                 String clsName = cls.getClassName();
                 if (concurrentAwaitClasses.contains(clsName)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT.name(), NORMAL_PRIORITY)
-                            .addClass(this).addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.SWCO_SUSPICIOUS_WAIT_ON_CONCURRENT_OBJECT.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
                 }
             }
         } catch (ClassNotFoundException cnfe) {

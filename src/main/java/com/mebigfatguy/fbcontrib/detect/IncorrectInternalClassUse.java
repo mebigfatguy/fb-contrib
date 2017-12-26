@@ -40,7 +40,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class IncorrectInternalClassUse implements Detector {
 
     private static final Set<String> internalPackages = UnmodifiableSet.create(
-        // @formatter:off
+    // @formatter:off
         "com/apple/eawt/",
         "com/sun/org/apache/xml/internal/",
         "com/sun/net/ssl/",
@@ -69,7 +69,7 @@ public class IncorrectInternalClassUse implements Detector {
     );
 
     private static final Set<String> externalPackages = UnmodifiableSet.create(
-         // @formatter:off
+    // @formatter:off
         "org/apache/xerces/xni/",
         "org/apache/xerces/xs/",
         "org/apache/xalan/extensions"
@@ -89,8 +89,7 @@ public class IncorrectInternalClassUse implements Detector {
     }
 
     /**
-     * implements the visitor to look for classes that reference com.sun.xxx, or org.apache.xerces.xxx classes by looking for class Const in the constant
-     * pool
+     * implements the visitor to look for classes that reference com.sun.xxx, or org.apache.xerces.xxx classes by looking for class Const in the constant pool
      *
      * @param context
      *            the context object of the currently parsed class

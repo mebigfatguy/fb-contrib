@@ -436,7 +436,7 @@ public final class SignatureUtils {
         String[] components = CLASS_COMPONENT_DELIMITER.split(className);
         StringBuilder buffer = new StringBuilder(className.length()).append(components[0]);
         for (int i = 1; (i < components.length) && !ANONYMOUS_COMPONENT.matcher(components[i]).matches(); i++) {
-            buffer.append('$').append(components[i]);
+            buffer.append(Values.INNER_CLASS_SEPARATOR).append(components[i]);
         }
         return buffer.toString();
     }

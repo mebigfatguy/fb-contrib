@@ -106,7 +106,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
             ConstantPool cp = classContext.getConstantPoolGen().getConstantPool();
 
             for (Field f : fields) {
-                if (!f.isStatic() && !f.isVolatile() && (f.getName().indexOf('$') < 0) && f.isPrivate()) {
+                if (!f.isStatic() && !f.isVolatile() && (f.getName().indexOf(Values.SYNTHETIC_MEMBER_CHAR) < 0) && f.isPrivate()) {
                     FieldAnnotation fa = new FieldAnnotation(cls.getClassName(), f.getName(), f.getSignature(), false);
                     boolean hasExternalAnnotation = false;
                     for (AnnotationEntry entry : f.getAnnotationEntries()) {
@@ -271,7 +271,8 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
                     ReferenceType rt = is.getReferenceType(cpg);
                     if (Values.CONSTRUCTOR.equals(is.getMethodName(cpg))) {
-                        if ((rt instanceof ObjectType) && ((ObjectType) rt).getClassName().startsWith(clsContext.getJavaClass().getClassName() + '$')) {
+                        if ((rt instanceof ObjectType)
+                                && ((ObjectType) rt).getClassName().startsWith(clsContext.getJavaClass().getClassName() + Values.INNER_CLASS_SEPARATOR)) {
                             localizableFields.clear();
                         }
                     } else {

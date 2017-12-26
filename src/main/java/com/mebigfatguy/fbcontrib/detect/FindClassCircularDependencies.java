@@ -164,7 +164,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     }
 
     private boolean isEnclosingClassName(String outerClass, String innerClass) {
-        return innerClass.startsWith(outerClass) && (innerClass.indexOf('$') >= 0);
+        return innerClass.startsWith(outerClass) && (innerClass.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0);
     }
 
     @Override
@@ -278,7 +278,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
         }
 
         private boolean findLoop(String curClass) {
-            if (curClass.contains("$")) {
+            if (curClass.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0) {
                 return false;
             }
 

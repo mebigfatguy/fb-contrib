@@ -43,7 +43,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class NonProductiveMethodCall extends BytecodeScanningDetector {
 
     private static final Set<Pattern> IMMUTABLE_METHODS = UnmodifiableSet.create(
-            // @formatter:off
+    // @formatter:off
             Pattern.compile(".*@toString\\(\\)Ljava/lang/String;"),
             Pattern.compile("java/lang/.+@.+Value\\(\\)[BCDFIJSZ]"),
             Pattern.compile(".*@equals\\(Ljava/lang/Object;\\)Z"),

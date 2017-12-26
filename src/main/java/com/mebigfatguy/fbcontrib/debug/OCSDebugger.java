@@ -33,51 +33,51 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class OCSDebugger extends BytecodeScanningDetector {
 
-	private static final String OCS_OUTPUT_FILE = "fb-contrib.ocs.output";
-	private static final String OCS_METHOD_DESC = "fb-contrib.ocs.method";
+    private static final String OCS_OUTPUT_FILE = "fb-contrib.ocs.output";
+    private static final String OCS_METHOD_DESC = "fb-contrib.ocs.method";
 
-	private static final String OUTPUT_FILE_NAME = System.getProperty(OCS_OUTPUT_FILE);
-	private static final String METHOD_DESC = System.getProperty(OCS_METHOD_DESC);
+    private static final String OUTPUT_FILE_NAME = System.getProperty(OCS_OUTPUT_FILE);
+    private static final String METHOD_DESC = System.getProperty(OCS_METHOD_DESC);
 
-	private OpcodeStack stack = new OpcodeStack();
-	private PrintWriter pw = null;
+    private OpcodeStack stack = new OpcodeStack();
+    private PrintWriter pw = null;
 
-	public OCSDebugger(@SuppressWarnings("unused") BugReporter bugReporter) {
-		// no bugs are reported, so not storing the bugReporter
-	}
+    public OCSDebugger(@SuppressWarnings("unused") BugReporter bugReporter) {
+        // no bugs are reported, so not storing the bugReporter
+    }
 
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		if (OUTPUT_FILE_NAME != null && METHOD_DESC != null) {
-			super.visitClassContext(classContext);
-		}
-	}
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        if (OUTPUT_FILE_NAME != null && METHOD_DESC != null) {
+            super.visitClassContext(classContext);
+        }
+    }
 
-	@Override
-	public void visitCode(Code obj) {
-		Method m = getMethod();
+    @Override
+    public void visitCode(Code obj) {
+        Method m = getMethod();
 
-		String curMethodDesc = getClassContext().getJavaClass().getClassName() + '.' + m.getName() + m.getSignature();
-		if (curMethodDesc.equals(METHOD_DESC)) {
-			try {
-				pw = new PrintWriter(OUTPUT_FILE_NAME, StandardCharsets.UTF_8.name());
-				stack.resetForMethodEntry(this);
+        String curMethodDesc = getClassContext().getJavaClass().getClassName() + '.' + m.getName() + m.getSignature();
+        if (curMethodDesc.equals(METHOD_DESC)) {
+            try {
+                pw = new PrintWriter(OUTPUT_FILE_NAME, StandardCharsets.UTF_8.name());
+                stack.resetForMethodEntry(this);
 
-				super.visitCode(obj);
-			} catch (IOException e) {
-				// ignore
-			} finally {
-				pw.close();
-				pw = null;
-			}
-		}
-	}
+                super.visitCode(obj);
+            } catch (IOException e) {
+                // ignore
+            } finally {
+                pw.close();
+                pw = null;
+            }
+        }
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		stack.precomputation(this);
-		stack.sawOpcode(this, seen);
-		pw.println(String.format("After executing: %-16s at PC: %-5d Stack Size: %-3d",
-				Const.getOpcodeName(getOpcode()), Integer.valueOf(getPC()), Integer.valueOf(stack.getStackDepth())));
-	}
+    @Override
+    public void sawOpcode(int seen) {
+        stack.precomputation(this);
+        stack.sawOpcode(this, seen);
+        pw.println(String.format("After executing: %-16s at PC: %-5d Stack Size: %-3d", Const.getOpcodeName(getOpcode()), Integer.valueOf(getPC()),
+                Integer.valueOf(stack.getStackDepth())));
+    }
 }

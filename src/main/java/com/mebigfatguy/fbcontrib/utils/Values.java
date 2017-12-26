@@ -133,11 +133,16 @@ public final class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_UUID = "java/util/UUID";
 
+    public static final char INNER_CLASS_SEPARATOR = '$';
+    public static final char SYNTHETIC_MEMBER_CHAR = '$';
+
     public static final Integer JAVA_1_1 = Integer.valueOf(Const.MAJOR_1_1);
     public static final Integer JAVA_5 = Integer.valueOf(Const.MAJOR_1_5);
 
     public static final Integer NORMAL_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.NORMAL_PRIORITY);
     public static final Integer LOW_BUG_PRIORITY = Integer.valueOf(BytecodeScanningDetector.LOW_PRIORITY);
+
+    public static final String WHITESPACE_COMMA_SPLIT = "\\s*,\\s*";
 
     private Values() {
     }

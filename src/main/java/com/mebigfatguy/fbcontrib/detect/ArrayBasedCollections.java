@@ -128,8 +128,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
         String methodName = getNameConstantOperand();
         String methodSig = getSigConstantOperand();
 
-        if (Values.SLASHED_JAVA_UTIL_MAP.equals(className) && "put".equals(methodName)
-                && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(methodSig)) {
+        if (Values.SLASHED_JAVA_UTIL_MAP.equals(className) && "put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(methodSig)) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item itm = stack.getStackItem(1);
                 String pushedSig = itm.getSignature();
@@ -156,8 +155,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     }
 
     private void foundBugFor(List<BugInstance> bugList) {
-        BugInstance bi = new BugInstance(this, BugType.ABC_ARRAY_BASED_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                .addSourceLine(this);
+        BugInstance bi = new BugInstance(this, BugType.ABC_ARRAY_BASED_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this);
         if (bugList == null) {
             bugReporter.reportBug(bi);
         } else {
