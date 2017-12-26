@@ -77,9 +77,9 @@ function toggleBlock(divId, imgId)
 		</div>
 
 		<hr/>
-        <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
+        <img id="git_image" src="flip2.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
         Detectors added in git<br/>
-        <div id="git" style="display:none;">
+        <div id="git" style="display:block;">
         	<ul>
             	<li><b>[UTWR] Use Try With Resources</b><br/>
             	Looks for try/finally blocks that manage resources, without using try-with-resources.
@@ -90,12 +90,15 @@ function toggleBlock(divId, imgId)
             	<li><b>[AI] Annotation Issues</b><br/>
             	Looks for issues around use of common annotations
             	</li>
+            	<li><b>[MUP] Map Usage Issues</b><br/>
+            	Looks for odd usage patterns when using Maps
+            	</li>
             </ul>
         </div>
         <hr/>        
-        <img id="v7_0_0_image" src="flip2.gif" onClick="toggleBlock('v7_0_0', 'v7_0_0_image');" align="top"/>
+        <img id="v7_0_0_image" src="flip1.gif" onClick="toggleBlock('v7_0_0', 'v7_0_0_image');" align="top"/>
         Detectors added in v7.0.0<br/>
-        <div id="v7_0_0" style="display:block;">
+        <div id="v7_0_0" style="display:none;">
             <ul>
             	<li><b>[SSCU] Suspicious Shaded Class Use</b><br/>
             	Looks for use of classes that have been shaded into 3rdparty jars, rather than using the 
