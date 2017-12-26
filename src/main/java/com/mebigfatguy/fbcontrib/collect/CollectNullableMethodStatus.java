@@ -33,6 +33,7 @@ public class CollectNullableMethodStatus extends AnnotationIssues implements Non
         super(null);
     }
 
+    @Override
     public boolean isCollecting() {
         return true;
     }
