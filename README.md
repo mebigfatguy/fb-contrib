@@ -14,13 +14,13 @@ for FindBugs:
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 7.0.5
+       Version: 7.2.0
        
 For SpotBugs
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 7.0.5.sb
+       Version: 7.2.0.sb
        
        
 Developer
@@ -80,7 +80,7 @@ com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
             <plugin>
                 <groupId>com.mebigfatguy.fb-contrib</groupId>
                 <artifactId>fb-contrib</artifactId>
-                <version>7.0.5</version>
+                <version>7.2.0.sb</version>
             </plugin>
         </plugins>
     </configuration>
@@ -104,7 +104,7 @@ com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
             <plugin>
                 <groupId>com.mebigfatguy.fb-contrib</groupId>
                 <artifactId>fb-contrib</artifactId>
-                <version>7.0.5</version>
+                <version>7.2.0.sb</version>
             </plugin>
         </plugins>
     </configuration>
@@ -130,7 +130,7 @@ dependencies {
     findbugs configurations.findbugsPlugins.dependencies
 
     // To keep everything tidy, we set these apart
-    findbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.0.5'
+    findbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.2.0'
 }
 
 task findbugs(type: FindBugs) {
