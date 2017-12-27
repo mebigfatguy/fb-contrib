@@ -2,6 +2,7 @@ package ex;
 
 import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -211,5 +212,23 @@ public class PSC_Sample {
         }
 
         return result;
+    }
+    
+    public List<String> fpStreamSource249(BooReader br) throws IOException, ClassNotFoundException {
+        List<String> result = new ArrayList<>();
+        Object o;
+        while (br.tokenType() != BooReader.BooTokenType.END) {
+            result.add(br.nextToken());
+        }
+
+        return result;
+    }
+    
+    interface BooReader {
+        enum BooTokenType { START,  MIDDLE, END };
+        
+        BooTokenType tokenType();
+        
+        String nextToken();
     }
 }
