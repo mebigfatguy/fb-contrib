@@ -199,6 +199,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                 if (xf != null) {
                     field = xf;
                 }
+                register = -1;
             }
         }
 

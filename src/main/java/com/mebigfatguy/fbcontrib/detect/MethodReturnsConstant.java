@@ -47,6 +47,9 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 @CustomUserValue
 public class MethodReturnsConstant extends BytecodeScanningDetector {
+
+    private static final Object CONSTANT_DOESNT_EXIST = new Object();
+
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private Integer returnRegister;
@@ -144,7 +147,8 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                     OpcodeStack.Item item = stack.getStackItem(0);
 
                     Integer register = Integer.valueOf(item.getRegisterNumber());
-                    if (registerConstants.containsKey(register) && (registerConstants.get(register) == null)) {
+                    Object constant = registerConstants.get(register);
+                    if (CONSTANT_DOESNT_EXIST.equals(constant)) {
                         throw new StopOpcodeParsingException();
                     }
 
@@ -156,7 +160,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                         }
                     }
 
-                    Object constant = item.getConstant();
+                    constant = item.getConstant();
                     if (constant == null) {
                         throw new StopOpcodeParsingException();
                     }
@@ -190,24 +194,26 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     Object constant = item.getConstant();
-                    if (registerConstants.containsKey(register)) {
-                        if ((constant == null) || !constant.equals(registerConstants.get(register))) {
-                            registerConstants.put(register, null);
+
+                    Object regConstant = registerConstants.get(register);
+                    if (regConstant != null) {
+                        if ((constant == null) || !constant.equals(regConstant)) {
+                            registerConstants.put(register, CONSTANT_DOESNT_EXIST);
                         }
                     } else {
                         if (item.getSignature().contains(Values.SIG_ARRAY_PREFIX)) {
-                            registerConstants.put(register, null);
+                            registerConstants.put(register, CONSTANT_DOESNT_EXIST);
                         } else {
-                            registerConstants.put(register, constant);
+                            registerConstants.put(register, constant == null ? CONSTANT_DOESNT_EXIST : constant);
                         }
                     }
                 } else {
-                    registerConstants.put(register, null);
+                    registerConstants.put(register, CONSTANT_DOESNT_EXIST);
                 }
 
                 if (returnRegister.equals(register)) {
                     Object constant = registerConstants.get(returnRegister);
-                    if (constant != null) {
+                    if (CONSTANT_DOESNT_EXIST.equals(constant)) {
                         throw new StopOpcodeParsingException();
                     }
                 }

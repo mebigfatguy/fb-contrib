@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -64,7 +65,8 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                 for (Field f : cls.getFields()) {
                     if (f.isPrivate() && !f.isSynthetic()) {
                         String fieldName = f.getName();
-                        fieldValues.put(fieldName, null);
+                        // preallocating a set per field is just a waste, so just insert the empty set as a place holder
+                        fieldValues.put(fieldName, Collections.emptySet());
                         nameToField.put(fieldName, f);
                     }
                 }
@@ -77,7 +79,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
 
                         for (Map.Entry<String, Set<Object>> fieldInfo : fieldValues.entrySet()) {
                             Set<Object> values = fieldInfo.getValue();
-                            if ((values != null) && (values.size() >= 3)) {
+                            if (values.size() >= 3) {
                                 String fieldName = fieldInfo.getKey();
                                 bugReporter.reportBug(new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY).addClass(this)
                                         .addField(XFactory.createXField(cls, nameToField.get(fieldName))).addSourceLine(firstFieldUse.get(fieldName)));
@@ -111,27 +113,30 @@ public class PoorMansEnum extends BytecodeScanningDetector {
 
             if (seen == PUTFIELD) {
                 String fieldName = getNameConstantOperand();
-                if (fieldValues.containsKey(fieldName) && (stack.getStackDepth() > 0)) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    Object cons = item.getConstant();
-                    if (cons == null) {
-                        fieldValues.remove(fieldName);
-                        nameToField.remove(fieldName);
-                        firstFieldUse.remove(fieldName);
+                if (stack.getStackDepth() > 0) {
+                    Set<Object> values = fieldValues.get(fieldName);
+                    if (values != null) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        Object cons = item.getConstant();
+                        if (cons == null) {
+                            fieldValues.remove(fieldName);
+                            nameToField.remove(fieldName);
+                            firstFieldUse.remove(fieldName);
 
-                        if (fieldValues.isEmpty()) {
-                            throw new StopOpcodeParsingException();
-                        }
-                    } else {
-                        Set<Object> values = fieldValues.get(fieldName);
-                        if (values == null) {
-                            values = new HashSet<>();
-                            fieldValues.put(fieldName, values);
-                            if (firstFieldUse.get(fieldName) == null) {
-                                firstFieldUse.put(fieldName, SourceLineAnnotation.fromVisitedInstruction(this));
+                            if (fieldValues.isEmpty()) {
+                                throw new StopOpcodeParsingException();
                             }
+                        } else {
+                            if (values.isEmpty()) {
+                                // it's the emptySet(), create a new one
+                                values = new HashSet<>();
+                                fieldValues.put(fieldName, values);
+                                if (firstFieldUse.get(fieldName) == null) {
+                                    firstFieldUse.put(fieldName, SourceLineAnnotation.fromVisitedInstruction(this));
+                                }
+                            }
+                            values.add(cons);
                         }
-                        values.add(cons);
                     }
                 }
             }
