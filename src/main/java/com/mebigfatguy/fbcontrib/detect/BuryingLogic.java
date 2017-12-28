@@ -25,6 +25,7 @@ import java.util.Iterator;
 
 import javax.annotation.Nullable;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
 import org.apache.bcel.classfile.Method;
@@ -56,14 +57,14 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
     private final static BitSet resetOps = new BitSet();
     static {
-        resetOps.set(PUTFIELD);
-        resetOps.set(PUTSTATIC);
-        resetOps.set(POP);
-        resetOps.set(POP2);
-        resetOps.set(TABLESWITCH);
-        resetOps.set(LOOKUPSWITCH);
-        resetOps.set(MONITORENTER);
-        resetOps.set(MONITOREXIT);
+        resetOps.set(Const.PUTFIELD);
+        resetOps.set(Const.PUTSTATIC);
+        resetOps.set(Const.POP);
+        resetOps.set(Const.POP2);
+        resetOps.set(Const.TABLESWITCH);
+        resetOps.set(Const.LOOKUPSWITCH);
+        resetOps.set(Const.MONITORENTER);
+        resetOps.set(Const.MONITOREXIT);
     }
 
     private BugReporter bugReporter;
@@ -217,7 +218,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                 int target = getBranchTarget();
 
                 if (getBranchOffset() > 0) {
-                    if ((seen == GOTO) || (seen == GOTO_W)) {
+                    if ((seen == Const.GOTO) || (seen == Const.GOTO_W)) {
                         gotoBranchPCs.set(target);
                     } else if ((catchPCs == null) || !catchPCs.get(getNextPC())) {
                         ifBlocks.add(new IfBlock(getNextPC(), target));
@@ -245,7 +246,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
                         activeUnconditional = blockAtPC;
                     }
                 }
-            } else if ((seen == TABLESWITCH) || (seen == LOOKUPSWITCH)) {
+            } else if ((seen == Const.TABLESWITCH) || (seen == Const.LOOKUPSWITCH)) {
                 int[] offsets = getSwitchOffsets();
                 int pc = getPC();
                 for (int offset : offsets) {
