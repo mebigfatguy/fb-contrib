@@ -450,6 +450,18 @@ public class SPP_Sample implements Serializable {
             List<String> l = new ArrayList<>(size);
         }
     }
+
+    public static abstract class FPAbstractWithToString {
+        public static class FPChildWithToString extends FPAbstractWithToString {
+            private FPAbstractWithToString left;
+            private FPAbstractWithToString right;
+
+            @Override
+            public String toString() {
+                return '(' + left.toString() + ") and (" + right.toString() + ')';
+            }
+        }
+    }
 }
 
 interface FPInterfaceWithSerialVer extends Serializable {
