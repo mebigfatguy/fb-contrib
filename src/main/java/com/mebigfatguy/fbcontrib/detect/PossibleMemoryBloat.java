@@ -240,8 +240,11 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             if (bloatableCandidates.isEmpty()) {
                 throw new StopOpcodeParsingException();
             }
-        } else if (increasingMethods.contains(mName) && bloatableCandidates.containsKey(field)) {
-            bloatableFields.put(field, bloatableCandidates.get(field));
+        } else if (increasingMethods.contains(mName)) {
+            FieldAnnotation fieldAn = bloatableCandidates.get(field);
+            if (fieldAn != null) {
+                bloatableFields.put(field, fieldAn);
+            }
         }
     }
 }
