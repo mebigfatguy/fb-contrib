@@ -69,13 +69,13 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
     private static final Set<FQMethod> UNSIZED_SOURCES = UnmodifiableSet.create(
     // @formatter:off
-            new FQMethod("java/util/Enumeration", "hasMoreElements", "()Z"),
-            new FQMethod("java/util/StringTokenizer", "hasMoreElements", "()Z"),
-            new FQMethod("java/util/StringTokenizer", "hasMoreTokens", "()Z")
+            new FQMethod("java/util/Enumeration", "hasMoreElements", SignatureBuilder.SIG_VOID_TO_BOOLEAN),
+            new FQMethod("java/util/StringTokenizer", "hasMoreElements", SignatureBuilder.SIG_VOID_TO_BOOLEAN),
+            new FQMethod("java/util/StringTokenizer", "hasMoreTokens", SignatureBuilder.SIG_VOID_TO_BOOLEAN)
     // @formatter:on
     );
 
-    private static final FQMethod ITERATOR_HASNEXT = new FQMethod("java/util/Iterator", "hasNext", "()Z");
+    private static final FQMethod ITERATOR_HASNEXT = new FQMethod("java/util/Iterator", "hasNext", SignatureBuilder.SIG_VOID_TO_BOOLEAN);
 
     private static final QMethod ITERATOR_METHOD = new QMethod("iterator", "()Ljava/util/Iterator;");
 
