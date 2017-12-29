@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.BitSet;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
@@ -101,7 +102,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             int pc = getPC();
-            if ((seen == LOOKUPSWITCH) || (seen == TABLESWITCH)) {
+            if ((seen == Const.LOOKUPSWITCH) || (seen == Const.TABLESWITCH)) {
                 switchLocs.set(pc);
                 for (int offset : getSwitchOffsets()) {
                     switchLocs.set(pc + offset);
@@ -140,7 +141,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                 break;
 
                 case SAW_LOAD:
-                    if ((seen == LDC) || (seen == LDC_W)) {
+                    if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
                         Constant c = getConstantRefOperand();
                         String currConstType = null;
                         if (c instanceof ConstantString) {
@@ -160,13 +161,13 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                         } else {
                             state = State.SAW_NOTHING;
                         }
-                    } else if (seen == GETSTATIC) {
+                    } else if (seen == Const.GETSTATIC) {
                         state = State.SAW_CONST;
 
-                    } else if ((seen >= ICONST_M1) && (seen <= ICONST_5)) {
+                    } else if ((seen >= Const.ICONST_M1) && (seen <= Const.ICONST_5)) {
                         state = State.SAW_CONST;
 
-                    } else if ((seen >= LCONST_0) && (seen <= LCONST_1)) {
+                    } else if ((seen >= Const.LCONST_0) && (seen <= Const.LCONST_1)) {
                         state = State.SAW_CONST;
 
                     } else {
@@ -175,13 +176,13 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                 break;
 
                 case SAW_CONST:
-                    if ((seen == INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand())
+                    if ((seen == Const.INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand())
                             && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
                         state = State.SAW_EQUALS;
-                    } else if (seen == IF_ICMPEQ) {
+                    } else if (seen == Const.IF_ICMPEQ) {
                         conditionCount++;
                         state = State.SAW_PATTERN;
-                    } else if (seen == IF_ICMPNE) {
+                    } else if (seen == Const.IF_ICMPNE) {
                         conditionCount++;
                         if (conditionCount >= LOW_CONDITIONAL_COUNT) {
                             bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
@@ -194,10 +195,10 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                 break;
 
                 case SAW_EQUALS:
-                    if (seen == IFNE) {
+                    if (seen == Const.IFNE) {
                         conditionCount++;
                         state = State.SAW_PATTERN;
-                    } else if (seen == IFEQ) {
+                    } else if (seen == Const.IFEQ) {
                         conditionCount++;
                         if (conditionCount >= LOW_CONDITIONAL_COUNT) {
                             bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
