@@ -418,7 +418,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     /**
      * returns if the conditional is based on a method call from an object that has no sizing to determine what presize should be. it's possible the correct
      * implementation should just return true, if <code>if ((seen != IFNE) || (stack.getStackDepth() == 0))</code>
-     * 
+     *
      * @param seen
      *            the current visited opcode
      * @return whether this conditional is based on a unsized object
@@ -497,7 +497,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
         }
     }
 
-    class PSCUserValue {
+    static class PSCUserValue {
 
         private Integer allocationNumber;
         private boolean hasSizedSource;
