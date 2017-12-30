@@ -2,8 +2,8 @@ package ex;
 
 import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -213,7 +213,7 @@ public class PSC_Sample {
 
         return result;
     }
-    
+
     public List<String> fpStreamSource249(BooReader br) throws IOException, ClassNotFoundException {
         List<String> result = new ArrayList<>();
         Object o;
@@ -223,12 +223,48 @@ public class PSC_Sample {
 
         return result;
     }
-    
+
+    public void fpInitMultipleOnSameRef(boolean a, boolean b) {
+        Set<String> immutable1;
+        Set<String> immutable2;
+
+        Set<String> s = new HashSet<>();
+        s.add("A1");
+        s.add("A2");
+        s.add("A3");
+        s.add("A4");
+        s.add("A5");
+        s.add("A6");
+        s.add("A7");
+        s.add("A8");
+        s.add("A9");
+        s.add("A10");
+        s.add("A11");
+        s.add("A12");
+        s.add("A13");
+        s.add("A14");
+        s.add("A15");
+        immutable1 = Collections.unmodifiableSet(s);
+
+        s = new HashSet<>();
+        s.add("B1");
+        s.add("B2");
+        s.add("B3");
+        s.add("B4");
+        s.add("B5");
+        s.add("B6");
+        s.add("B7");
+        s.add("B8");
+        immutable2 = Collections.unmodifiableSet(s);
+    }
+
     interface BooReader {
-        enum BooTokenType { START,  MIDDLE, END };
-        
+        enum BooTokenType {
+            START, MIDDLE, END
+        };
+
         BooTokenType tokenType();
-        
+
         String nextToken();
     }
 }

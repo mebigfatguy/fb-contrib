@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MUP_Sample {
+public class MUI_Sample {
 
     Map<String, String> fieldMap = new HashMap<>();
 
@@ -52,7 +52,7 @@ public class MUP_Sample {
     }
 
     public String getAValue() {
-        return MUP_Sample.class.getName();
+        return MUI_Sample.class.getName();
     }
 
 }

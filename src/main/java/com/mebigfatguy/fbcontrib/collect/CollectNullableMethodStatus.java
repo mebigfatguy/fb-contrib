@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 @SuppressWarnings({ "PMD", "CPD-START" })
 public class CollectNullableMethodStatus extends AnnotationIssues implements NonReportingDetector {
 
-    public CollectNullableMethodStatus(BugReporter bugReporter) {
+    public CollectNullableMethodStatus(@SuppressWarnings("unused") BugReporter bugReporter) {
         super(null);
     }
 

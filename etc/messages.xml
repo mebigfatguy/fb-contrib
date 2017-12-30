@@ -6034,7 +6034,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
-    <BugPattern type="MUP_CONTAINSKEY_BEFORE_GET">
+    <BugPattern type="MUI_CONTAINSKEY_BEFORE_GET">
     	<ShortDescription>Method check a map with containsKey(), before using get()</ShortDescription>
     	<LongDescription>Method {1} checks a map with containsKey(), before using get()</LongDescription>
     	<Details>

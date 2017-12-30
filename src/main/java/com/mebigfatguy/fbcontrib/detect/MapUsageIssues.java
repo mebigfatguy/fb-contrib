@@ -108,7 +108,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         ContainsKey ck = mapContainsKeyUsed.remove(new MapRef(itm));
                         if (ck != null) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.MUP_CONTAINSKEY_BEFORE_GET.name(), ck.getReportLevel()).addClass(this)
+                            bugReporter.reportBug(new BugInstance(this, BugType.MUI_CONTAINSKEY_BEFORE_GET.name(), ck.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                         }
                     }
