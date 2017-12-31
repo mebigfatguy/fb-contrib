@@ -5,7 +5,6 @@ classes
 .cvsignore
 *.*~
 *.xlr
-*.jar
 *.zip
 *.fbp
 htdocs/bugdescriptions.html
