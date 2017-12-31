@@ -264,7 +264,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ModifyingUnmodifiableCollection" speed="fast" reports="MUC_MODIFYING_UNMODIFIABLE_COLLECTION"/>
 
-    <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections" speed="fast" reports="PSC_PRESIZE_COLLECTIONS" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.PresizeCollections" speed="fast" reports="PSC_PRESIZE_COLLECTIONS,PSC_SUBOPTIMAL_COLLECTION_SIZING" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ArrayIndexOutOfBounds" speed="fast" reports="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS,AIOB_ARRAY_STORE_TO_NULL_REFERENCE" />
     
@@ -550,6 +550,7 @@
     <BugPattern abbrev="CU" type="CU_CLONE_USABILITY_THROWS" category="STYLE" />
     <BugPattern abbrev="CAAL" type="CAAL_CONFUSING_ARRAY_AS_LIST" category="CORRECTNESS" />
     <BugPattern abbrev="PSC" type="PSC_PRESIZE_COLLECTIONS" category="PERFORMANCE" />
+    <BugPattern abbrev="PSC" type="PSC_SUBOPTIMAL_COLLECTION_SIZING" category="PERFORMANCE" />
     <BugPattern abbrev="UMTP" type="UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER" category="CORRECTNESS" />
     <BugPattern abbrev="NPMC" type="NPMC_NON_PRODUCTIVE_METHOD_CALL" category="CORRECTNESS" />
     <BugPattern abbrev="AIOB" type="AIOB_ARRAY_INDEX_OUT_OF_BOUNDS" category="CORRECTNESS"  />

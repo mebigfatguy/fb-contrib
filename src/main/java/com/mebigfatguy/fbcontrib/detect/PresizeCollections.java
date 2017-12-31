@@ -79,8 +79,12 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
     private static final QMethod ITERATOR_METHOD = new QMethod("iterator", "()Ljava/util/Iterator;");
 
+    private static final FQMethod HASHMAP_SIZED_CTOR = new FQMethod("java/util/HashMap", "<init>", SignatureBuilder.SIG_INT_TO_VOID);
+    private static final FQMethod HASHSET_SIZED_CTOR = new FQMethod("java/util/HashSet", "<init>", SignatureBuilder.SIG_INT_TO_VOID);
+
     private BugReporter bugReporter;
     private JavaClass collectionClass;
+    private boolean guavaOnPath;
     private OpcodeStack stack;
     private int nextAllocNumber;
     private Map<Comparable<?>, PSCUserValue> storeToUserValue;
@@ -95,6 +99,14 @@ public class PresizeCollections extends BytecodeScanningDetector {
             collectionClass = Repository.lookupClass("java/util/Collection");
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
+        }
+
+        try {
+            Repository.lookupClass("com/google/common/collect/Maps");
+            guavaOnPath = true;
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+            guavaOnPath = false;
         }
     }
 
@@ -176,6 +188,16 @@ public class PresizeCollections extends BytecodeScanningDetector {
                             if (SignatureBuilder.SIG_VOID_TO_VOID.equals(signature)) {
                                 userValue = new PSCUserValue(Integer.valueOf(nextAllocNumber++));
                                 sawAlloc = true;
+                            } else if (guavaOnPath && (stack.getStackDepth() > 0)) {
+                                FQMethod fqMethod = new FQMethod(clsName, methodName, signature);
+                                if (HASHMAP_SIZED_CTOR.equals(fqMethod) || HASHSET_SIZED_CTOR.equals(fqMethod)) {
+                                    OpcodeStack.Item itm = stack.getStackItem(0);
+                                    XMethod xm = itm.getReturnValueOf();
+                                    if ((xm != null) && "size".equals(xm.getMethodDescriptor().getName())) {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.PSC_SUBOPTIMAL_COLLECTION_SIZING.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
+                                    }
+                                }
                             }
                         }
                     }
@@ -417,7 +439,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
     /**
      * returns if the conditional is based on a method call from an object that has no sizing to determine what presize should be. it's possible the correct
      * implementation should just return true, if <code>if ((seen != IFNE) || (stack.getStackDepth() == 0))</code>
-     * 
+     *
      * @param seen
      *            the current visited opcode
      * @return whether this conditional is based on a unsized object

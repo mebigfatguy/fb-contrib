@@ -4957,6 +4957,28 @@ if (name != null) {
 			]]>
 		</Details>
 	</BugPattern>
+	
+		<BugPattern type="PSC_SUBOPTIMAL_COLLECTION_SIZING">
+		<ShortDescription>Method uses suboptimal sizing to allocation a collection</ShortDescription>
+		<LongDescription>Method {1} uses suboptimal sizing to allocation a collection</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method allocates a collection using the a constructor that takes a size parameter. However,
+			because Maps and Sets have a loading factor, passing in the exact size you want is an 
+			incorrect way to presize the collection, and may still cause reallocations. Since you are using
+			Guava, it is better to use
+			<code><pre>
+				Maps.newHashMapWithExpectedSize(c.size());
+			</pre></code>
+			or
+			<code><pre>
+				Sets.newHashSetWithExpectedsize(c.size());
+			</pre></code>
+			as this method calculates the correct size taking into account the loading factor.
+			</p>
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER">
 		<ShortDescription>Method declares unbound method template parameter(s)</ShortDescription>
