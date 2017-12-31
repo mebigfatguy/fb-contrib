@@ -3,6 +3,7 @@ package ex;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -91,6 +92,21 @@ public class PSC_Sample {
         }
 
         return ss;
+    }
+
+    public String testNaiveSizing(Collection<String> cc) {
+        Map<String, String> mm = new HashMap<>(cc.size());
+        for (String c : cc) {
+            mm.put(c, c);
+        }
+
+        Set<String> ss = new HashSet<>(cc.size());
+        for (String c : cc) {
+            ss.add(c);
+        }
+
+        return mm.toString() + " - " + ss.toString();
+
     }
 
     public void fpDontHaveCollectionForSizing(Iterator<Long> it) {
