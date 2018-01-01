@@ -105,7 +105,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
             Repository.lookupClass("com/google/common/collect/Maps");
             guavaOnPath = true;
         } catch (ClassNotFoundException e) {
-            bugReporter.reportMissingClass(e);
+            // don't report. it's ok if the user doesn't use guava :)
             guavaOnPath = false;
         }
     }
