@@ -97,7 +97,7 @@ function toggleBlock(divId, imgId)
             	<li><b>[AI] Annotation Issues</b><br/>
             	Looks for issues around use of common annotations
             	</li>
-            	<li><b>[MUP] Map Usage Issues</b><br/>
+            	<li><b>[MUI] Map Usage Issues</b><br/>
             	Looks for odd usage patterns when using Maps
             	</li>
             </ul>

@@ -6259,5 +6259,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="UAC">Unnecessary Api Conversion</BugCode>
 	<BugCode abbrev="RFI">Reflection Issues</BugCode>
 	<BugCode abbrev="AI">Annotation Issues</BugCode>
-	<BugCode abbrev="MUP">Map Usage Issues</BugCode>
+	<BugCode abbrev="MUI">Map Usage Issues</BugCode>
 </MessageCollection>
