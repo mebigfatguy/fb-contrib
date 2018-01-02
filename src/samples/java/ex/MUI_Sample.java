@@ -50,6 +50,18 @@ public class MUI_Sample {
             return "Bar";
         }
     }
+    
+    public String testRemoveAfterGetLocal(Map<String, String> ss) {
+        String s = ss.get("foo");
+        ss.remove("foo");
+        return s;
+    }
+    
+    public String testRemoveAfterGetField() {
+        String s = fieldMap.get("foo");
+        fieldMap.remove("foo");
+        return s;
+    }
 
     public String getAValue() {
         return MUI_Sample.class.getName();

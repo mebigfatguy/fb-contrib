@@ -322,7 +322,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.AnnotationIssues" speed="fast" reports="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.MapUsageIssues" speed="fast" reports="MUI_CONTAINSKEY_BEFORE_GET"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MapUsageIssues" speed="fast" reports="MUI_CONTAINSKEY_BEFORE_GET,MUI_GET_BEFORE_REMOVE"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.collect.CollectNullableMethodStatus" speed="fast" reports="" hidden="true" />
     
@@ -620,4 +620,5 @@
 	<BugPattern abbrev="RFI" type="RFI_SET_ACCESSIBLE" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="AI" type="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="MUI" type="MUI_CONTAINSKEY_BEFORE_GET" category="STYLE" experimental="true" />
+	<BugPattern abbrev="MUI" type="MUI_GET_BEFORE_REMOVE" category="STYLE" experimental="true" />
 </FindbugsPlugin>

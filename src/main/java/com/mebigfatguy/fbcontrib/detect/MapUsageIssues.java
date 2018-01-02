@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Code;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -47,9 +48,11 @@ public class MapUsageIssues extends BytecodeScanningDetector {
 
     private static final FQMethod CONTAINSKEY_METHOD = new FQMethod("java/util/Map", "containsKey", "(Ljava/lang/Object;)Z");
     private static final FQMethod GET_METHOD = new FQMethod("java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;");
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Map<MapRef, ContainsKey> mapContainsKeyUsed;
+    private Map<MapRef, Get> mapGetUsed;
 
     /**
      * constructs a MUP detector given the reporter to report bugs on
@@ -66,9 +69,11 @@ public class MapUsageIssues extends BytecodeScanningDetector {
         try {
             stack = new OpcodeStack();
             mapContainsKeyUsed = new HashMap<>();
+            mapGetUsed = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             mapContainsKeyUsed = null;
+            mapGetUsed = null;
             stack = null;
         }
     }
@@ -77,6 +82,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         mapContainsKeyUsed.clear();
+        mapGetUsed.clear();
         super.visitCode(obj);
     }
 
@@ -93,6 +99,17 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                     }
                 }
             }
+
+            // checking for a branch might be overkill, but for now lets go with it
+            if (!mapGetUsed.isEmpty() && OpcodeUtils.isBranch(seen)) {
+                Iterator<Map.Entry<MapRef, Get>> it = mapGetUsed.entrySet().iterator();
+                int pc = getPC();
+                while (it.hasNext()) {
+                    Map.Entry<MapRef, Get> entry = it.next();
+                    it.remove();
+                }
+            }
+            
             if (seen == INVOKEINTERFACE) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (CONTAINSKEY_METHOD.equals(fqm)) {
@@ -107,8 +124,19 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         ContainsKey ck = mapContainsKeyUsed.remove(new MapRef(itm));
-                        if (ck != null) {
+                        if ((ck != null) && new ContainsKey(stack.getStackItem(0), 0).equals(ck)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.MUI_CONTAINSKEY_BEFORE_GET.name(), ck.getReportLevel()).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
+                        
+                        mapGetUsed.put(new MapRef(itm), new Get(stack.getStackItem(0)));
+                    }
+                } else if (REMOVE_METHOD.equals(fqm)) {
+                    if (stack.getStackDepth() >= 2) {
+                        OpcodeStack.Item itm = stack.getStackItem(1);
+                        Get get = mapGetUsed.remove(new MapRef(itm));
+                        if ((get != null) && new Get(stack.getStackItem(0)).equals(get)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.MUI_GET_BEFORE_REMOVE.name(), get.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                         }
                     }
@@ -146,7 +174,6 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                             keyValue = xm;
                             reportLevel = LOW_PRIORITY;
                         }
-                        keyValue = null;
                     }
                 }
             }
@@ -178,6 +205,67 @@ public class MapUsageIssues extends BytecodeScanningDetector {
         @Override
         public int hashCode() {
             return keyValue == null ? 0 : keyValue.hashCode();
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    }
+    
+    static class Get {
+        private Object keyValue;
+        private int reportLevel;
+        
+        public Get(OpcodeStack.Item itm) {
+            int reg = itm.getRegisterNumber();
+            if (reg >= 0) {
+                keyValue = Integer.valueOf(reg);
+                reportLevel = NORMAL_PRIORITY;
+            } else {
+                XField xf = itm.getXField();
+                if (xf != null) {
+                    keyValue = xf;
+                    reportLevel = NORMAL_PRIORITY;
+                } else {
+                    Object cons = itm.getConstant();
+                    if (cons != null) {
+                        keyValue = cons;
+                        reportLevel = NORMAL_PRIORITY;
+                    } else {
+                        XMethod xm = itm.getReturnValueOf();
+                        if (xm != null) {
+                            keyValue = xm;
+                            reportLevel = LOW_PRIORITY;
+                        }
+                        keyValue = null;
+                    }
+                }
+            }
+        }
+        
+        @Override
+        public boolean equals(Object o) {
+            if (!(o instanceof Get)) {
+                return false;
+            }
+
+            Get that = (Get) o;
+
+            if ((keyValue == null) || (that.keyValue == null)) {
+                return false;
+            }
+
+            return keyValue.equals(that.keyValue);
+        }
+
+        @Override
+        public int hashCode() {
+            return keyValue == null ? 0 : keyValue.hashCode();
+        }
+        
+        public int getReportLevel() {
+            return reportLevel;
         }
 
         @Override
