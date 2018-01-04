@@ -23,6 +23,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
@@ -187,12 +188,12 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
             if ((info != null) && ((assertionEnd < getPC()) || !assertableReports.contains(info))) {
                 reportBug(info);
             }
-        } else if (seen == GETSTATIC) {
+        } else if (seen == Const.GETSTATIC) {
             if ("$assertionsDisabled".equals(getNameConstantOperand())) {
                 sawAssertionDisabled = true;
                 return;
             }
-        } else if ((seen == IFNE) && sawAssertionDisabled) {
+        } else if ((seen == Const.IFNE) && sawAssertionDisabled) {
             assertionEnd = getBranchTarget();
         }
 
