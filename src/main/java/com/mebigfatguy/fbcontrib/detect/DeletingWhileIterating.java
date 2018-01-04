@@ -174,7 +174,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEINTERFACE) {
+            if (seen == Const.INVOKEINTERFACE) {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
@@ -239,7 +239,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                         groupId = id.intValue();
                     }
                 }
-            } else if ((seen == PUTFIELD) || (seen == PUTSTATIC)) {
+            } else if ((seen == Const.PUTFIELD) || (seen == Const.PUTSTATIC)) {
                 if (stack.getStackDepth() > 1) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
 
@@ -301,7 +301,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                 int reg = RegisterUtils.getALoadReg(this, seen);
                 OpcodeStack.Item itm = new OpcodeStack.Item(new OpcodeStack.Item(), reg);
                 groupId = findCollectionGroup(itm, false);
-            } else if ((seen == IFEQ) && (stack.getStackDepth() > 0)) {
+            } else if ((seen == Const.IFEQ) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 Integer id = (Integer) itm.getUserValue();
                 if (id != null) {
@@ -311,7 +311,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                     if (ins < 0) {
                         ins = 256 + ins;
                     }
-                    if ((ins == GOTO) || (ins == GOTO_W)) {
+                    if ((ins == Const.GOTO) || (ins == Const.GOTO_W)) {
                         Integer reg = groupToIterator.get(id);
                         if (reg != null) {
                             loops.put(reg, new Loop(getPC(), gotoAddr));
