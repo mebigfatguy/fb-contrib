@@ -6013,7 +6013,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		<![CDATA[
     		<p>This method creates a java.nio.file.Path object by first creating a java.io.File object, and then calling
     		toPath() on it. It is simpler to just construct the Path object directly, say by using
-    		{@code Path.get(String...)}.
+    		{@code Paths.get(String...)}.
     		</p>
     		]]>
     	</Details>
