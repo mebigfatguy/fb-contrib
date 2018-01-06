@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import javax.annotation.Nullable;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantString;
@@ -102,21 +103,21 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKESPECIAL) {
+            if (seen == Const.INVOKESPECIAL) {
                 userValue = sawInvokeSpecial();
-            } else if (seen == INVOKEVIRTUAL) {
+            } else if (seen == Const.INVOKEVIRTUAL) {
                 if (sawLDCEmpty) {
                     dealWithEmptyString();
                 }
                 userValue = sawInvokeVirtual();
 
-            } else if ((seen == GOTO) || (seen == GOTO_W)) {
+            } else if ((seen == Const.GOTO) || (seen == Const.GOTO_W)) {
                 int depth = stack.getStackDepth();
                 for (int i = 0; i < depth; i++) {
                     OpcodeStack.Item itm = stack.getStackItem(i);
                     itm.setUserValue(null);
                 }
-            } else if ((seen == LDC) || (seen == LDC_W)) {
+            } else if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
                 Constant c = getConstantRefOperand();
                 if (c instanceof ConstantString) {
                     String s = ((ConstantString) c).getBytes(getConstantPool());
