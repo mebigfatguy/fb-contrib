@@ -1,6 +1,6 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
- * Copyright (C) 2012-2017 Bhaskar Maddala
+ * Copyright (C) 2012-2018 Bhaskar Maddala
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -152,7 +152,7 @@ public class ContraVariantArrayAssignment extends BytecodeScanningDetector {
 
             Type sourceType = Type.getType(sourceSignature);
             Type targetType = Type.getType(targetSignature);
-            if (sourceType instanceof ArrayType && targetType instanceof ArrayType && isObjectType(sourceType) && isObjectType(targetType)) {
+            if ((sourceType instanceof ArrayType) && (targetType instanceof ArrayType) && isObjectType(sourceType) && isObjectType(targetType)) {
                 ObjectType sourceElementType = (ObjectType) ((ArrayType) sourceType).getBasicType();
                 ObjectType targetElementType = (ObjectType) ((ArrayType) targetType).getBasicType();
                 if (!targetElementType.isCastableTo(sourceElementType)) {
