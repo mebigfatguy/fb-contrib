@@ -1,7 +1,7 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
- * Copyright (C) 2005-2017 Dave Brosius
- * Copyright (C) 2016-2017 Juan Martin Sotuyo Dodero
+ * Copyright (C) 2005-2018 Dave Brosius
+ * Copyright (C) 2016-2018 Juan Martin Sotuyo Dodero
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
@@ -62,7 +62,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     }
 
     private static final Set<String> INJECTOR_ANNOTATIONS = UnmodifiableSet.create(
-        // @formatter:off
+    // @formatter:off
         "org.mockito.Mock",
         "org.springframework.beans.factory.annotation.Autowired"
         // @formatter:on

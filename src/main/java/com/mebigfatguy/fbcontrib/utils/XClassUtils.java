@@ -1,6 +1,6 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
- * Copyright (C) 2009-2017 Jean-Noel Rouvignac
+ * Copyright (C) 2009-2018 Jean-Noel Rouvignac
  *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
