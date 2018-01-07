@@ -1,13 +1,18 @@
 package ex;
+
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 @SuppressWarnings("all")
 public class UEC_Sample {
+
+    Map<FalsePositive, Integer> fpConcur = new ConcurrentHashMap<>();
+
     public enum Suite {
         Spades, Hearts, Clubs, Diamonds
     };
@@ -16,7 +21,7 @@ public class UEC_Sample {
         A, B, C
     };
 
-    private final Set<Suite> wildSuites = new HashSet<Suite>();
+    private final Set<Suite> wildSuites = new HashSet<>();
     private final EnumSet<Suite> eWildSuites = EnumSet.noneOf(Suite.class);
 
     private interface EnumStub {
@@ -35,7 +40,7 @@ public class UEC_Sample {
     }
 
     public Map<Suite, Integer> deal() {
-        Map<Suite, Integer> hand = new HashMap<Suite, Integer>();
+        Map<Suite, Integer> hand = new HashMap<>();
         hand.put(Suite.Spades, new Integer(10));
         hand.put(Suite.Hearts, new Integer(9));
 
@@ -67,9 +72,13 @@ public class UEC_Sample {
     }
 
     public void fpEnumsWithInf() {
-        Set<EnumStub> es = new HashSet<EnumStub>();
+        Set<EnumStub> es = new HashSet<>();
         es.add(EnumWithInf.A);
         es.add(EnumWithInf.B);
         es.add(EnumWithInf.C);
+    }
+
+    public void fpDontRecommendOnConcurrent(FalsePositive fp) {
+        fpConcur.put(fp, Integer.valueOf(1));
     }
 }
