@@ -34,7 +34,6 @@ import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
-import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -50,14 +49,16 @@ import edu.umd.cs.findbugs.ba.XField;
  */
 @CustomUserValue
 public class UseEnumCollections extends BytecodeScanningDetector {
-    private static final Set<String> nonEnumCollections = UnmodifiableSet.create("Ljava/util/HashSet;", "Ljava/util/HashMap;", "Ljava/util/TreeMap;",
-            "Ljava/util/ConcurrentHashMap;", "Ljava/util/IdentityHashMap;", "Ljava/util/WeakHashMap;");
+
+    enum CollectionType {
+        UNKNOWN, REGULAR, SPECIAL, ENUM
+    };
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private Set<String> checkedFields;
-    private Map<Integer, Boolean> enumRegs;
-    private Map<String, Boolean> enumFields;
+    private Map<Integer, CollectionType> enumRegs;
+    private Map<String, CollectionType> enumFields;
 
     /**
      * constructs a UEC detector given the reporter to report bugs on
@@ -118,31 +119,43 @@ public class UseEnumCollections extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        Boolean sawEnumCollectionCreation = null; // true - enum, false -
-                                                  // nonenum
+        CollectionType collectionType = CollectionType.UNKNOWN;
         try {
 
             stack.precomputation(this);
 
             if (seen == INVOKESTATIC) {
                 String clsName = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
                 if ("java/util/EnumSet".equals(clsName) && signature.endsWith(")Ljava/util/EnumSet;")) {
-                    sawEnumCollectionCreation = Boolean.TRUE;
+                    collectionType = CollectionType.ENUM;
+                } else if ("com/google/common/collect/Maps".equals(clsName) || "com/google/common/collect/Sets".equals(clsName)) {
+                    if (methodName.startsWith("newEnum")) {
+                        collectionType = CollectionType.ENUM;
+                    } else if (methodName.startsWith("newHash")) {
+                        collectionType = CollectionType.REGULAR;
+                    } else {
+                        collectionType = CollectionType.SPECIAL;
+                    }
                 }
             } else if (seen == INVOKESPECIAL) {
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 if ("java/util/EnumMap".equals(clsName) && Values.CONSTRUCTOR.equals(methodName)) {
-                    sawEnumCollectionCreation = Boolean.TRUE;
+                    collectionType = CollectionType.ENUM;
                 } else if (clsName.startsWith("java/util/") && (clsName.endsWith("Map") || clsName.endsWith("Set"))) {
-                    sawEnumCollectionCreation = Boolean.FALSE;
+                    if (clsName.equals("java/util/HashMap") || clsName.equals("java/util/HashSet")) {
+                        collectionType = CollectionType.REGULAR;
+                    } else {
+                        collectionType = CollectionType.SPECIAL;
+                    }
                 }
             } else if (OpcodeUtils.isAStore(seen)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-                    Boolean uv = (Boolean) itm.getUserValue();
+                    CollectionType uv = (CollectionType) itm.getUserValue();
                     if (uv == null) {
                         enumRegs.remove(reg);
                     } else {
@@ -151,12 +164,12 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 }
             } else if ((seen == ALOAD) || OpcodeUtils.isALoad(seen)) {
                 Integer reg = Integer.valueOf(RegisterUtils.getALoadReg(this, seen));
-                sawEnumCollectionCreation = enumRegs.get(reg);
+                collectionType = enumRegs.get(reg);
             } else if (seen == PUTFIELD) {
                 if (stack.getStackDepth() > 0) {
                     String fieldName = getNameConstantOperand();
                     OpcodeStack.Item itm = stack.getStackItem(0);
-                    Boolean uv = (Boolean) itm.getUserValue();
+                    CollectionType uv = (CollectionType) itm.getUserValue();
                     if (uv == null) {
                         enumFields.remove(fieldName);
                     } else {
@@ -165,17 +178,17 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 }
             } else if (seen == GETFIELD) {
                 String fieldName = getNameConstantOperand();
-                sawEnumCollectionCreation = enumFields.get(fieldName);
+                collectionType = enumFields.get(fieldName);
             } else if (seen == INVOKEINTERFACE) {
                 boolean bug = false;
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
                 if (Values.SLASHED_JAVA_UTIL_MAP.equals(clsName) && "put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)) {
-                    bug = isEnum(1) && !isEnumCollection(2) && !alreadyReported(2);
+                    bug = isEnum(1) && couldBeEnumCollection(2) && !alreadyReported(2);
                 } else if (Values.SLASHED_JAVA_UTIL_SET.equals(clsName) && "add".equals(methodName)
                         && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature)) {
-                    bug = isEnum(0) && !isEnumCollection(1) && !alreadyReported(1);
+                    bug = isEnum(0) && couldBeEnumCollection(1) && !alreadyReported(1);
                 }
 
                 if (bug) {
@@ -190,9 +203,9 @@ public class UseEnumCollections extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if ((sawEnumCollectionCreation != null) && (stack.getStackDepth() > 0)) {
+            if (((collectionType != null) && (collectionType != CollectionType.UNKNOWN)) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
-                itm.setUserValue(sawEnumCollectionCreation);
+                itm.setUserValue(collectionType);
             }
         }
     }
@@ -228,32 +241,27 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the item at the stackpos location is an instance of an EnumSet or EnumMap
+     * returns whether the item at the stackpos location isn't an enum collection but could be
      *
      * @param stackPos
      *            the position on the opstack to check
      *
-     * @return whether the class is an EnumSet or EnumMap
+     * @return whether the collection should be converted to an enum collection
      */
-    private boolean isEnumCollection(int stackPos) {
+    private boolean couldBeEnumCollection(int stackPos) {
         if (stack.getStackDepth() <= stackPos) {
             return false;
         }
 
         OpcodeStack.Item item = stack.getStackItem(stackPos);
 
-        Boolean userValue = (Boolean) item.getUserValue();
+        CollectionType userValue = (CollectionType) item.getUserValue();
         if (userValue != null) {
-            return userValue.booleanValue();
+            return userValue == CollectionType.REGULAR;
         }
 
         String realClass = item.getSignature();
-        if ("Ljava/util/EnumSet;".equals(realClass) || "Ljava/util/EnumMap;".equals(realClass)) {
-            return true;
-        }
-
-        // if can't tell here, then return true
-        return !nonEnumCollections.contains(realClass);
+        return "Ljava/util/HashSet;".equals(realClass) || "Ljava/util/HashMap;".equals(realClass);
     }
 
     /**
