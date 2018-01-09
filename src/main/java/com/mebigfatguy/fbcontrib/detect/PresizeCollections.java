@@ -72,7 +72,9 @@ public class PresizeCollections extends BytecodeScanningDetector {
     // @formatter:off
             new FQMethod("java/util/Enumeration", "hasMoreElements", SignatureBuilder.SIG_VOID_TO_BOOLEAN),
             new FQMethod("java/util/StringTokenizer", "hasMoreElements", SignatureBuilder.SIG_VOID_TO_BOOLEAN),
-            new FQMethod("java/util/StringTokenizer", "hasMoreTokens", SignatureBuilder.SIG_VOID_TO_BOOLEAN)
+            new FQMethod("java/util/StringTokenizer", "hasMoreTokens", SignatureBuilder.SIG_VOID_TO_BOOLEAN),
+            new FQMethod("java/util/regex/Matcher", "find", SignatureBuilder.SIG_VOID_TO_BOOLEAN),
+            new FQMethod("java/util/regex/Matcher", "find", SignatureBuilder.SIG_INT_TO_BOOLEAN)
     // @formatter:on
     );
 

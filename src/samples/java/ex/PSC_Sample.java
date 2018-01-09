@@ -14,6 +14,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
+import java.util.regex.Matcher;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
@@ -272,6 +273,19 @@ public class PSC_Sample {
         s.add("B7");
         s.add("B8");
         immutable2 = Collections.unmodifiableSet(s);
+    }
+
+    public List<String> fpMatcher(Matcher m) {
+        List<String> ss = new ArrayList<>();
+        int start = 0;
+        while (m.find(start)) {
+            String g = m.group(1);
+            ss.add(g);
+            start = m.end();
+        }
+
+        return ss;
+
     }
 
     interface BooReader {
