@@ -33,6 +33,8 @@ public class SignatureBuilder {
     public static final String SIG_VOID_TO_OBJECT = new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
 
     public static final String SIG_INT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).toString();
+    public static final String SIG_INT_TO_BOOLEAN = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_PRIMITIVE_BOOLEAN)
+            .toString();
     public static final String SIG_INT_TO_OBJECT = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT)
             .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
 
