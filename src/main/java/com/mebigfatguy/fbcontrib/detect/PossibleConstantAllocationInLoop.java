@@ -97,7 +97,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
         for (AllocationInfo info : allocations.values()) {
             if (info.loopBottom != -1) {
                 bugReporter.reportBug(new BugInstance(this, BugType.PCAIL_POSSIBLE_CONSTANT_ALLOCATION_IN_LOOP.name(), NORMAL_PRIORITY).addClass(this)
-                        .addMethod(this).addSourceLine(getClassContext(), this, info.allocationPC));
+                        .addMethod(this).addSourceLine(getClassContext(), this, info.allocationPC).addString(info.className));
             }
         }
     }
@@ -158,7 +158,7 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
                         String clsName = getClassConstantOperand();
                         if (!SYNTHETIC_ALLOCATION_CLASSES.contains(clsName) && switchInfos.isEmpty()) {
                             sawAllocationNumber = Integer.valueOf(nextAllocationNumber);
-                            allocations.put(sawAllocationNumber, new AllocationInfo(getPC()));
+                            allocations.put(sawAllocationNumber, new AllocationInfo(clsName, getPC()));
                             sawAllocation = true;
                         }
                     }
@@ -359,8 +359,10 @@ public class PossibleConstantAllocationInLoop extends BytecodeScanningDetector {
         int allocationPC;
         int loopTop;
         int loopBottom;
+        String className;
 
-        public AllocationInfo(int pc) {
+        public AllocationInfo(String clsName, int pc) {
+            className = clsName;
             allocationPC = pc;
             loopTop = -1;
             loopBottom = -1;
