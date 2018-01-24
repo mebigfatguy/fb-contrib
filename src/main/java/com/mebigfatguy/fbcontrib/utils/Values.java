@@ -80,6 +80,8 @@ public final class Values {
     public static final String DOTTED_JAVA_LANG_INTEGER = "java.lang.Integer";
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_STRINGBUILDER = "java.lang.StringBuilder";
+    @DottedClassName
+    public static final String DOTTED_JAVA_UTIL_MAP = "java.util.Map";
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
