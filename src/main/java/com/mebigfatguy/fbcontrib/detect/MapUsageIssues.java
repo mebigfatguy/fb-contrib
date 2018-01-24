@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.apache.bcel.classfile.Code;
 
@@ -29,7 +30,11 @@ import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -46,9 +51,14 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class MapUsageIssues extends BytecodeScanningDetector {
 
-    private static final FQMethod CONTAINSKEY_METHOD = new FQMethod("java/util/Map", "containsKey", "(Ljava/lang/Object;)Z");
-    private static final FQMethod GET_METHOD = new FQMethod("java/util/Map", "get", "(Ljava/lang/Object;)Ljava/lang/Object;");
-    private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Map", "remove", "(Ljava/lang/Object;)Ljava/lang/Object;");
+    private static final FQMethod CONTAINSKEY_METHOD = new FQMethod("java/util/Map", "containsKey", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final FQMethod GET_METHOD = new FQMethod("java/util/Map", "get", SignatureBuilder.SIG_OBJECT_TO_OBJECT);
+    private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Map", "remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT);
+
+    private static final QMethod SIZE_METHOD = new QMethod("size", SignatureBuilder.SIG_VOID_TO_INT);
+
+    private static final Set<String> COLLECTION_ACCESSORS = UnmodifiableSet.create("keySet", "entrySet", "values");
+
     private BugReporter bugReporter;
     private OpcodeStack stack;
     private Map<MapRef, ContainsKey> mapContainsKeyUsed;
@@ -109,7 +119,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                     it.remove();
                 }
             }
-            
+
             if (seen == INVOKEINTERFACE) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (CONTAINSKEY_METHOD.equals(fqm)) {
@@ -128,7 +138,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                             bugReporter.reportBug(new BugInstance(this, BugType.MUI_CONTAINSKEY_BEFORE_GET.name(), ck.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                         }
-                        
+
                         mapGetUsed.put(new MapRef(itm), new Get(stack.getStackItem(0)));
                     }
                 } else if (REMOVE_METHOD.equals(fqm)) {
@@ -138,6 +148,20 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         if ((get != null) && new Get(stack.getStackItem(0)).equals(get)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.MUI_GET_BEFORE_REMOVE.name(), get.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
+                        }
+                    }
+                }
+
+                QMethod qm = new QMethod(getNameConstantOperand(), getSigConstantOperand());
+                if (SIZE_METHOD.equals(qm)) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if ((itm.getRegisterNumber() < 0) && (itm.getXField() == null)) {
+                            XMethod xm = itm.getReturnValueOf();
+                            if ((xm != null) && Values.DOTTED_JAVA_UTIL_MAP.equals(xm.getClassName()) && COLLECTION_ACCESSORS.contains(xm.getName())) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.MUI_CALLING_SIZE_ON_SUBCONTAINER.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                            }
                         }
                     }
                 }
@@ -212,11 +236,11 @@ public class MapUsageIssues extends BytecodeScanningDetector {
             return ToString.build(this);
         }
     }
-    
+
     static class Get {
         private Object keyValue;
         private int reportLevel;
-        
+
         public Get(OpcodeStack.Item itm) {
             int reg = itm.getRegisterNumber();
             if (reg >= 0) {
@@ -243,7 +267,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                 }
             }
         }
-        
+
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof Get)) {
@@ -263,7 +287,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
         public int hashCode() {
             return keyValue == null ? 0 : keyValue.hashCode();
         }
-        
+
         public int getReportLevel() {
             return reportLevel;
         }

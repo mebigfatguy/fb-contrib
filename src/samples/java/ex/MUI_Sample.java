@@ -1,7 +1,9 @@
 package ex;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MUI_Sample {
@@ -50,17 +52,29 @@ public class MUI_Sample {
             return "Bar";
         }
     }
-    
+
     public String testRemoveAfterGetLocal(Map<String, String> ss) {
         String s = ss.get("foo");
         ss.remove("foo");
         return s;
     }
-    
+
     public String testRemoveAfterGetField() {
         String s = fieldMap.get("foo");
         fieldMap.remove("foo");
         return s;
+    }
+
+    public List<String> testKeySetSize(Map<String, String> m) {
+        return new ArrayList<>(m.keySet().size());
+    }
+
+    public List<String> testEntrySetSize(Map<String, String> m) {
+        return new ArrayList<>(m.entrySet().size());
+    }
+
+    public List<String> testValuesSize(Map<String, String> m) {
+        return new ArrayList<>(m.values().size());
     }
 
     public String getAValue() {
