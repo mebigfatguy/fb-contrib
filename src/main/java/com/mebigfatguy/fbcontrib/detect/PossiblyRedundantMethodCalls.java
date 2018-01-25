@@ -416,6 +416,10 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         }
                     }
                 }
+            } else if (OpcodeUtils.isReturn(seen)) {
+                localMethodCalls.clear();
+                fieldMethodCalls.clear();
+                branchTargets.clear(pc);
             }
         } finally {
             stack.sawOpcode(this, seen);
