@@ -265,3 +265,22 @@ class GitHubIssue109 {
         Object findByUuid(String uuid);
     }
 }
+
+class GitHubIssue261 {
+    @Test
+    public void fpCallingAnAssert() {
+        AssertHelper261 expect = new AssertHelper261Impl();
+        expect.assertNotSeen();
+    }
+}
+
+interface AssertHelper261 {
+    void assertNotSeen();
+}
+
+class AssertHelper261Impl implements AssertHelper261 {
+
+    @Override
+    public void assertNotSeen() {
+    }
+}

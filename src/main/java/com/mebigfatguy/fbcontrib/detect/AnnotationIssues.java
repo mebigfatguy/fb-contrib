@@ -128,6 +128,10 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             return;
         }
 
+        if (method.isSynthetic() && !isCollecting()) {
+            return;
+        }
+
         if (methodHasNullableAnnotation(method)) {
             if (isCollecting()) {
                 MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
