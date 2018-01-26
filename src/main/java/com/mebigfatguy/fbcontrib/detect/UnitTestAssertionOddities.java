@@ -34,6 +34,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
@@ -364,7 +365,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                 break;
             }
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
+            if (OpcodeUtils.isStandardInvoke(seen)) {
                 String lcName = getNameConstantOperand().toLowerCase(Locale.ENGLISH);
                 if (seen == INVOKEVIRTUAL) {
                     String sig = getSigConstantOperand();
