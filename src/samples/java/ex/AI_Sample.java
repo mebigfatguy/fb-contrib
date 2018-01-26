@@ -1,6 +1,9 @@
 package ex;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.security.AccessController;
+import java.security.PrivilegedAction;
 
 import javax.annotation.Nullable;
 
@@ -45,6 +48,13 @@ public class AI_Sample {
                 return null;
             }
         }.get();
+    }
+
+    public void fpLambda(Constructor c) {
+        AccessController.doPrivileged((PrivilegedAction<Void>) () -> {
+            c.setAccessible(true);
+            return null;
+        });
     }
 
     interface Stringer {
