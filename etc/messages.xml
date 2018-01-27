@@ -3490,7 +3490,7 @@ return "thisisaconstantstring";
 		</Details>
 	</BugPattern>
 	
-	<BugPattern type="SPP_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR">
+	<BugPattern type="MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR">
 		<ShortDescription>Method checks whether the keySet(), entrySet() or values() collection of a Map is null</ShortDescription>
 		<LongDescription>Method {1} checks whether the keySet(), entrySet() or values() collection of a Map is null</LongDescription>
 		<Details>

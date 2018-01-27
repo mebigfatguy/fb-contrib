@@ -65,6 +65,10 @@ public class MUI_Sample {
         return s;
     }
 
+    public boolean testKeySetForNull(Map<String, String> s) {
+        return s.keySet() != null;
+    }
+
     public List<String> testKeySetSize(Map<String, String> m) {
         return new ArrayList<>(m.keySet().size());
     }
