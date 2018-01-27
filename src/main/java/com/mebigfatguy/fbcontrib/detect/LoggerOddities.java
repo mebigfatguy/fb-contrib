@@ -360,103 +360,115 @@ public class LoggerOddities extends BytecodeScanningDetector {
     @SuppressWarnings("unchecked")
     private void checkForProblemsWithLoggerMethods() throws ClassNotFoundException {
         String callingClsName = getClassConstantOperand();
-        if (callingClsName.endsWith("Log") || (callingClsName.endsWith("Logger"))) {
-            String sig = getSigConstantOperand();
-            if (SIG_STRING_AND_THROWABLE_TO_VOID.equals(sig) || SIG_OBJECT_AND_THROWABLE_TO_VOID.equals(sig)) {
-                if (stack.getStackDepth() >= 2) {
-                    OpcodeStack.Item exItem = stack.getStackItem(0);
-                    OpcodeStack.Item msgItem = stack.getStackItem(1);
+        if (!(callingClsName.endsWith("Log") || (callingClsName.endsWith("Logger")))
+                || stack.getStackDepth() == 0) {
+            return;
+        }
+        String sig = getSigConstantOperand();
+        if (SIG_STRING_AND_THROWABLE_TO_VOID.equals(sig) || SIG_OBJECT_AND_THROWABLE_TO_VOID.equals(sig)) {
+            checkForProblemsWithLoggerThrowableMethods();
+        } else if (SignatureBuilder.SIG_OBJECT_TO_VOID.equals(sig)) {
+            checkForProblemsWithLoggerSingleArgumentMethod();
+        } else if ((SLF4J_LOGGER.equals(callingClsName) || LOG4J2_LOGGER.equals(callingClsName))
+                && (SignatureBuilder.SIG_STRING_TO_VOID.equals(sig)
+                    || SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID.equals(sig)
+                    || SIG_STRING_AND_TWO_OBJECTS_TO_VOID.equals(sig)
+                    || SIG_STRING_AND_OBJECT_ARRAY_TO_VOID.equals(sig))) {
+            checkForProblemsWithLoggerParameterisedMethods(sig);
+        }
+    }
 
-                    LOUserValue<Integer> uv = (LOUserValue<Integer>) msgItem.getUserValue();
-                    if ((uv != null) && (uv.getType() == LOUserValue.LOType.MESSAGE_REG) && (uv.getValue().intValue() == exItem.getRegisterNumber())) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                    } else {
-                        Object cons = msgItem.getConstant();
-                        if ((cons instanceof String) && ((String) cons).contains("{}")) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+    private void checkForProblemsWithLoggerThrowableMethods() {
+        if (stack.getStackDepth() < 2) {
+            return;
+        }
+        OpcodeStack.Item exItem = stack.getStackItem(0);
+        OpcodeStack.Item msgItem = stack.getStackItem(1);
+
+        LOUserValue<Integer> uv = (LOUserValue<Integer>) msgItem.getUserValue();
+        if ((uv != null) && (uv.getType() == LOUserValue.LOType.MESSAGE_REG) && (uv.getValue().intValue() == exItem.getRegisterNumber())) {
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+        } else {
+            Object cons = msgItem.getConstant();
+            if ((cons instanceof String) && ((String) cons).contains("{}")) {
+                bugReporter.reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY).addClass(this)
+                        .addMethod(this).addSourceLine(this));
+            }
+        }
+    }
+
+    private void checkForProblemsWithLoggerSingleArgumentMethod() throws ClassNotFoundException {
+        final JavaClass clazz = stack.getStackItem(0).getJavaClass();
+        if ((clazz != null) && clazz.instanceOf(throwableClass)) {
+            bugReporter.reportBug(new BugInstance(this, BugType.LO_LOGGER_LOST_EXCEPTION_STACK_TRACE.name(), NORMAL_PRIORITY).addClass(this)
+                    .addMethod(this).addSourceLine(this));
+        }
+    }
+
+    private void checkForProblemsWithLoggerParameterisedMethods(String sig) {
+        int numParms = SignatureUtils.getNumParameters(sig);
+        if (stack.getStackDepth() < numParms) {
+            return;
+        }
+        OpcodeStack.Item formatItem = stack.getStackItem(numParms - 1);
+        Object con = formatItem.getConstant();
+        if (con instanceof String) {
+            Matcher m = BAD_FORMATTING_ANCHOR.matcher((String) con);
+            if (m.find()) {
+                bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_FORMATTING_ANCHOR.name(), NORMAL_PRIORITY).addClass(this)
+                        .addMethod(this).addSourceLine(this));
+            } else {
+                m = BAD_STRING_FORMAT_PATTERN.matcher((String) con);
+                if (m.find()) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_STRING_FORMAT_NOTATION.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this));
+                } else {
+                    int actualParms = getVarArgsParmCount(sig);
+                    if (actualParms != -1) {
+                        int expectedParms = countAnchors((String) con);
+                        boolean hasEx = hasExceptionOnStack();
+                        if ((!hasEx && (expectedParms != actualParms))
+                                || (hasEx && ((expectedParms != (actualParms - 1)) && (expectedParms != actualParms)))) {
+                            bugReporter
+                                    .reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this).addString("Expected: " + expectedParms)
+                                            .addString("Actual: " + actualParms));
                         }
                     }
                 }
-            } else if (SignatureBuilder.SIG_OBJECT_TO_VOID.equals(sig)) {
-                if (stack.getStackDepth() > 0) {
-                    final JavaClass clazz = stack.getStackItem(0).getJavaClass();
-                    if ((clazz != null) && clazz.instanceOf(throwableClass)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.LO_LOGGER_LOST_EXCEPTION_STACK_TRACE.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+            }
+        } else {
+            LOUserValue<?> uv = (LOUserValue<?>) formatItem.getUserValue();
+            if ((uv != null) && (uv.getType() == LOUserValue.LOType.METHOD_NAME) && Values.TOSTRING.equals(uv.getValue())) {
+
+                bugReporter.reportBug(new BugInstance(this, BugType.LO_APPENDED_STRING_IN_FORMAT_STRING.name(), NORMAL_PRIORITY).addClass(this)
+                        .addMethod(this).addSourceLine(this));
+            } else {
+
+                if ((uv != null) && (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT)) {
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.LO_EMBEDDED_SIMPLE_STRING_FORMAT_IN_FORMAT_STRING.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                 }
-            } else if (SLF4J_LOGGER.equals(callingClsName) || (LOG4J2_LOGGER.equals(callingClsName))) {
-                String signature = getSigConstantOperand();
-                if (SignatureBuilder.SIG_STRING_TO_VOID.equals(signature) || SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID.equals(signature)
-                        || SIG_STRING_AND_TWO_OBJECTS_TO_VOID.equals(signature) || SIG_STRING_AND_OBJECT_ARRAY_TO_VOID.equals(signature)) {
-                    int numParms = SignatureUtils.getNumParameters(signature);
-                    if (stack.getStackDepth() >= numParms) {
-                        OpcodeStack.Item formatItem = stack.getStackItem(numParms - 1);
-                        Object con = formatItem.getConstant();
-                        if (con instanceof String) {
-                            Matcher m = BAD_FORMATTING_ANCHOR.matcher((String) con);
-                            if (m.find()) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_FORMATTING_ANCHOR.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            } else {
-                                m = BAD_STRING_FORMAT_PATTERN.matcher((String) con);
-                                if (m.find()) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_STRING_FORMAT_NOTATION.name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(this).addSourceLine(this));
-                                } else {
-                                    int actualParms = getVarArgsParmCount(signature);
-                                    if (actualParms != -1) {
-                                        int expectedParms = countAnchors((String) con);
-                                        boolean hasEx = hasExceptionOnStack();
-                                        if ((!hasEx && (expectedParms != actualParms))
-                                                || (hasEx && ((expectedParms != (actualParms - 1)) && (expectedParms != actualParms)))) {
-                                            bugReporter
-                                                    .reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY)
-                                                            .addClass(this).addMethod(this).addSourceLine(this).addString("Expected: " + expectedParms)
-                                                            .addString("Actual: " + actualParms));
-                                        }
-                                    }
-                                }
-                            }
-                        } else {
-                            LOUserValue<?> uv = (LOUserValue<?>) formatItem.getUserValue();
-                            if ((uv != null) && (uv.getType() == LOUserValue.LOType.METHOD_NAME) && Values.TOSTRING.equals(uv.getValue())) {
-
-                                bugReporter.reportBug(new BugInstance(this, BugType.LO_APPENDED_STRING_IN_FORMAT_STRING.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            } else {
-
-                                if ((uv != null) && (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT)) {
-                                    bugReporter
-                                            .reportBug(new BugInstance(this, BugType.LO_EMBEDDED_SIMPLE_STRING_FORMAT_IN_FORMAT_STRING.name(), NORMAL_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
-                                }
-                            }
-                        }
-
-                        boolean foundToString = false;
-                        for (int i = 0; i < (numParms - 1); i++) {
-                            OpcodeStack.Item itm = stack.getStackItem(i);
-                            LOUserValue<?> uv = (LOUserValue<?>) itm.getUserValue();
-                            foundToString = ((uv != null)
-                                    && ((uv.getType() == LOUserValue.LOType.TOSTRING) || (uv.getType() == LOUserValue.LOType.METHOD_NAME)));
-                            if (foundToString) {
-                                break;
-                            }
-                        }
-
-                        if (foundToString) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.LO_TOSTRING_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                    .addSourceLine(this));
-                        }
-                    }
-                }
-
             }
         }
 
+        boolean foundToString = false;
+        for (int i = 0; i < (numParms - 1); i++) {
+            OpcodeStack.Item itm = stack.getStackItem(i);
+            LOUserValue<?> uv = (LOUserValue<?>) itm.getUserValue();
+            foundToString = ((uv != null)
+                    && ((uv.getType() == LOUserValue.LOType.TOSTRING) || (uv.getType() == LOUserValue.LOType.METHOD_NAME)));
+            if (foundToString) {
+                break;
+            }
+        }
+
+        if (foundToString) {
+            bugReporter.reportBug(new BugInstance(this, BugType.LO_TOSTRING_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                    .addSourceLine(this));
+        }
     }
 
     /**

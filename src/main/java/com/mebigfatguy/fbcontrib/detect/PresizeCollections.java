@@ -521,7 +521,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
         }
     }
 
-    class PSCUserValue {
+    static class PSCUserValue {
 
         private Integer allocationNumber;
         private boolean hasSizedSource;

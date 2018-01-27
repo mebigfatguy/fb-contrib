@@ -52,7 +52,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
     private static final String USER_NULLABLE_ANNOTATIONS = "fb-contrib.ai.annotations";
 
-    public static final Set<String> NULLABLE_ANNOTATIONS = new HashSet<>();
+    private static final Set<String> NULLABLE_ANNOTATIONS = new HashSet<>();
 
     static {
         NULLABLE_ANNOTATIONS.add("Lorg/jetbrains/annotations/Nullable;");
