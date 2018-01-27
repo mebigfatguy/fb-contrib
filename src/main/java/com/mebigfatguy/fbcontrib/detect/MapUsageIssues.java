@@ -24,7 +24,9 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
@@ -58,6 +60,17 @@ public class MapUsageIssues extends BytecodeScanningDetector {
     private static final QMethod SIZE_METHOD = new QMethod("size", SignatureBuilder.SIG_VOID_TO_INT);
 
     private static final Set<String> COLLECTION_ACCESSORS = UnmodifiableSet.create("keySet", "entrySet", "values");
+
+    private static final Set<String> mapSets = UnmodifiableSet.create("keySet", "values", "entrySet");
+    private static JavaClass mapClass;
+
+    static {
+        try {
+            mapClass = Repository.lookupClass("java/util/Map");
+        } catch (ClassNotFoundException cnfe) {
+            mapClass = null;
+        }
+    }
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -120,7 +133,23 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                 }
             }
 
-            if (seen == INVOKEINTERFACE) {
+            if ((seen == IFNULL) || (seen == IFNONNULL)) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    XMethod method = itm.getReturnValueOf();
+                    if ((method != null) && (mapClass != null)) {
+                        if (COLLECTION_ACCESSORS.contains(method.getName())) {
+
+                            JavaClass cls = Repository.lookupClass(method.getClassName());
+                            if (cls.implementationOf(mapClass)) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                            }
+
+                        }
+                    }
+                }
+            } else if (seen == INVOKEINTERFACE) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (CONTAINSKEY_METHOD.equals(fqm)) {
                     if (getNextOpcode() == IFEQ) {
@@ -166,6 +195,8 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                     }
                 }
             }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
         } finally {
             stack.sawOpcode(this, seen);
         }
