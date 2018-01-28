@@ -907,22 +907,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         SPPUserValue userValue = null;
         String className = getClassConstantOperand();
 
-        if (Values.SLASHED_JAVA_UTIL_MAP.equals(className)) {
-            String method = getNameConstantOperand();
-            if ("keySet".equals(method)) {
-                userValue = new SPPUserValue(SPPMethod.KEYSET);
-            }
-        } else if (Values.SLASHED_JAVA_UTIL_SET.equals(className)) {
-            String method = getNameConstantOperand();
-            if ("contains".equals(method) && (stack.getStackDepth() >= 2)) {
-                OpcodeStack.Item item = stack.getStackItem(1);
-                SPPUserValue uv = (SPPUserValue) item.getUserValue();
-                if ((uv != null) && (uv.getMethod() == SPPMethod.KEYSET)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.SPP_USE_CONTAINSKEY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                }
-            }
-        } else if (Values.SLASHED_JAVA_UTIL_LIST.equals(className)) {
+        if (Values.SLASHED_JAVA_UTIL_LIST.equals(className)) {
             String method = getNameConstantOperand();
             if ("iterator".equals(method)) {
                 userValue = new SPPUserValue(SPPMethod.ITERATOR);
@@ -1066,7 +1051,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     }
 
     enum SPPMethod {
-        APPEND, GETPROPERTIES, ICONST, IGNORECASE, ITERATOR, KEYSET, TOCHARARRAY, SIZE, TRIM
+        APPEND, GETPROPERTIES, ICONST, IGNORECASE, ITERATOR, TOCHARARRAY, SIZE, TRIM
     }
 
     static class SPPUserValue {
