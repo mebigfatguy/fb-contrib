@@ -15,7 +15,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.StringTokenizer;
@@ -244,12 +243,6 @@ public class SPP_Sample implements Serializable {
 
     public boolean testCalBeforeAfter(Calendar c, Date d) {
         return c.after(d) || c.before(d);
-    }
-
-    public void testUseContainsKey(Map m) {
-        if (m.keySet().contains("Foo")) {
-            System.out.println("Yup");
-        }
     }
 
     public void testCollectionSizeEqualsZero(Set<String> s) {

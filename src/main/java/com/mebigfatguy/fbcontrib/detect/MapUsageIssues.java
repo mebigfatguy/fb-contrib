@@ -53,6 +53,7 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class MapUsageIssues extends BytecodeScanningDetector {
 
+    private static final FQMethod CONTAINS_METHOD = new FQMethod("java/util/Set", "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
     private static final FQMethod CONTAINSKEY_METHOD = new FQMethod("java/util/Map", "containsKey", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
     private static final FQMethod GET_METHOD = new FQMethod("java/util/Map", "get", SignatureBuilder.SIG_OBJECT_TO_OBJECT);
     private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Map", "remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT);
@@ -151,7 +152,18 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                 }
             } else if (seen == INVOKEINTERFACE) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-                if (CONTAINSKEY_METHOD.equals(fqm)) {
+                if (CONTAINS_METHOD.equals(fqm)) {
+                    if (stack.getStackDepth() >= 2) {
+                        OpcodeStack.Item item = stack.getStackItem(1);
+                        if ((item.getRegisterNumber() < 0) && (item.getXField() == null)) {
+                            XMethod xm = item.getReturnValueOf();
+                            if ((xm != null) && COLLECTION_ACCESSORS.contains(xm.getName()) && Values.DOTTED_JAVA_UTIL_MAP.equals(xm.getClassName())) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.MUI_USE_CONTAINSKEY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                        .addSourceLine(this));
+                            }
+                        }
+                    }
+                } else if (CONTAINSKEY_METHOD.equals(fqm)) {
                     if (getNextOpcode() == IFEQ) {
                         int ifEnd = getNextPC() + CodeByteUtils.getshort(getCode().getCode(), getNextPC() + 1);
                         if (stack.getStackDepth() >= 2) {

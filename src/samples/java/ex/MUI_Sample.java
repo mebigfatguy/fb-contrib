@@ -69,6 +69,12 @@ public class MUI_Sample {
         return s.keySet() != null;
     }
 
+    public void testUseContainsKey(Map m) {
+        if (m.keySet().contains("Foo")) {
+            System.out.println("Yup");
+        }
+    }
+
     public List<String> testKeySetSize(Map<String, String> m) {
         return new ArrayList<>(m.keySet().size());
     }

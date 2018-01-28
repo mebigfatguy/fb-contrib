@@ -3221,7 +3221,7 @@ if ({{FLAWED_TEST_LOGIC}}) {
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="SPP_USE_CONTAINSKEY">
+	<BugPattern type="MUI_USE_CONTAINSKEY">
 		<ShortDescription>Method calls keySet() just to call contains, use containsKey instead</ShortDescription>
 		<LongDescription>Method {1} calls keySet() just to call contains, use containsKey instead</LongDescription>
 		<Details>	
