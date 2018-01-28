@@ -145,7 +145,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 if ("java/util/EnumMap".equals(clsName) && Values.CONSTRUCTOR.equals(methodName)) {
                     collectionType = CollectionType.ENUM;
                 } else if (clsName.startsWith("java/util/") && (clsName.endsWith("Map") || clsName.endsWith("Set"))) {
-                    if (clsName.equals("java/util/HashMap") || clsName.equals("java/util/HashSet")) {
+                    if ("java/util/HashMap".equals(clsName) || "java/util/HashSet".equals(clsName)) {
                         collectionType = CollectionType.REGULAR;
                     } else {
                         collectionType = CollectionType.SPECIAL;

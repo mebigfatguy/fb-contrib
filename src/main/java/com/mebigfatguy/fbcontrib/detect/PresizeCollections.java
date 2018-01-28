@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Const;
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -476,6 +478,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
         return UNSIZED_SOURCES.contains(fqm);
     }
 
+    @Nullable
     private PSCUserValue isSizedSource(OpcodeStack.Item itm) {
         try {
             String sig = itm.getSignature();
