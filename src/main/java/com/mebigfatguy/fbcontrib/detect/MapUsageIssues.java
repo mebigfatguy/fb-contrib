@@ -62,7 +62,6 @@ public class MapUsageIssues extends BytecodeScanningDetector {
 
     private static final Set<String> COLLECTION_ACCESSORS = UnmodifiableSet.create("keySet", "entrySet", "values");
 
-    private static final Set<String> mapSets = UnmodifiableSet.create("keySet", "values", "entrySet");
     private static JavaClass mapClass;
 
     static {
