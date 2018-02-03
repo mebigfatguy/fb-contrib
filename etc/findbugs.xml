@@ -618,8 +618,8 @@
 	<BugPattern abbrev="RFI" type="RFI_SET_ACCESSIBLE" category="CORRECTNESS" experimental="true"/>
 	<BugPattern abbrev="AI" type="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="MUI" type="MUI_CONTAINSKEY_BEFORE_GET" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="MUI" type="MUI_GET_BEFORE_REMOVE" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="MUI" type="MUI_CALLING_SIZE_ON_SUBCONTAINER" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="MUI" type="MUI_GET_BEFORE_REMOVE" category="CORRECTNESS"/>
+	<BugPattern abbrev="MUI" type="MUI_CALLING_SIZE_ON_SUBCONTAINER" category="CORRECTNESS" />
 	<BugPattern abbrev="MUI" type="MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR" category="CORRECTNESS" />
 	<BugPattern abbrev="MUI" type="MUI_USE_CONTAINSKEY" category="CORRECTNESS" />
 </FindbugsPlugin>
