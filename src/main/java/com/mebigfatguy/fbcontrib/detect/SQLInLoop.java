@@ -1,17 +1,17 @@
 /*
  * fb-contrib - Auxiliary detectors for Java programs
  * Copyright (C) 2005-2018 Dave Brosius
- * 
+ *
  * This library is free software; you can redistribute it and/or
  * modify it under the terms of the GNU Lesser General Public
  * License as published by the Free Software Foundation; either
  * version 2.1 of the License, or (at your option) any later version.
- * 
+ *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
  * Lesser General Public License for more details.
- * 
+ *
  * You should have received a copy of the GNU Lesser General Public
  * License along with this library; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -48,7 +49,7 @@ public class SQLInLoop extends BytecodeScanningDetector {
 
     /**
      * constructs a SIL detector given the reporter to report bugs on
-     * 
+     *
      * @param bugReporter
      *            the sync of bug reports
      */
@@ -58,15 +59,15 @@ public class SQLInLoop extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to create and clear the query locations and loops collections
-     * 
+     *
      * @param classContext
      *            the context object for the currently parsed java class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            queryLocations = new ArrayList<Integer>();
-            loops = new ArrayList<LoopLocation>();
+            queryLocations = new ArrayList<>();
+            loops = new ArrayList<>();
             super.visitClassContext(classContext);
         } finally {
             queryLocations = null;
@@ -76,7 +77,7 @@ public class SQLInLoop extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to clear the collections, and report the query locations that are in loops
-     * 
+     *
      * @param obj
      *            the context object for the currently parsed code block
      */
@@ -98,19 +99,20 @@ public class SQLInLoop extends BytecodeScanningDetector {
 
     /**
      * implements the visitor to collect positions of queries and loops
-     * 
+     *
      * @param seen
      *            the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEINTERFACE) {
+        if (seen == Const.INVOKEINTERFACE) {
             String clsName = getClassConstantOperand();
             String methodName = getNameConstantOperand();
 
-            if (queryClasses.contains(clsName) && queryMethods.contains(methodName))
+            if (queryClasses.contains(clsName) && queryMethods.contains(methodName)) {
                 queryLocations.add(Integer.valueOf(getPC()));
-        } else if ((seen == GOTO) || (seen == GOTO_W)) {
+            }
+        } else if ((seen == Const.GOTO) || (seen == Const.GOTO_W)) {
             int branchTarget = getBranchTarget();
             int pc = getPC();
             if (branchTarget < pc) {
