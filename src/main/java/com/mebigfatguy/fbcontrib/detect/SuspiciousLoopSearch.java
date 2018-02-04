@@ -144,9 +144,10 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterNothing(int seen) {
-        if ((seen == INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
+        if ((seen == Const.INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand())
+                && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
             state = State.SAW_EQUALS;
-        } else if (seen == IF_ICMPNE) {
+        } else if (seen == Const.IF_ICMPNE) {
             if (getBranchOffset() > 0) {
                 state = State.SAW_IFEQ;
                 int target = getBranchTarget();
@@ -158,7 +159,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterEquals(int seen) {
-        if (seen == IFEQ) {
+        if (seen == Const.IFEQ) {
             if (getBranchOffset() > 0) {
                 state = State.SAW_IFEQ;
                 int target = getBranchTarget();
@@ -251,7 +252,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                 }
             }
             state = State.SAW_NOTHING;
-        } else if ((seen == GOTO) || (seen == GOTO_W))
+        } else if ((seen == Const.GOTO) || (seen == Const.GOTO_W))
 
         {
             if (!ifBlocks.isEmpty()) {
