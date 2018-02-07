@@ -78,7 +78,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
     private Map<MapRef, Get> mapGetUsed;
 
     /**
-     * constructs a MUP detector given the reporter to report bugs on
+     * constructs a MUI detector given the reporter to report bugs on
      *
      * @param bugReporter
      *            the sync of bug reports
