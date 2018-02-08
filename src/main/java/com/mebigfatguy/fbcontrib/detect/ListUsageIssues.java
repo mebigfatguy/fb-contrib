@@ -1,13 +1,15 @@
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
-import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -25,6 +27,17 @@ public class ListUsageIssues extends BytecodeScanningDetector {
 
     private static final FQMethod ARRAYS_ASLIST_METHOD = new FQMethod("java/util/Arrays", "asList",
             new SignatureBuilder().withParamTypes(Object[].class).withReturnType(List.class).build());
+    private static final FQMethod COLLECTIONS_SINGLETONLIST_METHOD = new FQMethod("java/util/Collections", "singletonList",
+            new SignatureBuilder().withParamTypes(Object.class).withReturnType(List.class).build());
+
+    private static final Set<FQMethod> ADDALL_METHODS = UnmodifiableSet.create(
+            new FQMethod("java/util/Collection", "addAll", new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
+            new FQMethod("java/util/List", "addAll", new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
+            new FQMethod("java/util/Set", "addAll", new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()));
+
+    enum LUIUserValue {
+        ONE_ITEM_LIST
+    };
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -59,14 +72,32 @@ public class ListUsageIssues extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
+        LUIUserValue userValue = null;
         try {
             if (seen == INVOKESTATIC) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (ARRAYS_ASLIST_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
-                        if ((clsVersion >= Constants.MAJOR_1_8) && Values.ONE.equals(itm.getConstant())) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_SINGLETON_LIST.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        if (Values.ONE.equals(itm.getConstant())) {
+                            if (clsVersion >= MAJOR_1_8) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_SINGLETON_LIST.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                            }
+
+                            userValue = LUIUserValue.ONE_ITEM_LIST;
+                        }
+                    }
+                } else if (COLLECTIONS_SINGLETONLIST_METHOD.equals(fqm)) {
+                    userValue = LUIUserValue.ONE_ITEM_LIST;
+                }
+            } else if (seen == INVOKEINTERFACE) {
+                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                if (ADDALL_METHODS.contains(fqm)) {
+                    if (stack.getStackDepth() >= 2) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if ((itm.getUserValue() == LUIUserValue.ONE_ITEM_LIST) && (itm.getRegisterNumber() < 0) && (itm.getXField() == null)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_COLLECTION_ADD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                     .addSourceLine(this));
                         }
                     }
@@ -74,6 +105,10 @@ public class ListUsageIssues extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(userValue);
+            }
         }
     }
 }
