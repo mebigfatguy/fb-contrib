@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.utils;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -52,6 +53,18 @@ public final class SignatureUtils {
     private static final Pattern CLASS_COMPONENT_DELIMITER = Pattern.compile("\\$");
     private static final Pattern ANONYMOUS_COMPONENT = Pattern.compile("^[1-9][0-9]{0,9}$");
     private static final String ECLIPSE_WEIRD_SIG_CHARS = "!+";
+
+    private static final Map<String, String> PRIMITIVE_NAME_TO_SIG = new HashMap<>();
+    static {
+        PRIMITIVE_NAME_TO_SIG.put("boolean", "B");
+        PRIMITIVE_NAME_TO_SIG.put("short", "S");
+        PRIMITIVE_NAME_TO_SIG.put("int", "I");
+        PRIMITIVE_NAME_TO_SIG.put("long", "J");
+        PRIMITIVE_NAME_TO_SIG.put("char", "C");
+        PRIMITIVE_NAME_TO_SIG.put("float", "F");
+        PRIMITIVE_NAME_TO_SIG.put("double", "D");
+        PRIMITIVE_NAME_TO_SIG.put("boolean", "Z");
+    }
 
     /**
      * private to reinforce the helper status of the class
@@ -406,6 +419,11 @@ public final class SignatureUtils {
         } else if (PRIMITIVE_TYPES.contains(className) || className.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
             return className.replace('.', '/');
         } else {
+            String primitive = PRIMITIVE_NAME_TO_SIG.get(className);
+            if (primitive != null) {
+                return primitive;
+            }
+
             return Values.SIG_QUALIFIED_CLASS_PREFIX + className.replace('.', '/') + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
         }
     }
