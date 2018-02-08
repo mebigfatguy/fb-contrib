@@ -400,11 +400,11 @@ public final class SignatureUtils {
      * @return the signature format of the class
      */
     public static String classToSignature(String className) {
-        if (PRIMITIVE_TYPES.contains(className) || className.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
-            return className;
-        } else if (className.startsWith(Values.SIG_ARRAY_PREFIX)) {
+        if (className.startsWith(Values.SIG_ARRAY_PREFIX)) {
             // convert the classname inside the array
             return Values.SIG_ARRAY_PREFIX + classToSignature(className.substring(Values.SIG_ARRAY_PREFIX.length()));
+        } else if (PRIMITIVE_TYPES.contains(className) || className.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
+            return className.replace('.', '/');
         } else {
             return Values.SIG_QUALIFIED_CLASS_PREFIX + className.replace('.', '/') + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
         }
