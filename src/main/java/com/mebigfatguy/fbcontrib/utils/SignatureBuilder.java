@@ -29,6 +29,7 @@ public class SignatureBuilder {
     public static final String SIG_VOID_TO_VOID = new SignatureBuilder().toString();
     public static final String SIG_VOID_TO_BOOLEAN = new SignatureBuilder().withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString();
     public static final String SIG_VOID_TO_INT = new SignatureBuilder().withReturnType(Values.SIG_PRIMITIVE_INT).toString();
+    public static final String SIG_VOID_TO_LONG = new SignatureBuilder().withReturnType(Values.SIG_PRIMITIVE_LONG).toString();
     public static final String SIG_VOID_TO_STRING = new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
     public static final String SIG_VOID_TO_OBJECT = new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
 
@@ -37,6 +38,8 @@ public class SignatureBuilder {
             .toString();
     public static final String SIG_INT_TO_OBJECT = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT)
             .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+    public static final String SIG_INT_TO_INT = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(Values.SIG_PRIMITIVE_INT)
+            .toString();
 
     public static final String SIG_LONG_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).toString();
     public static final String SIG_LONG_AND_INT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG)

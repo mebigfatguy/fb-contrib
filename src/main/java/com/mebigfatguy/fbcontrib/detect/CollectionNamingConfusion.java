@@ -48,7 +48,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     private JavaClass queueInterface;
 
     private BugReporter bugReporter;
-    private ClassContext classContext;
+    private ClassContext clsContext;
 
     /**
      * constructs a CNC detector given the reporter to report bugs on
@@ -83,7 +83,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     @Override
     public void visitClassContext(ClassContext classContext) {
         if (mapInterface != null) {
-            this.classContext = classContext;
+            this.clsContext = classContext;
             classContext.getJavaClass().accept(this);
         }
     }
@@ -117,7 +117,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
             for (LocalVariable lv : lvs) {
                 if (checkConfusedName(lv.getName(), lv.getSignature())) {
                     bugReporter.reportBug(new BugInstance(this, BugType.CNC_COLLECTION_NAMING_CONFUSION.name(), NORMAL_PRIORITY).addClass(this)
-                            .addString(lv.getName()).addSourceLine(this.classContext, this, lv.getStartPC()));
+                            .addString(lv.getName()).addSourceLine(this.clsContext, this, lv.getStartPC()));
                 }
             }
         }
