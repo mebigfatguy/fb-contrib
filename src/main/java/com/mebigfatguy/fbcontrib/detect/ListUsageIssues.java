@@ -4,6 +4,7 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -74,13 +75,13 @@ public class ListUsageIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         LUIUserValue userValue = null;
         try {
-            if (seen == INVOKESTATIC) {
+            if (seen == Const.INVOKESTATIC) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (ARRAYS_ASLIST_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         if (Values.ONE.equals(itm.getConstant())) {
-                            if (clsVersion >= MAJOR_1_8) {
+                            if (clsVersion >= Const.MAJOR_1_8) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_SINGLETON_LIST.name(), NORMAL_PRIORITY).addClass(this)
                                         .addMethod(this).addSourceLine(this));
                             }
@@ -91,7 +92,7 @@ public class ListUsageIssues extends BytecodeScanningDetector {
                 } else if (COLLECTIONS_SINGLETONLIST_METHOD.equals(fqm)) {
                     userValue = LUIUserValue.ONE_ITEM_LIST;
                 }
-            } else if (seen == INVOKEINTERFACE) {
+            } else if (seen == Const.INVOKEINTERFACE) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (ADDALL_METHODS.contains(fqm)) {
                     if (stack.getStackDepth() >= 2) {
