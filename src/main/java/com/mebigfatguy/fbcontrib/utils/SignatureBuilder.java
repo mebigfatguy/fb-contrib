@@ -42,6 +42,8 @@ public class SignatureBuilder {
             .toString();
 
     public static final String SIG_LONG_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).toString();
+    public static final String SIG_LONG_TO_LONG = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).withReturnType(Values.SIG_PRIMITIVE_LONG)
+            .toString();
     public static final String SIG_LONG_AND_INT_TO_VOID = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG)
             .toString();
 

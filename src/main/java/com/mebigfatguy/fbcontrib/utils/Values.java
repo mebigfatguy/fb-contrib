@@ -146,6 +146,8 @@ public final class Values {
 
     public static final String WHITESPACE_COMMA_SPLIT = "\\s*,\\s*";
 
+    public static final String JAVA = Values.JAVA;
+
     private Values() {
     }
 }
