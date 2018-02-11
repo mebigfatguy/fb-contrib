@@ -111,7 +111,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                     boolean hasExternalAnnotation = false;
                     for (AnnotationEntry entry : f.getAnnotationEntries()) {
                         ConstantUtf8 cutf = (ConstantUtf8) cp.getConstant(entry.getTypeIndex());
-                        if (!cutf.getBytes().startsWith("java")) {
+                        if (!cutf.getBytes().startsWith(Values.JAVA)) {
                             hasExternalAnnotation = true;
                             break;
                         }
