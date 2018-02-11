@@ -85,9 +85,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         new FQMethod("java/lang/System", "nanoTime", SignatureBuilder.SIG_VOID_TO_LONG),
         new FQMethod("java/util/Calendar", "get", SignatureBuilder.SIG_INT_TO_INT),
         new FQMethod("java/util/GregorianCalendar", "get", SignatureBuilder.SIG_INT_TO_INT),
-        new FQMethod("java/util/Iterator", "next", "()Ljava/lang/Object;"),
-        new FQMethod("java/util/regex/Matcher", "start", "()I"),
-        new FQMethod("java/util/concurrent/TimeUnit", "toMillis", "(J)J")
+        new FQMethod("java/util/Iterator", "next", SignatureBuilder.SIG_VOID_TO_OBJECT),
+        new FQMethod("java/util/regex/Matcher", "start", SignatureBuilder.SIG_VOID_TO_INT),
+        new FQMethod("java/util/concurrent/TimeUnit", "toMillis", SignatureBuilder.SIG_LONG_TO_LONG)
         //@formatter:on
     );
 
