@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
@@ -42,7 +43,7 @@ public class DateComparison extends BytecodeScanningDetector {
     private static final Set<String> dateClasses;
 
     static {
-        Set<String> dc = new HashSet<String>();
+        Set<String> dc = new HashSet<>();
         dc.add("java.util.Date");
         dc.add("java.sql.Date");
         dc.add("java.sql.Timestamp");
@@ -111,7 +112,7 @@ public class DateComparison extends BytecodeScanningDetector {
             break;
 
             case SAW_LOAD1_2:
-                if (seen == INVOKEVIRTUAL) {
+                if (seen == Const.INVOKEVIRTUAL) {
                     String cls = getDottedClassConstantOperand();
                     if (dateClasses.contains(cls)) {
                         String methodName = getNameConstantOperand();
@@ -126,7 +127,7 @@ public class DateComparison extends BytecodeScanningDetector {
             break;
 
             case SAW_CMP1:
-                if (seen == IFNE) {
+                if (seen == Const.IFNE) {
                     state = State.SAW_IFNE;
                 } else {
                     state = State.SAW_NOTHING;
@@ -159,7 +160,7 @@ public class DateComparison extends BytecodeScanningDetector {
             break;
 
             case SAW_LOAD2_2:
-                if (seen == INVOKEVIRTUAL) {
+                if (seen == Const.INVOKEVIRTUAL) {
                     String cls = getDottedClassConstantOperand();
                     if (dateClasses.contains(cls)) {
                         String methodName = getNameConstantOperand();
@@ -174,7 +175,7 @@ public class DateComparison extends BytecodeScanningDetector {
             break;
 
             case SAW_CMP2:
-                if (seen == IFEQ) {
+                if (seen == Const.IFEQ) {
                     bugReporter.reportBug(new BugInstance("DDC_DOUBLE_DATE_COMPARISON", NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this));
                 }
                 state = State.SAW_NOTHING;
