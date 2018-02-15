@@ -101,6 +101,10 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
         String refClsName = getClassConstantOperand();
         refClsName = normalizeArrayClass(refClsName.replace('/', '.'));
 
+        if (refClsName == null) {
+            return;
+        }
+
         if (refClsName.startsWith(Values.JAVA)) {
             return;
         }
