@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -160,7 +160,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
                 break;
             }
 
-            lastGotoPC = (((seen == GOTO) || (seen == GOTO_W)) && (getBranchOffset() > 0)) ? getBranchTarget() : -1;
+            lastGotoPC = (((seen == Const.GOTO) || (seen == Const.GOTO_W)) && (getBranchOffset() > 0)) ? getBranchTarget() : -1;
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         } finally {
@@ -169,7 +169,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterNothing(int seen) throws ClassNotFoundException {
-        if ((seen == IFNULL) && (stack.getStackDepth() >= 1)) {
+        if ((seen == Const.IFNULL) && (stack.getStackDepth() >= 1)) {
             OpcodeStack.Item itm = stack.getStackItem(0);
             lastNullCheckedReg = itm.getRegisterNumber();
             state = lastNullCheckedReg >= 0 ? State.SEEN_IFNULL : State.SEEN_NOTHING;
@@ -177,7 +177,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             lastNullCheckedReg = -1;
         }
 
-        if ((bugPC >= 0) && ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && "addSuppressed".equals(getNameConstantOperand())
+        if ((bugPC >= 0) && ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) && "addSuppressed".equals(getNameConstantOperand())
                 && SignatureBuilder.SIG_THROWABLE_TO_VOID.equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).instanceOf(throwableClass)) {
             closePC = -1;
@@ -199,7 +199,7 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterLoad(int seen, int pc) throws ClassNotFoundException {
-        if (((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) && "close".equals(getNameConstantOperand())
+        if (((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) && "close".equals(getNameConstantOperand())
                 && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).implementationOf(autoCloseableClass)) {
             TryBlock tb = findEnclosingFinally(pc);
