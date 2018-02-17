@@ -53,7 +53,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     private static final Pattern ARRAY_PATTERN = Pattern.compile("\\[+(L.*)");
     private Map<String, Set<String>> dependencyGraph = null;
     private BugReporter bugReporter;
-    private String clsName;
+    private String className;
 
     /**
      * constructs a FCCD detector given the reporter to report bugs on
@@ -68,7 +68,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
 
     @Override
     public void visit(JavaClass obj) {
-        clsName = obj.getClassName();
+        className = obj.getClassName();
     }
 
     @Override
@@ -81,7 +81,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
             if (v.getElementValueType() == ElementValue.CLASS) {
                 String annotationClsAttr = SignatureUtils.stripSignature(v.stringifyValue());
 
-                Set<String> dependencies = getDependenciesForClass(clsName);
+                Set<String> dependencies = getDependenciesForClass(className);
                 dependencies.add(annotationClsAttr);
             }
         }
@@ -109,19 +109,19 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
             return;
         }
 
-        if (clsName.equals(refClsName)) {
+        if (className.equals(refClsName)) {
             return;
         }
 
-        if (isEnclosingClassName(clsName, refClsName) || isEnclosingClassName(refClsName, clsName)) {
+        if (isEnclosingClassName(className, refClsName) || isEnclosingClassName(refClsName, className)) {
             return;
         }
 
-        if (isStaticChild(clsName, refClsName) || isStaticChild(refClsName, clsName)) {
+        if (isStaticChild(className, refClsName) || isStaticChild(refClsName, className)) {
             return;
         }
 
-        Set<String> dependencies = getDependenciesForClass(clsName);
+        Set<String> dependencies = getDependenciesForClass(className);
         dependencies.add(refClsName);
     }
 
@@ -129,8 +129,8 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
         Constant c = getConstantRefOperand();
         if (c instanceof ConstantClass) {
             String refClsName = normalizeArrayClass(getClassConstantOperand().replace('/', '.'));
-            if (!refClsName.equals(clsName)) {
-                Set<String> dependencies = getDependenciesForClass(clsName);
+            if (!refClsName.equals(className)) {
+                Set<String> dependencies = getDependenciesForClass(className);
                 dependencies.add(refClsName);
             }
         }
@@ -178,8 +178,8 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
         LoopFinder lf = new LoopFinder();
 
         while (!dependencyGraph.isEmpty()) {
-            String className = dependencyGraph.keySet().iterator().next();
-            Set<String> loop = lf.findLoop(dependencyGraph, className);
+            String clsName = dependencyGraph.keySet().iterator().next();
+            Set<String> loop = lf.findLoop(dependencyGraph, clsName);
             boolean pruneLeaves;
             if (loop != null) {
                 BugInstance bug = new BugInstance(this, BugType.FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY.name(), NORMAL_PRIORITY);
@@ -189,7 +189,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
                 bugReporter.reportBug(bug);
                 pruneLeaves = removeLoopLinks(loop);
             } else {
-                dependencyGraph.remove(className);
+                dependencyGraph.remove(clsName);
                 pruneLeaves = true;
             }
             if (pruneLeaves) {
@@ -236,11 +236,11 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
 
     private boolean removeLoopLinks(Set<String> loop) {
         Set<String> dependencies = null;
-        for (String className : loop) {
+        for (String clsName : loop) {
             if (dependencies != null) {
-                dependencies.remove(className);
+                dependencies.remove(clsName);
             }
-            dependencies = dependencyGraph.get(className);
+            dependencies = dependencyGraph.get(clsName);
         }
         if (dependencies != null) {
             dependencies.remove(loop.iterator().next());
@@ -249,8 +249,8 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
         boolean removedClass = false;
         Iterator<String> cIt = loop.iterator();
         while (cIt.hasNext()) {
-            String className = cIt.next();
-            dependencies = dependencyGraph.get(className);
+            String clsName = cIt.next();
+            dependencies = dependencyGraph.get(clsName);
             if (dependencies.isEmpty()) {
                 cIt.remove();
                 removedClass = true;
