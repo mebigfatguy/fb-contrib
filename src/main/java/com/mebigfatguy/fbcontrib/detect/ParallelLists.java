@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -107,7 +108,7 @@ public class ParallelLists extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEINTERFACE) {
+            if (seen == Const.INVOKEINTERFACE) {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String methodSig = getSigConstantOperand();
@@ -115,12 +116,12 @@ public class ParallelLists extends BytecodeScanningDetector {
                 if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "get".equals(methodName) && SignatureBuilder.SIG_INT_TO_OBJECT.equals(methodSig)) {
                     checkParms();
                 }
-            } else if ((seen >= IFEQ) && (seen <= RETURN)) {
+            } else if ((seen >= Const.IFEQ) && (seen <= Const.RETURN)) {
                 indexToFieldMap.clear();
-            } else if ((seen == IINC) || OpcodeUtils.isIStore(seen)) {
+            } else if ((seen == Const.IINC) || OpcodeUtils.isIStore(seen)) {
                 int reg = getIntOpRegister(seen);
                 indexToFieldMap.remove(Integer.valueOf(reg));
-            } else if ((seen >= IALOAD) && (seen <= SALOAD)) {
+            } else if ((seen >= Const.IALOAD) && (seen <= Const.SALOAD)) {
                 checkParms();
             }
         } finally {
@@ -137,10 +138,10 @@ public class ParallelLists extends BytecodeScanningDetector {
      * @return the register in use
      */
     private int getIntOpRegister(final int seen) {
-        if ((seen == ISTORE) || (seen == IINC)) {
+        if ((seen == Const.ISTORE) || (seen == Const.IINC)) {
             return getRegisterOperand();
         }
-        return seen - ISTORE_0;
+        return seen - Const.ISTORE_0;
     }
 
     private void checkParms() {
