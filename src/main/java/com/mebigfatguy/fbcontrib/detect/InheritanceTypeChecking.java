@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
@@ -61,7 +62,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            ifStatements = new HashSet<IfStatement>();
+            ifStatements = new HashSet<>();
             super.visitClassContext(classContext);
         } finally {
             ifStatements = null;
@@ -92,10 +93,11 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
         Iterator<IfStatement> isi = ifStatements.iterator();
         while (isi.hasNext()) {
             IfStatement.Action action = isi.next().processOpcode(this, bugReporter, seen);
-            if (action == IfStatement.Action.REMOVE_ACTION)
+            if (action == IfStatement.Action.REMOVE_ACTION) {
                 isi.remove();
-            else if (action == IfStatement.Action.PROCESSED_ACTION)
+            } else if (action == IfStatement.Action.PROCESSED_ACTION) {
                 processed = true;
+            }
         }
 
         if (!processed && OpcodeUtils.isALoad(seen)) {
@@ -130,9 +132,10 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
         public IfStatement.Action processOpcode(BytecodeScanningDetector bsd, BugReporter bugReporter, int seen) {
             switch (state) {
                 case SEEN_ALOAD:
-                    if (seen == INSTANCEOF) {
-                        if (instanceOfTypes == null)
-                            instanceOfTypes = new HashSet<String>();
+                    if (seen == Const.INSTANCEOF) {
+                        if (instanceOfTypes == null) {
+                            instanceOfTypes = new HashSet<>();
+                        }
                         instanceOfTypes.add(bsd.getClassConstantOperand());
                         state = State.SEEN_INSTANCEOF;
                         return IfStatement.Action.PROCESSED_ACTION;
@@ -140,7 +143,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
                 break;
 
                 case SEEN_INSTANCEOF:
-                    if (seen == IFEQ) {
+                    if (seen == Const.IFEQ) {
                         branchTarget = bsd.getBranchTarget();
                         state = State.SEEN_IFEQ;
                         matchCount++;
