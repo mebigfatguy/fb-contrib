@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -133,7 +134,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                 }
             }
 
-            if ((seen == IFNULL) || (seen == IFNONNULL)) {
+            if ((seen == Const.IFNULL) || (seen == Const.IFNONNULL)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     XMethod method = itm.getReturnValueOf();
@@ -149,7 +150,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if (seen == INVOKEINTERFACE) {
+            } else if (seen == Const.INVOKEINTERFACE) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (CONTAINS_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
@@ -163,7 +164,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         }
                     }
                 } else if (CONTAINSKEY_METHOD.equals(fqm)) {
-                    if (getNextOpcode() == IFEQ) {
+                    if (getNextOpcode() == Const.IFEQ) {
                         int ifEnd = getNextPC() + CodeByteUtils.getshort(getCode().getCode(), getNextPC() + 1);
                         if (stack.getStackDepth() >= 2) {
                             OpcodeStack.Item itm = stack.getStackItem(1);
