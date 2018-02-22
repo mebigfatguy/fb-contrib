@@ -24,8 +24,8 @@ import java.util.Deque;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -85,11 +85,11 @@ public class OptionalIssues extends BytecodeScanningDetector {
     private Deque<ActiveStackOp> activeStackOps;
 
     static {
-        INVOKE_OPS.set(INVOKEINTERFACE);
-        INVOKE_OPS.set(INVOKEVIRTUAL);
-        INVOKE_OPS.set(INVOKESTATIC);
-        INVOKE_OPS.set(INVOKESPECIAL);
-        INVOKE_OPS.set(INVOKEDYNAMIC);
+        INVOKE_OPS.set(Const.INVOKEINTERFACE);
+        INVOKE_OPS.set(Const.INVOKEVIRTUAL);
+        INVOKE_OPS.set(Const.INVOKESTATIC);
+        INVOKE_OPS.set(Const.INVOKESPECIAL);
+        INVOKE_OPS.set(Const.INVOKEDYNAMIC);
     }
 
     /**
@@ -152,8 +152,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case IFNULL:
-                case IFNONNULL:
+                case Const.IFNULL:
+                case Const.IFNONNULL:
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         if ("Ljava/util/Optional;".equals(itm.getSignature())) {
@@ -164,7 +164,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                     }
                 break;
 
-                case INVOKEDYNAMIC:
+                case Const.INVOKEDYNAMIC:
                     // smells like a hack. Not sure how to do this better
                     ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
                     ConstantPool cp = getConstantPool();
@@ -173,9 +173,9 @@ public class OptionalIssues extends BytecodeScanningDetector {
                     curCalledMethod = new FQMethod(getClassName(), "lambda$" + id.getBootstrapMethodAttrIndex(), typeConstant.getBytes());
                 break;
 
-                case INVOKESTATIC:
-                case INVOKEINTERFACE:
-                case INVOKESPECIAL:
+                case Const.INVOKESTATIC:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKESPECIAL:
                     String clsName = getClassConstantOperand();
                     String methodName = getNameConstantOperand();
                     curCalledMethod = new FQMethod(clsName, methodName, getSigConstantOperand());
@@ -192,7 +192,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                     }
                 break;
 
-                case INVOKEVIRTUAL:
+                case Const.INVOKEVIRTUAL:
                     curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                     if (OR_ELSE_METHODS.contains(curCalledMethod)) {
                         if (stack.getStackDepth() > 0) {
