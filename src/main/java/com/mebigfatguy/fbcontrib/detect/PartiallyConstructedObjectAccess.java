@@ -27,6 +27,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -114,7 +115,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL)) {
+            if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKESPECIAL)) {
                 int parmCount = SignatureUtils.getNumParameters(getSigConstantOperand());
                 if (stack.getStackDepth() > parmCount) {
                     OpcodeStack.Item itm = stack.getStackItem(parmCount);
@@ -123,7 +124,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                         if (cls != null) {
                             Method m = findMethod(cls, getNameConstantOperand(), getSigConstantOperand());
                             if ((m != null) && (!m.isFinal())) {
-                                if (isCtor && (seen != INVOKESPECIAL)) {
+                                if (isCtor && (seen != Const.INVOKESPECIAL)) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this, getPC()));
                                     throw new StopOpcodeParsingException();
