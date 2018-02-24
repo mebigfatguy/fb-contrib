@@ -111,7 +111,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == PUTFIELD) {
+            if (seen == Const.PUTFIELD) {
                 String fieldName = getNameConstantOperand();
                 if (stack.getStackDepth() > 0) {
                     Set<Object> values = fieldValues.get(fieldName);
