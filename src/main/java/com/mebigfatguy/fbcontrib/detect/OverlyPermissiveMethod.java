@@ -23,8 +23,8 @@ import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Attribute;
@@ -127,15 +127,15 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case INVOKEVIRTUAL:
-                case INVOKEINTERFACE:
-                case INVOKESTATIC:
-                case INVOKESPECIAL: {
+                case Const.INVOKEVIRTUAL:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKESTATIC:
+                case Const.INVOKESPECIAL: {
                     String calledClass = getClassConstantOperand();
                     String sig = getSigConstantOperand();
                     MethodInfo mi = Statistics.getStatistics().getMethodStatistics(calledClass, getNameConstantOperand(), sig);
                     if (mi != null) {
-                        if (seen == INVOKEINTERFACE) {
+                        if (seen == Const.INVOKEINTERFACE) {
                             mi.addCallingAccess(Const.ACC_PUBLIC);
                         } else {
                             String calledPackage;
@@ -153,7 +153,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                             } else if (samePackage) {
                                 mi.addCallingAccess(0);
                             } else {
-                                if (seen == INVOKESTATIC) {
+                                if (seen == Const.INVOKESTATIC) {
                                     mi.addCallingAccess(Const.ACC_PUBLIC);
                                 } else if (isCallingOnThis(sig)) {
                                     mi.addCallingAccess(Const.ACC_PROTECTED);
@@ -166,7 +166,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                 }
                 break;
 
-                case INVOKEDYNAMIC:
+                case Const.INVOKEDYNAMIC:
                     ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
 
                     BootstrapMethod bm = getBootstrapMethod(id.getBootstrapMethodAttrIndex());
