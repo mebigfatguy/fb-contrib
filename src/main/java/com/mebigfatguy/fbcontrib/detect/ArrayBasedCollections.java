@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -112,10 +113,10 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEINTERFACE) {
+            if (seen == Const.INVOKEINTERFACE) {
                 processInvokeInterface();
 
-            } else if (seen == INVOKESPECIAL) {
+            } else if (seen == Const.INVOKESPECIAL) {
                 processInvokeSpecial();
             }
         } finally {
