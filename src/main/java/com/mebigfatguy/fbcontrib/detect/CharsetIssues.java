@@ -212,10 +212,10 @@ public class CharsetIssues extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case INVOKESPECIAL:
-                case INVOKESTATIC:
-                case INVOKEINTERFACE:
-                case INVOKEVIRTUAL:
+                case Const.INVOKESPECIAL:
+                case Const.INVOKESTATIC:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKEVIRTUAL:
                     String encoding = null;
                     String className = getClassConstantOperand();
                     String methodName = getNameConstantOperand();
@@ -235,7 +235,7 @@ public class CharsetIssues extends BytecodeScanningDetector {
                                     String changedMethodSig = replaceNthArgWithCharsetString(methodSig, offset);
                                     bugReporter.reportBug(new BugInstance(this, BugType.CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this).addCalledMethod(this)
-                                            .addCalledMethod(className, methodName, changedMethodSig, seen == INVOKESTATIC));
+                                            .addCalledMethod(className, methodName, changedMethodSig, seen == Const.INVOKESTATIC));
                                 }
                             }
                         }
