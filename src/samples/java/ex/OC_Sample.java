@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -12,5 +13,22 @@ public class OC_Sample {
 
     public void castDateInField(Object o) {
         ud = (java.sql.Date) o;
+    }
+
+    public void fpFieldCast262() {
+        Reference<String> test = new Reference<>(null);
+        test.value = (String) getObject();
+    }
+
+    public final class Reference<T> {
+        public T value;
+
+        public Reference(T value) {
+            this.value = value;
+        }
+    }
+
+    public Object getObject() {
+        return "string";
     }
 }
