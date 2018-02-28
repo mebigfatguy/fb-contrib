@@ -132,7 +132,8 @@ public class OverzealousCasting extends BytecodeScanningDetector {
                     if (sig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
                         sig = SignatureUtils.trimSignature(sig);
                     }
-                    if (!sig.equals(castClass)) {
+                    // if the signature is Object, the field might be genericized, so ignore
+                    if (!sig.equals(Values.SLASHED_JAVA_LANG_OBJECT) && !sig.equals(castClass)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.OC_OVERZEALOUS_CASTING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
                     }
