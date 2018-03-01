@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -108,7 +109,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+            if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
