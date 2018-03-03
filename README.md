@@ -20,7 +20,7 @@ For SpotBugs
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 7.2.0.sb
+       Version: 7.2.1.sb
        
        
 Developer
@@ -130,7 +130,7 @@ dependencies {
     findbugs configurations.findbugsPlugins.dependencies
 
     // To keep everything tidy, we set these apart
-    findbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.2.1'
+    findbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.2.1.sb'
 }
 
 task findbugs(type: FindBugs) {
