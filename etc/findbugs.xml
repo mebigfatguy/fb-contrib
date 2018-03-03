@@ -23,7 +23,7 @@
 
 	<!-- Detectors -->
 
-    <!-- COMMENT OUT FOR RELEASE -->
+    <!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -33,7 +33,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-    <!-- COMMENT OUT FOR RELEASE -->
+         COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -327,11 +327,11 @@
     <Detector class="com.mebigfatguy.fbcontrib.collect.CollectNullableMethodStatus" speed="fast" reports="" hidden="true" />
     
     
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+    <!-- COMMENT OUT FOR POINT RELEASE 
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ListUsageIssues" speed="fast" reports="LUI_USE_SINGLETON_LIST,LUI_USE_COLLECTION_ADD,LUI_USE_GET0"/>
     
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+         COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
