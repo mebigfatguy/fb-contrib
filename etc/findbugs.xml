@@ -329,7 +329,7 @@
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.ListUsageIssues" speed="fast" reports="LUI_USE_SINGLETON_LIST,LUI_USE_COLLECTION_ADD"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ListUsageIssues" speed="fast" reports="LUI_USE_SINGLETON_LIST,LUI_USE_COLLECTION_ADD,LUI_USE_GET0"/>
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -627,4 +627,5 @@
 	<BugPattern abbrev="MUI" type="MUI_USE_CONTAINSKEY" category="CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_SINGLETON_LIST" category="CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_COLLECTION_ADD" category="CORRECTNESS" />
+	<BugPattern abbrev="LUI" type="LUI_USE_GET0" category="CORRECTNESS" />
 </FindbugsPlugin>

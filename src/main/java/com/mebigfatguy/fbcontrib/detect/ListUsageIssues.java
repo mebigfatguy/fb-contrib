@@ -30,6 +30,11 @@ public class ListUsageIssues extends BytecodeScanningDetector {
             new SignatureBuilder().withParamTypes(Object[].class).withReturnType(List.class).build());
     private static final FQMethod COLLECTIONS_SINGLETONLIST_METHOD = new FQMethod("java/util/Collections", "singletonList",
             new SignatureBuilder().withParamTypes(Object.class).withReturnType(List.class).build());
+    private static final FQMethod LIST_STREAM_METHOD = new FQMethod("java/util/List", "stream",
+            new SignatureBuilder().withReturnType("java/util/stream/Stream").build());
+    private static final FQMethod STREAM_FINDFIRST_METHOD = new FQMethod("java/util/stream/Stream", "findFirst",
+            new SignatureBuilder().withReturnType("java/util/Optional").build());
+    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get", SignatureBuilder.SIG_VOID_TO_OBJECT);
 
     private static final Set<FQMethod> ADDALL_METHODS = UnmodifiableSet.create(
             new FQMethod("java/util/Collection", "addAll", new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
@@ -37,7 +42,7 @@ public class ListUsageIssues extends BytecodeScanningDetector {
             new FQMethod("java/util/Set", "addAll", new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()));
 
     enum LUIUserValue {
-        ONE_ITEM_LIST
+        ONE_ITEM_LIST, LIST_STREAM, STREAM_OPTIONAL
     };
 
     private BugReporter bugReporter;
@@ -45,7 +50,7 @@ public class ListUsageIssues extends BytecodeScanningDetector {
     private int clsVersion;
 
     /**
-     * constructs a LUI detector given the reporter to report bugs on
+     * constructs a LUI detector given the reporter to report bugs on with
      *
      * @param bugReporter
      *            the sync of bug reports
@@ -100,6 +105,26 @@ public class ListUsageIssues extends BytecodeScanningDetector {
                         if ((itm.getUserValue() == LUIUserValue.ONE_ITEM_LIST) && (itm.getRegisterNumber() < 0) && (itm.getXField() == null)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_COLLECTION_ADD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                     .addSourceLine(this));
+                        }
+                    }
+                } else if (LIST_STREAM_METHOD.equals(fqm)) {
+                    userValue = LUIUserValue.LIST_STREAM;
+                } else if (STREAM_FINDFIRST_METHOD.equals(fqm)) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (itm.getUserValue() == LUIUserValue.LIST_STREAM) {
+                            userValue = LUIUserValue.STREAM_OPTIONAL;
+                        }
+                    }
+                }
+            } else if (seen == INVOKEVIRTUAL) {
+                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                if (OPTIONAL_GET_METHOD.equals(fqm)) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (itm.getUserValue() == LUIUserValue.STREAM_OPTIONAL) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.LUI_USE_GET0.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }

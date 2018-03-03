@@ -6179,6 +6179,26 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
+    <BugPattern type="LUI_USE_GET0">
+    	<ShortDescription>Method uses collection streaming to get first item in a List</ShortDescription>
+    	<LongDescription>Method {1} uses collection streaming to get first item in a List</LongDescription>
+    	<Details>
+    	<![CDATA[
+    	<p>This method fetches the first item in a List using collection streaming. As a list is already ordered
+    	there is no need to do that just use the regular get(0) interface.<br/>
+    	Example:
+    	<code><pre>
+    	String s = myList.stream().findFirst().get();
+    	</pre></code>
+    	Can be more simply done using
+    	<code><pre>
+    	String s = myList.get(0);
+    	</pre></code>
+    	</p>
+    	]]>
+    	</Details>
+    </BugPattern>
+    
     <BugPattern type="LUI_USE_COLLECTION_ADD">
     	<ShortDescription>Method passes a temporary one item list to Collection.addAll()</ShortDescription>
     	<LongDescription>Method {1} passes a temporary one item list to Collection.addAll()</LongDescription>

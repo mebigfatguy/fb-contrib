@@ -23,6 +23,10 @@ public class LUI_Sample {
         return s;
     }
 
+    public String streamForGet0(List<String> s) {
+        return s.stream().findFirst().get();
+    }
+
     public List<String> fpWithArray() {
         return Arrays.asList("foo", "bar");
     }
