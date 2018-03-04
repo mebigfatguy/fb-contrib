@@ -81,6 +81,9 @@ function toggleBlock(divId, imgId)
         Detectors added in git<br/>
         <div id="git" style="display:none;">
 			<ul>
+				<li><b>[LUI] List Usage Issues</b><br/>
+            	Looks for odd usage patterns when using Lists
+            	</li>
 			</ul>
 		</div>	
 		<hr/>
