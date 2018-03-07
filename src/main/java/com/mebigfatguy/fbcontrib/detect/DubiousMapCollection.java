@@ -68,9 +68,17 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     private static final Set<String> MODIFYING_METHODS = UnmodifiableSet.create(
     // @formatter:off
         "clear",
+        "compute",
+        "computeIfAbsent",
+        "computeIfPresent",
+        "forEach",
+        "merge",
         "put",
+        "putIfAbsent",
         "putAll",
-        "remove"
+        "remove",
+        "replace",
+        "replaceAll"
     // @formatter:on
     );
 
