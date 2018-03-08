@@ -285,6 +285,37 @@ public class PSC_Sample {
         }
 
         return ss;
+    }
+
+    public List<?> fpDecodeValue249(BsonReader reader, DecoderContext decoderContext) {
+        reader.readStartArray();
+
+        List<Object> list = new ArrayList<>();
+        while (reader.readBsonType() != BsonType.END_OF_DOCUMENT) {
+            list.add(readValue249(reader, decoderContext));
+        }
+        reader.readEndArray();
+
+        return list;
+    }
+
+    public Object readValue249(BsonReader br, DecoderContext dc) {
+        return null;
+    }
+
+    enum BsonType {
+        END_OF_DOCUMENT
+    }
+
+    interface BsonReader {
+        void readStartArray();
+
+        BsonType readBsonType();
+
+        Object readEndArray();
+    }
+
+    interface DecoderContext {
 
     }
 

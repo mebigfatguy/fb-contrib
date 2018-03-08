@@ -284,7 +284,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                         int thisOffset = pc + offsets[0];
                         for (int o = 0; o < (offsets.length - 1); o++) {
                             int nextOffset = offsets[o + 1] + pc;
-                            CodeRange db = new CodeRange(thisOffset, nextOffset);
+                            CodeRange db = new CodeRange(thisOffset, nextOffset, false);
                             optionalRanges.add(db);
                             thisOffset = nextOffset;
                         }
@@ -320,8 +320,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                                 List<Integer> pcs = entry.getValue();
                                 for (int pc : pcs) {
                                     if (pc > target) {
-                                        int numDownBranches = countDownBranches(allocLoc.intValue(), pc);
-                                        if (numDownBranches == 1) {
+                                        if (hasSinglePossiblySizedBranch(allocLoc.intValue(), pc)) {
                                             bugReporter.reportBug(new BugInstance(this, BugType.PSC_PRESIZE_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this)
                                                     .addMethod(this).addSourceLine(this, pc));
                                             it.remove();
@@ -332,7 +331,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                             }
                         }
                     } else {
-                        CodeRange db = new CodeRange(getPC(), getBranchTarget());
+                        CodeRange db = new CodeRange(getPC(), getBranchTarget(), !branchBasedOnUnsizedObject(seen));
                         optionalRanges.add(db);
                     }
                 break;
@@ -343,7 +342,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case Const.IFGT:
                     // null check and >, >= branches are hard to presize
                     if (getBranchOffset() > 0) {
-                        CodeRange db = new CodeRange(getPC(), getBranchTarget());
+                        CodeRange db = new CodeRange(getPC(), getBranchTarget(), false);
                         optionalRanges.add(db);
                     }
                 break;
@@ -398,15 +397,23 @@ public class PresizeCollections extends BytecodeScanningDetector {
         }
     }
 
-    private int countDownBranches(int allocationPos, int addPC) {
+    private boolean hasSinglePossiblySizedBranch(int allocationPos, int addPC) {
         int numDownBranches = 0;
         for (CodeRange db : optionalRanges) {
             if ((db.fromPC > allocationPos) && (db.fromPC < addPC) && (db.toPC > addPC)) {
                 numDownBranches++;
+
+                if (numDownBranches > 1) {
+                    return false;
+                }
+
+                if (!db.isPossiblySized) {
+                    return false;
+                }
             }
         }
 
-        return numDownBranches;
+        return numDownBranches == 1;
     }
 
     /**
@@ -421,7 +428,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
         CodeException[] ces = c.getExceptionTable();
         if (ces != null) {
             for (CodeException ce : ces) {
-                CodeRange range = new CodeRange(ce.getStartPC(), ce.getEndPC());
+                CodeRange range = new CodeRange(ce.getStartPC(), ce.getEndPC(), false);
                 List<Integer> handlers = ranges.get(range);
                 if (handlers == null) {
                     handlers = new ArrayList<>(6);
@@ -436,7 +443,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
             List<Integer> handlers = entry.getValue();
             Collections.sort(handlers);
             for (int h = 0; h < (handlers.size() - 1); h++) {
-                optionalRanges.add(new CodeRange(handlers.get(h), handlers.get(h + 1)));
+                optionalRanges.add(new CodeRange(handlers.get(h), handlers.get(h + 1), false));
             }
         }
     }
@@ -497,10 +504,12 @@ public class PresizeCollections extends BytecodeScanningDetector {
     static class CodeRange {
         public int fromPC;
         public int toPC;
+        public boolean isPossiblySized;
 
-        CodeRange(int from, int to) {
+        CodeRange(int from, int to, boolean isSized) {
             fromPC = from;
             toPC = to;
+            isPossiblySized = isSized;
         }
 
         @Override
