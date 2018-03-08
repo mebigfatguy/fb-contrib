@@ -90,6 +90,10 @@ public final class Values {
     public static final String SLASHED_JAVA_LANG_STRING = "java/lang/String";
     public static final String SIG_JAVA_LANG_STRING = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_STRING + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_VOID = "java/lang/Void";
+    public static final String SIG_JAVA_LANG_VOID = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_VOID + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+
+    @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRINGBUILDER = "java/lang/StringBuilder";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRINGBUFFER = "java/lang/StringBuffer";

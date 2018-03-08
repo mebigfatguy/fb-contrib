@@ -40,6 +40,10 @@ public class AI_Sample {
         return f;
     }
 
+    public Void fpVoid() {
+        return null;
+    }
+
     public String fpAnon() {
 
         return new Stringer() {
