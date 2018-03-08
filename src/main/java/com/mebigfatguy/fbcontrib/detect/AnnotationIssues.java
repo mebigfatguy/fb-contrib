@@ -123,12 +123,17 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
         Method method = getMethod();
         String sig = method.getSignature();
-        char returnTypeChar = sig.charAt(sig.indexOf(')') + 1);
+        String returnType = sig.substring(sig.indexOf(')') + 1);
+        char returnTypeChar = returnType.charAt(0);
         if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
             return;
         }
 
         if (method.isSynthetic() && !isCollecting()) {
+            return;
+        }
+
+        if (Values.SIG_JAVA_LANG_VOID.equals(returnType)) {
             return;
         }
 
