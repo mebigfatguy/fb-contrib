@@ -90,7 +90,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private boolean isTestCaseDerived;
     private boolean isAnnotationCapable;
-    private String clsName;
+    private String className;
     private boolean sawAssert;
     private State state;
     private boolean checkIsNegated;
@@ -135,7 +135,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             JavaClass cls = classContext.getJavaClass();
-            clsName = cls.getClassName().replace('.', '/');
+            className = cls.getClassName().replace('.', '/');
             isTestCaseDerived = (testCaseClass != null) && cls.instanceOf(testCaseClass);
             isAnnotationCapable = (cls.getMajor() >= 5) && ((testAnnotationClass != null) || (testNGAnnotationClass != null));
             if (isTestCaseDerived || isAnnotationCapable) {
@@ -378,7 +378,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                 // call a method with assert of verify in them
                 // it's possibly doing asserts for you. Yes this is a hack
 
-                if (clsName.equals(getClassConstantOperand()) || lcName.contains("assert") || lcName.contains("verify")) {
+                if (className.equals(getClassConstantOperand()) || lcName.contains("assert") || lcName.contains("verify")) {
                     sawAssert = true;
                 }
             }
