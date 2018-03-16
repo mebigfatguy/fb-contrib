@@ -276,6 +276,8 @@ public class LO_Sample {
 
         public static org.apache.logging.log4j.Logger l7 = org.apache.logging.log4j.LogManager.getLogger(Log4j2.class);
 
+        private static org.apache.logging.log4j.Logger l8 = org.apache.logging.log4j.LogManager.getFormatterLogger(Log4j2.class);
+
         // no tag
         private org.apache.logging.log4j.Logger someLocalLogger;
 
@@ -388,6 +390,10 @@ public class LO_Sample {
 
         public void fpOKPattern(File f) {
             l3.error("Specify the path to {} with %TEMP% or using system property", f);
+        }
+
+        public void fpFormatterPattern() {
+            l8.error("%d", 5);
         }
 
         public class Inner {
