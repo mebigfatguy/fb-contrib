@@ -71,7 +71,7 @@ public class SEO_Sample {
         public void testStoredResult() {
             boolean c1 = aComedy("Baz");
 
-            if (aComedy("Baf") && c1) {
+            if (aComedy("Baf") || c1) {
                 System.out.println("Booyah");
             }
         }
