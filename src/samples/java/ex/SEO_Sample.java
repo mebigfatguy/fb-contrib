@@ -64,6 +64,29 @@ public class SEO_Sample {
                 System.out.println("Not a SEO");
             }
         }
+    }
 
+    class FNIssue266 {
+
+        public void testStoredResult() {
+            boolean c1 = aComedy("Baz");
+
+            if (aComedy("Baf") || c1) {
+                System.out.println("Booyah");
+            }
+        }
+
+        public boolean aComedy(String input) {
+            String result = "foo";
+            while ((result.length() > 0) || result.startsWith(input)) {
+                if (Math.random() > 0.5) {
+                    result += "bar";
+                } else {
+                    result = result.substring(1);
+                }
+            }
+
+            return (result.length() > 10) && (result.length() < 20);
+        }
     }
 }

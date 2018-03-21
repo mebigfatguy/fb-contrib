@@ -4968,8 +4968,8 @@ if (name != null) {
 	</BugPattern>
 	
 		<BugPattern type="PSC_SUBOPTIMAL_COLLECTION_SIZING">
-		<ShortDescription>Method uses suboptimal sizing to allocation a collection</ShortDescription>
-		<LongDescription>Method {1} uses suboptimal sizing to allocation a collection</LongDescription>
+		<ShortDescription>Method uses suboptimal sizing to allocate a collection</ShortDescription>
+		<LongDescription>Method {1} uses suboptimal sizing to allocate a collection</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method allocates a collection using the a constructor that takes a size parameter. However,
