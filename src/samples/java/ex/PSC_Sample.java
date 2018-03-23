@@ -287,6 +287,13 @@ public class PSC_Sample {
         return ss;
     }
 
+    public void fpIterable269(final Iterable<String> strings) {
+        final List<String> stringList = new ArrayList<>();
+        for (final String string : strings) {
+            stringList.add(string);
+        }
+    }
+
     public List<?> fpDecodeValue249(BsonReader reader, DecoderContext decoderContext) {
         reader.readStartArray();
 
