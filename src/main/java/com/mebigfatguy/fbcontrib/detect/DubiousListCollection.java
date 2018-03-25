@@ -23,8 +23,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -77,7 +77,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 			new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT),
             new QMethod("replaceAll", new SignatureBuilder().withParamTypes("java/util/function/UnaryOperator").build()),
 			new QMethod("set",
-					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT)
+					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).build()),
             new QMethod("sort", new SignatureBuilder().withParamTypes("java/util/Comparator").build()),
 			new QMethod("subList",
 					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_INT)
