@@ -1739,6 +1739,15 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 			]]>
 		</Details>
 	</Detector>
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues">
+		<Details>
+			<![CDATA[
+			<p>Looks for various issues around the use of @FunctionalInterfaces.</p>
+			<p>It is a fast detector</p>
+			]]>
+		</Details>
+	</Detector>
 
 
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
@@ -6213,6 +6222,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="FII_USE_METHOD_HANDLE">
+    	<ShortDescription>Method creates an anonymous lambda expression instead of specifying a method handle</ShortDescription>
+    	<LongDescription>Method {1} creates an anonymous lamda expression instead of specicying a method handle</LongDescription>
+    	<Details>
+    	<![CDATA[
+    	<p>This method defines an anonymous lambda function to be called to fetch a single value from the passed in value. While
+    	this will work, it is needlessly complex as this function merely calls a single getter method on the object, and thus
+    	the code can be simplied by just passing in a method handle instead.</p>
+    	]]>
+    	</Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -6360,4 +6381,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="AI">Annotation Issues</BugCode>
 	<BugCode abbrev="MUI">Map Usage Issues</BugCode>
 	<BugCode abbrev="LUI">List Usage Issues</BugCode>
+	<BugCode abbrev="FII">FunctionalInterface Issues</BugCode>
 </MessageCollection>
