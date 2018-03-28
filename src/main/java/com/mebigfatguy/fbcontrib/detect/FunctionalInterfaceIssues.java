@@ -26,6 +26,7 @@ import java.util.Map;
 
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -85,7 +86,8 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         functionalInterfaceInfo.put(getMethod(), fiis);
                     }
 
-                    FIInfo fii = new FIInfo();
+                    ConstantInvokeDynamic cid = (ConstantInvokeDynamic) getConstantRefOperand();
+                    FIInfo fii = new FIInfo(getPC(), cid.getBootstrapMethodAttrIndex());
                     fiis.add(fii);
                 break;
 
@@ -119,5 +121,10 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     class FIInfo {
         private int pc;
         private int bootstrapId;
+
+        public FIInfo(int pc, int bootstrapId) {
+            this.pc = pc;
+            this.bootstrapId = bootstrapId;
+        }
     }
 }
