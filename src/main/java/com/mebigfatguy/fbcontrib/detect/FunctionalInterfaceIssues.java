@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.JavaClass;
@@ -54,7 +54,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             JavaClass cls = classContext.getJavaClass();
-            if (cls.getMajor() >= Constants.MAJOR_1_8) {
+            if (cls.getMajor() >= Const.MAJOR_1_8) {
                 stack = new OpcodeStack();
                 functionalInterfaceInfo = new HashMap<>();
                 super.visitClassContext(classContext);
@@ -79,7 +79,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case Constants.INVOKEDYNAMIC:
+                case Const.INVOKEDYNAMIC:
                     List<FIInfo> fiis = functionalInterfaceInfo.get(getMethod());
                     if (fiis == null) {
                         fiis = new ArrayList<>();
@@ -115,7 +115,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
      */
     public boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Constants.INVOKEDYNAMIC));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.INVOKEDYNAMIC));
     }
 
     class FIInfo {
