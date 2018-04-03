@@ -15,12 +15,15 @@ import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.TreeSet;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Sets;
 
 public class PSC_Sample {
+
+    private static final Pattern REGEX_TXN = Pattern.compile("(<Txn>(.*?)</Txn>)");
 
     public void testPSC(List<PSC_Sample> samples) {
         Set<String> names = new HashSet<>();
@@ -292,6 +295,15 @@ public class PSC_Sample {
         for (final String string : strings) {
             stringList.add(string);
         }
+    }
+
+    public List<String> fpGetTransactions247(String xml) {
+        List<String> transactions = new ArrayList<>();
+        Matcher matcher = REGEX_TXN.matcher(xml.replaceAll("\n", ""));
+        while (matcher.find()) {
+            transactions.add(matcher.group());
+        }
+        return transactions;
     }
 
     public List<?> fpDecodeValue249(BsonReader reader, DecoderContext decoderContext) {
