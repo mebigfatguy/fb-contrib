@@ -67,8 +67,13 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     stack = new OpcodeStack();
                     functionalInterfaceInfo = new HashMap<>();
                     super.visitClassContext(classContext);
-                }
 
+                    for (Map.Entry<Method, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
+                        for (FIInfo fii : entry.getValue()) {
+
+                        }
+                    }
+                }
             }
         } finally {
             functionalInterfaceInfo = null;
@@ -108,15 +113,6 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
-        }
-    }
-
-    @Override
-    public void report() {
-        for (Map.Entry<Method, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
-            for (FIInfo fii : entry.getValue()) {
-
-            }
         }
     }
 
