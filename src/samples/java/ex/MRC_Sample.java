@@ -132,4 +132,12 @@ public class MRC_Sample {
     private String fpAppend() {
         return PART1 + PART2;
     }
+
+    private String fpOrThrows271(boolean b) {
+        if (b) {
+            return "CONSTANT";
+        }
+
+        throw new UnsupportedOperationException();
+    }
 }
