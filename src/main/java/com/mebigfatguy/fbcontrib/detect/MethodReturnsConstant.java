@@ -177,9 +177,11 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 }
             } else if ((seen == GOTO) || (seen == GOTO_W)) {
                 if (stack.getStackDepth() > 0) {
-                    // Trinaries confuse us too much, if the code has a ternary well - oh well
+                    // Ternaries confuse us too much, if the code has a ternary well - oh well
                     throw new StopOpcodeParsingException();
                 }
+            } else if (seen == ATHROW) {
+                throw new StopOpcodeParsingException();
             } else if (seen == INVOKEVIRTUAL) {
                 String clsName = getClassConstantOperand();
                 if (SignatureUtils.isPlainStringConvertableClass(clsName)) {
