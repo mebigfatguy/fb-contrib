@@ -191,14 +191,6 @@ public class OCP_Sample extends Z implements ActionListener, Serializable {
     public Date fpParmAnnot(@NiftyParm GregorianCalendar g) {
         return g.getTime();
     }
-
-    public void fpHasOverload() {
-        fpOverloaded270 overloaded = new fpOverloaded270();
-
-        TreeSet<String> s = new TreeSet<>();
-        overloaded.fpProcessSet(s);
-    }
-
 }
 
 @Retention(RetentionPolicy.CLASS)
