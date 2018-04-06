@@ -396,28 +396,54 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                 }
 
                 if (definers.size() == 1) {
-                    String name = "";
-                    LocalVariableTable lvt = getMethod().getLocalVariableTable();
-                    if (lvt != null) {
-                        LocalVariable lv = lvt.getLocalVariable(reg.intValue(), 0);
-                        if (lv != null) {
-                            name = lv.getName();
-                        }
-                    }
-                    int parm = reg.intValue();
-                    if (!methodIsStatic) {
-                        parm--;
-                    }
-                    parm++; // users expect 1 based parameters
 
-                    String infName = definers.keySet().iterator().next().getClassName();
-                    bugReporter.reportBug(new BugInstance(this, BugType.OCP_OVERLY_CONCRETE_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this, 0).addString(getCardinality(parm) + " parameter '" + name + "' could be declared as " + infName + " instead"));
+                    if (!hasOverloadedMethod()) {
+
+                        String name = "";
+                        LocalVariableTable lvt = getMethod().getLocalVariableTable();
+                        if (lvt != null) {
+                            LocalVariable lv = lvt.getLocalVariable(reg.intValue(), 0);
+                            if (lv != null) {
+                                name = lv.getName();
+                            }
+                        }
+                        int parm = reg.intValue();
+                        if (!methodIsStatic) {
+                            parm--;
+                        }
+
+                        parm++; // users expect 1 based parameters
+
+                        String infName = definers.keySet().iterator().next().getClassName();
+                        bugReporter.reportBug(new BugInstance(this, BugType.OCP_OVERLY_CONCRETE_PARAMETER.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this, 0)
+                                .addString(getCardinality(parm) + " parameter '" + name + "' could be declared as " + infName + " instead"));
+                    }
                 }
             } catch (ClassNotFoundException e) {
                 bugReporter.reportMissingClass(e);
             }
         }
+    }
+
+    /**
+     * looks to see if this method has an overloaded method in actuality, this isn't precise and returns true for methods that are named the same, and have same
+     * number of args This will miss some cases, but in practicality doesn't matter.
+     */
+    private boolean hasOverloadedMethod() {
+        Method thisMethod = getMethod();
+        String name = thisMethod.getName();
+        String sig = thisMethod.getSignature();
+        int numArgs = SignatureUtils.getNumParameters(sig);
+
+        for (Method m : cls.getMethods()) {
+            if (m.getName().equals(name)) {
+                if (!m.getSignature().equals(sig) && (numArgs == SignatureUtils.getNumParameters(m.getSignature()))) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     private void removeInheritedInterfaces(Map<JavaClass, List<MethodInfo>> definers) throws ClassNotFoundException {
