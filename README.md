@@ -42,6 +42,7 @@ Contributors
 * Richard Fearn
 * Mikkel Kjeldsen
 * Jeremy Landis
+* Peter Hermsdorf
 
 
 The master branch is the main branch of development currently targeting the new FindBugs 3 platform.
