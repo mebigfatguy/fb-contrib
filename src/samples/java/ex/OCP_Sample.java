@@ -1,4 +1,5 @@
 package ex;
+
 import java.awt.Color;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.TreeSet;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
@@ -222,5 +224,15 @@ class fpGenericConstrainedInterface implements Comparator<GregorianCalendar> {
         } else {
             return 0;
         }
+    }
+}
+
+class fpOverloaded270 {
+    public boolean fpProcessSet(HashSet<String> s) {
+        return s.contains("boo");
+    }
+
+    public boolean fpProcessSet(TreeSet<String> s) {
+        return s.contains("boo");
     }
 }
