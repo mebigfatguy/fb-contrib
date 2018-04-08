@@ -33,6 +33,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -155,7 +156,11 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             assumedNullTill.clear();
             assumedNonNullTill.clear();
             noAssumptionsPossible.clear();
-            super.visitCode(obj);
+
+            try {
+                super.visitCode(obj);
+            } catch (StopOpcodeParsingException e) {
+            }
 
             if (methodIsNullable) {
                 if (isCollecting()) {
@@ -170,10 +175,6 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (methodIsNullable) {
-            return;
-        }
-
         boolean resultIsNullable = false;
 
         clearAssumptions(assumedNullTill, getPC());
@@ -187,6 +188,9 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                         Integer reg = Integer.valueOf(itm.getRegisterNumber());
                         methodIsNullable = !noAssumptionsPossible.contains(reg) && ((assumedNullTill.containsKey(reg) && !assumedNonNullTill.containsKey(reg))
                                 || isStackElementNullable(getClassName(), getMethod(), itm));
+                        if (methodIsNullable) {
+                            throw new StopOpcodeParsingException();
+                        }
                     }
                     break;
                 }
