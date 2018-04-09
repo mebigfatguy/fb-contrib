@@ -3238,6 +3238,18 @@ if ({{FLAWED_TEST_LOGIC}}) {
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="SPP_USE_ZERO_WITH_COMPARATOR">
+		<ShortDescription>Method compares the result of a compareTo method to a value other than zero</ShortDescription>
+		<LongDescription>Method {1} compares the result of a compareTo method to a value other than zero</LongDescription>
+		<Details>
+			<![CDATA[
+			This method calls the compareTo method on an object and then compares the resultant value to a value other than
+			zero. The compareTo method is really only specified to return 0, a positive number or a negative number, so you should 
+			compare as == 0, or > 0 or < 0, and not to a specific value like == 1.
+			]]>
+		</Details>
+	</BugPattern>
 
 	<BugPattern type="MUI_USE_CONTAINSKEY">
 		<ShortDescription>Method calls keySet() just to call contains, use containsKey instead</ShortDescription>

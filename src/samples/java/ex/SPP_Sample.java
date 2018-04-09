@@ -383,6 +383,16 @@ public class SPP_Sample implements Serializable {
         return ToStringBuilder.reflectionToString(ToStringStyle.SHORT_PREFIX_STYLE);
     }
 
+    public void testCompareToValue(Comp s1, Comp s2, int x) {
+        if (s1.compareTo(s2) == 1) {
+            System.out.println("Hip");
+        } else if (s1.compareTo(s2) == x) {
+            System.out.println("Hip");
+        } else if (s1.compareTo(s2) == 0) {
+            System.out.println("Hooray");
+        }
+    }
+
     public boolean fpNullAndInstanceOf(Object o) {
         if (o != null) {
             if (o instanceof String) {
@@ -460,5 +470,13 @@ interface FPInterfaceWithSerialVer extends Serializable {
 class StringProducer {
     public String getString() {
         return "foo";
+    }
+}
+
+class Comp implements Comparable<Comp> {
+
+    @Override
+    public int compareTo(Comp o) {
+        return 0;
     }
 }

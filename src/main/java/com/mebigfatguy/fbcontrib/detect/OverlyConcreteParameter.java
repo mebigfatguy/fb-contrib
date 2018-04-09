@@ -396,30 +396,26 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     removeInheritedInterfaces(definers);
                 }
 
-                if (definers.size() == 1) {
+                if ((definers.size() == 1) && !hasOverloadedMethod()) {
 
-                    if (!hasOverloadedMethod()) {
-
-                        String name = "";
-                        LocalVariableTable lvt = getMethod().getLocalVariableTable();
-                        if (lvt != null) {
-                            LocalVariable lv = lvt.getLocalVariable(reg.intValue(), 0);
-                            if (lv != null) {
-                                name = lv.getName();
-                            }
+                    String name = "";
+                    LocalVariableTable lvt = getMethod().getLocalVariableTable();
+                    if (lvt != null) {
+                        LocalVariable lv = lvt.getLocalVariable(reg.intValue(), 0);
+                        if (lv != null) {
+                            name = lv.getName();
                         }
-                        int parm = reg.intValue();
-                        if (!methodIsStatic) {
-                            parm--;
-                        }
-
-                        parm++; // users expect 1 based parameters
-
-                        String infName = definers.keySet().iterator().next().getClassName();
-                        bugReporter.reportBug(new BugInstance(this, BugType.OCP_OVERLY_CONCRETE_PARAMETER.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this, 0)
-                                .addString(getCardinality(parm) + " parameter '" + name + "' could be declared as " + infName + " instead"));
                     }
+                    int parm = reg.intValue();
+                    if (!methodIsStatic) {
+                        parm--;
+                    }
+
+                    parm++; // users expect 1 based parameters
+
+                    String infName = definers.keySet().iterator().next().getClassName();
+                    bugReporter.reportBug(new BugInstance(this, BugType.OCP_OVERLY_CONCRETE_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this, 0).addString(getCardinality(parm) + " parameter '" + name + "' could be declared as " + infName + " instead"));
                 }
             } catch (ClassNotFoundException e) {
                 bugReporter.reportMissingClass(e);
