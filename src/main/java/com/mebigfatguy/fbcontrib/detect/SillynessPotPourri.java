@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -278,6 +279,33 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
                     }
                 break;
+
+                case IF_ICMPEQ:
+                case IF_ICMPGE:
+                case IF_ICMPGT:
+                case IF_ICMPLE:
+                case IF_ICMPLT:
+                case IF_ICMPNE:
+                    if (stack.getStackDepth() >= 2) {
+                        OpcodeStack.Item first = stack.getStackItem(1);
+                        OpcodeStack.Item second = stack.getStackItem(0);
+                        SPPUserValue uv = (SPPUserValue) first.getUserValue();
+                        Integer c = null;
+                        if ((uv != null) && (uv.getMethod() == SPPMethod.COMPARETO)) {
+                            c = (Integer) second.getConstant();
+                        } else {
+                            uv = (SPPUserValue) second.getUserValue();
+                            if ((uv != null) && (uv.getMethod() == SPPMethod.COMPARETO)) {
+                                c = (Integer) first.getConstant();
+                            }
+                        }
+                        if ((uv != null) && (uv.getMethod() == SPPMethod.COMPARETO) && ((c == null) || (c.intValue() != 0))) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SPP_USE_ZERO_WITH_COMPARATOR.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
+                    }
+                break;
+
                 default:
                     if (OpcodeUtils.isALoad(seen)) {
                         sawLoad(seen);
@@ -662,6 +690,14 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             propertiesSilliness(methodName);
         } else if (Values.TOSTRING.equals(methodName) && Values.SLASHED_JAVA_LANG_OBJECT.equals(className)) {
             defaultToStringSilliness();
+        } else if ("compareTo".equals(methodName)) {
+            String sig = getSigConstantOperand();
+            if ("I".equals(SignatureUtils.getReturnSignature(sig))) {
+                List<String> parms = SignatureUtils.getParameterSignatures(sig);
+                if ((parms.size() == 1) && className.equals(SignatureUtils.trimSignature(parms.get(0)))) {
+                    return new SPPUserValue(SPPMethod.COMPARETO);
+                }
+            }
         }
         return null;
     }
@@ -1051,7 +1087,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     }
 
     enum SPPMethod {
-        APPEND, GETPROPERTIES, ICONST, IGNORECASE, ITERATOR, TOCHARARRAY, SIZE, TRIM
+        APPEND, GETPROPERTIES, ICONST, IGNORECASE, ITERATOR, TOCHARARRAY, SIZE, TRIM, COMPARETO
     }
 
     static class SPPUserValue {
