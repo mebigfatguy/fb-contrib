@@ -29,8 +29,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -280,12 +280,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     }
                 break;
 
-                case IF_ICMPEQ:
-                case IF_ICMPGE:
-                case IF_ICMPGT:
-                case IF_ICMPLE:
-                case IF_ICMPLT:
-                case IF_ICMPNE:
+                case Const.IF_ICMPEQ:
+                case Const.IF_ICMPGE:
+                case Const.IF_ICMPGT:
+                case Const.IF_ICMPLE:
+                case Const.IF_ICMPLT:
+                case Const.IF_ICMPNE:
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item first = stack.getStackItem(1);
                         OpcodeStack.Item second = stack.getStackItem(0);
