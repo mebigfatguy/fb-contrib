@@ -22,6 +22,9 @@ public class PRMC_Sample {
     String[] array1;
     String[] array2;
 
+    private Integer meh1 = Integer.MIN_VALUE;
+    private Integer meh2 = Integer.MIN_VALUE;
+
     public boolean test1(Calendar c) {
         Date d = c.getTime();
         long l = d.getTime();
