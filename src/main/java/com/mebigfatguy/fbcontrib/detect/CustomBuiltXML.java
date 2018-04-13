@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
@@ -136,7 +137,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKESPECIAL) {
+            if (seen == Const.INVOKESPECIAL) {
                 String clsName = getClassConstantOperand();
                 if (SignatureUtils.isPlainStringConvertableClass(clsName)) {
                     String methodName = getNameConstantOperand();
@@ -147,7 +148,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                         strCon = (String) itm.getConstant();
                     }
                 }
-            } else if (seen == INVOKEVIRTUAL) {
+            } else if (seen == Const.INVOKEVIRTUAL) {
                 String clsName = getClassConstantOperand();
                 if (SignatureUtils.isPlainStringConvertableClass(clsName)) {
                     String methodName = getNameConstantOperand();
