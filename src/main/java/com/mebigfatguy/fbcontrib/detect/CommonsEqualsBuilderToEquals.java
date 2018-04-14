@@ -19,6 +19,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
 
@@ -74,7 +75,7 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
-            if (seen == INVOKEVIRTUAL) {
+            if (seen == Const.INVOKEVIRTUAL) {
                 String methodName = getNameConstantOperand();
                 if ("equals".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand()) && (stack.getStackDepth() > 1)) {
                     String calledClass = stack.getStackItem(1).getSignature();
