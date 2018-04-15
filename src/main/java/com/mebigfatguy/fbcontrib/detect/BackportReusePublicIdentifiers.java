@@ -91,7 +91,7 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
         stack.precomputation(this);
 
         switch (seen) {
-            case INVOKESTATIC: {
+            case Const.INVOKESTATIC: {
                 String className = getClassConstantOperand();
                 for (Backports backport : BACKPORTS) {
                     if (className.startsWith(backport.getPathPrefix())) {
@@ -104,7 +104,7 @@ public class BackportReusePublicIdentifiers extends OpcodeStackDetector {
             }
             break;
 
-            case INVOKESPECIAL: {
+            case Const.INVOKESPECIAL: {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 for (Backports backport : BACKPORTS) {
