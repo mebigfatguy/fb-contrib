@@ -216,10 +216,20 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     private ConstantMethodHandle getMethodHandle(int bootstrapIndex) {
         byte[] attBytes = ((Unknown) bootstrapAtt).getBytes();
-        int offset = (bootstrapIndex * 6) + 2;
-        int numArgs = CodeByteUtils.getshort(attBytes, offset += 2);
+
+        int offset = 2; // num methods
+        for (int i = 0; i < bootstrapIndex; i++) {
+            offset += 2; // method ref
+            int numArgs = CodeByteUtils.getshort(attBytes, offset);
+            offset += 2 + (numArgs * 2);
+        }
+        offset += 2; // method ref
+
+        int numArgs = CodeByteUtils.getshort(attBytes, offset);
+        offset += 2; // args
         for (int i = 0; i < numArgs; i++) {
-            int arg = CodeByteUtils.getshort(attBytes, offset += 2);
+            int arg = CodeByteUtils.getshort(attBytes, offset);
+            offset += 2; // arg
             Constant c = getConstantPool().getConstant(arg);
             if (c instanceof ConstantMethodHandle) {
                 return (ConstantMethodHandle) c;
