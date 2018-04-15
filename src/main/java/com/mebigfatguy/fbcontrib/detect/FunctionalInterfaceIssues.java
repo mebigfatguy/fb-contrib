@@ -30,17 +30,27 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantMethodHandle;
+import org.apache.bcel.classfile.ConstantMethodref;
+import org.apache.bcel.classfile.ConstantNameAndType;
+import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.classfile.Unknown;
 
+import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 
+import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for issues around use of @FunctionalInterface classes, especially in use with Streams..
@@ -48,10 +58,19 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
+    private static final int REF_invokeStatic = 6;
+
     private BugReporter bugReporter;
+    private JavaClass cls;
     private OpcodeStack stack;
     private Attribute bootstrapAtt;
-    private Map<Method, List<FIInfo>> functionalInterfaceInfo;
+    private Map<String, List<FIInfo>> functionalInterfaceInfo;
+    private boolean isLambda;
+    private AnonState anonState;
+
+    enum AnonState {
+        SEEN_NOTHING, SEEN_ALOAD_0, SEEN_INVOKE
+    };
 
     public FunctionalInterfaceIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -60,7 +79,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            JavaClass cls = classContext.getJavaClass();
+            cls = classContext.getJavaClass();
             if (cls.getMajor() >= Constants.MAJOR_1_8) {
                 bootstrapAtt = getBootstrapAttribute(cls);
                 if (bootstrapAtt != null) {
@@ -68,9 +87,10 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     functionalInterfaceInfo = new HashMap<>();
                     super.visitClassContext(classContext);
 
-                    for (Map.Entry<Method, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
+                    for (Map.Entry<String, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
                         for (FIInfo fii : entry.getValue()) {
-
+                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_METHOD_HANDLE.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(fii.getMethod()).addSourceLine(fii.getSrcLine()));
                         }
                     }
                 }
@@ -79,14 +99,28 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
             functionalInterfaceInfo = null;
             bootstrapAtt = null;
             stack = null;
+            cls = null;
         }
     }
 
     @Override
     public void visitCode(Code obj) {
 
-        if (prescreen(getMethod())) {
+        Method m = getMethod();
+        if ((m.getAccessFlags() & ACC_SYNTHETIC) != 0) {
+            // This assumes lambda methods follow regular methods
+            List<FIInfo> fiis = functionalInterfaceInfo.get(m.getName());
+            if (fiis != null) {
+                try {
+                    isLambda = true;
+                    anonState = AnonState.SEEN_NOTHING;
+                    super.visitCode(obj);
+                } catch (StopOpcodeParsingException e) {
+                }
+            }
+        } else if (prescreen(m)) {
             stack.resetForMethodEntry(this);
+            isLambda = false;
             super.visitCode(obj);
         }
     }
@@ -95,21 +129,63 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
 
         try {
-            switch (seen) {
-                case Constants.INVOKEDYNAMIC:
-                    List<FIInfo> fiis = functionalInterfaceInfo.get(getMethod());
-                    if (fiis == null) {
-                        fiis = new ArrayList<>();
-                        functionalInterfaceInfo.put(getMethod(), fiis);
-                    }
+            if (isLambda) {
+                switch (anonState) {
+                    case SEEN_NOTHING:
+                        if (seen == ALOAD_0) {
+                            anonState = AnonState.SEEN_ALOAD_0;
+                        } else {
+                            functionalInterfaceInfo.remove(getMethod().getName());
+                            throw new StopOpcodeParsingException();
+                        }
+                    break;
 
-                    ConstantInvokeDynamic cid = (ConstantInvokeDynamic) getConstantRefOperand();
+                    case SEEN_ALOAD_0:
+                        if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+                            String signature = getSigConstantOperand();
+                            if (signature.startsWith("()")) {
+                                anonState = AnonState.SEEN_INVOKE;
+                            } else {
+                                functionalInterfaceInfo.remove(getMethod().getName());
+                                throw new StopOpcodeParsingException();
+                            }
+                        } else {
+                            functionalInterfaceInfo.remove(getMethod().getName());
+                            throw new StopOpcodeParsingException();
+                        }
+                    break;
 
-                    ConstantMethodHandle cmh = getMethodHandle(cid.getBootstrapMethodAttrIndex());
-                    FIInfo fii = new FIInfo(getPC(), cid.getBootstrapMethodAttrIndex());
-                    fiis.add(fii);
-                break;
+                    case SEEN_INVOKE:
+                        if (!OpcodeUtils.isReturn(seen)) {
+                            functionalInterfaceInfo.remove(getMethod().getName());
+                        }
+                        throw new StopOpcodeParsingException();
 
+                    default:
+                        functionalInterfaceInfo.remove(getMethod().getName());
+                        throw new StopOpcodeParsingException();
+                }
+            } else {
+                switch (seen) {
+                    case Constants.INVOKEDYNAMIC:
+                        ConstantInvokeDynamic cid = (ConstantInvokeDynamic) getConstantRefOperand();
+
+                        ConstantMethodHandle cmh = getMethodHandle(cid.getBootstrapMethodAttrIndex());
+                        String anonName = getAnonymousName(cmh);
+                        if (anonName != null) {
+
+                            List<FIInfo> fiis = functionalInterfaceInfo.get(anonName);
+                            if (fiis == null) {
+                                fiis = new ArrayList<>();
+                                functionalInterfaceInfo.put(anonName, fiis);
+                            }
+
+                            FIInfo fii = new FIInfo(getXMethod(), SourceLineAnnotation.fromVisitedInstruction(this));
+                            fiis.add(fii);
+                        }
+                    break;
+
+                }
             }
         } finally {
             stack.sawOpcode(this, seen);
@@ -128,8 +204,8 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return (bytecodeSet != null) && (bytecodeSet.get(Constants.INVOKEDYNAMIC));
     }
 
-    private Attribute getBootstrapAttribute(JavaClass cls) {
-        for (Attribute att : cls.getAttributes()) {
+    private Attribute getBootstrapAttribute(JavaClass clz) {
+        for (Attribute att : clz.getAttributes()) {
             if ("BootstrapMethods".equals(att.getName())) {
                 return att;
             }
@@ -139,9 +215,8 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     }
 
     private ConstantMethodHandle getMethodHandle(int bootstrapIndex) {
-        int offset = bootstrapIndex * 6;
         byte[] attBytes = ((Unknown) bootstrapAtt).getBytes();
-        int methodRefIndex = CodeByteUtils.getshort(attBytes, offset += 2);
+        int offset = (bootstrapIndex * 6) + 2;
         int numArgs = CodeByteUtils.getshort(attBytes, offset += 2);
         for (int i = 0; i < numArgs; i++) {
             int arg = CodeByteUtils.getshort(attBytes, offset += 2);
@@ -154,13 +229,49 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return null;
     }
 
-    class FIInfo {
-        private int pc;
-        private int bootstrapId;
-
-        public FIInfo(int pc, int bootstrapId) {
-            this.pc = pc;
-            this.bootstrapId = bootstrapId;
+    private String getAnonymousName(ConstantMethodHandle cmh) {
+        if (cmh.getReferenceKind() != REF_invokeStatic) {
+            return null;
         }
+
+        ConstantPool cp = getConstantPool();
+        ConstantMethodref methodRef = (ConstantMethodref) cp.getConstant(cmh.getReferenceIndex());
+        String clsName = methodRef.getClass(cp);
+        if (!clsName.equals(cls.getClassName())) {
+            return null;
+        }
+
+        ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(methodRef.getNameAndTypeIndex());
+
+        String signature = nameAndType.getSignature(cp);
+        if (signature.endsWith("V")) {
+            return null;
+        }
+
+        return nameAndType.getName(cp);
+    }
+
+    class FIInfo {
+        private XMethod method;
+        private SourceLineAnnotation srcLine;
+
+        public FIInfo(XMethod method, SourceLineAnnotation srcLine) {
+            this.method = method;
+            this.srcLine = srcLine;
+        }
+
+        public XMethod getMethod() {
+            return method;
+        }
+
+        public SourceLineAnnotation getSrcLine() {
+            return srcLine;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+
     }
 }
