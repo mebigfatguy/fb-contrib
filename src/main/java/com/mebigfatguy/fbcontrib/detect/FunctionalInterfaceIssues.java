@@ -272,7 +272,22 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
             return null;
         }
 
-        return nameAndType.getName(cp);
+        String methodName = nameAndType.getName(cp);
+        if (!isSynthetic(methodName, nameAndType.getSignature(cp))) {
+            return null;
+        }
+
+        return methodName;
+    }
+
+    private boolean isSynthetic(String methodName, String methodSig) {
+        for (Method m : cls.getMethods()) {
+            if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
+                return m.isSynthetic();
+            }
+        }
+
+        return false;
     }
 
     class FIInfo {
