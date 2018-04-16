@@ -50,7 +50,6 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for issues around use of @FunctionalInterface classes, especially in use with Streams..
@@ -90,7 +89,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     for (Map.Entry<String, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
                         for (FIInfo fii : entry.getValue()) {
                             bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_METHOD_HANDLE.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(fii.getMethod()).addSourceLine(fii.getSrcLine()));
+                                    .addMethod(cls, fii.getMethod()).addSourceLine(fii.getSrcLine()));
                         }
                     }
                 }
@@ -262,15 +261,15 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     }
 
     class FIInfo {
-        private XMethod method;
+        private Method method;
         private SourceLineAnnotation srcLine;
 
-        public FIInfo(XMethod method, SourceLineAnnotation srcLine) {
+        public FIInfo(Method method, SourceLineAnnotation srcLine) {
             this.method = method;
             this.srcLine = srcLine;
         }
 
-        public XMethod getMethod() {
+        public Method getMethod() {
             return method;
         }
 
