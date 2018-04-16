@@ -84,6 +84,9 @@ function toggleBlock(divId, imgId)
 				<li><b>[LUI] List Usage Issues</b><br/>
             	Looks for odd usage patterns when using Lists
             	</li>
+            	<li><b>[FII] Functional Interface Issues</b><br/>
+                Looks for issues around use of @FunctionalInterface classes, especially in use with Streams
+                </li>
 			</ul>
 		</div>	
 		<hr/>
