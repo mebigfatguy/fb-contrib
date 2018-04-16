@@ -28,9 +28,9 @@ import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantMethodHandle;
-import org.apache.bcel.classfile.ConstantMethodref;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
@@ -245,7 +245,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         }
 
         ConstantPool cp = getConstantPool();
-        ConstantMethodref methodRef = (ConstantMethodref) cp.getConstant(cmh.getReferenceIndex());
+        ConstantCP methodRef = (ConstantCP) cp.getConstant(cmh.getReferenceIndex());
         String clsName = methodRef.getClass(cp);
         if (!clsName.equals(cls.getClassName())) {
             return null;
