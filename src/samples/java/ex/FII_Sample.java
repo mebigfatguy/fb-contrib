@@ -1,6 +1,7 @@
 package ex;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class FII_Sample {
@@ -23,6 +24,11 @@ public class FII_Sample {
     public List<String> fpGetNames(List<Bauble> baubles) {
 
         return baubles.stream().map(Bauble::getName).collect(Collectors.toList());
+    }
+
+    public Map<String, Long> fpBuildMapper(List<Long> l) {
+
+        return l.stream().collect(Collectors.toMap(Object::toString, e -> e));
     }
 
     public static class Bauble {
