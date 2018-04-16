@@ -1,6 +1,9 @@
 package ex;
 
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class FII_Sample {
@@ -25,6 +28,11 @@ public class FII_Sample {
         return baubles.stream().map(Bauble::getName).collect(Collectors.toList());
     }
 
+    public Map<String, Long> fpBuildMapper(List<Long> l) {
+
+        return l.stream().collect(Collectors.toMap(Object::toString, e -> e));
+    }
+
     public static class Bauble {
 
         public String getName() {
@@ -33,6 +41,19 @@ public class FII_Sample {
 
         public boolean isFree() {
             return true;
+        }
+    }
+
+    public enum GiantSpeak {
+        FEE, FI, FO, FUM, BLUB;
+
+        static Set<GiantSpeak> sayings = EnumSet.allOf(GiantSpeak.class);
+        static {
+            sayings.removeIf(s -> !s.whatGiantSay());
+        }
+
+        public boolean whatGiantSay() {
+            return this != GiantSpeak.BLUB;
         }
     }
 }

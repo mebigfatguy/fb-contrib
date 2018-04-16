@@ -57,17 +57,22 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
+    enum ParseState {
+        NORMAL, LAMBDA;
+    }
+
+    enum AnonState {
+        SEEN_NOTHING, SEEN_ALOAD_0, SEEN_INVOKE
+    };
+
     private BugReporter bugReporter;
     private JavaClass cls;
     private OpcodeStack stack;
     private BootstrapMethods bootstrapAtt;
     private Map<String, List<FIInfo>> functionalInterfaceInfo;
-    private boolean isLambda;
-    private AnonState anonState;
 
-    enum AnonState {
-        SEEN_NOTHING, SEEN_ALOAD_0, SEEN_INVOKE
-    };
+    private ParseState parseState;
+    private AnonState anonState;
 
     public FunctionalInterfaceIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -82,6 +87,9 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                 if (bootstrapAtt != null) {
                     stack = new OpcodeStack();
                     functionalInterfaceInfo = new HashMap<>();
+                    parseState = ParseState.NORMAL;
+                    super.visitClassContext(classContext);
+                    parseState = ParseState.LAMBDA;
                     super.visitClassContext(classContext);
 
                     for (Map.Entry<String, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
@@ -104,21 +112,28 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
 
         Method m = getMethod();
-        if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) != 0) {
-            // This assumes lambda methods follow regular methods
-            List<FIInfo> fiis = functionalInterfaceInfo.get(m.getName());
-            if (fiis != null) {
-                try {
-                    isLambda = true;
-                    anonState = AnonState.SEEN_NOTHING;
-                    super.visitCode(obj);
-                } catch (StopOpcodeParsingException e) {
+        switch (parseState) {
+            case LAMBDA:
+                if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) != 0) {
+                    List<FIInfo> fiis = functionalInterfaceInfo.get(m.getName());
+                    if (fiis != null) {
+                        try {
+                            anonState = AnonState.SEEN_NOTHING;
+                            super.visitCode(obj);
+                        } catch (StopOpcodeParsingException e) {
+                        }
+                    }
                 }
-            }
-        } else if (prescreen(m)) {
-            stack.resetForMethodEntry(this);
-            isLambda = false;
-            super.visitCode(obj);
+            break;
+
+            case NORMAL:
+                if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) == 0) {
+                    if (prescreen(m)) {
+                        stack.resetForMethodEntry(this);
+                        super.visitCode(obj);
+                        break;
+                    }
+                }
         }
     }
 
@@ -126,7 +141,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
 
         try {
-            if (isLambda) {
+            if (parseState == ParseState.LAMBDA) {
                 switch (anonState) {
                     case SEEN_NOTHING:
                         if (seen == Const.ALOAD_0) {
@@ -243,7 +258,22 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
             return null;
         }
 
-        return nameAndType.getName(cp);
+        String methodName = nameAndType.getName(cp);
+        if (!isSynthetic(methodName, nameAndType.getSignature(cp))) {
+            return null;
+        }
+
+        return methodName;
+    }
+
+    private boolean isSynthetic(String methodName, String methodSig) {
+        for (Method m : cls.getMethods()) {
+            if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
+                return m.isSynthetic();
+            }
+        }
+
+        return false;
     }
 
     class FIInfo {
