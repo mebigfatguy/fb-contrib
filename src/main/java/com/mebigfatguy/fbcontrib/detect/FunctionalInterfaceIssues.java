@@ -177,7 +177,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                 functionalInterfaceInfo.put(anonName, fiis);
                             }
 
-                            FIInfo fii = new FIInfo(getXMethod(), SourceLineAnnotation.fromVisitedInstruction(this));
+                            FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this));
                             fiis.add(fii);
                         }
                     break;
