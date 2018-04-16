@@ -143,6 +143,7 @@ public class LO_Sample {
 
         public void fpOKPattern(File f) {
             l3.error("Specify the path to {} with %TEMP% or using system property", f);
+            l3.info("Copy {}% complete", 1);
         }
 
         public void fpFalseToString(FunnyToString fts) {
