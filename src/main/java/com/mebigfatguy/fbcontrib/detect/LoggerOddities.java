@@ -97,7 +97,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
     private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
     private static final Pattern BAD_STRING_FORMAT_PATTERN = Pattern
-            .compile("(?<![a-zA-Z0-9])%([0-9]*\\$)?(-|#|\\+| |0|,|\\(|)?[0-9]*(\\.[0-9]+)?(b|h|s|c|d|o|x|e|f|g|a|t|%|n)");
+            .compile("(?<![a-zA-Z0-9])%([0-9]*\\$)?(-|#|\\+|0|,|\\(|)?[0-9]*(\\.[0-9]+)?(b|h|s|c|d|o|x|e|f|g|a|t|%|n)");
     private static final Pattern FORMATTER_ANCHOR = Pattern.compile("\\{\\}");
     private static final Pattern NON_SIMPLE_FORMAT = Pattern.compile(".*\\%[^sdf].*", Pattern.CASE_INSENSITIVE);
 
