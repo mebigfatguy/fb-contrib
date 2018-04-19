@@ -19,6 +19,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
 
@@ -73,7 +74,7 @@ public class CommonsHashcodeBuilderToHashcode extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL) {
+        if (seen == Const.INVOKEVIRTUAL) {
             String methodName = getNameConstantOperand();
             if (Values.HASHCODE.equals(methodName) && SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand()) && (stack.getStackDepth() > 0)) {
                 String calledClass = stack.getStackItem(0).getSignature();
