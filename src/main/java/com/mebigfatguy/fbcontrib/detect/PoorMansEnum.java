@@ -31,11 +31,13 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
@@ -43,6 +45,7 @@ import edu.umd.cs.findbugs.ba.XFactory;
 /**
  * looks for simple fields that only store one of several constant values. This usually is an indication that this field should really be an enum type.
  */
+@CustomUserValue
 public class PoorMansEnum extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
@@ -64,10 +67,13 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                 nameToField = new HashMap<>();
                 for (Field f : cls.getFields()) {
                     if (f.isPrivate() && !f.isSynthetic()) {
-                        String fieldName = f.getName();
-                        // preallocating a set per field is just a waste, so just insert the empty set as a place holder
-                        fieldValues.put(fieldName, Collections.emptySet());
-                        nameToField.put(fieldName, f);
+                        String fieldSig = f.getSignature();
+                        if ((!fieldSig.startsWith("L") && !fieldSig.startsWith("[")) || Values.SIG_JAVA_LANG_STRING.equals(fieldSig)) {
+                            String fieldName = f.getName();
+                            // preallocating a set per field is just a waste, so just insert the empty set as a place holder
+                            fieldValues.put(fieldName, Collections.emptySet());
+                            nameToField.put(fieldName, f);
+                        }
                     }
                 }
                 if (!fieldValues.isEmpty()) {
@@ -108,6 +114,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
+        boolean explicitNull = false;
         try {
             stack.precomputation(this);
 
@@ -118,7 +125,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                     if (values != null) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         Object cons = item.getConstant();
-                        if (cons == null) {
+                        if ((cons == null) && (item.getUserValue() == null)) {
                             fieldValues.remove(fieldName);
                             nameToField.remove(fieldName);
                             firstFieldUse.remove(fieldName);
@@ -139,9 +146,15 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                         }
                     }
                 }
+            } else if (seen == ACONST_NULL) {
+                explicitNull = true;
             }
         } finally {
             stack.sawOpcode(this, seen);
+            if ((explicitNull) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(Boolean.TRUE);
+            }
         }
     }
 }
