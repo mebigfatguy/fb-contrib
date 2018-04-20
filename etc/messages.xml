@@ -6235,14 +6235,14 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
-    <BugPattern type="FII_USE_METHOD_HANDLE">
-    	<ShortDescription>Method creates an anonymous lambda expression instead of specifying a method handle</ShortDescription>
-    	<LongDescription>Method {1} creates an anonymous lamda expression instead of specicying a method handle</LongDescription>
+    <BugPattern type="FII_USE_METHOD_REFERENCE">
+    	<ShortDescription>Method creates an anonymous lambda expression instead of specifying a method reference</ShortDescription>
+    	<LongDescription>Method {1} creates an anonymous lamda expression instead of specifying a method reference</LongDescription>
     	<Details>
     	<![CDATA[
     	<p>This method defines an anonymous lambda function to be called to fetch a single value from the passed in value. While
     	this will work, it is needlessly complex as this function merely calls a single getter method on the object, and thus
-    	the code can be simplied by just passing in a method handle instead.</p>
+    	the code can be simplied by just passing in a method reference instead.</p>
     	]]>
     	</Details>
     </BugPattern>

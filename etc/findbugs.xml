@@ -331,7 +331,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ListUsageIssues" speed="fast" reports="LUI_USE_SINGLETON_LIST,LUI_USE_COLLECTION_ADD,LUI_USE_GET0"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_HANDLE" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_REFERENCE" />
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -631,5 +631,5 @@
 	<BugPattern abbrev="LUI" type="LUI_USE_SINGLETON_LIST" category="CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_COLLECTION_ADD" category="CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_GET0" category="CORRECTNESS" />
-	<BugPattern abbrev="FII" type="FII_USE_METHOD_HANDLE" category="CORRECTNESS" />
+	<BugPattern abbrev="FII" type="FII_USE_METHOD_REFERENCE" category="CORRECTNESS" />
 </FindbugsPlugin>
