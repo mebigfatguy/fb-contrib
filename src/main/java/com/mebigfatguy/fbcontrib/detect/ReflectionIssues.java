@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -64,7 +65,7 @@ public class ReflectionIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
 
         try {
-            if (seen == INVOKEVIRTUAL) {
+            if (seen == Const.INVOKEVIRTUAL) {
                 QMethod m = new QMethod(getNameConstantOperand(), getSigConstantOperand());
                 if (SETACCESSIBLE.equals(m)) {
 
@@ -75,7 +76,7 @@ public class ReflectionIssues extends BytecodeScanningDetector {
                     }
                 }
 
-            } else if (seen == INVOKESTATIC) {
+            } else if (seen == Const.INVOKESTATIC) {
                 FQMethod m = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (SETACCESSIBLE_ARRAY.equals(m)) {
                     bugReporter.reportBug(
