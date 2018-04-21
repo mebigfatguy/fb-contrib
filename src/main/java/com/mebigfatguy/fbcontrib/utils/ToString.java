@@ -35,7 +35,7 @@ public class ToString {
      * holds objects that have already been converted to string to avoid infinite loops in the toString generation
      */
     private static class VisitedInfo {
-        Set<Integer> visitedObjects = new HashSet<>();
+        Set<Integer> visitedHC = new HashSet<>();
         int count = 0;
     }
 
@@ -54,10 +54,10 @@ public class ToString {
         VisitedInfo vi = visited.get();
         try {
             vi.count++;
-            return generate(o, (ignoredFields == null) ? null : Arrays.<String> asList(ignoredFields), vi.visitedObjects);
+            return generate(o, (ignoredFields == null) ? null : Arrays.<String> asList(ignoredFields), vi.visitedHC);
         } finally {
             if (--vi.count == 0) {
-                vi.visitedObjects.clear();
+                vi.visitedHC.clear();
             }
         }
     }
