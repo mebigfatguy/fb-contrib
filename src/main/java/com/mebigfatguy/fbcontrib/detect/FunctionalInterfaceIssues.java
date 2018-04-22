@@ -40,6 +40,7 @@ import org.apache.bcel.classfile.Unknown;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 
@@ -47,17 +48,18 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
-import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for issues around use of @FunctionalInterface classes, especially in use with Streams..
  */
-@CustomUserValue
 public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     private static final int REF_invokeStatic = 6;
+
+    private static final QMethod CONTAINS = new QMethod("contains", "(Ljava/lang/Object;)Z");
 
     enum ParseState {
         NORMAL, LAMBDA;
@@ -65,7 +67,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     enum AnonState {
         SEEN_NOTHING, SEEN_ALOAD_0, SEEN_INVOKE
-    };
+    }
 
     private BugReporter bugReporter;
     private JavaClass cls;
@@ -196,6 +198,22 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
                             FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this));
                             fiis.add(fii);
+                        }
+                    break;
+
+                    case Constants.INVOKEINTERFACE:
+                        QMethod m = new QMethod(getNameConstantOperand(), getSigConstantOperand());
+                        if (CONTAINS.equals(m)) {
+                            if (stack.getStackDepth() >= 2) {
+                                OpcodeStack.Item itm = stack.getStackItem(1);
+                                XMethod xm = itm.getReturnValueOf();
+                                if (xm != null) {
+                                    if ("java.util.stream.Stream".equals(xm.getClassName()) && "collect".equals(xm.getName())) {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FILTER_FIND_FIRST.name(), NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this));
+                                    }
+                                }
+                            }
                         }
                     break;
 

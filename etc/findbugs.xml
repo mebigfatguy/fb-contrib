@@ -331,7 +331,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ListUsageIssues" speed="fast" reports="LUI_USE_SINGLETON_LIST,LUI_USE_COLLECTION_ADD,LUI_USE_GET0"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_REFERENCE" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_REFERENCE,FII_USE_FILTER_FIND_FIRST" />
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -620,15 +620,16 @@
 	<BugPattern abbrev="OI" type="OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL" category="CORRECTNESS" />
 	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT" category="CORRECTNESS"/>
 	<BugPattern abbrev="UAC" type="UAC_UNNECESSARY_API_CONVERSION_FILE_TO_PATH" category="CORRECTNESS"/>
-	<BugPattern abbrev="RFI" type="RFI_SET_ACCESSIBLE" category="CORRECTNESS" experimental="true"/>
-	<BugPattern abbrev="AI" type="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="MUI" type="MUI_CONTAINSKEY_BEFORE_GET" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="RFI" type="RFI_SET_ACCESSIBLE" category="CORRECTNESS"/>
+	<BugPattern abbrev="AI" type="AI_ANNOTATION_ISSUES_NEEDS_NULLABLE" category="CORRECTNESS"/>
+	<BugPattern abbrev="MUI" type="MUI_CONTAINSKEY_BEFORE_GET" category="CORRECTNESS"/>
 	<BugPattern abbrev="MUI" type="MUI_GET_BEFORE_REMOVE" category="CORRECTNESS"/>
 	<BugPattern abbrev="MUI" type="MUI_CALLING_SIZE_ON_SUBCONTAINER" category="CORRECTNESS" />
 	<BugPattern abbrev="MUI" type="MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR" category="CORRECTNESS" />
 	<BugPattern abbrev="MUI" type="MUI_USE_CONTAINSKEY" category="CORRECTNESS" />
-	<BugPattern abbrev="LUI" type="LUI_USE_SINGLETON_LIST" category="CORRECTNESS" />
-	<BugPattern abbrev="LUI" type="LUI_USE_COLLECTION_ADD" category="CORRECTNESS" />
-	<BugPattern abbrev="LUI" type="LUI_USE_GET0" category="CORRECTNESS" />
-	<BugPattern abbrev="FII" type="FII_USE_METHOD_REFERENCE" category="CORRECTNESS" />
+	<BugPattern abbrev="LUI" type="LUI_USE_SINGLETON_LIST" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="LUI" type="LUI_USE_COLLECTION_ADD" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="LUI" type="LUI_USE_GET0" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="FII" type="FII_USE_METHOD_REFERENCE" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="FII" type="FII_USE_FILTER_FIND_FIRST" category="CORRECTNESS" experimental="true"/>
 </FindbugsPlugin>
