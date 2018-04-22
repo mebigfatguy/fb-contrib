@@ -78,6 +78,20 @@ public class OptionalIssues extends BytecodeScanningDetector {
     // @formatter:on
     );
 
+    /**
+     * java.util.Optional is handled in the detector OptionalIssues
+     */
+    private static final Set<String> OPTIONAL_CLASSES = UnmodifiableSet.create(
+    // @formatter:off
+        "Ljava/util/Optional;",
+        "Ljava/util/OptionalDouble;",
+        "Ljava/util/OptionalInt;",
+        "Ljava/util/OptionalLong;",
+        "Lcom/google/common/base/Optional;",
+        "Lorg/openjdk/jmh/util/Optional;"
+    // @formatter:on
+    );
+
     private static final BitSet INVOKE_OPS = new BitSet();
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -156,7 +170,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 case Const.IFNONNULL:
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
-                        if ("Ljava/util/Optional;".equals(itm.getSignature())) {
+                        if (OPTIONAL_CLASSES.contains(itm.getSignature())) {
                             bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_CHECKING_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                         }

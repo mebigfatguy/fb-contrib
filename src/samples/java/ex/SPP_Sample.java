@@ -22,8 +22,6 @@ import java.util.StringTokenizer;
 import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.google.common.base.Optional;
-
 @SuppressWarnings("all")
 public class SPP_Sample implements Serializable {
     public static final long serialVersionUID = -2766574418713802220L;
@@ -369,14 +367,6 @@ public class SPP_Sample implements Serializable {
         // no tag
         System.out.println(x.trim());
         return x;
-    }
-
-    public String testOptional(Optional<String> o) {
-        if (o == null) {
-            return "";
-        }
-
-        return o.get();
     }
 
     public String testCommonsLangToStringBuilder() {

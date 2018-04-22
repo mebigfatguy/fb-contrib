@@ -3491,20 +3491,6 @@ return "thisisaconstantstring";
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="SPP_NULL_CHECK_ON_OPTIONAL">
-		<ShortDescription>Method checks an Optional reference for null or non nullness</ShortDescription>
-		<LongDescription>Method {1} checks an Optional reference for null or non nullness</LongDescription>
-		<Details>
-			<![CDATA[
-			This method uses an Optional variable, and checks the reference value for whether it is null or not null.
-			Since the point of the Optional class is to avoid the 'null reference problem', having code that needs to
-			check the reference itself is self defeating, and therefore makes the use of the Optional variable useless.
-			You should never use a variable of type Optional that has a value of null, and so there should be no need to
-			check for it.
-			]]>
-		</Details>
-	</BugPattern>
-
 	<BugPattern type="SPP_WRONG_COMMONS_TO_STRING_OBJECT">
 		<ShortDescription>Method does not pass an object to commons-lang's ToStringBuilder</ShortDescription>
 		<LongDescription>Method {1} does not pass an object to commons-lang's ToStringBuilder</LongDescription>
@@ -6235,6 +6221,30 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
+    <BugPattern type="FII_USE_FILTER_FIND_FIRST">
+        <ShortDescription>Method calls contains() on a collected lambda expression</ShortDescription>
+        <LongDescription>Method {1} calls contains() on a collected lambda expresssion</LongDescription>
+        <Details>
+        <![CDATA[
+        <p>This method builds a collection using lambda expressions with a collect terminal operation. It then immediately
+        calls the contains() method on it, to see if an item is present. This is sub optimal as the lambda still needs to 
+        build the entire collection, iterating the entire source list. It is better to use filter() and findFirst() to short
+        circuit the building of the collection.
+        </p>
+        <p>
+        Instead of
+        <code><pre>
+        baubles.stream().map(Bauble::getName).collect(Collectors.toSet()).contains(name)
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().filter(b -> name.equals(b.getName())).findFirst().isPresent()
+        </pre></code>
+        </p>
+        ]]>
+        </Details>
+    </BugPattern>
+    
     <BugPattern type="FII_USE_METHOD_REFERENCE">
     	<ShortDescription>Method creates an anonymous lambda expression instead of specifying a method reference</ShortDescription>
     	<LongDescription>Method {1} creates an anonymous lamda expression instead of specifying a method reference</LongDescription>
@@ -6243,6 +6253,16 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<p>This method defines an anonymous lambda function to be called to fetch a single value from the passed in value. While
     	this will work, it is needlessly complex as this function merely calls a single getter method on the object, and thus
     	the code can be simplied by just passing in a method reference instead.</p>
+    	<p>
+        Instead of
+        <code><pre>
+        baubles.stream().map(b -> b.getName()).collect(Collectors.toSet())
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().map(Bauble::getName).collect(Collectors.toSet())
+        </pre></code>
+        </p>
     	]]>
     	</Details>
     </BugPattern>
