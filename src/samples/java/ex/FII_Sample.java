@@ -33,6 +33,10 @@ public class FII_Sample {
         return l.stream().collect(Collectors.toMap(Object::toString, e -> e));
     }
 
+    public boolean containsOnACollect(List<Bauble> baubles, String name) {
+        return baubles.stream().map(Bauble::getName).collect(Collectors.toSet()).contains(name);
+    }
+
     public static class Bauble {
 
         public String getName() {
