@@ -206,11 +206,13 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         if (CONTAINS.equals(m)) {
                             if (stack.getStackDepth() >= 2) {
                                 OpcodeStack.Item itm = stack.getStackItem(1);
-                                XMethod xm = itm.getReturnValueOf();
-                                if (xm != null) {
-                                    if ("java.util.stream.Stream".equals(xm.getClassName()) && "collect".equals(xm.getName())) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FILTER_FIND_FIRST.name(), NORMAL_PRIORITY).addClass(this)
-                                                .addMethod(this).addSourceLine(this));
+                                if (itm.getRegisterNumber() < 0) {
+                                    XMethod xm = itm.getReturnValueOf();
+                                    if (xm != null) {
+                                        if ("java.util.stream.Stream".equals(xm.getClassName()) && "collect".equals(xm.getName())) {
+                                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FILTER_FIND_FIRST.name(), NORMAL_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                        }
                                     }
                                 }
                             }
