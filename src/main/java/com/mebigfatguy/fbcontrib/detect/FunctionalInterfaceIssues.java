@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.BootstrapMethod;
@@ -199,7 +201,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         }
                     break;
 
-                    case Constants.INVOKEINTERFACE:
+                    case Const.INVOKEINTERFACE:
                         QMethod m = new QMethod(getNameConstantOperand(), getSigConstantOperand());
                         if (CONTAINS.equals(m)) {
                             if (stack.getStackDepth() >= 2) {
@@ -236,6 +238,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return (bytecodeSet != null) && (bytecodeSet.get(Const.INVOKEDYNAMIC));
     }
 
+    @Nullable
     private BootstrapMethods getBootstrapAttribute(JavaClass clz) {
         for (Attribute att : clz.getAttributes()) {
             if (att instanceof BootstrapMethods) {
@@ -246,6 +249,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return null;
     }
 
+    @Nullable
     private ConstantMethodHandle getMethodHandle(int bootstrapIndex) {
         BootstrapMethod bsMethod = bootstrapAtt.getBootstrapMethods()[bootstrapIndex];
 
@@ -259,6 +263,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return null;
     }
 
+    @Nullable
     private String getAnonymousName(ConstantMethodHandle cmh) {
         if (cmh.getReferenceKind() != Const.REF_invokeStatic) {
             return null;
@@ -296,7 +301,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return false;
     }
 
-    class FIInfo {
+    static class FIInfo {
         private Method method;
         private SourceLineAnnotation srcLine;
 
