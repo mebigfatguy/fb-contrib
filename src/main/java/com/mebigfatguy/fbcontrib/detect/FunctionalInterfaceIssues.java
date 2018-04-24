@@ -315,7 +315,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return false;
     }
 
-    class FIInfo {
+    static class FIInfo {
         private Method method;
         private SourceLineAnnotation srcLine;
 
