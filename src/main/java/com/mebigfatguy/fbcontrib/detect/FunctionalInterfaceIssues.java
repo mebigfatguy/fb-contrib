@@ -24,6 +24,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.annotation.Nullable;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
@@ -238,6 +240,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return (bytecodeSet != null) && (bytecodeSet.get(Constants.INVOKEDYNAMIC));
     }
 
+    @Nullable
     private Attribute getBootstrapAttribute(JavaClass clz) {
         for (Attribute att : clz.getAttributes()) {
             if ("BootstrapMethods".equals(att.getName())) {
@@ -248,6 +251,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return null;
     }
 
+    @Nullable
     private ConstantMethodHandle getMethodHandle(int bootstrapIndex) {
         byte[] attBytes = ((Unknown) bootstrapAtt).getBytes();
 
@@ -273,6 +277,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         return null;
     }
 
+    @Nullable
     private String getAnonymousName(ConstantMethodHandle cmh) {
         if (cmh.getReferenceKind() != REF_invokeStatic) {
             return null;
