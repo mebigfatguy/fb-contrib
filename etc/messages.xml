@@ -6228,7 +6228,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <![CDATA[
         <p>This method builds a collection using lambda expressions with a collect terminal operation. It then immediately
         calls the contains() method on it, to see if an item is present. This is sub optimal as the lambda still needs to 
-        build the entire collection, iterating the entire source list. It is better to use filter() and findFirst() to short
+        build the entire collection, iterating the entire source list. It is better to use anyMatch() to short
         circuit the building of the collection.
         </p>
         <p>
@@ -6238,7 +6238,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </pre></code>
         do
         <code></pre>
-        baubles.stream().filter(b -> name.equals(b.getName())).findFirst().isPresent()
+        baubles.stream().anyMatch(b -> name.equals(b.getName()))
         </pre></code>
         </p>
         ]]>

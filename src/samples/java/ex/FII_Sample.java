@@ -37,6 +37,10 @@ public class FII_Sample {
         return baubles.stream().map(Bauble::getName).collect(Collectors.toSet()).contains(name);
     }
 
+    public boolean poorMansAnyMatch(List<Bauble> baubles, String name) {
+        return baubles.stream().map(Bauble::getName).filter(n -> n.equals(name)).findFirst().isPresent();
+    }
+
     public static class Bauble {
 
         public String getName() {
