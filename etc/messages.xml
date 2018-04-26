@@ -6221,7 +6221,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
-    <BugPattern type="FII_USE_FILTER_FIND_FIRST">
+    <BugPattern type="FII_USE_ANY_MATCH">
         <ShortDescription>Method calls contains() on a collected lambda expression</ShortDescription>
         <LongDescription>Method {1} calls contains() on a collected lambda expresssion</LongDescription>
         <Details>

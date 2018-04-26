@@ -212,7 +212,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                     XMethod xm = itm.getReturnValueOf();
                                     if (xm != null) {
                                         if ("java.util.stream.Stream".equals(xm.getClassName()) && "collect".equals(xm.getName())) {
-                                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FILTER_FIND_FIRST.name(), NORMAL_PRIORITY)
+                                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), NORMAL_PRIORITY)
                                                     .addClass(this).addMethod(this).addSourceLine(this));
                                         }
                                     }
