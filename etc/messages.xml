@@ -6221,7 +6221,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
-    <BugPattern type="FII_USE_ANY_MATCH">
+    <BugPattern type="FII_AVOID_CONTAINS_ON_COLLECTED_STREAM">
         <ShortDescription>Method calls contains() on a collected lambda expression</ShortDescription>
         <LongDescription>Method {1} calls contains() on a collected lambda expresssion</LongDescription>
         <Details>
@@ -6265,6 +6265,15 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </p>
     	]]>
     	</Details>
+    </BugPattern>
+    
+    <BugPattern type="FII_USE_ANY_MATCH">
+        <ShortDescription>Method suboptimally finds any match in a stream</ShortDescription>
+        <LongDescription>Method {1} suboptimally finds any match in a stream</LongDescription>
+        <Details>
+        <![CDATA[
+        <p>This method looks for one item in a stream using filter().findFirst.isPresent() when .anyMatch() will do the same thing more succintly</p>
+        ]]></Details>
     </BugPattern>
 
 	<!-- BugCode -->
