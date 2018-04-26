@@ -41,6 +41,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
@@ -50,16 +51,22 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
-import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
  * looks for issues around use of @FunctionalInterface classes, especially in use with Streams..
  */
+@CustomUserValue
 public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     private static final QMethod CONTAINS = new QMethod("contains", "(Ljava/lang/Object;)Z");
+
+    private static final FQMethod COLLECT = new FQMethod("java/util/stream/Stream", "collect", "(Ljava/util/stream/Collector;)Ljava/lang/Object;");
+    private static final FQMethod FILTER = new FQMethod("java/util/stream/Stream", "filter", "(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;");
+    private static final FQMethod FINDFIRST = new FQMethod("java/util/stream/Stream", "findFirst", "()Ljava/util/Optional;");
+    private static final FQMethod ISPRESENT = new FQMethod("java/util/Optional", "isPresent", "()Z");
 
     enum ParseState {
         NORMAL, LAMBDA;
@@ -67,6 +74,10 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     enum AnonState {
         SEEN_NOTHING, SEEN_ALOAD_0, SEEN_INVOKE
+    }
+
+    enum FIIUserValue {
+        COLLECT, FILTER, FINDFIRST;
     }
 
     private BugReporter bugReporter;
@@ -143,6 +154,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
+        FIIUserValue userValue = null;
 
         try {
             if (parseState == ParseState.LAMBDA) {
@@ -203,26 +215,52 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
                     case Const.INVOKEINTERFACE:
                         QMethod m = new QMethod(getNameConstantOperand(), getSigConstantOperand());
+
                         if (CONTAINS.equals(m)) {
                             if (stack.getStackDepth() >= 2) {
                                 OpcodeStack.Item itm = stack.getStackItem(1);
-                                if (itm.getRegisterNumber() < 0) {
-                                    XMethod xm = itm.getReturnValueOf();
-                                    if (xm != null) {
-                                        if ("java.util.stream.Stream".equals(xm.getClassName()) && "collect".equals(xm.getName())) {
-                                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FILTER_FIND_FIRST.name(), NORMAL_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
-                                        }
+                                if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT == itm.getUserValue())) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_CONTAINS_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
+                                }
+                            }
+                        } else {
+                            FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                            if (COLLECT.equals(fqm)) {
+                                userValue = FIIUserValue.COLLECT;
+                            } else if (FILTER.equals(fqm)) {
+                                userValue = FIIUserValue.FILTER;
+                            } else if (FINDFIRST.equals(fqm)) {
+                                if (stack.getStackDepth() > 0) {
+                                    OpcodeStack.Item itm = stack.getStackItem(0);
+                                    if (itm.getUserValue() == FIIUserValue.FILTER) {
+                                        userValue = FIIUserValue.FINDFIRST;
                                     }
                                 }
                             }
                         }
                     break;
 
+                    case Constants.INVOKEVIRTUAL:
+                        FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                        if (ISPRESENT.equals(fqm)) {
+                            if (stack.getStackDepth() > 0) {
+                                OpcodeStack.Item itm = stack.getStackItem(0);
+                                if ((itm.getUserValue() == FIIUserValue.FINDFIRST) && (itm.getRegisterNumber() < 0)) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), LOW_PRIORITY).addClass(this).addMethod(this)
+                                            .addSourceLine(this));
+                                }
+                            }
+                        }
+                    break;
                 }
             }
         } finally {
             stack.sawOpcode(this, seen);
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(userValue);
+            }
         }
     }
 
