@@ -41,6 +41,10 @@ public class FII_Sample {
         return baubles.stream().map(Bauble::getName).filter(n -> n.equals(name)).findFirst().isPresent();
     }
 
+    public Bauble get0OnCollect(List<Bauble> baubles) {
+        return baubles.stream().collect(Collectors.toList()).get(0);
+    }
+
     public static class Bauble {
 
         public String getName() {
