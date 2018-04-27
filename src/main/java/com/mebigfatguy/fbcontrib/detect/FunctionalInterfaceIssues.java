@@ -19,7 +19,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +45,7 @@ import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -67,6 +67,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     private static final FQMethod FILTER = new FQMethod("java/util/stream/Stream", "filter", "(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;");
     private static final FQMethod FINDFIRST = new FQMethod("java/util/stream/Stream", "findFirst", "()Ljava/util/Optional;");
     private static final FQMethod ISPRESENT = new FQMethod("java/util/Optional", "isPresent", "()Z");
+    private static final FQMethod GET = new FQMethod("java/util/List", "get", "(I)Ljava/lang/Object;");
 
     enum ParseState {
         NORMAL, LAMBDA;
@@ -143,11 +144,9 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
             case NORMAL:
                 if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) == 0) {
-                    if (prescreen(m)) {
-                        stack.resetForMethodEntry(this);
-                        super.visitCode(obj);
-                        break;
-                    }
+                    stack.resetForMethodEntry(this);
+                    super.visitCode(obj);
+                    break;
                 }
         }
     }
@@ -237,6 +236,17 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                         userValue = FIIUserValue.FINDFIRST;
                                     }
                                 }
+                            } else if (GET.equals(fqm)) {
+                                if (stack.getStackDepth() >= 2) {
+                                    OpcodeStack.Item itm = stack.getStackItem(0);
+                                    if (Values.ZERO.equals(itm.getConstant())) {
+                                        itm = stack.getStackItem(1);
+                                        if ((itm.getUserValue() == FIIUserValue.COLLECT) && (itm.getRegisterNumber() < 0)) {
+                                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FIND_FIRST.name(), NORMAL_PRIORITY).addClass(this)
+                                                    .addMethod(this).addSourceLine(this));
+                                        }
+                                    }
+                                }
                             }
                         }
                     break;
@@ -262,18 +272,6 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                 itm.setUserValue(userValue);
             }
         }
-    }
-
-    /**
-     * looks for methods that contain a INVOKEDYNAMIC opcodes
-     *
-     * @param method
-     *            the context object of the current method
-     * @return if the class uses synchronization
-     */
-    private boolean prescreen(Method method) {
-        BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Const.INVOKEDYNAMIC));
     }
 
     @Nullable

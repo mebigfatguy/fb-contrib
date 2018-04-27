@@ -6275,6 +6275,27 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <p>This method looks for one item in a stream using filter().findFirst.isPresent() when .anyMatch() will do the same thing more succintly</p>
         ]]></Details>
     </BugPattern>
+    
+    <BugPattern type="FII_USE_FIND_FIRST">
+        <ShortDescription>Method collects a List from a stream() just to get the first element</ShortDescription>
+        <LongDescription>Method {1} collects a List from a stream() just to get the first element</LongDescription>
+        <Details>
+        <![CDATA[
+        <p>This method streams data into a List just to call get(0) to get the first item. You can just use findFirst() to short circuit the
+        processing of the stream.</p>
+        <p>
+        Instead of
+        <code><pre>
+        baubles.stream().collect(Collectors.toList()).get(0)
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().findFirst().get())
+        </pre></code>
+        </p>
+        ]]>
+        </Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
