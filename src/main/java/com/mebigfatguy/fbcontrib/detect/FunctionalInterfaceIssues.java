@@ -230,6 +230,13 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                             if (COLLECT.equals(fqm)) {
                                 userValue = FIIUserValue.COLLECT;
                             } else if (FILTER.equals(fqm)) {
+                                if (stack.getStackDepth() > 1) {
+                                    OpcodeStack.Item itm = stack.getStackItem(1);
+                                    if ((itm.getUserValue() == FIIUserValue.FILTER) && (itm.getRegisterNumber() < 0)) {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.FII_COMBINE_FILTERS.name(), LOW_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this));
+                                    }
+                                }
                                 userValue = FIIUserValue.FILTER;
                             } else if (FINDFIRST.equals(fqm)) {
                                 if (stack.getStackDepth() > 0) {
