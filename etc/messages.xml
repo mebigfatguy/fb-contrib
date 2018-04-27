@@ -6296,6 +6296,16 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="FII_COMBINE_FILTERS">
+        <ShortDescription>Method implements a stream using back to back filters</ShortDescription>
+        <LongDescription>Method {1} implements a stream using back to back filters</LongDescription>
+        <Details>
+        <![CDATA[
+        <p>This method streams data using more than one filter back to back. These can just be combined into one filter</p>
+        ]]>
+        </Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
