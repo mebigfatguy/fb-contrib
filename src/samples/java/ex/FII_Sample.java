@@ -45,6 +45,10 @@ public class FII_Sample {
         return baubles.stream().collect(Collectors.toList()).get(0);
     }
 
+    public List<Bauble> backToBackFilter(Set<Bauble> baubles) {
+        return baubles.stream().filter(b -> b.getName().equals("diamonds")).filter(b -> b.isFree()).collect(Collectors.toList());
+    }
+
     public static class Bauble {
 
         public String getName() {
