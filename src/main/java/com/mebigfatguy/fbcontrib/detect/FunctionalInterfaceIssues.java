@@ -251,7 +251,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         }
                     break;
 
-                    case Constants.INVOKEVIRTUAL:
+                    case Const.INVOKEVIRTUAL:
                         FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                         if (ISPRESENT.equals(fqm)) {
                             if (stack.getStackDepth() > 0) {
