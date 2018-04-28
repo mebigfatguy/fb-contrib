@@ -88,6 +88,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private Attribute bootstrapAtt;
     private Map<String, List<FIInfo>> functionalInterfaceInfo;
+    private Map<String, BugType> anonymousBugType;
 
     private ParseState parseState;
     private AnonState anonState;
@@ -105,6 +106,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                 if (bootstrapAtt != null) {
                     stack = new OpcodeStack();
                     functionalInterfaceInfo = new HashMap<>();
+                    anonymousBugType = new HashMap<>();
                     parseState = ParseState.NORMAL;
                     super.visitClassContext(classContext);
                     parseState = ParseState.LAMBDA;
@@ -112,7 +114,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
                     for (Map.Entry<String, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
                         for (FIInfo fii : entry.getValue()) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_METHOD_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
+                            bugReporter.reportBug(new BugInstance(this, anonymousBugType.get(entry.getKey()).name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(cls, fii.getMethod()).addSourceLine(fii.getSrcLine()));
                         }
                     }
@@ -120,6 +122,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
             }
         } finally {
             functionalInterfaceInfo = null;
+            anonymousBugType = null;
             bootstrapAtt = null;
             stack = null;
             cls = null;
@@ -178,6 +181,9 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                 functionalInterfaceInfo.remove(getMethod().getName());
                                 throw new StopOpcodeParsingException();
                             }
+                        } else if ((seen == ARETURN) && (getPC() == 1)) {
+                            anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
+                            throw new StopOpcodeParsingException();
                         } else {
                             functionalInterfaceInfo.remove(getMethod().getName());
                             throw new StopOpcodeParsingException();
@@ -188,6 +194,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         if (!OpcodeUtils.isReturn(seen)) {
                             functionalInterfaceInfo.remove(getMethod().getName());
                         }
+                        anonymousBugType.put(getMethod().getName(), BugType.FII_USE_METHOD_REFERENCE);
                         throw new StopOpcodeParsingException();
 
                     default:
