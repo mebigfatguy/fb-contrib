@@ -49,6 +49,10 @@ public class FII_Sample {
         return baubles.stream().filter(b -> b.getName().equals("diamonds")).filter(b -> b.isFree()).collect(Collectors.toList());
     }
 
+    public Map<String, Bauble> mapIdentity(List<Bauble> baubles) {
+        return baubles.stream().collect(Collectors.toMap(Bauble::getName, b -> b));
+    }
+
     public static class Bauble {
 
         public String getName() {

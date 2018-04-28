@@ -6306,6 +6306,16 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="FII_USE_FUNCTION_IDENTITY">
+        <ShortDescription>Method declares an identity lambda function rather than using Function.identity()</ShortDescription>
+        <LongDescription>Method {1} declares an identity lambda function rather than using Function.identity()</LongDescription>
+        <Details>
+        <![CDATA[
+            <p>This method declares a no-op (identity) lambda method rather than just specifying Function.identity()</p>
+        ]]>
+        </Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
