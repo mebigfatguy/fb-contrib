@@ -53,6 +53,10 @@ public class FII_Sample {
         return baubles.stream().collect(Collectors.toMap(Bauble::getName, b -> b));
     }
 
+    public int sizeOnACollect(List<Bauble> baubles, String name) {
+        return baubles.stream().filter(b -> b.getName().equals(name)).collect(Collectors.toSet()).size();
+    }
+
     public static class Bauble {
 
         public String getName() {

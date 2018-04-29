@@ -64,6 +64,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     private static final int REF_invokeStatic = 6;
 
     private static final QMethod CONTAINS = new QMethod("contains", "(Ljava/lang/Object;)Z");
+    private static final QMethod SIZE = new QMethod("size", "()I");
 
     private static final FQMethod COLLECT = new FQMethod("java/util/stream/Stream", "collect", "(Ljava/util/stream/Collector;)Ljava/lang/Object;");
     private static final FQMethod FILTER = new FQMethod("java/util/stream/Stream", "filter", "(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;");
@@ -229,6 +230,14 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                 OpcodeStack.Item itm = stack.getStackItem(1);
                                 if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT == itm.getUserValue())) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_CONTAINS_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
+                                }
+                            }
+                        } else if (SIZE.equals(m)) {
+                            if (stack.getStackDepth() >= 1) {
+                                OpcodeStack.Item itm = stack.getStackItem(0);
+                                if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT == itm.getUserValue())) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_SIZE_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                 }
                             }
