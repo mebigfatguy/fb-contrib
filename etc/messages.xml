@@ -6316,6 +6316,34 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="FII_AVOID_SIZE_ON_COLLECTED_STREAM">
+        <ShortDescription>Method calls size() on a collected lambda expression</ShortDescription>
+        <LongDescription>Method {1} calls size() on a collected lambda expresssion</LongDescription>
+        <Details>
+        <![CDATA[
+        <p>This method builds a collection using lambda expressions with a collect terminal operation. It then immediately
+        calls the size() method on it, to get a count of items. This is sub optimal as the lambda still needs to 
+        build the entire collection, iterating the entire source list. It is better to use count() predicate to short
+        circuit the building of the collection. If you were using a Set, then also add the distinct() predicate.
+        </p>
+        <p>
+        Instead of
+        <code><pre>
+        baubles.stream().filter(b -> b.getName("orb")).collect(Collectors.toList()).size())
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().filter(b -> b.getName("orb")).count()
+        </pre></code>
+        or for sets you can use
+        <code></pre>
+        baubles.stream().filter(b -> b.getName("orb")).distinct().count()
+        </pre></code>
+        </p>
+        ]]>
+        </Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
