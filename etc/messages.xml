@@ -1748,8 +1748,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
 			]]>
 		</Details>
 	</Detector>
-
-
+	
+	<Detector class="com.mebigfatguy.fbcontrib.detect.SetUsageIssues">
+        <Details>
+            <![CDATA[
+            <p>Looks for various issues around the use of the Set interface</p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
+	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
 	</Detector>
@@ -6158,7 +6166,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	    <code>
     	    <pre>
     	    	Map<String, String> myMap = getSomeMap();
-    	    	String v myMap.get("foo")) {
+    	    	String v = myMap.get("foo")) {
     	    	myMap.remove("foo");
     	    </pre>
     	    </code>
@@ -6344,6 +6352,35 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="SUI_CONTAINS_BEFORE_ADD">
+        <ShortDescription>Method checks for an item in a set with contains, before using add()</ShortDescription>
+        <LongDescription>Method {1} checks for an item in a set with contains, before using add()</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method checks to see if an element is in set before adding it. This is unnecessary as you can just
+            add the item, and if the item exists, it won't add it, otherwise it will.</p>
+            <p>As an example, instead of using
+            <code>
+            <pre>
+                Set<String> mySet = getSomeSet();
+                if (!mySet.contains("foo")) {
+                    mySet.add("foo");
+                }
+            </pre>
+            </code>
+            convert this to
+            <code>
+            <pre>
+                Set<String> mySet = getSomeSet();
+                if (mySet.add("foo")) {
+                }
+            </pre>
+            </code>
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -6492,4 +6529,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="MUI">Map Usage Issues</BugCode>
 	<BugCode abbrev="LUI">List Usage Issues</BugCode>
 	<BugCode abbrev="FII">FunctionalInterface Issues</BugCode>
+	<BugCode abbrev="SUI">Set Usage Issues</BugCode>
 </MessageCollection>
