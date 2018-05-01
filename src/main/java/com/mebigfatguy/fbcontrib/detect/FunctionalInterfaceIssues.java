@@ -81,7 +81,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     }
 
     enum FIIUserValue {
-        COLLECT, FILTER, FINDFIRST;
+        COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM;
     }
 
     private BugReporter bugReporter;
@@ -228,7 +228,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         if (CONTAINS.equals(m)) {
                             if (stack.getStackDepth() >= 2) {
                                 OpcodeStack.Item itm = stack.getStackItem(1);
-                                if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT == itm.getUserValue())) {
+                                if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT_ITEM == itm.getUserValue())) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_CONTAINS_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                 }
@@ -236,7 +236,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         } else if (SIZE.equals(m)) {
                             if (stack.getStackDepth() >= 1) {
                                 OpcodeStack.Item itm = stack.getStackItem(0);
-                                if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT == itm.getUserValue())) {
+                                if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT_ITEM == itm.getUserValue())) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_SIZE_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
                                 }
@@ -244,21 +244,21 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         } else {
                             FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                             if (COLLECT.equals(fqm)) {
-                                userValue = FIIUserValue.COLLECT;
+                                userValue = FIIUserValue.COLLECT_ITEM;
                             } else if (FILTER.equals(fqm)) {
                                 if (stack.getStackDepth() > 1) {
                                     OpcodeStack.Item itm = stack.getStackItem(1);
-                                    if ((itm.getUserValue() == FIIUserValue.FILTER) && (itm.getRegisterNumber() < 0)) {
+                                    if ((itm.getUserValue() == FIIUserValue.FILTER_ITEM) && (itm.getRegisterNumber() < 0)) {
                                         bugReporter.reportBug(new BugInstance(this, BugType.FII_COMBINE_FILTERS.name(), LOW_PRIORITY).addClass(this)
                                                 .addMethod(this).addSourceLine(this));
                                     }
                                 }
-                                userValue = FIIUserValue.FILTER;
+                                userValue = FIIUserValue.FILTER_ITEM;
                             } else if (FINDFIRST.equals(fqm)) {
                                 if (stack.getStackDepth() > 0) {
                                     OpcodeStack.Item itm = stack.getStackItem(0);
-                                    if (itm.getUserValue() == FIIUserValue.FILTER) {
-                                        userValue = FIIUserValue.FINDFIRST;
+                                    if (itm.getUserValue() == FIIUserValue.FILTER_ITEM) {
+                                        userValue = FIIUserValue.FINDFIRST_ITEM;
                                     }
                                 }
                             } else if (GET.equals(fqm)) {
@@ -266,7 +266,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                     OpcodeStack.Item itm = stack.getStackItem(0);
                                     if (Values.ZERO.equals(itm.getConstant())) {
                                         itm = stack.getStackItem(1);
-                                        if ((itm.getUserValue() == FIIUserValue.COLLECT) && (itm.getRegisterNumber() < 0)) {
+                                        if ((itm.getUserValue() == FIIUserValue.COLLECT_ITEM) && (itm.getRegisterNumber() < 0)) {
                                             bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FIND_FIRST.name(), NORMAL_PRIORITY).addClass(this)
                                                     .addMethod(this).addSourceLine(this));
                                         }
@@ -281,7 +281,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         if (ISPRESENT.equals(fqm)) {
                             if (stack.getStackDepth() > 0) {
                                 OpcodeStack.Item itm = stack.getStackItem(0);
-                                if ((itm.getUserValue() == FIIUserValue.FINDFIRST) && (itm.getRegisterNumber() < 0)) {
+                                if ((itm.getUserValue() == FIIUserValue.FINDFIRST_ITEM) && (itm.getRegisterNumber() < 0)) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), LOW_PRIORITY).addClass(this).addMethod(this)
                                             .addSourceLine(this));
                                 }
