@@ -180,7 +180,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                 functionalInterfaceInfo.remove(getMethod().getName());
                                 throw new StopOpcodeParsingException();
                             }
-                        } else if ((seen == ARETURN) && (getPC() == 1)) {
+                        } else if ((seen == Const.ARETURN) && (getPC() == 1)) {
                             anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
                             throw new StopOpcodeParsingException();
                         } else {
