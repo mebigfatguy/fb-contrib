@@ -333,7 +333,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_REFERENCE,FII_AVOID_CONTAINS_ON_COLLECTED_STREAM,FII_USE_ANY_MATCH,FII_USE_FIND_FIRST,FII_COMBINE_FILTERS,FII_USE_FUNCTION_IDENTITY,FII_AVOID_SIZE_ON_COLLECTED_STREAM" />
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.SetUsageIssues" speed="fast" reports="SUI_CONTAINS_BEFORE_ADD"/>
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SetUsageIssues" speed="fast" reports="SUI_CONTAINS_BEFORE_ADD,SUI_CONTAINS_BEFORE_REMOVE"/>
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -640,4 +640,5 @@
 	<BugPattern abbrev="FII" type="FII_USE_FUNCTION_IDENTITY" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="FII" type="FII_AVOID_SIZE_ON_COLLECTED_STREAM" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_ADD" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_REMOVE" category="CORRECTNESS" experimental="true" />
 </FindbugsPlugin>

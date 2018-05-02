@@ -6358,7 +6358,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <LongDescription>Method {1} checks for an item in a set with contains, before using add()</LongDescription>
         <Details>
             <![CDATA[
-            <p>This method checks to see if an element is in set before adding it. This is unnecessary as you can just
+            <p>This method checks to see if an element is not in a set before adding it. This is unnecessary as you can just
             add the item, and if the item exists, it won't add it, otherwise it will.</p>
             <p>As an example, instead of using
             <code>
@@ -6374,6 +6374,35 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             <pre>
                 Set<String> mySet = getSomeSet();
                 if (mySet.add("foo")) {
+                }
+            </pre>
+            </code>
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>
+    
+    <BugPattern type="SUI_CONTAINS_BEFORE_REMOVE">
+        <ShortDescription>Method checks for an item in a set with contains, before using remove()</ShortDescription>
+        <LongDescription>Method {1} checks for an item in a set with contains, before using remove()</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method checks to see if an element is in a set before removing it. This is unnecessary as you can just
+            remove the item, and if the item exists, it will return true.</p>
+            <p>As an example, instead of using
+            <code>
+            <pre>
+                Set<String> mySet = getSomeSet();
+                if (mySet.contains("foo")) {
+                    mySet.remove("foo");
+                }
+            </pre>
+            </code>
+            convert this to
+            <code>
+            <pre>
+                Set<String> mySet = getSomeSet();
+                if (mySet.remove("foo")) {
                 }
             </pre>
             </code>
