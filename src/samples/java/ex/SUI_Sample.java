@@ -10,4 +10,17 @@ public class SUI_Sample {
         }
     }
 
+    public void testFpAddAfterContains(Set<String> ss) {
+        if (ss.contains("foo")) {
+            ss.remove("foo");
+        }
+        ss.add("foo");
+    }
+
+    public void testremoveAfterContains(Set<String> ss) {
+        if (ss.contains("foo")) {
+            ss.remove("foo");
+        }
+    }
+
 }
