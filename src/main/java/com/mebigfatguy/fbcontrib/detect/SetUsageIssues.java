@@ -107,7 +107,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         Contains contains = setContainsUsed.remove(new SetRef(itm));
-                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains)) {
+                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains) && !contains.isContained()) {
                             bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_ADD.name(), contains.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                         }
@@ -120,6 +120,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                     if (sr != null) {
                         Contains contains = setContainsUsed.get(sr);
                         contains.setScopeEnd(getBranchTarget());
+                        contains.setContained(seen == IFEQ);
                     }
                 }
             }
@@ -137,6 +138,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
         private Object keyValue;
         private int reportLevel;
         private int scopeEnd;
+        private boolean isContained;
 
         public Contains(OpcodeStack.Item itm) {
             int reg = itm.getRegisterNumber();
@@ -164,6 +166,14 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                 }
             }
             scopeEnd = Integer.MAX_VALUE;
+        }
+
+        public boolean isContained() {
+            return isContained;
+        }
+
+        public void setContained(boolean contained) {
+            isContained = contained;
         }
 
         public void setScopeEnd(int pc) {
