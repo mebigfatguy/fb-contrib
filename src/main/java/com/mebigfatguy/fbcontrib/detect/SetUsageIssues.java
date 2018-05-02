@@ -129,8 +129,10 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                     SetRef sr = (SetRef) itm.getUserValue();
                     if (sr != null) {
                         Contains contains = setContainsUsed.get(sr);
-                        contains.setScopeEnd(getBranchTarget());
-                        contains.setContained(seen == IFEQ);
+                        if (contains != null) {
+                            contains.setScopeEnd(getBranchTarget());
+                            contains.setContained(seen == IFEQ);
+                        }
                     }
                 }
             }
