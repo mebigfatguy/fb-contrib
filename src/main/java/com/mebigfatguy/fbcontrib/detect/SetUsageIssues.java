@@ -113,7 +113,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if (seen == IFNE) {
+            } else if ((seen == IFNE) || (seen == IFEQ)) {
                 if ((stack.getStackDepth() > 0) && (getBranchOffset() > 0)) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     SetRef sr = (SetRef) itm.getUserValue();
