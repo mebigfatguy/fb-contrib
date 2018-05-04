@@ -27,7 +27,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
-    <Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="fast" reports="CE_CLASS_ENVY" disabled="true" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="fast" reports="CE_CLASS_ENVY" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedSynchronizedBlock" speed="fast" reports="BSB_BLOATED_SYNCHRONIZED_BLOCK" hidden="true" /> 
 
