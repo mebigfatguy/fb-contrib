@@ -47,19 +47,23 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * finds methods that excessively use methods from another class. This probably means these methods should be defined in that other class.
  */
 public class ClassEnvy extends BytecodeScanningDetector {
+
+    private static final double DEFAULT_ENVY_PERCENT = 0.90;
+    private static final int DEFAULT_MIN_ENVY = 5;
+
     private static final String ENVY_PERCENT_PROPERTY = "fb-contrib.ce.percent";
     private static final Set<String> ignorableInterfaces = UnmodifiableSet.create(
-            //@formatter:off
+    //@formatter:off
             "java.io.Serializable",
             "java.lang.Cloneable",
             "java.lang.Comparable"
             //@formatter:on
     );
 
-    private static final Comparator<Map.Entry<String, Set<Integer>>> ACCESS_COUNT_COMPARATOR = new Comparator<Map.Entry<String, Set<Integer>>>() {
+    private static final Comparator<Map.Entry<String, BitSet>> ACCESS_COUNT_COMPARATOR = new Comparator<Map.Entry<String, BitSet>>() {
         @Override
-        public int compare(final Map.Entry<String, Set<Integer>> entry1, final Map.Entry<String, Set<Integer>> entry2) {
-            return entry2.getValue().size() - entry1.getValue().size();
+        public int compare(final Map.Entry<String, BitSet> entry1, final Map.Entry<String, BitSet> entry2) {
+            return entry2.getValue().cardinality() - entry1.getValue().cardinality();
         }
     };
 
@@ -67,12 +71,13 @@ public class ClassEnvy extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private String packageName;
     private String clsName;
+    private String parentClassName;
     private Map<String, BitSet> clsAccessCount;
     private int thisClsAccessCount;
     private String methodName;
     private boolean methodIsStatic;
-    private double envyPercent = 0.90;
-    private int envyMin = 5;
+    private double envyPercent;
+    private int minEnvy;
 
     /**
      * constructs a CE detector given the reporter to report bugs on
@@ -82,17 +87,17 @@ public class ClassEnvy extends BytecodeScanningDetector {
      */
     public ClassEnvy(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        String percent = System.getProperty(ENVY_PERCENT_PROPERTY);
-        if (percent != null) {
-            try {
-                envyPercent = Double.parseDouble(percent);
-            } catch (NumberFormatException nfe) {
-                // Stick with original
-            }
+
+        try {
+            String percent = System.getProperty(ENVY_PERCENT_PROPERTY, String.valueOf(DEFAULT_ENVY_PERCENT));
+            envyPercent = Double.parseDouble(percent);
+        } catch (NumberFormatException nfe) {
+            envyPercent = DEFAULT_ENVY_PERCENT;
         }
-        Integer min = Integer.getInteger("ENVY_MIN_PROPERTY");
+
+        Integer min = Integer.getInteger("ENVY_MIN_PROPERTY", DEFAULT_MIN_ENVY);
         if (min != null) {
-            envyMin = min.intValue();
+            minEnvy = min.intValue();
         }
     }
 
@@ -108,11 +113,15 @@ public class ClassEnvy extends BytecodeScanningDetector {
             JavaClass cls = classContext.getJavaClass();
             packageName = cls.getPackageName();
             clsName = cls.getClassName();
+            parentClassName = cls.getSuperclassName();
             stack = new OpcodeStack();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
             clsAccessCount = null;
+            packageName = null;
+            clsName = null;
+            parentClassName = null;
         }
     }
 
@@ -149,12 +158,12 @@ public class ClassEnvy extends BytecodeScanningDetector {
         if (clsAccessCount.isEmpty()) {
             return;
         }
-        Map.Entry<String, Set<Integer>>[] envies = clsAccessCount.entrySet().toArray(new Map.Entry[clsAccessCount.size()]);
+        Map.Entry<String, BitSet>[] envies = clsAccessCount.entrySet().toArray(new Map.Entry[clsAccessCount.size()]);
         Arrays.sort(envies, ACCESS_COUNT_COMPARATOR);
 
-        Map.Entry<String, Set<Integer>> bestEnvyEntry = envies[0];
-        int bestEnvyCount = bestEnvyEntry.getValue().size();
-        if (bestEnvyCount < envyMin) {
+        Map.Entry<String, BitSet> bestEnvyEntry = envies[0];
+        int bestEnvyCount = bestEnvyEntry.getValue().cardinality();
+        if (bestEnvyCount < minEnvy) {
             return;
         }
 
@@ -270,8 +279,10 @@ public class ClassEnvy extends BytecodeScanningDetector {
      *            the class to check
      */
     private void countClassAccess(final String calledClass) {
-        if (calledClass.equals(clsName)) {
-            thisClsAccessCount++;
+        if (calledClass.equals(clsName) || isAssociatedClass(calledClass)) {
+            if (getPrevOpcode(1) != ALOAD_0) {
+                thisClsAccessCount++;
+            }
         } else {
             String calledPackage = SignatureUtils.getPackageName(calledClass);
             if (SignatureUtils.similarPackages(calledPackage, packageName, 2) && !generalPurpose(calledClass)) {
@@ -285,6 +296,33 @@ public class ClassEnvy extends BytecodeScanningDetector {
                 }
             }
         }
+    }
+
+    /**
+     * returns whether the called class is an inner class, or super class of the current class
+     *
+     * @param calledClass
+     *            the class to check
+     * @return if the class is related to this class
+     */
+    private boolean isAssociatedClass(String calledClass) {
+        if (calledClass.equals(parentClassName)) {
+            return true;
+        }
+
+        if (calledClass.length() <= clsName.length()) {
+            return false;
+        }
+        int innerMarkPos = calledClass.indexOf('$', clsName.length());
+        if (innerMarkPos < 0) {
+            innerMarkPos = calledClass.indexOf('.', clsName.length());
+            if (innerMarkPos < 0) {
+                return false;
+            }
+        }
+
+        String topClass = calledClass.substring(0, innerMarkPos);
+        return topClass.equals(clsName) || calledClass.substring(innerMarkPos + 1).startsWith("access");
     }
 
     /**
