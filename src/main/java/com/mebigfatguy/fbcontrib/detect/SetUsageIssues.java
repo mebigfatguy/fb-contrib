@@ -135,6 +135,8 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                         }
                     }
                 }
+            } else if ((seen == GOTO) || (seen == GOTO_W)) {
+                setContainsUsed.clear();
             }
 
         } finally {
