@@ -27,8 +27,6 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
-    <Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="fast" reports="CE_CLASS_ENVY" />
-    
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedSynchronizedBlock" speed="fast" reports="BSB_BLOATED_SYNCHRONIZED_BLOCK" hidden="true" /> 
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
@@ -334,6 +332,8 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_REFERENCE,FII_AVOID_CONTAINS_ON_COLLECTED_STREAM,FII_USE_ANY_MATCH,FII_USE_FIND_FIRST,FII_COMBINE_FILTERS,FII_USE_FUNCTION_IDENTITY,FII_AVOID_SIZE_ON_COLLECTED_STREAM" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.SetUsageIssues" speed="fast" reports="SUI_CONTAINS_BEFORE_ADD,SUI_CONTAINS_BEFORE_REMOVE"/>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="slow" reports="CE_CLASS_ENVY" />
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     

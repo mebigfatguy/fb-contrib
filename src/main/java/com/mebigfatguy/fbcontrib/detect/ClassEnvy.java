@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * finds methods that excessively use methods from another class. This probably means these methods should be defined in that other class.
@@ -205,6 +206,8 @@ public class ClassEnvy extends BytecodeScanningDetector {
                 countClassAccess(1);
             } else if (seen == Const.GETFIELD) {
                 countClassAccess(0);
+            } else if ((seen == PUTSTATIC) || (seen == GETSTATIC)) {
+                countClassAccess(getDottedClassConstantOperand());
             } else if ((seen == Const.ALOAD_0) && (!methodIsStatic)) {
                 countClassAccess(clsName);
             }
@@ -277,7 +280,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
      * @param calledClass
      *            the class to check
      */
-    private void countClassAccess(final String calledClass) {
+    private void countClassAccess(final @DottedClassName String calledClass) {
         if (calledClass.equals(clsName) || isAssociatedClass(calledClass)) {
             if (getPrevOpcode(1) != ALOAD_0) {
                 thisClsAccessCount++;
@@ -304,7 +307,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
      *            the class to check
      * @return if the class is related to this class
      */
-    private boolean isAssociatedClass(String calledClass) {
+    private boolean isAssociatedClass(@DottedClassName String calledClass) {
         if (calledClass.equals(parentClassName)) {
             return true;
         }
