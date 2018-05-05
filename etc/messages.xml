@@ -139,12 +139,11 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy">
 		<Details>
 			<![CDATA[
-			<p><em>THIS DETECTOR IS HIGHLY EXPERIMENTAL AND IS LIKELY TO CREATE A LOT OF FUD</em></p>
 			<p>Looks for methods that use a high percentage of methods from another class over their class' own
 			methods. When this is the case, it is often better to implement this method in that other class,
 			by refactoring the class to accept parameters it needs from the source class.
 			The reporting percentage can be set with system property 'fb-contrib.ce.percent'.</p>
-			<p>It is a fast detector.</p>
+			<p>It is a slow detector.</p>
 			]]>
 		</Details>
 	</Detector>
@@ -1958,7 +1957,6 @@ private void appendToList(List&lt;String&gt; list) {
 		<LongDescription>Method {1} excessively uses methods of another class</LongDescription>
 		<Details>
 			<![CDATA[
-			<p><em>THIS DETECTOR IS HIGHLY EXPERIMENTAL AND IS LIKELY TO CREATE A LOT OF FUD</em></p>
 			<p>This method makes extensive use of methods from another class over methods of its own
 			class. Typically this means that the functionality that is accomplished by this method
 			most likely belongs with the class that is being used so liberally. Consider refactoring this

@@ -175,6 +175,16 @@ public class ClassEnvy extends BytecodeScanningDetector {
                 return;
             }
 
+            if (envies.length > 1) {
+                int runnerUpEnvyCount = 0;
+                for (int i = 1; i < envies.length; i++) {
+                    runnerUpEnvyCount += envies[i].getValue().cardinality();
+                }
+                if (runnerUpEnvyCount >= bestEnvyCount) {
+                    return;
+                }
+            }
+
             bugReporter.reportBug(new BugInstance(this, BugType.CE_CLASS_ENVY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLineRange(this, 0, obj.getCode().length - 1).addString(bestEnvy));
         }
