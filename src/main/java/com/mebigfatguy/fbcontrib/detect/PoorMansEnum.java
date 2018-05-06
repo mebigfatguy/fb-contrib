@@ -146,7 +146,7 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if (seen == ACONST_NULL) {
+            } else if (seen == Const.ACONST_NULL) {
                 explicitNull = true;
             }
         } finally {
