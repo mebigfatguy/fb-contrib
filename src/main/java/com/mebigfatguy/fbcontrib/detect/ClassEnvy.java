@@ -71,8 +71,8 @@ public class ClassEnvy extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private String packageName;
-    private String clsName;
-    private String parentClassName;
+    private @DottedClassName String clsName;
+    private @DottedClassName String parentClassName;
     private Map<String, BitSet> clsAccessCount;
     private int thisClsAccessCount;
     private String methodName;
@@ -203,7 +203,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if (OpcodeUtils.isStandardInvoke(seen)) {
-                String calledClass = getClassConstantOperand().replace('/', '.');
+                String calledClass = getDottedClassConstantOperand();
 
                 if (seen == INVOKEINTERFACE) {
                     int parmCount = SignatureUtils.getNumParameters(this.getSigConstantOperand());

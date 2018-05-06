@@ -529,7 +529,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         @Override
         public void sawOpcode(int seen) {
             if (seen == PUTFIELD) {
-                if (clsName.equals(getClassConstantOperand())) {
+                if (clsName.equals(getDottedClassConstantOperand())) {
                     String methodDesc = getMethodName() + getMethodSig();
                     Set<String> fields = mfModifiers.get(methodDesc);
                     if (fields == null) {

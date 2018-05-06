@@ -55,6 +55,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * looks for deletion of items from a collection using the remove method of the collection at the same time that the collection is being iterated on. If this
@@ -402,7 +403,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
      *            the class to check
      * @return whether the class is a collection
      */
-    private boolean isCollection(String className) {
+    private boolean isCollection(@SlashedClassName String className) {
         try {
             JavaClass cls = Repository.lookupClass(className);
             return cls.implementationOf(collectionClass) && !exceptionClasses.contains(cls);

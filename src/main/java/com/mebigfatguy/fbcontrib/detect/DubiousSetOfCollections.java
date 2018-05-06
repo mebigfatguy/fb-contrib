@@ -31,6 +31,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * looks for uses of sets or keySets of maps that contain other collections. As collection typically implement hashCode, equals and compareTo by iterating the
@@ -122,8 +123,8 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
                                     .addMethod(this).addSourceLine(this));
                         }
                     }
-                } else if ("put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)
-                        && isImplementationOf(clsName, setCls) && (stack.getStackDepth() > 2)) {
+                } else if ("put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature) && isImplementationOf(clsName, setCls)
+                        && (stack.getStackDepth() > 2)) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     JavaClass entryCls = item.getJavaClass();
                     if (isImplementationOf(entryCls, collectionCls)) {
@@ -148,7 +149,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
      *            the interface to check
      * @return if the class implements the interface
      */
-    private boolean isImplementationOf(String clsName, JavaClass inf) {
+    private boolean isImplementationOf(@SlashedClassName String clsName, JavaClass inf) {
 
         try {
             if (clsName.startsWith("java/lang/")) {
