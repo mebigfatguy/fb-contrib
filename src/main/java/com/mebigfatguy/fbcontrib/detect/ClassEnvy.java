@@ -50,7 +50,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 public class ClassEnvy extends BytecodeScanningDetector {
 
     private static final double DEFAULT_ENVY_PERCENT = 0.90;
-    private static final int DEFAULT_MIN_ENVY = 5;
+    private static final int DEFAULT_MIN_ENVY = 7;
 
     private static final String ENVY_PERCENT_PROPERTY = "fb-contrib.ce.percent";
     private static final Set<String> ignorableInterfaces = UnmodifiableSet.create(
