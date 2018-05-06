@@ -34,6 +34,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * Looks for methods that pass a primitive wrapper class object, to the same classes Constructor.
@@ -49,7 +50,7 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
 
     private BugReporter bugReporter;
     private State state;
-    private String boxClass;
+    private @SlashedClassName String boxClass;
     private BitSet ternaryPCs;
 
     static {

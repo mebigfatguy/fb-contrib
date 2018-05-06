@@ -35,10 +35,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for if/else blocks where a series of them use instanceof on the same
- * variable to determine what do to. If these classes are related by
- * inheritance, this often is better handled through calling a single overridden
- * method.
+ * looks for if/else blocks where a series of them use instanceof on the same variable to determine what do to. If these classes are related by inheritance,
+ * this often is better handled through calling a single overridden method.
  */
 public class InheritanceTypeChecking extends BytecodeScanningDetector {
     private BugReporter bugReporter;
@@ -63,7 +61,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            ifStatements = new HashSet<IfStatement>();
+            ifStatements = new HashSet<>();
             super.visitClassContext(classContext);
         } finally {
             ifStatements = null;
@@ -83,8 +81,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find if/else code that checks types using
-     * instanceof, and these types are related by inheritance.
+     * implements the visitor to find if/else code that checks types using instanceof, and these types are related by inheritance.
      *
      * @param seen
      *            the opcode of the currently parsed instruction
@@ -95,10 +92,11 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
         Iterator<IfStatement> isi = ifStatements.iterator();
         while (isi.hasNext()) {
             IfStatement.Action action = isi.next().processOpcode(this, bugReporter, seen);
-            if (action == IfStatement.Action.REMOVE_ACTION)
+            if (action == IfStatement.Action.REMOVE_ACTION) {
                 isi.remove();
-            else if (action == IfStatement.Action.PROCESSED_ACTION)
+            } else if (action == IfStatement.Action.PROCESSED_ACTION) {
                 processed = true;
+            }
         }
 
         if (!processed && OpcodeUtils.isALoad(seen)) {
@@ -132,47 +130,48 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
 
         public IfStatement.Action processOpcode(BytecodeScanningDetector bsd, BugReporter bugReporter, int seen) {
             switch (state) {
-            case SEEN_ALOAD:
-                if (seen == INSTANCEOF) {
-                    if (instanceOfTypes == null)
-                        instanceOfTypes = new HashSet<String>();
-                    instanceOfTypes.add(bsd.getClassConstantOperand());
-                    state = State.SEEN_INSTANCEOF;
-                    return IfStatement.Action.PROCESSED_ACTION;
-                }
-                break;
-
-            case SEEN_INSTANCEOF:
-                if (seen == IFEQ) {
-                    branchTarget = bsd.getBranchTarget();
-                    state = State.SEEN_IFEQ;
-                    matchCount++;
-                    return IfStatement.Action.PROCESSED_ACTION;
-                }
-                break;
-
-            case SEEN_IFEQ:
-                if (bsd.getPC() == branchTarget) {
-                    if (OpcodeUtils.isALoad(seen) && (reg == RegisterUtils.getALoadReg(bsd, seen))) {
-                        state = State.SEEN_ALOAD;
+                case SEEN_ALOAD:
+                    if (seen == INSTANCEOF) {
+                        if (instanceOfTypes == null) {
+                            instanceOfTypes = new HashSet<>();
+                        }
+                        instanceOfTypes.add(bsd.getClassConstantOperand());
+                        state = State.SEEN_INSTANCEOF;
                         return IfStatement.Action.PROCESSED_ACTION;
                     }
-                    if (matchCount > 1) {
-                        String clsName = bsd.getClassName();
-                        int priority = NORMAL_PRIORITY;
-                        for (String type : instanceOfTypes) {
-                            if (!SignatureUtils.similarPackages(clsName, type, 2)) {
-                                priority = LOW_PRIORITY;
-                                break;
-                            }
-                        }
+                break;
 
-                        bugReporter.reportBug(
-                                new BugInstance(bsd, "ITC_INHERITANCE_TYPE_CHECKING", priority).addClass(bsd).addMethod(bsd).addSourceLine(bsd, firstPC));
-                        return IfStatement.Action.REMOVE_ACTION;
+                case SEEN_INSTANCEOF:
+                    if (seen == IFEQ) {
+                        branchTarget = bsd.getBranchTarget();
+                        state = State.SEEN_IFEQ;
+                        matchCount++;
+                        return IfStatement.Action.PROCESSED_ACTION;
                     }
-                }
-                return IfStatement.Action.NO_ACTION;
+                break;
+
+                case SEEN_IFEQ:
+                    if (bsd.getPC() == branchTarget) {
+                        if (OpcodeUtils.isALoad(seen) && (reg == RegisterUtils.getALoadReg(bsd, seen))) {
+                            state = State.SEEN_ALOAD;
+                            return IfStatement.Action.PROCESSED_ACTION;
+                        }
+                        if (matchCount > 1) {
+                            String clsName = bsd.getClassName();
+                            int priority = NORMAL_PRIORITY;
+                            for (String type : instanceOfTypes) {
+                                if (!SignatureUtils.similarPackages(clsName, type, 2)) {
+                                    priority = LOW_PRIORITY;
+                                    break;
+                                }
+                            }
+
+                            bugReporter.reportBug(
+                                    new BugInstance(bsd, "ITC_INHERITANCE_TYPE_CHECKING", priority).addClass(bsd).addMethod(bsd).addSourceLine(bsd, firstPC));
+                            return IfStatement.Action.REMOVE_ACTION;
+                        }
+                    }
+                    return IfStatement.Action.NO_ACTION;
             }
 
             return IfStatement.Action.REMOVE_ACTION;

@@ -50,6 +50,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.classfile.analysis.AnnotationValue;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /** looks for odd uses of the Assert class of the JUnit and TestNG framework */
 @CustomUserValue
@@ -90,7 +91,7 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private boolean isTestCaseDerived;
     private boolean isAnnotationCapable;
-    private String className;
+    private @SlashedClassName String className;
     private boolean sawAssert;
     private State state;
     private boolean checkIsNegated;

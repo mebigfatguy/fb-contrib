@@ -28,6 +28,7 @@ import com.mebigfatguy.fbcontrib.utils.Values;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * looks for methods that call a method to retrieve a reference to an object, to use to load a constant. It is simpler and more performant to access the static
@@ -42,7 +43,7 @@ public class NeedlessInstanceRetrieval extends BytecodeScanningDetector {
     private LineNumberTable lnTable;
     private State state;
     private int invokePC;
-    private String returnType;
+    private @SlashedClassName String returnType;
 
     /**
      * constructs a NIR detector given the reporter to report bugs on

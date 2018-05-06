@@ -26,6 +26,7 @@ import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * looks for problems surrounding use of HttpRequests from the Apache HttpComponents library which have have some little-known quirks about them. This is a set
@@ -60,7 +61,7 @@ public class HttpClientProblems extends MissingMethodsDetector {
     }
 
     @Override
-    protected boolean doesObjectNeedToBeWatched(String type) {
+    protected boolean doesObjectNeedToBeWatched(@DottedClassName String type) {
         return httpRequestClasses.contains(type);
     }
 

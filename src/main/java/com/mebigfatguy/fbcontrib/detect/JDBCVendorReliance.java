@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * looks for uses of jdbc vendor specific classes and methods making the database access code non portable.
@@ -170,7 +171,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
      *
      * @return if the class name is a jdbc one
      */
-    private static boolean isJDBCClass(String name) {
+    private static boolean isJDBCClass(@SlashedClassName String name) {
         String clsName = SignatureUtils.stripSignature(name);
 
         return (clsName.startsWith("java.sql.") || clsName.startsWith("javax.sql.")) && !clsName.endsWith("Exception");

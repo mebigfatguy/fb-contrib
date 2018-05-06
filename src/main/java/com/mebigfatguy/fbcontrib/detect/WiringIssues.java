@@ -138,8 +138,8 @@ public class WiringIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
-                String clsName = getClassConstantOperand();
-                if (Statistics.getStatistics().isAutowiredBean(clsName.replace('/', '.'))) {
+                String clsName = getDottedClassConstantOperand();
+                if (Statistics.getStatistics().isAutowiredBean(clsName)) {
                     String signature = getSigConstantOperand();
                     int numParms = SignatureUtils.getNumParameters(signature);
                     if (stack.getStackDepth() > numParms) {

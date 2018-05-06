@@ -31,6 +31,7 @@ import com.mebigfatguy.fbcontrib.utils.Values;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
 
@@ -95,7 +96,7 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
      *            the classname to check
      * @return whether the classname is an exception
      */
-    private boolean isKnownException(String clsName) {
+    private boolean isKnownException(@SlashedClassName String clsName) {
         for (String exceptionCls : knownExceptions) {
             if (clsName.startsWith(exceptionCls)) {
                 return true;

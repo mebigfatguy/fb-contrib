@@ -62,6 +62,7 @@ import edu.umd.cs.findbugs.ba.CFG;
 import edu.umd.cs.findbugs.ba.CFGBuilderException;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.Edge;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * finds fields that are used in a locals only fashion, specifically private fields that are accessed first in each method with a store vs. a load.
@@ -485,7 +486,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 
         private final Map<String, Set<String>> methodCallChain = new HashMap<>();
         private final Map<String, Set<String>> mfModifiers = new HashMap<>();
-        private String clsName;
+        private @DottedClassName String clsName;
 
         public Map<String, Set<String>> getMethodFieldModifiers() {
             Map<String, Set<String>> modifiers = new HashMap<>(mfModifiers.size());
@@ -538,7 +539,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
                     }
                     fields.add(getNameConstantOperand());
                 }
-            } else if ((seen == INVOKEVIRTUAL) && clsName.equals(getClassConstantOperand())) {
+            } else if ((seen == INVOKEVIRTUAL) && clsName.equals(getDottedClassConstantOperand())) {
                 String methodDesc = getMethodName() + getMethodSig();
                 Set<String> methods = methodCallChain.get(methodDesc);
                 if (methods == null) {
