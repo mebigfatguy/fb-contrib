@@ -181,7 +181,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
                 for (int i = 1; i < envies.length; i++) {
                     runnerUpEnvyCount += envies[i].getValue().cardinality();
                 }
-                if (runnerUpEnvyCount >= bestEnvyCount) {
+                if ((2 * runnerUpEnvyCount) > bestEnvyCount) {
                     return;
                 }
             }
