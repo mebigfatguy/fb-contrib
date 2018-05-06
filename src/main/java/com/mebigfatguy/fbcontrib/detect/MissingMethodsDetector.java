@@ -38,6 +38,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * an abstract base class for WriteOnlyCollections and HttpClientProblems, looks for calls that are expected to be made, but are not.
@@ -331,7 +332,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         Object returnValue = userObject;
         String methodName = getNameConstantOperand();
         if (Values.CONSTRUCTOR.equals(methodName)) {
-            String clsName = getClassConstantOperand().replace('/', '.');
+            String clsName = getDottedClassConstantOperand();
             if (doesObjectNeedToBeWatched(clsName)) {
                 returnValue = Boolean.TRUE;
             }
@@ -419,7 +420,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
     protected abstract BugInstance makeLocalBugInstance();
 
-    protected abstract boolean doesObjectNeedToBeWatched(String type);
+    protected abstract boolean doesObjectNeedToBeWatched(@DottedClassName String type);
 
     protected abstract boolean doesStaticFactoryReturnNeedToBeWatched(String clsName, String methodName, String signature);
 

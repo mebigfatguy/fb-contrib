@@ -64,6 +64,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
  * Looks for allocations and initializations of java collections, but that are never read from or accessed to gain information. This represents a collection of
@@ -249,7 +250,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
      * @return whether this class is a collection
      */
     @Override
-    protected boolean doesObjectNeedToBeWatched(String type) {
+    protected boolean doesObjectNeedToBeWatched(@DottedClassName String type) {
         return collectionClasses.contains(type);
     }
 

@@ -54,6 +54,7 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.OpcodeStack.Item;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * looks for uses of log4j or slf4j where the class specified when creating the logger is not the same as the class in which this logger is used. Also looks for
@@ -334,7 +335,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
      *            the signature of the field
      * @return if the field is a logger and not private
      */
-    private boolean isNonPrivateLogField(String fieldClsName, String fieldName, String fieldSig) {
+    private boolean isNonPrivateLogField(@SlashedClassName String fieldClsName, String fieldName, String fieldSig) {
 
         String fieldType = SignatureUtils.trimSignature(fieldSig);
         if (!SLF4J_LOGGER.equals(fieldType) && !COMMONS_LOGGER.equals(fieldType) && !LOG4J_LOGGER.equals(fieldType) && !LOG4J2_LOGGER.equals(fieldType)) {

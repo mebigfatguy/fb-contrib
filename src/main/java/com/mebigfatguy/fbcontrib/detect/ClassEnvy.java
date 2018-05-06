@@ -51,7 +51,7 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 public class ClassEnvy extends BytecodeScanningDetector {
 
     private static final double DEFAULT_ENVY_PERCENT = 0.90;
-    private static final int DEFAULT_MIN_ENVY = 5;
+    private static final int DEFAULT_MIN_ENVY = 7;
 
     private static final String ENVY_PERCENT_PROPERTY = "fb-contrib.ce.percent";
     private static final Set<String> ignorableInterfaces = UnmodifiableSet.create(
@@ -70,8 +70,8 @@ public class ClassEnvy extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private String packageName;
-    private String clsName;
-    private String parentClassName;
+    private @DottedClassName String clsName;
+    private @DottedClassName String parentClassName;
     private Map<String, BitSet> clsAccessCount;
     private int thisClsAccessCount;
     private String methodName;
@@ -180,7 +180,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
                 for (int i = 1; i < envies.length; i++) {
                     runnerUpEnvyCount += envies[i].getValue().cardinality();
                 }
-                if (runnerUpEnvyCount >= bestEnvyCount) {
+                if ((2 * runnerUpEnvyCount) > bestEnvyCount) {
                     return;
                 }
             }
@@ -202,7 +202,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if (OpcodeUtils.isStandardInvoke(seen)) {
-                String calledClass = getClassConstantOperand().replace('/', '.');
+                String calledClass = getDottedClassConstantOperand();
 
                 if (seen == Const.INVOKEINTERFACE) {
                     int parmCount = SignatureUtils.getNumParameters(this.getSigConstantOperand());

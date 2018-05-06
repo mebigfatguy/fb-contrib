@@ -36,6 +36,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * looks for manual casts of objects that are more specific then needed as the value is assigned to a class or interface higher up in the inheritance chain. You
@@ -46,10 +47,10 @@ public class OverzealousCasting extends BytecodeScanningDetector {
         SAW_NOTHING, SAW_NEXT, SAW_CHECKCAST
     }
 
-    BugReporter bugReporter;
-    State state;
-    LocalVariableTable lvt;
-    String castClass;
+    private BugReporter bugReporter;
+    private State state;
+    private LocalVariableTable lvt;
+    private @SlashedClassName String castClass;
 
     /**
      * constructs a OC detector given the reporter to report bugs on

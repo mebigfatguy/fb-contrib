@@ -459,7 +459,7 @@ public final class SignatureUtils {
         return buffer.toString();
     }
 
-    public static boolean isPlainStringConvertableClass(String className) {
+    public static boolean isPlainStringConvertableClass(@SlashedClassName String className) {
         return Values.SLASHED_JAVA_LANG_STRINGBUILDER.equals(className) || Values.SLASHED_JAVA_LANG_STRINGBUFFER.equals(className)
                 || Values.SLASHED_JAVA_UTIL_UUID.equals(className);
     }

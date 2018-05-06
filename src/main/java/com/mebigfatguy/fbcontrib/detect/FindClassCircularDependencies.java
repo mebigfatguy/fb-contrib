@@ -53,7 +53,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     private static final Pattern ARRAY_PATTERN = Pattern.compile("\\[+(L.*)");
     private Map<String, Set<String>> dependencyGraph = null;
     private BugReporter bugReporter;
-    private String className;
+    private @DottedClassName String className;
 
     /**
      * constructs a FCCD detector given the reporter to report bugs on
@@ -98,8 +98,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     }
 
     private void processInvoke() {
-        String refClsName = getClassConstantOperand();
-        refClsName = normalizeArrayClass(refClsName.replace('/', '.'));
+        String refClsName = normalizeArrayClass(getDottedClassConstantOperand());
 
         if (refClsName == null) {
             return;
@@ -128,7 +127,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     private void processLoadConstant() {
         Constant c = getConstantRefOperand();
         if (c instanceof ConstantClass) {
-            String refClsName = normalizeArrayClass(getClassConstantOperand().replace('/', '.'));
+            String refClsName = normalizeArrayClass(getDottedClassConstantOperand());
             if (!refClsName.equals(className)) {
                 Set<String> dependencies = getDependenciesForClass(className);
                 dependencies.add(refClsName);
