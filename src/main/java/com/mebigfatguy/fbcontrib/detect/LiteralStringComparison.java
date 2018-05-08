@@ -162,6 +162,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
                     }
                 break;
 
+                case TABLESWITCH:
                 case LOOKUPSWITCH:
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
