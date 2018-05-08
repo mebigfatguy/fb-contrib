@@ -216,7 +216,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
                 countClassAccess(1);
             } else if (seen == Const.GETFIELD) {
                 countClassAccess(0);
-            } else if ((seen == PUTSTATIC) || (seen == GETSTATIC)) {
+            } else if ((seen == Const.PUTSTATIC) || (seen == Const.GETSTATIC)) {
                 countClassAccess(getDottedClassConstantOperand());
             } else if ((seen == Const.ALOAD_0) && (!methodIsStatic)) {
                 countClassAccess(clsName);
@@ -292,7 +292,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
      */
     private void countClassAccess(final @DottedClassName String calledClass) {
         if (calledClass.equals(clsName) || isAssociatedClass(calledClass)) {
-            if (getPrevOpcode(1) != ALOAD_0) {
+            if (getPrevOpcode(1) != Const.ALOAD_0) {
                 thisClsAccessCount++;
             }
         } else {
