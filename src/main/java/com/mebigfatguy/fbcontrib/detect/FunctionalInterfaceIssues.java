@@ -133,6 +133,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
 
+        stack.resetForMethodEntry(this);
         Method m = getMethod();
         switch (parseState) {
             case LAMBDA:
@@ -150,7 +151,6 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
             case NORMAL:
                 if ((m.getAccessFlags() & ACC_SYNTHETIC) == 0) {
-                    stack.resetForMethodEntry(this);
                     super.visitCode(obj);
                     break;
                 }
