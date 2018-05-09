@@ -128,7 +128,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
             if (!mapGetUsed.isEmpty() && OpcodeUtils.isBranch(seen)) {
                 Iterator<Map.Entry<MapRef, Get>> it = mapGetUsed.entrySet().iterator();
                 while (it.hasNext()) {
-                    Map.Entry<MapRef, Get> entry = it.next();
+                    it.next();
                     it.remove();
                 }
             }
