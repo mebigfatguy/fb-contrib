@@ -1,21 +1,27 @@
 package ex;
+
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.WeakHashMap;
 
 public class PMB_Sample {
-    private static Set<String> bl_data = new HashSet<String>(); // tag
-    private static List<String> data = new ArrayList<String>(); // no tag
-    private static Set<String> inner_data = new HashSet<String>(); // no tag
+    private static Set<String> bl_data = new HashSet<>(); // tag
+    private static List<String> data = new ArrayList<>(); // no tag
+    private static Set<String> inner_data = new HashSet<>(); // no tag
     private static StringBuilder return_data = new StringBuilder(); // no tag
-    private static Map<String, String> fp_data = new WeakHashMap<String, String>();
+    private static Map<String, String> fp_data = new WeakHashMap<>();
 
-    private static final Set<String> bloatableSigs = new HashSet<String>();
+    private static Map<String, String> fpEmptyWithIterator = new HashMap<>();
+
+    private static final Set<String> bloatableSigs = new HashSet<>();
 
     static {
         bloatableSigs.add("Ljava/util/concurrent/ArrayBlockingQueue;");
@@ -91,5 +97,21 @@ public class PMB_Sample {
 
     public void fpAddToWeakHashMap() {
         fp_data.put("Hello", "There");
+    }
+
+    public static void fpCleanUpWithIterator276(String key) {
+
+        Random r = new Random();
+
+        Iterator<Map.Entry<String, String>> it = fpEmptyWithIterator.entrySet().iterator();
+        while (it.hasNext()) {
+            it.next();
+            it.remove();
+            if (r.nextBoolean()) {
+                break;
+            }
+
+            fpEmptyWithIterator.put(key, "foo");
+        }
     }
 }

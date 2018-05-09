@@ -31,6 +31,8 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -41,6 +43,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.FieldAnnotation;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
@@ -50,6 +53,7 @@ import edu.umd.cs.findbugs.ba.XField;
  * remove items from these members. Such class fields are likely causes of memory bloat.
  *
  */
+@CustomUserValue
 public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
     private static final Set<String> bloatableSigs = UnmodifiableSet.create("Ljava/util/concurrent/ArrayBlockingQueue;", "Ljava/util/ArrayList;",
@@ -69,12 +73,15 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     private static final Set<String> increasingMethods = UnmodifiableSet.create("add", "addAll", "addElement", "addFirst", "addLast", "append",
             "insertElementAt", "offer", "put");
 
+    private static final Set<String> mapSubsets = UnmodifiableSet.create("keySet", "entrySet", "values");
+
     private final BugReporter bugReporter;
     private Map<XField, FieldAnnotation> bloatableCandidates;
     private Map<XField, FieldAnnotation> bloatableFields;
     private OpcodeStack stack;
     private String methodName;
     private Set<FieldAnnotation> threadLocalNonStaticFields;
+    private Map<Integer, XField> userValues;
 
     /**
      * constructs a PMB detector given the reporter to report bugs on
@@ -98,6 +105,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             bloatableCandidates = new HashMap<>();
             bloatableFields = new HashMap<>();
             threadLocalNonStaticFields = new HashSet<>();
+            userValues = new HashMap<>();
             parseFields(classContext);
 
             if (!bloatableCandidates.isEmpty()) {
@@ -113,6 +121,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             stack = null;
             bloatableCandidates = null;
             bloatableFields = null;
+            userValues = null;
             threadLocalNonStaticFields = null;
         }
     }
@@ -169,6 +178,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
+        userValues.clear();
 
         if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName)) {
             return;
@@ -187,6 +197,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
+        XField userValue = null;
         try {
             stack.precomputation(this);
 
@@ -198,6 +209,25 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                     XField field = itm.getXField();
                     if ((field != null) && bloatableCandidates.containsKey(field)) {
                         checkMethodAsDecreasingOrIncreasing(field);
+                    }
+                    String calledMethod = getNameConstantOperand();
+                    if ("iterator".equals(calledMethod)) {
+                        userValue = (XField) itm.getUserValue();
+                        if (userValue == null) {
+                            userValue = field;
+                        }
+                    } else {
+                        if (field == null) {
+                            field = (XField) itm.getUserValue();
+                        }
+                        if (field != null) {
+                            if (mapSubsets.contains(calledMethod)) {
+                                userValue = field;
+                            } else if ("remove".equals(calledMethod) && "java/util/Iterator".equals(getClassConstantOperand())) {
+                                bloatableCandidates.remove(field);
+                                bloatableFields.remove(field);
+                            }
+                        }
                     }
                 }
             } else if (seen == Const.PUTSTATIC) {
@@ -212,9 +242,20 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             // Should not include private methods
             else if (seen == Const.ARETURN) {
                 removeFieldsThatGetReturned();
+            } else if (OpcodeUtils.isALoad(seen)) {
+                userValue = userValues.get(RegisterUtils.getALoadReg(this, seen));
+            } else if (OpcodeUtils.isAStore(seen)) {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    userValues.put(RegisterUtils.getAStoreReg(this, seen), (XField) itm.getUserValue());
+                }
             }
         } finally {
             stack.sawOpcode(this, seen);
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(userValue);
+            }
         }
     }
 
