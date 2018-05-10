@@ -21,11 +21,11 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.CollectionRef;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -51,7 +51,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private Map<SetRef, Contains> setContainsUsed;
+    private Map<CollectionRef, Contains> setContainsUsed;
 
     /**
      * constructs a SUI detector given the reporter to report bugs on
@@ -84,7 +84,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        SetRef userValue = null;
+        CollectionRef userValue = null;
 
         try {
             if (!setContainsUsed.isEmpty()) {
@@ -100,14 +100,14 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (CONTAINS_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
-                        SetRef sr = new SetRef(stack.getStackItem(1));
+                        CollectionRef sr = new CollectionRef(stack.getStackItem(1));
                         setContainsUsed.put(sr, new Contains(stack.getStackItem(0)));
                         userValue = sr;
                     }
                 } else if (ADD_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
-                        Contains contains = setContainsUsed.remove(new SetRef(itm));
+                        Contains contains = setContainsUsed.remove(new CollectionRef(itm));
                         if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains) && !contains.isContained()) {
                             bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_ADD.name(), contains.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
@@ -116,7 +116,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                 } else if (REMOVE_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
-                        Contains contains = setContainsUsed.remove(new SetRef(itm));
+                        Contains contains = setContainsUsed.remove(new CollectionRef(itm));
                         if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains) && contains.isContained()) {
                             bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_REMOVE.name(), contains.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
@@ -126,7 +126,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
             } else if ((seen == IFNE) || (seen == IFEQ)) {
                 if ((stack.getStackDepth() > 0) && (getBranchOffset() > 0)) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
-                    SetRef sr = (SetRef) itm.getUserValue();
+                    CollectionRef sr = (CollectionRef) itm.getUserValue();
                     if (sr != null) {
                         Contains contains = setContainsUsed.get(sr);
                         if (contains != null) {
@@ -228,54 +228,4 @@ public class SetUsageIssues extends BytecodeScanningDetector {
         }
     }
 
-    static class SetRef {
-        private int register;
-        private XField field;
-
-        public SetRef(OpcodeStack.Item itm) {
-            int reg = itm.getRegisterNumber();
-            if (reg >= 0) {
-                register = reg;
-            } else {
-                XField xf = itm.getXField();
-                if (xf != null) {
-                    field = xf;
-                }
-                register = -1;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            if (register >= 0) {
-                return register;
-            }
-
-            if (field != null) {
-                return field.hashCode();
-            }
-
-            return Integer.MAX_VALUE;
-        }
-
-        public boolean isValid() {
-            return (register >= 0) || (field != null);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof SetRef)) {
-                return false;
-            }
-
-            SetRef that = (SetRef) o;
-
-            return (register == that.register) && Objects.equals(field, that.field);
-        }
-
-        @Override
-        public String toString() {
-            return ToString.build(this);
-        }
-    }
 }

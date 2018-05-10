@@ -21,7 +21,6 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Set;
 
 import org.apache.bcel.Const;
@@ -31,6 +30,7 @@ import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
+import com.mebigfatguy.fbcontrib.utils.CollectionRef;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
@@ -75,8 +75,8 @@ public class MapUsageIssues extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private Map<MapRef, ContainsKey> mapContainsKeyUsed;
-    private Map<MapRef, Get> mapGetUsed;
+    private Map<CollectionRef, ContainsKey> mapContainsKeyUsed;
+    private Map<CollectionRef, Get> mapGetUsed;
 
     /**
      * constructs a MUI detector given the reporter to report bugs on
@@ -114,10 +114,10 @@ public class MapUsageIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             if (!mapContainsKeyUsed.isEmpty()) {
-                Iterator<Map.Entry<MapRef, ContainsKey>> it = mapContainsKeyUsed.entrySet().iterator();
+                Iterator<Map.Entry<CollectionRef, ContainsKey>> it = mapContainsKeyUsed.entrySet().iterator();
                 int pc = getPC();
                 while (it.hasNext()) {
-                    Map.Entry<MapRef, ContainsKey> entry = it.next();
+                    Map.Entry<CollectionRef, ContainsKey> entry = it.next();
                     if (!entry.getKey().isValid() || entry.getValue().outOfScope(pc)) {
                         it.remove();
                     }
@@ -126,7 +126,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
 
             // checking for a branch might be overkill, but for now lets go with it
             if (!mapGetUsed.isEmpty() && OpcodeUtils.isBranch(seen)) {
-                Iterator<Map.Entry<MapRef, Get>> it = mapGetUsed.entrySet().iterator();
+                Iterator<Map.Entry<CollectionRef, Get>> it = mapGetUsed.entrySet().iterator();
                 while (it.hasNext()) {
                     it.next();
                     it.remove();
@@ -167,24 +167,24 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         int ifEnd = getNextPC() + CodeByteUtils.getshort(getCode().getCode(), getNextPC() + 1);
                         if (stack.getStackDepth() >= 2) {
                             OpcodeStack.Item itm = stack.getStackItem(1);
-                            mapContainsKeyUsed.put(new MapRef(itm), new ContainsKey(stack.getStackItem(0), ifEnd));
+                            mapContainsKeyUsed.put(new CollectionRef(itm), new ContainsKey(stack.getStackItem(0), ifEnd));
                         }
                     }
                 } else if (GET_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
-                        ContainsKey ck = mapContainsKeyUsed.remove(new MapRef(itm));
+                        ContainsKey ck = mapContainsKeyUsed.remove(new CollectionRef(itm));
                         if ((ck != null) && new ContainsKey(stack.getStackItem(0), 0).equals(ck)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.MUI_CONTAINSKEY_BEFORE_GET.name(), ck.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
                         }
 
-                        mapGetUsed.put(new MapRef(itm), new Get(stack.getStackItem(0)));
+                        mapGetUsed.put(new CollectionRef(itm), new Get(stack.getStackItem(0)));
                     }
                 } else if (REMOVE_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
-                        Get get = mapGetUsed.remove(new MapRef(itm));
+                        Get get = mapGetUsed.remove(new CollectionRef(itm));
                         if ((get != null) && new Get(stack.getStackItem(0)).equals(get)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.MUI_GET_BEFORE_REMOVE.name(), get.getReportLevel()).addClass(this)
                                     .addMethod(this).addSourceLine(this));
@@ -340,54 +340,4 @@ public class MapUsageIssues extends BytecodeScanningDetector {
         }
     }
 
-    static class MapRef {
-        private int register;
-        private XField field;
-
-        public MapRef(OpcodeStack.Item itm) {
-            int reg = itm.getRegisterNumber();
-            if (reg >= 0) {
-                register = reg;
-            } else {
-                XField xf = itm.getXField();
-                if (xf != null) {
-                    field = xf;
-                }
-                register = -1;
-            }
-        }
-
-        @Override
-        public int hashCode() {
-            if (register >= 0) {
-                return register;
-            }
-
-            if (field != null) {
-                return field.hashCode();
-            }
-
-            return Integer.MAX_VALUE;
-        }
-
-        public boolean isValid() {
-            return (register >= 0) || (field != null);
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof MapRef)) {
-                return false;
-            }
-
-            MapRef that = (MapRef) o;
-
-            return (register == that.register) && Objects.equals(field, that.field);
-        }
-
-        @Override
-        public String toString() {
-            return ToString.build(this);
-        }
-    }
 }
