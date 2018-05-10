@@ -85,10 +85,10 @@
             <name>Jeremy Landis</name>
         </contributor>
         <contributor>
-        	<name>Peter Hermsdorf</name>
+            <name>Peter Hermsdorf</name>
         </contributor>
         <contributor>
-        	<name>David Burström</name>
+            <name>David Burström</name>
         </contributor>
     </contributors>
 
@@ -310,10 +310,10 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-        	<groupId>org.apache.logging.log4j</groupId>
-        	<artifactId>log4j-api</artifactId>
-        	<version>2.9.1</version>
-        	<scope>test</scope>
+            <groupId>org.apache.logging.log4j</groupId>
+            <artifactId>log4j-api</artifactId>
+            <version>2.9.1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -353,9 +353,9 @@
                     <version>3.0.0</version>
                 </plugin>
                 <plugin>
-                    <groupId>com.github.spotbugs</groupId>
+                    <groupId>com.github.hazendaz.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>${spotbugs.version}</version>
+                    <version>3.0.6</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -519,13 +519,13 @@
             </plugin>
 
             <plugin>
-                <groupId>com.github.spotbugs</groupId>
+                <groupId>com.github.hazendaz.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <dependencies>
                     <dependency>
-                        <groupId>com.github.spotbugs</groupId>
-                        <artifactId>spotbugs</artifactId>
-                        <version>${spotbugs.version}</version>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>findbugs</artifactId>
+                        <version>3.0.1</version>
                     </dependency>
                 </dependencies>
                 <configuration>
