@@ -56,7 +56,7 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
 
         dumbMethods.put(new FQMethod("java/lang/Runtime", "runFinalization", SignatureBuilder.SIG_VOID_TO_VOID),
                 new ReportInfo("MDM_RUNFINALIZATION", NORMAL_PRIORITY));
-        dumbMethods.put(new FQMethod("java/lang/System", "runFinalization", SignatureBuilder.SIG_VOID_TO_VOID),
+        dumbMethods.put(new FQMethod(Values.SLASHED_JAVA_LANG_SYSTEM, "runFinalization", SignatureBuilder.SIG_VOID_TO_VOID),
                 new ReportInfo("MDM_RUNFINALIZATION", NORMAL_PRIORITY));
 
         dumbMethods.put(new FQMethod("java/math/BigDecimal", "equals", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),

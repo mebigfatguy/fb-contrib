@@ -75,8 +75,8 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
     private static final Set<FQMethod> dangerousAssignmentMethodSources = UnmodifiableSet.create(
     //@formatter:off
-        new FQMethod("java/lang/System", "currentTimeMillis", SignatureBuilder.SIG_VOID_TO_LONG),
-        new FQMethod("java/lang/System", "nanoTime", SignatureBuilder.SIG_VOID_TO_LONG),
+        new FQMethod(Values.SLASHED_JAVA_LANG_SYSTEM, "currentTimeMillis", SignatureBuilder.SIG_VOID_TO_LONG),
+        new FQMethod(Values.SLASHED_JAVA_LANG_SYSTEM, "nanoTime", SignatureBuilder.SIG_VOID_TO_LONG),
         new FQMethod("java/util/Calendar", "get", SignatureBuilder.SIG_INT_TO_INT),
         new FQMethod("java/util/GregorianCalendar", "get", SignatureBuilder.SIG_INT_TO_INT),
         new FQMethod("java/util/Iterator", "next", SignatureBuilder.SIG_VOID_TO_OBJECT),

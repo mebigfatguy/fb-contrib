@@ -104,6 +104,8 @@ public final class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRINGBUFFER = "java/lang/StringBuffer";
     @SlashedClassName
+    public static final String SLASHED_JAVA_LANG_SYSTEM = "java/lang/System";
+    @SlashedClassName
     public static final String SLASHED_JAVA_LANG_CLASS = "java/lang/Class";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_THROWABLE = "java/lang/Throwable";
