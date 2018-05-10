@@ -213,6 +213,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
         }
     }
 
+    @SuppressWarnings("CPD-START")
     static class ContainsKey {
         private Object keyValue;
         private int scopeEnd;

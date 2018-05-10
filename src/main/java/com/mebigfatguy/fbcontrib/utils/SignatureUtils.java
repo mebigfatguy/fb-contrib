@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -149,33 +148,8 @@ public final class SignatureUtils {
      * @return the signature of the type
      */
     public static String getTypeCodeSignature(int typeCode) {
-        switch (typeCode) {
-            case Const.T_BOOLEAN:
-                return Values.SIG_PRIMITIVE_BOOLEAN;
-
-            case Const.T_CHAR:
-                return Values.SIG_PRIMITIVE_CHAR;
-
-            case Const.T_FLOAT:
-                return Values.SIG_PRIMITIVE_FLOAT;
-
-            case Const.T_DOUBLE:
-                return Values.SIG_PRIMITIVE_DOUBLE;
-
-            case Const.T_BYTE:
-                return Values.SIG_PRIMITIVE_BYTE;
-
-            case Const.T_SHORT:
-                return Values.SIG_PRIMITIVE_SHORT;
-
-            case Const.T_INT:
-                return Values.SIG_PRIMITIVE_INT;
-
-            case Const.T_LONG:
-                return Values.SIG_PRIMITIVE_LONG;
-        }
-
-        return Values.SIG_JAVA_LANG_OBJECT;
+        String signature = Values.PRIMITIVE_TYPE_CODE_SIGS.get((byte) typeCode);
+        return signature == null ? Values.SIG_JAVA_LANG_OBJECT : signature;
     }
 
     @Nullable

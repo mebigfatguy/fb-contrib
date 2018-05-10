@@ -148,6 +148,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
         }
     }
 
+    @SuppressWarnings("CPD-START")
     static class Contains {
         private Object keyValue;
         private int reportLevel;

@@ -489,7 +489,7 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
         private @DottedClassName String clsName;
 
         public Map<String, Set<String>> getMethodFieldModifiers() {
-            Map<String, Set<String>> modifiers = new HashMap<>(mfModifiers.size());
+            Map<String, Set<String>> modifiers = new HashMap<>(mfModifiers.size(), 1.0F);
             modifiers.putAll(mfModifiers);
             for (Entry<String, Set<String>> method : modifiers.entrySet()) {
                 modifiers.put(method.getKey(), new HashSet<>(method.getValue()));
