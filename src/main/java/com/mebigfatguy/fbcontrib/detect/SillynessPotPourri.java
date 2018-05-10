@@ -603,7 +603,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
         String className = getClassConstantOperand();
         String methodName = getNameConstantOperand();
-        if ("java/lang/System".equals(className)) {
+        if (Values.SLASHED_JAVA_LANG_SYSTEM.equals(className)) {
             if ("getProperties".equals(methodName)) {
                 userValue = new SPPUserValue(SPPMethod.GETPROPERTIES);
             } else if ("arraycopy".equals(methodName) && (stack.getStackDepth() >= 5)) {

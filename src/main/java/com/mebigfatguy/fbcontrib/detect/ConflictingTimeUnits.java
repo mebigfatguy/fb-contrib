@@ -54,8 +54,8 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         String voidToLong = new SignatureBuilder().withReturnType(Values.SIG_PRIMITIVE_LONG).toString();
         String longToLong = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).withReturnType(Values.SIG_PRIMITIVE_LONG).toString();
         Map<FQMethod, Units> tugm = new HashMap<>(50);
-        tugm.put(new FQMethod("java/lang/System", "currentTimeMillis", voidToLong), Units.MILLIS);
-        tugm.put(new FQMethod("java/lang/System", "nanoTime", voidToLong), Units.NANOS);
+        tugm.put(new FQMethod(Values.SLASHED_JAVA_LANG_SYSTEM, "currentTimeMillis", voidToLong), Units.MILLIS);
+        tugm.put(new FQMethod(Values.SLASHED_JAVA_LANG_SYSTEM, "nanoTime", voidToLong), Units.NANOS);
         tugm.put(new FQMethod("java/sql/Timestamp", "getTime", voidToLong), Units.MILLIS);
         tugm.put(new FQMethod("java/sql/Timestamp", "getNanos", SignatureBuilder.SIG_VOID_TO_INT), Units.NANOS);
         tugm.put(new FQMethod("java/util/Date", "getTime", voidToLong), Units.MILLIS);
