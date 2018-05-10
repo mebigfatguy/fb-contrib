@@ -43,9 +43,11 @@ Contributors
 * Mikkel Kjeldsen
 * Jeremy Landis
 * Peter Hermsdorf
+* David Burström
 
 
-The master branch is the main branch of development currently targeting the new FindBugs 3 platform.
+fb-contrib has two main branches, 'findbugs' and 'spotbugs'. Code is committed to findbugs, and then merged to spotbugs.
+It is preferable therefore to create merge requests against the findbugs branch. Thanks!
 
 
 ## Setting up for Development - Ant

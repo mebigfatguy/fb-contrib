@@ -65,7 +65,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         NULLABLE_ANNOTATIONS.add("Landroid/support/annotations/Nullable");
 
         String userAnnotations = System.getProperty(USER_NULLABLE_ANNOTATIONS);
-        if ((userAnnotations != null) && userAnnotations.isEmpty()) {
+        if ((userAnnotations != null) && !userAnnotations.isEmpty()) {
             String[] annotations = userAnnotations.split(Values.WHITESPACE_COMMA_SPLIT);
             for (String annotation : annotations) {
                 NULLABLE_ANNOTATIONS.add("L" + annotation.replace('.', '/') + ";");
