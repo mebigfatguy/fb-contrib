@@ -18,6 +18,10 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.apache.bcel.Constants;
 import org.apache.bcel.generic.Type;
 
@@ -54,6 +58,8 @@ public final class Values {
     public static final String SIG_PRIMITIVE_SHORT = Type.SHORT.getSignature();
     public static final String SIG_PRIMITIVE_INT = Type.INT.getSignature();
     public static final String SIG_PRIMITIVE_LONG = Type.LONG.getSignature();
+    public static final Map<Byte, String> PRIMITIVE_TYPE_CODE_SIGS;
+
     public static final String SIG_VOID = Type.VOID.getSignature();
     public static final String SIG_GENERIC_TEMPLATE = "T";
     public static final String SIG_QUALIFIED_CLASS_PREFIX = "L";
@@ -151,6 +157,19 @@ public final class Values {
     public static final String WHITESPACE_COMMA_SPLIT = "\\s*,\\s*";
 
     public static final String JAVA = "java";
+
+    static {
+        Map<Byte, String> typeCodeSigs = new HashMap<>(8, 1.0F);
+        typeCodeSigs.put(Constants.T_BOOLEAN, SIG_PRIMITIVE_BOOLEAN);
+        typeCodeSigs.put(Constants.T_CHAR, SIG_PRIMITIVE_CHAR);
+        typeCodeSigs.put(Constants.T_FLOAT, SIG_PRIMITIVE_FLOAT);
+        typeCodeSigs.put(Constants.T_DOUBLE, SIG_PRIMITIVE_DOUBLE);
+        typeCodeSigs.put(Constants.T_BYTE, SIG_PRIMITIVE_BYTE);
+        typeCodeSigs.put(Constants.T_SHORT, SIG_PRIMITIVE_SHORT);
+        typeCodeSigs.put(Constants.T_INT, SIG_PRIMITIVE_INT);
+        typeCodeSigs.put(Constants.T_LONG, SIG_PRIMITIVE_LONG);
+        PRIMITIVE_TYPE_CODE_SIGS = Collections.unmodifiableMap(typeCodeSigs);
+    }
 
     private Values() {
     }
