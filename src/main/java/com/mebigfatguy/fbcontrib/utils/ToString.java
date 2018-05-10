@@ -70,9 +70,8 @@ public class ToString {
         Integer identityHC = Integer.valueOf(System.identityHashCode(o));
         sb.append(cls.getSimpleName()).append('[').append(identityHC).append("]{");
 
-        if (!visitedObjects.contains(identityHC)) {
+        if (visitedObjects.add(identityHC)) {
             try {
-                visitedObjects.add(identityHC);
                 String sep = "";
                 for (Field f : cls.getDeclaredFields()) {
                     String fieldName = f.getName();

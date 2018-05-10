@@ -149,33 +149,8 @@ public final class SignatureUtils {
      * @return the signature of the type
      */
     public static String getTypeCodeSignature(int typeCode) {
-        switch (typeCode) {
-            case Const.T_BOOLEAN:
-                return Values.SIG_PRIMITIVE_BOOLEAN;
-
-            case Const.T_CHAR:
-                return Values.SIG_PRIMITIVE_CHAR;
-
-            case Const.T_FLOAT:
-                return Values.SIG_PRIMITIVE_FLOAT;
-
-            case Const.T_DOUBLE:
-                return Values.SIG_PRIMITIVE_DOUBLE;
-
-            case Const.T_BYTE:
-                return Values.SIG_PRIMITIVE_BYTE;
-
-            case Const.T_SHORT:
-                return Values.SIG_PRIMITIVE_SHORT;
-
-            case Const.T_INT:
-                return Values.SIG_PRIMITIVE_INT;
-
-            case Const.T_LONG:
-                return Values.SIG_PRIMITIVE_LONG;
-        }
-
-        return Values.SIG_JAVA_LANG_OBJECT;
+        String signature = Values.PRIMITIVE_TYPE_CODE_SIGS.get((byte) typeCode);
+        return signature == null ? Values.SIG_JAVA_LANG_OBJECT : signature;
     }
 
     @Nullable
@@ -413,7 +388,9 @@ public final class SignatureUtils {
      * @return the signature format of the class
      */
     public static String classToSignature(String className) {
-        if (className.startsWith(Values.SIG_ARRAY_PREFIX)) {
+        if (className == null) {
+            return null;
+        } else if (className.startsWith(Values.SIG_ARRAY_PREFIX)) {
             // convert the classname inside the array
             return Values.SIG_ARRAY_PREFIX + classToSignature(className.substring(Values.SIG_ARRAY_PREFIX.length()));
         } else if (PRIMITIVE_TYPES.contains(className) || className.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {

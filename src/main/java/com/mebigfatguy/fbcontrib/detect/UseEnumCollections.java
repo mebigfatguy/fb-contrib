@@ -284,8 +284,6 @@ public class UseEnumCollections extends BytecodeScanningDetector {
         }
 
         String fieldName = field.getName();
-        boolean checked = checkedFields.contains(fieldName);
-        checkedFields.add(fieldName);
-        return checked;
+        return !checkedFields.add(fieldName);
     }
 }
