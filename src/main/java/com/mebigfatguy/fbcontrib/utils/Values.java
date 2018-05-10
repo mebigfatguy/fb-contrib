@@ -18,16 +18,16 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
+
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.Type;
-
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * a class holding common Const used throughout fb-contrib

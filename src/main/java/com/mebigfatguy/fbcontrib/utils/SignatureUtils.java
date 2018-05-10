@@ -29,7 +29,6 @@ import java.util.Set;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
