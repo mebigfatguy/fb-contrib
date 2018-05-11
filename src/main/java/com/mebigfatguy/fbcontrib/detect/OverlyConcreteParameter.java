@@ -425,6 +425,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     /**
      * looks to see if this method has an overloaded method in actuality, this isn't precise and returns true for methods that are named the same, and have same
      * number of args This will miss some cases, but in practicality doesn't matter.
+     *
+     * @return whether there is a method in this class that overrides the given method
      */
     private boolean hasOverloadedMethod() {
         Method thisMethod = getMethod();
