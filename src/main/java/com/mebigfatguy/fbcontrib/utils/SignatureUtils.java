@@ -386,6 +386,7 @@ public final class SignatureUtils {
      *            the class name to convert
      * @return the signature format of the class
      */
+    @Nullable
     public static String classToSignature(String className) {
         if (className == null) {
             return null;
@@ -412,6 +413,7 @@ public final class SignatureUtils {
      *
      * @return the array signature
      */
+    @Nullable
     public static String toArraySignature(String typeName) {
         String sig = classToSignature(typeName);
         if ((sig == null) || (sig.length() == 0)) {
