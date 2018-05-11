@@ -77,9 +77,9 @@ function toggleBlock(divId, imgId)
 		</div>
 
 		<hr/>
-        <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
+        <img id="git_image" src="flip2.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
         Detectors added in git<br/>
-        <div id="git" style="display:none;">
+        <div id="git" style="display:block;">
 			<ul>
 				<li><b>[LUI] List Usage Issues</b><br/>
             	Looks for odd usage patterns when using Lists
@@ -87,12 +87,19 @@ function toggleBlock(divId, imgId)
             	<li><b>[FII] Functional Interface Issues</b><br/>
                 Looks for issues around use of @FunctionalInterface classes, especially in use with Streams
                 </li>
+                <li><b>[SUI] Set Usage Issues</b><br/>
+                Looks for odd usage patterns when using Sets
+                </li>
+                <li><b>[CE] Class Envy</b><br/>
+                Looks for methods that excessively use methods from another class. This probably means these methods 
+                should be defined in that other class.
+                </li>
 			</ul>
 		</div>	
 		<hr/>
-        <img id="v7_2_0_image" src="flip2.gif" onClick="toggleBlock('v7_2_0', 'v7_2_0_image');" align="top"/>
+        <img id="v7_2_0_image" src="flip1.gif" onClick="toggleBlock('v7_2_0', 'v7_2_0_image');" align="top"/>
         Detectors added in v7.2.0<br/>
-        <div id="v7_2_0" style="display:block;">
+        <div id="v7_2_0" style="display:none;">
         	<ul>
             	<li><b>[UTWR] Use Try With Resources</b><br/>
             	Looks for try/finally blocks that manage resources, without using try-with-resources.
