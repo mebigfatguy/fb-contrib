@@ -57,6 +57,10 @@ public class FII_Sample {
         return baubles.stream().filter(b -> b.getName().equals(name)).collect(Collectors.toSet()).size();
     }
 
+    public void fpUnrelatedLambdaValue282(Map<String, Bauble> map, BaubleFactory factory) {
+        map.computeIfAbsent("pixie dust", _unused -> factory.getBauble());
+    }
+
     public static class Bauble {
 
         public String getName() {
@@ -65,6 +69,12 @@ public class FII_Sample {
 
         public boolean isFree() {
             return true;
+        }
+    }
+
+    public static class BaubleFactory {
+        public Bauble getBauble() {
+            return new Bauble();
         }
     }
 
