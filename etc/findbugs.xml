@@ -23,7 +23,7 @@
 
 	<!-- Detectors -->
 
-    <!-- COMMENT OUT FOR RELEASE -->
+    <!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -31,7 +31,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-    <!-- COMMENT OUT FOR RELEASE -->
+     COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -324,9 +324,6 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.collect.CollectNullableMethodStatus" speed="fast" reports="" hidden="true" />
     
-    
-    <!-- COMMENT OUT FOR POINT RELEASE -->
-    
     <Detector class="com.mebigfatguy.fbcontrib.detect.ListUsageIssues" speed="fast" reports="LUI_USE_SINGLETON_LIST,LUI_USE_COLLECTION_ADD,LUI_USE_GET0"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_REFERENCE,FII_AVOID_CONTAINS_ON_COLLECTED_STREAM,FII_USE_ANY_MATCH,FII_USE_FIND_FIRST,FII_COMBINE_FILTERS,FII_USE_FUNCTION_IDENTITY,FII_AVOID_SIZE_ON_COLLECTED_STREAM" />
@@ -335,6 +332,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="slow" reports="CE_CLASS_ENVY" />
     
+    <!-- COMMENT OUT FOR POINT RELEASE -->
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
