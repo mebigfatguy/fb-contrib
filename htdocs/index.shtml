@@ -68,18 +68,24 @@ function toggleBlock(divId, imgId)
 			</li>
 			</ul>
 		</p>
-		<p style="font-weight: bold;">The latest version of fb-contrib is 7.2.1.sb available for download 
+		<p style="font-weight: bold;">The latest version of fb-contrib is 7.4.0.sb available for download 
 		<a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22fb-contrib%22">here</a>.</p>
 		<p style="font-weight: bold;">This version requires SpotBugs 3.1.0 or better</p>
 		<p style="font-weight: bold;">Please note that active development for this project is now done on 
 				github. If this site seems behind, please <a href="http://github.com/mebigfatguy/fb-contrib">check there</a>.
 				I will try to keep this site up to date, but I'd appreciate a poke if you see something missing.</p>
 		</div>
-
-		<hr/>
-        <img id="git_image" src="flip2.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
+        <hr/>
+        <img id="git_image" src="flip1.gif" onClick="toggleBlock('git', 'git_image');" align="top"/>
         Detectors added in git<br/>
-        <div id="git" style="display:block;">
+        <div id="git" style="display:none;">
+            <ul>
+            </ul>
+        </div>  
+		<hr/>
+        <img id="v7_4_0_image" src="flip2.gif" onClick="toggleBlock('v7_4_0', 'v7_4_0_image');" align="top"/>
+        Detectors added in v7.4.0<br/>
+        <div id="v7_4_0" style="display:block;">
 			<ul>
 				<li><b>[LUI] List Usage Issues</b><br/>
             	Looks for odd usage patterns when using Lists
