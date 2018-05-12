@@ -43,6 +43,7 @@ import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -140,10 +141,14 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                 if ((m.getAccessFlags() & ACC_SYNTHETIC) != 0) {
                     List<FIInfo> fiis = functionalInterfaceInfo.get(m.getName());
                     if (fiis != null) {
-                        try {
-                            anonState = AnonState.SEEN_NOTHING;
-                            super.visitCode(obj);
-                        } catch (StopOpcodeParsingException e) {
+                        if (SignatureUtils.getNumParameters(m.getSignature()) != 1) {
+                            functionalInterfaceInfo.remove(m.getName());
+                        } else {
+                            try {
+                                anonState = AnonState.SEEN_NOTHING;
+                                super.visitCode(obj);
+                            } catch (StopOpcodeParsingException e) {
+                            }
                         }
                     }
                 }
