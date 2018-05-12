@@ -1,5 +1,6 @@
 package ex;
 
+import java.math.BigDecimal;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Map;
@@ -57,6 +58,14 @@ public class FII_Sample {
         return baubles.stream().filter(b -> b.getName().equals(name)).collect(Collectors.toSet()).size();
     }
 
+    public void fpUnrelatedLambdaValue282(Map<String, Bauble> map, BaubleFactory factory) {
+        map.computeIfAbsent("pixie dust", _unused -> factory.getBauble());
+    }
+
+    public BigDecimal fpCastEliminatesMethodReference282(List<Bauble> baubles) {
+        return baubles.stream().filter(b -> b.getName().equals("special")).map(b -> (BigDecimal) b.getCost()).findFirst().get();
+    }
+
     public static class Bauble {
 
         public String getName() {
@@ -65,6 +74,23 @@ public class FII_Sample {
 
         public boolean isFree() {
             return true;
+        }
+
+        public Number getCost() {
+            return 0.0;
+        }
+    }
+
+    public static class SpecialBauble extends Bauble {
+        @Override
+        public BigDecimal getCost() {
+            return new BigDecimal("0.0");
+        }
+    }
+
+    public static class BaubleFactory {
+        public Bauble getBauble() {
+            return new Bauble();
         }
     }
 
