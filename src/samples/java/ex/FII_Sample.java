@@ -2,10 +2,14 @@ package ex;
 
 import java.math.BigDecimal;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 public class FII_Sample {
 
@@ -64,6 +68,21 @@ public class FII_Sample {
 
     public BigDecimal fpCastEliminatesMethodReference282(List<Bauble> baubles) {
         return baubles.stream().filter(b -> b.getName().equals("special")).map(b -> (BigDecimal) b.getCost()).findFirst().get();
+    }
+
+    public static <T> Stream<T> fpIiteratorToFiniteStream283(Iterator<T> iterator, boolean parallel) {
+        Iterable<T> iterable = () -> iterator;
+        return StreamSupport.stream(iterable.spliterator(), parallel);
+    }
+
+    public void fpUseIdentity283() {
+        put(m -> {
+            m.putAll(m);
+            return m;
+        });
+    }
+
+    public void put(Function<Map<String, Object>, Map<String, Object>> updateFunction) {
     }
 
     public static class Bauble {

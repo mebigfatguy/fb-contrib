@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -186,6 +187,20 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                 throw new StopOpcodeParsingException();
                             }
                         } else if ((seen == Const.ARETURN) && (getPC() == 1)) {
+                            List<FIInfo> infos = functionalInterfaceInfo.get(getMethod().getName());
+                            if (infos != null) {
+                                Iterator<FIInfo> it = infos.iterator();
+                                while (it.hasNext()) {
+                                    FIInfo info = it.next();
+                                    if (info.wasPrecededByExplicitStackOp()) {
+                                        it.remove();
+                                    }
+                                }
+                                if (infos.isEmpty()) {
+                                    functionalInterfaceInfo.remove(getMethod().getName());
+                                }
+                            }
+
                             anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
                             throw new StopOpcodeParsingException();
                         } else {
@@ -197,6 +212,13 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     case SEEN_INVOKE:
                         if (!OpcodeUtils.isReturn(seen)) {
                             functionalInterfaceInfo.remove(getMethod().getName());
+                        }
+
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (!itm.getSignature().equals(SignatureUtils.getReturnSignature(getMethod().getSignature()))) {
+                                functionalInterfaceInfo.remove(getMethod().getName());
+                            }
                         }
                         anonymousBugType.put(getMethod().getName(), BugType.FII_USE_METHOD_REFERENCE);
                         throw new StopOpcodeParsingException();
@@ -220,7 +242,9 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                 functionalInterfaceInfo.put(anonName, fiis);
                             }
 
-                            FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this));
+                            int lastOp = getPrevOpcode(1);
+                            FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this),
+                                    OpcodeUtils.isALoad(lastOp) || (lastOp == GETFIELD) || (lastOp == GETSTATIC));
                             fiis.add(fii);
                         }
                     break;
@@ -368,10 +392,12 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     static class FIInfo {
         private Method method;
         private SourceLineAnnotation srcLine;
+        private boolean precededByExplicitStackOp;
 
-        public FIInfo(Method method, SourceLineAnnotation srcLine) {
+        public FIInfo(Method method, SourceLineAnnotation srcLine, boolean precededByExplicitStackOp) {
             this.method = method;
             this.srcLine = srcLine;
+            this.precededByExplicitStackOp = precededByExplicitStackOp;
         }
 
         public Method getMethod() {
@@ -380,6 +406,10 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
         public SourceLineAnnotation getSrcLine() {
             return srcLine;
+        }
+
+        public boolean wasPrecededByExplicitStackOp() {
+            return precededByExplicitStackOp;
         }
 
         @Override
