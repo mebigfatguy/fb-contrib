@@ -200,6 +200,13 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         if (!OpcodeUtils.isReturn(seen)) {
                             functionalInterfaceInfo.remove(getMethod().getName());
                         }
+
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (!itm.getSignature().equals(SignatureUtils.getReturnSignature(getMethod().getSignature()))) {
+                                functionalInterfaceInfo.remove(getMethod().getName());
+                            }
+                        }
                         anonymousBugType.put(getMethod().getName(), BugType.FII_USE_METHOD_REFERENCE);
                         throw new StopOpcodeParsingException();
 
