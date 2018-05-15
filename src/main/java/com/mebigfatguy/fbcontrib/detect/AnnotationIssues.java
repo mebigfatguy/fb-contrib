@@ -33,7 +33,10 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
+import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
@@ -72,6 +75,12 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             }
         }
     }
+
+    private static final Set<FQMethod> NOTABLE_EXCEPTIONS = UnmodifiableSet.create(
+    // @formatter:off
+            new FQMethod(Values.SLASHED_JAVA_LANG_CLASS, "newInstance", SignatureBuilder.SIG_VOID_TO_OBJECT)
+    // @formatter:on
+    );
 
     public enum NULLABLE {
         TRUE
@@ -135,6 +144,12 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         }
 
         if (Values.SIG_JAVA_LANG_VOID.equals(returnType)) {
+            return;
+        }
+
+        if (NOTABLE_EXCEPTIONS.contains(new FQMethod(getClassName(), method.getName(), sig))) {
+            MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
+            methodInfo.setCanReturnNull(false);
             return;
         }
 
