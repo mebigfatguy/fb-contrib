@@ -61,6 +61,10 @@ public class AI_Sample {
         });
     }
 
+    public AI_Sample fpNotableExceptions284() throws Exception {
+        return AI_Sample.class.newInstance();
+    }
+
     interface Stringer {
         String get();
     }
