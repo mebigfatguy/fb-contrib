@@ -25,8 +25,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
@@ -282,7 +282,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 if ((loggerUV != null) && (loggerUV.getType() == LOUserValue.LOType.FORMATTER_LOGGER)) {
                     formatterLoggers.add(getNameConstantOperand());
                 }
-            } else if (seen == GETSTATIC) {
+            } else if (seen == Const.GETSTATIC) {
                 if (formatterLoggers.contains(getNameConstantOperand())) {
                     seenFormatterLogger = true;
                 }
