@@ -268,7 +268,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if (seen == PUTSTATIC) {
+            } else if (seen == Const.PUTSTATIC) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 if (isStaticInitializer && isNonPrivateLogField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand())) {
                     XMethod m = itm.getReturnValueOf();

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
 
@@ -112,7 +113,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
                 }
             }
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+            if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
                 String clsName = getClassConstantOperand();
                 if (!Values.SLASHED_JAVA_LANG_OBJECT.equals(clsName) && !isJDBCClass(clsName)) {
                     int parmCnt = SignatureUtils.getNumParameters(getSigConstantOperand());
@@ -127,7 +128,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
                 }
             }
 
-            if (seen == INVOKEINTERFACE) {
+            if (seen == Const.INVOKEINTERFACE) {
                 String infName = getClassConstantOperand();
                 if (isJDBCClass(infName)) {
                     String sig = getSigConstantOperand();
