@@ -23,6 +23,7 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Objects;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -96,7 +97,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                 }
             }
 
-            if (seen == INVOKEINTERFACE) {
+            if (seen == Const.INVOKEINTERFACE) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (CONTAINS_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
@@ -123,7 +124,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if ((seen == IFNE) || (seen == IFEQ)) {
+            } else if ((seen == Const.IFNE) || (seen == Const.IFEQ)) {
                 if ((stack.getStackDepth() > 0) && (getBranchOffset() > 0)) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     SetRef sr = (SetRef) itm.getUserValue();
@@ -131,11 +132,11 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                         Contains contains = setContainsUsed.get(sr);
                         if (contains != null) {
                             contains.setScopeEnd(getBranchTarget());
-                            contains.setContained(seen == IFEQ);
+                            contains.setContained(seen == Const.IFEQ);
                         }
                     }
                 }
-            } else if ((seen == GOTO) || (seen == GOTO_W)) {
+            } else if ((seen == Const.GOTO) || (seen == Const.GOTO_W)) {
                 setContainsUsed.clear();
             }
 
