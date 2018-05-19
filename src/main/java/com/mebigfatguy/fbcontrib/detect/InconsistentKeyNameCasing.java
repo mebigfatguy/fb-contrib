@@ -27,6 +27,7 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
@@ -126,7 +127,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEINTERFACE) {
+            if (seen == Const.INVOKEINTERFACE) {
                 KeyType type = isKeyAccessMethod(seen);
                 if (type != null) {
                     int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
@@ -197,7 +198,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
      */
     @Nullable
     private KeyType isKeyAccessMethod(int seen) {
-        if (seen == INVOKEINTERFACE) {
+        if (seen == Const.INVOKEINTERFACE) {
             String clsName = getClassConstantOperand();
             if (HTTP_SESSION.equals(clsName)) {
                 String methodName = getNameConstantOperand();
