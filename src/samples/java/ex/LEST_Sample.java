@@ -3,12 +3,15 @@ package ex;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UncheckedIOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import com.google.common.base.Throwables;
 
@@ -159,6 +162,20 @@ public class LEST_Sample {
             RuntimeException r = new RuntimeException();
             r.addSuppressed(e);
             throw r;
+        }
+    }
+
+    public void testFPUncheckedIOException290(List<String> s) throws IOException {
+        try {
+            List<FileInputStream> fis = s.stream().map(ss -> {
+                try {
+                    return new FileInputStream(ss);
+                } catch (IOException e) {
+                    throw new UncheckedIOException(e);
+                }
+            }).collect(Collectors.toList());
+        } catch (UncheckedIOException e) {
+            throw e.getCause();
         }
     }
 
