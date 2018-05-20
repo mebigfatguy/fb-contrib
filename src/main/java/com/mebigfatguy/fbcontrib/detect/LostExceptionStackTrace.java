@@ -241,8 +241,9 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                                         markAsValid = true; // Fixes javac generated code
                                     }
                                 }
-                            } else if (("getTargetException".equals(methodName) || "getCause".equals(methodName))
-                                    && "java/lang/reflect/InvocationTargetException".equals(getClassConstantOperand())) {
+                            } else if ((("getTargetException".equals(methodName) || "getCause".equals(methodName))
+                                    && "java/lang/reflect/InvocationTargetException".equals(getClassConstantOperand()))
+                                    || "java/io/UncheckedIOException".equals(getClassConstantOperand())) {
                                 markAsValid = true;
                             } else if (isPossibleExBuilder(catchInfo.getRegister())) {
                                 markAsValid = true;
