@@ -109,7 +109,9 @@
 		<path id="fb-contrib.test.classpath">
 			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
 			<pathelement location="${lib.dir}/jcommander-${jcommander.version}.jar" />
-			<pathelement location="${lib.dir}/mockito-core-${mockito-core.version}.jar" />
+            <pathelement location="${lib.dir}/mockito-core-${mockito-core.version}.jar" />
+            <pathelement location="${lib.dir}/byte-buddy-${byte-buddy.version}.jar" />
+            <pathelement location="${lib.dir}/objenesis-${objenesis.version}.jar" />
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
 			<pathelement location="${findbugs.dir}/lib/dom4j-1.6.1.jar" />
 			<pathelement location="${findbugs.dir}/lib/jaxen-1.1.6.jar" />
