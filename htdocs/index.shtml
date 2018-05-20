@@ -68,7 +68,7 @@ function toggleBlock(divId, imgId)
 			</li>
 			</ul>
 		</p>
-		<p style="font-weight: bold;">The latest version of fb-contrib is 7.4.0 available for download 
+		<p style="font-weight: bold;">The latest version of fb-contrib is 7.4.1 available for download 
 		<a href="http://search.maven.org/#search%7Cga%7C1%7Ca%3A%22fb-contrib%22">here</a>.</p>
 		<p style="font-weight: bold;">This version requires FindBugs 3.0.1 or better</p>
 		<p style="font-weight: bold;">Please note that active development for this project is now done on 
