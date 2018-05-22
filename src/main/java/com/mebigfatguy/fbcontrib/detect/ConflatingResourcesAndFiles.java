@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -88,9 +89,9 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEVIRTUAL) {
+            if (seen == Const.INVOKEVIRTUAL) {
                 sawResource = processInvokeVirtual();
-            } else if (seen == INVOKESPECIAL) {
+            } else if (seen == Const.INVOKESPECIAL) {
                 sawResource = processInvokeSpecial();
             }
 
