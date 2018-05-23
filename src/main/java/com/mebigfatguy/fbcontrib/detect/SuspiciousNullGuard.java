@@ -26,6 +26,8 @@ import javax.annotation.Nullable;
 import org.apache.bcel.Const;
 
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
@@ -102,8 +104,9 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            Integer pc = Integer.valueOf(getPC());
-            nullGuards.remove(pc);
+            int pc = getPC();
+            nullGuards.remove(Integer.valueOf(pc));
+            clearEndOfLifeRegisters();
 
             switch (seen) {
                 case Const.IFNULL: {
@@ -112,12 +115,21 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
                         int reg = itm.getRegisterNumber();
                         Integer target = Integer.valueOf(getBranchTarget());
                         if (reg >= 0) {
-                            nullGuards.put(target, new NullGuard(reg, pc.intValue(), itm.getSignature()));
+                            int eol = Integer.MAX_VALUE;
+                            LocalVariableTable lvt = getMethod().getLocalVariableTable();
+                            if (lvt != null) {
+                                LocalVariable lv = lvt.getLocalVariable(reg, pc);
+                                if (lv != null) {
+                                    eol = pc + lv.getLength();
+                                }
+                            }
+
+                            nullGuards.put(target, new NullGuard(reg, pc, eol, itm.getSignature()));
                         } else {
                             XField xf = itm.getXField();
                             Integer sourceFieldReg = (Integer) itm.getUserValue();
                             if ((xf != null) && (sourceFieldReg != null)) {
-                                nullGuards.put(target, new NullGuard(xf, sourceFieldReg.intValue(), pc.intValue(), itm.getSignature()));
+                                nullGuards.put(target, new NullGuard(xf, sourceFieldReg.intValue(), pc, itm.getSignature()));
                             }
                         }
                     }
@@ -259,17 +271,30 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
         }
     }
 
+    private void clearEndOfLifeRegisters() {
+        int pc = getPC();
+        Iterator<NullGuard> it = nullGuards.values().iterator();
+        while (it.hasNext()) {
+            NullGuard potentialEOL = it.next();
+            if (potentialEOL.isEOL(pc)) {
+                it.remove();
+            }
+        }
+    }
+
     static class NullGuard {
         int register;
         XField field;
         int fieldSourceReg;
         int location;
+        int scopeEnd;
         String signature;
 
-        NullGuard(int reg, int start, String guardSignature) {
+        NullGuard(int reg, int start, int end, String guardSignature) {
             register = reg;
             field = null;
             location = start;
+            scopeEnd = end;
             signature = guardSignature;
         }
 
@@ -278,6 +303,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
             field = xf;
             fieldSourceReg = fieldSource;
             location = start;
+            scopeEnd = Integer.MAX_VALUE;
             signature = guardSignature;
         }
 
@@ -295,6 +321,10 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
 
         int getLocation() {
             return location;
+        }
+
+        boolean isEOL(int pc) {
+            return pc >= scopeEnd;
         }
 
         String getSignature() {
