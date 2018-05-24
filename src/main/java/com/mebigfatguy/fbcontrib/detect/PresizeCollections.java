@@ -460,7 +460,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
             return true;
         }
 
-        if ((seen != IFNE) || (stack.getStackDepth() == 0)) {
+        if (((seen != IFNE) && (seen != IFEQ)) || (stack.getStackDepth() == 0)) {
             return false;
         }
 
