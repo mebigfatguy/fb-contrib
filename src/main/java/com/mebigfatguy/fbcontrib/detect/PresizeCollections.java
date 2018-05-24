@@ -461,7 +461,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
             return true;
         }
 
-        if ((seen != Const.IFNE) || (stack.getStackDepth() == 0)) {
+        if (((seen != Const.IFNE) && (seen != Const.IFEQ)) || (stack.getStackDepth() == 0)) {
             return false;
         }
 
