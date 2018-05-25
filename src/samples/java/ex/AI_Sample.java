@@ -74,6 +74,15 @@ public class AI_Sample {
         }
     }
 
+    public Object fpConditionalWithElseNotNull() {
+        Object t = create();
+        if (t == null) {
+            return new Object();
+        } else {
+            return t;
+        }
+    }
+
     interface Stringer {
         String get();
     }
