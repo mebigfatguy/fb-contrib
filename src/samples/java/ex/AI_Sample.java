@@ -65,7 +65,30 @@ public class AI_Sample {
         return AI_Sample.class.newInstance();
     }
 
+    public Object fpConditionalWithThrow291() {
+        Object t = create();
+        if (t != null) {
+            return t;
+        } else {
+            throw new RuntimeException();
+        }
+    }
+
+    public Object fpConditionalWithElseNotNull() {
+        Object t = create();
+        if (t == null) {
+            return new Object();
+        } else {
+            return t;
+        }
+    }
+
     interface Stringer {
         String get();
+    }
+
+    @Nullable
+    private static Object create() {
+        return Math.random() >= 0.5 ? new Object() : null;
     }
 }
