@@ -4,8 +4,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
+import java.util.List;
 
 import javax.annotation.Nullable;
+
+import org.apache.commons.collections.CollectionUtils;
 
 public class AI_Sample {
 
@@ -83,6 +87,16 @@ public class AI_Sample {
         }
     }
 
+    public Object fpIsEmpty(String s) {
+        List<String> ss = maybeGetList(s);
+
+        if (CollectionUtils.isEmpty(ss)) {
+            return Collections.emptyList();
+        }
+
+        return ss;
+    }
+
     interface Stringer {
         String get();
     }
@@ -90,5 +104,12 @@ public class AI_Sample {
     @Nullable
     private static Object create() {
         return Math.random() >= 0.5 ? new Object() : null;
+    }
+
+    private List<String> maybeGetList(String s) {
+        if (s == null) {
+            return null;
+        }
+        return Collections.singletonList(s);
     }
 }

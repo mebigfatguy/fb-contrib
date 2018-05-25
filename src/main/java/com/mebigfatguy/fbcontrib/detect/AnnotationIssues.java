@@ -41,6 +41,7 @@ import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
+import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -87,8 +88,18 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     // @formatter:on
     );
 
-    public enum NULLABLE {
-        TRUE
+    public class AIUserValue {
+
+        int reg;
+
+        public AIUserValue(int reg) {
+            this.reg = reg;
+        }
+
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
     };
 
     private BugReporter bugReporter;
@@ -123,7 +134,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     assumedNullTill = new HashMap<>();
                     assumedNonNullTill = new HashMap<>();
                     noAssumptionsPossible = new HashSet<>();
-                    branchTargets = new ArrayList();
+                    branchTargets = new ArrayList<>();
                     super.visitClassContext(classContext);
                 }
             }
@@ -199,7 +210,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        boolean resultIsNullable = false;
+        AIUserValue userValue = null;
 
         if (OpcodeUtils.isBranch(seen) && (getBranchOffset() > 0)) {
             branchTargets.add(getBranchTarget());
@@ -255,10 +266,40 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     }
                 break;
 
-                case Const.INVOKESTATIC:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKEVIRTUAL: {
-                    resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
+                case IFEQ:
+                    if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        AIUserValue uv = (AIUserValue) itm.getUserValue();
+                        if ((uv != null) && (uv.reg >= 0)) {
+                            assumedNullTill.put(uv.reg, getBranchTarget());
+                        }
+                    }
+                break;
+
+                case INVOKESTATIC:
+                    if (stack.getStackDepth() > 0) {
+                        String signature = getSigConstantOperand();
+                        if (signature.equals("(Ljava/util/Collection;)Z") || signature.equals("(Ljava/util/Map;)Z")) {
+                            String methodName = getNameConstantOperand();
+                            if (methodName.equals("isEmpty")) {
+                                OpcodeStack.Item item = stack.getStackItem(0);
+                                int reg = item.getRegisterNumber();
+                                if (reg >= 0) {
+                                    userValue = new AIUserValue(reg);
+                                    break;
+                                }
+                            }
+                        }
+                    }
+
+                    // $FALL-THROUGH$
+                case INVOKEINTERFACE:
+                case INVOKEVIRTUAL: {
+
+                    boolean resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
+                    if (resultIsNullable) {
+                        userValue = new AIUserValue(-1);
+                    }
                     break;
                 }
 
@@ -271,9 +312,9 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
-            if ((resultIsNullable) && (stack.getStackDepth() > 0)) {
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
-                itm.setUserValue(NULLABLE.TRUE);
+                itm.setUserValue(userValue);
             }
         }
     }
@@ -290,7 +331,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     }
 
     public static boolean isStackElementNullable(String className, Method method, OpcodeStack.Item itm) {
-        if (itm.isNull() || (itm.getUserValue() instanceof NULLABLE)) {
+        if (itm.isNull() || (itm.getUserValue() != null)) {
             MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(), method.getSignature());
             if (mi != null) {
                 mi.setCanReturnNull(true);
