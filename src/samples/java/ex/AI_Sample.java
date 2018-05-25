@@ -4,13 +4,12 @@ import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
+import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.Nullable;
 
 import org.apache.commons.collections.CollectionUtils;
-
-import edu.emory.mathcs.backport.java.util.Collections;
 
 public class AI_Sample {
 
