@@ -201,8 +201,8 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     if (!methodIsNullable && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         Integer reg = Integer.valueOf(itm.getRegisterNumber());
-                        methodIsNullable = !noAssumptionsPossible.contains(reg) && ((assumedNullTill.containsKey(reg) && !assumedNonNullTill.containsKey(reg))
-                                || isStackElementNullable(getClassName(), getMethod(), itm));
+                        methodIsNullable = !assumedNonNullTill.containsKey(reg) && (!noAssumptionsPossible.contains(reg)
+                                && ((assumedNullTill.containsKey(reg)) || isStackElementNullable(getClassName(), getMethod(), itm)));
                         if (methodIsNullable) {
                             throw new StopOpcodeParsingException();
                         }
