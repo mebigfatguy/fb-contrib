@@ -36,6 +36,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
@@ -348,6 +349,11 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 if ((lastOp == ARETURN) || (lastOp == ATHROW)) {
                     int nonNullTill = getNextBranchTarget();
                     assumedNonNullTill.put(entry.getKey(), nonNullTill);
+                } else if (OpcodeUtils.isBranch(lastOp)) {
+                    int branchOffset = CodeByteUtils.getshort(getCode().getCode(), getPC() - 2);
+                    if (branchOffset > 0) {
+                        assumedNonNullTill.put(entry.getKey(), getPC() + branchOffset);
+                    }
                 }
             }
         }
