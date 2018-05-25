@@ -18,9 +18,12 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -34,6 +37,7 @@ import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
@@ -90,6 +94,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     private Map<Integer, Integer> assumedNullTill;
     private Map<Integer, Integer> assumedNonNullTill;
     private Set<Integer> noAssumptionsPossible;
+    private List<Integer> branchTargets;
     private OpcodeStack stack;
     private boolean methodIsNullable;
 
@@ -117,6 +122,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     assumedNullTill = new HashMap<>();
                     assumedNonNullTill = new HashMap<>();
                     noAssumptionsPossible = new HashSet<>();
+                    branchTargets = new ArrayList();
                     super.visitClassContext(classContext);
                 }
             }
@@ -125,6 +131,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             assumedNullTill = null;
             assumedNonNullTill = null;
             noAssumptionsPossible = null;
+            branchTargets = null;
         }
     }
 
@@ -171,6 +178,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             assumedNullTill.clear();
             assumedNonNullTill.clear();
             noAssumptionsPossible.clear();
+            branchTargets.clear();
 
             try {
                 super.visitCode(obj);
@@ -192,8 +200,20 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         boolean resultIsNullable = false;
 
+        if (OpcodeUtils.isBranch(seen) && (getBranchOffset() > 0)) {
+            branchTargets.add(getBranchTarget());
+            Collections.sort(branchTargets);
+        }
+
+        clearBranchTargets(getPC());
+        convertNullToNonNull(getPC());
         clearAssumptions(assumedNullTill, getPC());
         clearAssumptions(assumedNonNullTill, getPC());
+
+        if (OpcodeUtils.isBranch(seen) && (getBranchOffset() > 0)) {
+            branchTargets.add(getBranchTarget());
+            Collections.sort(branchTargets);
+        }
 
         try {
             switch (seen) {
@@ -319,6 +339,42 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 it.remove();
             }
         }
+    }
+
+    public void convertNullToNonNull(int pc) {
+        for (Map.Entry<Integer, Integer> entry : assumedNullTill.entrySet()) {
+            if (entry.getValue().intValue() == pc) {
+                int lastOp = getPrevOpcode(1);
+                if ((lastOp == ARETURN) || (lastOp == ATHROW)) {
+                    int nonNullTill = getNextBranchTarget();
+                    assumedNonNullTill.put(entry.getKey(), nonNullTill);
+                }
+            }
+        }
+    }
+
+    /**
+     * remove branch targets that have been passed
+     *
+     * @param pc
+     *            the current pc
+     */
+    public void clearBranchTargets(int pc) {
+        Iterator<Integer> it = branchTargets.iterator();
+        while (it.hasNext()) {
+            int target = it.next().intValue();
+            if (target <= pc) {
+                it.remove();
+            }
+        }
+    }
+
+    public int getNextBranchTarget() {
+        if (branchTargets.isEmpty()) {
+            return Integer.MAX_VALUE;
+        }
+
+        return branchTargets.get(0);
     }
 
     public void removeAssumptions(Map<Integer, Integer> assumptionsTill) {
