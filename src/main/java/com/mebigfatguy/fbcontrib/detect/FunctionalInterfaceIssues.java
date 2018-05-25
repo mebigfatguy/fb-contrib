@@ -367,7 +367,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     @Nullable
     private String getAnonymousName(ConstantMethodHandle cmh) {
-        if (cmh.getReferenceKind() != REF_invokeStatic) {
+        if ((cmh == null) || (cmh.getReferenceKind() != REF_invokeStatic)) {
             return null;
         }
 
