@@ -4,6 +4,8 @@ com.github.spotbugs,spotbugs,3.1.0-RC3,287475e969fd13fbcc7d14d23c56fef9c3e07446
 ,spotbugs-annotations,,3a6c88e8c765949c01d905008f366264644efc0f
 ,spotbugs-ant,,cf936ce2437a4f29ff0e4c805b4f66d85e1b4fe4
 ,,,
+jaxen,jaxen,1.1.6,3f8c36d9a0578e8e98f030c662b69888b1430ac0
+,,,
 dom4j,dom4j,1.6.1,5d3ccc056b6f056dbf0dddfdf43894b9065a8f94
 ,,,
 org.apache.bcel,bcel,6.0,7d08bcac4832f81467d3e2ca5bd58ad627288656

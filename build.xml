@@ -141,7 +141,8 @@
 			<pathelement location="${lib.dir}/spring-beans-${spring-beans.version}.jar" />
 			<pathelement location="${lib.dir}/spring-context-${spring-context.version}.jar" />
 			<pathelement location="${lib.dir}/spring-tx-${spring-tx.version}.jar" />
-			<pathelement location="${lib.dir}/javax.persistence-${javax.persistence.version}.jar" />
+            <pathelement location="${lib.dir}/javax.persistence-${javax.persistence.version}.jar" />
+            <pathelement location="${lib.dir}/jaxen-${jaxen.version}.jar" />
 			<pathelement location="${lib.dir}/mockito-core-${mockito-core.version}.jar" />
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
 			<pathelement location="${lib.dir}/jena-shaded-guava-${jena-shaded-guava.version}.jar" />
