@@ -250,7 +250,7 @@
 				<include name="**/*.license" />
                 <include name="**/*.txt" />
                 <include name="**/*.md" />
-                <include name="**/*.xls" />
+                <include name="**/*.csv" />
                 <include name="**/*.example" />
                 <include name="**/*.fbp" />
 			</fileset>
