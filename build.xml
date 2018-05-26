@@ -51,7 +51,7 @@
 	
 	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank" unless="no.yank">
         <mkdir dir="${lib.dir}" />
-        <yank:yank yankFile="${basedir}/yank.xls" destination="${lib.dir}" proxyServer="${proxy.server}" source="true" separateClassifierTypes="true" checkSHADigests="true">
+        <yank:yank yankFile="${basedir}/yank.csv" destination="${lib.dir}" proxyServer="${proxy.server}" source="true" separateClassifierTypes="true" checkSHADigests="true">
             <server url="http://repo1.maven.org/maven2" />
             <generateVersions propertyFileName="${basedir}/version.properties" />
         </yank:yank>
