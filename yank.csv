@@ -4,6 +4,9 @@
 ,"spotbugs-annotations",,"3a6c88e8c765949c01d905008f366264644efc0f"
 ,"spotbugs-ant",,"cf936ce2437a4f29ff0e4c805b4f66d85e1b4fe4"
 ,,,
+"org.ow2.asm","asm","6.0","bc6fa6b19424bb9592fe43bbc20178f92d403105"
+,"asm-tree",,"a624f1a6e4e428dcd680a01bab2d4c56b35b18f0"
+,,,
 "jaxen","jaxen","1.1.6","3f8c36d9a0578e8e98f030c662b69888b1430ac0"
 ,,,
 "dom4j","dom4j","1.6.1","5d3ccc056b6f056dbf0dddfdf43894b9065a8f94"
