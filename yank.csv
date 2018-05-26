@@ -48,7 +48,7 @@
 ,"httpcore","4.4.5","e7501a1b34325abb00d17dde96150604a0658b54"
 ,"httpclient-cache","4.5.2","bd50ea83908dbf2f387a333216e66d2f0c5079bd"
 ,,,
-"commons-codec","commons-codec","1.1","b2745bd8b6d7b82c4902bb6c8d830536c15d77c5"
+"commons-codec","commons-codec","1.10","4b95f4897fa13f2cd904aee711aeafc0c5295cd8"
 ,,,
 "javax.ws.rs","javax.ws.rs-api","2.0.1","104e9c2b5583cfcfeac0402316221648d6d8ea6b"
 ,,,
