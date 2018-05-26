@@ -6,6 +6,8 @@ com.google.code.findbugs,findbugs,3.0.1,7ae69957c437fd71628d3904572170cf80c01551
 ,findbugs-ant,3.0.0,56f704b2769296de1b86102caefb6e8bd8b979af
 ,jsr305,3.0.2,25ea2e8b0c338a877313bd4672d3fe056ea78f0d
 ,,,
+jaxen,jaxen,1.1.6,3f8c36d9a0578e8e98f030c662b69888b1430ac0
+,,,
 dom4j,dom4j,1.6.1,5d3ccc056b6f056dbf0dddfdf43894b9065a8f94
 ,,,
 org.ow2.asm,asm-debug-all,5.0.2,5742eaa4eb2f0583b642eb2a2a7597c996139103
