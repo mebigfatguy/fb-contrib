@@ -112,7 +112,12 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
             return;
         }
 
-        if (!interfaceMethods.contains(new QMethod(methodName, getMethod().getSignature()))) {
+        Method m = getMethod();
+        if (m.isSynthetic()) {
+            return;
+        }
+
+        if (!interfaceMethods.contains(new QMethod(methodName, m.getSignature()))) {
             super.visitCode(obj);
         }
     }
