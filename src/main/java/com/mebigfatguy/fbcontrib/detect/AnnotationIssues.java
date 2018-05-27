@@ -88,7 +88,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     // @formatter:on
     );
 
-    public class AIUserValue {
+    public static class AIUserValue {
 
         int reg;
 
