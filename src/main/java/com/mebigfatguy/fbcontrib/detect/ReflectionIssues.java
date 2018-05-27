@@ -19,12 +19,15 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import org.apache.bcel.Const;
+import java.lang.reflect.AccessibleObject;
+
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -33,9 +36,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class ReflectionIssues extends BytecodeScanningDetector {
 
-    private static final QMethod SETACCESSIBLE = new QMethod("setAccessible", "(Z)V");
+    private static final QMethod SETACCESSIBLE = new QMethod("setAccessible", SignatureBuilder.SIG_BOOLEAN_TO_VOID);
     private static final FQMethod SETACCESSIBLE_ARRAY = new FQMethod("java/lang/reflect/AccessibleObject", "setAccessible",
-            "([Ljava/lang/reflect/AccessibleObject;Z)V");
+            new SignatureBuilder().withParamTypes(AccessibleObject.class).build());
     private static final JavaClass ACCESSIBLE_OBJECT_CLASS;
 
     static {

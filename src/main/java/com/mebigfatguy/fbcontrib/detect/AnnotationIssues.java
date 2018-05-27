@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -62,6 +63,13 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
     private static final String USER_NULLABLE_ANNOTATIONS = "fb-contrib.ai.annotations";
 
+    private static final Set<String> IS_EMPTY_SIGNATURES = UnmodifiableSet.create(
+    // @formatter:off
+            new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build(),
+            new SignatureBuilder().withParamTypes(Map.class).withReturnType(boolean.class).build()
+    // @formatter:on
+    );
+
     private static final Set<String> NULLABLE_ANNOTATIONS = new HashSet<>();
 
     static {
@@ -88,7 +96,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     // @formatter:on
     );
 
-    public class AIUserValue {
+    public static class AIUserValue {
 
         int reg;
 
@@ -279,7 +287,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 case INVOKESTATIC:
                     if (stack.getStackDepth() > 0) {
                         String signature = getSigConstantOperand();
-                        if (signature.equals("(Ljava/util/Collection;)Z") || signature.equals("(Ljava/util/Map;)Z")) {
+                        if (IS_EMPTY_SIGNATURES.contains(signature)) {
                             String methodName = getNameConstantOperand();
                             if (methodName.equals("isEmpty")) {
                                 OpcodeStack.Item item = stack.getStackItem(0);
