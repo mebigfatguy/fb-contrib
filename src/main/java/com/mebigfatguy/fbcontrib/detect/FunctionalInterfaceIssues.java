@@ -44,6 +44,7 @@ import com.mebigfatguy.fbcontrib.utils.CodeByteUtils;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -65,14 +66,14 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     private static final int REF_invokeStatic = 6;
 
-    private static final QMethod CONTAINS = new QMethod("contains", "(Ljava/lang/Object;)Z");
-    private static final QMethod SIZE = new QMethod("size", "()I");
+    private static final QMethod CONTAINS = new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final QMethod SIZE = new QMethod("size", SignatureBuilder.SIG_VOID_TO_INT);
 
     private static final FQMethod COLLECT = new FQMethod("java/util/stream/Stream", "collect", "(Ljava/util/stream/Collector;)Ljava/lang/Object;");
     private static final FQMethod FILTER = new FQMethod("java/util/stream/Stream", "filter", "(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;");
     private static final FQMethod FINDFIRST = new FQMethod("java/util/stream/Stream", "findFirst", "()Ljava/util/Optional;");
-    private static final FQMethod ISPRESENT = new FQMethod("java/util/Optional", "isPresent", "()Z");
-    private static final FQMethod GET = new FQMethod("java/util/List", "get", "(I)Ljava/lang/Object;");
+    private static final FQMethod ISPRESENT = new FQMethod("java/util/Optional", "isPresent", SignatureBuilder.SIG_VOID_TO_BOOLEAN);
+    private static final FQMethod GET = new FQMethod("java/util/List", "get", SignatureBuilder.SIG_INT_TO_OBJECT);
 
     enum ParseState {
         NORMAL, LAMBDA;

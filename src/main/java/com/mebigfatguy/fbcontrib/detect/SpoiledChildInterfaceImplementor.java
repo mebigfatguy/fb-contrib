@@ -28,6 +28,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -46,15 +47,15 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 
     private static final Set<QMethod> OBJECT_METHODS = UnmodifiableSet.create(
     // @formatter:off
-            new QMethod("equals", "(Ljava/lang/Object;)Z"),
-            new QMethod(Values.HASHCODE, "()I"),
-            new QMethod(Values.TOSTRING, "()Ljava/lang/String;"),
-            new QMethod("clone", "()Ljava/lang/Object;"),
-            new QMethod("notify", "()V"),
-            new QMethod("notifyAll", "()V"),
-            new QMethod("wait", "(J)V"),
+            new QMethod("equals", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
+            new QMethod(Values.HASHCODE, SignatureBuilder.SIG_VOID_TO_INT),
+            new QMethod(Values.TOSTRING, SignatureBuilder.SIG_VOID_TO_STRING),
+            new QMethod("clone", SignatureBuilder.SIG_VOID_TO_OBJECT),
+            new QMethod("notify", SignatureBuilder.SIG_VOID_TO_VOID),
+            new QMethod("notifyAll", SignatureBuilder.SIG_VOID_TO_VOID),
+            new QMethod("wait", SignatureBuilder.SIG_LONG_TO_VOID),
             new QMethod("wait", "(JI)V"),
-            new QMethod("wait", "()V")
+            new QMethod("wait", SignatureBuilder.SIG_VOID_TO_VOID)
     // @formatter:on
     );
     private final BugReporter bugReporter;
