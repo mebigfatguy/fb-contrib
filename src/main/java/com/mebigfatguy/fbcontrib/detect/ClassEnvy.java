@@ -347,7 +347,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     private void addLineNumber(BitSet lineNumbers) {
         LineNumberTable lnt = getCode().getLineNumberTable();
         if (lnt == null) {
-            lineNumbers.set(-lineNumbers.size());
+            lineNumbers.set(0);
         } else {
             int line = lnt.getSourceLine(getPC());
             if (line < 0) {
