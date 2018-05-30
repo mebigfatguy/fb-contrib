@@ -268,10 +268,10 @@ public class JPAIssues extends BytecodeScanningDetector {
     /**
      * parses the current class for spring-tx and jpa annotations, as well as hashCode and equals methods.
      *
-     * @param cls
+     * @param clz
      *            the currently parsed class
      */
-    private void catalogClass(JavaClass cls) {
+    private void catalogClass(JavaClass clz) {
         transactionalMethods = new HashMap<>();
         isEntity = false;
         hasId = false;
@@ -279,14 +279,14 @@ public class JPAIssues extends BytecodeScanningDetector {
         hasEagerOneToMany = false;
         hasHCEquals = false;
 
-        for (AnnotationEntry entry : cls.getAnnotationEntries()) {
+        for (AnnotationEntry entry : clz.getAnnotationEntries()) {
             if ("Ljavax/persistence/Entity;".equals(entry.getAnnotationType())) {
                 isEntity = true;
                 break;
             }
         }
 
-        for (Method m : cls.getMethods()) {
+        for (Method m : clz.getMethods()) {
             catalogFieldOrMethod(m);
 
             if (("equals".equals(m.getName()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(m.getSignature()))
@@ -295,7 +295,7 @@ public class JPAIssues extends BytecodeScanningDetector {
             }
         }
 
-        for (Field f : cls.getFields()) {
+        for (Field f : clz.getFields()) {
             catalogFieldOrMethod(f);
         }
     }
