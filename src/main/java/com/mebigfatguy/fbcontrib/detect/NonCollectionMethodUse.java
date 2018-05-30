@@ -67,7 +67,7 @@ public class NonCollectionMethodUse extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL) {
+        if (seen == Const.INVOKEVIRTUAL) {
             String className = getClassConstantOperand();
             String methodName = getNameConstantOperand();
             String methodSig = getSigConstantOperand();
