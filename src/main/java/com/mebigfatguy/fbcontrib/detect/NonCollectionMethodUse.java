@@ -20,6 +20,8 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
+import org.apache.bcel.Const;
+
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;

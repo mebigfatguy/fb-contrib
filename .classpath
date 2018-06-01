@@ -38,5 +38,6 @@
 	<classpathentry kind="lib" path="lib/bcel-6.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.1.jar"/>
 	<classpathentry kind="lib" path="lib/asm-6.0.jar"/>
+	<classpathentry kind="lib" path="lib/asm-tree-6.0.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
