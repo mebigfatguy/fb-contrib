@@ -31,7 +31,7 @@
 	<property name="javac.debug" value="on" />
 	<property name="test_reports.dir" value="${target.dir}/reports/test"/>
 
-	<property name="fb-contrib.version" value="7.4.2" />
+	<property name="fb-contrib.version" value="7.4.3-SNAPSHOT" />
 	
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
 	
