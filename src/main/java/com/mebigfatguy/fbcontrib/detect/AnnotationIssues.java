@@ -274,7 +274,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     }
                 break;
 
-                case IFEQ:
+                case Const.IFEQ:
                     if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         AIUserValue uv = (AIUserValue) itm.getUserValue();
@@ -284,7 +284,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     }
                 break;
 
-                case INVOKESTATIC:
+                case Const.INVOKESTATIC:
                     if (stack.getStackDepth() > 0) {
                         String signature = getSigConstantOperand();
                         if (IS_EMPTY_SIGNATURES.contains(signature)) {
@@ -301,8 +301,8 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                     }
 
                     // $FALL-THROUGH$
-                case INVOKEINTERFACE:
-                case INVOKEVIRTUAL: {
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKEVIRTUAL: {
 
                     boolean resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
                     if (resultIsNullable) {
@@ -395,7 +395,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         for (Map.Entry<Integer, Integer> entry : assumedNullTill.entrySet()) {
             if (entry.getValue().intValue() == pc) {
                 int lastOp = getPrevOpcode(1);
-                if ((lastOp == ARETURN) || (lastOp == ATHROW)) {
+                if ((lastOp == Const.ARETURN) || (lastOp == Const.ATHROW)) {
                     int nonNullTill = getNextBranchTarget();
                     assumedNonNullTill.put(entry.getKey(), nonNullTill);
                 } else if (OpcodeUtils.isBranch(lastOp)) {
