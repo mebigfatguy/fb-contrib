@@ -136,7 +136,7 @@ public class FinalParameters extends BytecodeScanningDetector {
                     while ((line = sourceReader.readLine()) != null) {
                         lines.add(line);
                     }
-                    sourceLines = lines.toArray(new String[lines.size()]);
+                    sourceLines = lines.toArray(new String[0]);
                 }
             }
         } catch (IOException ioe) {

@@ -166,7 +166,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                 filteredEx.add(ce);
             }
         }
-        return filteredEx.toArray(new CodeException[filteredEx.size()]);
+        return filteredEx.toArray(new CodeException[0]);
     }
 
     /**

@@ -17,6 +17,8 @@
     <exclude name="SwitchStmtsShouldHaveDefault"/>
     <!-- switching on strings is quite efficient -->
     <exclude name="TooFewBranchesForASwitchStatement"/>
+    <!-- data classes aren't evil -->
+    <exclude name="DataClass"/>
     <!-- would take serious refactoring in some cases -->
     <exclude name="GodClass"/>
     <!-- we already check this ourselves -->

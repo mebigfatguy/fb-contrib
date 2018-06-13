@@ -268,8 +268,8 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
      * represents a method that is called, and whether it is in the super class
      */
     static class CalledMethod {
-        private QMethod callee;
-        private boolean isSuper;
+        final QMethod callee;
+        final boolean isSuper;
 
         public CalledMethod(QMethod c, boolean s) {
             callee = c;

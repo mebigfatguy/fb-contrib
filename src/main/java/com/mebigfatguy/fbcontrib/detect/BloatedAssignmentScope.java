@@ -97,7 +97,7 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
 
     BugReporter bugReporter;
     private OpcodeStack stack;
-    private BitSet ignoreRegs;
+    BitSet ignoreRegs;
     private ScopeBlock rootScopeBlock;
     private BitSet tryBlocks;
     private BitSet catchHandlers;
@@ -632,8 +632,9 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
             return null;
         }
 
-        if (sb.children != null) {
-            for (ScopeBlock child : sb.children) {
+        List<ScopeBlock> children = sb.getChildren();
+        if (children != null) {
+            for (ScopeBlock child : children) {
                 ScopeBlock foundSb = findScopeBlock(child, pc);
                 if (foundSb != null) {
                     return foundSb;
@@ -657,12 +658,14 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
      */
     private ScopeBlock findScopeBlockWithTarget(ScopeBlock sb, int start, int target) {
         ScopeBlock parentBlock = null;
-        if ((sb.startLocation < start) && (sb.finishLocation >= start) && ((sb.finishLocation <= target) || (sb.isGoto() && !sb.isLoop()))) {
+        int finishLocation = sb.getFinish();
+        if ((sb.getStart() < start) && (finishLocation >= start) && ((finishLocation <= target) || (sb.isGoto() && !sb.isLoop()))) {
             parentBlock = sb;
         }
 
-        if (sb.children != null) {
-            for (ScopeBlock child : sb.children) {
+        List<ScopeBlock> children = sb.getChildren();
+        if (children != null) {
+            for (ScopeBlock child : children) {
                 ScopeBlock targetBlock = findScopeBlockWithTarget(child, start, target);
                 if (targetBlock != null) {
                     return targetBlock;

@@ -140,7 +140,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
         while (m.find()) {
             templates.add(new TemplateItem(m.group(1), m.group(2)));
         }
-        ts.templateParameters = templates.toArray(new TemplateItem[templates.size()]);
+        ts.templateParameters = templates.toArray(new TemplateItem[0]);
 
         return ts;
     }

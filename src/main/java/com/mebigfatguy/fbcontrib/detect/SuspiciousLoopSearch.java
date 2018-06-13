@@ -289,7 +289,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     static class IfBlock {
         int start;
         int end;
-        private Map<Integer, Integer> storeRegs;
+        final Map<Integer, Integer> storeRegs;
 
         public IfBlock(int start, int end) {
             this.start = start;
