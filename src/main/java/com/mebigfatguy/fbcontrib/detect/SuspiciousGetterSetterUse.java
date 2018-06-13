@@ -35,9 +35,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
  */
 public class SuspiciousGetterSetterUse extends BytecodeScanningDetector {
 
-    private static enum State {
+    private enum State {
         SEEN_NOTHING, SEEN_ALOAD, SEEN_GETFIELD, SEEN_DUAL_LOADS, SEEN_INVOKEVIRTUAL
-    };
+    }
 
     private final BugReporter bugReporter;
     private State state;

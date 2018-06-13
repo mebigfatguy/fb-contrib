@@ -105,14 +105,15 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
             Iterator<LoopInfo> it = loops.values().iterator();
             while (it.hasNext()) {
                 LoopInfo loop = it.next();
-                if ((loop.getEndPC() - 3) <= pc) {
-                    int loopPC = loop.getAddPC();
+                int endPC = loop.getEndPC();
+                int loopPC = loop.getAddPC();
+                if ((endPC - 3) <= pc) {
                     if (loopPC > 0) {
                         bugReporter.reportBug(new BugInstance(this, BugType.UAA_USE_ADD_ALL.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this, loopPC));
                     }
                     it.remove();
-                } else if ((loop.getEndPC() > pc) && (loop.addPC < (pc - 5)) && (loop.addPC > 0)) {
+                } else if ((endPC > pc) && (loopPC < (pc - 5)) && (loopPC > 0)) {
                     it.remove();
                 }
             }

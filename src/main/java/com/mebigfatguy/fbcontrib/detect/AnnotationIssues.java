@@ -72,6 +72,20 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
     private static final Set<String> NULLABLE_ANNOTATIONS = new HashSet<>();
 
+    private static final Set<FQMethod> NOTABLE_EXCEPTIONS = UnmodifiableSet.create(
+    // @formatter:off
+            new FQMethod(Values.SLASHED_JAVA_LANG_CLASS, "newInstance", SignatureBuilder.SIG_VOID_TO_OBJECT)
+    // @formatter:on
+    );
+
+    private BugReporter bugReporter;
+    private Map<Integer, Integer> assumedNullTill;
+    private Map<Integer, Integer> assumedNonNullTill;
+    private Set<Integer> noAssumptionsPossible;
+    private List<Integer> branchTargets;
+    private OpcodeStack stack;
+    private boolean methodIsNullable;
+
     static {
         NULLABLE_ANNOTATIONS.add("Lorg/jetbrains/annotations/Nullable;");
         NULLABLE_ANNOTATIONS.add("Ljavax/annotation/Nullable;");
@@ -90,12 +104,6 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         }
     }
 
-    private static final Set<FQMethod> NOTABLE_EXCEPTIONS = UnmodifiableSet.create(
-    // @formatter:off
-            new FQMethod(Values.SLASHED_JAVA_LANG_CLASS, "newInstance", SignatureBuilder.SIG_VOID_TO_OBJECT)
-    // @formatter:on
-    );
-
     public static class AIUserValue {
 
         int reg;
@@ -109,14 +117,6 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             return ToString.build(this);
         }
     };
-
-    private BugReporter bugReporter;
-    private Map<Integer, Integer> assumedNullTill;
-    private Map<Integer, Integer> assumedNonNullTill;
-    private Set<Integer> noAssumptionsPossible;
-    private List<Integer> branchTargets;
-    private OpcodeStack stack;
-    private boolean methodIsNullable;
 
     /**
      * constructs a AI detector given the reporter to report bugs on
@@ -289,7 +289,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                         String signature = getSigConstantOperand();
                         if (IS_EMPTY_SIGNATURES.contains(signature)) {
                             String methodName = getNameConstantOperand();
-                            if (methodName.equals("isEmpty")) {
+                            if ("isEmpty".equals(methodName)) {
                                 OpcodeStack.Item item = stack.getStackItem(0);
                                 int reg = item.getRegisterNumber();
                                 if (reg >= 0) {

@@ -187,8 +187,8 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
      * what offset from the start or end of the method the parm is
      */
     static class ParameterInfo<T extends Comparable<T>> {
-        private int parameterOffset;
-        private boolean fromStart;
+        final int parameterOffset;
+        final boolean fromStart;
         private Set<T> validValues;
         private Range<T> range;
 

@@ -287,10 +287,10 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
         if (!transitionPoints.isEmpty()) {
             int transitionPoint = transitionPoints.nextSetBit(0);
             while (transitionPoint >= 0) {
-                if (transitionPoint < firstBlock.handlerPC) {
+                if (transitionPoint < firstBlock.getHandlerPC()) {
                     transitionPoints.clear(transitionPoint);
                 } else {
-                    return transitionPoint < secondBlock.handlerPC;
+                    return transitionPoint < secondBlock.getHandlerPC();
                 }
                 transitionPoint = transitionPoints.nextSetBit(transitionPoint + 1);
             }
@@ -386,6 +386,10 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
 
         int getStartPC() {
             return startPC;
+        }
+
+        int getHandlerPC() {
+            return handlerPC;
         }
 
         int getEndHandlerPC() {

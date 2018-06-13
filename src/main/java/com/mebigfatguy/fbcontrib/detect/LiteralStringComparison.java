@@ -193,7 +193,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
             if (!lookupSwitches.isEmpty()) {
                 int innerMostSwitch = lookupSwitches.size() - 1;
                 LookupDetails details = lookupSwitches.get(innerMostSwitch);
-                if (details.switchTargets.get(getPC()) && (stack.getStackDepth() > 0)) {
+                if (details.getSwitchTargets().get(getPC()) && (stack.getStackDepth() > 0)) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     item.setUserValue(details.getStringReference());
                 }
