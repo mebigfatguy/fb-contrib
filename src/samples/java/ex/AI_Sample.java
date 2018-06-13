@@ -97,6 +97,23 @@ public class AI_Sample {
         return ss;
     }
 
+    public String fpGetProperty296(final String key, final String defaultValue) {
+        String strResult = getProperty(key);
+        if (strResult != null) {
+            return strResult;
+        } else {
+            putDefault(key, defaultValue);
+            return defaultValue;
+        }
+    }
+
+    public String getProperty(final String key) {
+        return Math.random() > 0.5 ? null : "";
+    }
+
+    private void putDefault(String key, String value) {
+    }
+
     interface Stringer {
         String get();
     }
