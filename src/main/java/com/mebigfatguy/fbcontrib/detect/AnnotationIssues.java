@@ -93,7 +93,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         NULLABLE_ANNOTATIONS.add("Lcom/sun/istack/Nullable;");
         NULLABLE_ANNOTATIONS.add("Ledu/umd/cs/findbugs/annotations/Nullable;");
         NULLABLE_ANNOTATIONS.add("Lorg/springframework/lang/Nullable;");
-        NULLABLE_ANNOTATIONS.add("Landroid/support/annotations/Nullable");
+        NULLABLE_ANNOTATIONS.add("Landroid/support/annotation/Nullable");
 
         String userAnnotations = System.getProperty(USER_NULLABLE_ANNOTATIONS);
         if ((userAnnotations != null) && !userAnnotations.isEmpty()) {
