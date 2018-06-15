@@ -36,6 +36,7 @@ Contributors
 * Jeremy Landis
 * Peter Hermsdorf
 * David Burström
+* Venkata Gajavalli
 
 
 fb-contrib has two main branches, 'findbugs' and 'spotbugs'. Code is committed to findbugs, and then merged to spotbugs.
