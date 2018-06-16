@@ -38,7 +38,7 @@ public class ReflectionIssues extends BytecodeScanningDetector {
 
     private static final QMethod SETACCESSIBLE = new QMethod("setAccessible", SignatureBuilder.SIG_BOOLEAN_TO_VOID);
     private static final FQMethod SETACCESSIBLE_ARRAY = new FQMethod("java/lang/reflect/AccessibleObject", "setAccessible",
-            new SignatureBuilder().withParamTypes(AccessibleObject.class).build());
+            new SignatureBuilder().withParamTypes(AccessibleObject[].class).build());
     private static final JavaClass ACCESSIBLE_OBJECT_CLASS;
 
     static {
