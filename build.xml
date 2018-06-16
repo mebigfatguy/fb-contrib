@@ -151,7 +151,7 @@
 		</path>
 	</target>
 
-	<target name="validate_xml" depends="-init" description="validates the xml files">
+	<target name="validate_xml" depends="-init" unless="skip-validate" description="validates the xml files">
 		<taskdef name="bug-rank-check-style" classname="text.style.check.BugRankCheckStyleTask"/>
 		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true" />
