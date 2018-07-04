@@ -18,11 +18,11 @@
  */
 package com.mebigfatguy.fbcontrib.collect;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.ToString;
@@ -38,7 +38,7 @@ public final class Statistics implements Iterable<Map.Entry<FQMethod, MethodInfo
     private static Statistics statistics = new Statistics();
     private static final MethodInfo NOT_FOUND_METHOD_INFO = new MethodInfo();
 
-    private final Map<FQMethod, MethodInfo> methodStatistics = new HashMap<>();
+    private final Map<FQMethod, MethodInfo> methodStatistics = new ConcurrentHashMap<>();
 
     private final Set<String> autowiredBeans = new HashSet<>();
 
