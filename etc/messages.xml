@@ -6190,6 +6190,9 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	produces a far simpler instance of List. Since both of these arrays are immutable (from the List's point of view) they are equivalent from a usage
     	standpoint.
     	</p>
+    	<p>There is one difference between Array.asList and Collections.singletonList that you should be mindful of. The rarely used set(index, value) method is
+    	allowed to be used with a List created by Array.asList, but not with Collections.singletonList. So if you do use the set(index, value) method
+    	continue using Arrays.asList.
     	]]>
     	</Details>
     </BugPattern>
