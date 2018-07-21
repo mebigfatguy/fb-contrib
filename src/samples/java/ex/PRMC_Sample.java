@@ -106,6 +106,15 @@ public class PRMC_Sample {
         List p = Collections.emptyList();
     }
 
+    public void fpSimpleGetter() {
+        getData();
+        getData();
+    }
+
+    public String getData() {
+        return data;
+    }
+
     enum FPEnum {
         fee, fi, fo, fum
     };

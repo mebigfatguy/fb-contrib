@@ -136,7 +136,8 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         String clsName = getClassName();
         Method method = getMethod();
         int accessFlags = method.getAccessFlags();
-        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, obj.getLength(), numMethodCalls);
+        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, code.length,
+                numMethodCalls);
         if ((clsName.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0) || ((accessFlags & (Const.ACC_ABSTRACT | Const.ACC_INTERFACE | Const.ACC_ANNOTATION)) != 0)) {
             mi.addCallingAccess(Const.ACC_PUBLIC);
         } else if ((accessFlags & Const.ACC_PRIVATE) == 0) {
