@@ -384,15 +384,14 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
                     if (mc != null) {
                         if (!signature.endsWith(Values.SIG_VOID) && methodName.equals(mc.getName()) && signature.equals(mc.getSignature())
-                                && !isRiskyName(className, methodName)
-                                && !commonMethods.contains(new FQMethod(getClassConstantOperand(), methodName, signature))) {
+                                && !isRiskyName(className, methodName) && !commonMethods.contains(new FQMethod(className, methodName, signature))) {
                             Object[] parms = mc.getParms();
                             if (Arrays.equals(parms, parmConstants)) {
                                 int ln = getLineNumber(pc);
 
                                 if ((ln != mc.getLineNumber()) || (Math.abs(pc - mc.getPC()) < 10)) {
                                     Statistics statistics = Statistics.getStatistics();
-                                    MethodInfo mi = statistics.getMethodStatistics(getClassConstantOperand(), methodName, signature);
+                                    MethodInfo mi = statistics.getMethodStatistics(className, methodName, signature);
 
                                     bugReporter.reportBug(
                                             new BugInstance(this, BugType.PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS.name(), getBugPriority(methodName, mi))
