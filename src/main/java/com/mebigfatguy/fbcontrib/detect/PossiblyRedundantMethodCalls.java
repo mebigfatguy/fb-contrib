@@ -64,6 +64,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     public static final String PRMC_HIGH_METHODCALLS = "fbcontrib.PRMC.highmethodcalls";
     public static final String PRMC_NORMAL_BYTECOUNT = "fbcontrib.PRMC.normalbytecount";
     public static final String PRMC_NORMAL_METHODCALLS = "fbcontrib.PRMC.normalmethodcalls";
+    public static final String PRMC_LOW_BYTECOUNT = "fbcontrib.PRMC.lowbytecount";
+    public static final String PRMC_LOW_METHODCALLS = "fbcontrib.PRMC.lowmethodcalls";
 
     /**
      * a collection of names that are to be checked against a currently parsed method, to see if that method is risky to be called redundant. The contents are
@@ -76,8 +78,10 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     private static Set<String> riskyMethodNameContents = new HashSet<>();
     private static int highByteCountLimit = 200;
     private static int highMethodCallLimit = 10;
-    private static int normalByteCountLimit = 50;
+    private static int normalByteCountLimit = 75;
     private static int normalMethodCallLimit = 4;
+    private static int lowByteCountLimit = 10;
+    private static int lowMethodCallLimit = 1;
 
     static {
         riskyMethodNameContents.add("next");
@@ -129,6 +133,14 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         prop = Integer.getInteger(PRMC_NORMAL_METHODCALLS);
         if (prop != null) {
             normalMethodCallLimit = prop.intValue();
+        }
+        prop = Integer.getInteger(PRMC_LOW_BYTECOUNT);
+        if (prop != null) {
+            lowByteCountLimit = prop.intValue();
+        }
+        prop = Integer.getInteger(PRMC_LOW_METHODCALLS);
+        if (prop != null) {
+            lowMethodCallLimit = prop.intValue();
         }
     }
 
@@ -461,7 +473,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
             return NORMAL_PRIORITY;
         }
 
-        if ((mi.getNumBytes() == 0) || (mi.getNumMethodCalls() == 0)) {
+        if ((mi.getNumBytes() >= lowByteCountLimit) || (mi.getNumMethodCalls() >= lowMethodCallLimit)) {
             return LOW_PRIORITY;
         }
 
