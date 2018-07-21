@@ -12,7 +12,7 @@ Available on [maven.org](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 7.4.2 or 7.4.2.sb
+       Version: 7.4.3 or 7.4.3.sb
 
 
 Developer
@@ -76,7 +76,7 @@ com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
             <plugin>
                 <groupId>com.mebigfatguy.fb-contrib</groupId>
                 <artifactId>fb-contrib</artifactId>
-                <version>7.4.2</version>
+                <version>7.4.3</version>
             </plugin>
         </plugins>
     </configuration>
@@ -100,7 +100,7 @@ com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
             <plugin>
                 <groupId>com.mebigfatguy.fb-contrib</groupId>
                 <artifactId>fb-contrib</artifactId>
-                <version>7.4.2</version>
+                <version>7.4.3</version>
             </plugin>
         </plugins>
     </configuration>
@@ -126,7 +126,7 @@ dependencies {
     findbugs configurations.findbugsPlugins.dependencies
 
     // To keep everything tidy, we set these apart
-    findbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.2'
+    findbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.4.3'
 }
 
 task findbugs(type: FindBugs) {
