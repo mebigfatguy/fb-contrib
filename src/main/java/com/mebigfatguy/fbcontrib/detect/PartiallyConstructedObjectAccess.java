@@ -123,8 +123,8 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                         JavaClass cls = itm.getJavaClass();
                         if (cls != null) {
                             Method m = findMethod(cls, getNameConstantOperand(), getSigConstantOperand());
-                            if ((m != null) && (!m.isFinal())) {
-                                if (isCtor && (seen != Const.INVOKESPECIAL)) {
+                            if (m != null) {
+                                if (isCtor && (seen != Const.INVOKESPECIAL) && !m.isFinal()) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this, getPC()));
                                     throw new StopOpcodeParsingException();
@@ -166,7 +166,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
             Method m = entry.getKey();
             if (Values.CONSTRUCTOR.equals(m.getName())) {
                 checkedMethods.clear();
-                Deque<SourceLineAnnotation> slas = foundPrivateInChain(m, checkedMethods);
+                Deque<SourceLineAnnotation> slas = foundNonPrivateNonFinalInChain(m, checkedMethods);
                 if (slas != null) {
                     BugInstance bi = new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), LOW_PRIORITY).addClass(cls).addMethod(cls,
                             m);
@@ -180,7 +180,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
     }
 
     @Nullable
-    private Deque<SourceLineAnnotation> foundPrivateInChain(Method m, Set<Method> checkedMethods) {
+    private Deque<SourceLineAnnotation> foundNonPrivateNonFinalInChain(Method m, Set<Method> checkedMethods) {
         Map<Method, SourceLineAnnotation> calledMethods = methodToCalledMethods.get(m);
         if (calledMethods != null) {
             for (Map.Entry<Method, SourceLineAnnotation> entry : calledMethods.entrySet()) {
@@ -196,7 +196,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                 }
 
                 checkedMethods.add(cm);
-                Deque<SourceLineAnnotation> slas = foundPrivateInChain(cm, checkedMethods);
+                Deque<SourceLineAnnotation> slas = foundNonPrivateNonFinalInChain(cm, checkedMethods);
                 if (slas != null) {
                     slas.addFirst(entry.getValue());
                     return slas;
