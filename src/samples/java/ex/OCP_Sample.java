@@ -20,6 +20,7 @@ import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.TreeSet;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -53,6 +54,18 @@ public class OCP_Sample extends Z implements ActionListener, Serializable {
             sb.append(it.next());
         }
         return sb.toString();
+    }
+
+    // List should be declared as Collection where possible
+    public String max(List<String> s) {
+        String max = "";
+        for (String p : s) {
+            if (p.length() > max.length()) {
+                max = p;
+            }
+        }
+
+        return max;
     }
 
     // tag OCP dh could be a ContentHandler instead
