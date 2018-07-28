@@ -520,7 +520,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     }
 
                     JavaClass clz = Repository.lookupClass(clsName);
-                    if ((clz.isClass() && (!clz.isAbstract())) || OVERLY_CONCRETE_INTERFACES.contains(clsName)) {
+                    if ((clz.isClass() && (!clz.isAbstract()) && (!cls.isEnum())) || OVERLY_CONCRETE_INTERFACES.contains(clsName)) {
                         Map<JavaClass, List<MethodInfo>> definers = getClassDefiners(clz);
 
                         if (!definers.isEmpty()) {
