@@ -67,6 +67,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     private static final Set<String> CONVERSION_SUPER_CLASSES = UnmodifiableSet.create("com.fasterxml.jackson.databind.JsonSerializer",
             "com.fasterxml.jackson.databind.JsonDeserializer");
 
+    private static final Set<String> OVERLY_CONCRETE_INTERFACES = UnmodifiableSet.create("java.util.List");
+
     private final BugReporter bugReporter;
     private JavaClass[] constrainingClasses;
     private Map<Integer, Map<JavaClass, List<MethodInfo>>> parameterDefiners;
@@ -519,7 +521,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     }
 
                     JavaClass clz = Repository.lookupClass(clsName);
-                    if (clz.isClass() && (!clz.isAbstract())) {
+                    if ((clz.isClass() && (!clz.isAbstract()) && (!cls.isEnum())) || OVERLY_CONCRETE_INTERFACES.contains(clsName)) {
                         Map<JavaClass, List<MethodInfo>> definers = getClassDefiners(clz);
 
                         if (!definers.isEmpty()) {
