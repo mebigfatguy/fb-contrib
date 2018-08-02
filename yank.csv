@@ -1,7 +1,7 @@
 GroupId,ArtifactId,Version,Digest
 ,,,
 com.google.code.findbugs,findbugs,3.0.1,7ae69957c437fd71628d3904572170cf80c01551
-,bcel-findbugs,6,7a7563ba41dceff3da4af4927b7c09908bd5132c
+,bcel-findbugs,6.0,7a7563ba41dceff3da4af4927b7c09908bd5132c
 ,findbugs-annotations,3.0.1,0bf2342edabc0fc37fc0b1de0b03f071bef935c3
 ,findbugs-ant,3.0.0,56f704b2769296de1b86102caefb6e8bd8b979af
 ,jsr305,3.0.2,25ea2e8b0c338a877313bd4672d3fe056ea78f0d
@@ -42,7 +42,7 @@ commons-collections,commons-collections,3.2.2,8ad72fe39fa8c91eaaf12aadb21e0c3661
 ,,,
 org.slf4j,slf4j-api,1.7.21,139535a69a4239db087de9bab0bee568bf8e0b70
 ,,,
-com.google.guava,guava,19,6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9
+com.google.guava,guava,19.0,6ce200f6b23222af3d8abb6b6459e6c44f4bb0e9
 ,,,
 org.apache.httpcomponents,httpclient,4.5.2,733db77aa8d9b2d68015189df76ab06304406e50
 ,httpcore,4.4.5,e7501a1b34325abb00d17dde96150604a0658b54
