@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.Const;
 
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -137,7 +138,7 @@ public class WiringIssues extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         try {
-            if ((seen == INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+            if ((seen == Const.INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
                 String clsName = getDottedClassConstantOperand();
                 if (Statistics.getStatistics().isAutowiredBean(clsName)) {
                     String signature = getSigConstantOperand();
