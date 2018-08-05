@@ -4,6 +4,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Field;
@@ -173,7 +174,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if ((seen == INVOKEVIRTUAL) && "printStackTrace".equals(getNameConstantOperand())
+        if ((seen == Const.INVOKEVIRTUAL) && "printStackTrace".equals(getNameConstantOperand())
                 && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())) {
             bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                     .addSourceLine(this));
