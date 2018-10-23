@@ -1,6 +1,7 @@
 package ex;
 
 import java.math.BigDecimal;
+import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -21,6 +22,10 @@ public class FII_Sample {
     public List<String> getNames(List<Bauble> baubles) {
 
         return baubles.stream().map(b -> b.getName()).collect(Collectors.toList());
+    }
+
+    public void addBitSet(BitSet bs, List<Integer ints) {
+        ints.forEach(i -> bs.set(i));    
     }
 
     public List<Bauble> getfpFreeBees(List<Bauble> baubles) {
