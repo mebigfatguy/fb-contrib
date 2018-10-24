@@ -24,7 +24,7 @@ public class FII_Sample {
         return baubles.stream().map(b -> b.getName()).collect(Collectors.toList());
     }
 
-    public void addBitSet(BitSet bs, List<Integer ints) {
+    public void addBitSet(BitSet bs, List<Integer> ints) {
         ints.forEach(i -> bs.set(i));    
     }
 
