@@ -336,7 +336,7 @@
         <echo message="sonatype update bundle produced at ${sonatype.dir}/bundle.jar" />
         <echo message="upload this jar at https://oss.sonatype.org" />
         <echo message="" />
-        <echo message="see link for details-> https://docs.sonatype.org/display/Repository/Uploading+3rd-party+Artifacts+to+The+Central+Repository" />
+        <echo message="see link for details-> https://central.sonatype.org/pages/ossrh-guide.html" />
         <echo message="====================================================================================================================================" />
     </target>
 </project>

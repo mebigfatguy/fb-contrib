@@ -84,6 +84,9 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private static final String NG_ASSERT_CLASS = "org/testng/Assert";
     private static final String NG_JUNIT_ASSERT_CLASS = "org/testng/AssertJUnit";
 
+    private static final String MBEAN_CLASS = "org/meanbean/test/BeanTester";
+    private static final String MBEAN_METHOD = "testBean";
+
     private BugReporter bugReporter;
     private JavaClass testCaseClass;
     private JavaClass testAnnotationClass;
@@ -303,6 +306,14 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                     String sig = getSigConstantOperand();
                     if (clsName.startsWith("java/lang/") && "valueOf".equals(methodName) && (sig.indexOf(")Ljava/lang/") >= 0)) {
                         userValue = "valueOf";
+                    }
+                }
+            } else if (seen == Const.INVOKEVIRTUAL) {
+                String className = getClassConstantOperand();
+                if (MBEAN_CLASS.equals(className)) {
+                    String methodName = getNameConstantOperand();
+                    if (MBEAN_METHOD.equals(methodName)) {
+                        sawAssert = true;
                     }
                 }
             } else if ((seen == Const.ATHROW) && (stack.getStackDepth() > 0)) {
