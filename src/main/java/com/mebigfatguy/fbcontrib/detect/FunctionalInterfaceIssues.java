@@ -59,364 +59,411 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for issues around use of @FunctionalInterface classes, especially in use with Streams..
+ * looks for issues around use of @FunctionalInterface classes, especially in
+ * use with Streams..
  */
 @CustomUserValue
 public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
-    private static final QMethod CONTAINS = new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
-    private static final QMethod SIZE = new QMethod("size", SignatureBuilder.SIG_VOID_TO_INT);
+	private static final QMethod CONTAINS = new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+	private static final QMethod SIZE = new QMethod("size", SignatureBuilder.SIG_VOID_TO_INT);
 
-    private static final FQMethod COLLECT = new FQMethod("java/util/stream/Stream", "collect", "(Ljava/util/stream/Collector;)Ljava/lang/Object;");
-    private static final FQMethod FILTER = new FQMethod("java/util/stream/Stream", "filter", "(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;");
-    private static final FQMethod FINDFIRST = new FQMethod("java/util/stream/Stream", "findFirst", "()Ljava/util/Optional;");
-    private static final FQMethod ISPRESENT = new FQMethod("java/util/Optional", "isPresent", SignatureBuilder.SIG_VOID_TO_BOOLEAN);
-    private static final FQMethod GET = new FQMethod("java/util/List", "get", SignatureBuilder.SIG_INT_TO_OBJECT);
+	private static final FQMethod COLLECT = new FQMethod("java/util/stream/Stream", "collect",
+			"(Ljava/util/stream/Collector;)Ljava/lang/Object;");
+	private static final FQMethod FILTER = new FQMethod("java/util/stream/Stream", "filter",
+			"(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;");
+	private static final FQMethod FINDFIRST = new FQMethod("java/util/stream/Stream", "findFirst",
+			"()Ljava/util/Optional;");
+	private static final FQMethod ISPRESENT = new FQMethod("java/util/Optional", "isPresent",
+			SignatureBuilder.SIG_VOID_TO_BOOLEAN);
+	private static final FQMethod GET = new FQMethod("java/util/List", "get", SignatureBuilder.SIG_INT_TO_OBJECT);
 
-    enum ParseState {
-        NORMAL, LAMBDA;
-    }
+	enum ParseState {
+		NORMAL, LAMBDA;
+	}
 
-    enum AnonState {
-        SEEN_NOTHING, SEEN_ALOAD_0, SEEN_INVOKE
-    }
+	enum AnonState {
+		SEEN_NOTHING, SEEN_ALOAD_0, SEEN_ALOAD_1, SEEN_INVOKE
+	}
 
-    enum FIIUserValue {
-        COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM;
-    }
+	enum FIIUserValue {
+		COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM;
+	}
 
-    private BugReporter bugReporter;
-    private JavaClass cls;
-    private OpcodeStack stack;
+	private BugReporter bugReporter;
+	private JavaClass cls;
+	private OpcodeStack stack;
     private BootstrapMethods bootstrapAtt;
-    private Map<String, List<FIInfo>> functionalInterfaceInfo;
-    private Map<String, BugType> anonymousBugType;
+	private Map<String, List<FIInfo>> functionalInterfaceInfo;
+	private Map<String, BugType> anonymousBugType;
 
-    private ParseState parseState;
-    private AnonState anonState;
+	private ParseState parseState;
+	private AnonState anonState;
+	private boolean isParmLambda;
 
-    public FunctionalInterfaceIssues(BugReporter bugReporter) {
-        this.bugReporter = bugReporter;
-    }
+	public FunctionalInterfaceIssues(BugReporter bugReporter) {
+		this.bugReporter = bugReporter;
+	}
 
-    @Override
-    public void visitClassContext(ClassContext classContext) {
-        try {
-            cls = classContext.getJavaClass();
+	@Override
+	public void visitClassContext(ClassContext classContext) {
+		try {
+			cls = classContext.getJavaClass();
             if (cls.getMajor() >= Const.MAJOR_1_8) {
-                bootstrapAtt = getBootstrapAttribute(cls);
-                if (bootstrapAtt != null) {
-                    stack = new OpcodeStack();
-                    functionalInterfaceInfo = new HashMap<>();
-                    anonymousBugType = new HashMap<>();
-                    parseState = ParseState.NORMAL;
-                    super.visitClassContext(classContext);
-                    parseState = ParseState.LAMBDA;
-                    super.visitClassContext(classContext);
+				bootstrapAtt = getBootstrapAttribute(cls);
+				if (bootstrapAtt != null) {
+					stack = new OpcodeStack();
+					functionalInterfaceInfo = new HashMap<>();
+					anonymousBugType = new HashMap<>();
+					parseState = ParseState.NORMAL;
+					super.visitClassContext(classContext);
+					parseState = ParseState.LAMBDA;
+					super.visitClassContext(classContext);
 
-                    for (Map.Entry<String, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
-                        for (FIInfo fii : entry.getValue()) {
-                            bugReporter.reportBug(new BugInstance(this, anonymousBugType.get(entry.getKey()).name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(cls, fii.getMethod()).addSourceLine(fii.getSrcLine()));
-                        }
-                    }
-                }
-            }
-        } finally {
-            functionalInterfaceInfo = null;
-            anonymousBugType = null;
-            bootstrapAtt = null;
-            stack = null;
-            cls = null;
-        }
-    }
+					for (Map.Entry<String, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
+						for (FIInfo fii : entry.getValue()) {
+							bugReporter.reportBug(
+									new BugInstance(this, anonymousBugType.get(entry.getKey()).name(), NORMAL_PRIORITY)
+											.addClass(this).addMethod(cls, fii.getMethod())
+											.addSourceLine(fii.getSrcLine()));
+						}
+					}
+				}
+			}
+		} finally {
+			functionalInterfaceInfo = null;
+			anonymousBugType = null;
+			bootstrapAtt = null;
+			stack = null;
+			cls = null;
+		}
+	}
 
-    @Override
-    public void visitCode(Code obj) {
+	@Override
+	public void visitCode(Code obj) {
 
-        stack.resetForMethodEntry(this);
-        Method m = getMethod();
-        switch (parseState) {
-            case LAMBDA:
+		stack.resetForMethodEntry(this);
+		Method m = getMethod();
+		switch (parseState) {
+		case LAMBDA:
                 if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) != 0) {
-                    List<FIInfo> fiis = functionalInterfaceInfo.get(m.getName());
-                    if (fiis != null) {
-                        if (SignatureUtils.getNumParameters(m.getSignature()) != 1) {
-                            functionalInterfaceInfo.remove(m.getName());
-                        } else {
-                            try {
-                                anonState = AnonState.SEEN_NOTHING;
-                                super.visitCode(obj);
-                            } catch (StopOpcodeParsingException e) {
-                            }
-                        }
-                    }
-                }
-            break;
+				List<FIInfo> fiis = functionalInterfaceInfo.get(m.getName());
+				if (fiis != null) {
+					int numParms = SignatureUtils.getNumParameters(m.getSignature());
+					if (numParms < 1 || numParms > 2) {
+						functionalInterfaceInfo.remove(m.getName());
+					} else {
+						isParmLambda = numParms == 2;
+						try {
+							anonState = AnonState.SEEN_NOTHING;
+							super.visitCode(obj);
+						} catch (StopOpcodeParsingException e) {
+						}
+					}
+				}
+			}
+			break;
 
-            case NORMAL:
+		case NORMAL:
                 if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) == 0) {
-                    super.visitCode(obj);
-                    break;
-                }
-        }
-    }
+				super.visitCode(obj);
+				break;
+			}
+		}
+	}
 
-    @Override
-    public void sawOpcode(int seen) {
-        FIIUserValue userValue = null;
+	@Override
+	public void sawOpcode(int seen) {
+		FIIUserValue userValue = null;
 
-        try {
-            if (parseState == ParseState.LAMBDA) {
-                switch (anonState) {
-                    case SEEN_NOTHING:
+		try {
+			if (parseState == ParseState.LAMBDA) {
+				switch (anonState) {
+				case SEEN_NOTHING:
                         if (seen == Const.ALOAD_0) {
-                            anonState = AnonState.SEEN_ALOAD_0;
-                        } else {
-                            functionalInterfaceInfo.remove(getMethod().getName());
-                            throw new StopOpcodeParsingException();
-                        }
-                    break;
+						anonState = AnonState.SEEN_ALOAD_0;
+					} else {
+						functionalInterfaceInfo.remove(getMethod().getName());
+						throw new StopOpcodeParsingException();
+					}
+					break;
 
-                    case SEEN_ALOAD_0:
+				case SEEN_ALOAD_0:
                         if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
-                            String signature = getSigConstantOperand();
-                            if (signature.startsWith("()")) {
-                                anonState = AnonState.SEEN_INVOKE;
-                            } else {
-                                functionalInterfaceInfo.remove(getMethod().getName());
-                                throw new StopOpcodeParsingException();
-                            }
+						String signature = getSigConstantOperand();
+						if (signature.startsWith("()")) {
+							anonState = AnonState.SEEN_INVOKE;
+						} else {
+							functionalInterfaceInfo.remove(getMethod().getName());
+							throw new StopOpcodeParsingException();
+						}
                         } else if ((seen == Const.ARETURN) && (getPC() == 1)) {
-                            List<FIInfo> infos = functionalInterfaceInfo.get(getMethod().getName());
-                            if (infos != null) {
-                                Iterator<FIInfo> it = infos.iterator();
-                                while (it.hasNext()) {
-                                    FIInfo info = it.next();
-                                    if (info.wasPrecededByExplicitStackOp()) {
-                                        it.remove();
-                                    }
-                                }
-                                if (infos.isEmpty()) {
-                                    functionalInterfaceInfo.remove(getMethod().getName());
-                                }
-                            }
+						List<FIInfo> infos = functionalInterfaceInfo.get(getMethod().getName());
+						if (infos != null) {
+							Iterator<FIInfo> it = infos.iterator();
+							while (it.hasNext()) {
+								FIInfo info = it.next();
+								if (info.wasPrecededByExplicitStackOp()) {
+									it.remove();
+								}
+							}
+							if (infos.isEmpty()) {
+								functionalInterfaceInfo.remove(getMethod().getName());
+							}
+						}
 
-                            anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
-                            throw new StopOpcodeParsingException();
-                        } else {
-                            functionalInterfaceInfo.remove(getMethod().getName());
-                            throw new StopOpcodeParsingException();
-                        }
-                    break;
+						anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
+						throw new StopOpcodeParsingException();
+					} else if (seen == ALOAD_1) {
+						if (!isParmLambda) {
+							functionalInterfaceInfo.remove(getMethod().getName());
+							throw new StopOpcodeParsingException();
+						}
 
-                    case SEEN_INVOKE:
-                        if (!OpcodeUtils.isReturn(seen)) {
-                            functionalInterfaceInfo.remove(getMethod().getName());
-                        }
+						anonState = AnonState.SEEN_ALOAD_1;
+					} else {
+						functionalInterfaceInfo.remove(getMethod().getName());
+						throw new StopOpcodeParsingException();
+					}
+					break;
 
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            if (!itm.getSignature().equals(SignatureUtils.getReturnSignature(getMethod().getSignature()))) {
-                                functionalInterfaceInfo.remove(getMethod().getName());
-                            }
-                        }
-                        anonymousBugType.put(getMethod().getName(), BugType.FII_USE_METHOD_REFERENCE);
-                        throw new StopOpcodeParsingException();
+				case SEEN_ALOAD_1:
+					if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+						String clsName = getClassConstantOperand();
+						String methodName = getNameConstantOperand();
+						if ((clsName.startsWith("java/lang/")
+								&& (methodName.endsWith("Value") || methodName.equals("valueOf")))) {
+							break;
+						}
 
-                    default:
-                        functionalInterfaceInfo.remove(getMethod().getName());
-                        throw new StopOpcodeParsingException();
-                }
-            } else {
-                switch (seen) {
+						if (SignatureUtils.getNumParameters(getSigConstantOperand()) == 1) {
+							anonState = AnonState.SEEN_INVOKE;
+						} else {
+							functionalInterfaceInfo.remove(getMethod().getName());
+							throw new StopOpcodeParsingException();
+						}
+					} else {
+						functionalInterfaceInfo.remove(getMethod().getName());
+						throw new StopOpcodeParsingException();
+					}
+					break;
+
+				case SEEN_INVOKE:
+					if (!OpcodeUtils.isReturn(seen)) {
+						functionalInterfaceInfo.remove(getMethod().getName());
+					}
+
+					if (stack.getStackDepth() > 0) {
+						OpcodeStack.Item itm = stack.getStackItem(0);
+						if (!itm.getSignature().equals(SignatureUtils.getReturnSignature(getMethod().getSignature()))) {
+							functionalInterfaceInfo.remove(getMethod().getName());
+						}
+					}
+					anonymousBugType.put(getMethod().getName(), BugType.FII_USE_METHOD_REFERENCE);
+					throw new StopOpcodeParsingException();
+
+				default:
+					functionalInterfaceInfo.remove(getMethod().getName());
+					throw new StopOpcodeParsingException();
+				}
+			} else {
+				switch (seen) {
                     case Const.INVOKEDYNAMIC:
-                        ConstantInvokeDynamic cid = (ConstantInvokeDynamic) getConstantRefOperand();
+					ConstantInvokeDynamic cid = (ConstantInvokeDynamic) getConstantRefOperand();
 
-                        ConstantMethodHandle cmh = getMethodHandle(cid.getBootstrapMethodAttrIndex());
-                        String anonName = getAnonymousName(cmh);
-                        if (anonName != null) {
+					ConstantMethodHandle cmh = getMethodHandle(cid.getBootstrapMethodAttrIndex());
+					String anonName = getAnonymousName(cmh);
+					if (anonName != null) {
 
-                            List<FIInfo> fiis = functionalInterfaceInfo.get(anonName);
-                            if (fiis == null) {
-                                fiis = new ArrayList<>();
-                                functionalInterfaceInfo.put(anonName, fiis);
-                            }
+						List<FIInfo> fiis = functionalInterfaceInfo.get(anonName);
+						if (fiis == null) {
+							fiis = new ArrayList<>();
+							functionalInterfaceInfo.put(anonName, fiis);
+						}
 
-                            int lastOp = getPrevOpcode(1);
-                            FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this),
+						int lastOp = getPrevOpcode(1);
+						FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this),
                                     (lastOp == Const.GETFIELD) || (lastOp == Const.GETSTATIC) || OpcodeUtils.isALoad(lastOp));
-                            fiis.add(fii);
-                        }
-                    break;
+						fiis.add(fii);
+					}
+					break;
 
                     case Const.INVOKEINTERFACE:
-                        QMethod m = new QMethod(getNameConstantOperand(), getSigConstantOperand());
+					QMethod m = new QMethod(getNameConstantOperand(), getSigConstantOperand());
 
-                        if (CONTAINS.equals(m)) {
-                            if (stack.getStackDepth() >= 2) {
-                                OpcodeStack.Item itm = stack.getStackItem(1);
-                                if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT_ITEM == itm.getUserValue())) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_CONTAINS_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(this).addSourceLine(this));
-                                }
-                            }
-                        } else if (SIZE.equals(m)) {
-                            if (stack.getStackDepth() >= 1) {
-                                OpcodeStack.Item itm = stack.getStackItem(0);
-                                if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT_ITEM == itm.getUserValue())) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_SIZE_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(this).addSourceLine(this));
-                                }
-                            }
-                        } else {
-                            FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-                            if (COLLECT.equals(fqm)) {
-                                userValue = FIIUserValue.COLLECT_ITEM;
-                            } else if (FILTER.equals(fqm)) {
-                                if (stack.getStackDepth() > 1) {
-                                    OpcodeStack.Item itm = stack.getStackItem(1);
-                                    if ((itm.getUserValue() == FIIUserValue.FILTER_ITEM) && (itm.getRegisterNumber() < 0)) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.FII_COMBINE_FILTERS.name(), LOW_PRIORITY).addClass(this)
-                                                .addMethod(this).addSourceLine(this));
-                                    }
-                                }
-                                userValue = FIIUserValue.FILTER_ITEM;
-                            } else if (FINDFIRST.equals(fqm)) {
-                                if (stack.getStackDepth() > 0) {
-                                    OpcodeStack.Item itm = stack.getStackItem(0);
-                                    if (itm.getUserValue() == FIIUserValue.FILTER_ITEM) {
-                                        userValue = FIIUserValue.FINDFIRST_ITEM;
-                                    }
-                                }
-                            } else if (GET.equals(fqm)) {
-                                if (stack.getStackDepth() >= 2) {
-                                    OpcodeStack.Item itm = stack.getStackItem(0);
-                                    if (Values.ZERO.equals(itm.getConstant())) {
-                                        itm = stack.getStackItem(1);
-                                        if ((itm.getUserValue() == FIIUserValue.COLLECT_ITEM) && (itm.getRegisterNumber() < 0)) {
-                                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FIND_FIRST.name(), NORMAL_PRIORITY).addClass(this)
-                                                    .addMethod(this).addSourceLine(this));
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    break;
+					if (CONTAINS.equals(m)) {
+						if (stack.getStackDepth() >= 2) {
+							OpcodeStack.Item itm = stack.getStackItem(1);
+							if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT_ITEM == itm.getUserValue())) {
+								bugReporter.reportBug(
+										new BugInstance(this, BugType.FII_AVOID_CONTAINS_ON_COLLECTED_STREAM.name(),
+												NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+							}
+						}
+					} else if (SIZE.equals(m)) {
+						if (stack.getStackDepth() >= 1) {
+							OpcodeStack.Item itm = stack.getStackItem(0);
+							if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT_ITEM == itm.getUserValue())) {
+								bugReporter.reportBug(
+										new BugInstance(this, BugType.FII_AVOID_SIZE_ON_COLLECTED_STREAM.name(),
+												NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+							}
+						}
+					} else {
+						FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+								getSigConstantOperand());
+						if (COLLECT.equals(fqm)) {
+							userValue = FIIUserValue.COLLECT_ITEM;
+						} else if (FILTER.equals(fqm)) {
+							if (stack.getStackDepth() > 1) {
+								OpcodeStack.Item itm = stack.getStackItem(1);
+								if ((itm.getUserValue() == FIIUserValue.FILTER_ITEM) && (itm.getRegisterNumber() < 0)) {
+									bugReporter.reportBug(
+											new BugInstance(this, BugType.FII_COMBINE_FILTERS.name(), LOW_PRIORITY)
+													.addClass(this).addMethod(this).addSourceLine(this));
+								}
+							}
+							userValue = FIIUserValue.FILTER_ITEM;
+						} else if (FINDFIRST.equals(fqm)) {
+							if (stack.getStackDepth() > 0) {
+								OpcodeStack.Item itm = stack.getStackItem(0);
+								if (itm.getUserValue() == FIIUserValue.FILTER_ITEM) {
+									userValue = FIIUserValue.FINDFIRST_ITEM;
+								}
+							}
+						} else if (GET.equals(fqm)) {
+							if (stack.getStackDepth() >= 2) {
+								OpcodeStack.Item itm = stack.getStackItem(0);
+								if (Values.ZERO.equals(itm.getConstant())) {
+									itm = stack.getStackItem(1);
+									if ((itm.getUserValue() == FIIUserValue.COLLECT_ITEM)
+											&& (itm.getRegisterNumber() < 0)) {
+										bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FIND_FIRST.name(),
+												NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+									}
+								}
+							}
+						}
+					}
+					break;
 
                     case Const.INVOKEVIRTUAL:
-                        FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-                        if (ISPRESENT.equals(fqm)) {
-                            if (stack.getStackDepth() > 0) {
-                                OpcodeStack.Item itm = stack.getStackItem(0);
-                                if ((itm.getUserValue() == FIIUserValue.FINDFIRST_ITEM) && (itm.getRegisterNumber() < 0)) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), LOW_PRIORITY).addClass(this).addMethod(this)
-                                            .addSourceLine(this));
-                                }
-                            }
-                        }
-                    break;
-                }
-            }
-        } finally {
-            stack.sawOpcode(this, seen);
-            if ((userValue != null) && (stack.getStackDepth() > 0)) {
-                OpcodeStack.Item itm = stack.getStackItem(0);
-                itm.setUserValue(userValue);
-            }
-        }
-    }
+					FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+							getSigConstantOperand());
+					if (ISPRESENT.equals(fqm)) {
+						if (stack.getStackDepth() > 0) {
+							OpcodeStack.Item itm = stack.getStackItem(0);
+							if ((itm.getUserValue() == FIIUserValue.FINDFIRST_ITEM) && (itm.getRegisterNumber() < 0)) {
+								bugReporter
+										.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), LOW_PRIORITY)
+												.addClass(this).addMethod(this).addSourceLine(this));
+							}
+						}
+					}
+					break;
+				}
+			}
+		} finally {
+			stack.sawOpcode(this, seen);
+			if ((userValue != null) && (stack.getStackDepth() > 0)) {
+				OpcodeStack.Item itm = stack.getStackItem(0);
+				itm.setUserValue(userValue);
+			}
+		}
+	}
 
-    @Nullable
+	@Nullable
     private BootstrapMethods getBootstrapAttribute(JavaClass clz) {
-        for (Attribute att : clz.getAttributes()) {
+		for (Attribute att : clz.getAttributes()) {
             if (att instanceof BootstrapMethods) {
                 return (BootstrapMethods) att;
-            }
-        }
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    @Nullable
-    private ConstantMethodHandle getMethodHandle(int bootstrapIndex) {
+	@Nullable
+	private ConstantMethodHandle getMethodHandle(int bootstrapIndex) {
         BootstrapMethod bsMethod = bootstrapAtt.getBootstrapMethods()[bootstrapIndex];
 
         for (int arg : bsMethod.getBootstrapArguments()) {
-            Constant c = getConstantPool().getConstant(arg);
-            if (c instanceof ConstantMethodHandle) {
-                return (ConstantMethodHandle) c;
-            }
-        }
+			Constant c = getConstantPool().getConstant(arg);
+			if (c instanceof ConstantMethodHandle) {
+				return (ConstantMethodHandle) c;
+			}
+		}
 
-        return null;
-    }
+		return null;
+	}
 
-    @Nullable
-    private String getAnonymousName(ConstantMethodHandle cmh) {
+	@Nullable
+	private String getAnonymousName(ConstantMethodHandle cmh) {
         if (cmh == null || cmh.getReferenceKind() != Const.REF_invokeStatic) {
-            return null;
-        }
+			return null;
+		}
 
-        ConstantPool cp = getConstantPool();
-        ConstantCP methodRef = (ConstantCP) cp.getConstant(cmh.getReferenceIndex());
-        String clsName = methodRef.getClass(cp);
-        if (!clsName.equals(cls.getClassName())) {
-            return null;
-        }
+		ConstantPool cp = getConstantPool();
+		ConstantCP methodRef = (ConstantCP) cp.getConstant(cmh.getReferenceIndex());
+		String clsName = methodRef.getClass(cp);
+		if (!clsName.equals(cls.getClassName())) {
+			return null;
+		}
 
-        ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(methodRef.getNameAndTypeIndex());
+		ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(methodRef.getNameAndTypeIndex());
 
-        String signature = nameAndType.getSignature(cp);
-        if (signature.endsWith("V")) {
-            return null;
-        }
+		String signature = nameAndType.getSignature(cp);
+		int numParms = SignatureUtils.getNumParameters(signature);
 
-        String methodName = nameAndType.getName(cp);
-        if (!isSynthetic(methodName, nameAndType.getSignature(cp))) {
-            return null;
-        }
+		if (((numParms == 1) && signature.endsWith("V")) || ((numParms == 2) && !signature.endsWith("V"))) {
+			return null;
+		}
 
-        return methodName;
-    }
+		String methodName = nameAndType.getName(cp);
+		if (!isSynthetic(methodName, nameAndType.getSignature(cp))) {
+			return null;
+		}
 
-    private boolean isSynthetic(String methodName, String methodSig) {
-        for (Method m : cls.getMethods()) {
-            if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
-                return m.isSynthetic();
-            }
-        }
+		return methodName;
+	}
 
-        return false;
-    }
+	private boolean isSynthetic(String methodName, String methodSig) {
+		for (Method m : cls.getMethods()) {
+			if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
+				return m.isSynthetic();
+			}
+		}
 
-    static class FIInfo {
-        private Method method;
-        private SourceLineAnnotation srcLine;
-        private boolean precededByExplicitStackOp;
+		return false;
+	}
 
-        public FIInfo(Method method, SourceLineAnnotation srcLine, boolean precededByExplicitStackOp) {
-            this.method = method;
-            this.srcLine = srcLine;
-            this.precededByExplicitStackOp = precededByExplicitStackOp;
-        }
+	static class FIInfo {
+		private Method method;
+		private SourceLineAnnotation srcLine;
+		private boolean precededByExplicitStackOp;
 
-        public Method getMethod() {
-            return method;
-        }
+		public FIInfo(Method method, SourceLineAnnotation srcLine, boolean precededByExplicitStackOp) {
+			this.method = method;
+			this.srcLine = srcLine;
+			this.precededByExplicitStackOp = precededByExplicitStackOp;
+		}
 
-        public SourceLineAnnotation getSrcLine() {
-            return srcLine;
-        }
+		public Method getMethod() {
+			return method;
+		}
 
-        public boolean wasPrecededByExplicitStackOp() {
-            return precededByExplicitStackOp;
-        }
+		public SourceLineAnnotation getSrcLine() {
+			return srcLine;
+		}
 
-        @Override
-        public String toString() {
-            return ToString.build(this);
-        }
+		public boolean wasPrecededByExplicitStackOp() {
+			return precededByExplicitStackOp;
+		}
 
-    }
+		@Override
+		public String toString() {
+			return ToString.build(this);
+		}
+
+	}
 }
