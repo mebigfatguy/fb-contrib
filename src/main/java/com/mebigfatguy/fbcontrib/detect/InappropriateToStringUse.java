@@ -67,7 +67,8 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
             "java/lang/Number",
             Values.SLASHED_JAVA_LANG_STRINGBUFFER,
             Values.SLASHED_JAVA_LANG_STRINGBUILDER,
-            "java/io/StringWriter"
+            "java/io/StringWriter",
+            "javax/ws/rs/core/MediaType"
             // @formatter:on
     );
 
