@@ -1756,6 +1756,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
             ]]>
         </Details>
     </Detector>
+
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousArgumentTypes">
+        <Details>
+            <![CDATA[
+            <p>Looks for method calls where the arguments passed seem oddly typed for the use they are intended for.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -6412,6 +6422,17 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details>
     </BugPattern>
 
+    <BugPattern type="SAT_SUSPICIOUS_ARGUMENT_TYPES">
+        <ShortDescription>This method invokes a method with parameters that seem incorrect for their intended use</ShortDescription>
+        <LongDescription>This method {1} invokes a method with parameters that seem incorrect for their intended use</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method calls a method passing arguments that seem incorrect for the intended purpose of the method. Make sure that the argument types are valid</p>
+            <p>For Match.hasEntry it seems unlikely you want to pass a Matcher and non-Matcher at the same time</p>
+            ]]>
+        </Details> 
+    </BugPattern>
+
 	<!-- BugCode -->
 
 	<BugCode abbrev="ISB">Inefficient String Buffering</BugCode>
@@ -6560,4 +6581,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="LUI">List Usage Issues</BugCode>
 	<BugCode abbrev="FII">FunctionalInterface Issues</BugCode>
 	<BugCode abbrev="SUI">Set Usage Issues</BugCode>
+    <BugCode abbrev="SAT">Suspicious Argument Types</BugCode>
 </MessageCollection>

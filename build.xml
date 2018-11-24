@@ -145,6 +145,7 @@
             <pathelement location="${lib.dir}/jaxen-${jaxen.version}.jar" />
 			<pathelement location="${lib.dir}/mockito-core-${mockito-core.version}.jar" />
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
+			<pathelement location="${lib.dir}/hamcrest-library-${hamcrest-library.version}.jar" />
 			<pathelement location="${lib.dir}/jena-shaded-guava-${jena-shaded-guava.version}.jar" />
 			<pathelement location="${lib.dir}/javax.ws.rs-api-${javax.ws.rs-api.version}.jar" />
 			<pathelement location="${lib.dir}/jersey-media-multipart-${jersey-media-multipart.version}.jar" />
