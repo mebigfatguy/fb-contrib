@@ -333,6 +333,9 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="slow" reports="CE_CLASS_ENVY" />
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
+
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousArgumentTypes" speed="fast" reports="SAT_SUSPICIOUS_ARGUMENT_TYPES" />
+
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -639,4 +642,5 @@
 	<BugPattern abbrev="FII" type="FII_AVOID_SIZE_ON_COLLECTED_STREAM" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_ADD" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_REMOVE" category="CORRECTNESS" experimental="true" />
+    <BugPattern abbrev="SAT" type="SAT_SUSPICIOUS_ARGUMENT_TYPES" category="CORRECTNESS" experimental="true" />
 </FindbugsPlugin>
