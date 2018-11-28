@@ -1,6 +1,6 @@
 package com.mebigfatguy.fbcontrib.detect;
 
-import org.apache.bcel.Constants;
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -45,7 +45,7 @@ public class SuspiciousArgumentTypes extends BytecodeScanningDetector {
 	@Override
 	public void sawOpcode(int seen) {
 		try {
-			if (seen == Constants.INVOKESTATIC) {
+			if (seen == Const.INVOKESTATIC) {
 				FQMethod invokedMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
 						getSigConstantOperand());
 				if (HAS_ENTRY.equals(invokedMethod)) {
