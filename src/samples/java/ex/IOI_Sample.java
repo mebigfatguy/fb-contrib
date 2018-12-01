@@ -9,6 +9,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.zip.DataFormatException;
 import java.util.zip.Deflater;
 import java.util.zip.Inflater;
 
@@ -50,14 +51,14 @@ public class IOI_Sample {
 
 	public void deflatorMisuse(byte[] in, byte[] out) {
 		Deflater compresser = new Deflater();
-		compresser.setInput(b);
+		compresser.setInput(in);
 		compresser.finish();
 		compresser.deflate(out);
 	}
 
-	public void inflatorMisuse(byte[] in, byte[] out) {
+	public void inflatorMisuse(byte[] in, byte[] out) throws DataFormatException {
 		Inflater expander = new Inflater();
-		expander.setInput(b);
+		expander.setInput(in);
 		expander.inflate(out);
 	}
 
