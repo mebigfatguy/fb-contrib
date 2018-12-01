@@ -1599,7 +1599,7 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
     <Detector class="com.mebigfatguy.fbcontrib.detect.IOIssues">
     	<Details>
     		<![CDATA[
-    		<p>Looks for various issues around doing I/O with streams and reader/writers.</p>
+    		<p>Looks for various issues around doing I/O with streams and reader/writers, and compression of byte buffers.</p>
     		<p>It is a fast detector.</p>
     		]]>
     	</Details>
