@@ -18,11 +18,6 @@
 	<classpathentry kind="lib" path="lib/findbugs-3.0.1.jar" sourcepath="lib/sources/findbugs-3.0.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/junit-4.12.jar"/>
 	<classpathentry kind="lib" path="lib/javax.persistence-2.1.1.jar" sourcepath="/home/dave/.m2/repository/org/eclipse/persistence/javax.persistence/2.1.1/javax.persistence-2.1.1-sources.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/findbugs">
-		<accessrules>
-			<accessrule kind="nonaccessible" pattern="org/hamcrest/**"/>
-		</accessrules>
-	</classpathentry>
 	<classpathentry kind="lib" path="lib/threetenbp-1.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar" sourcepath="/home/dave/.m2/repository/commons-collections/commons-collections/3.2.2/commons-collections-3.2.2-sources.jar"/>
@@ -48,5 +43,6 @@
 	<classpathentry kind="lib" path="lib/log4j-api-2.9.1.jar"/>
 	<classpathentry kind="lib" path="lib/jsr305-3.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest-library-1.3.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
