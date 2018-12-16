@@ -5844,7 +5844,20 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
-
+    
+    <BugPattern type="IOI_UNENDED_ZLIB_OBJECT">
+    	<ShortDescription>Method creates a ZLIB Inflater or Deflater and doesn't appear to end() it</ShortDescription>
+    	<LongDescription>Method {1} creates a ZLIB Inflater or Deflater and doesn't appear to end() it</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method constructs a java.util.zip.Inflater or java.util.zip.Deflater and does not appear to call end() on
+    		it. This will cause a potentially large amount of memory to hang around inside the object until the object gets 
+    		garbage collected. To avoid this unnecessary bloat, put a call to end() in a finally block of the code where you
+    		are using this instance.
+    		</p>
+    		]]>
+    	</Details>
+    </BugPattern>
 
     <BugPattern type="DMC_DUBIOUS_MAP_COLLECTION">
     	<ShortDescription>Class holds a map-type field, but uses it as only a List</ShortDescription>
