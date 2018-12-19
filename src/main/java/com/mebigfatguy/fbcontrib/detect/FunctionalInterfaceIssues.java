@@ -232,7 +232,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 						String clsName = getClassConstantOperand();
 						String methodName = getNameConstantOperand();
 						if ((clsName.startsWith("java/lang/")
-								&& (methodName.endsWith("Value") || methodName.equals("valueOf")))) {
+								&& (methodName.endsWith("Value") || "valueOf".equals(methodName)))) {
 							break;
 						}
 

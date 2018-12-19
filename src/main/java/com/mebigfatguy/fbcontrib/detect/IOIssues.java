@@ -253,8 +253,11 @@ public class IOIssues extends BytecodeScanningDetector {
 							bugReporter.reportBug(
 									new BugInstance(this, BugType.IOI_COPY_WITH_READER.name(), NORMAL_PRIORITY)
 											.addClass(this).addMethod(this).addSourceLine(this));
+							break;
+
+						default:
+							break;
 						}
-						break;
 					}
 				}
 			}
