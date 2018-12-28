@@ -4,7 +4,6 @@ install: ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -Dfindbugs.sk
 jdk:
     - oraclejdk9
     - oraclejdk8
-    - openjdk8
 
 cache:
     directories:
