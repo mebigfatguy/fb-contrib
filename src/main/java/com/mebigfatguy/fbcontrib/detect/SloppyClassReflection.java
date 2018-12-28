@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.Field;
@@ -138,7 +139,7 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         switch (state) {
             case COLLECT:
-                if ((seen == INVOKESTATIC) || (seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE) || (seen == INVOKESPECIAL)) {
+                if ((seen == Const.INVOKESTATIC) || (seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKESPECIAL)) {
                     refClasses.add(getClassConstantOperand());
                     String signature = getSigConstantOperand();
                     Type[] argTypes = Type.getArgumentTypes(signature);
@@ -151,7 +152,7 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
             break;
 
             case SEEN_NOTHING:
-                if ((seen == LDC) || (seen == LDC_W)) {
+                if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
                     Constant c = getConstantRefOperand();
                     if (c instanceof ConstantString) {
                         clsName = ((ConstantString) c).getBytes(getConstantPool());
@@ -161,7 +162,7 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
             break;
 
             case SEEN_LDC:
-                if ((seen == INVOKESTATIC) && "forName".equals(getNameConstantOperand()) && "java/lang/Class".equals(getClassConstantOperand())
+                if ((seen == Const.INVOKESTATIC) && "forName".equals(getNameConstantOperand()) && "java/lang/Class".equals(getClassConstantOperand())
                         && refClasses.contains(clsName)) {
                     bugReporter.reportBug(new BugInstance(this, BugType.SCR_SLOPPY_CLASS_REFLECTION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                             .addSourceLine(this));

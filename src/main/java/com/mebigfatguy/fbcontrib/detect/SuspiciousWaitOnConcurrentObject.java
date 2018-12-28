@@ -95,7 +95,7 @@ public class SuspiciousWaitOnConcurrentObject extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if ((seen != INVOKEVIRTUAL) || !"wait".equals(getNameConstantOperand()) || stack.getStackDepth() == 0) {
+            if ((seen != Const.INVOKEVIRTUAL) || !"wait".equals(getNameConstantOperand()) || stack.getStackDepth() == 0) {
                 return;
             }
             JavaClass cls = stack.getStackItem(0).getJavaClass();

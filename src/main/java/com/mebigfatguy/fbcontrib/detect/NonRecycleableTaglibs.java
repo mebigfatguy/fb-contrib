@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -160,7 +161,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (seen == PUTFIELD) {
+        if (seen == Const.PUTFIELD) {
             QMethod methodInfo = new QMethod(getMethodName(), getMethodSig());
             Map<Map.Entry<String, String>, SourceLineAnnotation> fields = methodWrites.get(methodInfo);
             if (fields == null) {

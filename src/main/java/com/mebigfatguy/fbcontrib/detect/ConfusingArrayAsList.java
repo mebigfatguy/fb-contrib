@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -98,7 +99,7 @@ public class ConfusingArrayAsList extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKESTATIC) {
+            if (seen == Const.INVOKESTATIC) {
                 String clsName = getClassConstantOperand();
                 if ("java/util/Arrays".equals(clsName)) {
                     String methodName = getNameConstantOperand();

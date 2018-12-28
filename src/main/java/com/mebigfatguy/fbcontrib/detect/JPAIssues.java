@@ -28,6 +28,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
@@ -211,13 +212,13 @@ public class JPAIssues extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case INVOKEVIRTUAL:
-                case INVOKEINTERFACE: {
+                case Const.INVOKEVIRTUAL:
+                case Const.INVOKEINTERFACE: {
                     userValue = processInvoke();
                     break;
                 }
 
-                case POP: {
+                case Const.POP: {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         if (itm.getUserValue() == JPAUserValue.MERGE) {

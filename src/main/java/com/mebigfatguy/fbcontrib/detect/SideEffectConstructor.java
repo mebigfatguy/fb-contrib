@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -104,7 +105,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
                 break;
 
                 case SAW_CTOR:
-                    if ((seen == POP) || (seen == RETURN)) {
+                    if ((seen == Const.POP) || (seen == Const.RETURN)) {
                         bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                 .addSourceLine(this));
                     }
@@ -123,7 +124,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
     }
 
     private int sawOpcodeAfterNothing(int seen) {
-        if (seen == INVOKESPECIAL) {
+        if (seen == Const.INVOKESPECIAL) {
             String name = getNameConstantOperand();
             if (Values.CONSTRUCTOR.equals(name)) {
                 String sig = getSigConstantOperand();
@@ -136,7 +137,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
                     }
                 }
             }
-        } else if (seen == RETURN) {
+        } else if (seen == Const.RETURN) {
             int depth = stack.getStackDepth();
             for (int i = 0; i < depth; i++) {
                 OpcodeStack.Item item = stack.getStackItem(i);

@@ -214,7 +214,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
 						anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
 						throw new StopOpcodeParsingException();
-					} else if (seen == ALOAD_1) {
+					} else if (seen == Const.ALOAD_1) {
 						if (!isParmLambda) {
 							functionalInterfaceInfo.remove(getMethod().getName());
 							throw new StopOpcodeParsingException();
@@ -228,7 +228,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 					break;
 
 				case SEEN_ALOAD_1:
-					if ((seen == INVOKEVIRTUAL) || (seen == INVOKEINTERFACE)) {
+					if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
 						String clsName = getClassConstantOperand();
 						String methodName = getNameConstantOperand();
 						if ((clsName.startsWith("java/lang/")

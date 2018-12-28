@@ -52,6 +52,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
 import java.util.concurrent.LinkedBlockingDeque;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -210,7 +211,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if (seen == PUTFIELD) {
+        if (seen == Const.PUTFIELD) {
             OpcodeStack stack = getStack();
             if (stack.getStackDepth() > 0) {
                 int reg = stack.getStackItem(0).getRegisterNumber();

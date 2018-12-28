@@ -136,7 +136,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         if (state == State.SAW_NOTHING) {
-            if (seen == INVOKESPECIAL) {
+            if (seen == Const.INVOKESPECIAL) {
                 state = State.SAW_INVOKESPECIAL;
             }
         } else if (state == State.SAW_INVOKESPECIAL) {
@@ -145,7 +145,7 @@ public class DeprecatedTypesafeEnumPattern extends BytecodeScanningDetector {
     }
 
     private void handleInvokeSpecialState(int seen) {
-        if (seen == PUTSTATIC) {
+        if (seen == Const.PUTSTATIC) {
             String fieldName = getNameConstantOperand();
             if (enumConstNames.contains(fieldName)) {
                 if (enumCount == 0) {

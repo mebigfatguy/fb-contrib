@@ -23,6 +23,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
@@ -248,7 +249,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
                         localLabels.put(Integer.valueOf(reg), SourceLineAnnotation.fromVisitedInstruction(this));
                     }
                 }
-            } else if (seen == PUTFIELD) {
+            } else if (seen == Const.PUTFIELD) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     if (S508UserValue.SAW_TEXT_LABEL != item.getUserValue()) {
@@ -256,7 +257,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
                         fieldLabels.remove(XFactory.createXField(fa));
                     }
                 }
-            } else if (seen == INVOKESPECIAL) {
+            } else if (seen == Const.INVOKESPECIAL) {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 if ("javax/swing/JLabel".equals(className) && Values.CONSTRUCTOR.equals(methodName)) {
@@ -265,7 +266,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
                         sawTextLabel = true;
                     }
                 }
-            } else if (seen == INVOKEVIRTUAL) {
+            } else if (seen == Const.INVOKEVIRTUAL) {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
 
@@ -305,11 +306,11 @@ public class Section508Compliance extends BytecodeScanningDetector {
                 processSetSizeOps(methodName);
                 processNullLayouts(className, methodName);
                 processSetColorOps(methodName);
-            } else if ((seen == INVOKESTATIC) && "javax/swing/UIManager".equals(getClassConstantOperand())) {
+            } else if ((seen == Const.INVOKESTATIC) && "javax/swing/UIManager".equals(getClassConstantOperand())) {
                 sawUIManager = true;
             }
 
-            if ((seen == INVOKEVIRTUAL) || (seen == INVOKESPECIAL) || (seen == INVOKEINTERFACE)) {
+            if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE)) {
                 processFaultyGuiStrings();
             }
         } catch (ClassNotFoundException cnfe) {

@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ElementValue;
@@ -130,11 +131,11 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
             }
 
             switch (seen) {
-                case MONITORENTER:
+                case Const.MONITORENTER:
                     syncBlockCount++;
                 break;
 
-                case MONITOREXIT:
+                case Const.MONITOREXIT:
                     syncBlockCount--;
                     // javac stutters the exit in catch/finally blocks in a bolux of nastyness, so guard against it
                     if (syncBlockCount < 0) {
@@ -142,7 +143,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
                     }
                 break;
 
-                case PUTFIELD:
+                case Const.PUTFIELD:
                     if (syncBlockCount == 0) {
                         if (stack.getStackDepth() >= 2) {
                             OpcodeStack.Item itm = stack.getStackItem(1);

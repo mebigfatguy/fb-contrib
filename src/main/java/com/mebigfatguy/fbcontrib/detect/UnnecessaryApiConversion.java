@@ -21,6 +21,7 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -77,7 +78,7 @@ public class UnnecessaryApiConversion extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case INVOKEVIRTUAL:
+                case Const.INVOKEVIRTUAL:
                     FQMethod conversionMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                     LegacyInfo legacyInfo = conversions.get(conversionMethod);
                     if ((legacyInfo != null) && (stack.getStackDepth() > 0)) {

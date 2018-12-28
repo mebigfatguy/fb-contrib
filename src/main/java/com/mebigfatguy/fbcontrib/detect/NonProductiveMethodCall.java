@@ -22,6 +22,7 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -107,17 +108,17 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case INVOKEVIRTUAL:
-                case INVOKEINTERFACE:
-                case INVOKESTATIC:
+                case Const.INVOKEVIRTUAL:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKESTATIC:
                     String sig = getSigConstantOperand();
                     if (!sig.endsWith(Values.SIG_VOID)) {
                         methodInfo = getClassConstantOperand() + '@' + getNameConstantOperand() + getSigConstantOperand();
                     }
                 break;
 
-                case POP:
-                case POP2:
+                case Const.POP:
+                case Const.POP2:
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         String mInfo = (String) item.getUserValue();
