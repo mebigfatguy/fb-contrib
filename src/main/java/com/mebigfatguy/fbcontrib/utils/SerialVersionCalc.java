@@ -52,39 +52,46 @@ public class SerialVersionCalc {
 
 			String[] infs = cls.getInterfaceNames();
 			Arrays.sort(infs);
-			Arrays.stream(infs).forEach(inf -> utfUpdate(digest, inf));
+			for (String inf : infs) {
+				utfUpdate(digest, inf);
+			}
 
 			Field[] fields = cls.getFields();
 			Arrays.sort(fields, new FieldSorter());
-			Arrays.stream(fields).filter(field -> !field.isPrivate() || (!field.isStatic() && !field.isTransient()))
-					.forEach(field -> {
-						utfUpdate(digest, field.getName());
-						digest.update(toArray(filterModifiers(field.getModifiers(), ModifierType.FIELD)));
-						utfUpdate(digest, field.getSignature());
-					});
+			for (Field field : fields) {
+				if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
+					utfUpdate(digest, field.getName());
+					digest.update(toArray(filterModifiers(field.getModifiers(), ModifierType.FIELD)));
+					utfUpdate(digest, field.getSignature());
+				}
+			}
 
 			Method[] methods = cls.getMethods();
 			Arrays.sort(methods, new MethodSorter());
 
-			Arrays.stream(methods).filter(method -> "<clinit>".equals(method.getName())).forEach(sinit -> {
-				utfUpdate(digest, sinit.getName());
-				digest.update(toArray(filterModifiers(sinit.getModifiers(), ModifierType.METHOD)));
-				utfUpdate(digest, sinit.getSignature());
-			});
+			for (Method sinit : methods) {
+				if ("<clinit>".equals(sinit.getName())) {
+					utfUpdate(digest, sinit.getName());
+					digest.update(toArray(filterModifiers(sinit.getModifiers(), ModifierType.METHOD)));
+					utfUpdate(digest, sinit.getSignature());
+				}
+			}
 
-			Arrays.stream(methods).filter(method -> "<init>".equals(method.getName()) && !method.isPrivate())
-					.forEach(init -> {
-						utfUpdate(digest, init.getName());
-						digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
-						utfUpdate(digest, init.getSignature());
-					});
+			for (Method init : methods) {
+				if ("<init>".equals(init.getName()) && !init.isPrivate()) {
+					utfUpdate(digest, init.getName());
+					digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
+					utfUpdate(digest, init.getSignature());
+				}
+			}
 
-			Arrays.stream(methods).filter(method -> !"<init>".equals(method.getName()) && !method.isPrivate())
-					.forEach(cons -> {
-						utfUpdate(digest, cons.getName());
-						digest.update(toArray(filterModifiers(cons.getModifiers(), ModifierType.METHOD)));
-						utfUpdate(digest, cons.getSignature());
-					});
+			for (Method method : methods) {
+				if (!"<init>".equals(method.getName()) && !method.isPrivate()) {
+					utfUpdate(digest, method.getName());
+					digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
+					utfUpdate(digest, method.getSignature());
+				}
+			}
 
 			byte[] shaBytes = digest.digest();
 
