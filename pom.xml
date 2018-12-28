@@ -434,9 +434,9 @@
                         <configuration>
                             <rules>
                                 <dependencyConvergence/>
-                                <requirePrerequisite>
-                                    <mavenVersion>3.2.5</mavenVersion>
-                                </requirePrerequisite>
+                                <requireMavenVersion>
+                                    <version>[3.2.5,)</version>
+                                </requireMavenVersion>
                             </rules>
                         </configuration>
                         <goals>
