@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
@@ -72,7 +73,7 @@ public class SpuriousThreadStates extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEVIRTUAL) {
+            if (seen == Const.INVOKEVIRTUAL) {
                 String className = getClassConstantOperand();
                 if (Values.SLASHED_JAVA_LANG_OBJECT.equals(className)) {
                     if (stack.getStackDepth() > 0) {

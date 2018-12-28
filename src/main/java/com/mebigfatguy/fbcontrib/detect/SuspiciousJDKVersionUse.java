@@ -173,9 +173,9 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
 
         String clsName;
         try {
-            if ((seen == INVOKEVIRTUAL) // Interfaces are more difficult, ignore
+            if ((seen == Const.INVOKEVIRTUAL) // Interfaces are more difficult, ignore
                                         // for now
-                    || (seen == INVOKESTATIC) || (seen == INVOKESPECIAL)) {
+                    || (seen == Const.INVOKESTATIC) || (seen == Const.INVOKESPECIAL)) {
                 clsName = getClassConstantOperand();
                 if ((clsName.startsWith("java/")) || (clsName.startsWith("javax/"))) {
                     Method m = findCalledMethod();

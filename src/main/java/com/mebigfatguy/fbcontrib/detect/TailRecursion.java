@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
 
@@ -106,7 +107,7 @@ public class TailRecursion extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEVIRTUAL) {
+            if (seen == Const.INVOKEVIRTUAL) {
                 checkForTailRecursion();
             }
         } finally {

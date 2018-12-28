@@ -123,7 +123,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case INVOKEVIRTUAL:
+                case Const.INVOKEVIRTUAL:
                     if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand())) {
                         String calledMethodName = getNameConstantOperand();
                         String calledMethodSig = getSigConstantOperand();
@@ -162,8 +162,8 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
                     }
                 break;
 
-                case TABLESWITCH:
-                case LOOKUPSWITCH:
+                case Const.TABLESWITCH:
+                case Const.LOOKUPSWITCH:
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         String stringRef = (String) item.getUserValue();

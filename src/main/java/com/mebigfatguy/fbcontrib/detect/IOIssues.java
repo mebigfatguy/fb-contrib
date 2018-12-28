@@ -159,23 +159,23 @@ public class IOIssues extends BytecodeScanningDetector {
 
 		try {
 			switch (seen) {
-			case INVOKESPECIAL:
+			case Const.INVOKESPECIAL:
 				uvSawType = processInvokeSpecial();
 				break;
 
-			case INVOKESTATIC:
+			case Const.INVOKESTATIC:
 				processInvokeStatic();
 				break;
 
-			case INVOKEVIRTUAL:
+			case Const.INVOKEVIRTUAL:
 				processInvokeVirtual();
 				break;
 
-			case ASTORE:
-			case ASTORE_0:
-			case ASTORE_1:
-			case ASTORE_2:
-			case ASTORE_3:
+			case Const.ASTORE:
+			case Const.ASTORE_0:
+			case Const.ASTORE_1:
+			case Const.ASTORE_2:
+			case Const.ASTORE_3:
 				processAStore(seen);
 				break;
 

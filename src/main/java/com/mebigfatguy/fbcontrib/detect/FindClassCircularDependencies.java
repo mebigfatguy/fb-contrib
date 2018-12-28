@@ -29,6 +29,7 @@ import java.util.regex.Pattern;
 
 import javax.annotation.Nullable;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ElementValue;
@@ -89,10 +90,10 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if ((seen == INVOKESPECIAL) || (seen == INVOKESTATIC) || (seen == INVOKEVIRTUAL)) {
+        if ((seen == Const.INVOKESPECIAL) || (seen == Const.INVOKESTATIC) || (seen == Const.INVOKEVIRTUAL)) {
             processInvoke();
 
-        } else if (seen == LDC) {
+        } else if (seen == Const.LDC) {
             processLoadConstant();
         }
     }

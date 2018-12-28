@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.collect.ImmutabilityType;
@@ -123,10 +124,10 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case INVOKESTATIC:
-                case INVOKEINTERFACE:
-                case INVOKESPECIAL:
-                case INVOKEVIRTUAL: {
+                case Const.INVOKESTATIC:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKESPECIAL:
+                case Const.INVOKEVIRTUAL: {
                     String className = getClassConstantOperand();
                     String methodName = getNameConstantOperand();
                     String signature = getSigConstantOperand();
@@ -134,7 +135,7 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
                     MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
                     imType = mi.getImmutabilityType();
 
-                    if (seen == INVOKEINTERFACE) {
+                    if (seen == Const.INVOKEINTERFACE) {
                         Integer collectionOffset = MODIFYING_METHODS.get(new QMethod(methodName, signature));
                         if ((collectionOffset != null) && CollectionUtils.isListSetMap(className) && (stack.getStackDepth() > collectionOffset.intValue())) {
                             OpcodeStack.Item item = stack.getStackItem(collectionOffset.intValue());

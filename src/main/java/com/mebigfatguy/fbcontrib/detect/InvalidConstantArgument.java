@@ -32,6 +32,7 @@ import javax.swing.JOptionPane;
 import javax.swing.border.BevelBorder;
 import javax.swing.border.EtchedBorder;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
@@ -125,10 +126,10 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             switch (seen) {
-                case INVOKESPECIAL:
-                case INVOKESTATIC:
-                case INVOKEINTERFACE:
-                case INVOKEVIRTUAL:
+                case Const.INVOKESPECIAL:
+                case Const.INVOKESTATIC:
+                case Const.INVOKEINTERFACE:
+                case Const.INVOKEVIRTUAL:
                     String sig = getSigConstantOperand();
                     String mInfo = getClassConstantOperand() + '#' + getNameConstantOperand() + sig;
                     for (InvalidPattern entry : PATTERNS) {

@@ -135,7 +135,7 @@ public class ListUsageIssues extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if (seen == INVOKEVIRTUAL) {
+            } else if (seen == Const.INVOKEVIRTUAL) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (OPTIONAL_GET_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() > 0) {

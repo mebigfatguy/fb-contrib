@@ -24,6 +24,7 @@ import java.util.Set;
 
 import javax.annotation.Nullable;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -129,7 +130,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == INVOKEVIRTUAL) {
+            if (seen == Const.INVOKEVIRTUAL) {
                 methodPackage = processInvokeVirtual();
 
             } else if (OpcodeUtils.isAStore(seen)) {

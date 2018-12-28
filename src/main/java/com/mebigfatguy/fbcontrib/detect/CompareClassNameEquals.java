@@ -19,6 +19,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.LocalVariableTable;
 
@@ -69,7 +70,7 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        if (seen == INVOKEVIRTUAL) {
+        if (seen == Const.INVOKEVIRTUAL) {
             if ("getName".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())
                     && Values.SLASHED_JAVA_LANG_CLASS.equals(getClassConstantOperand())) {
                 flag = true;

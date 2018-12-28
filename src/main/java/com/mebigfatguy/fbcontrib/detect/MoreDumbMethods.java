@@ -159,7 +159,7 @@ public class MoreDumbMethods extends BytecodeScanningDetector {
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (classContext.getJavaClass().getMajor() <= MAJOR_1_5) {
+        if (classContext.getJavaClass().getMajor() <= Const.MAJOR_1_5) {
             dumbMethods.put(new FQMethod("java/security/SecureRandom", Values.CONSTRUCTOR, SignatureBuilder.SIG_VOID_TO_VOID),
                     new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
             dumbMethods.put(new FQMethod("java/security/SecureRandom", Values.CONSTRUCTOR, byteArrayToVoid), new ReportInfo("MDM_SECURERANDOM", LOW_PRIORITY));
