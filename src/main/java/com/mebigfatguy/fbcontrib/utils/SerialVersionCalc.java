@@ -34,6 +34,10 @@ import org.apache.bcel.classfile.Method;
 
 public class SerialVersionCalc {
 
+	enum ModifierType {
+		CLASS, METHOD, FIELD
+	}
+
 	public static long uuid(JavaClass cls) throws IOException {
 
 		if (cls.isEnum()) {
@@ -44,7 +48,7 @@ public class SerialVersionCalc {
 			MessageDigest digest = MessageDigest.getInstance("SHA-1");
 
 			utfUpdate(digest, cls.getClassName());
-			digest.update(toArray(cls.getModifiers()));
+			digest.update(toArray(filterModifiers(cls.getModifiers(), ModifierType.CLASS)));
 
 			String[] infs = cls.getInterfaceNames();
 			Arrays.sort(infs);
@@ -55,7 +59,7 @@ public class SerialVersionCalc {
 			Arrays.stream(fields).filter(field -> !field.isPrivate() || (!field.isStatic() && !field.isTransient()))
 					.forEach(field -> {
 						utfUpdate(digest, field.getName());
-						digest.update(toArray(filterModifiers(field.getModifiers())));
+						digest.update(toArray(filterModifiers(field.getModifiers(), ModifierType.FIELD)));
 						utfUpdate(digest, field.getSignature());
 					});
 
@@ -64,21 +68,21 @@ public class SerialVersionCalc {
 
 			Arrays.stream(methods).filter(method -> "<clinit>".equals(method.getName())).forEach(sinit -> {
 				utfUpdate(digest, sinit.getName());
-				digest.update(toArray(filterModifiers(sinit.getModifiers())));
+				digest.update(toArray(filterModifiers(sinit.getModifiers(), ModifierType.METHOD)));
 				utfUpdate(digest, sinit.getSignature());
 			});
 
 			Arrays.stream(methods).filter(method -> "<init>".equals(method.getName()) && !method.isPrivate())
 					.forEach(init -> {
 						utfUpdate(digest, init.getName());
-						digest.update(toArray(filterModifiers(init.getModifiers())));
+						digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
 						utfUpdate(digest, init.getSignature());
 					});
 
 			Arrays.stream(methods).filter(method -> !"<init>".equals(method.getName()) && !method.isPrivate())
 					.forEach(cons -> {
 						utfUpdate(digest, cons.getName());
-						digest.update(toArray(filterModifiers(cons.getModifiers())));
+						digest.update(toArray(filterModifiers(cons.getModifiers(), ModifierType.METHOD)));
 						utfUpdate(digest, cons.getSignature());
 					});
 
@@ -93,9 +97,26 @@ public class SerialVersionCalc {
 		}
 	}
 
-	private static int filterModifiers(int modifier) {
-		return modifier
-				& (Constants.ACC_PUBLIC | Constants.ACC_FINAL | Constants.ACC_INTERFACE | Constants.ACC_ABSTRACT);
+	private static int filterModifiers(int modifier, ModifierType type) {
+
+		switch (type) {
+		case CLASS:
+			return modifier
+					& (Constants.ACC_PUBLIC | Constants.ACC_FINAL | Constants.ACC_INTERFACE | Constants.ACC_ABSTRACT);
+
+		case METHOD:
+			return modifier & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED
+					| Constants.ACC_STATIC | Constants.ACC_FINAL | Constants.ACC_SYNCHRONIZED | Constants.ACC_NATIVE
+					| Constants.ACC_ABSTRACT | Constants.ACC_STRICT);
+
+		case FIELD:
+			return modifier & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED
+					| Constants.ACC_STATIC | Constants.ACC_FINAL | Constants.ACC_VOLATILE | Constants.ACC_TRANSIENT);
+
+		default:
+			return 0;
+		}
+
 	}
 
 	private static byte[] toArray(int i) {
