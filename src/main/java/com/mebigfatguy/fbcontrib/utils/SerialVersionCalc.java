@@ -27,6 +27,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
@@ -54,7 +55,7 @@ public class SerialVersionCalc {
 			Arrays.stream(fields).filter(field -> !field.isPrivate() || (!field.isStatic() && !field.isTransient()))
 					.forEach(field -> {
 						utfUpdate(digest, field.getName());
-						digest.update(toArray(field.getModifiers()));
+						digest.update(toArray(filterModifiers(field.getModifiers())));
 						utfUpdate(digest, field.getSignature());
 					});
 
@@ -63,21 +64,21 @@ public class SerialVersionCalc {
 
 			Arrays.stream(methods).filter(method -> "<clinit>".equals(method.getName())).forEach(sinit -> {
 				utfUpdate(digest, sinit.getName());
-				digest.update(toArray(sinit.getModifiers()));
+				digest.update(toArray(filterModifiers(sinit.getModifiers())));
 				utfUpdate(digest, sinit.getSignature());
 			});
 
 			Arrays.stream(methods).filter(method -> "<init>".equals(method.getName()) && !method.isPrivate())
 					.forEach(init -> {
 						utfUpdate(digest, init.getName());
-						digest.update(toArray(init.getModifiers()));
+						digest.update(toArray(filterModifiers(init.getModifiers())));
 						utfUpdate(digest, init.getSignature());
 					});
 
 			Arrays.stream(methods).filter(method -> !"<init>".equals(method.getName()) && !method.isPrivate())
 					.forEach(cons -> {
 						utfUpdate(digest, cons.getName());
-						digest.update(toArray(cons.getModifiers()));
+						digest.update(toArray(filterModifiers(cons.getModifiers())));
 						utfUpdate(digest, cons.getSignature());
 					});
 
@@ -90,6 +91,11 @@ public class SerialVersionCalc {
 		} catch (NoSuchAlgorithmException e) {
 			return 0;
 		}
+	}
+
+	private static int filterModifiers(int modifier) {
+		return modifier
+				& (Constants.ACC_PUBLIC | Constants.ACC_FINAL | Constants.ACC_INTERFACE | Constants.ACC_ABSTRACT);
 	}
 
 	private static byte[] toArray(int i) {
