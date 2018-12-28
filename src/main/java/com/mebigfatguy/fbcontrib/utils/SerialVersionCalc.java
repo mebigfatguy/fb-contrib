@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.utils;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -80,11 +81,11 @@ public class SerialVersionCalc {
 						utfUpdate(digest, cons.getSignature());
 					});
 
-			byte[] sha = digest.digest();
+			byte[] shaBytes = digest.digest();
 
-			return (sha[0] & 0x00FF) | (sha[1] & 0x00FF) << 8 | (sha[2] & 0x00FF) << 16 | (sha[3] & 0x00FF) << 24
-					| (sha[4] & 0x00FF) << 32 | (sha[5] & 0x00FF) << 40 | (sha[6] & 0x00FF) << 48
-					| (sha[7] & 0x00FF) << 56;
+			ByteBuffer bb = ByteBuffer.wrap(shaBytes, 0, 8);
+			bb.order(ByteOrder.LITTLE_ENDIAN);
+			return bb.getLong();
 
 		} catch (NoSuchAlgorithmException e) {
 			return 0;
