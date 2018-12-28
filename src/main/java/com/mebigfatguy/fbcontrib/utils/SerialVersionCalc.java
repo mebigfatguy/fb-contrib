@@ -41,43 +41,43 @@ public class SerialVersionCalc {
 		try {
 			MessageDigest digest = MessageDigest.getInstance("SHA-1");
 
-			digest.update(cls.getClassName().getBytes(StandardCharsets.UTF_8));
+			utfUpdate(digest, cls.getClassName());
 			digest.update(toArray(cls.getModifiers()));
 
 			String[] infs = cls.getInterfaceNames();
 			Arrays.sort(infs);
-			Arrays.stream(infs).forEach(inf -> digest.update(inf.getBytes(StandardCharsets.UTF_8)));
+			Arrays.stream(infs).forEach(inf -> utfUpdate(digest, inf));
 
 			Field[] fields = cls.getFields();
 			Arrays.sort(fields, new FieldSorter());
 			Arrays.stream(fields).filter(field -> !field.isPrivate() || (!field.isStatic() && !field.isTransient()))
 					.forEach(field -> {
-						digest.update(field.getName().getBytes(StandardCharsets.UTF_8));
+						utfUpdate(digest, field.getName());
 						digest.update(toArray(field.getModifiers()));
-						digest.update(field.getSignature().getBytes(StandardCharsets.UTF_8));
+						utfUpdate(digest, field.getSignature());
 					});
 
 			Method[] methods = cls.getMethods();
 			Arrays.sort(methods, new MethodSorter());
 
 			Arrays.stream(methods).filter(method -> "<clinit>".equals(method.getName())).forEach(sinit -> {
-				digest.update(sinit.getName().getBytes(StandardCharsets.UTF_8));
+				utfUpdate(digest, sinit.getName());
 				digest.update(toArray(sinit.getModifiers()));
-				digest.update(sinit.getSignature().getBytes(StandardCharsets.UTF_8));
+				utfUpdate(digest, sinit.getSignature());
 			});
 
 			Arrays.stream(methods).filter(method -> "<init>".equals(method.getName()) && !method.isPrivate())
 					.forEach(init -> {
-						digest.update(init.getName().getBytes(StandardCharsets.UTF_8));
+						utfUpdate(digest, init.getName());
 						digest.update(toArray(init.getModifiers()));
-						digest.update(init.getSignature().getBytes(StandardCharsets.UTF_8));
+						utfUpdate(digest, init.getSignature());
 					});
 
 			Arrays.stream(methods).filter(method -> !"<init>".equals(method.getName()) && !method.isPrivate())
 					.forEach(cons -> {
-						digest.update(cons.getName().getBytes(StandardCharsets.UTF_8));
+						utfUpdate(digest, cons.getName());
 						digest.update(toArray(cons.getModifiers()));
-						digest.update(cons.getSignature().getBytes(StandardCharsets.UTF_8));
+						utfUpdate(digest, cons.getSignature());
 					});
 
 			byte[] sha = digest.digest();
@@ -95,6 +95,13 @@ public class SerialVersionCalc {
 		ByteBuffer b = ByteBuffer.allocate(4);
 		b.putInt(i);
 		return b.array();
+	}
+
+	private static void utfUpdate(MessageDigest digest, String str) {
+		byte[] data = str.getBytes(StandardCharsets.UTF_8);
+
+		digest.update(toArray(data.length), 2, 2);
+		digest.update(data);
 	}
 
 	static class FieldSorter implements Comparator<Field> {
