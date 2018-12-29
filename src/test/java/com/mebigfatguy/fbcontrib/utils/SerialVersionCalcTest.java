@@ -38,7 +38,7 @@ public class SerialVersionCalcTest implements Serializable {
 		JavaClass cls = Repository.lookupClass(SerialVersionCalcTest.class);
 		long uuid = SerialVersionCalc.uuid(cls);
 
-		Assert.assertEquals(MESSAGE, serialVersionUID, uuid);
+		Assert.assertEquals(serialVersionUID, uuid, MESSAGE);
 	}
 
 	public void nop(String x) {
