@@ -23,12 +23,12 @@ import java.io.Serializable;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
-import org.testng.Assert;
-import org.testng.annotations.Test;
+import org.junit.Assert;
+import org.junit.Test;
 
 public class SerialVersionCalcTest implements Serializable {
 
-	private static final long serialVersionUID = 8895112901776514147L;
+	private static final long serialVersionUID = -2376285031192005354L;
 
 	static final String MESSAGE = "Calculated Serial Version doesn't match defined one";
 
@@ -38,6 +38,9 @@ public class SerialVersionCalcTest implements Serializable {
 		JavaClass cls = Repository.lookupClass(SerialVersionCalcTest.class);
 		long uuid = SerialVersionCalc.uuid(cls);
 
-		Assert.assertEquals(serialVersionUID, uuid, MESSAGE);
+		Assert.assertEquals(MESSAGE, serialVersionUID, uuid);
+	}
+
+	public void nop(String x) {
 	}
 }

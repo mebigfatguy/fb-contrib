@@ -71,17 +71,18 @@ public class SerialVersionCalc {
 
 			for (Method sinit : methods) {
 				if ("<clinit>".equals(sinit.getName())) {
-					utfUpdate(digest, sinit.getName());
-					digest.update(toArray(filterModifiers(sinit.getModifiers(), ModifierType.METHOD)));
-					utfUpdate(digest, sinit.getSignature());
+					utfUpdate(digest, "<clinit>");
+					digest.update(toArray(Constants.ACC_STATIC));
+					utfUpdate(digest, "()V");
+					break;
 				}
 			}
 
 			for (Method init : methods) {
 				if ("<init>".equals(init.getName()) && !init.isPrivate()) {
-					utfUpdate(digest, init.getName());
+					utfUpdate(digest, "<init>");
 					digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
-					utfUpdate(digest, init.getSignature());
+					utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
 				}
 			}
 
@@ -89,7 +90,7 @@ public class SerialVersionCalc {
 				if (!"<init>".equals(method.getName()) && !method.isPrivate()) {
 					utfUpdate(digest, method.getName());
 					digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
-					utfUpdate(digest, method.getSignature());
+					utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
 				}
 			}
 
