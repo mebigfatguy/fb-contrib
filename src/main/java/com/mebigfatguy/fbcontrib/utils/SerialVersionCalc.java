@@ -79,7 +79,7 @@ public class SerialVersionCalc {
 			}
 
 			for (Method init : methods) {
-				if (!"<clinit>".equals(init.getName()) && "<init>".equals(init.getName()) && !init.isPrivate()) {
+				if ("<init>".equals(init.getName()) && !init.isPrivate()) {
 					utfUpdate(digest, "<init>");
 					digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
 					utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
