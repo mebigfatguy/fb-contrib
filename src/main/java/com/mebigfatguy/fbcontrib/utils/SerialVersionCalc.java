@@ -80,9 +80,9 @@ public class SerialVersionCalc {
 					});
 
 			Arrays.stream(methods).filter(method -> !"<clinit>".equals(method.getName())
-					&& !"<init>".equals(method.getName()) && !method.isPrivate()).forEach(cons -> {
-						utfUpdate(digest, cons.getName());
-						digest.update(toArray(filterModifiers(cons.getModifiers(), ModifierType.METHOD)));
+					&& !"<init>".equals(method.getName()) && !method.isPrivate()).forEach(method -> {
+						utfUpdate(digest, method.getName());
+						digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
 						utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
 					});
 
