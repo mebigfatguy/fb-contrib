@@ -28,7 +28,7 @@ import org.testng.annotations.Test;
 
 public class SerialVersionCalcTest implements Serializable {
 
-	private static final long serialVersionUID = 8895112901776514147L;
+	private static final long serialVersionUID = -2376285031192005354L;
 
 	static final String MESSAGE = "Calculated Serial Version doesn't match defined one";
 
@@ -39,5 +39,8 @@ public class SerialVersionCalcTest implements Serializable {
 		long uuid = SerialVersionCalc.uuid(cls);
 
 		Assert.assertEquals(serialVersionUID, uuid, MESSAGE);
+	}
+
+	public void nop(String x) {
 	}
 }

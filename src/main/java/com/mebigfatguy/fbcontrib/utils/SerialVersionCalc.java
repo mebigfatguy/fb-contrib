@@ -66,24 +66,24 @@ public class SerialVersionCalc {
 			Method[] methods = cls.getMethods();
 			Arrays.sort(methods, new MethodSorter());
 
-			Arrays.stream(methods).filter(method -> "<clinit>".equals(method.getName())).forEach(sinit -> {
-				utfUpdate(digest, sinit.getName());
-				digest.update(toArray(filterModifiers(sinit.getModifiers(), ModifierType.METHOD)));
-				utfUpdate(digest, sinit.getSignature());
+			Arrays.stream(methods).filter(method -> "<clinit>".equals(method.getName())).limit(1).forEach(sinit -> {
+				utfUpdate(digest, "<clinit>");
+				digest.update(toArray(Const.ACC_STATIC));
+				utfUpdate(digest, "()V");
 			});
 
 			Arrays.stream(methods).filter(method -> "<init>".equals(method.getName()) && !method.isPrivate())
 					.forEach(init -> {
-						utfUpdate(digest, init.getName());
+						utfUpdate(digest, "<init>");
 						digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
-						utfUpdate(digest, init.getSignature());
+						utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
 					});
 
-			Arrays.stream(methods).filter(method -> !"<init>".equals(method.getName()) && !method.isPrivate())
-					.forEach(cons -> {
+			Arrays.stream(methods).filter(method -> !"<clinit>".equals(method.getName())
+					&& !"<init>".equals(method.getName()) && !method.isPrivate()).forEach(cons -> {
 						utfUpdate(digest, cons.getName());
 						digest.update(toArray(filterModifiers(cons.getModifiers(), ModifierType.METHOD)));
-						utfUpdate(digest, cons.getSignature());
+						utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
 					});
 
 			byte[] shaBytes = digest.digest();
