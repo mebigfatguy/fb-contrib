@@ -23,8 +23,8 @@ import java.io.Serializable;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.JavaClass;
-import org.junit.Assert;
-import org.junit.Test;
+import org.testng.Assert;
+import org.testng.annotations.Test;
 
 public class SerialVersionCalcTest implements Serializable {
 
