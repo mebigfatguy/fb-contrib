@@ -79,7 +79,7 @@ public class SerialVersionCalc {
 			}
 
 			for (Method init : methods) {
-				if ("<init>".equals(init.getName()) && !init.isPrivate()) {
+				if (!"<clinit>".equals(init.getName()) && "<init>".equals(init.getName()) && !init.isPrivate()) {
 					utfUpdate(digest, "<init>");
 					digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
 					utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
@@ -87,7 +87,7 @@ public class SerialVersionCalc {
 			}
 
 			for (Method method : methods) {
-				if (!"<init>".equals(method.getName()) && !method.isPrivate()) {
+				if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
 					utfUpdate(digest, method.getName());
 					digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
 					utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
