@@ -34,130 +34,130 @@ import org.apache.bcel.classfile.Method;
 
 public class SerialVersionCalc {
 
-	enum ModifierType {
-		CLASS, METHOD, FIELD
-	}
+    enum ModifierType {
+        CLASS, METHOD, FIELD
+    }
 
-	public static long uuid(JavaClass cls) throws IOException {
+    public static long uuid(JavaClass cls) throws IOException {
 
-		if (cls.isEnum()) {
-			return 0;
-		}
+        if (cls.isEnum()) {
+            return 0;
+        }
 
-		try {
-			MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
 
-			utfUpdate(digest, cls.getClassName());
-			digest.update(toArray(filterModifiers(cls.getModifiers(), ModifierType.CLASS)));
+            utfUpdate(digest, cls.getClassName());
+            digest.update(toArray(filterModifiers(cls.getModifiers(), ModifierType.CLASS)));
 
-			String[] infs = cls.getInterfaceNames();
-			Arrays.sort(infs);
-			for (String inf : infs) {
-				utfUpdate(digest, inf);
-			}
+            String[] infs = cls.getInterfaceNames();
+            Arrays.sort(infs);
+            for (String inf : infs) {
+                utfUpdate(digest, inf);
+            }
 
-			Field[] fields = cls.getFields();
-			Arrays.sort(fields, new FieldSorter());
-			for (Field field : fields) {
-				if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
-					utfUpdate(digest, field.getName());
-					digest.update(toArray(filterModifiers(field.getModifiers(), ModifierType.FIELD)));
-					utfUpdate(digest, field.getSignature());
-				}
-			}
+            Field[] fields = cls.getFields();
+            Arrays.sort(fields, new FieldSorter());
+            for (Field field : fields) {
+                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
+                    utfUpdate(digest, field.getName());
+                    digest.update(toArray(filterModifiers(field.getModifiers(), ModifierType.FIELD)));
+                    utfUpdate(digest, field.getSignature());
+                }
+            }
 
-			Method[] methods = cls.getMethods();
-			Arrays.sort(methods, new MethodSorter());
+            Method[] methods = cls.getMethods();
+            Arrays.sort(methods, new MethodSorter());
 
-			for (Method sinit : methods) {
-				if ("<clinit>".equals(sinit.getName())) {
-					utfUpdate(digest, "<clinit>");
-					digest.update(toArray(Constants.ACC_STATIC));
-					utfUpdate(digest, "()V");
-					break;
-				}
-			}
+            for (Method sinit : methods) {
+                if ("<clinit>".equals(sinit.getName())) {
+                    utfUpdate(digest, "<clinit>");
+                    digest.update(toArray(Constants.ACC_STATIC));
+                    utfUpdate(digest, "()V");
+                    break;
+                }
+            }
 
-			for (Method init : methods) {
-				if ("<init>".equals(init.getName()) && !init.isPrivate()) {
-					utfUpdate(digest, "<init>");
-					digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
-					utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
-				}
-			}
+            for (Method init : methods) {
+                if ("<init>".equals(init.getName()) && !init.isPrivate()) {
+                    utfUpdate(digest, "<init>");
+                    digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
+                    utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
+                }
+            }
 
-			for (Method method : methods) {
-				if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
-					utfUpdate(digest, method.getName());
-					digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
-					utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
-				}
-			}
+            for (Method method : methods) {
+                if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
+                    utfUpdate(digest, method.getName());
+                    digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
+                    utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
+                }
+            }
 
-			byte[] shaBytes = digest.digest();
+            byte[] shaBytes = digest.digest();
 
-			ByteBuffer bb = ByteBuffer.wrap(shaBytes, 0, 8);
-			bb.order(ByteOrder.LITTLE_ENDIAN);
-			return bb.getLong();
+            ByteBuffer bb = ByteBuffer.wrap(shaBytes, 0, 8);
+            bb.order(ByteOrder.LITTLE_ENDIAN);
+            return bb.getLong();
 
-		} catch (NoSuchAlgorithmException e) {
-			return 0;
-		}
-	}
+        } catch (NoSuchAlgorithmException e) {
+            return 0;
+        }
+    }
 
-	private static int filterModifiers(int modifier, ModifierType type) {
+    private static int filterModifiers(int modifier, ModifierType type) {
 
-		switch (type) {
-		case CLASS:
-			return modifier
-					& (Constants.ACC_PUBLIC | Constants.ACC_FINAL | Constants.ACC_INTERFACE | Constants.ACC_ABSTRACT);
+        switch (type) {
+        case CLASS:
+            return modifier
+                    & (Constants.ACC_PUBLIC | Constants.ACC_FINAL | Constants.ACC_INTERFACE | Constants.ACC_ABSTRACT);
 
-		case METHOD:
-			return modifier & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED
-					| Constants.ACC_STATIC | Constants.ACC_FINAL | Constants.ACC_SYNCHRONIZED | Constants.ACC_NATIVE
-					| Constants.ACC_ABSTRACT | Constants.ACC_STRICT);
+        case METHOD:
+            return modifier & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED
+                    | Constants.ACC_STATIC | Constants.ACC_FINAL | Constants.ACC_SYNCHRONIZED | Constants.ACC_NATIVE
+                    | Constants.ACC_ABSTRACT | Constants.ACC_STRICT);
 
-		case FIELD:
-			return modifier & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED
-					| Constants.ACC_STATIC | Constants.ACC_FINAL | Constants.ACC_VOLATILE | Constants.ACC_TRANSIENT);
+        case FIELD:
+            return modifier & (Constants.ACC_PUBLIC | Constants.ACC_PRIVATE | Constants.ACC_PROTECTED
+                    | Constants.ACC_STATIC | Constants.ACC_FINAL | Constants.ACC_VOLATILE | Constants.ACC_TRANSIENT);
 
-		default:
-			return 0;
-		}
+        default:
+            return 0;
+        }
 
-	}
+    }
 
-	private static byte[] toArray(int i) {
-		ByteBuffer b = ByteBuffer.allocate(4);
-		b.putInt(i);
-		return b.array();
-	}
+    private static byte[] toArray(int i) {
+        ByteBuffer b = ByteBuffer.allocate(4);
+        b.putInt(i);
+        return b.array();
+    }
 
-	private static void utfUpdate(MessageDigest digest, String str) {
-		byte[] data = str.getBytes(StandardCharsets.UTF_8);
+    private static void utfUpdate(MessageDigest digest, String str) {
+        byte[] data = str.getBytes(StandardCharsets.UTF_8);
 
-		digest.update(toArray(data.length), 2, 2);
-		digest.update(data);
-	}
+        digest.update(toArray(data.length), 2, 2);
+        digest.update(data);
+    }
 
-	static class FieldSorter implements Comparator<Field> {
+    static class FieldSorter implements Comparator<Field> {
 
-		@Override
-		public int compare(Field f1, Field f2) {
-			return f1.getName().compareTo(f2.getName());
-		}
-	}
+        @Override
+        public int compare(Field f1, Field f2) {
+            return f1.getName().compareTo(f2.getName());
+        }
+    }
 
-	static class MethodSorter implements Comparator<Method> {
+    static class MethodSorter implements Comparator<Method> {
 
-		@Override
-		public int compare(Method m1, Method m2) {
-			int cmp = m1.getName().compareTo(m2.getName());
-			if (cmp != 0) {
-				return cmp;
-			}
+        @Override
+        public int compare(Method m1, Method m2) {
+            int cmp = m1.getName().compareTo(m2.getName());
+            if (cmp != 0) {
+                return cmp;
+            }
 
-			return m1.getSignature().compareTo(m2.getSignature());
-		}
-	}
+            return m1.getSignature().compareTo(m2.getSignature());
+        }
+    }
 }

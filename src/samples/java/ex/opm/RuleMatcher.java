@@ -16,8 +16,8 @@ public class RuleMatcher extends BaseMatcher<String> {
         return false;
     }
 
-	@Override
-	public void describeTo(Description d) {
-	}
+    @Override
+    public void describeTo(Description d) {
+    }
 
 }

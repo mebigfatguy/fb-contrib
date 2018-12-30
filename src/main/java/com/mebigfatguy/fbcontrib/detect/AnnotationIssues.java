@@ -61,386 +61,386 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 @CustomUserValue
 public class AnnotationIssues extends BytecodeScanningDetector {
 
-	private static final String USER_NULLABLE_ANNOTATIONS = "fb-contrib.ai.annotations";
+    private static final String USER_NULLABLE_ANNOTATIONS = "fb-contrib.ai.annotations";
 
-	private static final Set<String> IS_EMPTY_SIGNATURES = UnmodifiableSet.create(
-			// @formatter:off
-			new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build(),
-			new SignatureBuilder().withParamTypes(Map.class).withReturnType(boolean.class).build()
-	// @formatter:on
-	);
+    private static final Set<String> IS_EMPTY_SIGNATURES = UnmodifiableSet.create(
+            // @formatter:off
+            new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build(),
+            new SignatureBuilder().withParamTypes(Map.class).withReturnType(boolean.class).build()
+    // @formatter:on
+    );
 
-	private static final Set<String> NULLABLE_ANNOTATIONS = new HashSet<>();
+    private static final Set<String> NULLABLE_ANNOTATIONS = new HashSet<>();
 
-	static {
-		NULLABLE_ANNOTATIONS.add("Lorg/jetbrains/annotations/Nullable;");
-		NULLABLE_ANNOTATIONS.add("Ljavax/annotation/Nullable;");
-		NULLABLE_ANNOTATIONS.add("Ljavax/annotation/CheckForNull;");
-		NULLABLE_ANNOTATIONS.add("Lcom/sun/istack/Nullable;");
-		NULLABLE_ANNOTATIONS.add("Ledu/umd/cs/findbugs/annotations/Nullable;");
-		NULLABLE_ANNOTATIONS.add("Lorg/springframework/lang/Nullable;");
-		NULLABLE_ANNOTATIONS.add("Landroid/support/annotation/Nullable");
+    static {
+        NULLABLE_ANNOTATIONS.add("Lorg/jetbrains/annotations/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Ljavax/annotation/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Ljavax/annotation/CheckForNull;");
+        NULLABLE_ANNOTATIONS.add("Lcom/sun/istack/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Ledu/umd/cs/findbugs/annotations/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Lorg/springframework/lang/Nullable;");
+        NULLABLE_ANNOTATIONS.add("Landroid/support/annotation/Nullable");
 
-		String userAnnotations = System.getProperty(USER_NULLABLE_ANNOTATIONS);
-		if ((userAnnotations != null) && !userAnnotations.isEmpty()) {
-			String[] annotations = userAnnotations.split(Values.WHITESPACE_COMMA_SPLIT);
-			for (String annotation : annotations) {
-				NULLABLE_ANNOTATIONS.add("L" + annotation.replace('.', '/') + ";");
-			}
-		}
-	}
+        String userAnnotations = System.getProperty(USER_NULLABLE_ANNOTATIONS);
+        if ((userAnnotations != null) && !userAnnotations.isEmpty()) {
+            String[] annotations = userAnnotations.split(Values.WHITESPACE_COMMA_SPLIT);
+            for (String annotation : annotations) {
+                NULLABLE_ANNOTATIONS.add("L" + annotation.replace('.', '/') + ";");
+            }
+        }
+    }
 
-	private static final Set<FQMethod> NOTABLE_EXCEPTIONS = UnmodifiableSet.create(
-			// @formatter:off
-			new FQMethod(Values.SLASHED_JAVA_LANG_CLASS, "newInstance", SignatureBuilder.SIG_VOID_TO_OBJECT)
-	// @formatter:on
-	);
+    private static final Set<FQMethod> NOTABLE_EXCEPTIONS = UnmodifiableSet.create(
+            // @formatter:off
+            new FQMethod(Values.SLASHED_JAVA_LANG_CLASS, "newInstance", SignatureBuilder.SIG_VOID_TO_OBJECT)
+    // @formatter:on
+    );
 
-	public static class AIUserValue {
+    public static class AIUserValue {
 
-		int reg;
+        int reg;
 
-		public AIUserValue(int reg) {
-			this.reg = reg;
-		}
+        public AIUserValue(int reg) {
+            this.reg = reg;
+        }
 
-		@Override
-		public String toString() {
-			return ToString.build(this);
-		}
-	};
+        @Override
+        public String toString() {
+            return ToString.build(this);
+        }
+    };
 
-	private BugReporter bugReporter;
-	private Map<Integer, Integer> assumedNullTill;
-	private Map<Integer, Integer> assumedNonNullTill;
-	private Set<Integer> noAssumptionsPossible;
-	private List<Integer> branchTargets;
-	private OpcodeStack stack;
-	private boolean methodIsNullable;
+    private BugReporter bugReporter;
+    private Map<Integer, Integer> assumedNullTill;
+    private Map<Integer, Integer> assumedNonNullTill;
+    private Set<Integer> noAssumptionsPossible;
+    private List<Integer> branchTargets;
+    private OpcodeStack stack;
+    private boolean methodIsNullable;
 
-	/**
-	 * constructs a AI detector given the reporter to report bugs on
-	 *
-	 * @param bugReporter the sync of bug reports
-	 */
-	public AnnotationIssues(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    /**
+     * constructs a AI detector given the reporter to report bugs on
+     *
+     * @param bugReporter the sync of bug reports
+     */
+    public AnnotationIssues(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	public boolean isCollecting() {
-		return false;
-	}
+    public boolean isCollecting() {
+        return false;
+    }
 
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			JavaClass cls = classContext.getJavaClass();
-			if (cls.getMajor() >= Constants.MAJOR_1_5) {
-				if (isCollecting() || !cls.isAnonymous()) {
-					stack = new OpcodeStack();
-					assumedNullTill = new HashMap<>();
-					assumedNonNullTill = new HashMap<>();
-					noAssumptionsPossible = new HashSet<>();
-					branchTargets = new ArrayList<>();
-					super.visitClassContext(classContext);
-				}
-			}
-		} finally {
-			stack = null;
-			assumedNullTill = null;
-			assumedNonNullTill = null;
-			noAssumptionsPossible = null;
-			branchTargets = null;
-		}
-	}
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            JavaClass cls = classContext.getJavaClass();
+            if (cls.getMajor() >= Constants.MAJOR_1_5) {
+                if (isCollecting() || !cls.isAnonymous()) {
+                    stack = new OpcodeStack();
+                    assumedNullTill = new HashMap<>();
+                    assumedNonNullTill = new HashMap<>();
+                    noAssumptionsPossible = new HashSet<>();
+                    branchTargets = new ArrayList<>();
+                    super.visitClassContext(classContext);
+                }
+            }
+        } finally {
+            stack = null;
+            assumedNullTill = null;
+            assumedNonNullTill = null;
+            noAssumptionsPossible = null;
+            branchTargets = null;
+        }
+    }
 
-	@Override
-	public void visitCode(Code obj) {
+    @Override
+    public void visitCode(Code obj) {
 
-		Method method = getMethod();
-		String sig = method.getSignature();
-		String returnType = sig.substring(sig.indexOf(')') + 1);
-		char returnTypeChar = returnType.charAt(0);
-		if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
-			return;
-		}
+        Method method = getMethod();
+        String sig = method.getSignature();
+        String returnType = sig.substring(sig.indexOf(')') + 1);
+        char returnTypeChar = returnType.charAt(0);
+        if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
+            return;
+        }
 
-		if (method.isSynthetic() && !isCollecting()) {
-			return;
-		}
+        if (method.isSynthetic() && !isCollecting()) {
+            return;
+        }
 
-		if (Values.SIG_JAVA_LANG_VOID.equals(returnType)) {
-			return;
-		}
+        if (Values.SIG_JAVA_LANG_VOID.equals(returnType)) {
+            return;
+        }
 
-		if (NOTABLE_EXCEPTIONS.contains(new FQMethod(getClassName(), method.getName(), sig))) {
-			MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
-					method.getSignature());
-			methodInfo.setCanReturnNull(false);
-			return;
-		}
+        if (NOTABLE_EXCEPTIONS.contains(new FQMethod(getClassName(), method.getName(), sig))) {
+            MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
+                    method.getSignature());
+            methodInfo.setCanReturnNull(false);
+            return;
+        }
 
-		if (methodHasNullableAnnotation(method)) {
-			if (isCollecting()) {
-				MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
-						method.getSignature());
-				methodInfo.setCanReturnNull(true);
-			}
-			return;
-		}
+        if (methodHasNullableAnnotation(method)) {
+            if (isCollecting()) {
+                MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
+                        method.getSignature());
+                methodInfo.setCanReturnNull(true);
+            }
+            return;
+        }
 
-		MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
-				method.getSignature());
-		if (!isCollecting() && methodInfo.getCanReturnNull()) {
-			bugReporter
-					.reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY)
-							.addClass(this).addMethod(this));
-		} else {
+        MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
+                method.getSignature());
+        if (!isCollecting() && methodInfo.getCanReturnNull()) {
+            bugReporter
+                    .reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY)
+                            .addClass(this).addMethod(this));
+        } else {
 
-			methodIsNullable = false;
-			stack.resetForMethodEntry(this);
-			assumedNullTill.clear();
-			assumedNonNullTill.clear();
-			noAssumptionsPossible.clear();
-			branchTargets.clear();
+            methodIsNullable = false;
+            stack.resetForMethodEntry(this);
+            assumedNullTill.clear();
+            assumedNonNullTill.clear();
+            noAssumptionsPossible.clear();
+            branchTargets.clear();
 
-			try {
-				super.visitCode(obj);
-			} catch (StopOpcodeParsingException e) {
-			}
+            try {
+                super.visitCode(obj);
+            } catch (StopOpcodeParsingException e) {
+            }
 
-			if (methodIsNullable) {
-				if (isCollecting()) {
-					methodInfo.setCanReturnNull(true);
-				} else {
-					bugReporter.reportBug(
-							new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY)
-									.addClass(this).addMethod(this));
-				}
-			}
-		}
-	}
+            if (methodIsNullable) {
+                if (isCollecting()) {
+                    methodInfo.setCanReturnNull(true);
+                } else {
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY)
+                                    .addClass(this).addMethod(this));
+                }
+            }
+        }
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		AIUserValue userValue = null;
+    @Override
+    public void sawOpcode(int seen) {
+        AIUserValue userValue = null;
 
-		if (OpcodeUtils.isBranch(seen) && (getBranchOffset() > 0)) {
-			branchTargets.add(getBranchTarget());
-			Collections.sort(branchTargets);
-		}
+        if (OpcodeUtils.isBranch(seen) && (getBranchOffset() > 0)) {
+            branchTargets.add(getBranchTarget());
+            Collections.sort(branchTargets);
+        }
 
-		clearBranchTargets(getPC());
-		convertNullToNonNull(getPC());
-		clearAssumptions(assumedNullTill, getPC());
-		clearAssumptions(assumedNonNullTill, getPC());
+        clearBranchTargets(getPC());
+        convertNullToNonNull(getPC());
+        clearAssumptions(assumedNullTill, getPC());
+        clearAssumptions(assumedNonNullTill, getPC());
 
-		if (OpcodeUtils.isBranch(seen) && (getBranchOffset() > 0)) {
-			branchTargets.add(getBranchTarget());
-			Collections.sort(branchTargets);
-		}
+        if (OpcodeUtils.isBranch(seen) && (getBranchOffset() > 0)) {
+            branchTargets.add(getBranchTarget());
+            Collections.sort(branchTargets);
+        }
 
-		try {
-			switch (seen) {
-			case ARETURN: {
-				if (!methodIsNullable && (stack.getStackDepth() > 0)) {
-					OpcodeStack.Item itm = stack.getStackItem(0);
-					Integer reg = Integer.valueOf(itm.getRegisterNumber());
-					methodIsNullable = !assumedNonNullTill.containsKey(reg)
-							&& (!noAssumptionsPossible.contains(reg) && ((assumedNullTill.containsKey(reg))
-									|| isStackElementNullable(getClassName(), getMethod(), itm)));
-					if (methodIsNullable) {
-						throw new StopOpcodeParsingException();
-					}
-				}
-				break;
-			}
+        try {
+            switch (seen) {
+            case ARETURN: {
+                if (!methodIsNullable && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    Integer reg = Integer.valueOf(itm.getRegisterNumber());
+                    methodIsNullable = !assumedNonNullTill.containsKey(reg)
+                            && (!noAssumptionsPossible.contains(reg) && ((assumedNullTill.containsKey(reg))
+                                    || isStackElementNullable(getClassName(), getMethod(), itm)));
+                    if (methodIsNullable) {
+                        throw new StopOpcodeParsingException();
+                    }
+                }
+                break;
+            }
 
-			case IFNONNULL:
-				if (getBranchOffset() > 0) {
-					if (stack.getStackDepth() > 0) {
-						OpcodeStack.Item itm = stack.getStackItem(0);
-						int reg = itm.getRegisterNumber();
-						if (reg >= 0) {
-							assumedNullTill.put(reg, getBranchTarget());
-						}
-					}
-				}
-				break;
+            case IFNONNULL:
+                if (getBranchOffset() > 0) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        int reg = itm.getRegisterNumber();
+                        if (reg >= 0) {
+                            assumedNullTill.put(reg, getBranchTarget());
+                        }
+                    }
+                }
+                break;
 
-			case IFNULL:
-				if (getBranchOffset() > 0) {
-					if (stack.getStackDepth() > 0) {
-						OpcodeStack.Item itm = stack.getStackItem(0);
-						int reg = itm.getRegisterNumber();
-						if (reg >= 0) {
-							assumedNonNullTill.put(reg, getBranchTarget());
-						}
-					}
-				}
-				break;
+            case IFNULL:
+                if (getBranchOffset() > 0) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        int reg = itm.getRegisterNumber();
+                        if (reg >= 0) {
+                            assumedNonNullTill.put(reg, getBranchTarget());
+                        }
+                    }
+                }
+                break;
 
-			case IFEQ:
-				if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
-					OpcodeStack.Item itm = stack.getStackItem(0);
-					AIUserValue uv = (AIUserValue) itm.getUserValue();
-					if ((uv != null) && (uv.reg >= 0)) {
-						assumedNullTill.put(uv.reg, getBranchTarget());
-					}
-				}
-				break;
+            case IFEQ:
+                if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    AIUserValue uv = (AIUserValue) itm.getUserValue();
+                    if ((uv != null) && (uv.reg >= 0)) {
+                        assumedNullTill.put(uv.reg, getBranchTarget());
+                    }
+                }
+                break;
 
-			case INVOKESTATIC:
-				if (stack.getStackDepth() > 0) {
-					String signature = getSigConstantOperand();
-					if (IS_EMPTY_SIGNATURES.contains(signature)) {
-						String methodName = getNameConstantOperand();
-						if ("isEmpty".equals(methodName)) {
-							OpcodeStack.Item item = stack.getStackItem(0);
-							int reg = item.getRegisterNumber();
-							if (reg >= 0) {
-								userValue = new AIUserValue(reg);
-								break;
-							}
-						}
-					}
-				}
+            case INVOKESTATIC:
+                if (stack.getStackDepth() > 0) {
+                    String signature = getSigConstantOperand();
+                    if (IS_EMPTY_SIGNATURES.contains(signature)) {
+                        String methodName = getNameConstantOperand();
+                        if ("isEmpty".equals(methodName)) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            int reg = item.getRegisterNumber();
+                            if (reg >= 0) {
+                                userValue = new AIUserValue(reg);
+                                break;
+                            }
+                        }
+                    }
+                }
 
-				// $FALL-THROUGH$
-			case INVOKEINTERFACE:
-			case INVOKEVIRTUAL: {
-				boolean resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(),
-						getSigConstantOperand()));
-				if (resultIsNullable) {
-					userValue = new AIUserValue(-1);
-				}
-				break;
-			}
+                // $FALL-THROUGH$
+            case INVOKEINTERFACE:
+            case INVOKEVIRTUAL: {
+                boolean resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand()));
+                if (resultIsNullable) {
+                    userValue = new AIUserValue(-1);
+                }
+                break;
+            }
 
-			case ATHROW: {
-				removeAssumptions(assumedNonNullTill);
-				removeAssumptions(assumedNullTill);
-				break;
-			}
+            case ATHROW: {
+                removeAssumptions(assumedNonNullTill);
+                removeAssumptions(assumedNullTill);
+                break;
+            }
 
-			}
-		} finally {
-			stack.sawOpcode(this, seen);
-			if ((userValue != null) && (stack.getStackDepth() > 0)) {
-				OpcodeStack.Item itm = stack.getStackItem(0);
-				itm.setUserValue(userValue);
-			}
-		}
-	}
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
+            if ((userValue != null) && (stack.getStackDepth() > 0)) {
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                itm.setUserValue(userValue);
+            }
+        }
+    }
 
-	public static boolean methodHasNullableAnnotation(Method m) {
-		for (AnnotationEntry entry : m.getAnnotationEntries()) {
-			String annotationType = entry.getAnnotationType();
-			if (NULLABLE_ANNOTATIONS.contains(annotationType)) {
-				return true;
-			}
-		}
+    public static boolean methodHasNullableAnnotation(Method m) {
+        for (AnnotationEntry entry : m.getAnnotationEntries()) {
+            String annotationType = entry.getAnnotationType();
+            if (NULLABLE_ANNOTATIONS.contains(annotationType)) {
+                return true;
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public static boolean isStackElementNullable(String className, Method method, OpcodeStack.Item itm) {
-		if (itm.isNull() || (itm.getUserValue() != null)) {
-			MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(),
-					method.getSignature());
-			if (mi != null) {
-				mi.setCanReturnNull(true);
-			}
-			return true;
-		} else {
-			XMethod xm = itm.getReturnValueOf();
-			if (xm != null) {
-				MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName().replace('.', '/'),
-						xm.getName(), xm.getSignature());
-				if ((mi != null) && mi.getCanReturnNull()) {
-					mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(),
-							method.getSignature());
-					if (mi != null) {
-						mi.setCanReturnNull(true);
-					}
-					return true;
-				}
-			}
-		}
+    public static boolean isStackElementNullable(String className, Method method, OpcodeStack.Item itm) {
+        if (itm.isNull() || (itm.getUserValue() != null)) {
+            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(),
+                    method.getSignature());
+            if (mi != null) {
+                mi.setCanReturnNull(true);
+            }
+            return true;
+        } else {
+            XMethod xm = itm.getReturnValueOf();
+            if (xm != null) {
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName().replace('.', '/'),
+                        xm.getName(), xm.getSignature());
+                if ((mi != null) && mi.getCanReturnNull()) {
+                    mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(),
+                            method.getSignature());
+                    if (mi != null) {
+                        mi.setCanReturnNull(true);
+                    }
+                    return true;
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public static boolean isMethodNullable(@SlashedClassName String className, String methodName,
-			String methodSignature) {
-		char returnTypeChar = methodSignature.charAt(methodSignature.indexOf(')') + 1);
-		if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
-			return false;
-		}
-		MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, methodSignature);
-		return ((mi != null) && mi.getCanReturnNull());
+    public static boolean isMethodNullable(@SlashedClassName String className, String methodName,
+            String methodSignature) {
+        char returnTypeChar = methodSignature.charAt(methodSignature.indexOf(')') + 1);
+        if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
+            return false;
+        }
+        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, methodSignature);
+        return ((mi != null) && mi.getCanReturnNull());
 
-		// can we check if it has @Nullable on it? hmm need to convert to Method
-	}
+        // can we check if it has @Nullable on it? hmm need to convert to Method
+    }
 
-	/**
-	 * the map is keyed by register, and value by when an assumption holds to a byte
-	 * offset if we have passed when the assumption holds, clear the item from the
-	 * map
-	 *
-	 * @param assumptionTill the map of assumptions
-	 * @param pc             // * the current pc
-	 */
-	public static void clearAssumptions(Map<Integer, Integer> assumptionTill, int pc) {
-		Iterator<Integer> it = assumptionTill.values().iterator();
-		while (it.hasNext()) {
-			if (it.next().intValue() <= pc) {
-				it.remove();
-			}
-		}
-	}
+    /**
+     * the map is keyed by register, and value by when an assumption holds to a byte
+     * offset if we have passed when the assumption holds, clear the item from the
+     * map
+     *
+     * @param assumptionTill the map of assumptions
+     * @param pc             // * the current pc
+     */
+    public static void clearAssumptions(Map<Integer, Integer> assumptionTill, int pc) {
+        Iterator<Integer> it = assumptionTill.values().iterator();
+        while (it.hasNext()) {
+            if (it.next().intValue() <= pc) {
+                it.remove();
+            }
+        }
+    }
 
-	public void convertNullToNonNull(int pc) {
-		for (Map.Entry<Integer, Integer> entry : assumedNullTill.entrySet()) {
-			if (entry.getValue().intValue() == pc) {
-				int lastOp = getPrevOpcode(1);
-				if ((lastOp == ARETURN) || (lastOp == ATHROW)) {
-					int nonNullTill = getNextBranchTarget();
-					assumedNonNullTill.put(entry.getKey(), nonNullTill);
-				} else if (OpcodeUtils.isBranch(lastOp)) {
-					int branchOffset = CodeByteUtils.getshort(getCode().getCode(), getPC() - 2);
-					if (branchOffset > 0) {
-						assumedNonNullTill.put(entry.getKey(), getPC() + branchOffset);
-					}
-				}
-			}
-		}
-	}
+    public void convertNullToNonNull(int pc) {
+        for (Map.Entry<Integer, Integer> entry : assumedNullTill.entrySet()) {
+            if (entry.getValue().intValue() == pc) {
+                int lastOp = getPrevOpcode(1);
+                if ((lastOp == ARETURN) || (lastOp == ATHROW)) {
+                    int nonNullTill = getNextBranchTarget();
+                    assumedNonNullTill.put(entry.getKey(), nonNullTill);
+                } else if (OpcodeUtils.isBranch(lastOp)) {
+                    int branchOffset = CodeByteUtils.getshort(getCode().getCode(), getPC() - 2);
+                    if (branchOffset > 0) {
+                        assumedNonNullTill.put(entry.getKey(), getPC() + branchOffset);
+                    }
+                }
+            }
+        }
+    }
 
-	/**
-	 * remove branch targets that have been passed
-	 *
-	 * @param pc the current pc
-	 */
-	public void clearBranchTargets(int pc) {
-		Iterator<Integer> it = branchTargets.iterator();
-		while (it.hasNext()) {
-			int target = it.next().intValue();
-			if (target <= pc) {
-				it.remove();
-			}
-		}
-	}
+    /**
+     * remove branch targets that have been passed
+     *
+     * @param pc the current pc
+     */
+    public void clearBranchTargets(int pc) {
+        Iterator<Integer> it = branchTargets.iterator();
+        while (it.hasNext()) {
+            int target = it.next().intValue();
+            if (target <= pc) {
+                it.remove();
+            }
+        }
+    }
 
-	public int getNextBranchTarget() {
-		if (branchTargets.isEmpty()) {
-			return Integer.MAX_VALUE;
-		}
+    public int getNextBranchTarget() {
+        if (branchTargets.isEmpty()) {
+            return Integer.MAX_VALUE;
+        }
 
-		return branchTargets.get(0);
-	}
+        return branchTargets.get(0);
+    }
 
-	public void removeAssumptions(Map<Integer, Integer> assumptionsTill) {
-		noAssumptionsPossible.addAll(assumptionsTill.keySet());
-	}
+    public void removeAssumptions(Map<Integer, Integer> assumptionsTill) {
+        noAssumptionsPossible.addAll(assumptionsTill.keySet());
+    }
 }
