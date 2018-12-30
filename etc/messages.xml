@@ -5630,7 +5630,7 @@ for (Person p : people) {
     	<Details>
     		<![CDATA[
     		<p>This serializable class defines a serialVersionUID that appears to be a computed value, however the value does not
-    		match the computed value, and thus lossese it's value as version indicator. Either create a custom value like 1, 2, 3, 4.. etc, or
+    		match the computed value, and thus losses it's value as version indicator. Either create a custom value like 1, 2, 3, 4.. etc, or
     		recompute the serialVersionUID using your IDE.</p>
     		]]>
     	</Details>
