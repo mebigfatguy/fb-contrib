@@ -66,8 +66,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
 
     private static final Set<String> INJECTOR_ANNOTATIONS = UnmodifiableSet.create(
     // @formatter:off
-			"org.mockito.Mock", "org.springframework.beans.factory.annotation.Autowired"
-	// @formatter:on
+            "org.mockito.Mock", "org.springframework.beans.factory.annotation.Autowired"
+    // @formatter:on
     );
 
     private static final String BOOLEAN_TYPE_SIGNATURE = "Ljava/lang/Boolean;";

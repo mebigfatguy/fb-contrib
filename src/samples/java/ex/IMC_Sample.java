@@ -19,39 +19,39 @@ import org.objectweb.asm.Opcodes;
 
 public class IMC_Sample implements Serializable {
 
-	private static final long serialVersionUID = 5213802770984511942L;
+    private static final long serialVersionUID = 5213802770984511942L;
 
-	private String reportMe;
+    private String reportMe;
 
-	private static final int OUT_OF_PLACE_STATIC = 0;
+    private static final int OUT_OF_PLACE_STATIC = 0;
 
-	@SuperSecret
-	class FPClassIMC {
-		private String dontReportMe;
-	}
+    @SuperSecret
+    class FPClassIMC {
+        private String dontReportMe;
+    }
 
-	class FPFieldIMC {
-		@SuperSecret
-		private String dontReportMe;
-	}
+    class FPFieldIMC {
+        @SuperSecret
+        private String dontReportMe;
+    }
 
-	public void psf(File f) {
-		try (InputStream is = new FileInputStream(f)) {
-			is.read();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+    public void psf(File f) {
+        try (InputStream is = new FileInputStream(f)) {
+            is.read();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 }
 
 class IMCFPHasAToString {
-	@SuperSecret
-	private String fooo;
+    @SuperSecret
+    private String fooo;
 
-	@Override
-	public String toString() {
-		return fooo;
-	}
+    @Override
+    public String toString() {
+        return fooo;
+    }
 }
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -61,32 +61,32 @@ class IMCFPHasAToString {
 
 class FPIMCTestClass {
 
-	private int data1, data2;
+    private int data1, data2;
 
-	@Test
-	public void doTest() {
-		Assert.assertEquals(data1, data2);
-	}
+    @Test
+    public void doTest() {
+        Assert.assertEquals(data1, data2);
+    }
 }
 
 @Entity
 class FPIMCEntity {
-	private int id;
-	private String name;
+    private int id;
+    private String name;
 }
 
 class MyVisitor extends AnnotationVisitor {
 
-	String name;
+    String name;
 
-	public MyVisitor() {
-		super(Opcodes.ASM4);
-	}
+    public MyVisitor() {
+        super(Opcodes.ASM4);
+    }
 
-	@Override
-	public AnnotationVisitor visitAnnotation(String arg0, String arg1) {
-		name = arg0;
+    @Override
+    public AnnotationVisitor visitAnnotation(String arg0, String arg1) {
+        name = arg0;
 
-		return super.visitAnnotation(arg0, arg1);
-	}
+        return super.visitAnnotation(arg0, arg1);
+    }
 }

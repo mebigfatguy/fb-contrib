@@ -64,10 +64,10 @@ public class PresizeCollections extends BytecodeScanningDetector {
 
     private static final Set<FQMethod> STATIC_COLLECTION_FACTORIES = UnmodifiableSet.create(
     // @formatter:off
-			new FQMethod("com/google/common/collect/Lists", "newArrayList", "()Ljava/util/ArrayList;"),
-			new FQMethod("com/google/common/collect/Sets", "newHashSet", "()Ljava/util/HashSet;"),
-			new FQMethod("com/google/common/collect/Maps", "newHashMap", "()Ljava/util/HashMap;")
-	// @formatter:on
+            new FQMethod("com/google/common/collect/Lists", "newArrayList", "()Ljava/util/ArrayList;"),
+            new FQMethod("com/google/common/collect/Sets", "newHashSet", "()Ljava/util/HashSet;"),
+            new FQMethod("com/google/common/collect/Maps", "newHashMap", "()Ljava/util/HashMap;")
+    // @formatter:on
     );
 
     private static final Set<FQMethod> UNSIZED_SOURCES = UnmodifiableSet.create(

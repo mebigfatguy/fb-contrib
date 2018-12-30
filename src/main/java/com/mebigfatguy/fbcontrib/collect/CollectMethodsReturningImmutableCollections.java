@@ -44,18 +44,18 @@ public class CollectMethodsReturningImmutableCollections extends BytecodeScannin
 
     private static final Set<String> IMMUTABLE_PRODUCING_METHODS = UnmodifiableSet.create(
     //@formatter:off
-			"com/google/common/Collect/Maps.immutableEnumMap", "com/google/common/Collect/Maps.unmodifiableMap",
-			"com/google/common/Collect/Sets.immutableEnumSet", "com/google/common/Collect/Sets.immutableCopy",
-			"java/util/Arrays.asList", "java/util/Collections.unmodifiableCollection",
-			"java/util/Collections.unmodifiableSet", "java/util/Collections.unmodifiableSortedSet",
-			"java/util/Collections.unmodifiableMap", "java/util/Collections.unmodifiableList",
-			"edu/emory/mathcs/backport/java/util/Arrays.asList",
-			"edu/emory/mathcs/backport/java/util/Collections.unmodifiableCollection",
-			"edu/emory/mathcs/backport/java/util/Collections.unmodifiableSet",
-			"edu/emory/mathcs/backport/java/util/Collections.unmodifiableSortedSet",
-			"edu/emory/mathcs/backport/java/util/Collections.unmodifiableMap",
-			"edu/emory/mathcs/backport/java/util/Collections.unmodifiableList"
-	// @formatter:on
+            "com/google/common/Collect/Maps.immutableEnumMap", "com/google/common/Collect/Maps.unmodifiableMap",
+            "com/google/common/Collect/Sets.immutableEnumSet", "com/google/common/Collect/Sets.immutableCopy",
+            "java/util/Arrays.asList", "java/util/Collections.unmodifiableCollection",
+            "java/util/Collections.unmodifiableSet", "java/util/Collections.unmodifiableSortedSet",
+            "java/util/Collections.unmodifiableMap", "java/util/Collections.unmodifiableList",
+            "edu/emory/mathcs/backport/java/util/Arrays.asList",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableCollection",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableSet",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableSortedSet",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableMap",
+            "edu/emory/mathcs/backport/java/util/Collections.unmodifiableList"
+    // @formatter:on
     );
 
     private BugReporter bugReporter;

@@ -56,8 +56,8 @@ public class ClassEnvy extends BytecodeScanningDetector {
     private static final String ENVY_PERCENT_PROPERTY = "fb-contrib.ce.percent";
     private static final Set<String> ignorableInterfaces = UnmodifiableSet.create(
     // @formatter:off
-			"java.io.Serializable", "java.lang.Cloneable", "java.lang.Comparable"
-	// @formatter:on
+            "java.io.Serializable", "java.lang.Cloneable", "java.lang.Comparable"
+    // @formatter:on
     );
 
     private static final Comparator<Map.Entry<String, BitSet>> ACCESS_COUNT_COMPARATOR = new Comparator<Map.Entry<String, BitSet>>() {

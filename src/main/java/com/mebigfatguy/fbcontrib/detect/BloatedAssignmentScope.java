@@ -67,10 +67,10 @@ import edu.umd.cs.findbugs.ba.XField;
 public class BloatedAssignmentScope extends BytecodeScanningDetector {
     private static final Set<String> dangerousAssignmentClassSources = UnmodifiableSet.create(
     //@formatter:off
-			"java/io/BufferedInputStream", "java/io/DataInput", "java/io/DataInputStream", "java/io/InputStream",
-			"java/io/ObjectInputStream", "java/io/BufferedReader", "java/io/FileReader", "java/io/Reader",
-			"javax/nio/channels/Channel", "io/netty/channel/Channel"
-	// @formatter:on
+            "java/io/BufferedInputStream", "java/io/DataInput", "java/io/DataInputStream", "java/io/InputStream",
+            "java/io/ObjectInputStream", "java/io/BufferedReader", "java/io/FileReader", "java/io/Reader",
+            "javax/nio/channels/Channel", "io/netty/channel/Channel"
+    // @formatter:on
     );
 
     private static final Set<FQMethod> dangerousAssignmentMethodSources = UnmodifiableSet.create(
@@ -82,15 +82,15 @@ public class BloatedAssignmentScope extends BytecodeScanningDetector {
         new FQMethod("java/util/Iterator", "next", SignatureBuilder.SIG_VOID_TO_OBJECT),
         new FQMethod("java/util/regex/Matcher", "start", SignatureBuilder.SIG_VOID_TO_INT),
         new FQMethod("java/util/concurrent/TimeUnit", "toMillis", SignatureBuilder.SIG_LONG_TO_LONG)
-	// @formatter:on
+    // @formatter:on
     );
 
     private static final Set<Pattern> dangerousAssignmentMethodPatterns = UnmodifiableSet.create(
     //@formatter:off
-			Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE),
-			Pattern.compile(".*\\.read[^.]*", Pattern.CASE_INSENSITIVE),
-			Pattern.compile(".*\\.create[^.]*", Pattern.CASE_INSENSITIVE)
-	// @formatter:on
+            Pattern.compile(".*serial.*", Pattern.CASE_INSENSITIVE),
+            Pattern.compile(".*\\.read[^.]*", Pattern.CASE_INSENSITIVE),
+            Pattern.compile(".*\\.create[^.]*", Pattern.CASE_INSENSITIVE)
+    // @formatter:on
     );
 
     private static final Set<String> dangerousStoreClassSigs = UnmodifiableSet.create("Ljava/util/concurrent/Future;");

@@ -50,10 +50,10 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
     private static final Set<String> safeClasses = UnmodifiableSet.create(
     // @formatter:off
-			Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_INTEGER,
-			Values.SLASHED_JAVA_LANG_LONG, Values.SLASHED_JAVA_LANG_FLOAT, Values.SLASHED_JAVA_LANG_DOUBLE,
-			Values.SLASHED_JAVA_LANG_SHORT, Values.SLASHED_JAVA_LANG_BYTE, Values.SLASHED_JAVA_LANG_BOOLEAN
-	// @formatter:on
+            Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_INTEGER,
+            Values.SLASHED_JAVA_LANG_LONG, Values.SLASHED_JAVA_LANG_FLOAT, Values.SLASHED_JAVA_LANG_DOUBLE,
+            Values.SLASHED_JAVA_LANG_SHORT, Values.SLASHED_JAVA_LANG_BYTE, Values.SLASHED_JAVA_LANG_BOOLEAN
+    // @formatter:on
     );
 
     private final BugReporter bugReporter;

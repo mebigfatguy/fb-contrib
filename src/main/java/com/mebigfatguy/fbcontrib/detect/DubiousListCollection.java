@@ -55,39 +55,39 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 
     private static final Set<QMethod> setMethods = UnmodifiableSet.create(
     //@formatter:off
-			new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
-			new QMethod("containsAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN),
-			new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT),
-			new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN),
-			new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN)
-	// @formatter:on
+            new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
+            new QMethod("containsAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN),
+            new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT),
+            new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN),
+            new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN)
+    // @formatter:on
     );
 
     private static final Set<QMethod> listMethods = UnmodifiableSet.create(
     //@formatter:off
-			new QMethod("add",
-					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT)
-							.toString()),
-			new QMethod("addAll",
-					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION)
-							.withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()),
-			new QMethod("lastIndexOf",
-					new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT)
-							.withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
-			new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT),
+            new QMethod("add",
+                    new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT)
+                            .toString()),
+            new QMethod("addAll",
+                    new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION)
+                            .withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()),
+            new QMethod("lastIndexOf",
+                    new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT)
+                            .withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
+            new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT),
             new QMethod("replaceAll", new SignatureBuilder().withParamTypes("java/util/function/UnaryOperator").build()),
-			new QMethod("set",
-					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).build()),
+            new QMethod("set",
+                    new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).build()),
             new QMethod("sort", new SignatureBuilder().withParamTypes("java/util/Comparator").build()),
-			new QMethod("subList",
-					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_INT)
-							.withReturnType(Values.SLASHED_JAVA_UTIL_LIST).toString()),
-			new QMethod("listIterator", new SignatureBuilder().withReturnType("java/util/ListIterator").toString()),
-			new QMethod("listIterator", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT)
-					.withReturnType("java/util/ListIterator").toString())
-	// Theoretically get(i) and indexOf(Object) are list Methods but are so
-	// abused, as to be meaningless
-	// @formatter:on
+            new QMethod("subList",
+                    new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_INT)
+                            .withReturnType(Values.SLASHED_JAVA_UTIL_LIST).toString()),
+            new QMethod("listIterator", new SignatureBuilder().withReturnType("java/util/ListIterator").toString()),
+            new QMethod("listIterator", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT)
+                    .withReturnType("java/util/ListIterator").toString())
+    // Theoretically get(i) and indexOf(Object) are list Methods but are so
+    // abused, as to be meaningless
+    // @formatter:on
     );
 
     private final BugReporter bugReporter;

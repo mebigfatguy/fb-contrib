@@ -28,19 +28,19 @@ import org.testng.annotations.Test;
 
 public class SerialVersionCalcTest implements Serializable {
 
-	private static final long serialVersionUID = -2376285031192005354L;
+    private static final long serialVersionUID = -2376285031192005354L;
 
-	static final String MESSAGE = "Calculated Serial Version doesn't match defined one";
+    static final String MESSAGE = "Calculated Serial Version doesn't match defined one";
 
-	@Test
-	public void testSerialVersionUID() throws ClassNotFoundException, IOException {
+    @Test
+    public void testSerialVersionUID() throws ClassNotFoundException, IOException {
 
-		JavaClass cls = Repository.lookupClass(SerialVersionCalcTest.class);
-		long uuid = SerialVersionCalc.uuid(cls);
+        JavaClass cls = Repository.lookupClass(SerialVersionCalcTest.class);
+        long uuid = SerialVersionCalc.uuid(cls);
 
-		Assert.assertEquals(serialVersionUID, uuid, MESSAGE);
-	}
+        Assert.assertEquals(serialVersionUID, uuid, MESSAGE);
+    }
 
-	public void nop(String x) {
-	}
+    public void nop(String x) {
+    }
 }

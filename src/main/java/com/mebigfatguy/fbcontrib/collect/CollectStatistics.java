@@ -50,20 +50,20 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
     private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
     // @formatter:off
-			new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
-			new SignatureBuilder().withMethodName(Values.TOSTRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING)
-					.toString(),
-			new SignatureBuilder().withMethodName(Values.HASHCODE).withReturnType(Values.SIG_PRIMITIVE_INT).toString(),
-			"clone()", "values()",
-			new SignatureBuilder().withMethodName("main").withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString()
-	// @formatter:on
+            new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
+            new SignatureBuilder().withMethodName(Values.TOSTRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING)
+                    .toString(),
+            new SignatureBuilder().withMethodName(Values.HASHCODE).withReturnType(Values.SIG_PRIMITIVE_INT).toString(),
+            "clone()", "values()",
+            new SignatureBuilder().withMethodName("main").withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString()
+    // @formatter:on
     );
 
     private static final Set<String> BEAN_ANNOTATIONS = UnmodifiableSet.create(
     // @formatter:off
-			"Lorg/springframework/stereotype/Component;", "Lorg/springframework/stereotype/Controller;",
-			"Lorg/springframework/stereotype/Repository;", "Lorg/springframework/stereotype/Service;"
-	// @formatter:on
+            "Lorg/springframework/stereotype/Component;", "Lorg/springframework/stereotype/Controller;",
+            "Lorg/springframework/stereotype/Repository;", "Lorg/springframework/stereotype/Service;"
+    // @formatter:on
     );
 
     private int numMethodCalls;

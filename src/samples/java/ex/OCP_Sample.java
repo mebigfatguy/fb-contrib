@@ -38,176 +38,176 @@ import org.xml.sax.helpers.DefaultHandler;
 @SuppressWarnings("all")
 public class OCP_Sample extends Z implements ActionListener, Serializable {
 
-	private static final Logger logger = Logger.getLogger(OCP_Sample.class);
+    private static final Logger logger = Logger.getLogger(OCP_Sample.class);
 
-	// tag OCP, hashset could be Set instead
-	public String getDisplay(HashSet<String> s, String a, String b) {
-		if (s.contains(a)) {
-			s.add(b);
-		} else {
-			s.add(a + b);
-		}
+    // tag OCP, hashset could be Set instead
+    public String getDisplay(HashSet<String> s, String a, String b) {
+        if (s.contains(a)) {
+            s.add(b);
+        } else {
+            s.add(a + b);
+        }
 
-		StringBuilder sb = new StringBuilder();
-		Iterator<String> it = s.iterator();
-		while (it.hasNext()) {
-			sb.append(it.next());
-		}
-		return sb.toString();
-	}
+        StringBuilder sb = new StringBuilder();
+        Iterator<String> it = s.iterator();
+        while (it.hasNext()) {
+            sb.append(it.next());
+        }
+        return sb.toString();
+    }
 
-	// List should be declared as Collection where possible
-	public String max(List<String> s) {
-		String max = "";
-		for (String p : s) {
-			if (p.length() > max.length()) {
-				max = p;
-			}
-		}
+    // List should be declared as Collection where possible
+    public String max(List<String> s) {
+        String max = "";
+        for (String p : s) {
+            if (p.length() > max.length()) {
+                max = p;
+            }
+        }
 
-		return max;
-	}
+        return max;
+    }
 
-	// tag OCP dh could be a ContentHandler instead
-	public void parse(DefaultHandler dh, File f) throws SAXException, ParserConfigurationException, IOException {
-		SAXParserFactory spf = SAXParserFactory.newInstance();
-		SAXParser sp = spf.newSAXParser();
-		XMLReader xr = sp.getXMLReader();
+    // tag OCP dh could be a ContentHandler instead
+    public void parse(DefaultHandler dh, File f) throws SAXException, ParserConfigurationException, IOException {
+        SAXParserFactory spf = SAXParserFactory.newInstance();
+        SAXParser sp = spf.newSAXParser();
+        XMLReader xr = sp.getXMLReader();
 
-		xr.setContentHandler(dh);
-		xr.parse(new InputSource(new FileInputStream(f)));
-	}
+        xr.setContentHandler(dh);
+        xr.parse(new InputSource(new FileInputStream(f)));
+    }
 
-	public void fpGenericList(List<String> ss) {
-		Object s = ss.get(0);
-	}
+    public void fpGenericList(List<String> ss) {
+        Object s = ss.get(0);
+    }
 
-	// no tag, x only exists in B, not A
-	public void falsePositive(B b) {
-		b.test();
-		b.x = 4;
-	}
+    // no tag, x only exists in B, not A
+    public void falsePositive(B b) {
+        b.test();
+        b.x = 4;
+    }
 
-	// no tag, we are returning the Color object
-	public Color fpGetColor(Color c) {
-		return c;
-	}
+    // no tag, we are returning the Color object
+    public Color fpGetColor(Color c) {
+        return c;
+    }
 
-	public void fpTooManyAbstractChoices(Legion l) {
-		if (l == null) {
-			return;
-		}
-	}
+    public void fpTooManyAbstractChoices(Legion l) {
+        if (l == null) {
+            return;
+        }
+    }
 
-	public static interface A {
-		public void test();
+    public static interface A {
+        public void test();
 
-		public void fp() throws IOException;
-	}
+        public void fp() throws IOException;
+    }
 
-	public static class B implements A {
-		public int x = 0;
+    public static class B implements A {
+        public int x = 0;
 
-		@Override
-		public void test() {
+        @Override
+        public void test() {
 
-		}
+        }
 
-		@Override
-		public void fp() {
+        @Override
+        public void fp() {
 
-		}
-	}
+        }
+    }
 
-	public static interface C {
-		public void cee();
-	}
+    public static interface C {
+        public void cee();
+    }
 
-	public static interface D {
-		public void dee();
-	}
+    public static interface D {
+        public void dee();
+    }
 
-	public static class Legion implements A, C, D {
+    public static class Legion implements A, C, D {
 
-		@Override
-		public void dee() {
-		}
+        @Override
+        public void dee() {
+        }
 
-		@Override
-		public void cee() {
-		}
+        @Override
+        public void cee() {
+        }
 
-		@Override
-		public void test() {
-		}
+        @Override
+        public void test() {
+        }
 
-		@Override
-		public void fp() throws IOException {
-		}
+        @Override
+        public void fp() throws IOException {
+        }
 
-	}
+    }
 
-	// no tag, we are overriding actionPerformed()
-	@Override
-	public void actionPerformed(ActionEvent ae) {
+    // no tag, we are overriding actionPerformed()
+    @Override
+    public void actionPerformed(ActionEvent ae) {
 
-	}
+    }
 
-	// no tag, B's fp() doesn't throw an exception, but its interface (A) does
-	public void ocpFalseFPDueToExceptionSig(B b) {
-		b.fp();
-	}
+    // no tag, B's fp() doesn't throw an exception, but its interface (A) does
+    public void ocpFalseFPDueToExceptionSig(B b) {
+        b.fp();
+    }
 
-	@Override // no tag, override
-	public void usesOCP(LinkedList<String> ll) {
-		ll.add("foo");
-	}
+    @Override // no tag, override
+    public void usesOCP(LinkedList<String> ll) {
+        ll.add("foo");
+    }
 
-	// no tag, Storing the object
-	public void testFPaastore(Color c) {
-		Color[] cc = new Color[] { c, c };
-	}
+    // no tag, Storing the object
+    public void testFPaastore(Color c) {
+        Color[] cc = new Color[] { c, c };
+    }
 
-	// no tag, isn't used
-	private void readObject(ObjectInputStream ois) {
+    // no tag, isn't used
+    private void readObject(ObjectInputStream ois) {
 
-	}
+    }
 
-	// tag OCP request -> HTTPMessage
-	public static void httpComponent(HttpPut request, String auth) {
-		auth = auth + "password";
-		request.addHeader("Authorization", Base64.encodeBase64String(auth.getBytes(StandardCharsets.UTF_8)));
-	}
+    // tag OCP request -> HTTPMessage
+    public static void httpComponent(HttpPut request, String auth) {
+        auth = auth + "password";
+        request.addHeader("Authorization", Base64.encodeBase64String(auth.getBytes(StandardCharsets.UTF_8)));
+    }
 
-	// should tag OCP request -> HTTPMessage, but doesnt
-	public static void httpComponentWithTryFalseNegative(HttpPut request, String auth) {
-		auth = auth + "password";
-		try {
-			// this will probably be tagged with
-			// CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET, if compiled under JDK 7
-			// or later
-			request.addHeader("Authorization", Base64.encodeBase64String(auth.getBytes("UTF-8")));
-		} catch (UnsupportedEncodingException e) {
-			logger.fatal("There was a problem encoding " + auth, e);
-		}
-	}
+    // should tag OCP request -> HTTPMessage, but doesnt
+    public static void httpComponentWithTryFalseNegative(HttpPut request, String auth) {
+        auth = auth + "password";
+        try {
+            // this will probably be tagged with
+            // CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET, if compiled under JDK 7
+            // or later
+            request.addHeader("Authorization", Base64.encodeBase64String(auth.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            logger.fatal("There was a problem encoding " + auth, e);
+        }
+    }
 
-	// tag OCP request -> HTTPMessage
-	public static void httpComponentWithTry(HttpPut request, String auth) {
-		auth = auth + "password";
-		try {
-			// this will probably be tagged with
-			// CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET, if compiled under JDK 7
-			// or later
-			request.addHeader("Authorization", Base64.encodeBase64String(auth.getBytes("UTF-8")));
-		} catch (UnsupportedEncodingException e) {
-			e.printStackTrace();
-		}
-	}
+    // tag OCP request -> HTTPMessage
+    public static void httpComponentWithTry(HttpPut request, String auth) {
+        auth = auth + "password";
+        try {
+            // this will probably be tagged with
+            // CSI_CHAR_SET_ISSUES_USE_STANDARD_CHARSET, if compiled under JDK 7
+            // or later
+            request.addHeader("Authorization", Base64.encodeBase64String(auth.getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+    }
 
-	public Date fpParmAnnot(@NiftyParm GregorianCalendar g) {
-		return g.getTime();
-	}
+    public Date fpParmAnnot(@NiftyParm GregorianCalendar g) {
+        return g.getTime();
+    }
 }
 
 @Retention(RetentionPolicy.CLASS)
@@ -216,40 +216,40 @@ public class OCP_Sample extends Z implements ActionListener, Serializable {
 }
 
 class Z {
-	@SuppressWarnings("unused")
-	public void usesOCP(LinkedList<String> ll) {
-	}
+    @SuppressWarnings("unused")
+    public void usesOCP(LinkedList<String> ll) {
+    }
 }
 
 class fpOverride {
-	@SuppressWarnings("deprecation")
-	public static final Comparator<Date> COMPARATOR = new Comparator<Date>() {
+    @SuppressWarnings("deprecation")
+    public static final Comparator<Date> COMPARATOR = new Comparator<Date>() {
 
-		@Override // no tag, override
-		public int compare(Date o1, Date o2) {
-			return o1.getYear() - o2.getYear();
-		}
-	};
+        @Override // no tag, override
+        public int compare(Date o1, Date o2) {
+            return o1.getYear() - o2.getYear();
+        }
+    };
 }
 
 class fpGenericConstrainedInterface implements Comparator<GregorianCalendar> {
-	// this method is really suspect, but will ignore this case
-	@Override
-	public int compare(GregorianCalendar c1, GregorianCalendar c2) {
-		if (c2.getGregorianChange() == null) {
-			return (int) (c1.getTime().getTime() - c2.getTime().getTime());
-		} else {
-			return 0;
-		}
-	}
+    // this method is really suspect, but will ignore this case
+    @Override
+    public int compare(GregorianCalendar c1, GregorianCalendar c2) {
+        if (c2.getGregorianChange() == null) {
+            return (int) (c1.getTime().getTime() - c2.getTime().getTime());
+        } else {
+            return 0;
+        }
+    }
 }
 
 class fpOverloaded270 {
-	public boolean fpProcessSet(HashSet<String> s) {
-		return s.contains("boo");
-	}
+    public boolean fpProcessSet(HashSet<String> s) {
+        return s.contains("boo");
+    }
 
-	public boolean fpProcessSet(TreeSet<String> s) {
-		return s.contains("boo");
-	}
+    public boolean fpProcessSet(TreeSet<String> s) {
+        return s.contains("boo");
+    }
 }
