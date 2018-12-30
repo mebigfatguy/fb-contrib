@@ -199,9 +199,8 @@ public class ImmatureClass extends BytecodeScanningDetector {
 			try {
 				if ("serialVersionUID".equals(f.getName())
 						&& getClassContext().getJavaClass().instanceOf(serializableClass)) {
-					Object o = f.getConstantValue();
-					if (o instanceof ConstantValue) {
-						ConstantValue cv = (ConstantValue) o;
+					ConstantValue cv = f.getConstantValue();
+					if (cv != null) {
 						Constant c = cv.getConstantPool().getConstant(cv.getConstantValueIndex());
 						if (c instanceof ConstantLong) {
 							long definedUUID = ((ConstantLong) c).getBytes();
