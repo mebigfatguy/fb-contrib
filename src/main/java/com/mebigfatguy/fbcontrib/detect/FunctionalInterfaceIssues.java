@@ -285,7 +285,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
 						int lastOp = getPrevOpcode(1);
 						FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this),
-								OpcodeUtils.isALoad(lastOp) || (lastOp == GETFIELD) || (lastOp == GETSTATIC));
+								(lastOp == GETFIELD) || (lastOp == GETSTATIC) || OpcodeUtils.isALoad(lastOp));
 						fiis.add(fii);
 					}
 					break;
