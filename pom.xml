@@ -4,9 +4,9 @@
     xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>com.mebigfatguy.fb-contrib</groupId>
-    <artifactId>fb-contrib</artifactId>
-    <version>7.4.4.sb</version>
+    <groupId>com.mebigfatguy.sb-contrib</groupId>
+    <artifactId>sb-contrib</artifactId>
+    <version>7.4.5-SNAPSHOT</version>
 
     <!-- TODO: Oss parent is obsolete, define items directly for releasing -->
     <parent>
@@ -377,16 +377,16 @@
                     <configuration>
                         <archive>
                             <manifestEntries>
-                                <fb-contrib-version>${project.version}</fb-contrib-version>
+                                <sb-contrib-version>${project.version}</sb-contrib-version>
                                 <Main-Class>com.mebigfatguy.fbcontrib.FBContrib</Main-Class>
                                 <git-revision>${scmBranch} ${buildNumber} ${maven.build.timestamp}</git-revision>
                                 <Eclipse-RegisterBuddy>edu.umd.cs.findbugs.plugin.eclipse</Eclipse-RegisterBuddy>
                                 <Bundle-ManifestVersion>2</Bundle-ManifestVersion>
-                                <Bundle-Name>fb-contrib plugin</Bundle-Name>
-                                <Bundle-SymbolicName>fb-contrib; singleton:=true</Bundle-SymbolicName>
+                                <Bundle-Name>sb-contrib plugin</Bundle-Name>
+                                <Bundle-SymbolicName>sb-contrib; singleton:=true</Bundle-SymbolicName>
                                 <Bundle-Version>${project.version}</Bundle-Version>
                                 <Bundle-ClassPath>.</Bundle-ClassPath>
-                                <Bundle-Vendor>FB-Contrib Project</Bundle-Vendor>
+                                <Bundle-Vendor>SB-Contrib Project</Bundle-Vendor>
                                 <Require-Bundle>edu.umd.cs.findbugs.plugin.eclipse</Require-Bundle>
                                 <Bundle-ActivationPolicy>lazy</Bundle-ActivationPolicy>
                                 <Export-Package>com.mebigfatguy.fbcontrib.collect, com.mebigfatguy.fbcontrib.detect,
@@ -554,8 +554,8 @@
                     <effort>Max</effort>
                     <plugins>
                         <plugin>
-                            <groupId>com.mebigfatguy.fb-contrib</groupId>
-                            <artifactId>fb-contrib</artifactId>
+                            <groupId>com.mebigfatguy.sb-contrib</groupId>
+                            <artifactId>sb-contrib</artifactId>
                             <version>${project.version}</version>
                         </plugin>
                     </plugins>

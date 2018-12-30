@@ -1,6 +1,6 @@
-<!-- fb-contrib Ant build script. Dave Brosius -->
+<!-- sb-contrib Ant build script. Dave Brosius -->
 
-<project name="fb-contrib" default="default">
+<project name="sb-contrib" default="default">
 
 	<presetdef name="javac">
 		<javac encoding="UTF-8" />
@@ -31,16 +31,16 @@
 	<property name="javac.debug" value="on" />
 	<property name="test_reports.dir" value="${target.dir}/reports/test"/>
 
-	<property name="fb-contrib.version" value="7.4.4.sb" />
+	<property name="sb-contrib.version" value="7.4.5-SNAPSHOT" />
 	
-	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
+	<property name="sonatype.dir" value="${user.home}/.sb-contrib-${sb-contrib.version}-sonatype" />
 	
 	<target name="clean" description="removes all generated collateral">
 		<delete dir="${target.dir}" />
 		<delete file="${htdocs.dir}/bugdescriptions.html" />
 	</target>
 	
-	<target name="infra_jars" description="pull jars needed to build fb-contrib to ${user.dir}/.ant/lib">
+	<target name="infra_jars" description="pull jars needed to build sb-contrib to ${user.dir}/.ant/lib">
 		<mkdir dir="${user.home}/.ant/lib" />
 		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/2.0.1/yank-2.0.1.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://bitbucket.org/kjlubick/bugrankcheckstyle/downloads/bug-rank-check-style-1.0.0.jar" dest="${user.home}/.ant/lib"/>
@@ -58,9 +58,9 @@
     </target>
     
     <target name="info">
-        <echo message="fb-contrib - a findbugs plugin"/>
+        <echo message="sb-contrib - a spotbugs plugin"/>
         <echo message=""/>
-    	<echo message="    This project requires three jars to build fb-contrib: yank, bug-rank-check-style, vcsversion and" />
+    	<echo message="    This project requires three jars to build sb-contrib: yank, bug-rank-check-style, vcsversion and" />
     	<echo message="    and optionally fb-delta, to generate delta's of bug reports, as well as stringliterals to dump"/>
     	<echo message="    a report of all string literals used in the code"/>    	
     	<echo message=""/>
@@ -98,7 +98,7 @@
 		<mkdir dir="${test.classes.dir}" />
 		<mkdir dir="${samples.classes.dir}" />
 		<mkdir dir="${javadoc.dir}" />
-		<path id="fb-contrib.classpath">
+		<path id="sb-contrib.classpath">
 			<pathelement location="${lib.dir}/spotbugs-${spotbugs.version}.jar" />
 			<pathelement location="${lib.dir}/bcel-${bcel.version}.jar" />
 			<pathelement location="${lib.dir}/spotbugs-annotations-${spotbugs-annotations.version}.jar" />
@@ -107,7 +107,7 @@
 			<pathelement location="${lib.dir}/jsr305-${jsr305.version}.jar" />
 			<pathelement location="${main.classes.dir}" />
 		</path>
-		<path id="fb-contrib.test.classpath">
+		<path id="sb-contrib.test.classpath">
 			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
 			<pathelement location="${lib.dir}/jcommander-${jcommander.version}.jar" />
             <pathelement location="${lib.dir}/mockito-core-${mockito-core.version}.jar" />
@@ -118,7 +118,7 @@
 			<pathelement location="${spotbugs.dir}/lib/jaxen-1.1.6.jar" />
 			
 		</path>
-		<path id="fb-contrib.samples.classpath">
+		<path id="sb-contrib.samples.classpath">
 			<pathelement location="${lib.dir}/asm-debug-all-${asm-debug-all.version}.jar" />
 			<pathelement location="${lib.dir}/javax.servlet.jsp-api-${javax.servlet.jsp-api.version}.jar" />
 			<pathelement location="${lib.dir}/junit-${junit.version}.jar" />
@@ -165,28 +165,28 @@
 
 	<target name="compile" depends="-init" description="compiles java files">
 		<javac srcdir="${src.dir}" destdir="${main.classes.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
-			<classpath refid="fb-contrib.classpath" />
+			<classpath refid="sb-contrib.classpath" />
 		</javac>
 	</target>
 	
 	<target name="compile_test" depends="compile" description="compiles java test files">
 		<javac srcdir="${test.dir}" destdir="${test.classes.dir}" source="${javac.source}" target="${javac.target}" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
-			<classpath refid="fb-contrib.classpath" />
-			<classpath refid="fb-contrib.test.classpath" />
+			<classpath refid="sb-contrib.classpath" />
+			<classpath refid="sb-contrib.test.classpath" />
 		</javac>
 	</target>
 
 	<target name="compile_samples" depends="-init" description="compiles sample problem files">
 		<javac srcdir="${samples.dir}" destdir="${samples.classes.dir}" source="1.8" target="1.8" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
         	<compilerarg value="-XDignore.symbol.file"/>
-			<classpath refid="fb-contrib.classpath" />
-			<classpath refid="fb-contrib.samples.classpath" />
+			<classpath refid="sb-contrib.classpath" />
+			<classpath refid="sb-contrib.samples.classpath" />
 		</javac>
 		<delete file="${samples.dir}/SJVU_Sample.class" />
 		<javac srcdir="${samples.dir}" destdir="${samples.classes.dir}" source="1.4" target="1.4" deprecation="${javac.deprecation}" debug="${javac.debug}" includeantruntime="false">
 			<include name="SJVU_Sample.java" />
-			<classpath refid="fb-contrib.classpath" />
-			<classpath refid="fb-contrib.samples.classpath" />
+			<classpath refid="sb-contrib.classpath" />
+			<classpath refid="sb-contrib.samples.classpath" />
 		</javac>
 	</target>
 	
@@ -196,15 +196,15 @@
 
 		<testng outputDir="${test_reports.dir}">
 			<classfileset dir="${test.classes.dir}" includes="**/*.class"/>
-			<classpath refid="fb-contrib.classpath"/>
-			<classpath refid="fb-contrib.test.classpath"/>
+			<classpath refid="sb-contrib.classpath"/>
+			<classpath refid="sb-contrib.test.classpath"/>
 			<classpath location="${test.classes.dir}"/>
 		</testng>
 	</target>
 
-	<target name="jar" depends="compile" xmlns:vcs="antlib:com.mebigfatguy.vcsversion" description="produces the fb-contrib jar file">
+	<target name="jar" depends="compile" xmlns:vcs="antlib:com.mebigfatguy.vcsversion" description="produces the sb-contrib jar file">
 		<vcs:vcsversion vcs="git" revisionProperty="_rev_" dateProperty="_date_" branchProperty="_branch_" urlProperty="_url_"/>
-		<jar destfile="${target.dir}/fb-contrib-${fb-contrib.version}.jar">
+		<jar destfile="${target.dir}/sb-contrib-${sb-contrib.version}.jar">
 			<fileset dir="etc">
 				<include name="findbugs.xml" />
 				<include name="messages*.xml" />
@@ -219,7 +219,7 @@
 				<include name="license.txt" />
 			</fileset>
 			<manifest>
-				<attribute name="fb-contrib-version" value="${fb-contrib.version}" />
+				<attribute name="sb-contrib-version" value="${sb-contrib.version}" />
 				<attribute name="Main-Class" value="com.mebigfatguy.fbcontrib.FBContrib" />
 				<attribute name="git-url" value="${_url_}" />
 				<attribute name="git-branch" value="${_branch_}" />
@@ -227,11 +227,11 @@
 				<attribute name="git-date" value="${_date_}" />
 				<attribute name="Eclipse-RegisterBuddy" value="edu.umd.cs.findbugs.plugin.eclipse" />
 				<attribute name="Bundle-ManifestVersion" value="2" />
-				<attribute name="Bundle-Name" value="fb-contrib plugin" />
-				<attribute name="Bundle-SymbolicName" value="fb-contrib; singleton:=true" />
-				<attribute name="Bundle-Version" value="${fb-contrib.version}" />
+				<attribute name="Bundle-Name" value="sb-contrib plugin" />
+				<attribute name="Bundle-SymbolicName" value="sb-contrib; singleton:=true" />
+				<attribute name="Bundle-Version" value="${sb-contrib.version}" />
 				<attribute name="Bundle-ClassPath" value="." />
-				<attribute name="Bundle-Vendor" value="FB-Contrib Project" />
+				<attribute name="Bundle-Vendor" value="SB-Contrib Project" />
 				<attribute name="Require-Bundle" value="edu.umd.cs.findbugs.plugin.eclipse" />
 				<attribute name="Bundle-ActivationPolicy" value="lazy" />
 				<attribute name="Export-Package" value="com.mebigfatguy.fbcontrib, com.mebigfatguy.fbcontrib.collect, com.mebigfatguy.fbcontrib.detect, com.mebigfatguy.fbcontrib.debug, com.mebigfatguy.fbcontrib.utils" />
@@ -245,7 +245,7 @@
 	</target>
 
 	<target name="srczip" description="builds the source distribution zip file">
-		<zip destfile="${target.dir}/fb-contrib-src-${fb-contrib.version}.zip">
+		<zip destfile="${target.dir}/sb-contrib-src-${sb-contrib.version}.zip">
 			<fileset dir="${basedir}">
 				<include name="**/*.java" />
 				<include name="**/*.xml" />
@@ -261,8 +261,8 @@
 	</target>
 
 	<target name="javadoc" depends="-init" description="build the javadoc for the project">
-		<javadoc packagenames="com.mebigfatguy.*" sourcepath="${src.dir}" classpathref="fb-contrib.classpath" destdir="${javadoc.dir}" windowtitle="fb-contrib api" access="private">
-			<doctitle><![CDATA[<h1>fb-contrib javadoc</h1>]]></doctitle>
+		<javadoc packagenames="com.mebigfatguy.*" sourcepath="${src.dir}" classpathref="sb-contrib.classpath" destdir="${javadoc.dir}" windowtitle="sb-contrib api" access="private">
+			<doctitle><![CDATA[<h1>sb-contrib javadoc</h1>]]></doctitle>
 			<bottom><![CDATA[<i>Copyright &#169; 2005-2018 MeBigFatGuy.com. All Rights Reserved.</i>]]></bottom>
 		</javadoc>
 	</target>
@@ -270,18 +270,18 @@
 	<target name="build" depends="-init, validate_xml, compile, compile_test, compile_samples, test, jar" description="builds the plugin jar">
 	</target>
 
-	<target name="install" depends="build" description="installs the plugin into FindBugs">
-		<echo message="Findbugs: ${spotbugs.dir}/plugin"/>		
+	<target name="install" depends="build" description="installs the plugin into spotbugs">
+		<echo message="Spotbugs: ${spotbugs.dir}/plugin"/>		
 		<copy todir="${spotbugs.dir}/plugin">
 			<fileset dir="${target.dir}">
-				<include name="fb-contrib-${fb-contrib.version}.jar" />
+				<include name="sb-contrib-${sb-contrib.version}.jar" />
 			</fileset>
 		</copy>
 	</target>
 	
 	<target name="sample_delta" depends="install" xmlns:fbdelta="antlib:com.mebigfatguy.fbdelta" description="compares this runs reported bugs on the sample classes set, against the stored report">
 		<taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${lib.dir}/findbugs-ant-${findbugs-ant.version}.jar"/>
-		<findbugs reportlevel="low" home="${spotbugs.dir}" auxClassPathRef="fb-contrib.samples.classpath" output="xml:withMessages" jvmargs="-ea -Xmx800m" projectName="Samples" outputFile="${target.dir}/samples.xml">
+		<findbugs reportlevel="low" home="${spotbugs.dir}" auxClassPathRef="sb-contrib.samples.classpath" output="xml:withMessages" jvmargs="-ea -Xmx800m" projectName="Samples" outputFile="${target.dir}/samples.xml">
 		      <class location="${samples.classes.dir}" />
 		</findbugs>
 		
@@ -308,28 +308,28 @@
 
     <target name="sonatype" depends="release" description="prepare an artifact bundle for sonatype">
         <mkdir dir="${sonatype.dir}"/>
-        <copy todir="${sonatype.dir}" file="${target.dir}/fb-contrib-${fb-contrib.version}.jar"/>
-        <copy tofile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-sources.jar" file="${target.dir}/fb-contrib-src-${fb-contrib.version}.zip"/>
-        <jar destfile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
-        <copy tofile="${sonatype.dir}/fb-contrib-${fb-contrib.version}.pom" file="${basedir}/pom.xml"/>
+        <copy todir="${sonatype.dir}" file="${target.dir}/sb-contrib-${sb-contrib.version}.jar"/>
+        <copy tofile="${sonatype.dir}/sb-contrib-${sb-contrib.version}-sources.jar" file="${target.dir}/sb-contrib-src-${sb-contrib.version}.zip"/>
+        <jar destfile="${sonatype.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
+        <copy tofile="${sonatype.dir}/sb-contrib-${sb-contrib.version}.pom" file="${basedir}/pom.xml"/>
         
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}.jar" />
+            <arg value="${sonatype.dir}/sb-contrib-${sb-contrib.version}.jar" />
         </exec>
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}.pom" />
+            <arg value="${sonatype.dir}/sb-contrib-${sb-contrib.version}.pom" />
         </exec>
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}-sources.jar" />
+            <arg value="${sonatype.dir}/sb-contrib-${sb-contrib.version}-sources.jar" />
         </exec>        
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" />
+            <arg value="${sonatype.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" />
         </exec>
-        <jar destfile="${sonatype.dir}/bundle.jar" basedir="${sonatype.dir}" includes="fb-contrib*">
+        <jar destfile="${sonatype.dir}/bundle.jar" basedir="${sonatype.dir}" includes="sb-contrib*">
         </jar>
         <echo message="" />
         <echo message="" />
