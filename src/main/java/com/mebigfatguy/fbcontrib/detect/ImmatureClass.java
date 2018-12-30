@@ -41,6 +41,9 @@ public class ImmatureClass extends BytecodeScanningDetector {
 
     private static final int MAX_EMPTY_METHOD_SIZE = 2; // ACONST_NULL, ARETURN
 
+    private static final int MANUAL_SERIALVERSION_ID_LOWER_BOUND = 0;
+    private static final int MANUAL_SERIALVERSION_ID_UPPER_BOUND = 10000;
+
     private static JavaClass serializableClass;
 
     static {
@@ -197,13 +200,13 @@ public class ImmatureClass extends BytecodeScanningDetector {
             try {
                 if ("serialVersionUID".equals(f.getName())
                         && getClassContext().getJavaClass().instanceOf(serializableClass)) {
-                    Object o = f.getConstantValue();
-                    if (o instanceof ConstantValue) {
-                        ConstantValue cv = (ConstantValue) o;
+                    ConstantValue cv = f.getConstantValue();
+                    if (cv != null) {
                         Constant c = cv.getConstantPool().getConstant(cv.getConstantValueIndex());
                         if (c instanceof ConstantLong) {
                             long definedUUID = ((ConstantLong) c).getBytes();
-                            if (definedUUID < 0 || definedUUID > 10000) {
+                            if (definedUUID < MANUAL_SERIALVERSION_ID_LOWER_BOUND
+                                    || definedUUID > MANUAL_SERIALVERSION_ID_UPPER_BOUND) {
                                 try {
                                     long computedUUID = SerialVersionCalc.uuid(getClassContext().getJavaClass());
                                     if (computedUUID != definedUUID) {

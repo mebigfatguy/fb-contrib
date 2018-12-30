@@ -41,7 +41,8 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
- * an abstract base class for WriteOnlyCollections and HttpClientProblems, looks for calls that are expected to be made, but are not.
+ * an abstract base class for WriteOnlyCollections and HttpClientProblems, looks
+ * for calls that are expected to be made, but are not.
  */
 public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
@@ -62,8 +63,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     /**
      * overrides the visitor to initialize and tear down the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -82,7 +82,8 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 for (Map.Entry<String, String> entry : fieldSpecialObjects.entrySet()) {
                     String fieldName = entry.getKey();
                     String signature = entry.getValue();
-                    bugReporter.reportBug(makeFieldBugInstance().addClass(this).addField(clsName, fieldName, signature, false));
+                    bugReporter.reportBug(
+                            makeFieldBugInstance().addClass(this).addField(clsName, fieldName, signature, false));
                 }
             }
         } finally {
@@ -108,8 +109,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     /**
      * overrides the visitor reset the stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -120,15 +120,16 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         super.visitCode(obj);
 
         for (Integer pc : localSpecialObjects.values()) {
-            bugReporter.reportBug(makeLocalBugInstance().addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
+            bugReporter.reportBug(
+                    makeLocalBugInstance().addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
         }
     }
 
     /**
-     * overrides the visitor to look for uses of collections where the only access to to the collection is to write to it
+     * overrides the visitor to look for uses of collections where the only access
+     * to to the collection is to write to it
      *
-     * @param seen
-     *            the opcode of the currently visited instruction
+     * @param seen the opcode of the currently visited instruction
      */
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_FALLTHROUGH", justification = "This fall-through is deliberate and documented")
     @Override
@@ -149,29 +150,29 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         try {
             switch (seen) {
                 case Const.INVOKESPECIAL:
-                    userObject = sawInvokeSpecial(userObject);
+                userObject = sawInvokeSpecial(userObject);
                 break;
                 case Const.INVOKEINTERFACE:
                 case Const.INVOKEVIRTUAL:
-                    sawInvokeInterfaceVirtual();
+                sawInvokeInterfaceVirtual();
                 break;
                 case Const.INVOKESTATIC:
-                    userObject = sawInvokeStatic(userObject);
-                    //$FALL-THROUGH$
+                userObject = sawInvokeStatic(userObject);
+                //$FALL-THROUGH$
                 case Const.INVOKEDYNAMIC:
-                    processMethodParms();
+                processMethodParms();
                 break;
                 case Const.ARETURN:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        clearUserValue(item);
-                    } else {
-                        // bad findbugs bug, which clears the stack after an ALOAD, in some cases
-                        int prevOp = getPrevOpcode(1);
-                        if (OpcodeUtils.isALoad(prevOp)) {
-                            localSpecialObjects.clear();
-                        }
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    clearUserValue(item);
+                } else {
+                    // bad findbugs bug, which clears the stack after an ALOAD, in some cases
+                    int prevOp = getPrevOpcode(1);
+                    if (OpcodeUtils.isALoad(prevOp)) {
+                        localSpecialObjects.clear();
                     }
+                }
                 break;
 
                 case Const.ASTORE_0:
@@ -179,7 +180,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 case Const.ASTORE_2:
                 case Const.ASTORE_3:
                 case Const.ASTORE:
-                    sawAStore(seen);
+                sawAStore(seen);
                 break;
 
                 case Const.ALOAD_0:
@@ -187,45 +188,45 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 case Const.ALOAD_2:
                 case Const.ALOAD_3:
                 case Const.ALOAD:
-                    userObject = sawLoad(seen, userObject);
+                userObject = sawLoad(seen, userObject);
                 break;
 
                 case Const.AASTORE:
-                    if (stack.getStackDepth() >= 3) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        clearUserValue(item);
-                    }
+                if (stack.getStackDepth() >= 3) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    clearUserValue(item);
+                }
                 break;
 
                 case Const.PUTFIELD:
-                    sawPutField();
+                sawPutField();
                 break;
 
                 case Const.GETFIELD:
-                    userObject = sawGetField(userObject);
+                userObject = sawGetField(userObject);
                 break;
 
                 case Const.PUTSTATIC:
-                    sawPutStatic();
+                sawPutStatic();
                 break;
 
                 case Const.GETSTATIC:
-                    userObject = sawGetStatic(userObject);
+                userObject = sawGetStatic(userObject);
                 break;
 
                 case Const.GOTO:
                 case Const.IFNULL:
                 case Const.IFNONNULL:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        Object uo = item.getUserValue();
-                        if ((uo != null) && !(uo instanceof Boolean)) {
-                            clearUserValue(item);
-                        }
-                        sawTernary = true;
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    Object uo = item.getUserValue();
+                    if ((uo != null) && !(uo instanceof Boolean)) {
+                        clearUserValue(item);
                     }
+                    sawTernary = true;
+                }
                 break;
-                default:
+            default:
                 break;
             }
         } finally {
@@ -341,8 +342,10 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         return returnValue;
     }
 
+    // TODO: returning two types of objects,this awful, need to fix at some point
     private Object sawInvokeStatic(Object userObject) {
-        if (doesStaticFactoryReturnNeedToBeWatched(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand())) {
+        if (doesStaticFactoryReturnNeedToBeWatched(getClassConstantOperand(), getNameConstantOperand(),
+                getSigConstantOperand())) {
             return Boolean.TRUE;
         }
         return userObject;
@@ -390,10 +393,12 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     }
 
     /**
-     * Checks to see if any of the locals or fields that we are tracking are passed into another method. If they are, we clear out our tracking of them, because
+     * Checks to see if any of the locals or fields that we are tracking are passed
+     * into another method. If they are, we clear out our tracking of them, because
      * we can't easily track their progress into the method.
      *
-     * This can be overridden to check for exceptions to this rule, for example, being logged to the console not counting.
+     * This can be overridden to check for exceptions to this rule, for example,
+     * being logged to the console not counting.
      */
     protected void processMethodParms() {
         String sig = getSigConstantOperand();
@@ -407,10 +412,10 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     }
 
     /**
-     * informs the missing method detector that a field should no longer be considered special
+     * informs the missing method detector that a field should no longer be
+     * considered special
      *
-     * @param name
-     *            the name of the field
+     * @param name the name of the field
      */
     protected void clearSpecialField(String name) {
         fieldSpecialObjects.remove(name);
@@ -422,7 +427,8 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
     protected abstract boolean doesObjectNeedToBeWatched(@DottedClassName String type);
 
-    protected abstract boolean doesStaticFactoryReturnNeedToBeWatched(String clsName, String methodName, String signature);
+    protected abstract boolean doesStaticFactoryReturnNeedToBeWatched(String clsName, String methodName,
+            String signature);
 
     protected abstract boolean isMethodThatShouldBeCalled(String methodName);
 

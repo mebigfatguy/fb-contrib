@@ -64,7 +64,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     private static final String USER_NULLABLE_ANNOTATIONS = "fb-contrib.ai.annotations";
 
     private static final Set<String> IS_EMPTY_SIGNATURES = UnmodifiableSet.create(
-    // @formatter:off
+            // @formatter:off
             new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build(),
             new SignatureBuilder().withParamTypes(Map.class).withReturnType(boolean.class).build()
     // @formatter:on
@@ -121,8 +121,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     /**
      * constructs a AI detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public AnnotationIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -175,22 +174,27 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         }
 
         if (NOTABLE_EXCEPTIONS.contains(new FQMethod(getClassName(), method.getName(), sig))) {
-            MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
+            MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
+                    method.getSignature());
             methodInfo.setCanReturnNull(false);
             return;
         }
 
         if (methodHasNullableAnnotation(method)) {
             if (isCollecting()) {
-                MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
+                MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
+                        method.getSignature());
                 methodInfo.setCanReturnNull(true);
             }
             return;
         }
 
-        MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(), method.getSignature());
+        MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
+                method.getSignature());
         if (!isCollecting() && methodInfo.getCanReturnNull()) {
-            bugReporter.reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
+            bugReporter
+                    .reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY)
+                            .addClass(this).addMethod(this));
         } else {
 
             methodIsNullable = false;
@@ -209,8 +213,9 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 if (isCollecting()) {
                     methodInfo.setCanReturnNull(true);
                 } else {
-                    bugReporter
-                            .reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY).addClass(this).addMethod(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY)
+                                    .addClass(this).addMethod(this));
                 }
             }
         }
@@ -238,84 +243,85 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         try {
             switch (seen) {
                 case Const.ARETURN: {
-                    if (!methodIsNullable && (stack.getStackDepth() > 0)) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        Integer reg = Integer.valueOf(itm.getRegisterNumber());
-                        methodIsNullable = !assumedNonNullTill.containsKey(reg) && (!noAssumptionsPossible.contains(reg)
-                                && ((assumedNullTill.containsKey(reg)) || isStackElementNullable(getClassName(), getMethod(), itm)));
-                        if (methodIsNullable) {
-                            throw new StopOpcodeParsingException();
-                        }
+                if (!methodIsNullable && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    Integer reg = Integer.valueOf(itm.getRegisterNumber());
+                    methodIsNullable = !assumedNonNullTill.containsKey(reg)
+                            && (!noAssumptionsPossible.contains(reg) && ((assumedNullTill.containsKey(reg))
+                                    || isStackElementNullable(getClassName(), getMethod(), itm)));
+                    if (methodIsNullable) {
+                        throw new StopOpcodeParsingException();
                     }
-                    break;
                 }
+                break;
+            }
 
                 case Const.IFNONNULL:
-                    if (getBranchOffset() > 0) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            int reg = itm.getRegisterNumber();
-                            if (reg >= 0) {
-                                assumedNullTill.put(reg, getBranchTarget());
-                            }
+                if (getBranchOffset() > 0) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        int reg = itm.getRegisterNumber();
+                        if (reg >= 0) {
+                            assumedNullTill.put(reg, getBranchTarget());
                         }
                     }
+                }
                 break;
 
                 case Const.IFNULL:
-                    if (getBranchOffset() > 0) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            int reg = itm.getRegisterNumber();
-                            if (reg >= 0) {
-                                assumedNonNullTill.put(reg, getBranchTarget());
-                            }
+                if (getBranchOffset() > 0) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        int reg = itm.getRegisterNumber();
+                        if (reg >= 0) {
+                            assumedNonNullTill.put(reg, getBranchTarget());
                         }
                     }
+                }
                 break;
 
                 case Const.IFEQ:
-                    if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        AIUserValue uv = (AIUserValue) itm.getUserValue();
-                        if ((uv != null) && (uv.reg >= 0)) {
-                            assumedNullTill.put(uv.reg, getBranchTarget());
-                        }
+                if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    AIUserValue uv = (AIUserValue) itm.getUserValue();
+                    if ((uv != null) && (uv.reg >= 0)) {
+                        assumedNullTill.put(uv.reg, getBranchTarget());
                     }
+                }
                 break;
 
                 case Const.INVOKESTATIC:
-                    if (stack.getStackDepth() > 0) {
-                        String signature = getSigConstantOperand();
-                        if (IS_EMPTY_SIGNATURES.contains(signature)) {
-                            String methodName = getNameConstantOperand();
-                            if ("isEmpty".equals(methodName)) {
-                                OpcodeStack.Item item = stack.getStackItem(0);
-                                int reg = item.getRegisterNumber();
-                                if (reg >= 0) {
-                                    userValue = new AIUserValue(reg);
-                                    break;
-                                }
+                if (stack.getStackDepth() > 0) {
+                    String signature = getSigConstantOperand();
+                    if (IS_EMPTY_SIGNATURES.contains(signature)) {
+                        String methodName = getNameConstantOperand();
+                        if ("isEmpty".equals(methodName)) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            int reg = item.getRegisterNumber();
+                            if (reg >= 0) {
+                                userValue = new AIUserValue(reg);
+                                break;
                             }
                         }
                     }
+                }
 
-                    // $FALL-THROUGH$
+                // $FALL-THROUGH$
                 case Const.INVOKEINTERFACE:
                 case Const.INVOKEVIRTUAL: {
-
-                    boolean resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand()));
-                    if (resultIsNullable) {
-                        userValue = new AIUserValue(-1);
-                    }
-                    break;
+                boolean resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand()));
+                if (resultIsNullable) {
+                    userValue = new AIUserValue(-1);
                 }
+                break;
+            }
 
                 case Const.ATHROW: {
-                    removeAssumptions(assumedNonNullTill);
-                    removeAssumptions(assumedNullTill);
-                    break;
-                }
+                removeAssumptions(assumedNonNullTill);
+                removeAssumptions(assumedNullTill);
+                break;
+            }
 
             }
         } finally {
@@ -340,7 +346,8 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
     public static boolean isStackElementNullable(String className, Method method, OpcodeStack.Item itm) {
         if (itm.isNull() || (itm.getUserValue() != null)) {
-            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(), method.getSignature());
+            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(),
+                    method.getSignature());
             if (mi != null) {
                 mi.setCanReturnNull(true);
             }
@@ -348,9 +355,11 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         } else {
             XMethod xm = itm.getReturnValueOf();
             if (xm != null) {
-                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(xm.getClassName().replace('.', '/'),
+                        xm.getName(), xm.getSignature());
                 if ((mi != null) && mi.getCanReturnNull()) {
-                    mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(), method.getSignature());
+                    mi = Statistics.getStatistics().getMethodStatistics(className, method.getName(),
+                            method.getSignature());
                     if (mi != null) {
                         mi.setCanReturnNull(true);
                     }
@@ -362,7 +371,8 @@ public class AnnotationIssues extends BytecodeScanningDetector {
         return false;
     }
 
-    public static boolean isMethodNullable(@SlashedClassName String className, String methodName, String methodSignature) {
+    public static boolean isMethodNullable(@SlashedClassName String className, String methodName,
+            String methodSignature) {
         char returnTypeChar = methodSignature.charAt(methodSignature.indexOf(')') + 1);
         if ((returnTypeChar != 'L') && (returnTypeChar != '[')) {
             return false;
@@ -374,13 +384,12 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * the map is keyed by register, and value by when an assumption holds to a byte offset if we have passed when the assumption holds, clear the item from the
+     * the map is keyed by register, and value by when an assumption holds to a byte
+     * offset if we have passed when the assumption holds, clear the item from the
      * map
      *
-     * @param assumptionTill
-     *            the map of assumptions
-     * @param pc
-     *            // * the current pc
+     * @param assumptionTill the map of assumptions
+     * @param pc             // * the current pc
      */
     public static void clearAssumptions(Map<Integer, Integer> assumptionTill, int pc) {
         Iterator<Integer> it = assumptionTill.values().iterator();
@@ -411,8 +420,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     /**
      * remove branch targets that have been passed
      *
-     * @param pc
-     *            the current pc
+     * @param pc the current pc
      */
     public void clearBranchTargets(int pc) {
         Iterator<Integer> it = branchTargets.iterator();
