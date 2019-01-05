@@ -63,36 +63,36 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 			new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT),
 			new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN),
 			new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN)
-    // @formatter:on
+	// @formatter:on
 	);
 
 	private static final Set<QMethod> listMethods = UnmodifiableSet.create(
 			// @formatter:off
-            new QMethod("add",
-                    new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT)
-                            .toString()),
-            new QMethod("addAll",
-                    new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION)
-                            .withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()),
-            new QMethod("lastIndexOf",
-                    new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT)
-                            .withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
+			new QMethod("add",
+					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT)
+							.toString()),
+			new QMethod("addAll",
+					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION)
+							.withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()),
+			new QMethod("lastIndexOf",
+					new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT)
+							.withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
 			new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT),
 			new QMethod("replaceAll",
-            new QMethod("set",
-                    new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT).build()),
+					new SignatureBuilder().withParamTypes("java/util/function/UnaryOperator").build()),
+			new QMethod("set",
 					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_LANG_OBJECT)
 							.withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString()),
 			new QMethod("sort", new SignatureBuilder().withParamTypes("java/util/Comparator").build()),
-            new QMethod("subList",
-                    new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_INT)
-                            .withReturnType(Values.SLASHED_JAVA_UTIL_LIST).toString()),
+			new QMethod("subList",
+					new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_INT)
+							.withReturnType(Values.SLASHED_JAVA_UTIL_LIST).toString()),
 			new QMethod("listIterator", new SignatureBuilder().withReturnType("java/util/ListIterator").toString()),
-            new QMethod("listIterator", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT)
-                    .withReturnType("java/util/ListIterator").toString())
-    // Theoretically get(i) and indexOf(Object) are list Methods but are so
-    // abused, as to be meaningless
-    // @formatter:on
+			new QMethod("listIterator", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT)
+					.withReturnType("java/util/ListIterator").toString())
+	// Theoretically get(i) and indexOf(Object) are list Methods but are so
+	// abused, as to be meaningless
+	// @formatter:on
 	);
 
 	private final BugReporter bugReporter;
@@ -158,11 +158,11 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 		try {
 			stack.precomputation(this);
 
-            if (seen == Const.INVOKEINTERFACE) {
+			if (seen == Const.INVOKEINTERFACE) {
 				processInvokeInterface();
-            } else if (seen == Const.INVOKEVIRTUAL) {
+			} else if (seen == Const.INVOKEVIRTUAL) {
 				processInvokeVirtual();
-            } else if ((seen == Const.ARETURN) && (stack.getStackDepth() > 0)) {
+			} else if ((seen == Const.ARETURN) && (stack.getStackDepth() > 0)) {
 				OpcodeStack.Item item = stack.getStackItem(0);
 				XField field = item.getXField();
 				if (field != null) {
@@ -250,8 +250,8 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 				FieldAnnotation fa = getFieldAnnotation(field);
 				if (fa != null) {
 					// can't use LinkedHashSet in 1.3 so report at LOW
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.DLC_DUBIOUS_LIST_COLLECTION.name(), (major >= Const.MAJOR_1_4) ? NORMAL_PRIORITY : LOW_PRIORITY)
+					bugReporter.reportBug(new BugInstance(this, BugType.DLC_DUBIOUS_LIST_COLLECTION.name(),
+							(major >= Const.MAJOR_1_4) ? NORMAL_PRIORITY : LOW_PRIORITY)
 									.addSourceLine(fi.getSourceLineAnnotation()));
 				}
 			}
