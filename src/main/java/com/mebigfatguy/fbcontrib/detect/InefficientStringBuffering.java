@@ -194,6 +194,9 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
                 OpcodeStack.Item itm = getStringBufferItemAt(0);
                 if (itm != null) {
                     userValue = (ISBUserValue) itm.getUserValue();
+                    if (userValue != null) {
+                    	userValue.setAppendType(AppendType.NESTED);
+                    }
                 }
             }
         } else if (Values.TOSTRING.equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())
@@ -281,6 +284,10 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
 
         public AppendType getAppendType() {
             return appendType;
+        }
+        
+        public void setAppendType(AppendType type) {
+        	appendType = type;
         }
 
         public boolean hasResolvedString() {
