@@ -52,6 +52,12 @@ public class ISB_Sample {
 
         return foo;
     }
+    
+    public String concatString334(String str1, String str2) {
+    	StringBuilder str = new StringBuilder();
+    	str.append("Result: "+str1 + str2);
+    	return str.toString();
+    }
 
     public String testFPISB9(int x) {
         StringBuffer sb = new StringBuffer();
