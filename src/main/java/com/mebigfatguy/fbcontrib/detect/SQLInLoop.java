@@ -26,6 +26,7 @@ import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 
@@ -112,7 +113,7 @@ public class SQLInLoop extends BytecodeScanningDetector {
             if (queryClasses.contains(clsName) && queryMethods.contains(methodName)) {
                 queryLocations.add(Integer.valueOf(getPC()));
             }
-        } else if ((seen == Const.GOTO) || (seen == Const.GOTO_W)) {
+        } else if (OpcodeUtils.isBranch(seen)) {
             int branchTarget = getBranchTarget();
             int pc = getPC();
             if (branchTarget < pc) {
