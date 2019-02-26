@@ -516,9 +516,13 @@ public void test(int i)
 	<Detector class="com.mebigfatguy.fbcontrib.detect.PossibleMemoryBloat">
 		<Details>
 			<![CDATA[
-			<p>Looks for classes that maintain collections or StringBuffer/StringBuilders in
+			<p>Looks for classes that have usage patterns that may cause memory bloat to occur.
+			This can occur with classes maintain collections or StringBuffer/StringBuilders in
 			static member variables, and that do not appear to provide a way to clear or remove
-			items from these members. Such class fields are likely causes of memory bloat.</p>
+			items from these members. 
+			Other cases are use of JAXBContexts stored recreated over and over again, instead of 
+			using a cached instance.
+			Such class fields are likely causes of memory bloat.</p>
 			<p>It is a fast detector.</p>
 			]]>
 		</Details>
@@ -2661,7 +2665,7 @@ static {
 			]]>
 		</Details>
 	</BugPattern>
-
+	
 	<BugPattern type="PMB_INSTANCE_BASED_THREAD_LOCAL">
 	   <ShortDescription>Field is an instance based ThreadLocal variable</ShortDescription>
 	   <LongDescription>Field {1} is an instance based ThreadLocal variable</LongDescription>
@@ -2673,6 +2677,20 @@ static {
 	       Since this ThreadLocal is instanced, you potentially will be creating many non-reclaimable
 	       variables, even after the owning instance has been reclaimed. It is almost a certainty that
 	       you want to use static based ThreadLocal variables.</p>
+	       ]]>
+	   </Details>
+	</BugPattern>
+	
+	<BugPattern type="PMB_LOCAL_BASED_JAXB_CONTEXT">
+	   <ShortDescription>Local JAXBContext created on demand</ShortDescription>
+	   <LongDescription>Method {1} createa a local JAXBContext on demand</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This method creates a JAXBContext and stores it in a local variable. This
+	       implies that this JAXBContext is created each time on demand, which will cause 
+	       memory bloat issues. It is better to either create this instance as a static field,
+	       or hold onto it with a ConcurrentHashMap, or such. See 
+	       https://javaee.github.io/jaxb-v2/doc/user-guide/ch03.html#other-miscellaneous-topics-performance-and-thread-safety </p>
 	       ]]>
 	   </Details>
 	</BugPattern>

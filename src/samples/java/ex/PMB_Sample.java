@@ -1,5 +1,6 @@
 package ex;
 
+import java.io.ByteArrayInputStream;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -11,6 +12,10 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.WeakHashMap;
+
+import javax.xml.bind.JAXBContext;
+import javax.xml.bind.JAXBException;
+import javax.xml.bind.Unmarshaller;
 
 public class PMB_Sample {
     private static Set<String> bl_data = new HashSet<>(); // tag
@@ -83,6 +88,12 @@ public class PMB_Sample {
     public void remove(String s) {
         data.remove(s);
     }
+    
+    public X instanceJAXBFactory(String xml) throws JAXBException {
+    	JAXBContext jc = JAXBContext.newInstance(X.class);
+    	Unmarshaller unmarshaller = jc.createUnmarshaller();
+    	return (X) unmarshaller.unmarshal( new ByteArrayInputStream(xml.getBytes()));
+    }
 
     public void fpInnerDoesRemove() {
         inner_data.add("Hello");
@@ -114,4 +125,8 @@ public class PMB_Sample {
             fpEmptyWithIterator.put(key, "foo");
         }
     }
+    
+    class X {
+    }
+    
 }

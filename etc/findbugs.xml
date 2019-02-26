@@ -106,7 +106,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.JDBCVendorReliance" speed="fast" reports="JVR_JDBC_VENDOR_RELIANCE" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.PossibleMemoryBloat" speed="fast" reports="PMB_POSSIBLE_MEMORY_BLOAT,PMB_INSTANCE_BASED_THREAD_LOCAL" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.PossibleMemoryBloat" speed="fast" reports="PMB_POSSIBLE_MEMORY_BLOAT,PMB_INSTANCE_BASED_THREAD_LOCAL,PMB_LOCAL_BASED_JAXB_CONTEXT" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.LocalSynchronizedCollection" speed="moderate" reports="LSYC_LOCAL_SYNCHRONIZED_COLLECTION" />
 
@@ -389,6 +389,7 @@
 	<BugPattern abbrev="JVR" type="JVR_JDBC_VENDOR_RELIANCE" category="CORRECTNESS" />
 	<BugPattern abbrev="PMB" type="PMB_POSSIBLE_MEMORY_BLOAT" category="CORRECTNESS" />
 	<BugPattern abbrev="PMB" type="PMB_INSTANCE_BASED_THREAD_LOCAL" category="CORRECTNESS" />
+	<BugPattern abbrev="PMB" type="PMB_LOCAL_BASED_JAXB_CONTEXT" category="CORRECTNESS" />
 	<BugPattern abbrev="LSYC" type="LSYC_LOCAL_SYNCHRONIZED_COLLECTION" category="CORRECTNESS" />
 	<BugPattern abbrev="FCBL" type="FCBL_FIELD_COULD_BE_LOCAL" category="CORRECTNESS" />
 	<BugPattern abbrev="NRTL" type="NRTL_NON_RECYCLEABLE_TAG_LIB" category="CORRECTNESS"/>
