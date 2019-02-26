@@ -142,8 +142,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if (SignatureUtils.isPlainStringConvertableClass(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && XML_SIG_BUILDER.withReturnType(clsName).toString().equals(methodSig)
-                            && (stack.getStackDepth() > 0)) {
+                    if (Values.CONSTRUCTOR.equals(methodName) && XML_SIG_BUILDER.withReturnType("V").toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         strCon = (String) itm.getConstant();
                     }
