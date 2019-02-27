@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -30,6 +31,7 @@ import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -46,6 +48,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
+import edu.umd.cs.findbugs.ba.XMethod;
+import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * looks for classes that maintain collections or StringBuffer/StringBuilders in static member variables, and that do not appear to provide a way to clear or
@@ -73,6 +77,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             "insertElementAt", "offer", "put");
 
     private static final Set<String> mapSubsets = UnmodifiableSet.create("keySet", "entrySet", "values");
+    
+    private static final FQMethod jaxbNewInstance = new FQMethod("javax/xml/bind/JAXBContext", "newInstance", "([Ljava/lang/Class;)Ljavax/xml/bind/JAXBContext;");
 
     private final BugReporter bugReporter;
     private Map<XField, FieldAnnotation> bloatableCandidates;
@@ -81,6 +87,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     private String methodName;
     private Set<FieldAnnotation> threadLocalNonStaticFields;
     private Map<Integer, XField> userValues;
+    private Map<Integer, Integer> jaxbContextRegs;
 
     /**
      * constructs a PMB detector given the reporter to report bugs on
@@ -105,23 +112,22 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             bloatableFields = new HashMap<>();
             threadLocalNonStaticFields = new HashSet<>();
             userValues = new HashMap<>();
+            jaxbContextRegs = new HashMap<>();
             parseFields(classContext);
 
-            if (!bloatableCandidates.isEmpty()) {
-                stack = new OpcodeStack();
-                super.visitClassContext(classContext);
+            stack = new OpcodeStack();
+            super.visitClassContext(classContext);
 
-                reportMemoryBloatBugs();
-                reportThreadLocalBugs();
-            }
-        } catch (StopOpcodeParsingException e) {
-            // no more bloatable candidates
+            reportMemoryBloatBugs();
+            reportThreadLocalBugs();
+
         } finally {
             stack = null;
             bloatableCandidates = null;
             bloatableFields = null;
             userValues = null;
             threadLocalNonStaticFields = null;
+            jaxbContextRegs = null;
         }
     }
 
@@ -178,13 +184,17 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         userValues.clear();
+        jaxbContextRegs.clear();
 
         if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName)) {
             return;
         }
 
-        if (!bloatableCandidates.isEmpty()) {
-            super.visitCode(obj);
+        super.visitCode(obj);
+        
+        for (Integer pc : jaxbContextRegs.values()) {
+        	bugReporter.reportBug(new BugInstance(this, BugType.PMB_LOCAL_BASED_JAXB_CONTEXT.name(), "<clinit>".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY)
+        			.addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
         }
     }
 
@@ -228,6 +238,16 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                             }
                         }
                     }
+                    
+                    for (int i = 0; i < argCount; i++) {
+                    	itm = stack.getStackItem(i);
+                    	jaxbContextRegs.remove(itm.getRegisterNumber());
+                    }
+                }
+            } else if (seen == PUTFIELD) {
+                if (stack.getStackDepth() > 0) {
+                	OpcodeStack.Item item = stack.getStackItem(0);
+	                jaxbContextRegs.remove(item.getRegisterNumber());
                 }
             } else if (seen == PUTSTATIC) {
                 if (stack.getStackDepth() > 0) {
@@ -236,6 +256,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                         XField field = item.getXField();
                         bloatableFields.remove(field);
                     }
+                    
+                    jaxbContextRegs.remove(item.getRegisterNumber());
                 }
             }
             // Should not include private methods
@@ -247,6 +269,15 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     userValues.put(RegisterUtils.getAStoreReg(this, seen), (XField) itm.getUserValue());
+                    
+            		XMethod xm = itm.getReturnValueOf();
+            		if (xm != null) {
+            			MethodDescriptor md = xm.getMethodDescriptor();
+            			FQMethod calledMethod = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
+                    	if (jaxbNewInstance.equals(calledMethod)) {
+                    		jaxbContextRegs.put(RegisterUtils.getAStoreReg(this, seen), getPC());
+                    	}
+            		}
                 }
             }
         } finally {
@@ -265,9 +296,6 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             if (field != null) {
                 bloatableCandidates.remove(field);
                 bloatableFields.remove(field);
-                if (bloatableCandidates.isEmpty()) {
-                    throw new StopOpcodeParsingException();
-                }
             }
         }
     }
@@ -277,9 +305,6 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         if (decreasingMethods.contains(mName)) {
             bloatableCandidates.remove(field);
             bloatableFields.remove(field);
-            if (bloatableCandidates.isEmpty()) {
-                throw new StopOpcodeParsingException();
-            }
         } else if (increasingMethods.contains(mName)) {
             FieldAnnotation fieldAn = bloatableCandidates.get(field);
             if (fieldAn != null) {
