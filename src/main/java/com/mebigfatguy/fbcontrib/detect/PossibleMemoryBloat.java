@@ -273,7 +273,6 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                     
             		XMethod xm = itm.getReturnValueOf();
             		if (xm != null) {
-            			MethodDescriptor md = xm.getMethodDescriptor();
             			FQMethod calledMethod = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
                     	if (jaxbNewInstance.equals(calledMethod)) {
                     		jaxbContextRegs.put(RegisterUtils.getAStoreReg(this, seen), getPC());
