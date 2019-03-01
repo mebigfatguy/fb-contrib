@@ -147,6 +147,7 @@ public final class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_UUID = "java/util/UUID";
     
+    public static final String SIG_JAVA_UTIL_STRINGBUFFER = "Ljava/lang/StringBuffer;";
     public static final String SIG_JAVA_UTIL_STRINGBUILDER = "Ljava/lang/StringBuilder;";
 
     public static final char INNER_CLASS_SEPARATOR = '$';

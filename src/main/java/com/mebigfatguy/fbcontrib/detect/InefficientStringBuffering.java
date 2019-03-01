@@ -260,7 +260,7 @@ public class InefficientStringBuffering extends BytecodeScanningDetector {
         if (stack.getStackDepth() > depth) {
             OpcodeStack.Item itm = stack.getStackItem(depth);
             String signature = itm.getSignature();
-            if ("Ljava/lang/StringBuffer;".equals(signature) || Values.SIG_JAVA_UTIL_STRINGBUILDER.equals(signature)) {
+            if (Values.SIG_JAVA_UTIL_STRINGBUFFER.equals(signature) || Values.SIG_JAVA_UTIL_STRINGBUILDER.equals(signature)) {
                 return itm;
             }
         }

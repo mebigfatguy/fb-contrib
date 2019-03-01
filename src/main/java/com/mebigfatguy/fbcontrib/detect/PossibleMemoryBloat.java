@@ -62,7 +62,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             "Ljava/util/EnumSet;", "Ljava/util/EnumMap;", "Ljava/util/HashMap;", "Ljava/util/HashSet;", "Ljava/util/Hashtable;", "Ljava/util/IdentityHashMap;",
             "Ljava/util/concurrent/LinkedBlockingQueue;", "Ljava/util/LinkedHashMap;", "Ljava/util/LinkedHashSet;", "Ljava/util/LinkedList;",
             "Ljava/util/List;", "Ljava/util/concurrent/PriorityBlockingQueue;", "Ljava/util/PriorityQueue;", "Ljava/util/Map;", "Ljava/util/Queue;",
-            "Ljava/util/Set;", "Ljava/util/SortedSet;", "Ljava/util/SortedMap;", "Ljava/util/Stack;", "Ljava/lang/StringBuffer;", Values.SIG_JAVA_UTIL_STRINGBUILDER,
+            "Ljava/util/Set;", "Ljava/util/SortedSet;", "Ljava/util/SortedMap;", "Ljava/util/Stack;", Values.SIG_JAVA_UTIL_STRINGBUFFER, Values.SIG_JAVA_UTIL_STRINGBUILDER,
             "Ljava/util/TreeMap;", "Ljava/util/TreeSet;", "Ljava/util/Vector;");
 
     private static final Set<String> nonBloatableSigs = UnmodifiableSet.create("Ljava/util/WeakHashMap;");
