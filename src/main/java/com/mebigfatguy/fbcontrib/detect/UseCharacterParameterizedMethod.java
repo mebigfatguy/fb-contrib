@@ -177,7 +177,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     String duppedSig = itm.getSignature();
-                    if ("Ljava/lang/StringBuilder;".equals(duppedSig) || "Ljava/lang/StringBuffer;".equals(duppedSig)) {
+                    if (Values.SIG_JAVA_UTIL_STRINGBUILDER.equals(duppedSig) || "Ljava/lang/StringBuffer;".equals(duppedSig)) {
                         itm.setUserValue(UCPMUserValue.INLINE);
                     }
                 }
@@ -256,7 +256,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
         String sig = getSigConstantOperand();
         String returnSig = SignatureUtils.getReturnSignature(sig);
-        if ("Ljava/lang/StringBuilder;".equals(returnSig) || "Ljava/lang/StringBuffer;".equals(returnSig)) {
+        if (Values.SIG_JAVA_UTIL_STRINGBUILDER.equals(returnSig) || "Ljava/lang/StringBuffer;".equals(returnSig)) {
             int parmCount = SignatureUtils.getNumParameters(sig);
             if (stack.getStackDepth() > parmCount) {
                 OpcodeStack.Item itm = stack.getStackItem(parmCount);

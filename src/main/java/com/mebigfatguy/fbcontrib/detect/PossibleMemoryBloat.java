@@ -18,7 +18,6 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
-import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -35,7 +34,6 @@ import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
-import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -49,7 +47,6 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
-import edu.umd.cs.findbugs.classfile.MethodDescriptor;
 
 /**
  * looks for classes that maintain collections or StringBuffer/StringBuilders in static member variables, and that do not appear to provide a way to clear or
@@ -65,7 +62,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             "Ljava/util/EnumSet;", "Ljava/util/EnumMap;", "Ljava/util/HashMap;", "Ljava/util/HashSet;", "Ljava/util/Hashtable;", "Ljava/util/IdentityHashMap;",
             "Ljava/util/concurrent/LinkedBlockingQueue;", "Ljava/util/LinkedHashMap;", "Ljava/util/LinkedHashSet;", "Ljava/util/LinkedList;",
             "Ljava/util/List;", "Ljava/util/concurrent/PriorityBlockingQueue;", "Ljava/util/PriorityQueue;", "Ljava/util/Map;", "Ljava/util/Queue;",
-            "Ljava/util/Set;", "Ljava/util/SortedSet;", "Ljava/util/SortedMap;", "Ljava/util/Stack;", "Ljava/lang/StringBuffer;", "Ljava/lang/StringBuilder;",
+            "Ljava/util/Set;", "Ljava/util/SortedSet;", "Ljava/util/SortedMap;", "Ljava/util/Stack;", "Ljava/lang/StringBuffer;", Values.SIG_JAVA_UTIL_STRINGBUILDER,
             "Ljava/util/TreeMap;", "Ljava/util/TreeSet;", "Ljava/util/Vector;");
 
     private static final Set<String> nonBloatableSigs = UnmodifiableSet.create("Ljava/util/WeakHashMap;");
