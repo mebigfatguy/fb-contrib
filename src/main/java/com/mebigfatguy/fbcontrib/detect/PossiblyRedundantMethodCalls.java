@@ -183,7 +183,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         new FQMethod("java/lang/Integer", "intValue", "()I"),
         new FQMethod("java/lang/Long", "longValue", "()J"),
         new FQMethod("java/lang/Float", "floatValue", "()F"),
-        new FQMethod("java/lang/Double", "doubleValue", "()D")
+        new FQMethod("java/lang/Double", "doubleValue", "()D"),
+        new FQMethod("java/util/Optional", "empty", "()Ljava/util/Optional;")
     // @formatter:on
     );
 
