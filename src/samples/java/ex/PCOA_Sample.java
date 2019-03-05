@@ -10,6 +10,7 @@ public class PCOA_Sample {
     }
 
     public PCOA_Sample(String ok) {
+    	//on jdk 8 this is INVOKESPECIAL, on jdk11 it's invokevirtual
         privateNonFinalMethod();
     }
 
