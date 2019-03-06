@@ -123,7 +123,7 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                         if (cls != null) {
                             Method m = findMethod(cls, getNameConstantOperand(), getSigConstantOperand());
                             if (m != null) {
-                                if (isCtor && (seen != INVOKESPECIAL) && !m.isFinal()) {
+                                if (isCtor && (seen != INVOKESPECIAL) && !m.isFinal() && !m.isPrivate()) {
                                     bugReporter.reportBug(new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this, getPC()));
                                     throw new StopOpcodeParsingException();
