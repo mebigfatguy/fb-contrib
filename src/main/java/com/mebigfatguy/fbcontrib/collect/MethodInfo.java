@@ -39,6 +39,7 @@ public class MethodInfo {
     private byte isCalledType;
     private boolean modifiesState;
     private boolean canReturnNull;
+    private boolean isDerived;
 
     public int getNumBytes() {
         return 0x0000FFFF & numMethodBytes;
@@ -119,8 +120,16 @@ public class MethodInfo {
     public void setCanReturnNull(boolean canReturnNull) {
         this.canReturnNull = canReturnNull;
     }
+    
+    public boolean isDerived() {
+		return isDerived;
+	}
 
-    @Override
+	public void setDerived(boolean isDerived) {
+		this.isDerived = isDerived;
+	}
+
+	@Override
     public boolean equals(Object o) {
         if (!(o instanceof MethodInfo)) {
             return false;
