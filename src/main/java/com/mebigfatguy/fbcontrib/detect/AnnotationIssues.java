@@ -191,7 +191,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
         MethodInfo methodInfo = Statistics.getStatistics().getMethodStatistics(getClassName(), method.getName(),
                 method.getSignature());
-        if (!isCollecting() && methodInfo.getCanReturnNull()) {
+        if (!isCollecting() && methodInfo.getCanReturnNull() && !methodInfo.isDerived()) {
             bugReporter
                     .reportBug(new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY)
                             .addClass(this).addMethod(this));
@@ -212,7 +212,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
             if (methodIsNullable) {
                 if (isCollecting()) {
                     methodInfo.setCanReturnNull(true);
-                } else {
+                } else if (!methodInfo.isDerived()) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.AI_ANNOTATION_ISSUES_NEEDS_NULLABLE.name(), LOW_PRIORITY)
                                     .addClass(this).addMethod(this));
