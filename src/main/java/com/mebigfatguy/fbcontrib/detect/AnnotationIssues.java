@@ -56,7 +56,9 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * looks for common problems with the application of annotations
+ * looks for common problems with the application of annotations.
+ * 
+ *   - missing @Nullable annotations
  */
 @CustomUserValue
 public class AnnotationIssues extends BytecodeScanningDetector {
