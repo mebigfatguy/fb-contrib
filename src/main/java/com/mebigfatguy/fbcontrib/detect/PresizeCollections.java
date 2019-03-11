@@ -382,6 +382,7 @@ public class PresizeCollections extends BytecodeScanningDetector {
                 case GETFIELD: {
                     userValue = storeToUserValue.get(getNameConstantOperand());
                 }
+                break;
 
             }
         } finally {
