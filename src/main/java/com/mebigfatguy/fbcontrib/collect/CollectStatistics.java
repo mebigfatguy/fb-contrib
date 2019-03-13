@@ -68,11 +68,13 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     // @formatter:on
     );
 
+    private BugReporter bugReporter;
     private int numMethodCalls;
     private boolean modifiesState;
     private boolean classHasAnnotation;
     private OpcodeStack stack;
     private Map<QMethod, Set<CalledMethod>> selfCallTree;
+    private Set<QMethod> constrainingMethods;
     private QMethod curMethod;
 
     /**
@@ -85,6 +87,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     @SuppressWarnings("PMD.UnusedFormalParameter")
     public CollectStatistics(BugReporter bugReporter) {
         Statistics.getStatistics().clear();
+        this.bugReporter = bugReporter;
     }
 
     /**
@@ -97,6 +100,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     public void visitClassContext(ClassContext classContext) {
         try {
             JavaClass cls = classContext.getJavaClass();
+            constrainingMethods = buildConstrainingMethods(cls);
             AnnotationEntry[] annotations = cls.getAnnotationEntries();
             classHasAnnotation = !CollectionUtils.isEmpty(annotations);
             stack = new OpcodeStack();
@@ -109,6 +113,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
             stack = null;
             selfCallTree = null;
             curMethod = null;
+            constrainingMethods = null;
         }
     }
 
@@ -121,6 +126,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
             }
         }
     }
+
 
     @Override
     public void visitCode(Code obj) {
@@ -138,8 +144,15 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         String clsName = getClassName();
         Method method = getMethod();
         int accessFlags = method.getAccessFlags();
+        
+        boolean isDerived = false;
+    	if (!constrainingMethods.isEmpty()) {
+	    	QMethod qm = new QMethod(method.getName(), method.getSignature());
+	    	isDerived = constrainingMethods.contains(qm);
+    	}
+    	
         MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, code.length,
-                numMethodCalls);
+                numMethodCalls, isDerived);
         if ((clsName.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0) || ((accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0)) {
             mi.addCallingAccess(Constants.ACC_PUBLIC);
         } else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
@@ -265,6 +278,31 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         }
 
         return !CollectionUtils.isEmpty(m.getAnnotationEntries());
+    }
+    
+    private Set<QMethod> buildConstrainingMethods(JavaClass cls) {
+    	
+    	Set<QMethod> constraints = new HashSet<>();
+    	try {
+	    	for (JavaClass inf : cls.getInterfaces()) {
+	    		for (Method m : inf.getMethods()) {
+	    			constraints.add(new QMethod(m.getName(), m.getSignature()));
+	    		}
+	    	}
+	    	
+	    	for (JavaClass parent : cls.getSuperClasses()) {
+	    		if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
+	    			for (Method m : parent.getMethods()) {
+	    				constraints.add(new QMethod(m.getName(), m.getSignature()));
+	    			}
+    				constraints.addAll(buildConstrainingMethods(parent));
+	    		}
+	    	}
+    	} catch (ClassNotFoundException e) {
+    		bugReporter.reportMissingClass(e);
+    	}
+    	
+    	return constraints;
     }
 
     /**
