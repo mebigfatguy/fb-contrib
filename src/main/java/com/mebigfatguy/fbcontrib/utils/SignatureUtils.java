@@ -191,7 +191,7 @@ public final class SignatureUtils {
         for (int i = start; i < limit; i++) {
             if (!methodSignature.startsWith(Values.SIG_ARRAY_PREFIX, i)) {
                 String parmSignature = null;
-                if (methodSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX, i)) {
+                if (methodSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX, i) || methodSignature.startsWith(Values.SIG_GENERIC_TEMPLATE, i)) {
                     int semiPos = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
                     parmSignature = methodSignature.substring(sigStart, semiPos + 1);
                     slotIndexToParms.put(Integer.valueOf(slot), parmSignature);
@@ -231,7 +231,7 @@ public final class SignatureUtils {
         int sigStart = start;
         for (int i = start; i < limit; i++) {
             if (!methodSignature.startsWith(Values.SIG_ARRAY_PREFIX, i)) {
-                if (methodSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX, i)) {
+                if (methodSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX, i) || methodSignature.startsWith(Values.SIG_GENERIC_TEMPLATE, i)) {
                     int semiPos = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
                     parmSignatures.add(methodSignature.substring(sigStart, semiPos + 1));
                     i = semiPos;
@@ -281,7 +281,7 @@ public final class SignatureUtils {
         int numParms = 0;
         for (int i = start; i < limit; i++) {
             if (!methodSignature.startsWith(Values.SIG_ARRAY_PREFIX, i)) {
-                if (methodSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX, i)) {
+                if (methodSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX, i) || methodSignature.startsWith(Values.SIG_GENERIC_TEMPLATE, i)) {
                     i = methodSignature.indexOf(Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR, i + 1);
                 } else if (isWonkyEclipseSignature(methodSignature, i)) {
                     continue;
@@ -372,7 +372,7 @@ public final class SignatureUtils {
      * @return the slashed class name
      */
     public static @SlashedClassName String trimSignature(String signature) {
-        if ((signature != null) && signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
+        if ((signature != null) && (signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) || signature.startsWith(Values.SIG_GENERIC_TEMPLATE)) && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
             return signature.substring(1, signature.length() - 1);
         }
 
