@@ -22,6 +22,7 @@ public class IMC_Sample implements Serializable {
     private static final long serialVersionUID = 5213802770984511942L;
 
     private String reportMe;
+    private String var;
 
     private static final int OUT_OF_PLACE_STATIC = 0;
 
@@ -41,6 +42,10 @@ public class IMC_Sample implements Serializable {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+    
+    public void hasVar() {
+    	int var = 0;
     }
 }
 

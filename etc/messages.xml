@@ -5652,7 +5652,17 @@ for (Person p : people) {
     		recompute the serialVersionUID using your IDE.</p>
     		]]>
     	</Details>
-    </BugPattern>    
+    </BugPattern> 
+    
+    <BugPattern type="IMC_IMMATURE_CLASS_VAR_NAME">
+    	<ShortDescription>Class defines a field or local variable named 'var'</ShortDescription>
+    	<LongDescription>Class {0} defines a field or local variable named 'var'</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>A field or variable is named 'var' which will conflict with the built in Java 10 feature using 'var' as a keyword.</p>
+    		]]>
+    	</Details>
+    </BugPattern>       
 
     <BugPattern type="JXI_GET_ENDPOINT_CONSUMES_CONTENT">
     	<ShortDescription>JAX-RS Method implements a GET request but consumes input</ShortDescription>
