@@ -175,6 +175,12 @@ public class ImmatureClass extends BytecodeScanningDetector {
 
 	@Override
 	public void visitField(Field f) {
+		
+		if ("var".equals(f.getName())) {
+			bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_VAR_NAME.name(), NORMAL_PRIORITY)
+					.addClass(this).addField(this));
+		}
+		
 		if (!f.isSynthetic() && (f.getName().indexOf(Values.SYNTHETIC_MEMBER_CHAR) < 0)) {
 			switch (fieldStatus) {
 			case NONE:
@@ -222,11 +228,23 @@ public class ImmatureClass extends BytecodeScanningDetector {
 			} catch (ClassNotFoundException e) {
 				bugReporter.reportMissingClass(e);
 			}
-
 		}
-
 	}
 
+	public void visitMethod(Method m) {
+		LocalVariableTable lvt = m.getLocalVariableTable();
+		if (lvt != null) {
+			LocalVariable[] lv = lvt.getLocalVariableTable();
+			if (lv != null) {
+				for (LocalVariable l : lv) {
+					if ("var".equals(l.getName())) {
+						bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_VAR_NAME.name(), NORMAL_PRIORITY)
+								.addClass(this).addMethod(this).addSourceLine(this, l.getStartPC()));
+					}
+				}
+			}
+		}
+	}
 	/**
 	 * implements the visitor to check for calls to Throwable.printStackTrace()
 	 *
