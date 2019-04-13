@@ -133,7 +133,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.build.timestamp.format>E MMM d hh:mm:ss yyyy XX</maven.build.timestamp.format>
-        <spotbugs.version>3.1.10</spotbugs.version>
+        <spotbugs.version>3.1.12</spotbugs.version>
     </properties>
 
     <dependencyManagement>
@@ -357,7 +357,7 @@
                 <plugin>
                     <groupId>com.github.spotbugs</groupId>
                     <artifactId>spotbugs-maven-plugin</artifactId>
-                    <version>${spotbugs.version}</version>
+                    <version>3.1.11</version>
                 </plugin>
                 <plugin>
                     <artifactId>maven-compiler-plugin</artifactId>
