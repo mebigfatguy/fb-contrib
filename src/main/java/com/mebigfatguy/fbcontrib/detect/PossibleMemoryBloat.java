@@ -242,7 +242,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                     	jaxbContextRegs.remove(itm.getRegisterNumber());
                     }
                 }
-            } else if (seen == PUTFIELD) {
+            } else if (seen == Const.PUTFIELD) {
                 if (stack.getStackDepth() > 0) {
                 	OpcodeStack.Item item = stack.getStackItem(0);
 	                jaxbContextRegs.remove(item.getRegisterNumber());
