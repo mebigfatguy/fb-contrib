@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -86,6 +87,14 @@ public class FII_Sample {
             return m;
         });
     }
+    
+	public static void foo(Consumer<Void> consumer) {
+	}
+
+	public static void bar342(Runnable runnable) {
+		foo(_unused -> runnable.run());
+	}
+
 
     public void put(Function<Map<String, Object>, Map<String, Object>> updateFunction) {
     }
