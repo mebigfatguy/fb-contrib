@@ -18,7 +18,7 @@ for FindBugs:
        
 For SpotBugs
 
-       GroupId: com.mebigfatguy.fb-contrib
+       GroupId: com.mebigfatguy.sb-contrib
     ArtifactId: sb-contrib
        Version: 7.4.5
        
