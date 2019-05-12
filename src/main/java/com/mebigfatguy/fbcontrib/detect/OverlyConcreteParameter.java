@@ -560,7 +560,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         Map<JavaClass, List<MethodInfo>> definers = new HashMap<>();
 
         for (JavaClass ci : cls.getAllInterfaces()) {
-            if (cls.equals(ci) || !cls.isPublic() || "java.lang.Comparable".equals(ci.getClassName())) {
+            if (cls.equals(ci) || !cls.isPublic() || "java.lang.Comparable".equals(ci.getClassName()) || "java.lang.constant.Constable".equals(ci.getClassName())) {
                 continue;
             }
             List<MethodInfo> methodInfos = getPublicMethodInfos(ci);
