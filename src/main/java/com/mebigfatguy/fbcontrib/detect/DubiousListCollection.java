@@ -251,7 +251,7 @@ public class DubiousListCollection extends BytecodeScanningDetector {
 				if (fa != null) {
 					// can't use LinkedHashSet in 1.3 so report at LOW
 					bugReporter.reportBug(new BugInstance(this, BugType.DLC_DUBIOUS_LIST_COLLECTION.name(),
-							(major >= Const.MAJOR_1_4) ? NORMAL_PRIORITY : LOW_PRIORITY)
+							(major >= Const.MAJOR_1_4) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addField(fa)
 									.addSourceLine(fi.getSourceLineAnnotation()));
 				}
 			}
