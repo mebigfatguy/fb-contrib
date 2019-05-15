@@ -101,9 +101,9 @@ com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
 
 ~~~~
 <plugin>
-    <groupId>com.github.hazendaz.spotbugs</groupId>
+    <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-maven-plugin</artifactId>
-    <version>3.0.6</version>
+    <version>3.1.11</version>
     <configuration>
         <plugins>
             <plugin>
