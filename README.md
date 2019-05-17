@@ -72,7 +72,7 @@ For example, If you are using FindBugs with Eclipse (and you extracted Eclipse t
 ## Usage - Maven
 
 To include the fb-contrib detectors when checking your project with FindBugs/Spotbugs, you can use the [FindBugs Maven plugin](https://gleclaire.github.io/findbugs-maven-plugin/usage.html).
-Or [SpotBugs Maven plugin](https://www.github.com/hazendaz/spotbugs-maven-plugin) which is a fork of findbugs maven plugin to provide spotbugs integration.  The group ID for fb-contrib is
+Or [SpotBugs Maven plugin](https://github.com/spotbugs/spotbugs-maven-plugin) which is a fork of findbugs maven plugin to provide spotbugs integration.  The group ID for fb-contrib is
 com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
 
 ~~~~
