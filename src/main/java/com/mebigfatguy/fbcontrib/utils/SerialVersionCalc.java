@@ -29,13 +29,18 @@ import java.util.Comparator;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
+import org.apache.bcel.classfile.FieldOrMethod;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-public class SerialVersionCalc {
+public final class SerialVersionCalc {
 
     enum ModifierType {
         CLASS, METHOD, FIELD
+    }
+
+    private SerialVersionCalc() {
+
     }
 
     public static long uuid(JavaClass cls) throws IOException {
@@ -55,7 +60,7 @@ public class SerialVersionCalc {
             Arrays.stream(infs).forEach(inf -> utfUpdate(digest, inf));
 
             Field[] fields = cls.getFields();
-            Arrays.sort(fields, new FieldSorter());
+            Arrays.sort(fields, Comparator.comparing(FieldOrMethod::getName));
             Arrays.stream(fields).filter(field -> !field.isPrivate() || (!field.isStatic() && !field.isTransient()))
                     .forEach(field -> {
                         utfUpdate(digest, field.getName());
@@ -64,7 +69,7 @@ public class SerialVersionCalc {
                     });
 
             Method[] methods = cls.getMethods();
-            Arrays.sort(methods, new MethodSorter());
+            Arrays.sort(methods, Comparator.comparing(FieldOrMethod::getName).thenComparing(FieldOrMethod::getSignature));
 
             Arrays.stream(methods).filter(method -> "<clinit>".equals(method.getName())).limit(1).forEach(sinit -> {
                 utfUpdate(digest, "<clinit>");
@@ -129,26 +134,5 @@ public class SerialVersionCalc {
 
         digest.update(toArray(data.length), 2, 2);
         digest.update(data);
-    }
-
-    static class FieldSorter implements Comparator<Field> {
-
-        @Override
-        public int compare(Field f1, Field f2) {
-            return f1.getName().compareTo(f2.getName());
-        }
-    }
-
-    static class MethodSorter implements Comparator<Method> {
-
-        @Override
-        public int compare(Method m1, Method m2) {
-            int cmp = m1.getName().compareTo(m2.getName());
-            if (cmp != 0) {
-                return cmp;
-            }
-
-            return m1.getSignature().compareTo(m2.getSignature());
-        }
     }
 }
