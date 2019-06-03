@@ -2,6 +2,7 @@ fb-contrib
 ==========
 
 [![Build Status](https://travis-ci.org/mebigfatguy/fb-contrib.svg?branch=master)](https://travis-ci.org/mebigfatguy/fb-contrib)
+[![Open Source Helpers](https://www.codetriage.com/mebigfatguy/fb-contrib/badges/users.svg)](https://www.codetriage.com/mebigfatguy/fb-contrib)
 
 a FindBugs and SpotBugs plugin for doing static code analysis on java byte code.
 For information see http://fb-contrib.sf.net
