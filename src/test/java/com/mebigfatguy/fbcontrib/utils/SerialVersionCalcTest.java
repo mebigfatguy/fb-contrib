@@ -28,9 +28,9 @@ import org.testng.annotations.Test;
 
 public class SerialVersionCalcTest implements Serializable {
 
-    private static final long serialVersionUID = -2376285031192005354L;
+	private static final long serialVersionUID = -3196349615192051714L;
 
-    static final String MESSAGE = "Calculated Serial Version doesn't match defined one";
+	static final String MESSAGE = "Calculated Serial Version doesn't match defined one";
 
     @Test
     public void testSerialVersionUID() throws ClassNotFoundException, IOException {
@@ -42,5 +42,8 @@ public class SerialVersionCalcTest implements Serializable {
     }
 
     public void nop(String x) {
+    }
+    
+    public <T extends Comparable> void useGenerics(T c) {
     }
 }
