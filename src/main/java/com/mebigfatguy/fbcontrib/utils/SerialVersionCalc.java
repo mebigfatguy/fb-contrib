@@ -51,47 +51,53 @@ public class SerialVersionCalc {
             digest.update(toArray(filterModifiers(cls.getModifiers(), ModifierType.CLASS)));
 
             String[] infs = cls.getInterfaceNames();
-            Arrays.sort(infs);
-            for (String inf : infs) {
-                utfUpdate(digest, inf);
+            if (infs.length > 0) {
+	            Arrays.sort(infs);
+	            for (String inf : infs) {
+	                utfUpdate(digest, inf);
+	            }
             }
 
             Field[] fields = cls.getFields();
-            Arrays.sort(fields, new FieldSorter());
-            for (Field field : fields) {
-                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
-                    utfUpdate(digest, field.getName());
-                    digest.update(toArray(filterModifiers(field.getModifiers(), ModifierType.FIELD)));
-                    utfUpdate(digest, field.getSignature());
-                }
+            if (fields.length > 0) {
+	            Arrays.sort(fields, new FieldSorter());
+	            for (Field field : fields) {
+	                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
+	                    utfUpdate(digest, field.getName());
+	                    digest.update(toArray(filterModifiers(field.getModifiers(), ModifierType.FIELD)));
+	                    utfUpdate(digest, field.getSignature());
+	                }
+	            }
             }
 
             Method[] methods = cls.getMethods();
-            Arrays.sort(methods, new MethodSorter());
-
-            for (Method sinit : methods) {
-                if ("<clinit>".equals(sinit.getName())) {
-                    utfUpdate(digest, "<clinit>");
-                    digest.update(toArray(Constants.ACC_STATIC));
-                    utfUpdate(digest, "()V");
-                    break;
-                }
-            }
-
-            for (Method init : methods) {
-                if ("<init>".equals(init.getName()) && !init.isPrivate()) {
-                    utfUpdate(digest, "<init>");
-                    digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
-                    utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
-                }
-            }
-
-            for (Method method : methods) {
-                if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
-                    utfUpdate(digest, method.getName());
-                    digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
-                    utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
-                }
+            if (methods.length > 0) {
+	            Arrays.sort(methods, new MethodSorter());
+	
+	            for (Method sinit : methods) {
+	                if ("<clinit>".equals(sinit.getName())) {
+	                    utfUpdate(digest, "<clinit>");
+	                    digest.update(toArray(Constants.ACC_STATIC));
+	                    utfUpdate(digest, "()V");
+	                    break;
+	                }
+	            }
+	
+	            for (Method init : methods) {
+	                if ("<init>".equals(init.getName()) && !init.isPrivate()) {
+	                    utfUpdate(digest, "<init>");
+	                    digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
+	                    utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
+	                }
+	            }
+	
+	            for (Method method : methods) {
+	                if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
+	                    utfUpdate(digest, method.getName());
+	                    digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
+	                    utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
+	                }
+	            }
             }
 
             byte[] shaBytes = digest.digest();
