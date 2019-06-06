@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -44,17 +46,18 @@ public class SerialVersionCalc {
             return 0;
         }
 
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             DataOutputStream dos = new DataOutputStream(baos)) {
 
-            utfUpdate(digest, cls.getClassName());
-            digest.update(toArray(filterModifiers(cls.getModifiers(), ModifierType.CLASS)));
+            dos.writeUTF(cls.getClassName());
+            dos.writeInt(filterModifiers(cls.getModifiers(), ModifierType.CLASS));
 
             String[] infs = cls.getInterfaceNames();
             if (infs.length > 0) {
 	            Arrays.sort(infs);
 	            for (String inf : infs) {
-	                utfUpdate(digest, inf);
+	                dos.writeUTF(inf);
 	            }
             }
 
@@ -63,9 +66,9 @@ public class SerialVersionCalc {
 	            Arrays.sort(fields, new FieldSorter());
 	            for (Field field : fields) {
 	                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
-	                    utfUpdate(digest, field.getName());
-	                    digest.update(toArray(filterModifiers(field.getModifiers(), ModifierType.FIELD)));
-	                    utfUpdate(digest, field.getSignature());
+	                    dos.writeUTF(field.getName());
+	                    dos.writeInt(filterModifiers(field.getModifiers(), ModifierType.FIELD));
+	                    dos.writeUTF(field.getSignature());
 	                }
 	            }
             }
@@ -76,31 +79,33 @@ public class SerialVersionCalc {
 	
 	            for (Method sinit : methods) {
 	                if ("<clinit>".equals(sinit.getName())) {
-	                    utfUpdate(digest, "<clinit>");
-	                    digest.update(toArray(Constants.ACC_STATIC));
-	                    utfUpdate(digest, "()V");
+	                    dos.writeUTF("<clinit>");
+	                    dos.writeInt(Constants.ACC_STATIC);
+	                    dos.writeUTF("()V");
 	                    break;
 	                }
 	            }
 	
 	            for (Method init : methods) {
 	                if ("<init>".equals(init.getName()) && !init.isPrivate()) {
-	                    utfUpdate(digest, "<init>");
-	                    digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
-	                    utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
+	                	dos.writeUTF("<init>");
+	                    dos.writeInt(filterModifiers(init.getModifiers(), ModifierType.METHOD));
+	                    dos.writeUTF(init.getSignature().replace('/', '.')); // how bazaar
 	                }
 	            }
 	
 	            for (Method method : methods) {
 	                if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
-	                    utfUpdate(digest, method.getName());
-	                    digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
-	                    utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
+	                    dos.writeUTF(method.getName());
+	                    dos.writeInt(filterModifiers(method.getModifiers(), ModifierType.METHOD));
+	                    dos.writeUTF(method.getSignature().replace('/', '.')); // how bazaar
 	                }
 	            }
             }
 
-            byte[] shaBytes = digest.digest();
+            dos.flush();
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            byte[] shaBytes = digest.digest(baos.toByteArray());
 
             ByteBuffer bb = ByteBuffer.wrap(shaBytes, 0, 8);
             bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -131,19 +136,6 @@ public class SerialVersionCalc {
             return 0;
         }
 
-    }
-
-    private static byte[] toArray(int i) {
-        ByteBuffer b = ByteBuffer.allocate(4);
-        b.putInt(i);
-        return b.array();
-    }
-
-    private static void utfUpdate(MessageDigest digest, String str) {
-        byte[] data = str.getBytes(StandardCharsets.UTF_8);
-
-        digest.update(toArray(data.length), 2, 2);
-        digest.update(data);
     }
 
     static class FieldSorter implements Comparator<Field> {
