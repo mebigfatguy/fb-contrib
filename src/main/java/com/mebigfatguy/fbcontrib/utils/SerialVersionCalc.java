@@ -85,7 +85,7 @@ public final class SerialVersionCalc {
 	            for (Method sinit : methods) {
 	                if ("<clinit>".equals(sinit.getName())) {
 	                    dos.writeUTF("<clinit>");
-	                    dos.writeInt(Constants.ACC_STATIC);
+	                    dos.writeInt(Const.ACC_STATIC);
 	                    dos.writeUTF("()V");
 	                    break;
 	                }
