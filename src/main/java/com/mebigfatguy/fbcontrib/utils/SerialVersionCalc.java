@@ -18,6 +18,8 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -49,49 +51,66 @@ public final class SerialVersionCalc {
             return 0;
         }
 
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+        
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+             DataOutputStream dos = new DataOutputStream(baos)) {
 
-            utfUpdate(digest, cls.getClassName());
-            digest.update(toArray(filterModifiers(cls.getModifiers(), ModifierType.CLASS)));
+            dos.writeUTF(cls.getClassName());
+            dos.writeInt(filterModifiers(cls.getModifiers(), ModifierType.CLASS));
 
             String[] infs = cls.getInterfaceNames();
-            Arrays.sort(infs);
-            Arrays.stream(infs).forEach(inf -> utfUpdate(digest, inf));
+            if (infs.length > 0) {
+	            Arrays.sort(infs);
+	            for (String inf : infs) {
+	                dos.writeUTF(inf);
+	            }
+            }
 
             Field[] fields = cls.getFields();
-            Arrays.sort(fields, Comparator.comparing(FieldOrMethod::getName));
-            Arrays.stream(fields).filter(field -> !field.isPrivate() || (!field.isStatic() && !field.isTransient()))
-                    .forEach(field -> {
-                        utfUpdate(digest, field.getName());
-                        digest.update(toArray(filterModifiers(field.getModifiers(), ModifierType.FIELD)));
-                        utfUpdate(digest, field.getSignature());
-                    });
+            if (fields.length > 0) {
+	            Arrays.sort(fields, new FieldSorter());
+	            for (Field field : fields) {
+	                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
+	                    dos.writeUTF(field.getName());
+	                    dos.writeInt(filterModifiers(field.getModifiers(), ModifierType.FIELD));
+	                    dos.writeUTF(field.getSignature());
+	                }
+	            }
+            }
 
             Method[] methods = cls.getMethods();
-            Arrays.sort(methods, Comparator.comparing(FieldOrMethod::getName).thenComparing(FieldOrMethod::getSignature));
+            if (methods.length > 0) {
+	            Arrays.sort(methods, new MethodSorter());
+	
+	            for (Method sinit : methods) {
+	                if ("<clinit>".equals(sinit.getName())) {
+	                    dos.writeUTF("<clinit>");
+	                    dos.writeInt(Constants.ACC_STATIC);
+	                    dos.writeUTF("()V");
+	                    break;
+	                }
+	            }
+	
+	            for (Method init : methods) {
+	                if ("<init>".equals(init.getName()) && !init.isPrivate()) {
+	                	dos.writeUTF("<init>");
+	                    dos.writeInt(filterModifiers(init.getModifiers(), ModifierType.METHOD));
+	                    dos.writeUTF(init.getSignature().replace('/', '.')); // how bazaar
+	                }
+	            }
+	
+	            for (Method method : methods) {
+	                if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
+	                    dos.writeUTF(method.getName());
+	                    dos.writeInt(filterModifiers(method.getModifiers(), ModifierType.METHOD));
+	                    dos.writeUTF(method.getSignature().replace('/', '.')); // how bazaar
+	                }
+	            }
+            }
 
-            Arrays.stream(methods).filter(method -> "<clinit>".equals(method.getName())).limit(1).forEach(sinit -> {
-                utfUpdate(digest, "<clinit>");
-                digest.update(toArray(Const.ACC_STATIC));
-                utfUpdate(digest, "()V");
-            });
-
-            Arrays.stream(methods).filter(method -> "<init>".equals(method.getName()) && !method.isPrivate())
-                    .forEach(init -> {
-                        utfUpdate(digest, "<init>");
-                        digest.update(toArray(filterModifiers(init.getModifiers(), ModifierType.METHOD)));
-                        utfUpdate(digest, init.getSignature().replace('/', '.')); // how bazaar
-                    });
-
-            Arrays.stream(methods).filter(method -> !"<clinit>".equals(method.getName())
-                    && !"<init>".equals(method.getName()) && !method.isPrivate()).forEach(method -> {
-                        utfUpdate(digest, method.getName());
-                        digest.update(toArray(filterModifiers(method.getModifiers(), ModifierType.METHOD)));
-                        utfUpdate(digest, method.getSignature().replace('/', '.')); // how bazaar
-                    });
-
-            byte[] shaBytes = digest.digest();
+            dos.flush();
+            MessageDigest digest = MessageDigest.getInstance("SHA-1");
+            byte[] shaBytes = digest.digest(baos.toByteArray());
 
             ByteBuffer bb = ByteBuffer.wrap(shaBytes, 0, 8);
             bb.order(ByteOrder.LITTLE_ENDIAN);
@@ -123,16 +142,24 @@ public final class SerialVersionCalc {
 
     }
 
-    private static byte[] toArray(int i) {
-        ByteBuffer b = ByteBuffer.allocate(4);
-        b.putInt(i);
-        return b.array();
+    static class FieldSorter implements Comparator<Field> {
+
+        @Override
+        public int compare(Field f1, Field f2) {
+            return f1.getName().compareTo(f2.getName());
+        }
     }
 
-    private static void utfUpdate(MessageDigest digest, String str) {
-        byte[] data = str.getBytes(StandardCharsets.UTF_8);
+    static class MethodSorter implements Comparator<Method> {
 
-        digest.update(toArray(data.length), 2, 2);
-        digest.update(data);
+        @Override
+        public int compare(Method m1, Method m2) {
+            int cmp = m1.getName().compareTo(m2.getName());
+            if (cmp != 0) {
+                return cmp;
+            }
+
+            return m1.getSignature().compareTo(m2.getSignature());
+        }
     }
 }
