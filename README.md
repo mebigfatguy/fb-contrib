@@ -12,7 +12,7 @@ Available on [maven.org](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib of sb-contrib
-       Version: 7.4.5
+       Version: 7.4.6
 
 
 Developer
@@ -77,7 +77,7 @@ com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
             <plugin>
                 <groupId>com.mebigfatguy.fb-contrib</groupId>
                 <artifactId>fb-contrib</artifactId>
-                <version>7.4.5</version>
+                <version>7.4.6</version>
             </plugin>
         </plugins>
     </configuration>
@@ -101,7 +101,7 @@ com.mebigfatguy.fb-contrib, and the artifact ID is fb-contrib. Eg:
             <plugin>
                 <groupId>com.mebigfatguy.fb-contrib</groupId>
                 <artifactId>fb-contrib</artifactId>
-                <version>7.4.5</version>
+                <version>7.4.6</version>
             </plugin>
         </plugins>
     </configuration>
