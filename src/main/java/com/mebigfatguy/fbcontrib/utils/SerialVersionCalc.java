@@ -58,7 +58,7 @@ public final class SerialVersionCalc {
             dos.writeUTF(cls.getClassName());
             dos.writeInt(filterModifiers(cls.getModifiers(), ModifierType.CLASS));
 
-            String[] infs = cls.getInterfaceNames();
+            String[] infs = cls.getInterfaceNames().clone();
             if (infs.length > 0) {
 	            Arrays.sort(infs);
 	            for (String inf : infs) {
@@ -66,7 +66,7 @@ public final class SerialVersionCalc {
 	            }
             }
 
-            Field[] fields = cls.getFields();
+            Field[] fields = cls.getFields().clone();
             if (fields.length > 0) {
 	            Arrays.sort(fields, new FieldSorter());
 	            for (Field field : fields) {
@@ -78,7 +78,7 @@ public final class SerialVersionCalc {
 	            }
             }
 
-            Method[] methods = cls.getMethods();
+            Method[] methods = cls.getMethods().clone();
             if (methods.length > 0) {
 	            Arrays.sort(methods, new MethodSorter());
 	
