@@ -53,16 +53,18 @@ public class SerialVersionCalc {
             dos.writeUTF(cls.getClassName());
             dos.writeInt(filterModifiers(cls.getModifiers(), ModifierType.CLASS));
 
-            String[] infs = cls.getInterfaceNames().clone();
+            String[] infs = cls.getInterfaceNames();
             if (infs.length > 0) {
+                infs = infs.clone();
 	            Arrays.sort(infs);
 	            for (String inf : infs) {
 	                dos.writeUTF(inf);
 	            }
             }
 
-            Field[] fields = cls.getFields().clone();
+            Field[] fields = cls.getFields();
             if (fields.length > 0) {
+                fields = fields.clone();
 	            Arrays.sort(fields, new FieldSorter());
 	            for (Field field : fields) {
 	                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
@@ -73,8 +75,9 @@ public class SerialVersionCalc {
 	            }
             }
 
-            Method[] methods = cls.getMethods().clone();
+            Method[] methods = cls.getMethods();
             if (methods.length > 0) {
+                methods = methods.clone();
 	            Arrays.sort(methods, new MethodSorter());
 	
 	            for (Method sinit : methods) {
