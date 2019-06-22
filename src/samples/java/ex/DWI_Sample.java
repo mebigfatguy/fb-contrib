@@ -1,4 +1,5 @@
 package ex;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -18,6 +19,16 @@ public class DWI_Sample {
                 bagOInts.remove(i);
             }
         }
+    }
+
+    void concurrentModificaitonExceptionTest352() { 
+        ArrayList<Integer> list = new ArrayList<Integer>(); 
+        list.add(2); 
+        Iterator<Integer> iterator = list.iterator(); 
+        while(iterator.hasNext()) { 
+            Integer integer = iterator.next(); 
+            list.remove(integer); 
+        } 
     }
 
     public void addIf(Set<String> s, Collection<String> c) {
