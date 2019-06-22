@@ -175,7 +175,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         try {
             stack.precomputation(this);
 
-            if (seen == Const.INVOKEINTERFACE) {
+            if (seen == Const.INVOKEINTERFACE || seen == Const.INVOKEVIRTUAL) {
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
