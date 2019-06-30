@@ -23,6 +23,7 @@ import java.util.Iterator;
 
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.InstructionHandle;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 
@@ -121,6 +122,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
                 BasicBlock bb = bbi.next();
                 Iterator<Edge> iei = cfg.outgoingEdgeIterator(bb);
                 int lastSwitchTargetBlockLabel = Integer.MIN_VALUE;
+                int lastSwitchPosition = Integer.MIN_VALUE;
                 while (iei.hasNext()) {
                     Edge e = iei.next();
                     int edgeType = e.getType();
@@ -132,11 +134,16 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
                                 branches++;
                             }
                         } else if ((edgeType == EdgeTypes.SWITCH_EDGE) || (edgeType == EdgeTypes.SWITCH_DEFAULT_EDGE)) {
-                            int nodeTarget = e.getTarget().getLabel();
-                            if (nodeTarget != lastSwitchTargetBlockLabel) {
+                        	BasicBlock target = e.getTarget();
+                            int nodeTarget = target.getLabel();
+                            
+                            InstructionHandle firstIns = target.getFirstInstruction();
+                            int pos = firstIns == null ? -1 : firstIns.getPosition();
+                            if (nodeTarget != lastSwitchTargetBlockLabel && pos != lastSwitchPosition) {
                                 branches++;
                             }
                             lastSwitchTargetBlockLabel = nodeTarget;
+                            lastSwitchPosition = pos;
                         } else {
                             branches++;
                         }
