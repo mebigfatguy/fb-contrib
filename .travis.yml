@@ -1,6 +1,6 @@
 language: java
 
-install: ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -Dfindbugs.skip=true -B -V
+install: ./mvnw install -B -V
 
 jdk:
     - oraclejdk11
