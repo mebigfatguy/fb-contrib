@@ -19,11 +19,12 @@
 package com.mebigfatguy.fbcontrib.utils;
 
 import java.io.ByteArrayOutputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
-import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
@@ -40,71 +41,80 @@ public class SerialVersionCalc {
         CLASS, METHOD, FIELD
     }
 
+    private static void writeInterfaces(DataOutput out, JavaClass cls) throws IOException {
+        String[] infs = cls.getInterfaceNames();
+        if (infs.length > 0) {
+            infs = infs.clone();
+            Arrays.sort(infs);
+            for (String inf : infs) {
+                out.writeUTF(inf);
+            }
+        }
+    }
+
+    private static void writeFields(DataOutput out, JavaClass cls) throws IOException {
+        Field[] fields = cls.getFields();
+        if (fields.length > 0) {
+            fields = fields.clone();
+            Arrays.sort(fields, new FieldSorter());
+            for (Field field : fields) {
+                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
+                    out.writeUTF(field.getName());
+                    out.writeInt(filterModifiers(field.getModifiers(), ModifierType.FIELD));
+                    out.writeUTF(field.getSignature());
+                }
+            }
+        }
+    }
+
+    private static void writeMethods(DataOutput out, JavaClass cls) throws IOException {
+        Method[] methods = cls.getMethods();
+        if (methods.length > 0) {
+            methods = methods.clone();
+            Arrays.sort(methods, new MethodSorter());
+
+            for (Method sinit : methods) {
+                if ("<clinit>".equals(sinit.getName())) {
+                    out.writeUTF("<clinit>");
+                    out.writeInt(Constants.ACC_STATIC);
+                    out.writeUTF("()V");
+                    break;
+                }
+            }
+
+            for (Method init : methods) {
+                if ("<init>".equals(init.getName()) && !init.isPrivate()) {
+                    out.writeUTF("<init>");
+                    out.writeInt(filterModifiers(init.getModifiers(), ModifierType.METHOD));
+                    out.writeUTF(init.getSignature().replace('/', '.')); // how bazaar
+                }
+            }
+
+            for (Method method : methods) {
+                if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
+                    out.writeUTF(method.getName());
+                    out.writeInt(filterModifiers(method.getModifiers(), ModifierType.METHOD));
+                    out.writeUTF(method.getSignature().replace('/', '.')); // how bazaar
+                }
+            }
+        }
+    }
+
     public static long uuid(JavaClass cls) throws IOException {
 
         if (cls.isEnum()) {
             return 0;
         }
 
-        
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
              DataOutputStream dos = new DataOutputStream(baos)) {
 
             dos.writeUTF(cls.getClassName());
             dos.writeInt(filterModifiers(cls.getModifiers(), ModifierType.CLASS));
 
-            String[] infs = cls.getInterfaceNames();
-            if (infs.length > 0) {
-                infs = infs.clone();
-	            Arrays.sort(infs);
-	            for (String inf : infs) {
-	                dos.writeUTF(inf);
-	            }
-            }
-
-            Field[] fields = cls.getFields();
-            if (fields.length > 0) {
-                fields = fields.clone();
-	            Arrays.sort(fields, new FieldSorter());
-	            for (Field field : fields) {
-	                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
-	                    dos.writeUTF(field.getName());
-	                    dos.writeInt(filterModifiers(field.getModifiers(), ModifierType.FIELD));
-	                    dos.writeUTF(field.getSignature());
-	                }
-	            }
-            }
-
-            Method[] methods = cls.getMethods();
-            if (methods.length > 0) {
-                methods = methods.clone();
-	            Arrays.sort(methods, new MethodSorter());
-	
-	            for (Method sinit : methods) {
-	                if ("<clinit>".equals(sinit.getName())) {
-	                    dos.writeUTF("<clinit>");
-	                    dos.writeInt(Constants.ACC_STATIC);
-	                    dos.writeUTF("()V");
-	                    break;
-	                }
-	            }
-	
-	            for (Method init : methods) {
-	                if ("<init>".equals(init.getName()) && !init.isPrivate()) {
-	                	dos.writeUTF("<init>");
-	                    dos.writeInt(filterModifiers(init.getModifiers(), ModifierType.METHOD));
-	                    dos.writeUTF(init.getSignature().replace('/', '.')); // how bazaar
-	                }
-	            }
-	
-	            for (Method method : methods) {
-	                if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
-	                    dos.writeUTF(method.getName());
-	                    dos.writeInt(filterModifiers(method.getModifiers(), ModifierType.METHOD));
-	                    dos.writeUTF(method.getSignature().replace('/', '.')); // how bazaar
-	                }
-	            }
-            }
+            writeInterfaces(dos, cls);
+            writeFields(dos, cls);
+            writeMethods(dos, cls);
 
             dos.flush();
             MessageDigest digest = MessageDigest.getInstance("SHA-1");
@@ -141,7 +151,8 @@ public class SerialVersionCalc {
 
     }
 
-    static class FieldSorter implements Comparator<Field> {
+    static class FieldSorter implements Comparator<Field>, Serializable {
+        private static final long serialVersionUID = 1L;
 
         @Override
         public int compare(Field f1, Field f2) {
@@ -149,7 +160,8 @@ public class SerialVersionCalc {
         }
     }
 
-    static class MethodSorter implements Comparator<Method> {
+    static class MethodSorter implements Comparator<Method>, Serializable {
+        private static final long serialVersionUID = 1L;
 
         @Override
         public int compare(Method m1, Method m2) {
