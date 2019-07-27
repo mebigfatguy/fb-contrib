@@ -1,5 +1,6 @@
 package ex;
 
+import java.io.ByteArrayOutputStream;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -55,6 +56,14 @@ public class COM_Sample {
         public void fpEnhanceAccess() {
         }
     }
+}
+
+class OS357 extends ByteArrayOutputStream {
+	
+	@Override
+	public void close() {
+		//  removes throws clause
+	}
 }
 
 interface Inf {
