@@ -141,9 +141,11 @@ public class ImmatureClass extends BytecodeScanningDetector {
 									} else if (!fieldSig.startsWith("Ljava/lang/")
 											&& !fieldSig.startsWith("Ljava/util/")) {
 										heStatus = HEStatus.NOT_NEEDED;
+									} else {
+										heStatus = (fieldSig.equals("Ljava/lang/Double;") || fieldSig.equals("Ljava/lang/Float;")) ? HEStatus.NOT_NEEDED : HEStatus.NEEDED;
 									}
 								} else if (!fieldSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
-									heStatus = HEStatus.NEEDED;
+									heStatus = fieldSig.equals("D") || fieldSig.equals("F") ? HEStatus.NOT_NEEDED : HEStatus.NEEDED;
 								}
 							}
 						} else {

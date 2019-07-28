@@ -49,6 +49,21 @@ public class IMC_Sample implements Serializable {
     }
 }
 
+class NeedsEquals {
+	String key;
+	String value;
+	
+	@Override
+	public String toString() {
+		return key + value;
+	}
+}
+
+class Numbers359 {
+	String key;
+	double value;
+}
+
 class IMCFPHasAToString {
     @SuperSecret
     private String fooo;
