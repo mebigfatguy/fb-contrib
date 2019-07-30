@@ -139,4 +139,23 @@ public class FII_Sample {
             return this != GiantSpeak.BLUB;
         }
     }
+    
+    final class FP363
+    {
+        public void example(Foo363 foo, String string)
+        {
+            perform(() -> foo.foo(string));  // (*)
+        }
+        
+        private void perform(Runnable action)
+        {
+            action.run();
+        }
+    }
+
+
+    abstract class Foo363
+    {
+        public abstract void foo(String string);
+    }
 }
