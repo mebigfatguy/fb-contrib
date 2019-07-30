@@ -106,7 +106,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 		riskyMethodNameContents.add("copy");
 		riskyMethodNameContents.add("currentTimeMillis");
 		riskyMethodNameContents.add("nanoTime");
-		riskyMethodNameContents.add("newInstance");
+		riskyMethodNameContents.add("new");
 		riskyMethodNameContents.add("noneOf");
 		riskyMethodNameContents.add("now");
 		riskyMethodNameContents.add("allOf");
