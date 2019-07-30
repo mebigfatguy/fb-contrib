@@ -167,7 +167,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 		if (userNameProp != null) {
 			String[] userNames = userNameProp.split(Values.WHITESPACE_COMMA_SPLIT);
 			for (String name : userNames) {
-				riskyClassNames.add(name);
+				riskyClassNames.add(name.replace('.', '.'));
 			}
 		}
 	}
