@@ -154,12 +154,19 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         functionalInterfaceInfo.remove(m.getName());
                     } else {
                         isParmLambda = numParms == 2;
-                        if (isParmLambda) {
-                        	String parmType = SignatureUtils.getParameterSignatures(m.getSignature()).get(1);
-                        	if (Values.SIG_JAVA_LANG_VOID.equals(parmType)) {
-                        		isParmLambda = false;
-                                functionalInterfaceInfo.remove(getMethod().getName());
-                                return;
+                        if (isParmLambda)  {
+                        	Iterator<FIInfo> it = fiis.iterator();
+                        	while (it.hasNext()) {
+                        		FIInfo fi = it.next();
+                        		if (!fi.getMethod().isStatic()) {
+                        			it.remove();
+                        		}
+                        	}
+                        	
+                        	if (fiis.isEmpty()) {
+	                    		isParmLambda = false;
+	                            functionalInterfaceInfo.remove(getMethod().getName());
+	                            return;
                         	}
                         }
                         try {
