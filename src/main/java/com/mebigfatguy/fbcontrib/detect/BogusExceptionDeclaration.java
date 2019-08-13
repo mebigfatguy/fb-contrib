@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.ExceptionTable;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
+import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -48,6 +50,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
+    private static final String IGNORE_INHERITED_METHODS_PROPERTY = "fb-contrib.bed.ignore_inherited";
+
     private static final Set<String> safeClasses = UnmodifiableSet.create(
     // @formatter:off
             Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_INTEGER,
@@ -55,6 +59,8 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
             Values.SLASHED_JAVA_LANG_SHORT, Values.SLASHED_JAVA_LANG_BYTE, Values.SLASHED_JAVA_LANG_BOOLEAN
     // @formatter:on
     );
+    
+    private static final boolean IGNORE_INHERITED_METHODS = Boolean.getBoolean(IGNORE_INHERITED_METHODS_PROPERTY);
 
     private final BugReporter bugReporter;
     private JavaClass runtimeExceptionClass;
@@ -116,7 +122,14 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
         if (method.isSynthetic()) {
             return;
         }
-
+        
+        if (IGNORE_INHERITED_METHODS) {
+	        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
+	        if (mi != null && mi.isDerived()) {
+	        	return;
+	        }
+        }
+        
         declaredCheckedExceptions.clear();
         stack.resetForMethodEntry(this);
 

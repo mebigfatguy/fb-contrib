@@ -38,6 +38,18 @@ public class SEO_Sample {
             System.out.println("Got It");
         }
     }
+    
+    private String fpArrays(String[] data) {
+    	if (isEmpty(data) && data[0] != null && data[1] != null)
+    		return data[0] + data[1];
+    	else {
+    		return "";
+    	}
+    }
+    
+    private boolean isEmpty(String[] d) {
+    	return d == null || d.length == 0;
+    }
 
     class Holder {
         private int[] data;

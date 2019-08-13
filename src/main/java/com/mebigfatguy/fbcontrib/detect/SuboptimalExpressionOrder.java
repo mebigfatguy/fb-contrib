@@ -115,6 +115,13 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
                         sawMethodWeight = 0;
                         return;
                     }
+                    
+                    for (String parmSig : SignatureUtils.getParameterSignatures(signature)) {
+                    	if (parmSig.charAt(0) == '[') {
+                    		sawMethodWeight = 0;
+                    		return;
+                    	}
+                    }
 
                     String clsName = getClassConstantOperand();
                     MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName, getNameConstantOperand(), signature);
