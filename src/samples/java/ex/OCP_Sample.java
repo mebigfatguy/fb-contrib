@@ -14,6 +14,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.GregorianCalendar;
@@ -251,5 +252,17 @@ class fpOverloaded270 {
 
     public boolean fpProcessSet(TreeSet<String> s) {
         return s.contains("boo");
+    }
+}
+
+class FP367 {
+	private List<Object> resources;
+
+    public void nonTernaryOCP(List<Object> resources) {
+        this.resources = resources;
+    }
+
+    public void ternaryOCP(List<Object> resources) {
+        this.resources = (resources == null) ? new ArrayList<>() : resources;
     }
 }
