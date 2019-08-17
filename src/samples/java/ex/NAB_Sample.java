@@ -1,9 +1,9 @@
 package ex;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import edu.emory.mathcs.backport.java.util.Arrays;
 
 @SuppressWarnings("all")
 public class NAB_Sample {
