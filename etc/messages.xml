@@ -1896,7 +1896,7 @@ System.out.println("Problem with the object :" + someObj);
 
 	<BugPattern type="OCP_OVERLY_CONCRETE_PARAMETER">
 		<ShortDescription>Method needlessly defines parameter with concrete classes</ShortDescription>
-		<LongDescription>{3}</LongDescription>
+		<LongDescription>{1}: {3}</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This method uses concrete classes for parameters when only methods defined in an implemented
