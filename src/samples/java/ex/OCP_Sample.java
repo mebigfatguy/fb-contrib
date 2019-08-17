@@ -258,6 +258,10 @@ class fpOverloaded270 {
 class FP367 {
 	private List<Object> resources;
 
+    public void nonTernaryOCP(List<Object> resources) {
+        this.resources = resources;
+    }
+
     public void ternaryOCP(List<Object> resources) {
         this.resources = (resources == null) ? new ArrayList<>() : resources;
     }
