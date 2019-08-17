@@ -30,11 +30,11 @@ import java.security.NoSuchAlgorithmException;
 import java.util.Arrays;
 import java.util.Comparator;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-import com.sun.xml.internal.bind.v2.runtime.reflect.opt.Const;
 
 public final class SerialVersionCalc {
 
