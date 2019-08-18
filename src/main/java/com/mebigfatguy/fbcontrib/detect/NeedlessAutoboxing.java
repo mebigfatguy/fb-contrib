@@ -217,12 +217,6 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                                 state = State.SEEN_VALUEOFSTRING;
                             }
                         } else {
-                            if (Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())
-                                    && SignatureBuilder.SIG_PRIMITIVE_BOOLEAN_TO_BOOLEAN.equals(getSigConstantOperand())) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            }
-
                             state = State.SEEN_VALUEOFPRIMITIVE;
                         }
                     } else {
