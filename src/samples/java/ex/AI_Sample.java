@@ -129,4 +129,17 @@ public class AI_Sample {
         }
         return Collections.singletonList(s);
     }
+    
+    interface GenericI<X> {
+    	X useGeneric();
+    }
+    
+    static class GenericClass implements GenericI<String> {
+    	
+    	public String useGeneric() {
+    		return null;
+    	}
+    }
+    
+    
 }
