@@ -25,6 +25,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.apache.bcel.Constants;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Annotations;
 import org.apache.bcel.classfile.Code;
@@ -328,12 +329,27 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     					} else {
     						matches = cParms[i].equals(mParms[i]);
     					}
+    					
+    					if (!matches) 
+    						break;
     				}
     				if (matches) {
     					if (Values.SIG_JAVA_LANG_OBJECT.equals(cp.getReturnTypeSignature())) {
     						matches = mp.getReturnTypeSignature().charAt(0) == 'L';
     					} else {
-    						matches =cp.getReturnTypeSignature().equals(mp.getReturnTypeSignature());
+    						String cRet = cp.getReturnTypeSignature();
+    						String mRet = mp.getReturnTypeSignature();
+    						matches = cRet.equals(mRet);
+    						if (!matches) {
+    							try {
+    							JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cRet));
+    							JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mRet));
+    							matches = mc.instanceOf(cc);
+    							} catch (ClassNotFoundException e) {
+    								bugReporter.reportMissingClass(e);
+    								matches = false;
+    							}
+    						}
     					}
     				}
     				
