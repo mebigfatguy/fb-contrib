@@ -328,6 +328,17 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     						matches = mParms[i].charAt(0) == 'L';
     					} else {
     						matches = cParms[i].equals(mParms[i]);
+    						if (!matches) {
+    							try {
+    							JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cParms[i]));
+    							JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mParms[i]));
+    							matches = mc.instanceOf(cc);
+    							} catch (ClassNotFoundException e) {
+    								bugReporter.reportMissingClass(e);
+    								matches = false;
+    							}
+    						}
+    						matches = ;
     					}
     					
     					if (!matches) 
