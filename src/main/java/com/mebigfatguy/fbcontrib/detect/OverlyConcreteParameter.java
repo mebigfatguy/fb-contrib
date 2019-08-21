@@ -248,7 +248,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         	} else if (getPC() == ternaryTarget && stack.getStackDepth() > 0) {
         		ternary2Value = stack.getStackItem(0);
         	}
-        	
+
             stack.precomputation(this);
 
             if (OpcodeUtils.isInvoke(seen)) {
@@ -329,7 +329,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                 } else {
                     parameterDefiners.clear();
                 }
-            } else if (((seen == GOTO) || (seen == GOTO_W)) && getBranchOffset() > 0) {
+            } else if (((seen == Const.GOTO) || (seen == Const.GOTO_W)) && getBranchOffset() > 0) {
             	if (stack.getStackDepth() > 0) {
             		ternary1Value = stack.getStackItem(0);
             		ternaryTarget = getBranchTarget();
@@ -352,7 +352,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     	if (itm == null) {
     		return;
     	}
-    	
+
     	int reg = itm.getRegisterNumber();
         int parm = reg;
         if (!methodIsStatic) {
@@ -363,7 +363,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
             parameterDefiners.remove(Integer.valueOf(reg));
         }
     }
-    
+
     /**
      * determines whether the method is a baked in special method of the jdk
      *

@@ -143,10 +143,10 @@ public class ImmatureClass extends BytecodeScanningDetector {
 											&& !fieldSig.startsWith("Ljava/util/")) {
 										heStatus = HEStatus.NOT_NEEDED;
 									} else {
-										heStatus = (fieldSig.equals("Ljava/lang/Double;") || fieldSig.equals("Ljava/lang/Float;")) ? HEStatus.NOT_NEEDED : HEStatus.NEEDED;
+										heStatus = ("Ljava/lang/Double;".equals(fieldSig) || "Ljava/lang/Float;".equals(fieldSig)) ? HEStatus.NOT_NEEDED : HEStatus.NEEDED;
 									}
 								} else if (!fieldSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
-									heStatus = fieldSig.equals("D") || fieldSig.equals("F") ? HEStatus.NOT_NEEDED : HEStatus.NEEDED;
+									heStatus = SignatureUtils.classToSignature("double").equals(fieldSig) || SignatureUtils.classToSignature("float").equals(fieldSig) ? HEStatus.NOT_NEEDED : HEStatus.NEEDED;
 								}
 							}
 						} else {
@@ -177,12 +177,12 @@ public class ImmatureClass extends BytecodeScanningDetector {
 
 	@Override
 	public void visitField(Field f) {
-		
+
 		if ("var".equals(f.getName())) {
 			bugReporter.reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_VAR_NAME.name(), NORMAL_PRIORITY)
 					.addClass(this).addField(this));
 		}
-		
+
 		if (!f.isSynthetic() && (f.getName().indexOf(Values.SYNTHETIC_MEMBER_CHAR) < 0)) {
 			switch (fieldStatus) {
 			case NONE:
