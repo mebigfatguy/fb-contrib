@@ -338,7 +338,6 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     								matches = false;
     							}
     						}
-    						matches = ;
     					}
     					
     					if (!matches) 
