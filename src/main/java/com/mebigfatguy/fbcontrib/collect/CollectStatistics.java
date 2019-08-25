@@ -350,7 +350,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     						String cRet = cp.getReturnTypeSignature();
     						String mRet = mp.getReturnTypeSignature();
     						matches = cRet.equals(mRet);
-    						if (!matches &&  && cRet.charAt(0) == 'L' && mRet.charAt(0) == 'L') {
+    						if (!matches  && cRet.charAt(0) == 'L' && mRet.charAt(0) == 'L') {
     							try {
     							JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cRet));
     							JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mRet));
