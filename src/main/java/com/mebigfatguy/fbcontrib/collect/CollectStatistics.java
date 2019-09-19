@@ -51,368 +51,368 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
  * detectors.
  */
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
-	private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
-			// @formatter:off
-			new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
-			new SignatureBuilder().withMethodName(Values.TOSTRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING)
-					.toString(),
-			new SignatureBuilder().withMethodName(Values.HASHCODE).withReturnType(Values.SIG_PRIMITIVE_INT).toString(),
-			"clone()", "values()",
-			new SignatureBuilder().withMethodName("main").withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString()
-	// @formatter:on
-	);
+    private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
+            // @formatter:off
+            new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
+            new SignatureBuilder().withMethodName(Values.TOSTRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING)
+                    .toString(),
+            new SignatureBuilder().withMethodName(Values.HASHCODE).withReturnType(Values.SIG_PRIMITIVE_INT).toString(),
+            "clone()", "values()",
+            new SignatureBuilder().withMethodName("main").withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString()
+    // @formatter:on
+    );
 
-	private static final Set<String> BEAN_ANNOTATIONS = UnmodifiableSet.create(
-			// @formatter:off
-			"Lorg/springframework/stereotype/Component;", "Lorg/springframework/stereotype/Controller;",
-			"Lorg/springframework/stereotype/Repository;", "Lorg/springframework/stereotype/Service;"
-	// @formatter:on
-	);
+    private static final Set<String> BEAN_ANNOTATIONS = UnmodifiableSet.create(
+            // @formatter:off
+            "Lorg/springframework/stereotype/Component;", "Lorg/springframework/stereotype/Controller;",
+            "Lorg/springframework/stereotype/Repository;", "Lorg/springframework/stereotype/Service;"
+    // @formatter:on
+    );
 
-	private BugReporter bugReporter;
-	private int numMethodCalls;
-	private boolean modifiesState;
-	private boolean classHasAnnotation;
-	private OpcodeStack stack;
-	private Map<QMethod, Set<CalledMethod>> selfCallTree;
-	private Set<QMethod> constrainingMethods;
-	private QMethod curMethod;
+    private BugReporter bugReporter;
+    private int numMethodCalls;
+    private boolean modifiesState;
+    private boolean classHasAnnotation;
+    private OpcodeStack stack;
+    private Map<QMethod, Set<CalledMethod>> selfCallTree;
+    private Set<QMethod> constrainingMethods;
+    private QMethod curMethod;
 
-	/**
-	 * constructs a CollectStatistics detector which clears the singleton that holds
-	 * the statistics for all classes parsed in the first pass.
-	 *
-	 * @param bugReporter unused, but required by reflection contract
-	 */
-	// required for reflection
-	@SuppressWarnings("PMD.UnusedFormalParameter")
-	public CollectStatistics(BugReporter bugReporter) {
-		Statistics.getStatistics().clear();
-		this.bugReporter = bugReporter;
-	}
+    /**
+     * constructs a CollectStatistics detector which clears the singleton that holds
+     * the statistics for all classes parsed in the first pass.
+     *
+     * @param bugReporter unused, but required by reflection contract
+     */
+    // required for reflection
+    @SuppressWarnings("PMD.UnusedFormalParameter")
+    public CollectStatistics(BugReporter bugReporter) {
+        Statistics.getStatistics().clear();
+        this.bugReporter = bugReporter;
+    }
 
-	/**
-	 * implements the visitor to collect statistics on this class
-	 *
-	 * @param classContext the currently class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			JavaClass cls = classContext.getJavaClass();
-			constrainingMethods = buildConstrainingMethods(cls, new HashSet<>());
-			AnnotationEntry[] annotations = cls.getAnnotationEntries();
-			classHasAnnotation = !CollectionUtils.isEmpty(annotations);
-			stack = new OpcodeStack();
-			selfCallTree = new HashMap<>();
-			super.visitClassContext(classContext);
+    /**
+     * implements the visitor to collect statistics on this class
+     *
+     * @param classContext the currently class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            JavaClass cls = classContext.getJavaClass();
+            constrainingMethods = buildConstrainingMethods(cls, new HashSet<String>());
+            AnnotationEntry[] annotations = cls.getAnnotationEntries();
+            classHasAnnotation = !CollectionUtils.isEmpty(annotations);
+            stack = new OpcodeStack();
+            selfCallTree = new HashMap<>();
+            super.visitClassContext(classContext);
 
-			performModifyStateClosure(classContext.getJavaClass());
+            performModifyStateClosure(classContext.getJavaClass());
 
-		} finally {
-			stack = null;
-			selfCallTree = null;
-			curMethod = null;
-			constrainingMethods = null;
-		}
-	}
+        } finally {
+            stack = null;
+            selfCallTree = null;
+            curMethod = null;
+            constrainingMethods = null;
+        }
+    }
 
-	@Override
-	public void visitAnnotation(Annotations annotations) {
-		for (AnnotationEntry entry : annotations.getAnnotationEntries()) {
-			String annotationType = entry.getAnnotationType();
-			if (BEAN_ANNOTATIONS.contains(annotationType)) {
-				Statistics.getStatistics().addAutowiredBean(getDottedClassName());
-			}
-		}
-	}
+    @Override
+    public void visitAnnotation(Annotations annotations) {
+        for (AnnotationEntry entry : annotations.getAnnotationEntries()) {
+            String annotationType = entry.getAnnotationType();
+            if (BEAN_ANNOTATIONS.contains(annotationType)) {
+                Statistics.getStatistics().addAutowiredBean(getDottedClassName());
+            }
+        }
+    }
 
-	@Override
-	public void visitCode(Code obj) {
+    @Override
+    public void visitCode(Code obj) {
 
-		numMethodCalls = 0;
-		modifiesState = false;
+        numMethodCalls = 0;
+        modifiesState = false;
 
-		byte[] code = obj.getCode();
-		if (code == null) {
-			return;
-		}
-		stack.resetForMethodEntry(this);
-		curMethod = null;
-		super.visitCode(obj);
-		String clsName = getClassName();
-		Method method = getMethod();
-		int accessFlags = method.getAccessFlags();
+        byte[] code = obj.getCode();
+        if (code == null) {
+            return;
+        }
+        stack.resetForMethodEntry(this);
+        curMethod = null;
+        super.visitCode(obj);
+        String clsName = getClassName();
+        Method method = getMethod();
+        int accessFlags = method.getAccessFlags();
 
-		boolean isDerived = false;
-		if (!constrainingMethods.isEmpty()) {
-			QMethod qm = new QMethod(method.getName(), method.getSignature());
-			isDerived = isConstrained(qm);
-		}
+        boolean isDerived = false;
+        if (!constrainingMethods.isEmpty()) {
+            QMethod qm = new QMethod(method.getName(), method.getSignature());
+            isDerived = isConstrained(qm);
+        }
 
-		MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(),
-				accessFlags, code.length, numMethodCalls, isDerived);
-		if (clsName.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0
-				|| (accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0) {
-			mi.addCallingAccess(Constants.ACC_PUBLIC);
-		} else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
-			if (isAssociationedWithAnnotations(method)) {
-				mi.addCallingAccess(Constants.ACC_PUBLIC);
-			} else {
-				String methodSig = getMethodName() + getMethodSig();
-				for (String sig : COMMON_METHOD_SIG_PREFIXES) {
-					if (methodSig.startsWith(sig)) {
-						mi.addCallingAccess(Constants.ACC_PUBLIC);
-						break;
-					}
-				}
-			}
-		}
+        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(),
+                accessFlags, code.length, numMethodCalls, isDerived);
+        if (clsName.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0
+                || (accessFlags & (ACC_ABSTRACT | ACC_INTERFACE | ACC_ANNOTATION)) != 0) {
+            mi.addCallingAccess(Constants.ACC_PUBLIC);
+        } else if ((accessFlags & Constants.ACC_PRIVATE) == 0) {
+            if (isAssociationedWithAnnotations(method)) {
+                mi.addCallingAccess(Constants.ACC_PUBLIC);
+            } else {
+                String methodSig = getMethodName() + getMethodSig();
+                for (String sig : COMMON_METHOD_SIG_PREFIXES) {
+                    if (methodSig.startsWith(sig)) {
+                        mi.addCallingAccess(Constants.ACC_PUBLIC);
+                        break;
+                    }
+                }
+            }
+        }
 
-		mi.setModifiesState(modifiesState);
-	}
+        mi.setModifiesState(modifiesState);
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		try {
-			switch (seen) {
-			case INVOKEVIRTUAL:
-			case INVOKEINTERFACE:
-			case INVOKESPECIAL:
-			case INVOKESTATIC:
-			case INVOKEDYNAMIC:
-				numMethodCalls++;
+    @Override
+    public void sawOpcode(int seen) {
+        try {
+            switch (seen) {
+            case INVOKEVIRTUAL:
+            case INVOKEINTERFACE:
+            case INVOKESPECIAL:
+            case INVOKESTATIC:
+            case INVOKEDYNAMIC:
+                numMethodCalls++;
 
-				if (seen != INVOKESTATIC) {
-					int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
-					if (stack.getStackDepth() > numParms) {
-						OpcodeStack.Item itm = stack.getStackItem(numParms);
-						if (itm.getRegisterNumber() == 0) {
-							Set<CalledMethod> calledMethods;
+                if (seen != INVOKESTATIC) {
+                    int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
+                    if (stack.getStackDepth() > numParms) {
+                        OpcodeStack.Item itm = stack.getStackItem(numParms);
+                        if (itm.getRegisterNumber() == 0) {
+                            Set<CalledMethod> calledMethods;
 
-							if (curMethod == null) {
-								curMethod = new QMethod(getMethodName(), getMethodSig());
-								calledMethods = new HashSet<>();
-								selfCallTree.put(curMethod, calledMethods);
-							} else {
-								calledMethods = selfCallTree.get(curMethod);
-							}
+                            if (curMethod == null) {
+                                curMethod = new QMethod(getMethodName(), getMethodSig());
+                                calledMethods = new HashSet<>();
+                                selfCallTree.put(curMethod, calledMethods);
+                            } else {
+                                calledMethods = selfCallTree.get(curMethod);
+                            }
 
-							calledMethods.add(
-									new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()),
-											seen == INVOKESPECIAL));
-						}
-					}
-				}
-				break;
+                            calledMethods.add(
+                                    new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()),
+                                            seen == INVOKESPECIAL));
+                        }
+                    }
+                }
+                break;
 
-			case PUTSTATIC:
-			case PUTFIELD:
-				modifiesState = true;
-				break;
+            case PUTSTATIC:
+            case PUTFIELD:
+                modifiesState = true;
+                break;
 
-			default:
-				break;
-			}
-		} finally {
-			stack.sawOpcode(this, seen);
-		}
-	}
+            default:
+                break;
+            }
+        } finally {
+            stack.sawOpcode(this, seen);
+        }
+    }
 
-	private void performModifyStateClosure(JavaClass cls) {
-		boolean foundNewCall = true;
-		Statistics statistics = Statistics.getStatistics();
+    private void performModifyStateClosure(JavaClass cls) {
+        boolean foundNewCall = true;
+        Statistics statistics = Statistics.getStatistics();
 
-		String clsName = cls.getClassName();
-		while (foundNewCall && !selfCallTree.isEmpty()) {
-			foundNewCall = false;
+        String clsName = cls.getClassName();
+        while (foundNewCall && !selfCallTree.isEmpty()) {
+            foundNewCall = false;
 
-			Iterator<Map.Entry<QMethod, Set<CalledMethod>>> callerIt = selfCallTree.entrySet().iterator();
-			while (callerIt.hasNext()) {
-				Map.Entry<QMethod, Set<CalledMethod>> callerEntry = callerIt.next();
-				QMethod caller = callerEntry.getKey();
+            Iterator<Map.Entry<QMethod, Set<CalledMethod>>> callerIt = selfCallTree.entrySet().iterator();
+            while (callerIt.hasNext()) {
+                Map.Entry<QMethod, Set<CalledMethod>> callerEntry = callerIt.next();
+                QMethod caller = callerEntry.getKey();
 
-				MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(),
-						caller.getSignature());
-				if (callerMi == null) {
-					// odd, shouldn't happen
-					foundNewCall = true;
-				} else if (callerMi.getModifiesState()) {
-					foundNewCall = true;
-				} else {
+                MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(),
+                        caller.getSignature());
+                if (callerMi == null) {
+                    // odd, shouldn't happen
+                    foundNewCall = true;
+                } else if (callerMi.getModifiesState()) {
+                    foundNewCall = true;
+                } else {
 
-					for (CalledMethod calledMethod : callerEntry.getValue()) {
+                    for (CalledMethod calledMethod : callerEntry.getValue()) {
 
-						if (calledMethod.isSuper) {
-							callerMi.setModifiesState(true);
-							foundNewCall = true;
-							break;
-						}
+                        if (calledMethod.isSuper) {
+                            callerMi.setModifiesState(true);
+                            foundNewCall = true;
+                            break;
+                        }
 
-						MethodInfo calleeMi = statistics.getMethodStatistics(clsName,
-								calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
-						if (calleeMi == null) {
-							// a super or sub class probably implements this method so just assume it
-							// modifies state
-							callerMi.setModifiesState(true);
-							foundNewCall = true;
-							break;
-						}
+                        MethodInfo calleeMi = statistics.getMethodStatistics(clsName,
+                                calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
+                        if (calleeMi == null) {
+                            // a super or sub class probably implements this method so just assume it
+                            // modifies state
+                            callerMi.setModifiesState(true);
+                            foundNewCall = true;
+                            break;
+                        }
 
-						if (calleeMi.getModifiesState()) {
-							callerMi.setModifiesState(true);
-							foundNewCall = true;
-							break;
-						}
-					}
-				}
+                        if (calleeMi.getModifiesState()) {
+                            callerMi.setModifiesState(true);
+                            foundNewCall = true;
+                            break;
+                        }
+                    }
+                }
 
-				if (foundNewCall) {
-					callerIt.remove();
-				}
-			}
-		}
+                if (foundNewCall) {
+                    callerIt.remove();
+                }
+            }
+        }
 
-		selfCallTree.clear();
-	}
+        selfCallTree.clear();
+    }
 
-	private boolean isAssociationedWithAnnotations(Method m) {
-		if (classHasAnnotation) {
-			return true;
-		}
+    private boolean isAssociationedWithAnnotations(Method m) {
+        if (classHasAnnotation) {
+            return true;
+        }
 
-		return !CollectionUtils.isEmpty(m.getAnnotationEntries());
-	}
+        return !CollectionUtils.isEmpty(m.getAnnotationEntries());
+    }
 
-	private Set<QMethod> buildConstrainingMethods(JavaClass cls, Set<String> visitedClasses) {
+    private Set<QMethod> buildConstrainingMethods(JavaClass cls, Set<String> visitedClasses) {
 
-		Set<QMethod> constraints = new HashSet<>();
-		try {
-			for (JavaClass inf : cls.getInterfaces()) {
-				String infName = inf.getClassName();
-				if (!visitedClasses.contains(infName)) {
-					visitedClasses.add(infName);
+        Set<QMethod> constraints = new HashSet<>();
+        try {
+            for (JavaClass inf : cls.getInterfaces()) {
+                String infName = inf.getClassName();
+                if (!visitedClasses.contains(infName)) {
+                    visitedClasses.add(infName);
 
-					for (Method m : inf.getMethods()) {
-						constraints.add(new QMethod(m.getName(), m.getSignature()));
-					}
-				}
-			}
+                    for (Method m : inf.getMethods()) {
+                        constraints.add(new QMethod(m.getName(), m.getSignature()));
+                    }
+                }
+            }
 
-			for (JavaClass parent : cls.getSuperClasses()) {
-				String clsName = parent.getClassName();
-				if (!visitedClasses.contains(clsName)) {
-					visitedClasses.add(clsName);
+            for (JavaClass parent : cls.getSuperClasses()) {
+                String clsName = parent.getClassName();
+                if (!visitedClasses.contains(clsName)) {
+                    visitedClasses.add(clsName);
 
-					if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
-						for (Method m : parent.getMethods()) {
-							constraints.add(new QMethod(m.getName(), m.getSignature()));
-						}
-						constraints.addAll(buildConstrainingMethods(parent, visitedClasses));
-					}
-				}
-			}
-		} catch (ClassNotFoundException e) {
-			bugReporter.reportMissingClass(e);
-		}
+                    if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
+                        for (Method m : parent.getMethods()) {
+                            constraints.add(new QMethod(m.getName(), m.getSignature()));
+                        }
+                        constraints.addAll(buildConstrainingMethods(parent, visitedClasses));
+                    }
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
 
-		return constraints;
-	}
+        return constraints;
+    }
 
-	private boolean isConstrained(QMethod m) {
-		if (constrainingMethods.contains(m)) {
-			return true;
-		}
+    private boolean isConstrained(QMethod m) {
+        if (constrainingMethods.contains(m)) {
+            return true;
+        }
 
-		SignatureParser mp = new SignatureParser(m.getSignature());
-		int numParms = mp.getNumParameters();
+        SignatureParser mp = new SignatureParser(m.getSignature());
+        int numParms = mp.getNumParameters();
 
-		for (QMethod constraint : constrainingMethods) {
-			if (m.getMethodName().equals(constraint.getMethodName())) {
-				SignatureParser cp = new SignatureParser(constraint.getSignature());
-				if (numParms == cp.getNumParameters()) {
-					String[] mParms = mp.getArguments();
-					String[] cParms = cp.getArguments();
+        for (QMethod constraint : constrainingMethods) {
+            if (m.getMethodName().equals(constraint.getMethodName())) {
+                SignatureParser cp = new SignatureParser(constraint.getSignature());
+                if (numParms == cp.getNumParameters()) {
+                    String[] mParms = mp.getArguments();
+                    String[] cParms = cp.getArguments();
 
-					boolean matches = true;
-					for (int i = 0; i < numParms; i++) {
-						if (Values.SIG_JAVA_LANG_OBJECT.equals(cParms[i])) {
-							matches = mParms[i].charAt(0) == 'L';
-						} else {
-							matches = cParms[i].equals(mParms[i]);
-							if (!matches && cParms[i].charAt(0) == 'L' && mParms[i].charAt(0) == 'L') {
-								try {
-									JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cParms[i]));
-									JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mParms[i]));
-									matches = mc.instanceOf(cc);
-								} catch (ClassNotFoundException e) {
-									bugReporter.reportMissingClass(e);
-									matches = false;
-								}
-							}
-						}
+                    boolean matches = true;
+                    for (int i = 0; i < numParms; i++) {
+                        if (Values.SIG_JAVA_LANG_OBJECT.equals(cParms[i])) {
+                            matches = mParms[i].charAt(0) == 'L';
+                        } else {
+                            matches = cParms[i].equals(mParms[i]);
+                            if (!matches && cParms[i].charAt(0) == 'L' && mParms[i].charAt(0) == 'L') {
+                                try {
+                                    JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cParms[i]));
+                                    JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mParms[i]));
+                                    matches = mc.instanceOf(cc);
+                                } catch (ClassNotFoundException e) {
+                                    bugReporter.reportMissingClass(e);
+                                    matches = false;
+                                }
+                            }
+                        }
 
-						if (!matches) {
-							break;
-						}
-					}
-					if (matches) {
-						if (Values.SIG_JAVA_LANG_OBJECT.equals(cp.getReturnTypeSignature())) {
-							matches = mp.getReturnTypeSignature().charAt(0) == 'L';
-						} else {
-							String cRet = cp.getReturnTypeSignature();
-							String mRet = mp.getReturnTypeSignature();
-							matches = cRet.equals(mRet);
-							if (!matches && cRet.charAt(0) == 'L' && mRet.charAt(0) == 'L') {
-								try {
-									JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cRet));
-									JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mRet));
-									matches = mc.instanceOf(cc);
-								} catch (ClassNotFoundException e) {
-									bugReporter.reportMissingClass(e);
-									matches = false;
-								}
-							}
-						}
-					}
+                        if (!matches) {
+                            break;
+                        }
+                    }
+                    if (matches) {
+                        if (Values.SIG_JAVA_LANG_OBJECT.equals(cp.getReturnTypeSignature())) {
+                            matches = mp.getReturnTypeSignature().charAt(0) == 'L';
+                        } else {
+                            String cRet = cp.getReturnTypeSignature();
+                            String mRet = mp.getReturnTypeSignature();
+                            matches = cRet.equals(mRet);
+                            if (!matches && cRet.charAt(0) == 'L' && mRet.charAt(0) == 'L') {
+                                try {
+                                    JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cRet));
+                                    JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mRet));
+                                    matches = mc.instanceOf(cc);
+                                } catch (ClassNotFoundException e) {
+                                    bugReporter.reportMissingClass(e);
+                                    matches = false;
+                                }
+                            }
+                        }
+                    }
 
-					if (matches) {
-						return true;
-					}
-				}
+                    if (matches) {
+                        return true;
+                    }
+                }
 
-			}
-		}
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * represents a method that is called, and whether it is in the super class
-	 */
-	static class CalledMethod {
-		private QMethod callee;
-		private boolean isSuper;
+    /**
+     * represents a method that is called, and whether it is in the super class
+     */
+    static class CalledMethod {
+        private QMethod callee;
+        private boolean isSuper;
 
-		public CalledMethod(QMethod c, boolean s) {
-			callee = c;
-			isSuper = s;
-		}
+        public CalledMethod(QMethod c, boolean s) {
+            callee = c;
+            isSuper = s;
+        }
 
-		@Override
-		public int hashCode() {
-			return callee.hashCode() & (isSuper ? 0 : 1);
-		}
+        @Override
+        public int hashCode() {
+            return callee.hashCode() & (isSuper ? 0 : 1);
+        }
 
-		@Override
-		public boolean equals(Object obj) {
-			if (!(obj instanceof CalledMethod)) {
-				return false;
-			}
+        @Override
+        public boolean equals(Object obj) {
+            if (!(obj instanceof CalledMethod)) {
+                return false;
+            }
 
-			CalledMethod that = (CalledMethod) obj;
+            CalledMethod that = (CalledMethod) obj;
 
-			return isSuper == that.isSuper && callee.equals(that.callee);
-		}
-	}
+            return isSuper == that.isSuper && callee.equals(that.callee);
+        }
+    }
 }
