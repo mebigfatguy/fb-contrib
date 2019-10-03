@@ -43,6 +43,7 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.NonReportingDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 
 /**
  * a first pass detector to collect various statistics used in second pass detectors.
@@ -146,7 +147,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         boolean isDerived = false;
     	if (!constrainingMethods.isEmpty()) {
 	    	QMethod qm = new QMethod(method.getName(), method.getSignature());
-	    	isDerived = constrainingMethods.contains(qm);
+	    	isDerived = isConstrained(qm);
     	}
     	
         MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, code.length,
@@ -301,6 +302,48 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     	}
     	
     	return constraints;
+    }
+    
+    private boolean isConstrained(QMethod m) {
+    	if (constrainingMethods.contains(m)) {
+    		return true;
+    	}
+    	
+    	SignatureParser mp = new SignatureParser(m.getSignature());
+    	int numParms = mp.getNumParameters();
+    	
+    	for (QMethod constraint : constrainingMethods) {
+    		if (m.getMethodName().equals(constraint.getMethodName())) {
+    			SignatureParser cp = new SignatureParser(constraint.getSignature());
+    			if (numParms == cp.getNumParameters()) {
+    				String[] mParms = mp.getArguments();
+    				String[] cParms = cp.getArguments();
+    				
+    				boolean matches = true;
+    				for (int i = 0; i < numParms; i++) {
+    					if (Values.SIG_JAVA_LANG_OBJECT.equals(cParms[i])) {
+    						matches = mParms[i].charAt(0) == 'L';
+    					} else {
+    						matches = cParms[i].equals(mParms[i]);
+    					}
+    				}
+    				if (matches) {
+    					if (Values.SIG_JAVA_LANG_OBJECT.equals(cp.getReturnTypeSignature())) {
+    						matches = mp.getReturnTypeSignature().charAt(0) == 'L';
+    					} else {
+    						matches =cp.getReturnTypeSignature().equals(mp.getReturnTypeSignature());
+    					}
+    				}
+    				
+    				if (matches) {
+    					return true;
+    				}
+    			}
+    			
+    		}
+    	}
+    	
+    	return false;
     }
 
     /**
