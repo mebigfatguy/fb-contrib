@@ -326,6 +326,16 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     						matches = mParms[i].charAt(0) == 'L';
     					} else {
     						matches = cParms[i].equals(mParms[i]);
+    						if (!matches && cParms[i].charAt(0) == 'L' && mParms[i].charAt(0) == 'L') {
+    							try {
+    							JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cParms[i]));
+    							JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mParms[i]));
+    							matches = mc.instanceOf(cc);
+    							} catch (ClassNotFoundException e) {
+    								bugReporter.reportMissingClass(e);
+    								matches = false;
+    							}
+    						}
     					}
     					
     					if (!matches) 
@@ -338,7 +348,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     						String cRet = cp.getReturnTypeSignature();
     						String mRet = mp.getReturnTypeSignature();
     						matches = cRet.equals(mRet);
-    						if (!matches) {
+    						if (!matches  && cRet.charAt(0) == 'L' && mRet.charAt(0) == 'L') {
     							try {
     							JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cRet));
     							JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mRet));
