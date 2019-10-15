@@ -100,7 +100,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     public void visitClassContext(ClassContext classContext) {
         try {
             JavaClass cls = classContext.getJavaClass();
-            constrainingMethods = buildConstrainingMethods(cls);
+            constrainingMethods = buildConstrainingMethods(cls, new HashSet<>());
             AnnotationEntry[] annotations = cls.getAnnotationEntries();
             classHasAnnotation = !CollectionUtils.isEmpty(annotations);
             stack = new OpcodeStack();
@@ -283,22 +283,32 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         return !CollectionUtils.isEmpty(m.getAnnotationEntries());
     }
 
-    private Set<QMethod> buildConstrainingMethods(JavaClass cls) {
+    private Set<QMethod> buildConstrainingMethods(JavaClass cls, Set<String> visitedClasses) {
 
         Set<QMethod> constraints = new HashSet<>();
         try {
             for (JavaClass inf : cls.getInterfaces()) {
-                for (Method m : inf.getMethods()) {
-                    constraints.add(new QMethod(m.getName(), m.getSignature()));
+                String infName = inf.getClassName();
+                if (!visitedClasses.contains(infName)) {
+                    visitedClasses.add(infName);
+
+                    for (Method m : inf.getMethods()) {
+                        constraints.add(new QMethod(m.getName(), m.getSignature()));
+                    }
                 }
             }
 
             for (JavaClass parent : cls.getSuperClasses()) {
-                if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
-                    for (Method m : parent.getMethods()) {
-                        constraints.add(new QMethod(m.getName(), m.getSignature()));
+                String clsName = parent.getClassName();
+                if (!visitedClasses.contains(clsName)) {
+                    visitedClasses.add(clsName);
+
+                    if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
+                        for (Method m : parent.getMethods()) {
+                            constraints.add(new QMethod(m.getName(), m.getSignature()));
+                        }
+                        constraints.addAll(buildConstrainingMethods(parent, visitedClasses));
                     }
-                    constraints.addAll(buildConstrainingMethods(parent));
                 }
             }
         } catch (ClassNotFoundException e) {
