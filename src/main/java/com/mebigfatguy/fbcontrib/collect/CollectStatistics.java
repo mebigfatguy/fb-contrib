@@ -100,7 +100,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     public void visitClassContext(ClassContext classContext) {
         try {
             JavaClass cls = classContext.getJavaClass();
-            constrainingMethods = buildConstrainingMethods(cls, new HashSet<>());
+            constrainingMethods = buildConstrainingMethods(cls, new HashSet<String>());
             AnnotationEntry[] annotations = cls.getAnnotationEntries();
             classHasAnnotation = !CollectionUtils.isEmpty(annotations);
             stack = new OpcodeStack();
