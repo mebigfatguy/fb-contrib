@@ -34,14 +34,14 @@ public class MRC_Sample {
 
     private String getTwoDupsBySwitch(int i) {
         switch (i) {
-            case 1:
-                return "Hello";
+        case 1:
+            return "Hello";
 
-            case 2:
-                return "Hello";
+        case 2:
+            return "Hello";
 
-            default:
-                return "Hello";
+        default:
+            return "Hello";
         }
     }
 

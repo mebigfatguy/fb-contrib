@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
@@ -74,20 +75,20 @@ public class BAS_Sample {
         String v = "Test";
 
         switch (a) {
-            case 1:
-                v = "Testa";
+        case 1:
+            v = "Testa";
             break;
 
-            case 2:
-                v = "Tesseract";
+        case 2:
+            v = "Tesseract";
             break;
 
-            case 3:
-                v = "Testy";
+        case 3:
+            v = "Testy";
             break;
 
-            default:
-                v = "Rossa";
+        default:
+            v = "Rossa";
             break;
         }
 

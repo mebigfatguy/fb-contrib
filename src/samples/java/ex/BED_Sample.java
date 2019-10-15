@@ -123,15 +123,15 @@ public class BED_Sample {
             };
         }
     }
-    
+
     static class BaseBED {
-    	public void foo() throws IOException {
-    	}
+        public void foo() throws IOException {
+        }
     }
-    
+
     /* is caught based on the option fb-contrib.bed.ignore_inherited */
     static class ChildBED extends BaseBED {
-    	public void foo() throws IOException {
-    	}
+        public void foo() throws IOException {
+        }
     }
 }

@@ -34,7 +34,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that conflate the use of resources and files. Converting URLs retrieved from potentially non file resources, into files objects.
+ * looks for methods that conflate the use of resources and files. Converting
+ * URLs retrieved from potentially non file resources, into files objects.
  */
 @CustomUserValue
 public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
@@ -45,8 +46,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
     /**
      * constructs a CRF detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ConflatingResourcesAndFiles(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -55,8 +55,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -71,8 +70,7 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
     /**
      * overrides the visitor to resets the stack for this method.
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -114,7 +112,8 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
             }
         } else if ("java/net/URL".equals(clsName)) {
             String methodName = getNameConstantOperand();
-            if (("toURI".equals(methodName) || "getFile".equals(methodName)) && (stack.getStackDepth() > 0) && (stack.getStackItem(0).getUserValue() != null)) {
+            if (("toURI".equals(methodName) || "getFile".equals(methodName)) && (stack.getStackDepth() > 0)
+                    && (stack.getStackItem(0).getUserValue() != null)) {
                 return true;
             }
         }
@@ -128,17 +127,20 @@ public class ConflatingResourcesAndFiles extends BytecodeScanningDetector {
         if ("java/io/File".equals(clsName)) {
             String methodName = getNameConstantOperand();
             String sig = getSigConstantOperand();
-            if (Values.CONSTRUCTOR.equals(methodName) && (SignatureUtils.getNumParameters(sig) == 1) && (stack.getStackDepth() > 0)) {
+            if (Values.CONSTRUCTOR.equals(methodName) && (SignatureUtils.getNumParameters(sig) == 1)
+                    && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (item.getUserValue() != null) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.CRF_CONFLATING_RESOURCES_AND_FILES.name(), NORMAL_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.CRF_CONFLATING_RESOURCES_AND_FILES.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
         } else if ("java/net/URI".equals(clsName) || "java/net/URL".equals(clsName)) {
             String methodName = getNameConstantOperand();
             String sig = getSigConstantOperand();
-            if (Values.CONSTRUCTOR.equals(methodName) && SignatureBuilder.SIG_STRING_TO_VOID.equals(sig) && (stack.getStackDepth() > 0)) {
+            if (Values.CONSTRUCTOR.equals(methodName) && SignatureBuilder.SIG_STRING_TO_VOID.equals(sig)
+                    && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 String cons = (String) item.getConstant();
                 if ((cons != null) && !cons.startsWith("file:/")) {

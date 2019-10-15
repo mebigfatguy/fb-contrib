@@ -43,7 +43,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XFactory;
 
 /**
- * looks for simple fields that only store one of several constant values. This usually is an indication that this field should really be an enum type.
+ * looks for simple fields that only store one of several constant values. This
+ * usually is an indication that this field should really be an enum type.
  */
 @CustomUserValue
 public class PoorMansEnum extends BytecodeScanningDetector {
@@ -68,9 +69,11 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                 for (Field f : cls.getFields()) {
                     if (f.isPrivate() && !f.isSynthetic()) {
                         String fieldSig = f.getSignature();
-                        if ((!fieldSig.startsWith("L") && !fieldSig.startsWith("[")) || Values.SIG_JAVA_LANG_STRING.equals(fieldSig)) {
+                        if ((!fieldSig.startsWith("L") && !fieldSig.startsWith("["))
+                                || Values.SIG_JAVA_LANG_STRING.equals(fieldSig)) {
                             String fieldName = f.getName();
-                            // preallocating a set per field is just a waste, so just insert the empty set as a place holder
+                            // preallocating a set per field is just a waste, so just insert the empty set
+                            // as a place holder
                             fieldValues.put(fieldName, Collections.emptySet());
                             nameToField.put(fieldName, f);
                         }
@@ -87,8 +90,11 @@ public class PoorMansEnum extends BytecodeScanningDetector {
                             Set<Object> values = fieldInfo.getValue();
                             if (values.size() >= 3) {
                                 String fieldName = fieldInfo.getKey();
-                                bugReporter.reportBug(new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addField(XFactory.createXField(cls, nameToField.get(fieldName))).addSourceLine(firstFieldUse.get(fieldName)));
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.PME_POOR_MANS_ENUM.name(), NORMAL_PRIORITY)
+                                                .addClass(this)
+                                                .addField(XFactory.createXField(cls, nameToField.get(fieldName)))
+                                                .addSourceLine(firstFieldUse.get(fieldName)));
                             }
                         }
                     } catch (StopOpcodeParsingException e) {

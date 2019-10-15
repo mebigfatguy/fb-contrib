@@ -43,25 +43,25 @@ public class IMC_Sample implements Serializable {
             e.printStackTrace();
         }
     }
-    
+
     public void hasVar() {
-    	int var = 0;
+        int var = 0;
     }
 }
 
 class NeedsEquals {
-	String key;
-	String value;
-	
-	@Override
-	public String toString() {
-		return key + value;
-	}
+    String key;
+    String value;
+
+    @Override
+    public String toString() {
+        return key + value;
+    }
 }
 
 class Numbers359 {
-	String key;
-	double value;
+    String key;
+    double value;
 }
 
 class IMCFPHasAToString {

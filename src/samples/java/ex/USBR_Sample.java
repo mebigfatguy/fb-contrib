@@ -1,4 +1,5 @@
 package ex;
+
 @SuppressWarnings("all")
 public class USBR_Sample {
     public int addEm(String csl) {

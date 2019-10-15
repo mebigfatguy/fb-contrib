@@ -44,9 +44,12 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for relatively large if blocks of code, where you unconditionally return from them, and then follow that with an unconditional return of a small block.
- * This places the bulk of the logic to the right indentation-wise, making it more difficult to read than needed. It would be better to invert the logic of the
- * if block, and immediately return, allowing the bulk of the logic to be move to the left, for easier reading.
+ * looks for relatively large if blocks of code, where you unconditionally
+ * return from them, and then follow that with an unconditional return of a
+ * small block. This places the bulk of the logic to the right indentation-wise,
+ * making it more difficult to read than needed. It would be better to invert
+ * the logic of the if block, and immediately return, allowing the bulk of the
+ * logic to be move to the left, for easier reading.
  */
 public class BuryingLogic extends BytecodeScanningDetector {
 
@@ -80,7 +83,8 @@ public class BuryingLogic extends BytecodeScanningDetector {
     private BitSet catchPCs;
     private BitSet gotoBranchPCs;
     /**
-     * if we've processed an if block, we want to avoid else ifs, so don't start looking for a new if branch, until some instruction that can't be part of a
+     * if we've processed an if block, we want to avoid else ifs, so don't start
+     * looking for a new if branch, until some instruction that can't be part of a
      * conditional is found
      */
     private boolean lookingForResetOp;
@@ -88,8 +92,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
     /**
      * constructs a BL detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public BuryingLogic(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -124,10 +127,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the opcode stack, and initialize if tracking collections
+     * implements the visitor to reset the opcode stack, and initialize if tracking
+     * collections
      *
-     * @param classContext
-     *            the currently parsed java class
+     * @param classContext the currently parsed java class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -178,8 +181,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
     }
 
     /**
-     * the difficult problem is to figure out when you are at the bottom of an if/else chain when all the above if/else blocks leave via returns. then there is
-     * only one branch target to the statement after the last else, which is indistinquishable from a simple if/else.
+     * the difficult problem is to figure out when you are at the bottom of an
+     * if/else chain when all the above if/else blocks leave via returns. then there
+     * is only one branch target to the statement after the last else, which is
+     * indistinquishable from a simple if/else.
      */
     @Override
     public void sawOpcode(int seen) {
@@ -234,9 +239,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
 
                     double ratio = (double) ifSize / (double) elseSize;
                     if (ratio > lowBugRatioLimit) {
-                        bugReporter
-                                .reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(), ratio > normalBugRatioLimit ? NORMAL_PRIORITY : LOW_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLineRange(this, activeUnconditional.getStart(), activeUnconditional.getEnd()));
+                        bugReporter.reportBug(new BugInstance(this, BugType.BL_BURYING_LOGIC.name(),
+                                ratio > normalBugRatioLimit ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLineRange(this, activeUnconditional.getStart(),
+                                                activeUnconditional.getEnd()));
                         throw new StopOpcodeParsingException();
                     }
                     activeUnconditional = null;
@@ -260,10 +266,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the last downward branching jump seen crosses over the current location
+     * returns whether the last downward branching jump seen crosses over the
+     * current location
      *
-     * @param pc
-     *            the current location
+     * @param pc the current location
      * @return if the last if statement branched over here
      */
     private boolean gotoAcrossPC(int pc) {
@@ -273,15 +279,16 @@ public class BuryingLogic extends BytecodeScanningDetector {
     }
 
     /**
-     * determines if this opcode couldn't be part of a conditional expression or at least is very unlikely to be so.
+     * determines if this opcode couldn't be part of a conditional expression or at
+     * least is very unlikely to be so.
      *
-     * @param seen
-     *            the currently parse opcode
+     * @param seen the currently parse opcode
      * @return if this operation resets the looking for conditionals
      */
     private boolean isResetOp(int seen) {
         return resetOps.get(seen) || OpcodeUtils.isStore(seen) || OpcodeUtils.isReturn(seen)
-                || ((OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")V")) || (isBranch(seen) && (getBranchOffset() < 0)));
+                || ((OpcodeUtils.isInvoke(seen) && getSigConstantOperand().endsWith(")V"))
+                        || (isBranch(seen) && (getBranchOffset() < 0)));
     }
 
     /**
@@ -342,10 +349,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
 
         /**
-         * remove all if blocks that are contained within a loop, once that loop has ended
+         * remove all if blocks that are contained within a loop, once that loop has
+         * ended
          *
-         * @param target
-         *            the start of the loop block
+         * @param target the start of the loop block
          */
         public void removeLoopBlocks(int target) {
             Iterator<IfBlock> it = blocks.descendingIterator();
@@ -359,10 +366,10 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
 
         /**
-         * counts all blocks including nested block that are closed off at the current pc
+         * counts all blocks including nested block that are closed off at the current
+         * pc
          *
-         * @param pc
-         *            the current pc
+         * @param pc the current pc
          * @return how many blocks have ended at the pc
          */
         public int countBlockEndsAtPC(int pc) {
@@ -395,7 +402,8 @@ public class BuryingLogic extends BytecodeScanningDetector {
     }
 
     /**
-     * represents the byte offset code range of code that is executed inside an if block
+     * represents the byte offset code range of code that is executed inside an if
+     * block
      */
     static class IfBlock {
         private int start;

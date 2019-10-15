@@ -1,4 +1,5 @@
 package ex;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class WOC_Sample {
             System.out.println("woops");
         }
     }
-    
+
     public void testGuavaWOCSimple() {
         // tag WOC_WRITE_ONLY_COLLECTION_LOCAL
         Set<String> s = Sets.newHashSet();
@@ -46,10 +47,10 @@ public class WOC_Sample {
             System.out.println("woops");
         }
     }
-    
+
     public void testIterateEmpty() {
         Set<String> ss = new HashSet<String>();
-        
+
         for (String s : ss) {
         }
     }
@@ -104,7 +105,7 @@ public class WOC_Sample {
         s.add("foo");
         s.add("bar");
 
-        return b ? s : Collections.<String> emptySet();
+        return b ? s : Collections.<String>emptySet();
     }
 
     private void helper(int i, Map<String, String> x) {

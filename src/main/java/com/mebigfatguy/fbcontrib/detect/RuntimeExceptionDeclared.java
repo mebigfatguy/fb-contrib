@@ -37,9 +37,11 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for methods that declare Runtime exceptions in their throws clause. While doing so is not illegal, it may represent a misunderstanding as to the
- * exception in question. If a RuntimeException is declared, it implies that this exception type is expected to happen, which if true, should be handled in
- * code, and not propagated.
+ * looks for methods that declare Runtime exceptions in their throws clause.
+ * While doing so is not illegal, it may represent a misunderstanding as to the
+ * exception in question. If a RuntimeException is declared, it implies that
+ * this exception type is expected to happen, which if true, should be handled
+ * in code, and not propagated.
  */
 public class RuntimeExceptionDeclared extends PreorderVisitor implements Detector {
     private static JavaClass runtimeExceptionClass;
@@ -58,8 +60,7 @@ public class RuntimeExceptionDeclared extends PreorderVisitor implements Detecto
     /**
      * constructs a DRE detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public RuntimeExceptionDeclared(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -69,8 +70,7 @@ public class RuntimeExceptionDeclared extends PreorderVisitor implements Detecto
     /**
      * overrides the visitor and accepts if the Exception class was loaded
      *
-     * @param classContext
-     *            the context object for the currently parsed class
+     * @param classContext the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(final ClassContext classContext) {
@@ -82,8 +82,7 @@ public class RuntimeExceptionDeclared extends PreorderVisitor implements Detecto
     /**
      * overrides the visitor to find declared runtime exceptions
      *
-     * @param obj
-     *            the method object of the currently parsed method
+     * @param obj the method object of the currently parsed method
      */
     @Override
     public void visitMethod(final Method obj) {
@@ -121,7 +120,8 @@ public class RuntimeExceptionDeclared extends PreorderVisitor implements Detecto
             }
 
             if (foundRuntime) {
-                BugInstance bug = new BugInstance(this, BugType.DRE_DECLARED_RUNTIME_EXCEPTION.name(), priority).addClass(this).addMethod(this);
+                BugInstance bug = new BugInstance(this, BugType.DRE_DECLARED_RUNTIME_EXCEPTION.name(), priority)
+                        .addClass(this).addMethod(this);
 
                 for (String ex : methodRTExceptions) {
                     bug.add(new StringAnnotation(ex));

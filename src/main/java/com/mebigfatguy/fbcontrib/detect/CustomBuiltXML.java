@@ -38,31 +38,34 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that build xml based strings by concatenation strings and custom values together. Doing so makes brittle code, that is difficult to modify,
- * validate and understand. It is cleaner to create external xml files that are transformed at runtime, using parameters set through Transformer.setParameter.
+ * looks for methods that build xml based strings by concatenation strings and
+ * custom values together. Doing so makes brittle code, that is difficult to
+ * modify, validate and understand. It is cleaner to create external xml files
+ * that are transformed at runtime, using parameters set through
+ * Transformer.setParameter.
  */
 public class CustomBuiltXML extends BytecodeScanningDetector {
     private static final List<XMLPattern> xmlPatterns = UnmodifiableList.create(
-    // @formatter:off
-        new XMLPattern(Pattern.compile(".*<[a-zA-Z_](\\w)*>[^=]?.*"), true),
-        new XMLPattern(Pattern.compile(".*</[a-zA-Z_](\\w)*>[^=]?.*"), true),
-        new XMLPattern(Pattern.compile(".*<[a-zA-Z_](\\w)*/>[^=]?.*"), true),
-        new XMLPattern(Pattern.compile(".*<[^=]?(/)?$"), true),
-        new XMLPattern(Pattern.compile("^(/)?>.*"), true),
-        new XMLPattern(Pattern.compile(".*=(\\s)*[\"'].*"), false),
-        new XMLPattern(Pattern.compile("^[\"']>.*"), true),
-        new XMLPattern(Pattern.compile(".*<!\\[CDATA\\[.*", Pattern.CASE_INSENSITIVE), true),
-        new XMLPattern(Pattern.compile(".*\\]\\]>.*"), true),
-        new XMLPattern(Pattern.compile(".*xmlns:.*"), true)
-        // @formatter:on
+            // @formatter:off
+            new XMLPattern(Pattern.compile(".*<[a-zA-Z_](\\w)*>[^=]?.*"), true),
+            new XMLPattern(Pattern.compile(".*</[a-zA-Z_](\\w)*>[^=]?.*"), true),
+            new XMLPattern(Pattern.compile(".*<[a-zA-Z_](\\w)*/>[^=]?.*"), true),
+            new XMLPattern(Pattern.compile(".*<[^=]?(/)?$"), true), new XMLPattern(Pattern.compile("^(/)?>.*"), true),
+            new XMLPattern(Pattern.compile(".*=(\\s)*[\"'].*"), false),
+            new XMLPattern(Pattern.compile("^[\"']>.*"), true),
+            new XMLPattern(Pattern.compile(".*<!\\[CDATA\\[.*", Pattern.CASE_INSENSITIVE), true),
+            new XMLPattern(Pattern.compile(".*\\]\\]>.*"), true), new XMLPattern(Pattern.compile(".*xmlns:.*"), true)
+    // @formatter:on
     );
 
     private static final String CBX_MIN_REPORTABLE_ITEMS = "fb-contrib.cbx.minxmlitems";
 
     /**
-     * This builder can be reused with different return types to reduce object creation, provided that param types are unchanged.
+     * This builder can be reused with different return types to reduce object
+     * creation, provided that param types are unchanged.
      */
-    private static final SignatureBuilder XML_SIG_BUILDER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING);
+    private static final SignatureBuilder XML_SIG_BUILDER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING);
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -76,8 +79,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
     /**
      * constructs a CBX detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public CustomBuiltXML(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -90,8 +92,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
     /**
      * overrides the visitor to create and destroy the stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -106,8 +107,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
     /**
      * overrides the visitor reset the opcode stack
      *
-     * @param obj
-     *            the code object of the currently parsed method
+     * @param obj the code object of the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -118,8 +118,9 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
         super.visitCode(obj);
         if ((xmlItemCount >= lowReportingThreshold) && (xmlConfidentCount > (lowReportingThreshold >> 1))) {
             bugReporter.reportBug(new BugInstance(this, "CBX_CUSTOM_BUILT_XML",
-                    (xmlItemCount >= highReportingThreshold) ? HIGH_PRIORITY : (xmlItemCount >= midReportingThreshold) ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClass(this).addMethod(this).addSourceLine(this, firstPC));
+                    (xmlItemCount >= highReportingThreshold) ? HIGH_PRIORITY
+                            : (xmlItemCount >= midReportingThreshold) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this, firstPC));
 
         }
     }
@@ -127,8 +128,7 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
     /**
      * overrides the visitor to find String concatenations including xml strings
      *
-     * @param seen
-     *            the opcode that is being visited
+     * @param seen the opcode that is being visited
      */
     @Override
     public void sawOpcode(int seen) {
@@ -142,7 +142,9 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if (SignatureUtils.isPlainStringConvertableClass(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(methodName) && XML_SIG_BUILDER.withReturnType("V").toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
+                    if (Values.CONSTRUCTOR.equals(methodName)
+                            && XML_SIG_BUILDER.withReturnType("V").toString().equals(methodSig)
+                            && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         strCon = (String) itm.getConstant();
                     }
@@ -152,7 +154,9 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
                 if (SignatureUtils.isPlainStringConvertableClass(clsName)) {
                     String methodName = getNameConstantOperand();
                     String methodSig = getSigConstantOperand();
-                    if ("append".equals(methodName) && XML_SIG_BUILDER.withReturnType(clsName).toString().equals(methodSig) && (stack.getStackDepth() > 0)) {
+                    if ("append".equals(methodName)
+                            && XML_SIG_BUILDER.withReturnType(clsName).toString().equals(methodSig)
+                            && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         strCon = (String) itm.getConstant();
                     }
@@ -185,7 +189,8 @@ public class CustomBuiltXML extends BytecodeScanningDetector {
     }
 
     /**
-     * represents a text pattern that is likely to be an xml snippet, as well as how much confidence that the pattern is infact xml, versus something else.
+     * represents a text pattern that is likely to be an xml snippet, as well as how
+     * much confidence that the pattern is infact xml, versus something else.
      */
     private static class XMLPattern {
         private Pattern pattern;

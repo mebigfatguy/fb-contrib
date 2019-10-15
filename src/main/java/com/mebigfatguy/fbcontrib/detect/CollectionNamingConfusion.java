@@ -38,7 +38,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for fields and local variables that have Map, Set, List in their names but the variable is a collection of a different basic type.
+ * looks for fields and local variables that have Map, Set, List in their names
+ * but the variable is a collection of a different basic type.
  */
 public class CollectionNamingConfusion extends PreorderVisitor implements Detector {
 
@@ -53,8 +54,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     /**
      * constructs a CNC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public CollectionNamingConfusion(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -75,10 +75,10 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     }
 
     /**
-     * overrides the visitor to make sure that the static initializer was able to load the map class
+     * overrides the visitor to make sure that the static initializer was able to
+     * load the map class
      *
-     * @param classContext
-     *            the currently parsed class
+     * @param classContext the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -89,25 +89,25 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     }
 
     /**
-     * overrides the visitor to look for fields where the name has 'Map', 'Set', 'List' in it but the type of that field isn't that.
+     * overrides the visitor to look for fields where the name has 'Map', 'Set',
+     * 'List' in it but the type of that field isn't that.
      *
-     * @param obj
-     *            the currently parsed field
+     * @param obj the currently parsed field
      */
     @Override
     public void visitField(Field obj) {
         if (checkConfusedName(obj.getName(), obj.getSignature())) {
-            bugReporter.reportBug(new BugInstance(this, BugType.CNC_COLLECTION_NAMING_CONFUSION.name(), NORMAL_PRIORITY).addClass(this).addField(this)
-                    .addString(obj.getName()));
+            bugReporter.reportBug(new BugInstance(this, BugType.CNC_COLLECTION_NAMING_CONFUSION.name(), NORMAL_PRIORITY)
+                    .addClass(this).addField(this).addString(obj.getName()));
         }
     }
 
     /**
-     * overrides the visitor to look for local variables where the name has 'Map', 'Set', 'List' in it but the type of that field isn't that. note that this
+     * overrides the visitor to look for local variables where the name has 'Map',
+     * 'Set', 'List' in it but the type of that field isn't that. note that this
      * only is useful if compiled with debug labels.
      *
-     * @param obj
-     *            the currently parsed method
+     * @param obj the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -116,33 +116,35 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
             LocalVariable[] lvs = lvt.getLocalVariableTable();
             for (LocalVariable lv : lvs) {
                 if (checkConfusedName(lv.getName(), lv.getSignature())) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.CNC_COLLECTION_NAMING_CONFUSION.name(), NORMAL_PRIORITY).addClass(this)
-                            .addString(lv.getName()).addSourceLine(this.clsContext, this, lv.getStartPC()));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.CNC_COLLECTION_NAMING_CONFUSION.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addString(lv.getName())
+                                    .addSourceLine(this.clsContext, this, lv.getStartPC()));
                 }
             }
         }
     }
 
     /**
-     * looks for a name that mentions a collection type but the wrong type for the variable
+     * looks for a name that mentions a collection type but the wrong type for the
+     * variable
      *
-     * @param methodOrVariableName
-     *            the method or variable name
-     * @param signature
-     *            the variable signature
+     * @param methodOrVariableName the method or variable name
+     * @param signature            the variable signature
      * @return whether the name doesn't match the type
      */
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "EXS_EXCEPTION_SOFTENING_RETURN_FALSE", justification = "No other simple way to determine whether class exists")
     private boolean checkConfusedName(String methodOrVariableName, String signature) {
         try {
             String name = methodOrVariableName.toLowerCase(Locale.ENGLISH);
-            if ((name.endsWith("map") || (name.endsWith("set") && !name.endsWith("toset")) || name.endsWith("list") || name.endsWith("queue"))
-                    && signature.startsWith("Ljava/util/")) {
+            if ((name.endsWith("map") || (name.endsWith("set") && !name.endsWith("toset")) || name.endsWith("list")
+                    || name.endsWith("queue")) && signature.startsWith("Ljava/util/")) {
                 String clsName = SignatureUtils.stripSignature(signature);
                 JavaClass cls = Repository.lookupClass(clsName);
-                if ((cls.implementationOf(mapInterface) && !name.endsWith("map")) || (cls.implementationOf(setInterface) && !name.endsWith("set"))
-                        || ((cls.implementationOf(listInterface) || cls.implementationOf(queueInterface)) && !name.endsWith("list")
-                                && !name.endsWith("queue"))) {
+                if ((cls.implementationOf(mapInterface) && !name.endsWith("map"))
+                        || (cls.implementationOf(setInterface) && !name.endsWith("set"))
+                        || ((cls.implementationOf(listInterface) || cls.implementationOf(queueInterface))
+                                && !name.endsWith("list") && !name.endsWith("queue"))) {
                     return true;
                 }
             }

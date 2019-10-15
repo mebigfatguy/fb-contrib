@@ -46,33 +46,28 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for methods that rely on the format of the string fetched from another object's toString method, when that method appears not to be owned by the author
- * of the calling method. As the implementation of toString() is often considered a private implementation detail of a class, and not something that should be
- * relied on, depending on it's format is dangerous.
+ * looks for methods that rely on the format of the string fetched from another
+ * object's toString method, when that method appears not to be owned by the
+ * author of the calling method. As the implementation of toString() is often
+ * considered a private implementation detail of a class, and not something that
+ * should be relied on, depending on it's format is dangerous.
  */
 @CustomUserValue
 public class InappropriateToStringUse extends BytecodeScanningDetector {
 
     private static final Set<String> validToStringClasses = UnmodifiableSet.create(
-    // @formatter:off
+            // @formatter:off
             Values.SLASHED_JAVA_LANG_OBJECT, // too many fps
-            Values.SLASHED_JAVA_LANG_BYTE,
-            Values.SLASHED_JAVA_LANG_CHARACTER,
-            Values.SLASHED_JAVA_LANG_SHORT,
-            Values.SLASHED_JAVA_LANG_INTEGER,
-            Values.SLASHED_JAVA_LANG_BOOLEAN,
-            Values.SLASHED_JAVA_LANG_FLOAT,
-            Values.SLASHED_JAVA_LANG_DOUBLE,
-            Values.SLASHED_JAVA_LANG_LONG,
-            Values.SLASHED_JAVA_LANG_STRING,
-            "java/lang/Number",
-            Values.SLASHED_JAVA_LANG_STRINGBUFFER,
-            Values.SLASHED_JAVA_LANG_STRINGBUILDER,
+            Values.SLASHED_JAVA_LANG_BYTE, Values.SLASHED_JAVA_LANG_CHARACTER, Values.SLASHED_JAVA_LANG_SHORT,
+            Values.SLASHED_JAVA_LANG_INTEGER, Values.SLASHED_JAVA_LANG_BOOLEAN, Values.SLASHED_JAVA_LANG_FLOAT,
+            Values.SLASHED_JAVA_LANG_DOUBLE, Values.SLASHED_JAVA_LANG_LONG, Values.SLASHED_JAVA_LANG_STRING,
+            "java/lang/Number", Values.SLASHED_JAVA_LANG_STRINGBUFFER, Values.SLASHED_JAVA_LANG_STRINGBUILDER,
             "java/io/StringWriter"
-            // @formatter:on
+    // @formatter:on
     );
 
-    private static final Set<String> stringAlgoMethods = UnmodifiableSet.create("indexOf", "contains", "startsWith", "endsWith", "substring");
+    private static final Set<String> stringAlgoMethods = UnmodifiableSet.create("indexOf", "contains", "startsWith",
+            "endsWith", "substring");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
@@ -82,8 +77,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
     /**
      * constructs a ITU detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public InappropriateToStringUse(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -92,8 +86,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -111,8 +104,7 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
     /**
      * overrides the visitor to resets the stack for this method.
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -194,8 +186,8 @@ public class InappropriateToStringUse extends BytecodeScanningDetector {
                             tsPackage = xm.getPackageName();
                         }
                         if ((tsPackage == null) || !SignatureUtils.similarPackages(tsPackage, packageName, 2)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.ITU_INAPPROPRIATE_TOSTRING_USE.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.ITU_INAPPROPRIATE_TOSTRING_USE.name(),
+                                    NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }

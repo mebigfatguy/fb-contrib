@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.Comparator;
 
 public class SCRV_Sample {
@@ -27,7 +28,7 @@ public class SCRV_Sample {
             return 1;
         }
     }
-    
+
     class UnconditionalNonZeroReturnComparable implements Comparable<SCRV_Sample> {
         @Override
         public int compareTo(SCRV_Sample arg0) {
@@ -63,4 +64,3 @@ public class SCRV_Sample {
         }
     }
 }
-

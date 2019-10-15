@@ -41,7 +41,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * Looks for methods that declare method level template parameter(s) that are not bound to any of the method's parameters, and thus is not adding any
+ * Looks for methods that declare method level template parameter(s) that are
+ * not bound to any of the method's parameters, and thus is not adding any
  * validation/type safety to the method, and is just confusing.
  */
 public class UnboundMethodTemplateParameter extends PreorderVisitor implements Detector {
@@ -57,8 +58,7 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     /**
      * implements the visitor to accept the class for visiting
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -67,10 +67,10 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     }
 
     /**
-     * implements the visitor to find methods that declare template parameters that are not bound to any parameter.
+     * implements the visitor to find methods that declare template parameters that
+     * are not bound to any parameter.
      *
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -80,10 +80,13 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
                 TemplateSignature ts = parseSignatureAttribute((Signature) a);
                 if (ts != null) {
                     for (TemplateItem templateParm : ts.templateParameters) {
-                        if (!ts.signature.contains(Values.SIG_GENERIC_TEMPLATE + templateParm.templateType + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR)
+                        if (!ts.signature.contains(Values.SIG_GENERIC_TEMPLATE + templateParm.templateType
+                                + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR)
                                 && !isTemplateParent(templateParm.templateType, ts.templateParameters)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addString("Template Parameter: " + templateParm.templateType));
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.UMTP_UNBOUND_METHOD_TEMPLATE_PARAMETER.name(),
+                                            NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                                    .addString("Template Parameter: " + templateParm.templateType));
                             return;
                         }
                     }
@@ -101,10 +104,8 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     /**
      * looks to see if this templateType is a parent of another template type
      *
-     * @param templateType
-     *            the type to look for
-     * @param items
-     *            the items to search
+     * @param templateType the type to look for
+     * @param items        the items to search
      * @return whether this template type is something another template type extends
      */
     private boolean isTemplateParent(String templateType, TemplateItem... items) {
@@ -118,10 +119,10 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     }
 
     /**
-     * builds a template signature object based on the signature attribute of the method
+     * builds a template signature object based on the signature attribute of the
+     * method
      *
-     * @param signatureAttribute
-     *            the signature attribute
+     * @param signatureAttribute the signature attribute
      * @return a template signature if there are templates defined, otherwise null
      */
     @Nullable
@@ -146,7 +147,8 @@ public class UnboundMethodTemplateParameter extends PreorderVisitor implements D
     }
 
     /**
-     * a simple data only class for holding the template parameters and method signature
+     * a simple data only class for holding the template parameters and method
+     * signature
      */
     static class TemplateSignature {
         TemplateItem[] templateParameters;

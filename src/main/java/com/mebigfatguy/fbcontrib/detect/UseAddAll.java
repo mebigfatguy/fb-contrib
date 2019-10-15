@@ -43,9 +43,11 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for loops that transfers the contents of one collection to another. These collection sources might be local variables or member fields, including sets,
- * maps key/values, lists, or arrays. It is simpler to just use the addAll method of the collection class. In the case where the source is an array, you can use
- * Arrays.asList(array), and use that as the source to addAll.
+ * looks for loops that transfers the contents of one collection to another.
+ * These collection sources might be local variables or member fields, including
+ * sets, maps key/values, lists, or arrays. It is simpler to just use the addAll
+ * method of the collection class. In the case where the source is an array, you
+ * can use Arrays.asList(array), and use that as the source to addAll.
  */
 @CustomUserValue
 public class UseAddAll extends AbstractCollectionScanningDetector {
@@ -59,8 +61,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
     /**
      * constructs a UAA detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public UseAddAll(BugReporter bugReporter) {
         super(bugReporter, Values.SLASHED_JAVA_UTIL_COLLECTION);
@@ -69,8 +70,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
     /**
      * implements the visitor to reset the userValues and loops
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -86,10 +86,10 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
     }
 
     /**
-     * implements the visitor to look for manually copying of collections to collections
+     * implements the visitor to look for manually copying of collections to
+     * collections
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -109,8 +109,8 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                 int loopPC = loop.getAddPC();
                 if ((endPC - 3) <= pc) {
                     if (loopPC > 0) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.UAA_USE_ADD_ALL.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this, loopPC));
+                        bugReporter.reportBug(new BugInstance(this, BugType.UAA_USE_ADD_ALL.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this, loopPC));
                     }
                     it.remove();
                 } else if ((endPC > pc) && (loopPC < (pc - 5)) && (loopPC > 0)) {
@@ -136,8 +136,8 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                             }
                         }
                     }
-                } else if ("keySet".equals(methodName) || "values".equals(methodName) || "iterator".equals(methodName) || "next".equals(methodName)
-                        || "hasNext".equals(methodName)) {
+                } else if ("keySet".equals(methodName) || "values".equals(methodName) || "iterator".equals(methodName)
+                        || "next".equals(methodName) || "hasNext".equals(methodName)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         int reg = isLocalCollection(itm);
@@ -152,7 +152,8 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                             }
                         }
                     }
-                } else if ("add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature) && (stack.getStackDepth() > 1)) {
+                } else if ("add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature)
+                        && (stack.getStackDepth() > 1)) {
                     OpcodeStack.Item colItem = stack.getStackItem(1);
                     OpcodeStack.Item valueItem = stack.getStackItem(0);
                     int reg = isLocalCollection(colItem);
@@ -172,7 +173,8 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                             uValue = (Comparable<?>) valueItem.getUserValue();
                             if (uValue != null) {
                                 LoopInfo loop = loops.get(uValue);
-                                if ((loop != null) && loop.isInLoop(pc) && (this.getCodeByte(getNextPC()) == Const.POP)) {
+                                if ((loop != null) && loop.isInLoop(pc)
+                                        && (this.getCodeByte(getNextPC()) == Const.POP)) {
                                     loop.foundAdd(pc);
                                 }
                             }
@@ -225,7 +227,8 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                         sawLoad = true;
                     }
                 }
-            } else if (((seen > Const.IFEQ) && (seen <= Const.GOTO)) || (seen == Const.IFNULL) || (seen == Const.IFNONNULL)) {
+            } else if (((seen > Const.IFEQ) && (seen <= Const.GOTO)) || (seen == Const.IFNULL)
+                    || (seen == Const.IFNONNULL)) {
                 removeLoop(pc);
             } else if ((seen == Const.CHECKCAST) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
@@ -266,12 +269,10 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
     /**
      * determines if the stack item refers to a collection that is stored in a field
      *
-     * @param item
-     *            the stack item to check
+     * @param item the stack item to check
      *
      * @return the field name of the collection, or null
-     * @throws ClassNotFoundException
-     *             if the items class cannot be found
+     * @throws ClassNotFoundException if the items class cannot be found
      */
     @Nullable
     private String isFieldCollection(OpcodeStack.Item item) throws ClassNotFoundException {

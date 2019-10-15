@@ -58,7 +58,7 @@ import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 /**
  * looks for common problems with the application of annotations.
  * 
- *   - missing @Nullable annotations
+ * - missing @Nullable annotations
  */
 @CustomUserValue
 public class AnnotationIssues extends BytecodeScanningDetector {
@@ -75,7 +75,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
     private static final Set<String> NULLABLE_ANNOTATIONS = new HashSet<>();
 
     private static final Set<FQMethod> NOTABLE_EXCEPTIONS = UnmodifiableSet.create(
-    // @formatter:off
+            // @formatter:off
             new FQMethod(Values.SLASHED_JAVA_LANG_CLASS, "newInstance", SignatureBuilder.SIG_VOID_TO_OBJECT)
     // @formatter:on
     );
@@ -244,7 +244,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case Const.ARETURN: {
+            case Const.ARETURN: {
                 if (!methodIsNullable && (stack.getStackDepth() > 0)) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     Integer reg = Integer.valueOf(itm.getRegisterNumber());
@@ -258,7 +258,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 break;
             }
 
-                case Const.IFNONNULL:
+            case Const.IFNONNULL:
                 if (getBranchOffset() > 0) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
@@ -270,7 +270,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 }
                 break;
 
-                case Const.IFNULL:
+            case Const.IFNULL:
                 if (getBranchOffset() > 0) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
@@ -282,7 +282,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 }
                 break;
 
-                case Const.IFEQ:
+            case Const.IFEQ:
                 if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     AIUserValue uv = (AIUserValue) itm.getUserValue();
@@ -292,7 +292,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 }
                 break;
 
-                case Const.INVOKESTATIC:
+            case Const.INVOKESTATIC:
                 if (stack.getStackDepth() > 0) {
                     String signature = getSigConstantOperand();
                     if (IS_EMPTY_SIGNATURES.contains(signature)) {
@@ -309,8 +309,8 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 }
 
                 // $FALL-THROUGH$
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKEVIRTUAL: {
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKEVIRTUAL: {
                 boolean resultIsNullable = (isMethodNullable(getClassConstantOperand(), getNameConstantOperand(),
                         getSigConstantOperand()));
                 if (resultIsNullable) {
@@ -319,7 +319,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
                 break;
             }
 
-                case Const.ATHROW: {
+            case Const.ATHROW: {
                 removeAssumptions(assumedNonNullTill);
                 removeAssumptions(assumedNullTill);
                 break;

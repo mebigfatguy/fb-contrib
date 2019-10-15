@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.Date;
 
 public class DDC_Sample {

@@ -1,4 +1,5 @@
 package ex;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.List;
@@ -109,23 +110,23 @@ public class SLS_Sample {
 
         for (char c : args) {
             switch (state) {
-                case A:
-                    if (val.equals(String.valueOf(c))) {
-                        state = State.B;
-                    } else {
-                        return;
-                    }
+            case A:
+                if (val.equals(String.valueOf(c))) {
+                    state = State.B;
+                } else {
+                    return;
+                }
                 break;
-                case B:
-                    if (val.equals(String.valueOf(c))) {
-                        state = State.C;
-                    }
+            case B:
+                if (val.equals(String.valueOf(c))) {
+                    state = State.C;
+                }
                 break;
 
-                default:
-                    if (val.equals(String.valueOf(c))) {
-                        state = State.A;
-                    }
+            default:
+                if (val.equals(String.valueOf(c))) {
+                    state = State.A;
+                }
                 break;
             }
         }

@@ -28,7 +28,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * a base detector class for when you need to precess collections, provides methods for checking collection attributes
+ * a base detector class for when you need to precess collections, provides
+ * methods for checking collection attributes
  */
 public class AbstractCollectionScanningDetector extends BytecodeScanningDetector {
     protected final JavaClass collectionClass;
@@ -48,10 +49,10 @@ public class AbstractCollectionScanningDetector extends BytecodeScanningDetector
     }
 
     /**
-     * implements the visitor to create and clear the stack, and report missing class errors
+     * implements the visitor to create and clear the stack, and report missing
+     * class errors
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -70,8 +71,7 @@ public class AbstractCollectionScanningDetector extends BytecodeScanningDetector
     /**
      * implements the visitor to reset the stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -80,14 +80,14 @@ public class AbstractCollectionScanningDetector extends BytecodeScanningDetector
     }
 
     /**
-     * determines if the stack item refers to a collection that is stored in a local variable
+     * determines if the stack item refers to a collection that is stored in a local
+     * variable
      *
-     * @param item
-     *            the stack item to check
+     * @param item the stack item to check
      *
-     * @return the register number of the local variable that this collection refers to, or -1
-     * @throws ClassNotFoundException
-     *             if the items class cannot be found
+     * @return the register number of the local variable that this collection refers
+     *         to, or -1
+     * @throws ClassNotFoundException if the items class cannot be found
      */
     protected final int isLocalCollection(OpcodeStack.Item item) throws ClassNotFoundException {
         Comparable<?> aliasReg = (Comparable<?>) item.getUserValue();

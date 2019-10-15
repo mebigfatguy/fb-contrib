@@ -36,11 +36,14 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for the execution of sql queries inside a loop. This pattern tends to be inefficient, and often can be improved upon, by collecting all the keys needed
- * for the query and issuing just one query using an in clause with all the keys for all the queries previously needed in the loop.
+ * looks for the execution of sql queries inside a loop. This pattern tends to
+ * be inefficient, and often can be improved upon, by collecting all the keys
+ * needed for the query and issuing just one query using an in clause with all
+ * the keys for all the queries previously needed in the loop.
  */
 public class SQLInLoop extends BytecodeScanningDetector {
-    private static final Set<String> queryClasses = UnmodifiableSet.create("java/sql/Statement", "java/sql/PreparedStatement", "java/sql/CallableStatement");
+    private static final Set<String> queryClasses = UnmodifiableSet.create("java/sql/Statement",
+            "java/sql/PreparedStatement", "java/sql/CallableStatement");
 
     private static final Set<String> queryMethods = UnmodifiableSet.create("execute", "executeQuery");
 
@@ -51,18 +54,17 @@ public class SQLInLoop extends BytecodeScanningDetector {
     /**
      * constructs a SIL detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SQLInLoop(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to create and clear the query locations and loops collections
+     * implements the visitor to create and clear the query locations and loops
+     * collections
      *
-     * @param classContext
-     *            the context object for the currently parsed java class
+     * @param classContext the context object for the currently parsed java class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -77,10 +79,10 @@ public class SQLInLoop extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to clear the collections, and report the query locations that are in loops
+     * implements the visitor to clear the collections, and report the query
+     * locations that are in loops
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -90,8 +92,8 @@ public class SQLInLoop extends BytecodeScanningDetector {
         for (Integer qLoc : queryLocations) {
             for (LoopLocation lLoc : loops) {
                 if (lLoc.isInLoop(qLoc.intValue())) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SIL_SQL_IN_LOOP.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this, qLoc.intValue()));
+                    bugReporter.reportBug(new BugInstance(this, BugType.SIL_SQL_IN_LOOP.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this, qLoc.intValue()));
                     break;
                 }
             }
@@ -101,8 +103,7 @@ public class SQLInLoop extends BytecodeScanningDetector {
     /**
      * implements the visitor to collect positions of queries and loops
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {

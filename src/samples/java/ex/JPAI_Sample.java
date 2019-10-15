@@ -1,4 +1,5 @@
 package ex;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.sql.SQLException;
@@ -53,7 +54,8 @@ public class JPAI_Sample {
 
     }
 
-    @Transactional(rollbackFor = { SQLException.class, CloneNotSupportedException.class }, noRollbackFor = IOException.class)
+    @Transactional(rollbackFor = { SQLException.class,
+            CloneNotSupportedException.class }, noRollbackFor = IOException.class)
     public void noDeclaredRollbackExceptions() {
     }
 

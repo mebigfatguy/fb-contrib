@@ -24,7 +24,8 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * a factory for creating unmodifiable ArrayLists by presenting values to a var-args creator method.
+ * a factory for creating unmodifiable ArrayLists by presenting values to a
+ * var-args creator method.
  */
 public final class UnmodifiableList {
 
@@ -33,8 +34,8 @@ public final class UnmodifiableList {
 
     @SafeVarargs
     public static <T> List<T> create(T... elements) {
-        List<T> l = new ArrayList<>(Arrays.<T> asList(elements));
+        List<T> l = new ArrayList<>(Arrays.<T>asList(elements));
 
-        return Collections.<T> unmodifiableList(l);
+        return Collections.<T>unmodifiableList(l);
     }
 }

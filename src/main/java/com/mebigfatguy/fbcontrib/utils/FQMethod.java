@@ -21,7 +21,8 @@ package com.mebigfatguy.fbcontrib.utils;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * holds information about a method that called, including class, method and signature
+ * holds information about a method that called, including class, method and
+ * signature
  */
 @PublicAPI("Used by fb-contrib-eclipse-quickfixes to determine type of fix to apply")
 public final class FQMethod {
@@ -61,7 +62,8 @@ public final class FQMethod {
 
         FQMethod that = (FQMethod) o;
 
-        return className.equals(that.className) && methodName.equals(that.methodName) && signature.equals(that.signature);
+        return className.equals(that.className) && methodName.equals(that.methodName)
+                && signature.equals(that.signature);
     }
 
     public String toFQMethodSignature() {

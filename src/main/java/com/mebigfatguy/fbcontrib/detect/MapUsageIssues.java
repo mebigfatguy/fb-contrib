@@ -54,10 +54,14 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class MapUsageIssues extends BytecodeScanningDetector {
 
-    private static final FQMethod CONTAINS_METHOD = new FQMethod("java/util/Set", "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
-    private static final FQMethod CONTAINSKEY_METHOD = new FQMethod("java/util/Map", "containsKey", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
-    private static final FQMethod GET_METHOD = new FQMethod("java/util/Map", "get", SignatureBuilder.SIG_OBJECT_TO_OBJECT);
-    private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Map", "remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT);
+    private static final FQMethod CONTAINS_METHOD = new FQMethod("java/util/Set", "contains",
+            SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final FQMethod CONTAINSKEY_METHOD = new FQMethod("java/util/Map", "containsKey",
+            SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final FQMethod GET_METHOD = new FQMethod("java/util/Map", "get",
+            SignatureBuilder.SIG_OBJECT_TO_OBJECT);
+    private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Map", "remove",
+            SignatureBuilder.SIG_OBJECT_TO_OBJECT);
 
     private static final QMethod SIZE_METHOD = new QMethod("size", SignatureBuilder.SIG_VOID_TO_INT);
 
@@ -81,8 +85,7 @@ public class MapUsageIssues extends BytecodeScanningDetector {
     /**
      * constructs a MUI detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public MapUsageIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -142,23 +145,27 @@ public class MapUsageIssues extends BytecodeScanningDetector {
 
                             JavaClass cls = Repository.lookupClass(method.getClassName());
                             if (cls.implementationOf(mapClass)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR.name(),
+                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                             }
 
                         }
                     }
                 }
             } else if (seen == Const.INVOKEINTERFACE) {
-                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand());
                 if (CONTAINS_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item item = stack.getStackItem(1);
                         if ((item.getRegisterNumber() < 0) && (item.getXField() == null)) {
                             XMethod xm = item.getReturnValueOf();
-                            if ((xm != null) && COLLECTION_ACCESSORS.contains(xm.getName()) && Values.DOTTED_JAVA_UTIL_MAP.equals(xm.getClassName())) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.MUI_USE_CONTAINSKEY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                        .addSourceLine(this));
+                            if ((xm != null) && COLLECTION_ACCESSORS.contains(xm.getName())
+                                    && Values.DOTTED_JAVA_UTIL_MAP.equals(xm.getClassName())) {
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.MUI_USE_CONTAINSKEY.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
                     }
@@ -175,8 +182,8 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         ContainsKey ck = mapContainsKeyUsed.remove(new MapRef(itm));
                         if ((ck != null) && new ContainsKey(stack.getStackItem(0), 0).equals(ck)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.MUI_CONTAINSKEY_BEFORE_GET.name(), ck.getReportLevel()).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.MUI_CONTAINSKEY_BEFORE_GET.name(),
+                                    ck.getReportLevel()).addClass(this).addMethod(this).addSourceLine(this));
                         }
 
                         mapGetUsed.put(new MapRef(itm), new Get(stack.getStackItem(0)));
@@ -186,8 +193,9 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         Get get = mapGetUsed.remove(new MapRef(itm));
                         if ((get != null) && new Get(stack.getStackItem(0)).equals(get)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.MUI_GET_BEFORE_REMOVE.name(), get.getReportLevel()).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.MUI_GET_BEFORE_REMOVE.name(), get.getReportLevel())
+                                            .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }
@@ -198,9 +206,11 @@ public class MapUsageIssues extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         if ((itm.getRegisterNumber() < 0) && (itm.getXField() == null)) {
                             XMethod xm = itm.getReturnValueOf();
-                            if ((xm != null) && Values.DOTTED_JAVA_UTIL_MAP.equals(xm.getClassName()) && COLLECTION_ACCESSORS.contains(xm.getName())) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.MUI_CALLING_SIZE_ON_SUBCONTAINER.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
+                            if ((xm != null) && Values.DOTTED_JAVA_UTIL_MAP.equals(xm.getClassName())
+                                    && COLLECTION_ACCESSORS.contains(xm.getName())) {
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.MUI_CALLING_SIZE_ON_SUBCONTAINER.name(),
+                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
                     }

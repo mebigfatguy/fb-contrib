@@ -53,28 +53,30 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class OptionalIssues extends BytecodeScanningDetector {
 
-    private static Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("Ljava/lang/Integer;", "Ljava/lang/Long;", "Ljava/lang/Double;");
+    private static Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("Ljava/lang/Integer;", "Ljava/lang/Long;",
+            "Ljava/lang/Double;");
 
-    private static final FQMethod OPTIONAL_OR_ELSE_METHOD = new FQMethod("java/util/Optional", "orElse", SignatureBuilder.SIG_OBJECT_TO_OBJECT);
+    private static final FQMethod OPTIONAL_OR_ELSE_METHOD = new FQMethod("java/util/Optional", "orElse",
+            SignatureBuilder.SIG_OBJECT_TO_OBJECT);
     private static final FQMethod OPTIONAL_OR_ELSE_GET_METHOD = new FQMethod("java/util/Optional", "orElseGet",
             "(Ljava/util/function/Supplier;)Ljava/lang/Object;");
-    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get", SignatureBuilder.SIG_VOID_TO_OBJECT);
+    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get",
+            SignatureBuilder.SIG_VOID_TO_OBJECT);
 
     private static final Set<FQMethod> OR_ELSE_METHODS = UnmodifiableSet.create(
-    // @formatter:off
-        OPTIONAL_OR_ELSE_METHOD,
-        new FQMethod("java/util/OptionalDouble", "orElse", "(D)D"),
-        new FQMethod("java/util/OptionalInt", "orElse", SignatureBuilder.SIG_INT_TO_INT),
-        new FQMethod("java/util/OptionalLong", "orElse", SignatureBuilder.SIG_LONG_TO_LONG)
+            // @formatter:off
+            OPTIONAL_OR_ELSE_METHOD, new FQMethod("java/util/OptionalDouble", "orElse", "(D)D"),
+            new FQMethod("java/util/OptionalInt", "orElse", SignatureBuilder.SIG_INT_TO_INT),
+            new FQMethod("java/util/OptionalLong", "orElse", SignatureBuilder.SIG_LONG_TO_LONG)
     // @formatter:on
     );
 
     private static final Set<FQMethod> OR_ELSE_GET_METHODS = UnmodifiableSet.create(
-    // @formatter:off
-        OPTIONAL_OR_ELSE_GET_METHOD,
-        new FQMethod("java/util/OptionalDouble", "orElseGet", "(Ljava/util/function/DoubleSupplier;)D"),
-        new FQMethod("java/util/OptionalInt", "orElseGet", "(Ljava/util/function/IntSupplier;)I"),
-        new FQMethod("java/util/OptionalLong", "orElseGet", "(Ljava/util/function/LongSupplier;)J")
+            // @formatter:off
+            OPTIONAL_OR_ELSE_GET_METHOD,
+            new FQMethod("java/util/OptionalDouble", "orElseGet", "(Ljava/util/function/DoubleSupplier;)D"),
+            new FQMethod("java/util/OptionalInt", "orElseGet", "(Ljava/util/function/IntSupplier;)I"),
+            new FQMethod("java/util/OptionalLong", "orElseGet", "(Ljava/util/function/LongSupplier;)J")
     // @formatter:on
     );
 
@@ -82,13 +84,9 @@ public class OptionalIssues extends BytecodeScanningDetector {
      * java.util.Optional is handled in the detector OptionalIssues
      */
     private static final Set<String> OPTIONAL_CLASSES = UnmodifiableSet.create(
-    // @formatter:off
-        "Ljava/util/Optional;",
-        "Ljava/util/OptionalDouble;",
-        "Ljava/util/OptionalInt;",
-        "Ljava/util/OptionalLong;",
-        "Lcom/google/common/base/Optional;",
-        "Lorg/openjdk/jmh/util/Optional;"
+            // @formatter:off
+            "Ljava/util/Optional;", "Ljava/util/OptionalDouble;", "Ljava/util/OptionalInt;", "Ljava/util/OptionalLong;",
+            "Lcom/google/common/base/Optional;", "Lorg/openjdk/jmh/util/Optional;"
     // @formatter:on
     );
 
@@ -109,18 +107,17 @@ public class OptionalIssues extends BytecodeScanningDetector {
     /**
      * constructs a OI detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public OptionalIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to filter out pre-1.8 classes, for 1.8+ classes, it creates the opcode stack and active stack ops
+     * implements the visitor to filter out pre-1.8 classes, for 1.8+ classes, it
+     * creates the opcode stack and active stack ops
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -142,8 +139,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     /**
      * implements the visitor clear the stacks
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -153,11 +149,11 @@ public class OptionalIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for reference compares of Optional, Optional use when more specific Optionals should be used, and use of orElse when
+     * implements the visitor to look for reference compares of Optional, Optional
+     * use when more specific Optionals should be used, and use of orElse when
      * orElseGet would be more appropriate
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -166,87 +162,95 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case Const.IFNULL:
-                case Const.IFNONNULL:
+            case Const.IFNULL:
+            case Const.IFNONNULL:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (OPTIONAL_CLASSES.contains(itm.getSignature())) {
+                        bugReporter
+                                .reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_CHECKING_REFERENCE.name(),
+                                        NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                    }
+
+                }
+                break;
+
+            case Const.INVOKEDYNAMIC:
+                // smells like a hack. Not sure how to do this better
+                ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
+                ConstantPool cp = getConstantPool();
+                ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(id.getNameAndTypeIndex());
+                ConstantUtf8 typeConstant = (ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex());
+                curCalledMethod = new FQMethod(getClassName(), "lambda$" + id.getBootstrapMethodAttrIndex(),
+                        typeConstant.getBytes());
+                break;
+
+            case Const.INVOKESTATIC:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESPECIAL:
+                String clsName = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
+                curCalledMethod = new FQMethod(clsName, methodName, getSigConstantOperand());
+
+                if ("java/util/Optional".equals(clsName) && "of".equals(methodName)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (OPTIONAL_CLASSES.contains(itm.getSignature())) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_CHECKING_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
-
-                    }
-                break;
-
-                case Const.INVOKEDYNAMIC:
-                    // smells like a hack. Not sure how to do this better
-                    ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
-                    ConstantPool cp = getConstantPool();
-                    ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(id.getNameAndTypeIndex());
-                    ConstantUtf8 typeConstant = (ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex());
-                    curCalledMethod = new FQMethod(getClassName(), "lambda$" + id.getBootstrapMethodAttrIndex(), typeConstant.getBytes());
-                break;
-
-                case Const.INVOKESTATIC:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKESPECIAL:
-                    String clsName = getClassConstantOperand();
-                    String methodName = getNameConstantOperand();
-                    curCalledMethod = new FQMethod(clsName, methodName, getSigConstantOperand());
-
-                    if ("java/util/Optional".equals(clsName) && "of".equals(methodName)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            String itmSig = itm.getSignature();
-                            if (BOXED_OPTIONAL_TYPES.contains(itmSig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(), LOW_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
-                            }
+                        String itmSig = itm.getSignature();
+                        if (BOXED_OPTIONAL_TYPES.contains(itmSig)) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(),
+                                            LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
+                }
                 break;
 
-                case Const.INVOKEVIRTUAL:
-                    curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-                    if (OR_ELSE_METHODS.contains(curCalledMethod)) {
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            if ((itm.getRegisterNumber() < 0) && (itm.getReturnValueOf() != null) && !isTrivialStackOps()) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
-                            }
+            case Const.INVOKEVIRTUAL:
+                curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand());
+                if (OR_ELSE_METHODS.contains(curCalledMethod)) {
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if ((itm.getRegisterNumber() < 0) && (itm.getReturnValueOf() != null) && !isTrivialStackOps()) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION.name(),
+                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
-                        if (OPTIONAL_OR_ELSE_METHOD.equals(curCalledMethod)) {
-                            sawPlainOptional = Boolean.TRUE;
-                        }
-                    } else if (OR_ELSE_GET_METHODS.contains(curCalledMethod)) {
-                        if (!activeStackOps.isEmpty()) {
-                            ActiveStackOp op = activeStackOps.getLast();
+                    }
+                    if (OPTIONAL_OR_ELSE_METHOD.equals(curCalledMethod)) {
+                        sawPlainOptional = Boolean.TRUE;
+                    }
+                } else if (OR_ELSE_GET_METHODS.contains(curCalledMethod)) {
+                    if (!activeStackOps.isEmpty()) {
+                        ActiveStackOp op = activeStackOps.getLast();
 
-                            FQMethod method = op.getMethod();
-                            if (method == null) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL.name(), LOW_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
-                            } else {
-                                Method getMethod = getLambdaMethod(method.getMethodName());
-                                if (getMethod != null) {
-                                    byte[] byteCode = getMethod.getCode().getCode();
-                                    if (byteCode.length <= 4) {
-                                        // we are looking for ALOAD, GETFIELD, or LDC followed by ARETURN, that should fit in 4 bytes
-                                        if (!hasInvoke(byteCode)) {
-                                            bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION.name(), LOW_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
-                                        }
+                        FQMethod method = op.getMethod();
+                        if (method == null) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL.name(),
+                                            LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        } else {
+                            Method getMethod = getLambdaMethod(method.getMethodName());
+                            if (getMethod != null) {
+                                byte[] byteCode = getMethod.getCode().getCode();
+                                if (byteCode.length <= 4) {
+                                    // we are looking for ALOAD, GETFIELD, or LDC followed by ARETURN, that should
+                                    // fit in 4 bytes
+                                    if (!hasInvoke(byteCode)) {
+                                        bugReporter.reportBug(new BugInstance(this,
+                                                BugType.OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION.name(), LOW_PRIORITY)
+                                                        .addClass(this).addMethod(this).addSourceLine(this));
                                     }
                                 }
                             }
                         }
-                        if (OPTIONAL_OR_ELSE_GET_METHOD.equals(curCalledMethod)) {
-                            sawPlainOptional = Boolean.TRUE;
-                        }
-                    } else if (OPTIONAL_GET_METHOD.equals(curCalledMethod)) {
+                    }
+                    if (OPTIONAL_OR_ELSE_GET_METHOD.equals(curCalledMethod)) {
                         sawPlainOptional = Boolean.TRUE;
                     }
+                } else if (OPTIONAL_GET_METHOD.equals(curCalledMethod)) {
+                    sawPlainOptional = Boolean.TRUE;
+                }
                 break;
             }
         } finally {
@@ -268,7 +272,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the set of operations that contributed to the current stack form, are trivial or not, specifically boxing a primitive value, or appending
+     * returns whether the set of operations that contributed to the current stack
+     * form, are trivial or not, specifically boxing a primitive value, or appending
      * to strings or such.
      *
      * @return the operations that caused the current stack to exist are trivial
@@ -299,10 +304,10 @@ public class OptionalIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * finds the bootstrap method for a lambda (invokedynamic call. As findbugs doesn't support bcel 6, have to cheat a little here.
+     * finds the bootstrap method for a lambda (invokedynamic call. As findbugs
+     * doesn't support bcel 6, have to cheat a little here.
      *
-     * @param methodName
-     *            the lambda name
+     * @param methodName the lambda name
      * @return the method object if it exists
      */
     @Nullable
@@ -319,8 +324,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     /**
      * returns whether the byte code of a method has an invokeXXX statement in it
      *
-     * @param byteCode
-     *            the byte code of a method to check
+     * @param byteCode the byte code of a method to check
      * @return if there is an invokeXX method found
      */
     private boolean hasInvoke(byte[] byteCode) {
@@ -334,7 +338,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * represents an opcode that was issued while there is still active elements on the stack.
+     * represents an opcode that was issued while there is still active elements on
+     * the stack.
      */
     static class ActiveStackOp {
         private int opcode;
@@ -370,7 +375,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
             ActiveStackOp that = (ActiveStackOp) o;
 
-            return (opcode == that.opcode) && ((method == that.method) || ((method != null) && method.equals(that.method)));
+            return (opcode == that.opcode)
+                    && ((method == that.method) || ((method != null) && method.equals(that.method)));
         }
 
         @Override

@@ -41,7 +41,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that are implemented using synchronized blocks, but are overly synchronized because the beginning of the block only accesses local
+ * looks for methods that are implemented using synchronized blocks, but are
+ * overly synchronized because the beginning of the block only accesses local
  * variables, and not member variables, or this.
  */
 public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
@@ -59,8 +60,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
     /**
      * constructs a BSB detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public BloatedSynchronizedBlock(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -84,8 +84,7 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a MONITORENTER opcodes
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class uses synchronization
      */
     private boolean prescreen(Method method) {
@@ -94,10 +93,10 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
     }
 
     /**
-     * implement the visitor to reset the sync count, the stack, and gather some information
+     * implement the visitor to reset the sync count, the stack, and gather some
+     * information
      *
-     * @param obj
-     *            the context object for the currently parsed method
+     * @param obj the context object for the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -118,10 +117,10 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
     }
 
     /**
-     * implement the visitor to find bloated sync blocks. This implementation only checks the outer most block
+     * implement the visitor to find bloated sync blocks. This implementation only
+     * checks the outer most block
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -135,10 +134,12 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                 }
             }
 
-            if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKEDYNAMIC)) {
+            if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE)
+                    || (seen == Const.INVOKEDYNAMIC)) {
                 String methodSig = getSigConstantOperand();
 
-                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassConstantOperand(), getNameConstantOperand(), methodSig);
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassConstantOperand(),
+                        getNameConstantOperand(), methodSig);
                 if (mi.getModifiesState()) {
                     unsafeCallOccurred = true;
                 } else {
@@ -155,7 +156,8 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                     }
                 }
             } else if (seen == Const.INVOKESTATIC) {
-                unsafeCallOccurred = getDottedClassConstantOperand().equals(this.getClassContext().getJavaClass().getClassName());
+                unsafeCallOccurred = getDottedClassConstantOperand()
+                        .equals(this.getClassContext().getJavaClass().getClassName());
             } else if (((seen >= Const.IFEQ) && (seen <= Const.GOTO)) || (seen == Const.GOTO_W)) {
                 Integer from = Integer.valueOf(getPC());
                 Integer to = Integer.valueOf(getBranchTarget());
@@ -190,7 +192,8 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
         // TODO: probably static calls are unsafe only if the monitor is
         // on a static
         boolean unsafe = unsafeCallOccurred;
-        unsafe |= ((seen == Const.PUTFIELD) || (seen == Const.GETFIELD) || (seen == Const.GETSTATIC) || (seen == Const.PUTSTATIC));
+        unsafe |= ((seen == Const.PUTFIELD) || (seen == Const.GETFIELD) || (seen == Const.GETSTATIC)
+                || (seen == Const.PUTSTATIC));
         unsafe |= (!isStatic) && ((seen == Const.ALOAD_0) || (seen == Const.ASTORE_0));
         int aloadReg = RegisterUtils.getALoadReg(this, seen);
         unsafe |= (aloadReg >= 0) && unsafeAliases.get(aloadReg);
@@ -210,8 +213,9 @@ public class BloatedSynchronizedBlock extends BytecodeScanningDetector {
                     }
                 }
                 if ((pc - syncPC) > minSafeCodeLength) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.BSB_BLOATED_SYNCHRONIZED_BLOCK.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLineRange(this, syncPC + 1, pc));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.BSB_BLOATED_SYNCHRONIZED_BLOCK.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLineRange(this, syncPC + 1, pc));
                 }
             }
             syncPC = -1;

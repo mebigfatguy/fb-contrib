@@ -46,9 +46,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that return a parameter after making what looks like modifications to that parameter. This leads to confusion for the user of this method
- * as it isn't obvious that the 'original' object is modified. If the point of this method is to modify the parameter, it is probably better just to have the
- * method be a void method, to avoid confusion.
+ * looks for methods that return a parameter after making what looks like
+ * modifications to that parameter. This leads to confusion for the user of this
+ * method as it isn't obvious that the 'original' object is modified. If the
+ * point of this method is to modify the parameter, it is probably better just
+ * to have the method be a void method, to avoid confusion.
  */
 public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
     private static final Set<String> knownImmutables;
@@ -75,18 +77,17 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
     /**
      * constructs a CFS detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ConfusingFunctionSemantics(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to initialize/destroy the possible parameter registers and opcode stack
+     * implements the visitor to initialize/destroy the possible parameter registers
+     * and opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -101,10 +102,10 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for any non-immutable typed parameters are assignable to the return type. If found, the method is parsed.
+     * implements the visitor to look for any non-immutable typed parameters are
+     * assignable to the return type. If found, the method is parsed.
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -120,7 +121,8 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
                 List<String> parmTypes = SignatureUtils.getParameterSignatures(methodSignature);
                 for (int p = 0; p < parmTypes.size(); p++) {
                     String parmSignature = parmTypes.get(p);
-                    if (parmSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && !knownImmutables.contains(parmSignature)) {
+                    if (parmSignature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)
+                            && !knownImmutables.contains(parmSignature)) {
                         if (returnClass == null) {
                             returnClass = Repository.lookupClass(SignatureUtils.trimSignature(retSignature));
                             parmRegs = RegisterUtils.getParameterRegisters(m);
@@ -141,8 +143,10 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
                         super.visitCode(obj);
                         for (ParmUsage pu : possibleParmRegs.values()) {
                             if ((pu.returnPC >= 0) && (pu.alteredPC >= 0) && (pu.returnPC > pu.alteredPC)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.CFS_CONFUSING_FUNCTION_SEMANTICS.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this, pu.returnPC).addSourceLine(this, pu.alteredPC));
+                                bugReporter.reportBug(new BugInstance(this,
+                                        BugType.CFS_CONFUSING_FUNCTION_SEMANTICS.name(), NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this, pu.returnPC)
+                                                .addSourceLine(this, pu.alteredPC));
                             }
                         }
                     } catch (StopOpcodeParsingException e) {
@@ -210,7 +214,8 @@ public class ConfusingFunctionSemantics extends BytecodeScanningDetector {
     }
 
     /**
-     * represents a method parameter, when it was first altered, and when it was last returned
+     * represents a method parameter, when it was first altered, and when it was
+     * last returned
      */
     static class ParmUsage {
         int returnPC = -1;

@@ -43,8 +43,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for methods that access arrays or classes that implement java.util.List using a constant integer for the index. This is often a typo intented to be a
- * loop variable, but if specific indices mean certain things, perhaps a first class object would be a better choice for a container.
+ * looks for methods that access arrays or classes that implement java.util.List
+ * using a constant integer for the index. This is often a typo intented to be a
+ * loop variable, but if specific indices mean certain things, perhaps a first
+ * class object would be a better choice for a container.
  */
 public class ConstantListIndex extends BytecodeScanningDetector {
     enum State {
@@ -55,16 +57,19 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     private static final Set<FQMethod> ubiquitousMethods;
 
     static {
-        String stringToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(SignatureBuilder.SIG_STRING_ARRAY)
-                .toString();
-        String stringAndCharToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_CHAR)
+        String stringToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
                 .withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
-        String stringAndIntToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT)
+        String stringAndCharToArray = new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_CHAR)
                 .withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
-        String twoStringsToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING)
+        String stringAndIntToArray = new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT)
                 .withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
-        String twoStringsAndIntToArray = new SignatureBuilder()
-                .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT)
+        String twoStringsToArray = new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_STRING)
+                .withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
+        String twoStringsAndIntToArray = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING,
+                Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT)
                 .withReturnType(SignatureBuilder.SIG_STRING_ARRAY).toString();
 
         Set<FQMethod> um = new HashSet<>();
@@ -76,14 +81,16 @@ public class ConstantListIndex extends BytecodeScanningDetector {
         um.add(new FQMethod("org/apache/commons/lang/StringUtils", "split", twoStringsAndIntToArray));
         um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparator", twoStringsToArray));
         um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparator", twoStringsAndIntToArray));
-        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparatorPreserveAllTokens", twoStringsToArray));
+        um.add(new FQMethod("org/apache/commons/lang/StringUtils", "splitByWholeSeparatorPreserveAllTokens",
+                twoStringsToArray));
         um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", stringToArray));
         um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", stringAndCharToArray));
         um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", twoStringsToArray));
         um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "split", twoStringsAndIntToArray));
         um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparator", twoStringsToArray));
         um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparator", twoStringsAndIntToArray));
-        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparatorPreserveAllTokens", twoStringsToArray));
+        um.add(new FQMethod("org/apache/commons/lang3/StringUtils", "splitByWholeSeparatorPreserveAllTokens",
+                twoStringsToArray));
         ubiquitousMethods = Collections.unmodifiableSet(um);
     }
 
@@ -97,8 +104,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     /**
      * constructs a CLI detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ConstantListIndex(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -114,13 +120,13 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and clear the const0loop set
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
         try {
-            if ((invocationHandlerClass != null) && classContext.getJavaClass().implementationOf(invocationHandlerClass)) {
+            if ((invocationHandlerClass != null)
+                    && classContext.getJavaClass().implementationOf(invocationHandlerClass)) {
                 return;
             }
             iConst0Looped = new BitSet();
@@ -137,8 +143,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the state
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitMethod(Method obj) {
@@ -150,8 +155,7 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     /**
      * implements the visitor to find accesses to lists or arrays using Const
      *
-     * @param seen
-     *            the currently visitor opcode
+     * @param seen the currently visitor opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -159,64 +163,66 @@ public class ConstantListIndex extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (state) {
-                case SAW_NOTHING:
-                    if (seen == Const.ICONST_0) {
-                        state = State.SAW_CONSTANT_0;
-                    } else if ((seen >= Const.ICONST_1) && (seen <= Const.ICONST_5)) {
+            case SAW_NOTHING:
+                if (seen == Const.ICONST_0) {
+                    state = State.SAW_CONSTANT_0;
+                } else if ((seen >= Const.ICONST_1) && (seen <= Const.ICONST_5)) {
+                    state = State.SAW_CONSTANT;
+                } else if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
+                    Constant c = getConstantRefOperand();
+                    if (c instanceof ConstantInteger) {
                         state = State.SAW_CONSTANT;
-                    } else if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
-                        Constant c = getConstantRefOperand();
-                        if (c instanceof ConstantInteger) {
-                            state = State.SAW_CONSTANT;
-                        }
                     }
+                }
                 break;
 
-                case SAW_CONSTANT_0:
-                case SAW_CONSTANT:
-                    switch (seen) {
-                        case Const.AALOAD:
-                            if ("main".equals(this.getMethodName())) {
-                                break;
-                            }
-                            //$FALL-THROUGH$
-                        case Const.IALOAD:
-                        case Const.LALOAD:
-                        case Const.FALOAD:
-                        case Const.DALOAD:
-                            // case BALOAD: byte and char indexing seems prevalent, and
-                            // case CALOAD: usually harmless so ignore
-                        case Const.SALOAD:
-                            if (stack.getStackDepth() > 1) {
-                                OpcodeStack.Item item = stack.getStackItem(1);
-                                if (!isArrayFromUbiquitousMethod(item)) {
-                                    if (state == State.SAW_CONSTANT_0) {
-                                        iConst0Looped.set(getPC());
-                                    } else {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this)
-                                                .addMethod(this).addSourceLine(this));
-                                    }
-                                }
-                            }
-                        break;
-
-                        case Const.INVOKEVIRTUAL:
-                            if (Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())) {
-                                String methodName = getNameConstantOperand();
-                                if ("get".equals(methodName)) {
-                                    if (state == State.SAW_CONSTANT_0) {
-                                        iConst0Looped.set(getPC());
-                                    } else {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this)
-                                                .addMethod(this).addSourceLine(this));
-                                    }
-                                }
-                            }
-                        break;
-                        default:
+            case SAW_CONSTANT_0:
+            case SAW_CONSTANT:
+                switch (seen) {
+                case Const.AALOAD:
+                    if ("main".equals(this.getMethodName())) {
                         break;
                     }
-                    state = State.SAW_NOTHING;
+                    //$FALL-THROUGH$
+                case Const.IALOAD:
+                case Const.LALOAD:
+                case Const.FALOAD:
+                case Const.DALOAD:
+                    // case BALOAD: byte and char indexing seems prevalent, and
+                    // case CALOAD: usually harmless so ignore
+                case Const.SALOAD:
+                    if (stack.getStackDepth() > 1) {
+                        OpcodeStack.Item item = stack.getStackItem(1);
+                        if (!isArrayFromUbiquitousMethod(item)) {
+                            if (state == State.SAW_CONSTANT_0) {
+                                iConst0Looped.set(getPC());
+                            } else {
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
+                            }
+                        }
+                    }
+                    break;
+
+                case Const.INVOKEVIRTUAL:
+                    if (Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())) {
+                        String methodName = getNameConstantOperand();
+                        if ("get".equals(methodName)) {
+                            if (state == State.SAW_CONSTANT_0) {
+                                iConst0Looped.set(getPC());
+                            } else {
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
+                            }
+                        }
+                    }
+                    break;
+                default:
+                    break;
+                }
+                state = State.SAW_NOTHING;
                 break;
             }
 
@@ -225,8 +231,9 @@ public class ConstantListIndex extends BytecodeScanningDetector {
                 for (int bugPC = iConst0Looped.nextSetBit(0); bugPC >= 0; bugPC = iConst0Looped.nextSetBit(bugPC + 1)) {
                     if (branchTarget < bugPC) {
                         if ((bugPC - branchTarget) < max_iConst0LoopDistance) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                    .addSourceLine(this, bugPC));
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.CLI_CONSTANT_LIST_INDEX.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this, bugPC));
                         }
                         iConst0Looped.clear(bugPC);
                     }
@@ -238,10 +245,10 @@ public class ConstantListIndex extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the array item was returned from a common method that the user can't do anything about and so don't report CLI in this case.
+     * returns whether the array item was returned from a common method that the
+     * user can't do anything about and so don't report CLI in this case.
      *
-     * @param item
-     *            the stack item representing the array
+     * @param item the stack item representing the array
      * @return if the array was returned from a common method
      */
     private static boolean isArrayFromUbiquitousMethod(OpcodeStack.Item item) {
@@ -250,7 +257,8 @@ public class ConstantListIndex extends BytecodeScanningDetector {
             return false;
         }
 
-        FQMethod methodDesc = new FQMethod(method.getClassName().replace('.', '/'), method.getName(), method.getSignature());
+        FQMethod methodDesc = new FQMethod(method.getClassName().replace('.', '/'), method.getName(),
+                method.getSignature());
         return ubiquitousMethods.contains(methodDesc);
     }
 }

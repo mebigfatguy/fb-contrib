@@ -19,7 +19,8 @@
 package com.mebigfatguy.fbcontrib.utils;
 
 /**
- * used to throw out of a sawOpcode method back to the visitCode method when there's no point continuing to parse opcodes
+ * used to throw out of a sawOpcode method back to the visitCode method when
+ * there's no point continuing to parse opcodes
  */
 public class StopOpcodeParsingException extends RuntimeException {
 

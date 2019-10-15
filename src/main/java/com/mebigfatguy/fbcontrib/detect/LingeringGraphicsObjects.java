@@ -41,9 +41,11 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for creation of java.awt.Graphics object that do not have the .dispose() method called on them when finished. These objects will be cleaned up by the
- * Garbage collector, bug given the likelyhood that large numbers of these objects can be created in a short period of time, it is better to dispose them as
- * soon as possible
+ * looks for creation of java.awt.Graphics object that do not have the
+ * .dispose() method called on them when finished. These objects will be cleaned
+ * up by the Garbage collector, bug given the likelyhood that large numbers of
+ * these objects can be created in a short period of time, it is better to
+ * dispose them as soon as possible
  */
 @CustomUserValue
 public class LingeringGraphicsObjects extends BytecodeScanningDetector {
@@ -53,14 +55,16 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
 
     static {
         Set<FQMethod> gp = new HashSet<FQMethod>();
-        gp.add(new FQMethod("java/awt/image/BufferedImage", "getGraphics", new SignatureBuilder().withReturnType("java/awt/Graphics").toString()));
-        gp.add(new FQMethod("java/awt/Graphics", "create", new SignatureBuilder().withReturnType("java/awt/Graphics").toString()));
-        GRAPHICS_PRODUCERS = Collections.<FQMethod> unmodifiableSet(gp);
+        gp.add(new FQMethod("java/awt/image/BufferedImage", "getGraphics",
+                new SignatureBuilder().withReturnType("java/awt/Graphics").toString()));
+        gp.add(new FQMethod("java/awt/Graphics", "create",
+                new SignatureBuilder().withReturnType("java/awt/Graphics").toString()));
+        GRAPHICS_PRODUCERS = Collections.<FQMethod>unmodifiableSet(gp);
 
         Set<FQMethod> gd = new HashSet<FQMethod>();
         gd.add(new FQMethod("java/awt/Graphics", "dispose", SignatureBuilder.SIG_VOID_TO_VOID));
         gd.add(new FQMethod("java/awt/Graphics2D", "dispose", SignatureBuilder.SIG_VOID_TO_VOID));
-        GRAPHICS_DISPOSERS = Collections.<FQMethod> unmodifiableSet(gd);
+        GRAPHICS_DISPOSERS = Collections.<FQMethod>unmodifiableSet(gd);
     }
 
     private final BugReporter bugReporter;
@@ -74,8 +78,7 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
     /**
      * overrides the visitor to set up the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -90,10 +93,10 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to check for registers that have been assigned Graphics objects that haven't been disposed
+     * overrides the visitor to check for registers that have been assigned Graphics
+     * objects that haven't been disposed
      *
-     * @param obj
-     *            the code block of the currently parsed method
+     * @param obj the code block of the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -101,8 +104,8 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
         graphicsRegs.clear();
         super.visitCode(obj);
         for (Integer pc : graphicsRegs.values()) {
-            bugReporter.reportBug(new BugInstance(this, BugType.LGO_LINGERING_GRAPHICS_OBJECT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                    .addSourceLine(this, pc.intValue()));
+            bugReporter.reportBug(new BugInstance(this, BugType.LGO_LINGERING_GRAPHICS_OBJECT.name(), NORMAL_PRIORITY)
+                    .addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
         }
 
     }
@@ -114,56 +117,56 @@ public class LingeringGraphicsObjects extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.ALOAD:
-                case Const.ALOAD_0:
-                case Const.ALOAD_1:
-                case Const.ALOAD_2:
-                case Const.ALOAD_3: {
-                    int reg = RegisterUtils.getALoadReg(this, seen);
-                    sawNewGraphicsAt = graphicsRegs.get(Integer.valueOf(reg));
+            case Const.ALOAD:
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3: {
+                int reg = RegisterUtils.getALoadReg(this, seen);
+                sawNewGraphicsAt = graphicsRegs.get(Integer.valueOf(reg));
+            }
+                break;
+
+            case Const.ASTORE:
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    sawNewGraphicsAt = (Integer) item.getUserValue();
+
+                    Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
+                    if (sawNewGraphicsAt != null) {
+                        graphicsRegs.put(reg, sawNewGraphicsAt);
+                    } else {
+                        graphicsRegs.remove(reg);
+                    }
+                    sawNewGraphicsAt = null;
+                }
+            }
+                break;
+
+            case Const.ARETURN:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
                 }
                 break;
 
-                case Const.ASTORE:
-                case Const.ASTORE_0:
-                case Const.ASTORE_1:
-                case Const.ASTORE_2:
-                case Const.ASTORE_3: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        sawNewGraphicsAt = (Integer) item.getUserValue();
-
-                        Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-                        if (sawNewGraphicsAt != null) {
-                            graphicsRegs.put(reg, sawNewGraphicsAt);
-                        } else {
-                            graphicsRegs.remove(reg);
-                        }
-                        sawNewGraphicsAt = null;
-                    }
+            case Const.INVOKEVIRTUAL:
+                String clsName = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
+                String methodSig = getSigConstantOperand();
+                FQMethod methodInfo = new FQMethod(clsName, methodName, methodSig);
+                if (GRAPHICS_PRODUCERS.contains(methodInfo)) {
+                    sawNewGraphicsAt = Integer.valueOf(getPC());
+                } else if (GRAPHICS_DISPOSERS.contains(methodInfo) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
                 }
                 break;
-
-                case Const.ARETURN:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
-                    }
-                break;
-
-                case Const.INVOKEVIRTUAL:
-                    String clsName = getClassConstantOperand();
-                    String methodName = getNameConstantOperand();
-                    String methodSig = getSigConstantOperand();
-                    FQMethod methodInfo = new FQMethod(clsName, methodName, methodSig);
-                    if (GRAPHICS_PRODUCERS.contains(methodInfo)) {
-                        sawNewGraphicsAt = Integer.valueOf(getPC());
-                    } else if (GRAPHICS_DISPOSERS.contains(methodInfo) && (stack.getStackDepth() > 0)) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        graphicsRegs.remove(Integer.valueOf(item.getRegisterNumber()));
-                    }
-                break;
-                default:
+            default:
                 break;
             }
         } finally {

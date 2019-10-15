@@ -39,7 +39,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that perform arithmetic operations on values representing time where the time unit is incompatible, ie adding a millisecond value to a
+ * looks for methods that perform arithmetic operations on values representing
+ * time where the time unit is incompatible, ie adding a millisecond value to a
  * nanosecond value.
  */
 @CustomUserValue
@@ -53,7 +54,8 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
 
     static {
         String voidToLong = new SignatureBuilder().withReturnType(Values.SIG_PRIMITIVE_LONG).toString();
-        String longToLong = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG).withReturnType(Values.SIG_PRIMITIVE_LONG).toString();
+        String longToLong = new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG)
+                .withReturnType(Values.SIG_PRIMITIVE_LONG).toString();
         Map<FQMethod, Units> tugm = new HashMap<>(50);
         tugm.put(new FQMethod(Values.SLASHED_JAVA_LANG_SYSTEM, "currentTimeMillis", voidToLong), Units.MILLIS);
         tugm.put(new FQMethod(Values.SLASHED_JAVA_LANG_SYSTEM, "nanoTime", voidToLong), Units.NANOS);
@@ -66,27 +68,33 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toMinutes", longToLong), Units.MINUTES);
         tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toHours", longToLong), Units.HOURS);
         tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "toDays", longToLong), Units.DAYS);
-        tugm.put(
-                new FQMethod("java/util/concurrent/TimeUnit", "excessNanos", new SignatureBuilder()
-                        .withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG).withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "excessNanos",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG)
+                        .withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
                 Units.NANOS);
-        tugm.put(
-                new FQMethod("java/util/concurrent/TimeUnit", "convert", new SignatureBuilder()
-                        .withParamTypes(Values.SIG_PRIMITIVE_LONG, "java/util/concurrent/TimeUnit").withReturnType(Values.SIG_PRIMITIVE_LONG).toString()),
+        tugm.put(new FQMethod("java/util/concurrent/TimeUnit", "convert",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, "java/util/concurrent/TimeUnit")
+                        .withReturnType(Values.SIG_PRIMITIVE_LONG).toString()),
                 Units.CALLER);
-        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toNanos", longToLong), Units.NANOS);
-        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toMicros", longToLong), Units.MICROS);
-        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toSeconds", longToLong), Units.SECONDS);
-        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toMinutes", longToLong), Units.MINUTES);
-        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toHours", longToLong), Units.HOURS);
-        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toDays", longToLong), Units.DAYS);
-        tugm.put(
-                new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "excessNanos", new SignatureBuilder()
-                        .withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG).withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toNanos", longToLong),
                 Units.NANOS);
-        tugm.put(
-                new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "convert", new SignatureBuilder()
-                        .withParamTypes(Values.SIG_PRIMITIVE_LONG, "java/util/concurrent/TimeUnit").withReturnType(Values.SIG_PRIMITIVE_LONG).toString()),
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toMicros", longToLong),
+                Units.MICROS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toSeconds", longToLong),
+                Units.SECONDS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toMinutes", longToLong),
+                Units.MINUTES);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toHours", longToLong),
+                Units.HOURS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "toDays", longToLong),
+                Units.DAYS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "excessNanos",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_LONG)
+                        .withReturnType(Values.SIG_PRIMITIVE_INT).toString()),
+                Units.NANOS);
+        tugm.put(new FQMethod("edu/emory/matchcs/backport/java/util/concurrent/TimeUnit", "convert",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_LONG, "java/util/concurrent/TimeUnit")
+                        .withReturnType(Values.SIG_PRIMITIVE_LONG).toString()),
                 Units.CALLER);
         tugm.put(new FQMethod("org/joda/time/base/BaseDuration", "getMillis", voidToLong), Units.MILLIS);
         tugm.put(new FQMethod("org/joda/time/base/BaseInterval", "getEndMillis", voidToLong), Units.MILLIS);
@@ -115,7 +123,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         tugm.put(new FQMethod("java/time/LocalTime", "getSecond", SignatureBuilder.SIG_VOID_TO_INT), Units.SECONDS);
         tugm.put(new FQMethod("java/time/LocalTime", "toNanoOfDay", voidToLong), Units.NANOS);
         tugm.put(new FQMethod("java/time/LocalTime", "toSecondOfDay", SignatureBuilder.SIG_VOID_TO_INT), Units.SECONDS);
-        TIME_UNIT_GENERATING_METHODS = Collections.<FQMethod, Units> unmodifiableMap(tugm);
+        TIME_UNIT_GENERATING_METHODS = Collections.<FQMethod, Units>unmodifiableMap(tugm);
     }
 
     private static final Map<String, Units> TIMEUNIT_TO_UNITS;
@@ -129,7 +137,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
         tutu.put("MINUTES", Units.MINUTES);
         tutu.put("HOURS", Units.HOURS);
         tutu.put("DAYS", Units.DAYS);
-        TIMEUNIT_TO_UNITS = Collections.<String, Units> unmodifiableMap(tutu);
+        TIMEUNIT_TO_UNITS = Collections.<String, Units>unmodifiableMap(tutu);
     }
 
     private BugReporter bugReporter;
@@ -138,8 +146,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
     /**
      * constructs a CTU detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ConflictingTimeUnits(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -148,8 +155,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -164,8 +170,7 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
     /**
      * overrides the visitor to resets the stack for this method.
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -174,7 +179,8 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for operations on two time unit values that are conflicting
+     * overrides the visitor to look for operations on two time unit values that are
+     * conflicting
      */
     @Override
     public void sawOpcode(int seen) {
@@ -183,41 +189,42 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.INVOKEVIRTUAL:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKESTATIC:
-                    unit = processInvoke();
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESTATIC:
+                unit = processInvoke();
                 break;
 
-                case Const.GETSTATIC:
-                    String clsName = getClassConstantOperand();
-                    if ("java/util/concurrent/TimeUnit".equals(clsName) || "edu/emory/matchcs/backport/java/util/concurrent/TimeUnit".equals(clsName)) {
-                        unit = TIMEUNIT_TO_UNITS.get(getNameConstantOperand());
-                    }
+            case Const.GETSTATIC:
+                String clsName = getClassConstantOperand();
+                if ("java/util/concurrent/TimeUnit".equals(clsName)
+                        || "edu/emory/matchcs/backport/java/util/concurrent/TimeUnit".equals(clsName)) {
+                    unit = TIMEUNIT_TO_UNITS.get(getNameConstantOperand());
+                }
                 break;
 
-                case Const.L2I:
-                case Const.I2L:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        unit = (Units) item.getUserValue();
-                    }
+            case Const.L2I:
+            case Const.I2L:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    unit = (Units) item.getUserValue();
+                }
                 break;
 
-                case Const.IADD:
-                case Const.ISUB:
-                case Const.IMUL:
-                case Const.IDIV:
-                case Const.IREM:
-                case Const.LADD:
-                case Const.LSUB:
-                case Const.LMUL:
-                case Const.LDIV:
-                case Const.LREM:
-                    processArithmetic();
+            case Const.IADD:
+            case Const.ISUB:
+            case Const.IMUL:
+            case Const.IDIV:
+            case Const.IREM:
+            case Const.LADD:
+            case Const.LSUB:
+            case Const.LMUL:
+            case Const.LDIV:
+            case Const.LREM:
+                processArithmetic();
                 break;
 
-                default:
+            default:
                 break;
             }
         } finally {
@@ -257,8 +264,9 @@ public class ConflictingTimeUnits extends BytecodeScanningDetector {
             Units u2 = (Units) arg2.getUserValue();
 
             if ((u1 != null) && (u2 != null) && (u1 != u2)) {
-                bugReporter.reportBug(new BugInstance(this, BugType.CTU_CONFLICTING_TIME_UNITS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this).addString(u1.toString()).addString(u2.toString()));
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.CTU_CONFLICTING_TIME_UNITS.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this).addString(u1.toString()).addString(u2.toString()));
             }
         }
     }

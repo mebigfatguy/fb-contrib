@@ -44,8 +44,10 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that use an array of length one to pass a variable to achieve call by pointer ala C++. It is better to define a proper return class type
- * that holds all the relevant information retrieved from the called method.
+ * looks for methods that use an array of length one to pass a variable to
+ * achieve call by pointer ala C++. It is better to define a proper return class
+ * type that holds all the relevant information retrieved from the called
+ * method.
  */
 @CustomUserValue
 public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
@@ -57,8 +59,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
     /**
      * constructs a AWCBR detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ArrayWrappedCallByReference(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -67,8 +68,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
     /**
      * implement the visitor to create and clear the stack and wrappers
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -85,8 +85,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a NEWARRAY or ANEWARRAY opcodes
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class uses synchronization
      */
     public boolean prescreen(Method method) {
@@ -97,8 +96,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the stack of opcodes
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -112,8 +110,7 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
     /**
      * implements the visitor to wrapped array parameter calls
      *
-     * @param seen
-     *            the currently visitor opcode
+     * @param seen the currently visitor opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -122,116 +119,117 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.NEWARRAY:
-                case Const.ANEWARRAY: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        Integer size = (Integer) itm.getConstant();
-                        if ((size != null) && (size.intValue() == 1)) {
-                            userValue = Values.NEGATIVE_ONE;
-                        }
+            case Const.NEWARRAY:
+            case Const.ANEWARRAY: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    Integer size = (Integer) itm.getConstant();
+                    if ((size != null) && (size.intValue() == 1)) {
+                        userValue = Values.NEGATIVE_ONE;
                     }
                 }
+            }
                 break;
 
-                case Const.IASTORE:
-                case Const.LASTORE:
-                case Const.FASTORE:
-                case Const.DASTORE:
-                case Const.AASTORE:
-                case Const.BASTORE:
-                case Const.CASTORE:
-                case Const.SASTORE: {
-                    userValue = processArrayElementStore();
-                }
+            case Const.IASTORE:
+            case Const.LASTORE:
+            case Const.FASTORE:
+            case Const.DASTORE:
+            case Const.AASTORE:
+            case Const.BASTORE:
+            case Const.CASTORE:
+            case Const.SASTORE: {
+                userValue = processArrayElementStore();
+            }
                 break;
 
-                case Const.ASTORE:
-                case Const.ASTORE_0:
-                case Const.ASTORE_1:
-                case Const.ASTORE_2:
-                case Const.ASTORE_3: {
-                    processLocalStore(seen);
-                }
+            case Const.ASTORE:
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3: {
+                processLocalStore(seen);
+            }
                 break;
 
-                case Const.INVOKEVIRTUAL:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKESPECIAL:
-                case Const.INVOKESTATIC: {
-                    processMethodCall();
-                }
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESPECIAL:
+            case Const.INVOKESTATIC: {
+                processMethodCall();
+            }
                 break;
 
-                case Const.IALOAD:
-                case Const.LALOAD:
-                case Const.FALOAD:
-                case Const.DALOAD:
-                case Const.AALOAD:
-                case Const.BALOAD:
-                case Const.CALOAD:
-                case Const.SALOAD: {
-                    if (stack.getStackDepth() >= 2) {
-                        OpcodeStack.Item arItm = stack.getStackItem(1);
-                        int arReg = arItm.getRegisterNumber();
-                        WrapperInfo wi = wrappers.get(Integer.valueOf(arReg));
-                        if ((wi != null) && wi.wasArg) {
-                            userValue = Integer.valueOf(wi.wrappedReg);
-                        }
-                    }
-                }
-                break;
-
-                case Const.ALOAD:
-                case Const.ALOAD_0:
-                case Const.ALOAD_1:
-                case Const.ALOAD_2:
-                case Const.ALOAD_3: {
-                    int reg = RegisterUtils.getALoadReg(this, seen);
-                    WrapperInfo wi = wrappers.get(Integer.valueOf(reg));
-                    if (wi != null) {
+            case Const.IALOAD:
+            case Const.LALOAD:
+            case Const.FALOAD:
+            case Const.DALOAD:
+            case Const.AALOAD:
+            case Const.BALOAD:
+            case Const.CALOAD:
+            case Const.SALOAD: {
+                if (stack.getStackDepth() >= 2) {
+                    OpcodeStack.Item arItm = stack.getStackItem(1);
+                    int arReg = arItm.getRegisterNumber();
+                    WrapperInfo wi = wrappers.get(Integer.valueOf(arReg));
+                    if ((wi != null) && wi.wasArg) {
                         userValue = Integer.valueOf(wi.wrappedReg);
                     }
                 }
+            }
                 break;
 
-                case Const.ISTORE:
-                case Const.ISTORE_0:
-                case Const.ISTORE_1:
-                case Const.ISTORE_2:
-                case Const.ISTORE_3:
-                case Const.LSTORE:
-                case Const.LSTORE_0:
-                case Const.LSTORE_1:
-                case Const.LSTORE_2:
-                case Const.LSTORE_3:
-                case Const.DSTORE:
-                case Const.DSTORE_0:
-                case Const.DSTORE_1:
-                case Const.DSTORE_2:
-                case Const.DSTORE_3:
-                case Const.FSTORE:
-                case Const.FSTORE_0:
-                case Const.FSTORE_1:
-                case Const.FSTORE_2:
-                case Const.FSTORE_3: {
-                    if (stack.getStackDepth() == 0) {
-                        break;
-                    }
-                    OpcodeStack.Item itm = stack.getStackItem(0);
-                    Integer elReg = (Integer) itm.getUserValue();
-                    if (elReg == null) {
-                        break;
-                    }
-                    int reg = RegisterUtils.getStoreReg(this, seen);
-                    if (elReg.intValue() == reg) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+            case Const.ALOAD:
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3: {
+                int reg = RegisterUtils.getALoadReg(this, seen);
+                WrapperInfo wi = wrappers.get(Integer.valueOf(reg));
+                if (wi != null) {
+                    userValue = Integer.valueOf(wi.wrappedReg);
                 }
+            }
                 break;
 
-                default:
+            case Const.ISTORE:
+            case Const.ISTORE_0:
+            case Const.ISTORE_1:
+            case Const.ISTORE_2:
+            case Const.ISTORE_3:
+            case Const.LSTORE:
+            case Const.LSTORE_0:
+            case Const.LSTORE_1:
+            case Const.LSTORE_2:
+            case Const.LSTORE_3:
+            case Const.DSTORE:
+            case Const.DSTORE_0:
+            case Const.DSTORE_1:
+            case Const.DSTORE_2:
+            case Const.DSTORE_3:
+            case Const.FSTORE:
+            case Const.FSTORE_0:
+            case Const.FSTORE_1:
+            case Const.FSTORE_2:
+            case Const.FSTORE_3: {
+                if (stack.getStackDepth() == 0) {
+                    break;
+                }
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                Integer elReg = (Integer) itm.getUserValue();
+                if (elReg == null) {
+                    break;
+                }
+                int reg = RegisterUtils.getStoreReg(this, seen);
+                if (elReg.intValue() == reg) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
+                }
+            }
+                break;
+
+            default:
                 break;
             }
         } finally {
@@ -246,11 +244,12 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for stores to registers, if that store is an array, builds a wrapper info for it and stores it in the wrappers collection. If it is a regular
-     * store, sees if this value, came from a wrapper array passed into a method, and if so reports it.
+     * looks for stores to registers, if that store is an array, builds a wrapper
+     * info for it and stores it in the wrappers collection. If it is a regular
+     * store, sees if this value, came from a wrapper array passed into a method,
+     * and if so reports it.
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     private void processLocalStore(int seen) {
         if (stack.getStackDepth() == 0) {
@@ -267,14 +266,16 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
         } else {
             Integer elReg = (Integer) itm.getUserValue();
             if ((elReg != null) && (elReg.intValue() == RegisterUtils.getAStoreReg(this, seen))) {
-                bugReporter.reportBug(new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
-                        .addMethod(this).addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.AWCBR_ARRAY_WRAPPED_CALL_BY_REFERENCE.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
             }
         }
     }
 
     /**
-     * processes a store to an array element to see if this array is being used as a wrapper array, and if so records the register that is stored within it.
+     * processes a store to an array element to see if this array is being used as a
+     * wrapper array, and if so records the register that is stored within it.
      *
      * @return the user value representing the stored register value
      */
@@ -302,8 +303,9 @@ public class ArrayWrappedCallByReference extends BytecodeScanningDetector {
     }
 
     /**
-     * processes a method call looking for parameters that are arrays. If this array was seen earlier as a simple wrapping array, then it marks it as being
-     * having been used as a parameter.
+     * processes a method call looking for parameters that are arrays. If this array
+     * was seen earlier as a simple wrapping array, then it marks it as being having
+     * been used as a parameter.
      *
      */
     private void processMethodCall() {

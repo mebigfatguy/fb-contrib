@@ -1,4 +1,5 @@
 package ex;
+
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -132,16 +133,16 @@ public class PCAIL_Sample {
     public String fpSwitch(List<String> ss, int i) {
         for (String s : ss) {
             switch (i) {
-                case 0:
-                    List<String> n = new ArrayList<>();
-                    n.add(s);
-                    if (n.isEmpty()) {
-                        return "yup";
-                    }
+            case 0:
+                List<String> n = new ArrayList<>();
+                n.add(s);
+                if (n.isEmpty()) {
+                    return "yup";
+                }
                 break;
 
-                case 1:
-                    return null;
+            case 1:
+                return null;
             }
         }
 
@@ -157,15 +158,15 @@ public class PCAIL_Sample {
             fooList.add(foo);
         }
     }
-    
+
     public void fpLambdaWithTernary(Deque<String> stack, Map<String, List<String>> details) {
         while (!stack.isEmpty()) {
             String s = stack.pop();
             List<String> detail = details.get(s);
             detail = detail != null ? detail : new ArrayList<String>();
             Collections.reverse(detail);
-            detail.forEach(stack::push); 
-        } 
+            detail.forEach(stack::push);
+        }
     }
 
     private PCAIL_Sample builder() {

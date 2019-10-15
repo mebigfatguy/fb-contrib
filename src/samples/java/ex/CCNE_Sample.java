@@ -1,4 +1,5 @@
 package ex;
+
 public class CCNE_Sample {
     public void compareClassEquals() {
         Object o = new CCNE_Sample();

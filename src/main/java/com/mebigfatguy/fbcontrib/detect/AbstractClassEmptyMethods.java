@@ -38,8 +38,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * finds methods of abstract classes that do nothing, or just throw exceptions. Since this is an abstract class, it may be more correct to just leave the method
- * abstract.
+ * finds methods of abstract classes that do nothing, or just throw exceptions.
+ * Since this is an abstract class, it may be more correct to just leave the
+ * method abstract.
  */
 public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     enum State {
@@ -55,8 +56,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     /**
      * constructs a ACEM detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public AbstractClassEmptyMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -71,8 +71,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     /**
      * overrides the visitor to check for abstract classes.
      *
-     * @param classContext
-     *            the context object that holds the JavaClass being parsed
+     * @param classContext the context object that holds the JavaClass being parsed
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -92,8 +91,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     /**
      * overrides the visitor to grab the method name and reset the state.
      *
-     * @param obj
-     *            the method being parsed
+     * @param obj the method being parsed
      */
     @Override
     public void visitMethod(Method obj) {
@@ -104,8 +102,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     /**
      * overrides the visitor to filter out constructors.
      *
-     * @param obj
-     *            the code to parse
+     * @param obj the code to parse
      */
     @Override
     public void visitCode(Code obj) {
@@ -126,64 +123,66 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     /**
      * overrides the visitor to look for empty methods or simple exception throwers.
      *
-     * @param seen
-     *            the opcode currently being parsed
+     * @param seen the opcode currently being parsed
      */
     @Override
     public void sawOpcode(int seen) {
         try {
             switch (state) {
-                case SAW_NOTHING:
-                    if (seen == Const.RETURN) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                        state = State.SAW_DONE;
-                    } else if (seen == Const.NEW) {
-                        String newClass = getClassConstantOperand();
-                        JavaClass exCls = Repository.lookupClass(newClass);
-                        if ((exceptionClass != null) && exCls.instanceOf(exceptionClass)) {
-                            state = State.SAW_NEW;
-                        } else {
-                            state = State.SAW_DONE;
-                        }
-                    } else {
-                        state = State.SAW_DONE;
-                    }
-                break;
-
-                case SAW_NEW:
-                    if (seen == Const.DUP) {
-                        state = State.SAW_DUP;
-                    } else {
-                        state = State.SAW_DONE;
-                    }
-                break;
-
-                case SAW_DUP:
-                    if (((seen == Const.LDC) || (seen == Const.LDC_W)) && (getConstantRefOperand() instanceof ConstantString)) {
-                        state = State.SAW_LDC;
-                    } else {
-                        state = State.SAW_DONE;
-                    }
-                break;
-
-                case SAW_LDC:
-                    if ((seen == Const.INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
-                        state = State.SAW_INVOKESPECIAL;
-                    } else {
-                        state = State.SAW_DONE;
-                    }
-                break;
-
-                case SAW_INVOKESPECIAL:
-                    if (seen == Const.ATHROW) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+            case SAW_NOTHING:
+                if (seen == Const.RETURN) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                     state = State.SAW_DONE;
+                } else if (seen == Const.NEW) {
+                    String newClass = getClassConstantOperand();
+                    JavaClass exCls = Repository.lookupClass(newClass);
+                    if ((exceptionClass != null) && exCls.instanceOf(exceptionClass)) {
+                        state = State.SAW_NEW;
+                    } else {
+                        state = State.SAW_DONE;
+                    }
+                } else {
+                    state = State.SAW_DONE;
+                }
                 break;
 
-                case SAW_DONE:
+            case SAW_NEW:
+                if (seen == Const.DUP) {
+                    state = State.SAW_DUP;
+                } else {
+                    state = State.SAW_DONE;
+                }
+                break;
+
+            case SAW_DUP:
+                if (((seen == Const.LDC) || (seen == Const.LDC_W))
+                        && (getConstantRefOperand() instanceof ConstantString)) {
+                    state = State.SAW_LDC;
+                } else {
+                    state = State.SAW_DONE;
+                }
+                break;
+
+            case SAW_LDC:
+                if ((seen == Const.INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+                    state = State.SAW_INVOKESPECIAL;
+                } else {
+                    state = State.SAW_DONE;
+                }
+                break;
+
+            case SAW_INVOKESPECIAL:
+                if (seen == Const.ATHROW) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
+                }
+                state = State.SAW_DONE;
+                break;
+
+            case SAW_DONE:
                 break;
             }
         } catch (ClassNotFoundException cnfe) {

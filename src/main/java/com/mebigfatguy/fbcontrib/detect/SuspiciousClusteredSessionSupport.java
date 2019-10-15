@@ -40,8 +40,9 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that access objects in http sessions, that are complex objects, modifies those objects, but does not call setAttribute to signify a change
- * so that cluster replication can happen.
+ * looks for methods that access objects in http sessions, that are complex
+ * objects, modifies those objects, but does not call setAttribute to signify a
+ * change so that cluster replication can happen.
  */
 @CustomUserValue
 public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector {
@@ -60,8 +61,7 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
     /**
      * implements the visitor to setup the opcode stack and attribute maps
      *
-     * @param classContext
-     *            the currently parsed class
+     * @param classContext the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -78,10 +78,10 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
     }
 
     /**
-     * implements the visitor to report on attributes that have changed, without a setAttribute being called on them
+     * implements the visitor to report on attributes that have changed, without a
+     * setAttribute being called on them
      *
-     * @param obj
-     *            the currently parsed method
+     * @param obj the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -90,17 +90,18 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
         savedAttributes.clear();
         super.visitCode(obj);
         for (Integer pc : changedAttributes.values()) {
-            bugReporter.reportBug(new BugInstance(this, BugType.SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT.name(), NORMAL_PRIORITY).addClass(this)
-                    .addMethod(this).addSourceLine(this, pc.intValue()));
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.SCSS_SUSPICIOUS_CLUSTERED_SESSION_SUPPORT.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
         }
     }
 
     /**
-     * implements the visitor to collect calls to getAttribute/setAttribute and stores to attributes to see what have been modified without recalling
+     * implements the visitor to collect calls to getAttribute/setAttribute and
+     * stores to attributes to see what have been modified without recalling
      * setAttribute
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -135,7 +136,8 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
                 int reg = RegisterUtils.getALoadReg(this, seen);
                 attributeName = savedAttributes.get(Integer.valueOf(reg));
                 sawGetAttribute = attributeName != null;
-            } else if ((((seen >= Const.ASTORE_0) && (seen <= Const.ASTORE_3)) || (seen == Const.ASTORE)) && (stack.getStackDepth() > 0)) {
+            } else if ((((seen >= Const.ASTORE_0) && (seen <= Const.ASTORE_3)) || (seen == Const.ASTORE))
+                    && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 attributeName = (String) item.getUserValue();
                 int reg = RegisterUtils.getAStoreReg(this, seen);

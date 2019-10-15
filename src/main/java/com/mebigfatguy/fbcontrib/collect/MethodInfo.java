@@ -120,16 +120,16 @@ public class MethodInfo {
     public void setCanReturnNull(boolean canReturnNull) {
         this.canReturnNull = canReturnNull;
     }
-    
+
     public boolean isDerived() {
-		return isDerived;
-	}
+        return isDerived;
+    }
 
-	public void setDerived(boolean isDerived) {
-		this.isDerived = isDerived;
-	}
+    public void setDerived(boolean isDerived) {
+        this.isDerived = isDerived;
+    }
 
-	@Override
+    @Override
     public boolean equals(Object o) {
         if (!(o instanceof MethodInfo)) {
             return false;
@@ -137,13 +137,15 @@ public class MethodInfo {
 
         MethodInfo mi = (MethodInfo) o;
 
-        return (numMethodBytes == mi.numMethodBytes) && (numMethodCalls == mi.numMethodCalls) && (immutabilityOrdinal == mi.immutabilityOrdinal)
-                && (declaredAccess == mi.declaredAccess) && (isCalledType == mi.isCalledType) && (modifiesState == mi.modifiesState);
+        return (numMethodBytes == mi.numMethodBytes) && (numMethodCalls == mi.numMethodCalls)
+                && (immutabilityOrdinal == mi.immutabilityOrdinal) && (declaredAccess == mi.declaredAccess)
+                && (isCalledType == mi.isCalledType) && (modifiesState == mi.modifiesState);
     }
 
     @Override
     public int hashCode() {
-        return numMethodBytes ^ numMethodCalls ^ immutabilityOrdinal ^ declaredAccess ^ isCalledType ^ (modifiesState ? 1 : -1);
+        return numMethodBytes ^ numMethodCalls ^ immutabilityOrdinal ^ declaredAccess ^ isCalledType
+                ^ (modifiesState ? 1 : -1);
     }
 
     @Override

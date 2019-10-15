@@ -146,7 +146,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         Method m = getMethod();
         switch (parseState) {
         case LAMBDA:
-                if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) != 0) {
+            if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) != 0) {
                 List<FIInfo> fiis = functionalInterfaceInfo.get(m.getName());
                 if (fiis != null) {
                     int numParms = SignatureUtils.getNumParameters(m.getSignature());
@@ -154,20 +154,20 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         functionalInterfaceInfo.remove(m.getName());
                     } else {
                         isParmLambda = numParms == 2;
-                        if (isParmLambda)  {
-                        	Iterator<FIInfo> it = fiis.iterator();
-                        	while (it.hasNext()) {
-                        		FIInfo fi = it.next();
-                        		if (!fi.getMethod().isStatic()) {
-                        			it.remove();
-                        		}
-                        	}
-                        	
-                        	if (fiis.isEmpty()) {
-	                    		isParmLambda = false;
-	                            functionalInterfaceInfo.remove(getMethod().getName());
-	                            return;
-                        	}
+                        if (isParmLambda) {
+                            Iterator<FIInfo> it = fiis.iterator();
+                            while (it.hasNext()) {
+                                FIInfo fi = it.next();
+                                if (!fi.getMethod().isStatic()) {
+                                    it.remove();
+                                }
+                            }
+
+                            if (fiis.isEmpty()) {
+                                isParmLambda = false;
+                                functionalInterfaceInfo.remove(getMethod().getName());
+                                return;
+                            }
                         }
                         try {
                             anonState = AnonState.SEEN_NOTHING;
@@ -180,7 +180,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
             break;
 
         case NORMAL:
-                if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) == 0) {
+            if ((m.getAccessFlags() & Const.ACC_SYNTHETIC) == 0) {
                 super.visitCode(obj);
                 break;
             }
@@ -195,7 +195,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
             if (parseState == ParseState.LAMBDA) {
                 switch (anonState) {
                 case SEEN_NOTHING:
-                        if (seen == Const.ALOAD_0) {
+                    if (seen == Const.ALOAD_0) {
                         anonState = AnonState.SEEN_ALOAD_0;
                     } else {
                         functionalInterfaceInfo.remove(getMethod().getName());
@@ -204,7 +204,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     break;
 
                 case SEEN_ALOAD_0:
-                        if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
+                    if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
                         String signature = getSigConstantOperand();
                         if (signature.startsWith("()")) {
                             anonState = AnonState.SEEN_INVOKE;
@@ -212,7 +212,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                             functionalInterfaceInfo.remove(getMethod().getName());
                             throw new StopOpcodeParsingException();
                         }
-                        } else if ((seen == Const.ARETURN) && (getPC() == 1)) {
+                    } else if ((seen == Const.ARETURN) && (getPC() == 1)) {
                         List<FIInfo> infos = functionalInterfaceInfo.get(getMethod().getName());
                         if (infos != null) {
                             Iterator<FIInfo> it = infos.iterator();
@@ -283,7 +283,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                 }
             } else {
                 switch (seen) {
-                    case Const.INVOKEDYNAMIC:
+                case Const.INVOKEDYNAMIC:
                     ConstantInvokeDynamic cid = (ConstantInvokeDynamic) getConstantRefOperand();
 
                     ConstantMethodHandle cmh = getMethodHandle(cid.getBootstrapMethodAttrIndex());
@@ -298,12 +298,13 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
                         int lastOp = getPrevOpcode(1);
                         FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this),
-                                    (lastOp == Const.GETFIELD) || (lastOp == Const.GETSTATIC) || OpcodeUtils.isALoad(lastOp));
+                                (lastOp == Const.GETFIELD) || (lastOp == Const.GETSTATIC)
+                                        || OpcodeUtils.isALoad(lastOp));
                         fiis.add(fii);
                     }
                     break;
 
-                    case Const.INVOKEINTERFACE:
+                case Const.INVOKEINTERFACE:
                     QMethod m = new QMethod(getNameConstantOperand(), getSigConstantOperand());
 
                     if (CONTAINS.equals(m)) {
@@ -362,7 +363,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     }
                     break;
 
-                    case Const.INVOKEVIRTUAL:
+                case Const.INVOKEVIRTUAL:
                     FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
                             getSigConstantOperand());
                     if (ISPRESENT.equals(fqm)) {

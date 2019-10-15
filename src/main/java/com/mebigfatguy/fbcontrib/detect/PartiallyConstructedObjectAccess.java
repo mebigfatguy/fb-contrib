@@ -45,8 +45,10 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for constructors of non final classes that make method calls to non final methods. As these methods could be overridden, the overridden method will be
- * accessing an object that is only partially constructed, perhaps causing problems.
+ * looks for constructors of non final classes that make method calls to non
+ * final methods. As these methods could be overridden, the overridden method
+ * will be accessing an object that is only partially constructed, perhaps
+ * causing problems.
  */
 public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -57,18 +59,18 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
     /**
      * constructs a PCOA detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public PartiallyConstructedObjectAccess(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to set up the stack and methodToCalledmethods map reports calls to public non final methods from methods called from constructors.
+     * implements the visitor to set up the stack and methodToCalledmethods map
+     * reports calls to public non final methods from methods called from
+     * constructors.
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(final ClassContext classContext) {
@@ -125,12 +127,14 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                             Method m = findMethod(cls, getNameConstantOperand(), getSigConstantOperand());
                             if (m != null) {
                                 if (isCtor && (seen != Const.INVOKESPECIAL) && !m.isFinal() && !m.isPrivate()) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(this).addSourceLine(this, getPC()));
+                                    bugReporter.reportBug(new BugInstance(this,
+                                            BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), NORMAL_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this, getPC()));
                                     throw new StopOpcodeParsingException();
                                 } else {
                                     if (!Values.CONSTRUCTOR.equals(m.getName())) {
-                                        Map<Method, SourceLineAnnotation> calledMethods = methodToCalledMethods.get(getMethod());
+                                        Map<Method, SourceLineAnnotation> calledMethods = methodToCalledMethods
+                                                .get(getMethod());
                                         calledMethods.put(m, SourceLineAnnotation.fromVisitedInstruction(this));
                                     }
                                 }
@@ -168,8 +172,8 @@ public class PartiallyConstructedObjectAccess extends BytecodeScanningDetector {
                 checkedMethods.clear();
                 Deque<SourceLineAnnotation> slas = foundNonPrivateNonFinalInChain(m, checkedMethods);
                 if (slas != null) {
-                    BugInstance bi = new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(), LOW_PRIORITY).addClass(cls).addMethod(cls,
-                            m);
+                    BugInstance bi = new BugInstance(this, BugType.PCOA_PARTIALLY_CONSTRUCTED_OBJECT_ACCESS.name(),
+                            LOW_PRIORITY).addClass(cls).addMethod(cls, m);
                     for (SourceLineAnnotation sla : slas) {
                         bi.addSourceLine(sla);
                     }

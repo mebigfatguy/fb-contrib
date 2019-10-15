@@ -35,9 +35,12 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for conditional expressions where both simple local variable (in)equalities are used along with method calls, where the method calls are done first. By
- * placing the simple local checks first, you eliminate potentially costly calls in some cases. This assumes that the methods called won't have side-effects
- * that are desired. At present it only looks for simple sequences of 'and' based conditions.
+ * looks for conditional expressions where both simple local variable
+ * (in)equalities are used along with method calls, where the method calls are
+ * done first. By placing the simple local checks first, you eliminate
+ * potentially costly calls in some cases. This assumes that the methods called
+ * won't have side-effects that are desired. At present it only looks for simple
+ * sequences of 'and' based conditions.
  */
 @CustomUserValue
 public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
@@ -52,8 +55,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
     /**
      * constructs a SEO detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SuboptimalExpressionOrder(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -62,8 +64,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
     /**
      * overrides the visitor to setup the opcode stack
      *
-     * @param clsContext
-     *            the context object of the currently parse class
+     * @param clsContext the context object of the currently parse class
      */
     @Override
     public void visitClassContext(ClassContext clsContext) {
@@ -78,8 +79,7 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the opcode stack, and initialize vars
      *
-     * @param obj
-     *            the code object of the currently parsed method
+     * @param obj the code object of the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -90,10 +90,10 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for chains of expressions joined by 'and' that have method calls before simple local variable conditions
+     * overrides the visitor to look for chains of expressions joined by 'and' that
+     * have method calls before simple local variable conditions
      *
-     * @param seen
-     *            the currently parse opcode
+     * @param seen the currently parse opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -106,194 +106,195 @@ public class SuboptimalExpressionOrder extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case Const.INVOKESPECIAL:
-                case Const.INVOKESTATIC:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKEVIRTUAL:
-                    String signature = getSigConstantOperand();
-                    if (Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(signature))) {
+            case Const.INVOKESPECIAL:
+            case Const.INVOKESTATIC:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKEVIRTUAL:
+                String signature = getSigConstantOperand();
+                if (Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(signature))) {
+                    sawMethodWeight = 0;
+                    return;
+                }
+
+                for (String parmSig : SignatureUtils.getParameterSignatures(signature)) {
+                    if (parmSig.charAt(0) == '[') {
                         sawMethodWeight = 0;
                         return;
                     }
-                    
-                    for (String parmSig : SignatureUtils.getParameterSignatures(signature)) {
-                    	if (parmSig.charAt(0) == '[') {
-                    		sawMethodWeight = 0;
-                    		return;
-                    	}
-                    }
+                }
 
-                    String clsName = getClassConstantOperand();
-                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName, getNameConstantOperand(), signature);
-                    if ((mi == null) || (mi.getNumBytes() == 0)) {
-                        userValue = Values.ONE;
-                    } else {
-                        userValue = Integer.valueOf(mi.getNumBytes());
-                    }
+                String clsName = getClassConstantOperand();
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName, getNameConstantOperand(),
+                        signature);
+                if ((mi == null) || (mi.getNumBytes() == 0)) {
+                    userValue = Values.ONE;
+                } else {
+                    userValue = Integer.valueOf(mi.getNumBytes());
+                }
                 break;
 
-                case Const.LCMP:
-                case Const.FCMPL:
-                case Const.FCMPG:
-                case Const.DCMPL:
-                case Const.DCMPG:
-                case Const.IAND:
-                case Const.IOR:
-                case Const.IXOR:
-                    if (stack.getStackDepth() >= 2) {
-                        for (int i = 0; i <= 1; i++) {
-                            OpcodeStack.Item itm = stack.getStackItem(i);
-                            userValue = (Integer) itm.getUserValue();
-                            if (userValue != null) {
-                                break;
-                            }
+            case Const.LCMP:
+            case Const.FCMPL:
+            case Const.FCMPG:
+            case Const.DCMPL:
+            case Const.DCMPG:
+            case Const.IAND:
+            case Const.IOR:
+            case Const.IXOR:
+                if (stack.getStackDepth() >= 2) {
+                    for (int i = 0; i <= 1; i++) {
+                        OpcodeStack.Item itm = stack.getStackItem(i);
+                        userValue = (Integer) itm.getUserValue();
+                        if (userValue != null) {
+                            break;
                         }
-                    } else {
-                        sawMethodWeight = 0;
                     }
+                } else {
+                    sawMethodWeight = 0;
+                }
                 break;
 
-                case Const.IF_ICMPEQ:
-                case Const.IF_ICMPNE:
-                case Const.IF_ICMPLT:
-                case Const.IF_ICMPGE:
-                case Const.IF_ICMPGT:
-                case Const.IF_ICMPLE:
-                case Const.IF_ACMPEQ:
-                case Const.IF_ACMPNE:
-                    if (conditionalTarget < 0) {
-                        conditionalTarget = getBranchTarget();
-                    } else if (conditionalTarget != getBranchTarget()) {
-                        conditionalTarget = -1;
-                        sawMethodWeight = 0;
-                        return;
-                    }
+            case Const.IF_ICMPEQ:
+            case Const.IF_ICMPNE:
+            case Const.IF_ICMPLT:
+            case Const.IF_ICMPGE:
+            case Const.IF_ICMPGT:
+            case Const.IF_ICMPLE:
+            case Const.IF_ACMPEQ:
+            case Const.IF_ACMPNE:
+                if (conditionalTarget < 0) {
+                    conditionalTarget = getBranchTarget();
+                } else if (conditionalTarget != getBranchTarget()) {
+                    conditionalTarget = -1;
+                    sawMethodWeight = 0;
+                    return;
+                }
 
-                    if (stack.getStackDepth() >= 2) {
-                        int expWeight = 0;
-                        for (int i = 0; i <= 1; i++) {
-                            OpcodeStack.Item itm = stack.getStackItem(i);
-
-                            Integer uv = (Integer) itm.getUserValue();
-                            if (uv != null) {
-                                expWeight = Math.max(uv.intValue(), expWeight);
-                            }
-                        }
-
-                        if ((expWeight == 0) && (sawMethodWeight > 0)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(),
-                                    sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this)
-                                            .addSourceLine(this));
-                            sawMethodWeight = 0;
-                            conditionalTarget = Integer.MAX_VALUE;
-                        } else {
-                            sawMethodWeight = Math.max(sawMethodWeight, expWeight);
-                        }
-                    }
-                break;
-
-                case Const.IFEQ:
-                case Const.IFNE:
-                case Const.IFLT:
-                case Const.IFGE:
-                case Const.IFGT:
-                case Const.IFLE:
-                case Const.IFNULL:
-                case Const.IFNONNULL:
-                    if (conditionalTarget < 0) {
-                        conditionalTarget = getBranchTarget();
-                    } else if (conditionalTarget != getBranchTarget()) {
-                        conditionalTarget = -1;
-                        sawMethodWeight = 0;
-                        return;
-                    }
-
-                    if (stack.getStackDepth() >= 1) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
+                if (stack.getStackDepth() >= 2) {
+                    int expWeight = 0;
+                    for (int i = 0; i <= 1; i++) {
+                        OpcodeStack.Item itm = stack.getStackItem(i);
 
                         Integer uv = (Integer) itm.getUserValue();
-                        if (uv == null) {
-                            if (sawMethodWeight > 0) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(),
-                                        sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this)
-                                                .addSourceLine(this));
-                                sawMethodWeight = 0;
-                                conditionalTarget = Integer.MAX_VALUE;
-                            }
-                        } else {
-                            sawMethodWeight = Math.max(sawMethodWeight, uv.intValue());
+                        if (uv != null) {
+                            expWeight = Math.max(uv.intValue(), expWeight);
                         }
                     }
-                break;
 
-                case Const.ISTORE:
-                case Const.LSTORE:
-                case Const.FSTORE:
-                case Const.DSTORE:
-                case Const.ASTORE:
-                case Const.ISTORE_0:
-                case Const.ISTORE_1:
-                case Const.ISTORE_2:
-                case Const.ISTORE_3:
-                case Const.LSTORE_0:
-                case Const.LSTORE_1:
-                case Const.LSTORE_2:
-                case Const.LSTORE_3:
-                case Const.FSTORE_0:
-                case Const.FSTORE_1:
-                case Const.FSTORE_2:
-                case Const.FSTORE_3:
-                case Const.DSTORE_0:
-                case Const.DSTORE_1:
-                case Const.DSTORE_2:
-                case Const.DSTORE_3:
-                case Const.ASTORE_0:
-                case Const.ASTORE_1:
-                case Const.ASTORE_2:
-                case Const.ASTORE_3:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        itm.setUserValue(null);
+                    if ((expWeight == 0) && (sawMethodWeight > 0)) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(),
+                                sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                        sawMethodWeight = 0;
+                        conditionalTarget = Integer.MAX_VALUE;
+                    } else {
+                        sawMethodWeight = Math.max(sawMethodWeight, expWeight);
                     }
-                    sawMethodWeight = 0;
+                }
+                break;
+
+            case Const.IFEQ:
+            case Const.IFNE:
+            case Const.IFLT:
+            case Const.IFGE:
+            case Const.IFGT:
+            case Const.IFLE:
+            case Const.IFNULL:
+            case Const.IFNONNULL:
+                if (conditionalTarget < 0) {
+                    conditionalTarget = getBranchTarget();
+                } else if (conditionalTarget != getBranchTarget()) {
                     conditionalTarget = -1;
-                break;
-
-                case Const.ATHROW:
-                case Const.POP:
-                case Const.POP2:
-                case Const.GOTO:
-                case Const.GOTO_W:
-                case Const.PUTFIELD:
-                case Const.PUTSTATIC:
-                case Const.IINC:
-                case Const.INSTANCEOF:
-                case Const.RETURN:
-                case Const.ARETURN:
-                case Const.IRETURN:
-                case Const.LRETURN:
-                case Const.FRETURN:
-                case Const.DRETURN:
                     sawMethodWeight = 0;
-                    conditionalTarget = -1;
-                break;
+                    return;
+                }
 
-                case Const.ARRAYLENGTH:
-                case Const.CHECKCAST:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        userValue = (Integer) itm.getUserValue();
-                    }
-                break;
+                if (stack.getStackDepth() >= 1) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
 
-                case Const.GETFIELD:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (itm.getReturnValueOf() != null) {
+                    Integer uv = (Integer) itm.getUserValue();
+                    if (uv == null) {
+                        if (sawMethodWeight > 0) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SEO_SUBOPTIMAL_EXPRESSION_ORDER.name(),
+                                    sawMethodWeight >= NORMAL_WEIGHT_LIMIT ? NORMAL_PRIORITY : LOW_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
                             sawMethodWeight = 0;
-                            conditionalTarget = -1;
+                            conditionalTarget = Integer.MAX_VALUE;
                         }
+                    } else {
+                        sawMethodWeight = Math.max(sawMethodWeight, uv.intValue());
                     }
+                }
+                break;
+
+            case Const.ISTORE:
+            case Const.LSTORE:
+            case Const.FSTORE:
+            case Const.DSTORE:
+            case Const.ASTORE:
+            case Const.ISTORE_0:
+            case Const.ISTORE_1:
+            case Const.ISTORE_2:
+            case Const.ISTORE_3:
+            case Const.LSTORE_0:
+            case Const.LSTORE_1:
+            case Const.LSTORE_2:
+            case Const.LSTORE_3:
+            case Const.FSTORE_0:
+            case Const.FSTORE_1:
+            case Const.FSTORE_2:
+            case Const.FSTORE_3:
+            case Const.DSTORE_0:
+            case Const.DSTORE_1:
+            case Const.DSTORE_2:
+            case Const.DSTORE_3:
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    itm.setUserValue(null);
+                }
+                sawMethodWeight = 0;
+                conditionalTarget = -1;
+                break;
+
+            case Const.ATHROW:
+            case Const.POP:
+            case Const.POP2:
+            case Const.GOTO:
+            case Const.GOTO_W:
+            case Const.PUTFIELD:
+            case Const.PUTSTATIC:
+            case Const.IINC:
+            case Const.INSTANCEOF:
+            case Const.RETURN:
+            case Const.ARETURN:
+            case Const.IRETURN:
+            case Const.LRETURN:
+            case Const.FRETURN:
+            case Const.DRETURN:
+                sawMethodWeight = 0;
+                conditionalTarget = -1;
+                break;
+
+            case Const.ARRAYLENGTH:
+            case Const.CHECKCAST:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    userValue = (Integer) itm.getUserValue();
+                }
+                break;
+
+            case Const.GETFIELD:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (itm.getReturnValueOf() != null) {
+                        sawMethodWeight = 0;
+                        conditionalTarget = -1;
+                    }
+                }
                 break;
             }
         } finally {

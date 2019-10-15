@@ -37,11 +37,13 @@ import edu.umd.cs.findbugs.bcel.OpcodeStackDetector;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * Looks for methods that pass a primitive wrapper class object, to the same classes Constructor.
+ * Looks for methods that pass a primitive wrapper class object, to the same
+ * classes Constructor.
  */
 public class NeedlessAutoboxing extends OpcodeStackDetector {
     enum State {
-        SEEN_NOTHING, SEEN_VALUE, SEEN_VALUEOFSTRING, SEEN_PARSE, SEEN_CTOR, SEEN_VALUEOFPRIMITIVE, SEEN_ICONST, SEEN_GETSTATIC
+        SEEN_NOTHING, SEEN_VALUE, SEEN_VALUEOFSTRING, SEEN_PARSE, SEEN_CTOR, SEEN_VALUEOFPRIMITIVE, SEEN_ICONST,
+        SEEN_GETSTATIC
     }
 
     private static final Map<String, BoxParms> boxClasses = new HashMap<>();
@@ -64,9 +66,12 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
         addBoxClass(boxClasses, Values.SLASHED_JAVA_LANG_DOUBLE, "double", Values.SIG_PRIMITIVE_DOUBLE);
     }
 
-    private static void addBoxClass(Map<String, BoxParms> map, String slashedClass, String primitiveName, String primitiveSig) {
+    private static void addBoxClass(Map<String, BoxParms> map, String slashedClass, String primitiveName,
+            String primitiveSig) {
         map.put(slashedClass,
-                new BoxParms(new SignatureBuilder().withMethodName(primitiveName + "Value").withReturnType(primitiveSig).toString(),
+                new BoxParms(
+                        new SignatureBuilder().withMethodName(primitiveName + "Value").withReturnType(primitiveSig)
+                                .toString(),
                         new SignatureBuilder().withParamTypes(primitiveSig).toString(),
                         new SignatureBuilder().withParamTypes(primitiveSig).withReturnType(slashedClass).toString()));
     }
@@ -82,16 +87,17 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
         addParseClass(parseClasses, Values.SLASHED_JAVA_LANG_DOUBLE, "double", Values.SIG_PRIMITIVE_DOUBLE);
     }
 
-    private static void addParseClass(Map<String, String> map, String slashedClass, String primitiveName, String primitiveSig) {
-        map.put(slashedClass, new SignatureBuilder().withMethodName("parse" + Character.toUpperCase(primitiveName.charAt(0)) + primitiveName.substring(1))
+    private static void addParseClass(Map<String, String> map, String slashedClass, String primitiveName,
+            String primitiveSig) {
+        map.put(slashedClass, new SignatureBuilder()
+                .withMethodName("parse" + Character.toUpperCase(primitiveName.charAt(0)) + primitiveName.substring(1))
                 .withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(primitiveSig).toString());
     }
 
     /**
      * constructs a NAB detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public NeedlessAutoboxing(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -123,71 +129,82 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
         }
 
         switch (state) {
-            case SEEN_NOTHING:
-                sawOpcodeAfterNothing(seen);
+        case SEEN_NOTHING:
+            sawOpcodeAfterNothing(seen);
             break;
 
-            case SEEN_VALUE:
-                sawOpcodeAfterValue(seen);
+        case SEEN_VALUE:
+            sawOpcodeAfterValue(seen);
             break;
 
-            case SEEN_CTOR:
-            case SEEN_VALUEOFPRIMITIVE:
-                if (seen == Const.INVOKEVIRTUAL) {
-                    BoxParms boxSigs = boxClasses.get(boxClass);
-                    if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_UNBOX.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
-                    } else if (getSigConstantOperand().startsWith(SignatureBuilder.PARAM_NONE) && getNameConstantOperand().endsWith("Value")) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_CAST.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
-                    }
+        case SEEN_CTOR:
+        case SEEN_VALUEOFPRIMITIVE:
+            if (seen == Const.INVOKEVIRTUAL) {
+                BoxParms boxSigs = boxClasses.get(boxClass);
+                if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_UNBOX.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
+                } else if (getSigConstantOperand().startsWith(SignatureBuilder.PARAM_NONE)
+                        && getNameConstantOperand().endsWith("Value")) {
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOX_TO_CAST.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                 }
-                state = State.SEEN_NOTHING;
+            }
+            state = State.SEEN_NOTHING;
             break;
 
-            case SEEN_VALUEOFSTRING:
-                if (seen == Const.INVOKEVIRTUAL) {
-                    BoxParms boxSigs = boxClasses.get(boxClass);
-                    if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_PARSE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
-                    }
+        case SEEN_VALUEOFSTRING:
+            if (seen == Const.INVOKEVIRTUAL) {
+                BoxParms boxSigs = boxClasses.get(boxClass);
+                if (boxSigs.getPrimitiveValueSignature().equals(getNameConstantOperand() + getSigConstantOperand())) {
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_PARSE.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                 }
-                state = State.SEEN_NOTHING;
+            }
+            state = State.SEEN_NOTHING;
             break;
 
-            case SEEN_PARSE:
-                if (seen == Const.INVOKESTATIC) {
-                    if (boxClass.equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_VALUEOF.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
-                    }
-                } else if ((seen == Const.INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand()) && boxClass.equals(getClassConstantOperand())) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_STRING_CTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this));
+        case SEEN_PARSE:
+            if (seen == Const.INVOKESTATIC) {
+                if (boxClass.equals(getClassConstantOperand()) && "valueOf".equals(getNameConstantOperand())) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_VALUEOF.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                 }
-                state = State.SEEN_NOTHING;
+            } else if ((seen == Const.INVOKESPECIAL) && Values.CONSTRUCTOR.equals(getNameConstantOperand())
+                    && boxClass.equals(getClassConstantOperand())) {
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.NAB_NEEDLESS_BOXING_STRING_CTOR.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
+            }
+            state = State.SEEN_NOTHING;
             break;
 
-            case SEEN_ICONST:
-                if ((seen == Const.INVOKESTATIC) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand())
-                        && "valueOf".equals(getNameConstantOperand()) && SignatureBuilder.SIG_PRIMITIVE_BOOLEAN_TO_BOOLEAN.equals(getSigConstantOperand())) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this));
-                }
-                state = State.SEEN_NOTHING;
-                sawOpcode(seen);
+        case SEEN_ICONST:
+            if ((seen == Const.INVOKESTATIC) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand())
+                    && "valueOf".equals(getNameConstantOperand())
+                    && SignatureBuilder.SIG_PRIMITIVE_BOOLEAN_TO_BOOLEAN.equals(getSigConstantOperand())) {
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
+            }
+            state = State.SEEN_NOTHING;
+            sawOpcode(seen);
             break;
 
-            case SEEN_GETSTATIC:
-                if ((seen == Const.INVOKEVIRTUAL) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand())
-                        && "booleanValue".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_BOOLEAN.equals(getSigConstantOperand())) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY).addClass(this)
-                            .addMethod(this).addSourceLine(this));
-                }
-                state = State.SEEN_NOTHING;
-                sawOpcode(seen);
+        case SEEN_GETSTATIC:
+            if ((seen == Const.INVOKEVIRTUAL) && Values.SLASHED_JAVA_LANG_BOOLEAN.equals(getClassConstantOperand())
+                    && "booleanValue".equals(getNameConstantOperand())
+                    && SignatureBuilder.SIG_VOID_TO_BOOLEAN.equals(getSigConstantOperand())) {
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.NAB_NEEDLESS_BOOLEAN_CONSTANT_CONVERSION.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
+            }
+            state = State.SEEN_NOTHING;
+            sawOpcode(seen);
             break;
         }
     }
@@ -195,75 +212,77 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
     private void sawOpcodeAfterNothing(int seen) {
         BoxParms boxSigs;
         switch (seen) {
-            case Const.INVOKEVIRTUAL:
-                boxClass = getClassConstantOperand();
-                boxSigs = boxClasses.get(boxClass);
-                if (boxSigs != null) {
-                    String methodInfo = getNameConstantOperand() + getSigConstantOperand();
-                    if (boxSigs.getPrimitiveValueSignature().equals(methodInfo)) {
-                        state = State.SEEN_VALUE;
-                    }
+        case Const.INVOKEVIRTUAL:
+            boxClass = getClassConstantOperand();
+            boxSigs = boxClasses.get(boxClass);
+            if (boxSigs != null) {
+                String methodInfo = getNameConstantOperand() + getSigConstantOperand();
+                if (boxSigs.getPrimitiveValueSignature().equals(methodInfo)) {
+                    state = State.SEEN_VALUE;
                 }
+            }
             break;
 
-            case Const.INVOKESTATIC:
-                boxClass = getClassConstantOperand();
-                boxSigs = boxClasses.get(boxClass);
-                if (boxSigs != null) {
-                    if ("valueOf".equals(getNameConstantOperand())) {
-                        String sig = getSigConstantOperand();
-                        if (sig.startsWith(SignatureBuilder.PARAM_STRING)) {
-                            if (!Values.SLASHED_JAVA_LANG_BOOLEAN.equals(boxClass) || (getClassContext().getJavaClass().getMajor() >= Const.MAJOR_1_5)) {
-                                state = State.SEEN_VALUEOFSTRING;
-                            }
-                        } else {
-                            state = State.SEEN_VALUEOFPRIMITIVE;
+        case Const.INVOKESTATIC:
+            boxClass = getClassConstantOperand();
+            boxSigs = boxClasses.get(boxClass);
+            if (boxSigs != null) {
+                if ("valueOf".equals(getNameConstantOperand())) {
+                    String sig = getSigConstantOperand();
+                    if (sig.startsWith(SignatureBuilder.PARAM_STRING)) {
+                        if (!Values.SLASHED_JAVA_LANG_BOOLEAN.equals(boxClass)
+                                || (getClassContext().getJavaClass().getMajor() >= Const.MAJOR_1_5)) {
+                            state = State.SEEN_VALUEOFSTRING;
                         }
                     } else {
-                        String parseSig = parseClasses.get(boxClass);
-                        if (parseSig != null) {
-                            String methodInfo = getNameConstantOperand() + getSigConstantOperand();
-                            if (parseSig.equals(methodInfo)) {
-                                state = State.SEEN_PARSE;
-                            }
+                        state = State.SEEN_VALUEOFPRIMITIVE;
+                    }
+                } else {
+                    String parseSig = parseClasses.get(boxClass);
+                    if (parseSig != null) {
+                        String methodInfo = getNameConstantOperand() + getSigConstantOperand();
+                        if (parseSig.equals(methodInfo)) {
+                            state = State.SEEN_PARSE;
                         }
                     }
                 }
+            }
             break;
 
-            case Const.INVOKESPECIAL:
-                boxClass = getClassConstantOperand();
-                boxSigs = boxClasses.get(boxClass);
-                if ((boxSigs != null) && Values.CONSTRUCTOR.equals(getNameConstantOperand()) && boxSigs.getCtorSignature().equals(getSigConstantOperand())) {
-                    state = State.SEEN_CTOR;
+        case Const.INVOKESPECIAL:
+            boxClass = getClassConstantOperand();
+            boxSigs = boxClasses.get(boxClass);
+            if ((boxSigs != null) && Values.CONSTRUCTOR.equals(getNameConstantOperand())
+                    && boxSigs.getCtorSignature().equals(getSigConstantOperand())) {
+                state = State.SEEN_CTOR;
+            }
+            break;
+
+        case Const.ICONST_0:
+        case Const.ICONST_1:
+            if (state == State.SEEN_NOTHING) {
+                state = State.SEEN_ICONST;
+            }
+            break;
+
+        case Const.GETSTATIC:
+            String clsName = getClassConstantOperand();
+            if (Values.SLASHED_JAVA_LANG_BOOLEAN.equals(clsName)) {
+                String fldName = getNameConstantOperand();
+                if ("TRUE".equals(fldName) || "FALSE".equals(fldName)) {
+                    state = State.SEEN_GETSTATIC;
                 }
+            }
             break;
 
-            case Const.ICONST_0:
-            case Const.ICONST_1:
-                if (state == State.SEEN_NOTHING) {
-                    state = State.SEEN_ICONST;
-                }
+        case Const.GOTO:
+        case Const.GOTO_W:
+            if (stack.getStackDepth() > 0) {
+                ternaryPCs.set(getBranchTarget());
+            }
             break;
 
-            case Const.GETSTATIC:
-                String clsName = getClassConstantOperand();
-                if (Values.SLASHED_JAVA_LANG_BOOLEAN.equals(clsName)) {
-                    String fldName = getNameConstantOperand();
-                    if ("TRUE".equals(fldName) || "FALSE".equals(fldName)) {
-                        state = State.SEEN_GETSTATIC;
-                    }
-                }
-            break;
-
-            case Const.GOTO:
-            case Const.GOTO_W:
-                if (stack.getStackDepth() > 0) {
-                    ternaryPCs.set(getBranchTarget());
-                }
-            break;
-
-            default:
+        default:
             break;
         }
     }
@@ -276,8 +295,9 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                     String boxSig = boxClasses.get(boxClass).getCtorSignature();
                     String methodSig = getSigConstantOperand();
                     if (boxSig.equals(methodSig)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_CTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_CTOR.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
             }
@@ -287,8 +307,9 @@ public class NeedlessAutoboxing extends OpcodeStackDetector {
                 String boxSig = boxClasses.get(boxClass).getValueOfSignature();
                 String methodSig = getSigConstantOperand();
                 if (boxSig.equals(methodSig)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_VALUEOF.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.NAB_NEEDLESS_AUTOBOXING_VALUEOF.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
         }

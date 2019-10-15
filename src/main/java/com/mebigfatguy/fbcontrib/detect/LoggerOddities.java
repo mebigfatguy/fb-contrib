@@ -57,44 +57,50 @@ import edu.umd.cs.findbugs.ba.XMethod;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * looks for uses of log4j or slf4j where the class specified when creating the logger is not the same as the class in which this logger is used. Also looks for
- * using concatenation with slf4j logging rather than using the parameterized interface.
+ * looks for uses of log4j or slf4j where the class specified when creating the
+ * logger is not the same as the class in which this logger is used. Also looks
+ * for using concatenation with slf4j logging rather than using the
+ * parameterized interface.
  */
 @CustomUserValue
 public class LoggerOddities extends BytecodeScanningDetector {
 
-    private static final Set<String> LOGGER_METHODS = UnmodifiableSet.create("trace", "debug", "info", "warn", "error", "fatal");
+    private static final Set<String> LOGGER_METHODS = UnmodifiableSet.create("trace", "debug", "info", "warn", "error",
+            "fatal");
     private static final String COMMONS_LOGGER = "org/apache/commons/logging/Log";
     private static final String LOG4J_LOGGER = "org/apache/log4j/Logger";
     private static final String LOG4J2_LOGGER = "org/apache/logging/log4j/Logger";
     private static final String LOG4J2_LOGMANAGER = "org/apache/logging/log4j/LogManager";
     private static final String SLF4J_LOGGER = "org/slf4j/Logger";
     private static final String SIG_STRING_AND_TWO_OBJECTS_TO_VOID = new SignatureBuilder()
-            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).toString();
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_OBJECT,
+                    Values.SLASHED_JAVA_LANG_OBJECT)
+            .toString();
     private static final String SIG_STRING_AND_OBJECT_ARRAY_TO_VOID = new SignatureBuilder()
             .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, SignatureBuilder.SIG_OBJECT_ARRAY).toString();
     private static final String SIG_OBJECT_AND_THROWABLE_TO_VOID = new SignatureBuilder()
             .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_THROWABLE).toString();
     private static final String SIG_STRING_AND_THROWABLE_TO_VOID = new SignatureBuilder()
             .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_THROWABLE).toString();
-    private static final String SIG_CLASS_TO_COMMONS_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS)
-            .withReturnType(COMMONS_LOGGER).toString();
-    private static final String SIG_CLASS_TO_LOG4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(LOG4J_LOGGER)
-            .toString();
-    private static final String SIG_CLASS_TO_LOG4J2_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(LOG4J2_LOGGER)
-            .toString();
-    private static final String SIG_CLASS_TO_SLF4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(SLF4J_LOGGER)
-            .toString();
-    private static final String SIG_STRING_TO_COMMONS_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
-            .withReturnType(COMMONS_LOGGER).toString();
-    private static final String SIG_STRING_TO_LOG4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(LOG4J_LOGGER)
-            .toString();
-    private static final String SIG_STRING_TO_LOG4J2_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
-            .withReturnType(LOG4J2_LOGGER).toString();
-    private static final String SIG_STRING_TO_SLF4J_LOGGER = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(SLF4J_LOGGER)
-            .toString();
+    private static final String SIG_CLASS_TO_COMMONS_LOGGER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(COMMONS_LOGGER).toString();
+    private static final String SIG_CLASS_TO_LOG4J_LOGGER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(LOG4J_LOGGER).toString();
+    private static final String SIG_CLASS_TO_LOG4J2_LOGGER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(LOG4J2_LOGGER).toString();
+    private static final String SIG_CLASS_TO_SLF4J_LOGGER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_CLASS).withReturnType(SLF4J_LOGGER).toString();
+    private static final String SIG_STRING_TO_COMMONS_LOGGER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(COMMONS_LOGGER).toString();
+    private static final String SIG_STRING_TO_LOG4J_LOGGER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(LOG4J_LOGGER).toString();
+    private static final String SIG_STRING_TO_LOG4J2_LOGGER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(LOG4J2_LOGGER).toString();
+    private static final String SIG_STRING_TO_SLF4J_LOGGER = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(SLF4J_LOGGER).toString();
     private static final String SIG_STRING_AND_FACTORY_TO_LOG4J_LOGGER = new SignatureBuilder()
-            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, "org/apache/log4j/spi/LoggerFactory").withReturnType(LOG4J_LOGGER).toString();
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, "org/apache/log4j/spi/LoggerFactory")
+            .withReturnType(LOG4J_LOGGER).toString();
 
     private static final Pattern BAD_FORMATTING_ANCHOR = Pattern.compile("\\{[0-9]\\}");
     private static final Pattern BAD_STRING_FORMAT_PATTERN = Pattern
@@ -112,8 +118,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * constructs a LO detector given the reporter to report bugs on.
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public LoggerOddities(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -127,10 +132,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to discover what the class name is if it is a normal class, or the owning class, if the class is an anonymous class.
+     * implements the visitor to discover what the class name is if it is a normal
+     * class, or the owning class, if the class is an anonymous class.
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -148,8 +153,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -157,9 +161,13 @@ public class LoggerOddities extends BytecodeScanningDetector {
         Method m = getMethod();
         if (Values.CONSTRUCTOR.equals(m.getName())) {
             for (String parmSig : SignatureUtils.getParameterSignatures(m.getSignature())) {
-                if (SignatureUtils.classToSignature(SLF4J_LOGGER).equals(parmSig) || SignatureUtils.classToSignature(LOG4J_LOGGER).equals(parmSig)
-                        || SignatureUtils.classToSignature(LOG4J2_LOGGER).equals(parmSig) || SignatureUtils.classToSignature(COMMONS_LOGGER).equals(parmSig)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
+                if (SignatureUtils.classToSignature(SLF4J_LOGGER).equals(parmSig)
+                        || SignatureUtils.classToSignature(LOG4J_LOGGER).equals(parmSig)
+                        || SignatureUtils.classToSignature(LOG4J2_LOGGER).equals(parmSig)
+                        || SignatureUtils.classToSignature(COMMONS_LOGGER).equals(parmSig)) {
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_PARAMETER.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this));
                 }
             }
         }
@@ -169,10 +177,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls to Logger.getLogger with the wrong class name
+     * implements the visitor to look for calls to Logger.getLogger with the wrong
+     * class name
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -199,7 +207,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
-                if (Values.SLASHED_JAVA_LANG_STRING.equals(clsName) && "format".equals(methodName) && (stack.getStackDepth() >= 2)) {
+                if (Values.SLASHED_JAVA_LANG_STRING.equals(clsName) && "format".equals(methodName)
+                        && (stack.getStackDepth() >= 2)) {
                     String format = (String) stack.getStackItem(1).getConstant();
                     if (format != null) {
                         Matcher m = NON_SIMPLE_FORMAT.matcher(format);
@@ -233,7 +242,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     }
                 } else if (LOGGER_METHODS.contains(mthName)) {
                     checkForProblemsWithLoggerMethods();
-                } else if (Values.TOSTRING.equals(mthName) && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())) {
+                } else if (Values.TOSTRING.equals(mthName)
+                        && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())) {
                     String callingClsName = getClassConstantOperand();
                     if (SignatureUtils.isPlainStringConvertableClass(callingClsName) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
@@ -264,17 +274,20 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     if ((uv != null) && (uv.getType() == LOUserValue.LOType.ARRAY_SIZE)) {
                         Integer size = uv.getValue();
                         if ((size != null) && (size.intValue() > 0) && hasExceptionOnStack()) {
-                            arrayItem.setUserValue(new LOUserValue<>(LOUserValue.LOType.ARRAY_SIZE, Integer.valueOf(-size.intValue())));
+                            arrayItem.setUserValue(new LOUserValue<>(LOUserValue.LOType.ARRAY_SIZE,
+                                    Integer.valueOf(-size.intValue())));
                         }
                     }
                 }
             } else if (seen == Const.PUTSTATIC) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
-                if (isStaticInitializer && isNonPrivateLogField(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand())) {
+                if (isStaticInitializer && isNonPrivateLogField(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand())) {
                     XMethod m = itm.getReturnValueOf();
                     if ((m != null) && isLoggerWithClassParm(m)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.LO_NON_PRIVATE_STATIC_LOGGER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.LO_NON_PRIVATE_STATIC_LOGGER.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
 
@@ -291,7 +304,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 LOUserValue<String> uv = (LOUserValue<String>) item.getUserValue();
                 if (uv != null) {
                     if (((uv.getType() == LOUserValue.LOType.METHOD_NAME) && Values.TOSTRING.equals(uv.getValue()))
-                            || (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT) || (uv.getType() == LOUserValue.LOType.TOSTRING)) {
+                            || (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT)
+                            || (uv.getType() == LOUserValue.LOType.TOSTRING)) {
                         item.setUserValue(new LOUserValue<>(LOUserValue.LOType.NULL, null));
                     }
                 }
@@ -327,18 +341,16 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * looks to see if this field is a logger, and declared non privately
      *
-     * @param fieldClsName
-     *            the owning class type of the field
-     * @param fieldName
-     *            the name of the field
-     * @param fieldSig
-     *            the signature of the field
+     * @param fieldClsName the owning class type of the field
+     * @param fieldName    the name of the field
+     * @param fieldSig     the signature of the field
      * @return if the field is a logger and not private
      */
     private boolean isNonPrivateLogField(@SlashedClassName String fieldClsName, String fieldName, String fieldSig) {
 
         String fieldType = SignatureUtils.trimSignature(fieldSig);
-        if (!SLF4J_LOGGER.equals(fieldType) && !COMMONS_LOGGER.equals(fieldType) && !LOG4J_LOGGER.equals(fieldType) && !LOG4J2_LOGGER.equals(fieldType)) {
+        if (!SLF4J_LOGGER.equals(fieldType) && !COMMONS_LOGGER.equals(fieldType) && !LOG4J_LOGGER.equals(fieldType)
+                && !LOG4J2_LOGGER.equals(fieldType)) {
             return false;
         }
 
@@ -357,24 +369,24 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether this method class is a standard logger instantiation that takes a java/lang/Class parameter
+     * returns whether this method class is a standard logger instantiation that
+     * takes a java/lang/Class parameter
      *
-     * @param m
-     *            the method to check
+     * @param m the method to check
      * @return if the method is a logger factory method that takes a Class object
      */
     private boolean isLoggerWithClassParm(XMethod m) {
         String signature = m.getSignature();
-        return SIG_CLASS_TO_SLF4J_LOGGER.equals(signature) || SIG_CLASS_TO_LOG4J_LOGGER.equals(signature) || SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature)
-                || SIG_CLASS_TO_COMMONS_LOGGER.equals(signature);
+        return SIG_CLASS_TO_SLF4J_LOGGER.equals(signature) || SIG_CLASS_TO_LOG4J_LOGGER.equals(signature)
+                || SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature) || SIG_CLASS_TO_COMMONS_LOGGER.equals(signature);
         // otherwise check the calling class?
     }
 
     /**
      * looks for a variety of logging issues with log statements
      *
-     * @throws ClassNotFoundException
-     *             if the exception class, or a parent class can't be found
+     * @throws ClassNotFoundException if the exception class, or a parent class
+     *                                can't be found
      */
     @SuppressWarnings("unchecked")
     private void checkForProblemsWithLoggerMethods() throws ClassNotFoundException {
@@ -388,8 +400,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
         } else if (SignatureBuilder.SIG_OBJECT_TO_VOID.equals(sig)) {
             checkForProblemsWithLoggerSingleArgumentMethod();
         } else if ((SLF4J_LOGGER.equals(callingClsName) || LOG4J2_LOGGER.equals(callingClsName))
-                && (SignatureBuilder.SIG_STRING_TO_VOID.equals(sig) || SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID.equals(sig)
-                        || SIG_STRING_AND_TWO_OBJECTS_TO_VOID.equals(sig) || SIG_STRING_AND_OBJECT_ARRAY_TO_VOID.equals(sig))) {
+                && (SignatureBuilder.SIG_STRING_TO_VOID.equals(sig)
+                        || SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID.equals(sig)
+                        || SIG_STRING_AND_TWO_OBJECTS_TO_VOID.equals(sig)
+                        || SIG_STRING_AND_OBJECT_ARRAY_TO_VOID.equals(sig))) {
             checkForProblemsWithLoggerParameterisedMethods(sig);
         }
     }
@@ -402,14 +416,16 @@ public class LoggerOddities extends BytecodeScanningDetector {
         OpcodeStack.Item msgItem = stack.getStackItem(1);
 
         LOUserValue<Integer> uv = (LOUserValue<Integer>) msgItem.getUserValue();
-        if ((uv != null) && (uv.getType() == LOUserValue.LOType.MESSAGE_REG) && (uv.getValue().intValue() == exItem.getRegisterNumber())) {
-            bugReporter
-                    .reportBug(new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+        if ((uv != null) && (uv.getType() == LOUserValue.LOType.MESSAGE_REG)
+                && (uv.getValue().intValue() == exItem.getRegisterNumber())) {
+            bugReporter.reportBug(new BugInstance(this, BugType.LO_STUTTERED_MESSAGE.name(), NORMAL_PRIORITY)
+                    .addClass(this).addMethod(this).addSourceLine(this));
         } else {
             Object cons = msgItem.getConstant();
             if ((cons instanceof String) && ((String) cons).contains("{}")) {
-                bugReporter.reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY).addClass(this)
-                        .addMethod(this).addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
             }
         }
     }
@@ -417,8 +433,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
     private void checkForProblemsWithLoggerSingleArgumentMethod() throws ClassNotFoundException {
         final JavaClass clazz = stack.getStackItem(0).getJavaClass();
         if ((clazz != null) && clazz.instanceOf(throwableClass)) {
-            bugReporter.reportBug(new BugInstance(this, BugType.LO_LOGGER_LOST_EXCEPTION_STACK_TRACE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                    .addSourceLine(this));
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.LO_LOGGER_LOST_EXCEPTION_STACK_TRACE.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 
@@ -432,40 +449,49 @@ public class LoggerOddities extends BytecodeScanningDetector {
         if (con instanceof String) {
             Matcher m = BAD_FORMATTING_ANCHOR.matcher((String) con);
             if (m.find()) {
-                bugReporter.reportBug(
-                        new BugInstance(this, BugType.LO_INVALID_FORMATTING_ANCHOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                bugReporter
+                        .reportBug(new BugInstance(this, BugType.LO_INVALID_FORMATTING_ANCHOR.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
             } else {
                 m = BAD_STRING_FORMAT_PATTERN.matcher((String) con);
                 if (m.find()) {
                     OpcodeStack.Item loggerItem = stack.getStackItem(numParms);
                     LOUserValue<Void> loggerUV = (LOUserValue<Void>) loggerItem.getUserValue();
                     if ((loggerUV == null) || (loggerUV.getType() != LOUserValue.LOType.FORMATTER_LOGGER)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.LO_INVALID_STRING_FORMAT_NOTATION.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.LO_INVALID_STRING_FORMAT_NOTATION.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                     }
                 } else {
                     int actualParms = getVarArgsParmCount(sig);
                     if (actualParms != -1) {
                         int expectedParms = countAnchors((String) con);
                         boolean hasEx = hasExceptionOnStack();
-                        if ((!hasEx && (expectedParms != actualParms)) || (hasEx && ((expectedParms != (actualParms - 1)) && (expectedParms != actualParms)))) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this).addString("Expected: " + expectedParms).addString("Actual: " + actualParms));
+                        if ((!hasEx && (expectedParms != actualParms)) || (hasEx
+                                && ((expectedParms != (actualParms - 1)) && (expectedParms != actualParms)))) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(),
+                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this)
+                                                    .addString("Expected: " + expectedParms)
+                                                    .addString("Actual: " + actualParms));
                         }
                     }
                 }
             }
         } else {
             LOUserValue<?> uv = (LOUserValue<?>) formatItem.getUserValue();
-            if ((uv != null) && (uv.getType() == LOUserValue.LOType.METHOD_NAME) && Values.TOSTRING.equals(uv.getValue())) {
+            if ((uv != null) && (uv.getType() == LOUserValue.LOType.METHOD_NAME)
+                    && Values.TOSTRING.equals(uv.getValue())) {
 
-                bugReporter.reportBug(new BugInstance(this, BugType.LO_APPENDED_STRING_IN_FORMAT_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.LO_APPENDED_STRING_IN_FORMAT_STRING.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
             } else {
 
                 if ((uv != null) && (uv.getType() == LOUserValue.LOType.SIMPLE_FORMAT)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.LO_EMBEDDED_SIMPLE_STRING_FORMAT_IN_FORMAT_STRING.name(), NORMAL_PRIORITY)
-                            .addClass(this).addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.LO_EMBEDDED_SIMPLE_STRING_FORMAT_IN_FORMAT_STRING.name(),
+                                    NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
         }
@@ -474,21 +500,24 @@ public class LoggerOddities extends BytecodeScanningDetector {
         for (int i = 0; i < (numParms - 1); i++) {
             OpcodeStack.Item itm = stack.getStackItem(i);
             LOUserValue<?> uv = (LOUserValue<?>) itm.getUserValue();
-            foundToString = ((uv != null) && ((uv.getType() == LOUserValue.LOType.TOSTRING) || (uv.getType() == LOUserValue.LOType.METHOD_NAME)));
+            foundToString = ((uv != null) && ((uv.getType() == LOUserValue.LOType.TOSTRING)
+                    || (uv.getType() == LOUserValue.LOType.METHOD_NAME)));
             if (foundToString) {
                 break;
             }
         }
 
         if (foundToString) {
-            bugReporter
-                    .reportBug(new BugInstance(this, BugType.LO_TOSTRING_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+            bugReporter.reportBug(new BugInstance(this, BugType.LO_TOSTRING_PARAMETER.name(), NORMAL_PRIORITY)
+                    .addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 
     /**
-     * looks for slf4j calls where an exception is passed as a logger parameter, expecting to be substituted for a {} marker. As slf4j just passes the exception
-     * down to the message generation itself, the {} marker will go unpopulated.
+     * looks for slf4j calls where an exception is passed as a logger parameter,
+     * expecting to be substituted for a {} marker. As slf4j just passes the
+     * exception down to the message generation itself, the {} marker will go
+     * unpopulated.
      */
     private void checkForLoggerParam() {
         if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
@@ -503,8 +532,9 @@ public class LoggerOddities extends BytecodeScanningDetector {
                             OpcodeStack.Item item = stack.getStackItem(types.size() - i - 1);
                             String cons = (String) item.getConstant();
                             if ((cons != null) && cons.contains("{}")) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.LO_EXCEPTION_WITH_LOGGER_PARMS.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
+                                bugReporter
+                                        .reportBug(new BugInstance(this, BugType.LO_EXCEPTION_WITH_LOGGER_PARMS.name(),
+                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                                 break;
                             }
                         }
@@ -515,8 +545,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for instantiation of a logger with what looks like a class name that isn't the same as the class in which it exists. There are some cases where a
-     * 'classname-like' string is presented purposely different than this class, and an attempt is made to ignore those.
+     * looks for instantiation of a logger with what looks like a class name that
+     * isn't the same as the class in which it exists. There are some cases where a
+     * 'classname-like' string is presented purposely different than this class, and
+     * an attempt is made to ignore those.
      */
     @SuppressWarnings("unchecked")
     private void lookForSuspectClasses() {
@@ -536,7 +568,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 loggingClassName = (String) item.getConstant();
                 loggingPriority = LOW_PRIORITY;
             }
-        } else if ((LOG4J_LOGGER.equals(callingClsName) || LOG4J2_LOGMANAGER.equals(callingClsName)) && "getLogger".equals(mthName)) {
+        } else if ((LOG4J_LOGGER.equals(callingClsName) || LOG4J2_LOGMANAGER.equals(callingClsName))
+                && "getLogger".equals(mthName)) {
             String signature = getSigConstantOperand();
 
             if (SIG_CLASS_TO_LOG4J_LOGGER.equals(signature) || SIG_CLASS_TO_LOG4J2_LOGGER.equals(signature)) {
@@ -580,9 +613,11 @@ public class LoggerOddities extends BytecodeScanningDetector {
 
         if (loggingClassName != null) {
             loggingClassName = loggingClassName.replace('/', '.');
-            if ((stack.getStackDepth() > 0) && !loggingClassName.equals(SignatureUtils.getNonAnonymousPortion(nameOfThisClass))) {
-                bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_CLASS.name(), loggingPriority).addClass(this).addMethod(this)
-                        .addSourceLine(this).addString(loggingClassName).addString(nameOfThisClass));
+            if ((stack.getStackDepth() > 0)
+                    && !loggingClassName.equals(SignatureUtils.getNonAnonymousPortion(nameOfThisClass))) {
+                bugReporter.reportBug(new BugInstance(this, BugType.LO_SUSPECT_LOG_CLASS.name(), loggingPriority)
+                        .addClass(this).addMethod(this).addSourceLine(this).addString(loggingClassName)
+                        .addString(nameOfThisClass));
             }
         }
     }
@@ -602,8 +637,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     /**
      * returns the number of anchors {} in a string
      *
-     * @param formatString
-     *            the format string
+     * @param formatString the format string
      * @return the number of anchors
      */
     private static int countAnchors(String formatString) {
@@ -619,10 +653,11 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * returns the number of parameters slf4j or log4j2 is expecting to inject into the format string
+     * returns the number of parameters slf4j or log4j2 is expecting to inject into
+     * the format string
      *
-     * @param signature
-     *            the method signature of the error, warn, info, debug statement
+     * @param signature the method signature of the error, warn, info, debug
+     *                  statement
      * @return the number of expected parameters
      */
     @SuppressWarnings("unchecked")
@@ -646,7 +681,8 @@ public class LoggerOddities extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether an exception object is on the stack slf4j will find this, and not include it in the parm list so i we find one, just don't report
+     * returns whether an exception object is on the stack slf4j will find this, and
+     * not include it in the parm list so i we find one, just don't report
      *
      * @return whether or not an exception i present
      */

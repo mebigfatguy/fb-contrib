@@ -43,7 +43,8 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for calls to HttpRequest.getParameter with parameters of the same name with different cases like 'id' and 'Id'.
+ * looks for calls to HttpRequest.getParameter with parameters of the same name
+ * with different cases like 'id' and 'Id'.
  */
 public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     private static final String HTTP_SESSION = "javax/servlet/http/HttpSession";
@@ -51,11 +52,11 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     private static final String GET_ATTRIBUTE = "getAttribute";
     private static final String SET_ATTRIBUTE = "setAttribute";
     private static final String GET_PARAMETER = "getParameter";
-    private static final String GET_ATTRIBUTE_SIG = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
-            .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+    private static final String GET_ATTRIBUTE_SIG = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
     private static final String SET_ATTRIBUTE_SIG = SignatureBuilder.SIG_STRING_AND_OBJECT_TO_VOID;
-    private static final String GET_PARAMETER_SIG = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING)
-            .withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
+    private static final String GET_PARAMETER_SIG = new SignatureBuilder()
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString();
 
     enum KeyType {
         ATTRIBUTE("IKNC_INCONSISTENT_HTTP_ATTRIBUTE_CASING"), PARAMETER("IKNC_INCONSISTENT_HTTP_PARAM_CASING");
@@ -78,8 +79,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     /**
      * constructs a IKNC detector given the reporter to report bugs on
      *
-     * @param reporter
-     *            the sync of bug reports
+     * @param reporter the sync of bug reports
      */
     public InconsistentKeyNameCasing(BugReporter reporter) {
         bugReporter = reporter;
@@ -91,8 +91,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     /**
      * implements the visitor to create the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -107,8 +106,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack for a new method
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -117,10 +115,10 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls to HttpServletRequest.getParameter and collect what the name of the key is.
+     * implements the visitor to look for calls to HttpServletRequest.getParameter
+     * and collect what the name of the key is.
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -149,7 +147,8 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
                                 parmCaseInfo.put(parmName, annotations);
                             }
 
-                            annotations.add(new SourceInfo(getClassName(), getMethodName(), getMethodSig(), getMethod().isStatic(),
+                            annotations.add(new SourceInfo(getClassName(), getMethodName(), getMethodSig(),
+                                    getMethod().isStatic(),
                                     SourceLineAnnotation.fromVisitedInstruction(getClassContext(), this, getPC())));
                         }
                     }
@@ -161,7 +160,8 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for the collected parm names, and look for duplicates that are different in casing only.
+     * implements the visitor to look for the collected parm names, and look for
+     * duplicates that are different in casing only.
      */
     @Override
     public void report() {
@@ -176,7 +176,8 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
                     for (Map.Entry<String, List<SourceInfo>> sourceInfos : parmCaseInfo.entrySet()) {
                         for (SourceInfo sourceInfo : sourceInfos.getValue()) {
                             bi.addClass(sourceInfo.clsName);
-                            bi.addMethod(sourceInfo.clsName, sourceInfo.methodName, sourceInfo.signature, sourceInfo.isStatic);
+                            bi.addMethod(sourceInfo.clsName, sourceInfo.methodName, sourceInfo.signature,
+                                    sourceInfo.isStatic);
                             bi.addSourceLine(sourceInfo.srcLine);
                             bi.addString(sourceInfos.getKey());
                         }
@@ -190,10 +191,10 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     }
 
     /**
-     * looks to see if this method is a getAttribute/setAttribute on Session or getParameter on HttpServletRequest
+     * looks to see if this method is a getAttribute/setAttribute on Session or
+     * getParameter on HttpServletRequest
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      * @return if it is one of these special methods
      */
     @Nullable

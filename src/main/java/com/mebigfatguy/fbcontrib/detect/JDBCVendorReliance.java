@@ -42,7 +42,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * looks for uses of jdbc vendor specific classes and methods making the database access code non portable.
+ * looks for uses of jdbc vendor specific classes and methods making the
+ * database access code non portable.
  */
 @CustomUserValue
 public class JDBCVendorReliance extends BytecodeScanningDetector {
@@ -53,8 +54,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
     /**
      * constructs a JVR detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public JDBCVendorReliance(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -63,8 +63,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the stack and jdbc locals
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -76,10 +75,10 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
     }
 
     /**
-     * implement the visitor to reset the opcode stack and set of locals that are jdbc objects
+     * implement the visitor to reset the opcode stack and set of locals that are
+     * jdbc objects
      *
-     * @param obj
-     *            the context param of the currently parsed method
+     * @param obj the context param of the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -92,8 +91,8 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
         for (int t = 0; t < argTypes.length; t++) {
             String sig = argTypes[t].getSignature();
             if (isJDBCClass(sig)) {
-                jdbcLocals.put(Integer.valueOf(parmRegs[t]),
-                        Integer.valueOf(RegisterUtils.getLocalVariableEndRange(obj.getLocalVariableTable(), parmRegs[t], 0)));
+                jdbcLocals.put(Integer.valueOf(parmRegs[t]), Integer
+                        .valueOf(RegisterUtils.getLocalVariableEndRange(obj.getLocalVariableTable(), parmRegs[t], 0)));
             }
         }
     }
@@ -120,8 +119,9 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > parmCnt) {
                         OpcodeStack.Item itm = stack.getStackItem(parmCnt);
                         if (itm.getUserValue() != null) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.JVR_JDBC_VENDOR_RELIANCE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                    .addSourceLine(this));
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.JVR_JDBC_VENDOR_RELIANCE.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
                             return;
                         }
                     }
@@ -142,8 +142,8 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     if (itm.getUserValue() != null) {
                         int reg = RegisterUtils.getAStoreReg(this, seen);
-                        jdbcLocals.put(Integer.valueOf(reg),
-                                Integer.valueOf(RegisterUtils.getLocalVariableEndRange(getMethod().getLocalVariableTable(), reg, getNextPC())));
+                        jdbcLocals.put(Integer.valueOf(reg), Integer.valueOf(RegisterUtils
+                                .getLocalVariableEndRange(getMethod().getLocalVariableTable(), reg, getNextPC())));
                     }
                 }
 
@@ -167,8 +167,7 @@ public class JDBCVendorReliance extends BytecodeScanningDetector {
     /**
      * returns whether the class is a jdbc class
      *
-     * @param name
-     *            class name or signature of a class
+     * @param name class name or signature of a class
      *
      * @return if the class name is a jdbc one
      */

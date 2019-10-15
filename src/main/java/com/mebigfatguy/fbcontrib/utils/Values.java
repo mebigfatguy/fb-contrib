@@ -91,13 +91,16 @@ public final class Values {
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
-    public static final String SIG_JAVA_LANG_OBJECT = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_OBJECT + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_OBJECT = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_OBJECT
+            + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRING = "java/lang/String";
-    public static final String SIG_JAVA_LANG_STRING = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_STRING + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_STRING = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_STRING
+            + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_VOID = "java/lang/Void";
-    public static final String SIG_JAVA_LANG_VOID = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_VOID + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_VOID = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_VOID
+            + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRINGBUILDER = "java/lang/StringBuilder";
@@ -131,7 +134,8 @@ public final class Values {
     public static final String SLASHED_JAVA_LANG_CHARACTER = "java/lang/Character";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_BOOLEAN = "java/lang/Boolean";
-    public static final String SIG_JAVA_LANG_BOOLEAN = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_BOOLEAN + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_BOOLEAN = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_BOOLEAN
+            + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_COMPARATOR = "java/util/Comparator";
     @SlashedClassName
@@ -146,7 +150,7 @@ public final class Values {
     public static final String SLASHED_JAVA_UTIL_QUEUE = "java/util/Queue";
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_UUID = "java/util/UUID";
-    
+
     public static final String SIG_JAVA_UTIL_STRINGBUFFER = "Ljava/lang/StringBuffer;";
     public static final String SIG_JAVA_UTIL_STRINGBUILDER = "Ljava/lang/StringBuilder;";
 

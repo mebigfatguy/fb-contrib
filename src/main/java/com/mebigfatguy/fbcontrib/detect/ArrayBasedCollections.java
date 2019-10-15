@@ -36,8 +36,10 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that use arrays for items in the keyset of a map, or as an element of a set, or in a list when using the contains method. Since arrays do
- * not, and cannot define an equals method, reference equality is used for these collections, which is probably not desired.
+ * looks for methods that use arrays for items in the keyset of a map, or as an
+ * element of a set, or in a list when using the contains method. Since arrays
+ * do not, and cannot define an equals method, reference equality is used for
+ * these collections, which is probably not desired.
  */
 public class ArrayBasedCollections extends BytecodeScanningDetector {
     private BugReporter bugReporter;
@@ -50,8 +52,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     /**
      * constructs a ABC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ArrayBasedCollections(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -60,8 +61,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     /**
      * implement the visitor to report bugs if no Tree comparators were found
      *
-     * @param classContext
-     *            the context object for the class currently being parsed
+     * @param classContext the context object for the class currently being parsed
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -93,8 +93,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the stack of opcodes
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -105,8 +104,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     /**
      * implements the visitor to find accesses to maps, sets and lists using arrays
      *
-     * @param seen
-     *            the currently visitor opcode
+     * @param seen the currently visitor opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -129,7 +127,8 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
         String methodName = getNameConstantOperand();
         String methodSig = getSigConstantOperand();
 
-        if (Values.SLASHED_JAVA_UTIL_MAP.equals(className) && "put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(methodSig)) {
+        if (Values.SLASHED_JAVA_UTIL_MAP.equals(className) && "put".equals(methodName)
+                && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(methodSig)) {
             if (stack.getStackDepth() > 1) {
                 OpcodeStack.Item itm = stack.getStackItem(1);
                 String pushedSig = itm.getSignature();
@@ -137,7 +136,8 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
                     foundBugFor(mapBugs);
                 }
             }
-        } else if (Values.SLASHED_JAVA_UTIL_SET.equals(className) && "add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(methodSig)) {
+        } else if (Values.SLASHED_JAVA_UTIL_SET.equals(className) && "add".equals(methodName)
+                && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(methodSig)) {
             if (stack.getStackDepth() > 0) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 String pushedSig = itm.getSignature();
@@ -145,8 +145,8 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
                     foundBugFor(setBugs);
                 }
             }
-        } else if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "contains".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(methodSig)
-                && (stack.getStackDepth() > 0)) {
+        } else if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "contains".equals(methodName)
+                && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(methodSig) && (stack.getStackDepth() > 0)) {
             OpcodeStack.Item itm = stack.getStackItem(0);
             String pushedSig = itm.getSignature();
             if (pushedSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
@@ -156,7 +156,8 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     }
 
     private void foundBugFor(List<BugInstance> bugList) {
-        BugInstance bi = new BugInstance(this, BugType.ABC_ARRAY_BASED_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this);
+        BugInstance bi = new BugInstance(this, BugType.ABC_ARRAY_BASED_COLLECTIONS.name(), NORMAL_PRIORITY)
+                .addClass(this).addMethod(this).addSourceLine(this);
         if (bugList == null) {
             bugReporter.reportBug(bi);
         } else {
@@ -185,6 +186,7 @@ public class ArrayBasedCollections extends BytecodeScanningDetector {
     }
 
     private static boolean hasComparator(List<String> parmSignatures) {
-        return (parmSignatures.size() == 1) && SignatureUtils.classToSignature(Values.SLASHED_JAVA_UTIL_COMPARATOR).equals(parmSignatures.get(0));
+        return (parmSignatures.size() == 1)
+                && SignatureUtils.classToSignature(Values.SLASHED_JAVA_UTIL_COMPARATOR).equals(parmSignatures.get(0));
     }
 }

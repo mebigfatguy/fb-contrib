@@ -40,9 +40,12 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that synchronize on variables that are not owned by the current class. Doing this causes confusion when two classes use the same variable
- * for their own synchronization purposes. For cleanest separation of interests, only synchronize on private fields of the class. Note that 'this' is not owned
- * by the current class and synchronization on 'this' should be avoided as well.
+ * looks for methods that synchronize on variables that are not owned by the
+ * current class. Doing this causes confusion when two classes use the same
+ * variable for their own synchronization purposes. For cleanest separation of
+ * interests, only synchronize on private fields of the class. Note that 'this'
+ * is not owned by the current class and synchronization on 'this' should be
+ * avoided as well.
  */
 @CustomUserValue
 public class NonOwnedSynchronization extends BytecodeScanningDetector {
@@ -54,8 +57,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
     /**
      * constructs a NOS detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public NonOwnedSynchronization(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -79,8 +81,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a MONITORENTER opcode
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class uses synchronization
      */
     public boolean prescreen(Method method) {
@@ -91,8 +92,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -114,8 +114,7 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for synchronization on non-owned objects
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -124,91 +123,92 @@ public class NonOwnedSynchronization extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.GETFIELD:
-                    tosIsPriority = OWNED;
+            case Const.GETFIELD:
+                tosIsPriority = OWNED;
                 break;
 
-                case Const.ALOAD:
-                case Const.ALOAD_0:
-                case Const.ALOAD_1:
-                case Const.ALOAD_2:
-                case Const.ALOAD_3: {
-                    int reg = RegisterUtils.getALoadReg(this, seen);
-                    if ((reg == 0) && getMethod().isStatic()) {
-                        tosIsPriority = Values.LOW_BUG_PRIORITY;
-                    } else {
-                        tosIsPriority = regPriorities.get(Integer.valueOf(reg));
-                        if (tosIsPriority == null) {
-                            tosIsPriority = Values.NORMAL_BUG_PRIORITY;
-                        }
+            case Const.ALOAD:
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3: {
+                int reg = RegisterUtils.getALoadReg(this, seen);
+                if ((reg == 0) && getMethod().isStatic()) {
+                    tosIsPriority = Values.LOW_BUG_PRIORITY;
+                } else {
+                    tosIsPriority = regPriorities.get(Integer.valueOf(reg));
+                    if (tosIsPriority == null) {
+                        tosIsPriority = Values.NORMAL_BUG_PRIORITY;
                     }
                 }
+            }
                 break;
 
-                case Const.ASTORE:
-                case Const.ASTORE_0:
-                case Const.ASTORE_1:
-                case Const.ASTORE_2:
-                case Const.ASTORE_3: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        Integer priority = (Integer) item.getUserValue();
-                        regPriorities.put(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)), priority);
-                    }
+            case Const.ASTORE:
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    Integer priority = (Integer) item.getUserValue();
+                    regPriorities.put(Integer.valueOf(RegisterUtils.getAStoreReg(this, seen)), priority);
                 }
+            }
                 break;
 
-                case Const.INVOKEVIRTUAL:
-                case Const.INVOKEINTERFACE: {
-                    String sig = getSigConstantOperand();
-                    if (SignatureUtils.getReturnSignature(sig).startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
-                        int parmCnt = SignatureUtils.getNumParameters(sig);
-                        if (stack.getStackDepth() > parmCnt) {
-                            OpcodeStack.Item itm = stack.getStackItem(parmCnt);
-                            Integer priority = (Integer) itm.getUserValue();
-                            if ((priority != null) && OWNED.equals(priority)) {
-                                tosIsPriority = OWNED;
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE: {
+                String sig = getSigConstantOperand();
+                if (SignatureUtils.getReturnSignature(sig).startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+                    int parmCnt = SignatureUtils.getNumParameters(sig);
+                    if (stack.getStackDepth() > parmCnt) {
+                        OpcodeStack.Item itm = stack.getStackItem(parmCnt);
+                        Integer priority = (Integer) itm.getUserValue();
+                        if ((priority != null) && OWNED.equals(priority)) {
+                            tosIsPriority = OWNED;
+                        } else {
+                            int reg = itm.getRegisterNumber();
+                            if (reg > 0) {
+                                tosIsPriority = regPriorities.get(Integer.valueOf(reg));
                             } else {
-                                int reg = itm.getRegisterNumber();
-                                if (reg > 0) {
-                                    tosIsPriority = regPriorities.get(Integer.valueOf(reg));
-                                } else {
-                                    tosIsPriority = OWNED;
-                                }
+                                tosIsPriority = OWNED;
                             }
                         }
                     }
                 }
+            }
                 break;
 
-                case Const.INVOKESTATIC: {
-                    String sig = getSigConstantOperand();
-                    if (SignatureUtils.getReturnSignature(sig).startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
-                        tosIsPriority = OWNED; // can't be sure
-                    }
+            case Const.INVOKESTATIC: {
+                String sig = getSigConstantOperand();
+                if (SignatureUtils.getReturnSignature(sig).startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)) {
+                    tosIsPriority = OWNED; // can't be sure
                 }
+            }
                 break;
 
-                case Const.INVOKESPECIAL: {
-                    String name = getNameConstantOperand();
-                    if (Values.CONSTRUCTOR.equals(name)) {
-                        tosIsPriority = OWNED;
-                    }
+            case Const.INVOKESPECIAL: {
+                String name = getNameConstantOperand();
+                if (Values.CONSTRUCTOR.equals(name)) {
+                    tosIsPriority = OWNED;
                 }
+            }
                 break;
 
-                case Const.MONITORENTER: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        Integer priority = (Integer) itm.getUserValue();
-                        if ((priority != null) && (!priority.equals(OWNED))) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.NOS_NON_OWNED_SYNCHRONIZATION.name(), priority.intValue()).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
+            case Const.MONITORENTER: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    Integer priority = (Integer) itm.getUserValue();
+                    if ((priority != null) && (!priority.equals(OWNED))) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.NOS_NON_OWNED_SYNCHRONIZATION.name(), priority.intValue())
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
+            }
                 break;
-                default:
+            default:
                 break;
             }
         } finally {

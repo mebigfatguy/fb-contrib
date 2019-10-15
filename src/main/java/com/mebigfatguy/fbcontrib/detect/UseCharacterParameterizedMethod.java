@@ -45,8 +45,10 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that pass single character string Const as parameters to methods that alternatively have an overridden method that accepts a character
- * instead. It is more performant for the method to handle a single character than a String.
+ * looks for methods that pass single character string Const as parameters to
+ * methods that alternatively have an overridden method that accepts a character
+ * instead. It is more performant for the method to handle a single character
+ * than a String.
  */
 @CustomUserValue
 public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
@@ -57,15 +59,18 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     private OpcodeStack stack;
 
     /**
-     * holds a user value for a StringBuilder or StringBuffer on the stack that is an online append ideally there would be an UNKNOWN option, rather than null,
-     * but findbugs seems to have a nasty bug with static fields holding onto uservalues across detectors
+     * holds a user value for a StringBuilder or StringBuffer on the stack that is
+     * an online append ideally there would be an UNKNOWN option, rather than null,
+     * but findbugs seems to have a nasty bug with static fields holding onto
+     * uservalues across detectors
      */
     enum UCPMUserValue {
         INLINE
     }
 
     static {
-        String stringAndIntToInt = new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT)
+        String stringAndIntToInt = new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT)
                 .withReturnType(Values.SIG_PRIMITIVE_INT).toString();
 
         Map<FQMethod, Object> methodsMap = new HashMap<>();
@@ -73,26 +78,27 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
         // example, a value of 0 means the String literal to check
         // was the last parameter, and a stack offset of 2 means it was the 3rd
         // to last.
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", SignatureBuilder.SIG_STRING_TO_INT), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", SignatureBuilder.SIG_STRING_TO_INT),
+                Values.ZERO);
         methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "indexOf", stringAndIntToInt), Values.ONE);
-        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", SignatureBuilder.SIG_STRING_TO_INT), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", SignatureBuilder.SIG_STRING_TO_INT),
+                Values.ZERO);
         methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "lastIndexOf", stringAndIntToInt), Values.ONE);
         methodsMap.put(new FQMethod("java/io/PrintStream", "print", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        methodsMap.put(new FQMethod("java/io/PrintStream", "println", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        methodsMap.put(new FQMethod("java/io/StringWriter", "write", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        methodsMap.put(
-                new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUFFER, "append",
-                        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuffer").toString()),
+        methodsMap.put(new FQMethod("java/io/PrintStream", "println", SignatureBuilder.SIG_STRING_TO_VOID),
                 Values.ZERO);
-        methodsMap.put(
-                new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUILDER, "append",
-                        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuilder").toString()),
+        methodsMap.put(new FQMethod("java/io/StringWriter", "write", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUFFER, "append", new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuffer").toString()),
+                Values.ZERO);
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRINGBUILDER, "append", new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_STRING).withReturnType("java/lang/StringBuilder").toString()),
                 Values.ZERO);
 
         // same thing as above, except now with two params
-        methodsMap.put(
-                new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace", new SignatureBuilder()
-                        .withParamTypes("java/lang/CharSequence", "java/lang/CharSequence").withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString()),
+        methodsMap.put(new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "replace",
+                new SignatureBuilder().withParamTypes("java/lang/CharSequence", "java/lang/CharSequence")
+                        .withReturnType(Values.SLASHED_JAVA_LANG_STRING).toString()),
                 new IntPair(0, 1));
 
         characterMethods = Collections.unmodifiableMap(methodsMap);
@@ -101,8 +107,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     /**
      * constructs a UCPM detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public UseCharacterParameterizedMethod(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -111,8 +116,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     /**
      * overrides the visitor to create and clear the opcode stack
      *
-     * @param context
-     *            the context object for the currently parsed class
+     * @param context the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(final ClassContext context) {
@@ -127,8 +131,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a LDC opcode
      *
-     * @param obj
-     *            the context object of the current method
+     * @param obj the context object of the current method
      * @return if the class uses LDC instructions
      */
 
@@ -140,8 +143,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     /**
      * prescreens the method, and reset the stack
      *
-     * @param obj
-     *            the context object for the currently parsed method
+     * @param obj the context object for the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -152,7 +154,8 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for method calls that pass a constant string as a parameter when the string is only one character long, and there is an
+     * implements the visitor to look for method calls that pass a constant string
+     * as a parameter when the string is only one character long, and there is an
      * alternate method passing a character.
      */
     @Override
@@ -162,7 +165,8 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
-                FQMethod key = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                FQMethod key = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand());
 
                 Object posObject = characterMethods.get(key);
                 if (posObject instanceof Integer) {
@@ -177,11 +181,13 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     String duppedSig = itm.getSignature();
-                    if (Values.SIG_JAVA_UTIL_STRINGBUILDER.equals(duppedSig) || Values.SIG_JAVA_UTIL_STRINGBUFFER.equals(duppedSig)) {
+                    if (Values.SIG_JAVA_UTIL_STRINGBUILDER.equals(duppedSig)
+                            || Values.SIG_JAVA_UTIL_STRINGBUFFER.equals(duppedSig)) {
                         itm.setUserValue(UCPMUserValue.INLINE);
                     }
                 }
-            } else if ((seen == Const.PUTFIELD) || (((seen == Const.PUTSTATIC) || OpcodeUtils.isAStore(seen)) && (stack.getStackDepth() > 0))) {
+            } else if ((seen == Const.PUTFIELD)
+                    || (((seen == Const.PUTSTATIC) || OpcodeUtils.isAStore(seen)) && (stack.getStackDepth() > 0))) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(null);
             }
@@ -197,12 +203,14 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     }
 
     private void reportBug() {
-        bugReporter.reportBug(new BugInstance(this, BugType.UCPM_USE_CHARACTER_PARAMETERIZED_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                .addSourceLine(this));
+        bugReporter.reportBug(
+                new BugInstance(this, BugType.UCPM_USE_CHARACTER_PARAMETERIZED_METHOD.name(), NORMAL_PRIORITY)
+                        .addClass(this).addMethod(this).addSourceLine(this));
     }
 
     private boolean checkDoubleParamMethod(IntPair posObject) {
-        return checkSingleParamMethod(posObject.firstStringParam) && checkSingleParamMethod(posObject.secondStringParam);
+        return checkSingleParamMethod(posObject.firstStringParam)
+                && checkSingleParamMethod(posObject.secondStringParam);
     }
 
     private boolean checkSingleParamMethod(int paramPos) {
@@ -223,8 +231,7 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     /**
      * looks to see if we are in a inline string append like "(" + a + ")";
      *
-     * @param fqm
-     *            the method that is being called
+     * @param fqm the method that is being called
      * @return whether we are in an inline string append
      */
     private boolean isInlineAppend(FQMethod fqm) {
@@ -241,10 +248,10 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * checks to see if the current opcode is an INVOKEVIRTUAL call that has a INLINE userValue on the caller and a return value. If so, return it.
+     * checks to see if the current opcode is an INVOKEVIRTUAL call that has a
+     * INLINE userValue on the caller and a return value. If so, return it.
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      * @return whether the caller has an INLINE tag on it
      *
      */
@@ -256,7 +263,8 @@ public class UseCharacterParameterizedMethod extends BytecodeScanningDetector {
 
         String sig = getSigConstantOperand();
         String returnSig = SignatureUtils.getReturnSignature(sig);
-        if (Values.SIG_JAVA_UTIL_STRINGBUILDER.equals(returnSig) || Values.SIG_JAVA_UTIL_STRINGBUFFER.equals(returnSig)) {
+        if (Values.SIG_JAVA_UTIL_STRINGBUILDER.equals(returnSig)
+                || Values.SIG_JAVA_UTIL_STRINGBUFFER.equals(returnSig)) {
             int parmCount = SignatureUtils.getNumParameters(sig);
             if (stack.getStackDepth() > parmCount) {
                 OpcodeStack.Item itm = stack.getStackItem(parmCount);

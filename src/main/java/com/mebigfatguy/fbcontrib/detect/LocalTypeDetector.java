@@ -51,25 +51,30 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     private int classVersion;
 
     /**
-     * Should return a map of constructors that should be watched, as well as version number of Java that the given constructor becomes a bad idea.
+     * Should return a map of constructors that should be watched, as well as
+     * version number of Java that the given constructor becomes a bad idea.
      *
-     * e.g. StringBuffer was the only way to efficiently concatenate a string until the faster, non-thread safe StringBuilder was introduced in 1.5. Thus, in
-     * code that targets before 1.5, FindBugs should not report a LocalSynchronizedCollection bug. Therefore, the entry &lt;"java/lang/StringBuffer",
-     * Const.MAJOR_1_5&gt; is in the returned map.
+     * e.g. StringBuffer was the only way to efficiently concatenate a string until
+     * the faster, non-thread safe StringBuilder was introduced in 1.5. Thus, in
+     * code that targets before 1.5, FindBugs should not report a
+     * LocalSynchronizedCollection bug. Therefore, the entry
+     * &lt;"java/lang/StringBuffer", Const.MAJOR_1_5&gt; is in the returned map.
      *
      * @return the map of watched constructors
      */
     protected abstract Map<String, Integer> getWatchedConstructors();
 
     /**
-     * Should return a map of a class and a set of "factory" methods that create types that should be reported buggy (when made as local variables).
+     * Should return a map of a class and a set of "factory" methods that create
+     * types that should be reported buggy (when made as local variables).
      *
      * @return map of factory methods
      */
     protected abstract Map<String, Set<String>> getWatchedClassMethods();
 
     /**
-     * returns a set of self returning methods, that is, methods that when called on a a synchronized collection return themselves.
+     * returns a set of self returning methods, that is, methods that when called on
+     * a a synchronized collection return themselves.
      *
      * @return a set of self referential methods
      */
@@ -78,16 +83,14 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     /**
      * Given this RegisterInfo, report an appropriate bug.
      *
-     * @param cri
-     *            the register info
+     * @param cri the register info
      */
     protected abstract void reportBug(RegisterInfo cri);
 
     /**
      * implements the visitor to create and clear the stack and suspectLocals
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -105,23 +108,22 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     /**
      * implements the visitor to collect parameter registers
      *
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
         suspectLocals.clear();
         int[] parmRegs = RegisterUtils.getParameterRegisters(obj);
         for (int pr : parmRegs) {
-            suspectLocals.put(Integer.valueOf(pr), new RegisterInfo(RegisterUtils.getLocalVariableEndRange(obj.getLocalVariableTable(), pr, 0)));
+            suspectLocals.put(Integer.valueOf(pr),
+                    new RegisterInfo(RegisterUtils.getLocalVariableEndRange(obj.getLocalVariableTable(), pr, 0)));
         }
     }
 
     /**
      * implements the visitor to reset the stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -138,10 +140,10 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find the constructors defined in getWatchedConstructors() and the method calls in getWatchedClassMethods()
+     * implements the visitor to find the constructors defined in
+     * getWatchedConstructors() and the method calls in getWatchedClassMethods()
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -177,8 +179,12 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
                             OpcodeStack.Item item = stack.getStackItem(i);
                             RegisterInfo cri = suspectLocals.get(item.getUserValue());
                             if (cri != null) {
-                                if (SignatureUtils.similarPackages(SignatureUtils.getPackageName(SignatureUtils.stripSignature(getClassConstantOperand())),
-                                        SignatureUtils.getPackageName(SignatureUtils.stripSignature(this.getClassName())), 2)) {
+                                if (SignatureUtils.similarPackages(
+                                        SignatureUtils.getPackageName(
+                                                SignatureUtils.stripSignature(getClassConstantOperand())),
+                                        SignatureUtils.getPackageName(
+                                                SignatureUtils.stripSignature(this.getClassName())),
+                                        2)) {
                                     cri.setPriority(LOW_PRIORITY);
                                 } else {
                                     cri.setIgnore();
@@ -220,15 +226,16 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
             int reg = RegisterUtils.getAStoreReg(this, seen);
             if (item.getUserValue() != null) {
                 if (!suspectLocals.containsKey(Integer.valueOf(reg))) {
-                    RegisterInfo cri = new RegisterInfo(SourceLineAnnotation.fromVisitedInstruction(this),
-                            RegisterUtils.getLocalVariableEndRange(getMethod().getLocalVariableTable(), reg, getNextPC()));
+                    RegisterInfo cri = new RegisterInfo(SourceLineAnnotation.fromVisitedInstruction(this), RegisterUtils
+                            .getLocalVariableEndRange(getMethod().getLocalVariableTable(), reg, getNextPC()));
                     suspectLocals.put(Integer.valueOf(reg), cri);
 
                 }
             } else {
                 RegisterInfo cri = suspectLocals.get(Integer.valueOf(reg));
                 if (cri == null) {
-                    cri = new RegisterInfo(RegisterUtils.getLocalVariableEndRange(getMethod().getLocalVariableTable(), reg, getNextPC()));
+                    cri = new RegisterInfo(RegisterUtils.getLocalVariableEndRange(getMethod().getLocalVariableTable(),
+                            reg, getNextPC()));
                     suspectLocals.put(Integer.valueOf(reg), cri);
                 }
                 cri.setIgnore();
@@ -240,7 +247,8 @@ abstract class LocalTypeDetector extends BytecodeScanningDetector {
         Integer tosIsSyncColReg = null;
         Map<String, Set<String>> mapOfClassToMethods = getWatchedClassMethods();
         for (Entry<String, Set<String>> entry : mapOfClassToMethods.entrySet()) {
-            if (entry.getKey().equals(getClassConstantOperand()) && entry.getValue().contains(getNameConstantOperand())) {
+            if (entry.getKey().equals(getClassConstantOperand())
+                    && entry.getValue().contains(getNameConstantOperand())) {
                 tosIsSyncColReg = Values.NEGATIVE_ONE;
                 break;
             }

@@ -47,8 +47,9 @@ import edu.umd.cs.findbugs.ba.SourceFile;
 import edu.umd.cs.findbugs.ba.SourceFinder;
 
 /**
- * looks for methods that correctly do not write to a parameter. To help document this, and to perhaps help the jvm optimize the invocation of this method, you
- * should consider defining these parameters as final.
+ * looks for methods that correctly do not write to a parameter. To help
+ * document this, and to perhaps help the jvm optimize the invocation of this
+ * method, you should consider defining these parameters as final.
  */
 public class FinalParameters extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -63,8 +64,7 @@ public class FinalParameters extends BytecodeScanningDetector {
     /**
      * constructs a FP detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public FinalParameters(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -73,8 +73,7 @@ public class FinalParameters extends BytecodeScanningDetector {
     /**
      * overrides the visitor to initialize the 'has source' flag
      *
-     * @param classContext
-     *            the context object for the currently parsed class
+     * @param classContext the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -85,8 +84,7 @@ public class FinalParameters extends BytecodeScanningDetector {
     /**
      * overrides the visitor capture source lines for the method
      *
-     * @param obj
-     *            the method object for the currently parsed method
+     * @param obj the method object for the currently parsed method
      */
     @Override
     public void visitMethod(final Method obj) {
@@ -113,8 +111,7 @@ public class FinalParameters extends BytecodeScanningDetector {
     /**
      * reads the sourcefile based on the source line annotation for the method
      *
-     * @param obj
-     *            the method object for the currently parsed method
+     * @param obj the method object for the currently parsed method
      *
      * @return an array of source lines for the method
      */
@@ -128,8 +125,10 @@ public class FinalParameters extends BytecodeScanningDetector {
             srcLineAnnotation = SourceLineAnnotation.forEntireMethod(getClassContext().getJavaClass(), obj);
             if (srcLineAnnotation != null) {
                 SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
-                SourceFile sourceFile = sourceFinder.findSourceFile(srcLineAnnotation.getPackageName(), srcLineAnnotation.getSourceFile());
-                try (BufferedReader sourceReader = new BufferedReader(new InputStreamReader(sourceFile.getInputStream(), StandardCharsets.UTF_8))) {
+                SourceFile sourceFile = sourceFinder.findSourceFile(srcLineAnnotation.getPackageName(),
+                        srcLineAnnotation.getSourceFile());
+                try (BufferedReader sourceReader = new BufferedReader(
+                        new InputStreamReader(sourceFile.getInputStream(), StandardCharsets.UTF_8))) {
 
                     List<String> lines = new ArrayList<>(100);
                     String line;
@@ -148,10 +147,10 @@ public class FinalParameters extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to find the source lines for the method header, to find non final parameters
+     * overrides the visitor to find the source lines for the method header, to find
+     * non final parameters
      *
-     * @param obj
-     *            the code object for the currently parsed method
+     * @param obj the code object for the currently parsed method
      */
     @Override
     public void visitCode(final Code obj) {
@@ -204,7 +203,8 @@ public class FinalParameters extends BytecodeScanningDetector {
 
             String parmName = getRegisterName(obj, i);
             if (bi == null) {
-                bi = new BugInstance(this, BugType.FP_FINAL_PARAMETERS.name(), LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, 0);
+                bi = new BugInstance(this, BugType.FP_FINAL_PARAMETERS.name(), LOW_PRIORITY).addClass(this)
+                        .addMethod(this).addSourceLine(this, 0);
                 bugReporter.reportBug(bi);
             }
             bi.addString(parmName);
@@ -213,10 +213,10 @@ public class FinalParameters extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to find local variable reference stores to store them as changed
+     * overrides the visitor to find local variable reference stores to store them
+     * as changed
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(final int seen) {
@@ -228,10 +228,8 @@ public class FinalParameters extends BytecodeScanningDetector {
     /**
      * returns the variable name of the specified register slot
      *
-     * @param obj
-     *            the currently parsed code object
-     * @param reg
-     *            the variable register of interest
+     * @param obj the currently parsed code object
+     * @param reg the variable register of interest
      *
      * @return the variable name of the specified register
      */

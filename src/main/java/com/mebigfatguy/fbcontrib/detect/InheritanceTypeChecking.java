@@ -36,8 +36,10 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for if/else blocks where a series of them use instanceof on the same variable to determine what do to. If these classes are related by inheritance,
- * this often is better handled through calling a single overridden method.
+ * looks for if/else blocks where a series of them use instanceof on the same
+ * variable to determine what do to. If these classes are related by
+ * inheritance, this often is better handled through calling a single overridden
+ * method.
  */
 public class InheritanceTypeChecking extends BytecodeScanningDetector {
     private BugReporter bugReporter;
@@ -46,8 +48,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
     /**
      * constructs a ITC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public InheritanceTypeChecking(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -56,8 +57,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
     /**
      * implements the visitor to allocate and clear the ifStatements set
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -72,8 +72,7 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
     /**
      * implements the visitor to clear the ifStatements set
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -82,10 +81,10 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find if/else code that checks types using instanceof, and these types are related by inheritance.
+     * implements the visitor to find if/else code that checks types using
+     * instanceof, and these types are related by inheritance.
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -131,48 +130,48 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
 
         public IfStatement.Action processOpcode(BytecodeScanningDetector bsd, BugReporter bugReporter, int seen) {
             switch (state) {
-                case SEEN_ALOAD:
-                    if (seen == Const.INSTANCEOF) {
-                        if (instanceOfTypes == null) {
-                            instanceOfTypes = new HashSet<>();
-                        }
-                        instanceOfTypes.add(bsd.getClassConstantOperand());
-                        state = State.SEEN_INSTANCEOF;
-                        return IfStatement.Action.PROCESSED_ACTION;
+            case SEEN_ALOAD:
+                if (seen == Const.INSTANCEOF) {
+                    if (instanceOfTypes == null) {
+                        instanceOfTypes = new HashSet<>();
                     }
+                    instanceOfTypes.add(bsd.getClassConstantOperand());
+                    state = State.SEEN_INSTANCEOF;
+                    return IfStatement.Action.PROCESSED_ACTION;
+                }
                 break;
 
-                case SEEN_INSTANCEOF:
-                    if (seen == Const.IFEQ) {
-                        branchTarget = bsd.getBranchTarget();
-                        state = State.SEEN_IFEQ;
-                        matchCount++;
-                        return IfStatement.Action.PROCESSED_ACTION;
-                    }
+            case SEEN_INSTANCEOF:
+                if (seen == Const.IFEQ) {
+                    branchTarget = bsd.getBranchTarget();
+                    state = State.SEEN_IFEQ;
+                    matchCount++;
+                    return IfStatement.Action.PROCESSED_ACTION;
+                }
                 break;
 
-                case SEEN_IFEQ:
-                    if (bsd.getPC() == branchTarget) {
-                        if (OpcodeUtils.isALoad(seen) && (reg == RegisterUtils.getALoadReg(bsd, seen))) {
-                            state = State.SEEN_ALOAD;
-                            return IfStatement.Action.PROCESSED_ACTION;
-                        }
-                        if (matchCount > 1) {
-                            String clsName = bsd.getClassName();
-                            int priority = NORMAL_PRIORITY;
-                            for (String type : instanceOfTypes) {
-                                if (!SignatureUtils.similarPackages(clsName, type, 2)) {
-                                    priority = LOW_PRIORITY;
-                                    break;
-                                }
+            case SEEN_IFEQ:
+                if (bsd.getPC() == branchTarget) {
+                    if (OpcodeUtils.isALoad(seen) && (reg == RegisterUtils.getALoadReg(bsd, seen))) {
+                        state = State.SEEN_ALOAD;
+                        return IfStatement.Action.PROCESSED_ACTION;
+                    }
+                    if (matchCount > 1) {
+                        String clsName = bsd.getClassName();
+                        int priority = NORMAL_PRIORITY;
+                        for (String type : instanceOfTypes) {
+                            if (!SignatureUtils.similarPackages(clsName, type, 2)) {
+                                priority = LOW_PRIORITY;
+                                break;
                             }
-
-                            bugReporter.reportBug(
-                                    new BugInstance(bsd, "ITC_INHERITANCE_TYPE_CHECKING", priority).addClass(bsd).addMethod(bsd).addSourceLine(bsd, firstPC));
-                            return IfStatement.Action.REMOVE_ACTION;
                         }
+
+                        bugReporter.reportBug(new BugInstance(bsd, "ITC_INHERITANCE_TYPE_CHECKING", priority)
+                                .addClass(bsd).addMethod(bsd).addSourceLine(bsd, firstPC));
+                        return IfStatement.Action.REMOVE_ACTION;
                     }
-                    return IfStatement.Action.NO_ACTION;
+                }
+                return IfStatement.Action.NO_ACTION;
             }
 
             return IfStatement.Action.REMOVE_ACTION;

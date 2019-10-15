@@ -43,7 +43,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that return Object, and who's code body returns two or more different types of objects that are unrelated (other than by Object).
+ * looks for methods that return Object, and who's code body returns two or more
+ * different types of objects that are unrelated (other than by Object).
  */
 public class UnrelatedReturnValues extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -54,8 +55,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
     /**
      * constructs a URV detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public UnrelatedReturnValues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -64,8 +64,7 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and destroy the stack and return types
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -82,10 +81,10 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to see if the method returns Object, and if the method is defined in a superclass, or interface.
+     * implements the visitor to see if the method returns Object, and if the method
+     * is defined in a superclass, or interface.
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -120,14 +119,17 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
             JavaClass cls = findCommonType(returnTypes.keySet());
             BugInstance bug;
             if (isInherited) {
-                bug = new BugInstance(this, BugType.URV_INHERITED_METHOD_WITH_RELATED_TYPES.name(), priority).addClass(this).addMethod(this);
+                bug = new BugInstance(this, BugType.URV_INHERITED_METHOD_WITH_RELATED_TYPES.name(), priority)
+                        .addClass(this).addMethod(this);
                 if (cls != null) {
                     bug.addString(cls.getClassName());
                 }
             } else if (cls == null) {
-                bug = new BugInstance(this, BugType.URV_UNRELATED_RETURN_VALUES.name(), priority).addClass(this).addMethod(this);
+                bug = new BugInstance(this, BugType.URV_UNRELATED_RETURN_VALUES.name(), priority).addClass(this)
+                        .addMethod(this);
             } else {
-                bug = new BugInstance(this, BugType.URV_CHANGE_RETURN_TYPE.name(), priority).addClass(this).addMethod(this);
+                bug = new BugInstance(this, BugType.URV_CHANGE_RETURN_TYPE.name(), priority).addClass(this)
+                        .addMethod(this);
                 bug.addString(cls.getClassName());
             }
             for (Integer pc : returnTypes.values()) {
@@ -140,10 +142,10 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find return values where the types of objects returned from the method are related only by object.
+     * implements the visitor to find return values where the types of objects
+     * returned from the method are related only by object.
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -166,12 +168,13 @@ public class UnrelatedReturnValues extends BytecodeScanningDetector {
     /**
      * looks for a common superclass or interface for all the passed in types
      *
-     * @param classes
-     *            the set of classes to look for a common super class or interface
-     * @return the type that is the common interface or superclass (not Object, tho).
+     * @param classes the set of classes to look for a common super class or
+     *                interface
+     * @return the type that is the common interface or superclass (not Object,
+     *         tho).
      *
-     * @throws ClassNotFoundException
-     *             if a superclass or superinterface of one of the class is not found
+     * @throws ClassNotFoundException if a superclass or superinterface of one of
+     *                                the class is not found
      */
     @Nullable
     private static JavaClass findCommonType(Set<JavaClass> classes) throws ClassNotFoundException {

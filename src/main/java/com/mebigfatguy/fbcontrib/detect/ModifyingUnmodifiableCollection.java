@@ -43,7 +43,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for code that attempts to modify a collection that is or may be defined as immutable. Doing so will cause exceptions at runtime.
+ * looks for code that attempts to modify a collection that is or may be defined
+ * as immutable. Doing so will cause exceptions at runtime.
  */
 @CustomUserValue
 public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
@@ -59,8 +60,9 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
         mm.put(new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
         mm.put(new QMethod("put", SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT), Values.TWO);
         mm.put(new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_OBJECT), Values.ONE);
-        mm.put(new QMethod("putAll", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_UTIL_MAP).toString()), Values.ONE);
-        MODIFYING_METHODS = Collections.<QMethod, Integer> unmodifiableMap(mm);
+        mm.put(new QMethod("putAll", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_UTIL_MAP).toString()),
+                Values.ONE);
+        MODIFYING_METHODS = Collections.<QMethod, Integer>unmodifiableMap(mm);
     }
 
     private final BugReporter bugReporter;
@@ -70,8 +72,7 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     /**
      * constructs a MUC detector given the reporter to report bugs on
      *
-     * @param reporter
-     *            the sync of bug reports
+     * @param reporter the sync of bug reports
      */
     public ModifyingUnmodifiableCollection(BugReporter reporter) {
         bugReporter = reporter;
@@ -80,8 +81,7 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     /**
      * overrides the visitor to setup and tear down the opcode stack
      *
-     * @param context
-     *            the context object of the currently parse java class
+     * @param context the context object of the currently parse java class
      */
     @Override
     public void visitClassContext(ClassContext context) {
@@ -94,10 +94,10 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to reset the opcode stack, and reset the reported immutability of the method
+     * overrides the visitor to reset the opcode stack, and reset the reported
+     * immutability of the method
      *
-     * @param obj
-     *            the context object of the currently parse code block
+     * @param obj the context object of the currently parse code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -111,10 +111,10 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to find method mutations on collections that have previously been determined to have been created as immutable collections
+     * overrides the visitor to find method mutations on collections that have
+     * previously been determined to have been created as immutable collections
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -124,39 +124,41 @@ public class ModifyingUnmodifiableCollection extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.INVOKESTATIC:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKESPECIAL:
-                case Const.INVOKEVIRTUAL: {
-                    String className = getClassConstantOperand();
-                    String methodName = getNameConstantOperand();
-                    String signature = getSigConstantOperand();
+            case Const.INVOKESTATIC:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESPECIAL:
+            case Const.INVOKEVIRTUAL: {
+                String className = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
+                String signature = getSigConstantOperand();
 
-                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
-                    imType = mi.getImmutabilityType();
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, methodName, signature);
+                imType = mi.getImmutabilityType();
 
-                    if (seen == Const.INVOKEINTERFACE) {
-                        Integer collectionOffset = MODIFYING_METHODS.get(new QMethod(methodName, signature));
-                        if ((collectionOffset != null) && CollectionUtils.isListSetMap(className) && (stack.getStackDepth() > collectionOffset.intValue())) {
-                            OpcodeStack.Item item = stack.getStackItem(collectionOffset.intValue());
-                            ImmutabilityType type = (ImmutabilityType) item.getUserValue();
+                if (seen == Const.INVOKEINTERFACE) {
+                    Integer collectionOffset = MODIFYING_METHODS.get(new QMethod(methodName, signature));
+                    if ((collectionOffset != null) && CollectionUtils.isListSetMap(className)
+                            && (stack.getStackDepth() > collectionOffset.intValue())) {
+                        OpcodeStack.Item item = stack.getStackItem(collectionOffset.intValue());
+                        ImmutabilityType type = (ImmutabilityType) item.getUserValue();
 
-                            if ((type == ImmutabilityType.IMMUTABLE)
-                                    || ((type == ImmutabilityType.POSSIBLY_IMMUTABLE) && (reportedType != ImmutabilityType.POSSIBLY_IMMUTABLE))) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.MUC_MODIFYING_UNMODIFIABLE_COLLECTION.name(),
-                                        (type == ImmutabilityType.IMMUTABLE) ? HIGH_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                                .addSourceLine(this));
-                                if (type == ImmutabilityType.IMMUTABLE) {
-                                    throw new StopOpcodeParsingException();
-                                }
-
-                                reportedType = type;
+                        if ((type == ImmutabilityType.IMMUTABLE) || ((type == ImmutabilityType.POSSIBLY_IMMUTABLE)
+                                && (reportedType != ImmutabilityType.POSSIBLY_IMMUTABLE))) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.MUC_MODIFYING_UNMODIFIABLE_COLLECTION.name(),
+                                            (type == ImmutabilityType.IMMUTABLE) ? HIGH_PRIORITY : NORMAL_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                            if (type == ImmutabilityType.IMMUTABLE) {
+                                throw new StopOpcodeParsingException();
                             }
+
+                            reportedType = type;
                         }
                     }
                 }
+            }
                 break;
-                default:
+            default:
                 break;
             }
         } catch (ClassNotFoundException cnfe) {

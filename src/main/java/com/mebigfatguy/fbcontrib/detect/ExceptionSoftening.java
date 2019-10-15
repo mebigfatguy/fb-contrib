@@ -183,7 +183,8 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
             if (seen == Const.ATHROW) {
                 processThrow();
-            } else if ((seen == Const.IRETURN) && isBooleanMethod && !hasValidFalseReturn && (stack.getStackDepth() > 0)) {
+            } else if ((seen == Const.IRETURN) && isBooleanMethod && !hasValidFalseReturn
+                    && (stack.getStackDepth() > 0)) {
                 processBooleanReturn();
             }
 

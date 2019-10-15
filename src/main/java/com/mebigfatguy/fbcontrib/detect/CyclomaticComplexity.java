@@ -39,7 +39,8 @@ import edu.umd.cs.findbugs.ba.EdgeTypes;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * Calculates the McCabe Cyclomatic Complexity measure and reports methods that have an excessive value. This report value can be set with system property
+ * Calculates the McCabe Cyclomatic Complexity measure and reports methods that
+ * have an excessive value. This report value can be set with system property
  * 'fb-contrib.cc.limit'.
  */
 public class CyclomaticComplexity extends PreorderVisitor implements Detector {
@@ -51,8 +52,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
     /**
      * constructs a CC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public CyclomaticComplexity(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -65,8 +65,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
     /**
      * overrides the visitor to store the class context
      *
-     * @param context
-     *            the context object for the currently parsed class
+     * @param context the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(final ClassContext context) {
@@ -89,8 +88,7 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
     /**
      * overrides the visitor to navigate the basic block list to count branches
      *
-     * @param obj
-     *            the method of the currently parsed method
+     * @param obj the method of the currently parsed method
      */
     @Override
     public void visitMethod(final Method obj) {
@@ -126,17 +124,19 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
                 while (iei.hasNext()) {
                     Edge e = iei.next();
                     int edgeType = e.getType();
-                    if ((edgeType != EdgeTypes.FALL_THROUGH_EDGE) && (edgeType != EdgeTypes.RETURN_EDGE) && (edgeType != EdgeTypes.UNKNOWN_EDGE)) {
-                        if ((edgeType == EdgeTypes.UNHANDLED_EXCEPTION_EDGE) || (edgeType == EdgeTypes.HANDLED_EXCEPTION_EDGE)) {
+                    if ((edgeType != EdgeTypes.FALL_THROUGH_EDGE) && (edgeType != EdgeTypes.RETURN_EDGE)
+                            && (edgeType != EdgeTypes.UNKNOWN_EDGE)) {
+                        if ((edgeType == EdgeTypes.UNHANDLED_EXCEPTION_EDGE)
+                                || (edgeType == EdgeTypes.HANDLED_EXCEPTION_EDGE)) {
                             int nodeTarget = e.getTarget().getLabel();
                             if (!exceptionNodeTargets.get(nodeTarget)) {
                                 exceptionNodeTargets.set(nodeTarget);
                                 branches++;
                             }
                         } else if ((edgeType == EdgeTypes.SWITCH_EDGE) || (edgeType == EdgeTypes.SWITCH_DEFAULT_EDGE)) {
-                        	BasicBlock target = e.getTarget();
+                            BasicBlock target = e.getTarget();
                             int nodeTarget = target.getLabel();
-                            
+
                             InstructionHandle firstIns = target.getFirstInstruction();
                             int pos = firstIns == null ? -1 : firstIns.getPosition();
                             if (nodeTarget != lastSwitchTargetBlockLabel && pos != lastSwitchPosition) {
@@ -154,14 +154,15 @@ public class CyclomaticComplexity extends PreorderVisitor implements Detector {
             if (branches > reportLimit) {
 
                 int priority = (branches > (reportLimit * 2) ? HIGH_PRIORITY : NORMAL_PRIORITY);
-                BugInstance bug = new BugInstance(this, BugType.CC_CYCLOMATIC_COMPLEXITY.name(), priority).addClass(this).addMethod(this)
-                        .addSourceLine(classContext, this, 0).addInt(branches);
+                BugInstance bug = new BugInstance(this, BugType.CC_CYCLOMATIC_COMPLEXITY.name(), priority)
+                        .addClass(this).addMethod(this).addSourceLine(classContext, this, 0).addInt(branches);
 
                 bugReporter.reportBug(bug);
             }
         } catch (CFGBuilderException cbe) {
-            bugReporter.logError("Failure examining basic blocks for method " + classContext.getJavaClass().getClassName() + '.' + obj.getName()
-                    + " in Cyclomatic Complexity detector", cbe);
+            bugReporter
+                    .logError("Failure examining basic blocks for method " + classContext.getJavaClass().getClassName()
+                            + '.' + obj.getName() + " in Cyclomatic Complexity detector", cbe);
         }
     }
 }

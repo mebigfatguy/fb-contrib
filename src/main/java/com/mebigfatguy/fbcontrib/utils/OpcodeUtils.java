@@ -114,7 +114,8 @@ public final class OpcodeUtils {
     }
 
     public static boolean isStandardInvoke(int seen) {
-        return (seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESTATIC);
+        return (seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKEVIRTUAL)
+                || (seen == Const.INVOKESTATIC);
     }
 
     public static boolean isBranch(int seen) {
@@ -122,8 +123,8 @@ public final class OpcodeUtils {
     }
 
     public static boolean isReturn(int seen) {
-        return ((seen == Const.ARETURN) || (seen == Const.IRETURN) || (seen == Const.LRETURN) || (seen == Const.FRETURN) || (seen == Const.DRETURN)
-                || (seen == Const.RETURN));
+        return ((seen == Const.ARETURN) || (seen == Const.IRETURN) || (seen == Const.LRETURN) || (seen == Const.FRETURN)
+                || (seen == Const.DRETURN) || (seen == Const.RETURN));
     }
 
 }

@@ -41,7 +41,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * looks for class that implement Comparator or Comparable, and whose compare or compareTo methods return constant values only, but that don't represent the
+ * looks for class that implement Comparator or Comparable, and whose compare or
+ * compareTo methods return constant values only, but that don't represent the
  * three possible choice (a negative number, 0, and a positive number).
  */
 @CustomUserValue
@@ -51,7 +52,7 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     static {
         try {
             compareClasses = UnmodifiableList.create(
-            // @formatter:off
+                    // @formatter:off
                     new CompareSpec("java/lang/Comparable", new MethodInfo("compareTo", 1, Values.SIG_PRIMITIVE_INT)),
                     new CompareSpec(Values.SLASHED_JAVA_UTIL_COMPARATOR,
                             new MethodInfo("compare", 2, Values.SIG_PRIMITIVE_INT))
@@ -75,18 +76,17 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     /**
      * constructs a SCRV detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SuspiciousComparatorReturnValues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to actually iterate twice over this class, once for compareTo and once for compare.
+     * implements the visitor to actually iterate twice over this class, once for
+     * compareTo and once for compare.
      *
-     * @param classContext
-     *            the currently parsed class
+     * @param classContext the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -109,12 +109,14 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to check to see what Const were returned from a comparator. If no Const were returned it can't determine anything, however if only
-     * Const were returned, it looks to see if negative positive and zero was returned. It also looks to see if a non zero value is returned unconditionally.
-     * While it is possible that later check is ok, it usually means something is wrong.
+     * implements the visitor to check to see what Const were returned from a
+     * comparator. If no Const were returned it can't determine anything, however if
+     * only Const were returned, it looks to see if negative positive and zero was
+     * returned. It also looks to see if a non zero value is returned
+     * unconditionally. While it is possible that later check is ok, it usually
+     * means something is wrong.
      *
-     * @param obj
-     *            the currently parsed code block
+     * @param obj the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -139,8 +141,9 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
                     boolean seenAll = seenNegative & seenPositive & seenZero;
                     if (!seenAll || seenUnconditionalNonZero) {
                         bugReporter.reportBug(
-                                new BugInstance(this, BugType.SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(), seenAll ? LOW_PRIORITY : NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this, 0));
+                                new BugInstance(this, BugType.SCRV_SUSPICIOUS_COMPARATOR_RETURN_VALUES.name(),
+                                        seenAll ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                                .addSourceLine(this, 0));
                     }
                 }
             } catch (StopOpcodeParsingException e) {
@@ -150,11 +153,11 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for returns of constant values, and records them for being negative, zero or positive. It also records unconditional
+     * implements the visitor to look for returns of constant values, and records
+     * them for being negative, zero or positive. It also records unconditional
      * returns of non zero values
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -162,87 +165,87 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.IRETURN: {
-                    processIntegerReturn();
-                }
+            case Const.IRETURN: {
+                processIntegerReturn();
+            }
                 break;
 
-                case Const.GOTO:
-                case Const.GOTO_W: {
-                    if (stack.getStackDepth() > 0) {
+            case Const.GOTO:
+            case Const.GOTO_W: {
+                if (stack.getStackDepth() > 0) {
+                    throw new StopOpcodeParsingException();
+                }
+                if (furthestBranchTarget < getBranchTarget()) {
+                    furthestBranchTarget = getBranchTarget();
+                }
+            }
+                break;
+
+            case Const.IFEQ:
+            case Const.IFNE:
+            case Const.IFLT:
+            case Const.IFGE:
+            case Const.IFGT:
+            case Const.IFLE:
+            case Const.IF_ICMPEQ:
+            case Const.IF_ICMPNE:
+            case Const.IF_ICMPLT:
+            case Const.IF_ICMPGE:
+            case Const.IF_ICMPGT:
+            case Const.IF_ICMPLE:
+            case Const.IF_ACMPEQ:
+            case Const.IF_ACMPNE:
+            case Const.IFNULL:
+            case Const.IFNONNULL: {
+                if (furthestBranchTarget < getBranchTarget()) {
+                    furthestBranchTarget = getBranchTarget();
+                }
+            }
+                break;
+
+            case Const.LOOKUPSWITCH:
+            case Const.TABLESWITCH: {
+                int defTarget = getDefaultSwitchOffset() + getPC();
+                if (furthestBranchTarget > defTarget) {
+                    furthestBranchTarget = defTarget;
+                }
+            }
+                break;
+
+            case Const.ATHROW: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    String exSig = item.getSignature();
+                    if ("Ljava/lang/UnsupportedOperationException;".equals(exSig)) {
                         throw new StopOpcodeParsingException();
                     }
-                    if (furthestBranchTarget < getBranchTarget()) {
-                        furthestBranchTarget = getBranchTarget();
-                    }
+                }
+            }
+                break;
+
+            /*
+             * these three opcodes are here because findbugs proper is broken, it sometimes
+             * doesn't push this constant on the stack, because of bad branch handling
+             */
+            case Const.ICONST_0:
+                if (getNextOpcode() == Const.IRETURN) {
+                    sawConstant = Integer.valueOf(0);
                 }
                 break;
 
-                case Const.IFEQ:
-                case Const.IFNE:
-                case Const.IFLT:
-                case Const.IFGE:
-                case Const.IFGT:
-                case Const.IFLE:
-                case Const.IF_ICMPEQ:
-                case Const.IF_ICMPNE:
-                case Const.IF_ICMPLT:
-                case Const.IF_ICMPGE:
-                case Const.IF_ICMPGT:
-                case Const.IF_ICMPLE:
-                case Const.IF_ACMPEQ:
-                case Const.IF_ACMPNE:
-                case Const.IFNULL:
-                case Const.IFNONNULL: {
-                    if (furthestBranchTarget < getBranchTarget()) {
-                        furthestBranchTarget = getBranchTarget();
-                    }
+            case Const.ICONST_M1:
+                if (getNextOpcode() == Const.IRETURN) {
+                    sawConstant = Integer.valueOf(-1);
                 }
                 break;
 
-                case Const.LOOKUPSWITCH:
-                case Const.TABLESWITCH: {
-                    int defTarget = getDefaultSwitchOffset() + getPC();
-                    if (furthestBranchTarget > defTarget) {
-                        furthestBranchTarget = defTarget;
-                    }
+            case Const.ICONST_1:
+                if (getNextOpcode() == Const.IRETURN) {
+                    sawConstant = Integer.valueOf(1);
                 }
                 break;
 
-                case Const.ATHROW: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        String exSig = item.getSignature();
-                        if ("Ljava/lang/UnsupportedOperationException;".equals(exSig)) {
-                            throw new StopOpcodeParsingException();
-                        }
-                    }
-                }
-                break;
-
-                /*
-                 * these three opcodes are here because findbugs proper is broken, it sometimes
-                 * doesn't push this constant on the stack, because of bad branch handling
-                 */
-                case Const.ICONST_0:
-                    if (getNextOpcode() == Const.IRETURN) {
-                        sawConstant = Integer.valueOf(0);
-                    }
-                break;
-
-                case Const.ICONST_M1:
-                    if (getNextOpcode() == Const.IRETURN) {
-                        sawConstant = Integer.valueOf(-1);
-                    }
-                break;
-
-                case Const.ICONST_1:
-                    if (getNextOpcode() == Const.IRETURN) {
-                        sawConstant = Integer.valueOf(1);
-                    }
-                break;
-
-                default:
+            default:
                 break;
 
             }
@@ -252,8 +255,10 @@ public class SuspiciousComparatorReturnValues extends BytecodeScanningDetector {
     }
 
     /**
-     * processes an IRETURN looking for Const and categorizes them as negative, zero or positive. it also records a unconditional return of a non zero value
-     * Throws StopOpcodeParsingException if a return value (constant) is indeterminate
+     * processes an IRETURN looking for Const and categorizes them as negative, zero
+     * or positive. it also records a unconditional return of a non zero value
+     * Throws StopOpcodeParsingException if a return value (constant) is
+     * indeterminate
      *
      */
     private void processIntegerReturn() {
@@ -329,12 +334,9 @@ class MethodInfo {
     /**
      * simple constructor for initializing the data
      *
-     * @param methodName
-     *            the name of the method
-     * @param argumentCount
-     *            the number of parameters
-     * @param signatureEnding
-     *            the return value signature type
+     * @param methodName      the name of the method
+     * @param argumentCount   the number of parameters
+     * @param signatureEnding the return value signature type
      */
     MethodInfo(String methodName, int argumentCount, String signatureEnding) {
         this.methodName = methodName;
@@ -354,7 +356,8 @@ class MethodInfo {
         }
 
         MethodInfo that = (MethodInfo) o;
-        return (argumentCount == that.argumentCount) && methodName.equals(that.methodName) && signatureEnding.equals(that.signatureEnding);
+        return (argumentCount == that.argumentCount) && methodName.equals(that.methodName)
+                && signatureEnding.equals(that.signatureEnding);
     }
 
     @Override

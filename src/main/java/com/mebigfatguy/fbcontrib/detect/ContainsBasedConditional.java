@@ -38,9 +38,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for complex if conditions where multiple or clauses are joined together where the same variable is compared against a number of static values. This
- * pattern is much more easy to read if you put those values in a static set, and just use one contains(value) call. The set name adds self-documentation as
- * well.
+ * looks for complex if conditions where multiple or clauses are joined together
+ * where the same variable is compared against a number of static values. This
+ * pattern is much more easy to read if you put those values in a static set,
+ * and just use one contains(value) call. The set name adds self-documentation
+ * as well.
  */
 public class ContainsBasedConditional extends BytecodeScanningDetector {
 
@@ -64,8 +66,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
     /**
      * constructs a CBC detector given the reporter to report bugs on
      *
-     * @param reporter
-     *            the sync of bug reports
+     * @param reporter the sync of bug reports
      */
     public ContainsBasedConditional(BugReporter reporter) {
         bugReporter = reporter;
@@ -116,101 +117,101 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
             }
 
             switch (state) {
-                case SAW_NOTHING:
-                    conditionCount = 0;
-                    //$FALL-THROUGH$
-                case SAW_PATTERN:
-                    if (isLoad(seen)) {
-                        if (conditionCount > 0) {
-                            if (loadType == seen) {
-                                state = State.SAW_LOAD;
-                            } else {
-                                state = State.SAW_NOTHING;
-                            }
-                        } else {
-                            loadType = seen;
-                            bugPC = pc;
+            case SAW_NOTHING:
+                conditionCount = 0;
+                //$FALL-THROUGH$
+            case SAW_PATTERN:
+                if (isLoad(seen)) {
+                    if (conditionCount > 0) {
+                        if (loadType == seen) {
                             state = State.SAW_LOAD;
-                        }
-                    } else {
-                        if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
-                                    .addMethod(this).addSourceLine(this, bugPC));
-                        }
-                    }
-                break;
-
-                case SAW_LOAD:
-                    if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
-                        Constant c = getConstantRefOperand();
-                        String currConstType = null;
-                        if (c instanceof ConstantString) {
-                            currConstType = Values.SLASHED_JAVA_LANG_STRING;
-                        } else if (c instanceof ConstantClass) {
-                            currConstType = Values.SLASHED_JAVA_LANG_CLASS;
-                        }
-                        if (conditionCount > 0) {
-                            if ((constType != null) && constType.equals(currConstType)) {
-                                state = State.SAW_CONST;
-                            } else {
-                                state = State.SAW_NOTHING;
-                            }
-                        } else if (currConstType != null) {
-                            state = State.SAW_CONST;
-                            constType = currConstType;
                         } else {
                             state = State.SAW_NOTHING;
                         }
-                    } else if (seen == Const.GETSTATIC) {
-                        state = State.SAW_CONST;
-
-                    } else if ((seen >= Const.ICONST_M1) && (seen <= Const.ICONST_5)) {
-                        state = State.SAW_CONST;
-
-                    } else if ((seen >= Const.LCONST_0) && (seen <= Const.LCONST_1)) {
-                        state = State.SAW_CONST;
-
                     } else {
-                        state = State.SAW_NOTHING;
+                        loadType = seen;
+                        bugPC = pc;
+                        state = State.SAW_LOAD;
                     }
+                } else {
+                    if (conditionCount >= LOW_CONDITIONAL_COUNT) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(),
+                                priority(conditionCount)).addClass(this).addMethod(this).addSourceLine(this, bugPC));
+                    }
+                }
                 break;
 
-                case SAW_CONST:
-                    if ((seen == Const.INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand())
-                            && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
-                        state = State.SAW_EQUALS;
-                    } else if (seen == Const.IF_ICMPEQ) {
-                        conditionCount++;
-                        state = State.SAW_PATTERN;
-                    } else if (seen == Const.IF_ICMPNE) {
-                        conditionCount++;
-                        if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
-                                    .addMethod(this).addSourceLine(this, bugPC));
+            case SAW_LOAD:
+                if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
+                    Constant c = getConstantRefOperand();
+                    String currConstType = null;
+                    if (c instanceof ConstantString) {
+                        currConstType = Values.SLASHED_JAVA_LANG_STRING;
+                    } else if (c instanceof ConstantClass) {
+                        currConstType = Values.SLASHED_JAVA_LANG_CLASS;
+                    }
+                    if (conditionCount > 0) {
+                        if ((constType != null) && constType.equals(currConstType)) {
+                            state = State.SAW_CONST;
+                        } else {
+                            state = State.SAW_NOTHING;
                         }
-                        state = State.SAW_NOTHING;
+                    } else if (currConstType != null) {
+                        state = State.SAW_CONST;
+                        constType = currConstType;
                     } else {
                         state = State.SAW_NOTHING;
                     }
+                } else if (seen == Const.GETSTATIC) {
+                    state = State.SAW_CONST;
+
+                } else if ((seen >= Const.ICONST_M1) && (seen <= Const.ICONST_5)) {
+                    state = State.SAW_CONST;
+
+                } else if ((seen >= Const.LCONST_0) && (seen <= Const.LCONST_1)) {
+                    state = State.SAW_CONST;
+
+                } else {
+                    state = State.SAW_NOTHING;
+                }
                 break;
 
-                case SAW_EQUALS:
-                    if (seen == Const.IFNE) {
-                        conditionCount++;
-                        state = State.SAW_PATTERN;
-                    } else if (seen == Const.IFEQ) {
-                        conditionCount++;
-                        if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
-                                    .addMethod(this).addSourceLine(this, bugPC));
-                        }
-                        state = State.SAW_NOTHING;
-                    } else {
-                        state = State.SAW_NOTHING;
+            case SAW_CONST:
+                if ((seen == Const.INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand())
+                        && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
+                    state = State.SAW_EQUALS;
+                } else if (seen == Const.IF_ICMPEQ) {
+                    conditionCount++;
+                    state = State.SAW_PATTERN;
+                } else if (seen == Const.IF_ICMPNE) {
+                    conditionCount++;
+                    if (conditionCount >= LOW_CONDITIONAL_COUNT) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(),
+                                priority(conditionCount)).addClass(this).addMethod(this).addSourceLine(this, bugPC));
                     }
+                    state = State.SAW_NOTHING;
+                } else {
+                    state = State.SAW_NOTHING;
+                }
                 break;
-                default: // this indicates incompatible code change
-                    throw new AssertionError("Unhandled state: " + state);
+
+            case SAW_EQUALS:
+                if (seen == Const.IFNE) {
+                    conditionCount++;
+                    state = State.SAW_PATTERN;
+                } else if (seen == Const.IFEQ) {
+                    conditionCount++;
+                    if (conditionCount >= LOW_CONDITIONAL_COUNT) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(),
+                                priority(conditionCount)).addClass(this).addMethod(this).addSourceLine(this, bugPC));
+                    }
+                    state = State.SAW_NOTHING;
+                } else {
+                    state = State.SAW_NOTHING;
+                }
+                break;
+            default: // this indicates incompatible code change
+                throw new AssertionError("Unhandled state: " + state);
             }
         } finally {
             stack.sawOpcode(this, seen);
@@ -222,6 +223,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
     }
 
     private static int priority(int conditionCount) {
-        return (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY;
+        return (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY
+                : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY;
     }
 }

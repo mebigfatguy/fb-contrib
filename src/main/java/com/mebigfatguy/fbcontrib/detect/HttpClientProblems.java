@@ -29,19 +29,21 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
- * looks for problems surrounding use of HttpRequests from the Apache HttpComponents library which have have some little-known quirks about them. This is a set
- * of detectors that helps guard against resource starvation.
+ * looks for problems surrounding use of HttpRequests from the Apache
+ * HttpComponents library which have have some little-known quirks about them.
+ * This is a set of detectors that helps guard against resource starvation.
  */
 public class HttpClientProblems extends MissingMethodsDetector {
 
-    private static Set<String> httpRequestClasses = UnmodifiableSet.create("org.apache.http.client.methods.HttpGet", "org.apache.http.client.methods.HttpPut",
-            "org.apache.http.client.methods.HttpDelete", "org.apache.http.client.methods.HttpPost", "org.apache.http.client.methods.HttpPatch");
+    private static Set<String> httpRequestClasses = UnmodifiableSet.create("org.apache.http.client.methods.HttpGet",
+            "org.apache.http.client.methods.HttpPut", "org.apache.http.client.methods.HttpDelete",
+            "org.apache.http.client.methods.HttpPost", "org.apache.http.client.methods.HttpPatch");
 
     private static Set<String> resetMethods = UnmodifiableSet.create("reset", "releaseConnection");
 
     // Any methods that should not be treated as a "will call a reset method"
-    private static Set<String> whiteListMethods = UnmodifiableSet.create("execute", "fatal", "error", "info", "debug", "trace", "println", "print", "format",
-            "append" // for when Java uses StringBuilders to append Strings
+    private static Set<String> whiteListMethods = UnmodifiableSet.create("execute", "fatal", "error", "info", "debug",
+            "trace", "println", "print", "format", "append" // for when Java uses StringBuilders to append Strings
     );
 
     public HttpClientProblems(BugReporter bugReporter) {
@@ -55,7 +57,8 @@ public class HttpClientProblems extends MissingMethodsDetector {
 
     @Override
     protected BugInstance makeLocalBugInstance() {
-        // This is reported at LOW, and also the bugrank is set high, as there have been issues brought up with GitHub Issue #59
+        // This is reported at LOW, and also the bugrank is set high, as there have been
+        // issues brought up with GitHub Issue #59
         // If anyone wants to address these and retry, i'm all for it.
         return new BugInstance(this, BugType.HCP_HTTP_REQUEST_RESOURCES_NOT_FREED_LOCAL.name(), LOW_PRIORITY);
     }

@@ -38,8 +38,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * finds classes that implement clone() that do not specialize the return value, and do not swallow CloneNotFoundException. Not doing so makes the clone method
- * not as simple to use, and should be harmless to do.
+ * finds classes that implement clone() that do not specialize the return value,
+ * and do not swallow CloneNotFoundException. Not doing so makes the clone
+ * method not as simple to use, and should be harmless to do.
  */
 public class CloneUsability extends BytecodeScanningDetector {
 
@@ -53,8 +54,7 @@ public class CloneUsability extends BytecodeScanningDetector {
     /**
      * constructs a CU detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public CloneUsability(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -69,8 +69,7 @@ public class CloneUsability extends BytecodeScanningDetector {
     /**
      * overrides the visitor to check for classes that implement Cloneable.
      *
-     * @param classContext
-     *            the context object that holds the JavaClass being parsed
+     * @param classContext the context object that holds the JavaClass being parsed
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -97,8 +96,7 @@ public class CloneUsability extends BytecodeScanningDetector {
     /**
      * overrides the visitor to grab the method name and reset the state.
      *
-     * @param obj
-     *            the method being parsed
+     * @param obj the method being parsed
      */
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "FCBL_FIELD_COULD_BE_LOCAL", justification = "False positives occur when state is maintained across callbacks")
     @Override
@@ -112,12 +110,14 @@ public class CloneUsability extends BytecodeScanningDetector {
                 if (!clsName.equals(returnClsName)) {
                     if (Values.DOTTED_JAVA_LANG_OBJECT.equals(returnClsName)) {
                         bugReporter.reportBug(
-                                new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
+                                new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this));
                     } else {
                         JavaClass clonedClass = Repository.lookupClass(returnClsName);
                         if (!cls.instanceOf(clonedClass)) {
                             bugReporter.reportBug(
-                                    new BugInstance(this, BugType.CU_CLONE_USABILITY_MISMATCHED_RETURN.name(), HIGH_PRIORITY).addClass(this).addMethod(this));
+                                    new BugInstance(this, BugType.CU_CLONE_USABILITY_MISMATCHED_RETURN.name(),
+                                            HIGH_PRIORITY).addClass(this).addMethod(this));
                         }
                     }
                 }
@@ -133,7 +133,9 @@ public class CloneUsability extends BytecodeScanningDetector {
                     }
 
                     if (!throwsCNFE) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CU_CLONE_USABILITY_THROWS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.CU_CLONE_USABILITY_THROWS.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this));
                     }
                 }
             }
@@ -145,8 +147,7 @@ public class CloneUsability extends BytecodeScanningDetector {
     /**
      * overrides the visitor to look for a CloneNotSupported being thrown
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -165,8 +166,7 @@ public class CloneUsability extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a THROW opcode
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class throws exceptions
      */
     private boolean prescreen(Method method) {

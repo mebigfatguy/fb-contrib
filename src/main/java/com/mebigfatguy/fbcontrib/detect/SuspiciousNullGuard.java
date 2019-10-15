@@ -42,8 +42,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for code that checks to see if a field or local variable is not null, before entering a code block either an if, or while statement, and reassigns that
- * field or variable. It seems that perhaps the guard should check if the field or variable is null.
+ * looks for code that checks to see if a field or local variable is not null,
+ * before entering a code block either an if, or while statement, and reassigns
+ * that field or variable. It seems that perhaps the guard should check if the
+ * field or variable is null.
  */
 @CustomUserValue
 public class SuspiciousNullGuard extends BytecodeScanningDetector {
@@ -55,8 +57,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
     /**
      * constructs a SNG detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SuspiciousNullGuard(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -65,8 +66,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
     /**
      * overrides the visitor to initialize and tear down the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -82,8 +82,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -95,8 +94,7 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
     /**
      * overrides the visitor to look for bad null guards
      *
-     * @param seen
-     *            the opcode of the currently visited instruction
+     * @param seen the opcode of the currently visited instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -109,124 +107,126 @@ public class SuspiciousNullGuard extends BytecodeScanningDetector {
             clearEndOfLifeRegisters();
 
             switch (seen) {
-                case Const.IFNULL: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        int reg = itm.getRegisterNumber();
-                        Integer target = Integer.valueOf(getBranchTarget());
-                        if (reg >= 0) {
-                            int eol = Integer.MAX_VALUE;
-                            LocalVariableTable lvt = getMethod().getLocalVariableTable();
-                            if (lvt != null) {
-                                LocalVariable lv = lvt.getLocalVariable(reg, pc);
-                                if (lv != null) {
-                                    eol = pc + lv.getLength();
-                                }
-                            }
-
-                            nullGuards.put(target, new NullGuard(reg, pc, eol, itm.getSignature()));
-                        } else {
-                            XField xf = itm.getXField();
-                            Integer sourceFieldReg = (Integer) itm.getUserValue();
-                            if ((xf != null) && (sourceFieldReg != null)) {
-                                nullGuards.put(target, new NullGuard(xf, sourceFieldReg.intValue(), pc, itm.getSignature()));
-                            }
-                        }
-                    }
-                }
-                break;
-
-                case Const.ASTORE:
-                case Const.ASTORE_0:
-                case Const.ASTORE_1:
-                case Const.ASTORE_2:
-                case Const.ASTORE_3: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (!itm.isNull()) {
-                            NullGuard guard = findNullGuardWithRegister(RegisterUtils.getAStoreReg(this, seen));
-                            if (guard != null) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_LOCAL_GUARD.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                                removeNullGuard(guard);
-                            }
-                        }
-                    }
-                }
-                break;
-
-                case Const.ALOAD:
-                case Const.ALOAD_0:
-                case Const.ALOAD_1:
-                case Const.ALOAD_2:
-                case Const.ALOAD_3: {
-                    NullGuard guard = findNullGuardWithRegister(RegisterUtils.getALoadReg(this, seen));
-                    if (guard != null) {
-                        removeNullGuard(guard);
-                    }
-                    sawALOADReg = Integer.valueOf(RegisterUtils.getALoadReg(this, seen));
-                }
-                break;
-
-                case Const.PUTFIELD: {
-                    if (stack.getStackDepth() <= 1) {
-                        break;
-                    }
+            case Const.IFNULL: {
+                if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
-                    if (itm.isNull()) {
-                        break;
+                    int reg = itm.getRegisterNumber();
+                    Integer target = Integer.valueOf(getBranchTarget());
+                    if (reg >= 0) {
+                        int eol = Integer.MAX_VALUE;
+                        LocalVariableTable lvt = getMethod().getLocalVariableTable();
+                        if (lvt != null) {
+                            LocalVariable lv = lvt.getLocalVariable(reg, pc);
+                            if (lv != null) {
+                                eol = pc + lv.getLength();
+                            }
+                        }
+
+                        nullGuards.put(target, new NullGuard(reg, pc, eol, itm.getSignature()));
+                    } else {
+                        XField xf = itm.getXField();
+                        Integer sourceFieldReg = (Integer) itm.getUserValue();
+                        if ((xf != null) && (sourceFieldReg != null)) {
+                            nullGuards.put(target,
+                                    new NullGuard(xf, sourceFieldReg.intValue(), pc, itm.getSignature()));
+                        }
                     }
-                    XField xf = getXFieldOperand();
-                    itm = stack.getStackItem(1);
-                    Integer fieldSourceReg = (Integer) itm.getUserValue();
-                    if ((xf != null) && (fieldSourceReg != null)) {
-                        NullGuard guard = findNullGuardWithField(xf, fieldSourceReg.intValue());
+                }
+            }
+                break;
+
+            case Const.ASTORE:
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (!itm.isNull()) {
+                        NullGuard guard = findNullGuardWithRegister(RegisterUtils.getAStoreReg(this, seen));
                         if (guard != null) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_FIELD_GUARD.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_LOCAL_GUARD.name(),
+                                    NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                             removeNullGuard(guard);
                         }
                     }
                 }
+            }
                 break;
 
-                case Const.GETFIELD: {
-                    if (stack.getStackDepth() > 0) {
-                        XField xf = getXFieldOperand();
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        Integer fieldSourceReg = (Integer) itm.getUserValue();
-                        if ((xf != null) && (fieldSourceReg != null)) {
-                            NullGuard guard = findNullGuardWithField(xf, fieldSourceReg.intValue());
-                            if (guard != null) {
-                                removeNullGuard(guard);
-                            } else {
-                                sawALOADReg = (Integer) itm.getUserValue();
-                            }
+            case Const.ALOAD:
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3: {
+                NullGuard guard = findNullGuardWithRegister(RegisterUtils.getALoadReg(this, seen));
+                if (guard != null) {
+                    removeNullGuard(guard);
+                }
+                sawALOADReg = Integer.valueOf(RegisterUtils.getALoadReg(this, seen));
+            }
+                break;
+
+            case Const.PUTFIELD: {
+                if (stack.getStackDepth() <= 1) {
+                    break;
+                }
+                OpcodeStack.Item itm = stack.getStackItem(0);
+                if (itm.isNull()) {
+                    break;
+                }
+                XField xf = getXFieldOperand();
+                itm = stack.getStackItem(1);
+                Integer fieldSourceReg = (Integer) itm.getUserValue();
+                if ((xf != null) && (fieldSourceReg != null)) {
+                    NullGuard guard = findNullGuardWithField(xf, fieldSourceReg.intValue());
+                    if (guard != null) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.SNG_SUSPICIOUS_NULL_FIELD_GUARD.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                        removeNullGuard(guard);
+                    }
+                }
+            }
+                break;
+
+            case Const.GETFIELD: {
+                if (stack.getStackDepth() > 0) {
+                    XField xf = getXFieldOperand();
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    Integer fieldSourceReg = (Integer) itm.getUserValue();
+                    if ((xf != null) && (fieldSourceReg != null)) {
+                        NullGuard guard = findNullGuardWithField(xf, fieldSourceReg.intValue());
+                        if (guard != null) {
+                            removeNullGuard(guard);
+                        } else {
+                            sawALOADReg = (Integer) itm.getUserValue();
                         }
                     }
                 }
+            }
                 break;
 
-                case Const.IFEQ:
-                case Const.IFNE:
-                case Const.IFLT:
-                case Const.IFGE:
-                case Const.IFGT:
-                case Const.IFLE:
-                case Const.IF_ICMPEQ:
-                case Const.IF_ICMPNE:
-                case Const.IF_ICMPLT:
-                case Const.IF_ICMPGE:
-                case Const.IF_ICMPGT:
-                case Const.IF_ICMPLE:
-                case Const.IF_ACMPEQ:
-                case Const.IF_ACMPNE:
-                case Const.GOTO:
-                case Const.GOTO_W:
-                case Const.IFNONNULL:
-                    nullGuards.clear();
+            case Const.IFEQ:
+            case Const.IFNE:
+            case Const.IFLT:
+            case Const.IFGE:
+            case Const.IFGT:
+            case Const.IFLE:
+            case Const.IF_ICMPEQ:
+            case Const.IF_ICMPNE:
+            case Const.IF_ICMPLT:
+            case Const.IF_ICMPGE:
+            case Const.IF_ICMPGT:
+            case Const.IF_ICMPLE:
+            case Const.IF_ACMPEQ:
+            case Const.IF_ACMPNE:
+            case Const.GOTO:
+            case Const.GOTO_W:
+            case Const.IFNONNULL:
+                nullGuards.clear();
                 break;
-                default:
+            default:
                 break;
             }
         } finally {

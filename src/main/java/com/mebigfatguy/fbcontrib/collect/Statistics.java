@@ -53,7 +53,8 @@ public final class Statistics implements Iterable<Map.Entry<FQMethod, MethodInfo
         methodStatistics.clear();
     }
 
-    public MethodInfo addMethodStatistics(String className, String methodName, String signature, int access, int numBytes, int numMethodCalls, boolean isDerived) {
+    public MethodInfo addMethodStatistics(String className, String methodName, String signature, int access,
+            int numBytes, int numMethodCalls, boolean isDerived) {
         FQMethod key = new FQMethod(className, methodName, signature);
         MethodInfo mi = methodStatistics.get(key);
         if (mi == null) {

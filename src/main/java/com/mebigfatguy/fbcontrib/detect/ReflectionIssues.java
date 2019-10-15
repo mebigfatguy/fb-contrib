@@ -37,8 +37,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class ReflectionIssues extends BytecodeScanningDetector {
 
     private static final QMethod SETACCESSIBLE = new QMethod("setAccessible", SignatureBuilder.SIG_BOOLEAN_TO_VOID);
-    private static final FQMethod SETACCESSIBLE_ARRAY = new FQMethod("java/lang/reflect/AccessibleObject", "setAccessible",
-            new SignatureBuilder().withParamTypes(AccessibleObject[].class, boolean.class).build());
+    private static final FQMethod SETACCESSIBLE_ARRAY = new FQMethod("java/lang/reflect/AccessibleObject",
+            "setAccessible", new SignatureBuilder().withParamTypes(AccessibleObject[].class, boolean.class).build());
     private static final JavaClass ACCESSIBLE_OBJECT_CLASS;
 
     static {
@@ -74,16 +74,16 @@ public class ReflectionIssues extends BytecodeScanningDetector {
 
                     JavaClass clz = Repository.lookupClass(getClassConstantOperand());
                     if (clz.instanceOf(ACCESSIBLE_OBJECT_CLASS)) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, BugType.RFI_SET_ACCESSIBLE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.RFI_SET_ACCESSIBLE.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
 
             } else if (seen == Const.INVOKESTATIC) {
                 FQMethod m = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                 if (SETACCESSIBLE_ARRAY.equals(m)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.RFI_SET_ACCESSIBLE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.RFI_SET_ACCESSIBLE.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
         } catch (ClassNotFoundException e) {

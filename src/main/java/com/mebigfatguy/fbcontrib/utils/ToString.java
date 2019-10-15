@@ -32,7 +32,8 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 public class ToString {
 
     /**
-     * holds objects that have already been converted to string to avoid infinite loops in the toString generation
+     * holds objects that have already been converted to string to avoid infinite
+     * loops in the toString generation
      */
     private static class VisitedInfo {
         Set<Integer> visitedHC = new HashSet<>();
@@ -54,7 +55,7 @@ public class ToString {
         VisitedInfo vi = visited.get();
         try {
             vi.count++;
-            return generate(o, (ignoredFields == null) ? null : Arrays.<String> asList(ignoredFields), vi.visitedHC);
+            return generate(o, (ignoredFields == null) ? null : Arrays.<String>asList(ignoredFields), vi.visitedHC);
         } finally {
             if (--vi.count == 0) {
                 vi.visitedHC.clear();

@@ -32,7 +32,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for methods that are bigger than 8000 bytes, as these methods are ignored by the jit for compilation, causing them to always be interpreted.
+ * looks for methods that are bigger than 8000 bytes, as these methods are
+ * ignored by the jit for compilation, causing them to always be interpreted.
  */
 public class Unjitable extends PreorderVisitor implements Detector {
 
@@ -47,8 +48,7 @@ public class Unjitable extends PreorderVisitor implements Detector {
     /**
      * implements the visitor to accept the class for visiting
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -57,20 +57,21 @@ public class Unjitable extends PreorderVisitor implements Detector {
     }
 
     /**
-     * implements the visitor to look at the size of the method. static initializer are ignored as these will only be executed once anyway.
+     * implements the visitor to look at the size of the method. static initializer
+     * are ignored as these will only be executed once anyway.
      *
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
 
         Method m = getMethod();
-        if ((!m.isStatic() || !Values.STATIC_INITIALIZER.equals(m.getName())) && (!m.getName().contains("enum constant"))) { // a findbugs thing!!
+        if ((!m.isStatic() || !Values.STATIC_INITIALIZER.equals(m.getName()))
+                && (!m.getName().contains("enum constant"))) { // a findbugs thing!!
             byte[] code = obj.getCode();
             if (code.length >= UNJITABLE_CODE_LENGTH) {
-                bugReporter.reportBug(new BugInstance(this, BugType.UJM_UNJITABLE_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addString("Code Bytes: " + code.length));
+                bugReporter.reportBug(new BugInstance(this, BugType.UJM_UNJITABLE_METHOD.name(), NORMAL_PRIORITY)
+                        .addClass(this).addMethod(this).addString("Code Bytes: " + code.length));
             }
         }
     }

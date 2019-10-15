@@ -30,13 +30,13 @@ public final class AttributesUtils {
     }
 
     /**
-     * returns whether the pc is at a line number that also appears for a another byte code offset later on in the method. If this occurs we are in a jdk6
-     * finally replicated block, and so don't report this. If the code has no line number table, then just report it.
+     * returns whether the pc is at a line number that also appears for a another
+     * byte code offset later on in the method. If this occurs we are in a jdk6
+     * finally replicated block, and so don't report this. If the code has no line
+     * number table, then just report it.
      *
-     * @param obj
-     *            the code object to find line number attributes from
-     * @param pc
-     *            the pc to check
+     * @param obj the code object to find line number attributes from
+     * @param pc  the pc to check
      *
      * @return whether the pc is in user code
      */

@@ -34,7 +34,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for constructors that operate through side effects, specifically constructors that aren't assigned to any variable or field.
+ * looks for constructors that operate through side effects, specifically
+ * constructors that aren't assigned to any variable or field.
  */
 @CustomUserValue
 public class SideEffectConstructor extends BytecodeScanningDetector {
@@ -50,8 +51,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
     /**
      * constructs a SEC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SideEffectConstructor(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -60,8 +60,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
     /**
      * overrides the visitor to set up and tear down the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -76,8 +75,7 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the state and reset the opcode stack
      *
-     * @param obj
-     *            the context object of the currently parsed code
+     * @param obj the context object of the currently parsed code
      */
     @Override
     public void visitCode(Code obj) {
@@ -87,11 +85,11 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for constructors who's value is popped off the stack, and not assigned before the pop of the value, or if a return is
-     * issued with that object still on the stack.
+     * overrides the visitor to look for constructors who's value is popped off the
+     * stack, and not assigned before the pop of the value, or if a return is issued
+     * with that object still on the stack.
      *
-     * @param seen
-     *            the opcode of the currently parse opcode
+     * @param seen the opcode of the currently parse opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -100,16 +98,17 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (state) {
-                case SAW_NOTHING:
-                    pc = sawOpcodeAfterNothing(seen);
+            case SAW_NOTHING:
+                pc = sawOpcodeAfterNothing(seen);
                 break;
 
-                case SAW_CTOR:
-                    if ((seen == Const.POP) || (seen == Const.RETURN)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                .addSourceLine(this));
-                    }
-                    state = State.SAW_NOTHING;
+            case SAW_CTOR:
+                if ((seen == Const.POP) || (seen == Const.RETURN)) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
+                }
+                state = State.SAW_NOTHING;
                 break;
             }
         } finally {
@@ -143,8 +142,9 @@ public class SideEffectConstructor extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(i);
                 Integer secPC = (Integer) item.getUserValue();
                 if (secPC != null) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this, secPC.intValue()));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.SEC_SIDE_EFFECT_CONSTRUCTOR.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this, secPC.intValue()));
                     break;
                 }
 

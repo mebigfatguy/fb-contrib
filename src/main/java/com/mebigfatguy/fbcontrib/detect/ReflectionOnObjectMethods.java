@@ -45,43 +45,47 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for method calls through reflection on methods found in java.lang.Object. As these methods are always available, there's no reason to do this.
+ * looks for method calls through reflection on methods found in
+ * java.lang.Object. As these methods are always available, there's no reason to
+ * do this.
  */
 @CustomUserValue
 public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
 
     public static final String SIG_STRING_AND_CLASS_ARRAY_TO_METHOD = new SignatureBuilder()
-            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, SignatureUtils.toArraySignature(Values.SLASHED_JAVA_LANG_CLASS)).withReturnType(Method.class)
-            .toString();
+            .withParamTypes(Values.SLASHED_JAVA_LANG_STRING,
+                    SignatureUtils.toArraySignature(Values.SLASHED_JAVA_LANG_CLASS))
+            .withReturnType(Method.class).toString();
 
     private static final Set<String> objectSigs = UnmodifiableSet.create(
             // "clone()", // clone is declared protected
-            "equals(Ljava/lang/Object;)", "finalize()", "getClass()", "hashCode()", "notify()", "notifyAll()", "toString()", "wait", "wait(J)", "wait(JI)");
+            "equals(Ljava/lang/Object;)", "finalize()", "getClass()", "hashCode()", "notify()", "notifyAll()",
+            "toString()", "wait", "wait(J)", "wait(JI)");
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
     private Map<Integer, String[]> localClassTypes;
     private Map<String, String[]> fieldClassTypes;
     /**
-     * This object is not thread-safe, but can be reused, provided that all necessary fields are overwritten.
+     * This object is not thread-safe, but can be reused, provided that all
+     * necessary fields are overwritten.
      */
     private final SignatureBuilder sigWithoutReturn = new SignatureBuilder().withoutReturnType();
 
     /**
      * constructs a ROOM detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ReflectionOnObjectMethods(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to create the stack and local and field maps for Class arrays to be used for getting the reflection method
+     * implements the visitor to create the stack and local and field maps for Class
+     * arrays to be used for getting the reflection method
      *
-     * @param classContext
-     *            the context object of the currently parse class
+     * @param classContext the context object of the currently parse class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -105,10 +109,10 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the opcode stack and clear the local variable map@
+     * implements the visitor to reset the opcode stack and clear the local variable
+     * map@
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -118,10 +122,10 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls that invoke a method through reflection where the method is defined in java.lang.Object
+     * implements the visitor to look for calls that invoke a method through
+     * reflection where the method is defined in java.lang.Object
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -132,119 +136,121 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.ANEWARRAY: {
-                    if (Values.SLASHED_JAVA_LANG_CLASS.equals(getClassConstantOperand()) && (stack.getStackDepth() >= 1)) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        arraySize = (Integer) item.getConstant();
-                    }
+            case Const.ANEWARRAY: {
+                if (Values.SLASHED_JAVA_LANG_CLASS.equals(getClassConstantOperand()) && (stack.getStackDepth() >= 1)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    arraySize = (Integer) item.getConstant();
                 }
+            }
                 break;
 
-                case Const.AASTORE: {
-                    if (stack.getStackDepth() >= 3) {
-                        OpcodeStack.Item arrayItem = stack.getStackItem(2);
-                        String[] arrayTypes = (String[]) arrayItem.getUserValue();
-                        if (arrayTypes != null) {
-                            OpcodeStack.Item valueItem = stack.getStackItem(0);
-                            String type = (String) valueItem.getConstant();
-                            if (type != null) {
-                                OpcodeStack.Item indexItem = stack.getStackItem(1);
-                                Integer index = (Integer) indexItem.getConstant();
-                                if (index != null) {
-                                    arrayTypes[index.intValue()] = type;
-                                }
+            case Const.AASTORE: {
+                if (stack.getStackDepth() >= 3) {
+                    OpcodeStack.Item arrayItem = stack.getStackItem(2);
+                    String[] arrayTypes = (String[]) arrayItem.getUserValue();
+                    if (arrayTypes != null) {
+                        OpcodeStack.Item valueItem = stack.getStackItem(0);
+                        String type = (String) valueItem.getConstant();
+                        if (type != null) {
+                            OpcodeStack.Item indexItem = stack.getStackItem(1);
+                            Integer index = (Integer) indexItem.getConstant();
+                            if (index != null) {
+                                arrayTypes[index.intValue()] = type;
                             }
                         }
                     }
                 }
+            }
                 break;
 
-                case Const.PUTFIELD:
-                case Const.PUTSTATIC: {
-                    String name = getNameConstantOperand();
-                    if (stack.getStackDepth() >= 1) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        String[] arrayTypes = (String[]) item.getUserValue();
-                        if (arrayTypes != null) {
-                            fieldClassTypes.put(name, arrayTypes);
-                            return;
-                        }
+            case Const.PUTFIELD:
+            case Const.PUTSTATIC: {
+                String name = getNameConstantOperand();
+                if (stack.getStackDepth() >= 1) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    String[] arrayTypes = (String[]) item.getUserValue();
+                    if (arrayTypes != null) {
+                        fieldClassTypes.put(name, arrayTypes);
+                        return;
                     }
-                    fieldClassTypes.remove(name);
                 }
+                fieldClassTypes.remove(name);
+            }
                 break;
 
-                case Const.GETFIELD:
-                case Const.GETSTATIC: {
-                    String name = getNameConstantOperand();
-                    loadedTypes = fieldClassTypes.get(name);
-                }
+            case Const.GETFIELD:
+            case Const.GETSTATIC: {
+                String name = getNameConstantOperand();
+                loadedTypes = fieldClassTypes.get(name);
+            }
                 break;
 
-                case Const.ASTORE_0:
-                case Const.ASTORE_1:
-                case Const.ASTORE_2:
-                case Const.ASTORE_3:
-                case Const.ASTORE: {
-                    Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
-                    if (stack.getStackDepth() >= 1) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        String[] arrayTypes = (String[]) item.getUserValue();
-                        if (arrayTypes != null) {
-                            localClassTypes.put(reg, arrayTypes);
-                            return;
-                        }
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3:
+            case Const.ASTORE: {
+                Integer reg = Integer.valueOf(RegisterUtils.getAStoreReg(this, seen));
+                if (stack.getStackDepth() >= 1) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    String[] arrayTypes = (String[]) item.getUserValue();
+                    if (arrayTypes != null) {
+                        localClassTypes.put(reg, arrayTypes);
+                        return;
                     }
-                    localClassTypes.remove(reg);
                 }
+                localClassTypes.remove(reg);
+            }
                 break;
 
-                case Const.ALOAD_0:
-                case Const.ALOAD_1:
-                case Const.ALOAD_2:
-                case Const.ALOAD_3:
-                case Const.ALOAD: {
-                    int reg = RegisterUtils.getAStoreReg(this, seen);
-                    loadedTypes = localClassTypes.get(Integer.valueOf(reg));
-                }
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3:
+            case Const.ALOAD: {
+                int reg = RegisterUtils.getAStoreReg(this, seen);
+                loadedTypes = localClassTypes.get(Integer.valueOf(reg));
+            }
                 break;
 
-                case Const.INVOKEVIRTUAL: {
-                    String cls = getClassConstantOperand();
-                    if (Values.SLASHED_JAVA_LANG_CLASS.equals(cls)) {
-                        String method = getNameConstantOperand();
-                        if ("getMethod".equals(method)) {
-                            String sig = getSigConstantOperand();
-                            if (SIG_STRING_AND_CLASS_ARRAY_TO_METHOD.equals(sig) && (stack.getStackDepth() >= 2)) {
-                                OpcodeStack.Item clsArgs = stack.getStackItem(0);
-                                String[] arrayTypes = (String[]) clsArgs.getUserValue();
-                                if ((arrayTypes != null) || clsArgs.isNull()) {
-                                    OpcodeStack.Item methodItem = stack.getStackItem(1);
-                                    String methodName = (String) methodItem.getConstant();
-                                    if (methodName != null) {
-                                        String reflectionSig = sigWithoutReturn.withMethodName(methodName).withParamTypes(arrayTypes).build();
-                                        if (objectSigs.contains(reflectionSig)) {
-                                            loadedTypes = (arrayTypes == null) ? new String[0] : arrayTypes;
-                                        }
+            case Const.INVOKEVIRTUAL: {
+                String cls = getClassConstantOperand();
+                if (Values.SLASHED_JAVA_LANG_CLASS.equals(cls)) {
+                    String method = getNameConstantOperand();
+                    if ("getMethod".equals(method)) {
+                        String sig = getSigConstantOperand();
+                        if (SIG_STRING_AND_CLASS_ARRAY_TO_METHOD.equals(sig) && (stack.getStackDepth() >= 2)) {
+                            OpcodeStack.Item clsArgs = stack.getStackItem(0);
+                            String[] arrayTypes = (String[]) clsArgs.getUserValue();
+                            if ((arrayTypes != null) || clsArgs.isNull()) {
+                                OpcodeStack.Item methodItem = stack.getStackItem(1);
+                                String methodName = (String) methodItem.getConstant();
+                                if (methodName != null) {
+                                    String reflectionSig = sigWithoutReturn.withMethodName(methodName)
+                                            .withParamTypes(arrayTypes).build();
+                                    if (objectSigs.contains(reflectionSig)) {
+                                        loadedTypes = (arrayTypes == null) ? new String[0] : arrayTypes;
                                     }
                                 }
                             }
                         }
-                    } else if ("java/lang/reflect/Method".equals(cls)) {
-                        String method = getNameConstantOperand();
-                        if ("invoke".equals(method) && (stack.getStackDepth() >= 3)) {
-                            OpcodeStack.Item methodItem = stack.getStackItem(2);
-                            String[] arrayTypes = (String[]) methodItem.getUserValue();
-                            if (arrayTypes != null) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.ROOM_REFLECTION_ON_OBJECT_METHODS.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            }
+                    }
+                } else if ("java/lang/reflect/Method".equals(cls)) {
+                    String method = getNameConstantOperand();
+                    if ("invoke".equals(method) && (stack.getStackDepth() >= 3)) {
+                        OpcodeStack.Item methodItem = stack.getStackItem(2);
+                        String[] arrayTypes = (String[]) methodItem.getUserValue();
+                        if (arrayTypes != null) {
+                            bugReporter
+                                    .reportBug(new BugInstance(this, BugType.ROOM_REFLECTION_ON_OBJECT_METHODS.name(),
+                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }
+            }
                 break;
 
-                default:
+            default:
                 break;
             }
         } finally {
@@ -267,8 +273,7 @@ public class ReflectionOnObjectMethods extends BytecodeScanningDetector {
     /**
      * finds the method that is the static initializer for the class
      *
-     * @param cls
-     *            the class to find the initializer for
+     * @param cls the class to find the initializer for
      *
      * @return the Method of the static initializer or null if this class has none
      */

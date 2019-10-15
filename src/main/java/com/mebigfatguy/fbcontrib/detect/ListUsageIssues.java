@@ -46,18 +46,22 @@ public class ListUsageIssues extends BytecodeScanningDetector {
 
     private static final FQMethod ARRAYS_ASLIST_METHOD = new FQMethod("java/util/Arrays", "asList",
             new SignatureBuilder().withParamTypes(Object[].class).withReturnType(List.class).build());
-    private static final FQMethod COLLECTIONS_SINGLETONLIST_METHOD = new FQMethod("java/util/Collections", "singletonList",
-            new SignatureBuilder().withParamTypes(Object.class).withReturnType(List.class).build());
+    private static final FQMethod COLLECTIONS_SINGLETONLIST_METHOD = new FQMethod("java/util/Collections",
+            "singletonList", new SignatureBuilder().withParamTypes(Object.class).withReturnType(List.class).build());
     private static final FQMethod LIST_STREAM_METHOD = new FQMethod("java/util/List", "stream",
             new SignatureBuilder().withReturnType("java/util/stream/Stream").build());
     private static final FQMethod STREAM_FINDFIRST_METHOD = new FQMethod("java/util/stream/Stream", "findFirst",
             new SignatureBuilder().withReturnType("java/util/Optional").build());
-    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get", SignatureBuilder.SIG_VOID_TO_OBJECT);
+    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get",
+            SignatureBuilder.SIG_VOID_TO_OBJECT);
 
     private static final Set<FQMethod> ADDALL_METHODS = UnmodifiableSet.create(
-            new FQMethod("java/util/Collection", "addAll", new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
-            new FQMethod("java/util/List", "addAll", new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
-            new FQMethod("java/util/Set", "addAll", new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()));
+            new FQMethod("java/util/Collection", "addAll",
+                    new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
+            new FQMethod("java/util/List", "addAll",
+                    new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()),
+            new FQMethod("java/util/Set", "addAll",
+                    new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()));
 
     enum LUIUserValue {
         ONE_ITEM_LIST, LIST_STREAM, STREAM_OPTIONAL
@@ -70,8 +74,7 @@ public class ListUsageIssues extends BytecodeScanningDetector {
     /**
      * constructs a LUI detector given the reporter to report bugs on with
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ListUsageIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -99,14 +102,16 @@ public class ListUsageIssues extends BytecodeScanningDetector {
         LUIUserValue userValue = null;
         try {
             if (seen == Const.INVOKESTATIC) {
-                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand());
                 if (ARRAYS_ASLIST_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         if (Values.ONE.equals(itm.getConstant())) {
                             if (clsVersion >= Const.MAJOR_1_8) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_SINGLETON_LIST.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.LUI_USE_SINGLETON_LIST.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
                             }
 
                             userValue = LUIUserValue.ONE_ITEM_LIST;
@@ -116,13 +121,16 @@ public class ListUsageIssues extends BytecodeScanningDetector {
                     userValue = LUIUserValue.ONE_ITEM_LIST;
                 }
             } else if (seen == Const.INVOKEINTERFACE) {
-                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand());
                 if (ADDALL_METHODS.contains(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
-                        if ((itm.getUserValue() == LUIUserValue.ONE_ITEM_LIST) && (itm.getRegisterNumber() < 0) && (itm.getXField() == null)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_COLLECTION_ADD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                    .addSourceLine(this));
+                        if ((itm.getUserValue() == LUIUserValue.ONE_ITEM_LIST) && (itm.getRegisterNumber() < 0)
+                                && (itm.getXField() == null)) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.LUI_USE_COLLECTION_ADD.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 } else if (LIST_STREAM_METHOD.equals(fqm)) {
@@ -136,13 +144,14 @@ public class ListUsageIssues extends BytecodeScanningDetector {
                     }
                 }
             } else if (seen == Const.INVOKEVIRTUAL) {
-                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand());
                 if (OPTIONAL_GET_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         if (itm.getUserValue() == LUIUserValue.STREAM_OPTIONAL) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.LUI_USE_GET0.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.LUI_USE_GET0.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }

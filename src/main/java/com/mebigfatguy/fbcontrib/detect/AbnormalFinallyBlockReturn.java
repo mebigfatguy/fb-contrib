@@ -44,7 +44,9 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * find methods that return or throw exception from a finally block. Doing so short-circuits the return or exception thrown from the try block, and masks it.
+ * find methods that return or throw exception from a finally block. Doing so
+ * short-circuits the return or exception thrown from the try block, and masks
+ * it.
  */
 public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
@@ -54,18 +56,17 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     /**
      * constructs a AFBR detector given the reporter to report bugs on.
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public AbnormalFinallyBlockReturn(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * overrides the visitor to check for java class version being as good or better than 1.4
+     * overrides the visitor to check for java class version being as good or better
+     * than 1.4
      *
-     * @param classContext
-     *            the context object that holds the JavaClass parsed
+     * @param classContext the context object that holds the JavaClass parsed
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -89,8 +90,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     /**
      * overrides the visitor to collect finally block info.
      *
-     * @param obj
-     *            the code object to scan for finally blocks
+     * @param obj the code object to scan for finally blocks
      */
     @Override
     public void visitCode(Code obj) {
@@ -118,8 +118,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     /**
      * overrides the visitor to find return/exceptions from the finally block.
      *
-     * @param seen
-     *            the opcode that is being visited
+     * @param seen the opcode that is being visited
      */
     @Override
     public void sawOpcode(int seen) {
@@ -163,8 +162,9 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
         }
 
         if (OpcodeUtils.isReturn(seen) || (seen == Const.ATHROW)) {
-            bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                    .addSourceLine(this));
+            bugReporter
+                    .reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this));
             removeEarliestFinallyBlock();
         } else if (OpcodeUtils.isStandardInvoke(seen)) {
             try {
@@ -173,8 +173,9 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
                 if (m != null) {
                     ExceptionTable et = m.getExceptionTable();
                     if ((et != null) && (et.getLength() > 0) && !catchBlockInFinally(fbi)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), LOW_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.AFBR_ABNORMAL_FINALLY_BLOCK_RETURN.name(), LOW_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                         removeEarliestFinallyBlock();
                     }
                 }
@@ -185,7 +186,8 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     }
 
     /**
-     * removes the earliest finally block, as we've just concluded checking it, and if it's the last one then throw back to visitCode
+     * removes the earliest finally block, as we've just concluded checking it, and
+     * if it's the last one then throw back to visitCode
      */
     private void removeEarliestFinallyBlock() {
         fbInfo.remove(0);
@@ -197,12 +199,9 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     /**
      * finds the method in specified class by name and signature
      *
-     * @param cls
-     *            the class to look the method in
-     * @param name
-     *            the name of the method to look for
-     * @param sig
-     *            the signature of the method to look for
+     * @param cls  the class to look the method in
+     * @param name the name of the method to look for
+     * @param sig  the signature of the method to look for
      *
      * @return the Method object for the specified information
      */
@@ -219,11 +218,12 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
     }
 
     /**
-     * looks to see if any try/catch block exists inside this finally block, that wrap the current pc. This is a lax check as the try catch block may not catch
-     * exceptions that are thrown, but doing so would be prohibitively slow. But it should catch some problems.
+     * looks to see if any try/catch block exists inside this finally block, that
+     * wrap the current pc. This is a lax check as the try catch block may not catch
+     * exceptions that are thrown, but doing so would be prohibitively slow. But it
+     * should catch some problems.
      *
-     * @param fBlockInfo
-     *            the finally block the pc is currently in
+     * @param fBlockInfo the finally block the pc is currently in
      *
      * @return if all exceptions are caught inside this finally block
      */
@@ -255,8 +255,7 @@ public class AbnormalFinallyBlockReturn extends BytecodeScanningDetector {
         /**
          * create a finally block info for a specific code range
          *
-         * @param start
-         *            the start of the try block
+         * @param start the start of the try block
          */
         FinallyBlockInfo(int start) {
             startPC = start;

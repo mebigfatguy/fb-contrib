@@ -1,4 +1,5 @@
 package ex;
+
 class AOM_Super {
     public void test1() {
         test2();

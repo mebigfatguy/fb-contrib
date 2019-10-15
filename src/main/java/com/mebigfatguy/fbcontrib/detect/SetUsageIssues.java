@@ -46,9 +46,12 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class SetUsageIssues extends BytecodeScanningDetector {
 
-    private static final FQMethod CONTAINS_METHOD = new FQMethod("java/util/Set", "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
-    private static final FQMethod ADD_METHOD = new FQMethod("java/util/Set", "add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
-    private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Set", "remove", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final FQMethod CONTAINS_METHOD = new FQMethod("java/util/Set", "contains",
+            SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final FQMethod ADD_METHOD = new FQMethod("java/util/Set", "add",
+            SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
+    private static final FQMethod REMOVE_METHOD = new FQMethod("java/util/Set", "remove",
+            SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -57,8 +60,7 @@ public class SetUsageIssues extends BytecodeScanningDetector {
     /**
      * constructs a SUI detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SetUsageIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -98,7 +100,8 @@ public class SetUsageIssues extends BytecodeScanningDetector {
             }
 
             if (seen == Const.INVOKEINTERFACE) {
-                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand());
                 if (CONTAINS_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         SetRef sr = new SetRef(stack.getStackItem(1));
@@ -109,18 +112,20 @@ public class SetUsageIssues extends BytecodeScanningDetector {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         Contains contains = setContainsUsed.remove(new SetRef(itm));
-                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains) && !contains.isContained()) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_ADD.name(), contains.getReportLevel()).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains)
+                                && !contains.isContained()) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_ADD.name(),
+                                    contains.getReportLevel()).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 } else if (REMOVE_METHOD.equals(fqm)) {
                     if (stack.getStackDepth() >= 2) {
                         OpcodeStack.Item itm = stack.getStackItem(1);
                         Contains contains = setContainsUsed.remove(new SetRef(itm));
-                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains) && contains.isContained()) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_REMOVE.name(), contains.getReportLevel()).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                        if ((contains != null) && new Contains(stack.getStackItem(0)).equals(contains)
+                                && contains.isContained()) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SUI_CONTAINS_BEFORE_REMOVE.name(),
+                                    contains.getReportLevel()).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }

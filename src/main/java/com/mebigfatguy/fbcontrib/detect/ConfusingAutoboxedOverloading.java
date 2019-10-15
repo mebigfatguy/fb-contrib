@@ -39,8 +39,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for methods that have the same signature, except where one uses a Character parameter, and the other uses an int, long, float, double parameter. Since
- * autoboxing is available in 1.5 one might assume that
+ * looks for methods that have the same signature, except where one uses a
+ * Character parameter, and the other uses an int, long, float, double
+ * parameter. Since autoboxing is available in 1.5 one might assume that
  *
  * <pre>
  * test('a')
@@ -57,16 +58,15 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class ConfusingAutoboxedOverloading extends PreorderVisitor implements Detector {
     private static final int JDK15_MAJOR = 49;
 
-    private static final Set<String> primitiveSigs = UnmodifiableSet.create(Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE,
-            Values.SIG_PRIMITIVE_FLOAT);
+    private static final Set<String> primitiveSigs = UnmodifiableSet.create(Values.SIG_PRIMITIVE_INT,
+            Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_FLOAT);
 
     private final BugReporter bugReporter;
 
     /**
      * constructs a CAO detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ConfusingAutoboxedOverloading(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -75,8 +75,8 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
     /**
      * overrides the visitor to look for confusing signatures
      *
-     * @param classContext
-     *            the context object that holds the JavaClass currently being parsed
+     * @param classContext the context object that holds the JavaClass currently
+     *                     being parsed
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -96,8 +96,10 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
                 if (sigs != null) {
                     for (String sig : sigs) {
                         if (confusingSignatures(sig, signature)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.CAO_CONFUSING_AUTOBOXED_OVERLOADING.name(), NORMAL_PRIORITY)
-                                    .addClass(cls.getClassName()).addString(name + signature).addString(name + sig));
+                            bugReporter
+                                    .reportBug(new BugInstance(this, BugType.CAO_CONFUSING_AUTOBOXED_OVERLOADING.name(),
+                                            NORMAL_PRIORITY).addClass(cls.getClassName()).addString(name + signature)
+                                                    .addString(name + sig));
                         }
                     }
                 }
@@ -108,10 +110,8 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
     /**
      * returns if one signature is a Character and the other is a primitive
      *
-     * @param sig1
-     *            the first method signature
-     * @param sig2
-     *            the second method signature
+     * @param sig1 the first method signature
+     * @param sig2 the second method signature
      *
      * @return if one signature is a Character and the other a primitive
      */
@@ -154,10 +154,8 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
     /**
      * fills out a set of method details for possibly confusing method signatures
      *
-     * @param cls
-     *            the current class being parsed
-     * @param methodInfo
-     *            a collection to hold possibly confusing methods
+     * @param cls        the current class being parsed
+     * @param methodInfo a collection to hold possibly confusing methods
      */
     private void populateMethodInfo(JavaClass cls, Map<String, Set<String>> methodInfo) {
         try {
@@ -189,15 +187,15 @@ public class ConfusingAutoboxedOverloading extends PreorderVisitor implements De
     /**
      * returns whether a method signature has either a Character or primitive
      *
-     * @param sig
-     *            the method signature
+     * @param sig the method signature
      *
      * @return whether a method signature has either a Character or primitive
      */
     private static boolean isPossiblyConfusingSignature(String sig) {
         List<String> types = SignatureUtils.getParameterSignatures(sig);
         for (String typeSig : types) {
-            if (primitiveSigs.contains(typeSig) || SignatureUtils.classToSignature(Values.SLASHED_JAVA_LANG_CHARACTER).equals(typeSig)) {
+            if (primitiveSigs.contains(typeSig)
+                    || SignatureUtils.classToSignature(Values.SLASHED_JAVA_LANG_CHARACTER).equals(typeSig)) {
                 return true;
             }
         }

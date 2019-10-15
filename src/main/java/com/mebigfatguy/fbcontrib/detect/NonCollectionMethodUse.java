@@ -33,39 +33,44 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
- * looks for method calls to collection classes where the method is not defined by the Collections interface, and an equivalent method exists in the interface.
+ * looks for method calls to collection classes where the method is not defined
+ * by the Collections interface, and an equivalent method exists in the
+ * interface.
  */
 public class NonCollectionMethodUse extends BytecodeScanningDetector {
-    private static final Set<FQMethod> oldMethods = UnmodifiableSet.create(
-            new FQMethod("java/util/Hashtable", "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
-            new FQMethod("java/util/Hashtable", "elements", new SignatureBuilder().withReturnType("java/util/Enumeration").toString()),
-            new FQMethod("java/util/Hashtable", "keys", new SignatureBuilder().withReturnType("java/util/Enumeration").toString()),
-            new FQMethod("java/util/Vector", "addElement", new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).toString()),
-            new FQMethod("java/util/Vector", "elementAt", SignatureBuilder.SIG_INT_TO_OBJECT),
-            new FQMethod("java/util/Vector", "insertElementAt",
-                    new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SIG_PRIMITIVE_INT).toString()),
-            new FQMethod("java/util/Vector", "removeAllElements", SignatureBuilder.SIG_VOID_TO_VOID),
-            new FQMethod("java/util/Vector", "removeElement", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
-            new FQMethod("java/util/Vector", "removeElementAt", SignatureBuilder.SIG_INT_TO_VOID), new FQMethod("java/util/Vector", "setElementAt",
-                    new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SIG_PRIMITIVE_INT).toString()));
+    private static final Set<FQMethod> oldMethods = UnmodifiableSet
+            .create(new FQMethod("java/util/Hashtable", "contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
+                    new FQMethod("java/util/Hashtable", "elements",
+                            new SignatureBuilder().withReturnType("java/util/Enumeration").toString()),
+                    new FQMethod("java/util/Hashtable", "keys",
+                            new SignatureBuilder().withReturnType("java/util/Enumeration").toString()),
+                    new FQMethod("java/util/Vector", "addElement",
+                            new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).toString()),
+                    new FQMethod("java/util/Vector", "elementAt", SignatureBuilder.SIG_INT_TO_OBJECT),
+                    new FQMethod("java/util/Vector", "insertElementAt", new SignatureBuilder()
+                            .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SIG_PRIMITIVE_INT).toString()),
+                    new FQMethod("java/util/Vector", "removeAllElements", SignatureBuilder.SIG_VOID_TO_VOID),
+                    new FQMethod("java/util/Vector", "removeElement", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
+                    new FQMethod("java/util/Vector", "removeElementAt", SignatureBuilder.SIG_INT_TO_VOID),
+                    new FQMethod("java/util/Vector", "setElementAt", new SignatureBuilder()
+                            .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SIG_PRIMITIVE_INT).toString()));
 
     private BugReporter bugReporter;
 
     /**
      * constructs a NCMU detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public NonCollectionMethodUse(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to look for method calls that are one of the old pre-collections1.2 set of methods
+     * implements the visitor to look for method calls that are one of the old
+     * pre-collections1.2 set of methods
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -76,8 +81,9 @@ public class NonCollectionMethodUse extends BytecodeScanningDetector {
 
             FQMethod methodInfo = new FQMethod(className, methodName, methodSig);
             if (oldMethods.contains(methodInfo)) {
-                bugReporter.reportBug(new BugInstance(this, BugType.NCMU_NON_COLLECTION_METHOD_USE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this));
+                bugReporter
+                        .reportBug(new BugInstance(this, BugType.NCMU_NON_COLLECTION_METHOD_USE.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
             }
         }
     }

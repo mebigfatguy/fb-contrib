@@ -38,9 +38,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for classes that break the fundamental rule of equivalence, which is symmetry. If a equals b, then b equals a. While it is usually wrong to allow
- * equals to compare different types, at the very least you should make sure that each class knows about each other and is able to compare themselves with each
- * other.
+ * looks for classes that break the fundamental rule of equivalence, which is
+ * symmetry. If a equals b, then b equals a. While it is usually wrong to allow
+ * equals to compare different types, at the very least you should make sure
+ * that each class knows about each other and is able to compare themselves with
+ * each other.
  */
 public class NonSymmetricEquals extends BytecodeScanningDetector {
 
@@ -51,8 +53,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
     /**
      * constructs a NSE detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public NonSymmetricEquals(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -61,8 +62,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
     /**
      * implements the visitor to create the stack object
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -77,8 +77,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
     /**
      * implements the visitor to see if this method is equals(Object o)
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -95,8 +94,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a checkcast instruction
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class does checkcast instructions
      */
     private boolean prescreen(Method method) {
@@ -105,10 +103,10 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for checkcasts of the parameter to other types, and enter instances in a map for further processing in doReport.
+     * implements the visitor to look for checkcasts of the parameter to other
+     * types, and enter instances in a map for further processing in doReport.
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -123,10 +121,12 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
                     if (!thisCls.equals(equalsCls)) {
                         JavaClass thisJavaClass = getClassContext().getJavaClass();
                         JavaClass equalsJavaClass = Repository.lookupClass(equalsCls);
-                        boolean inheritance = thisJavaClass.instanceOf(equalsJavaClass) || equalsJavaClass.instanceOf(thisJavaClass);
+                        boolean inheritance = thisJavaClass.instanceOf(equalsJavaClass)
+                                || equalsJavaClass.instanceOf(thisJavaClass);
 
-                        BugInstance bug = new BugInstance(this, BugType.NSE_NON_SYMMETRIC_EQUALS.name(), inheritance ? LOW_PRIORITY : NORMAL_PRIORITY)
-                                .addClass(this).addMethod(this).addSourceLine(this).addString(equalsCls);
+                        BugInstance bug = new BugInstance(this, BugType.NSE_NON_SYMMETRIC_EQUALS.name(),
+                                inheritance ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                        .addSourceLine(this).addString(equalsCls);
                         Map<String, BugInstance> bugs = possibleBugs.get(thisCls);
                         if (bugs == null) {
                             bugs = new HashMap<>();

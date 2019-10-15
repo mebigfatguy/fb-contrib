@@ -45,9 +45,11 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for loops where an equality check is made and a variable is set because of it. It would seem once the item is found, the loop can be terminated,
- * however the code continues on, looking for more matches. It is possible the code is looking for the last match, but if this we case, a reverse iterator might
- * be more effective.
+ * looks for loops where an equality check is made and a variable is set because
+ * of it. It would seem once the item is found, the loop can be terminated,
+ * however the code continues on, looking for more matches. It is possible the
+ * code is looking for the last match, but if this we case, a reverse iterator
+ * might be more effective.
  */
 public class SuspiciousLoopSearch extends BytecodeScanningDetector {
 
@@ -65,8 +67,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     /**
      * constructs an SLS detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SuspiciousLoopSearch(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -75,8 +76,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     /**
      * overrides the visitor to initialize and tear down the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -97,8 +97,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -113,25 +112,25 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find continuations after finding a search result in a loop.
+     * implements the visitor to find continuations after finding a search result in
+     * a loop.
      *
-     * @param seen
-     *            the currently visitor opcode
+     * @param seen the currently visitor opcode
      */
     @Override
     public void sawOpcode(int seen) {
         try {
             switch (state) {
-                case SAW_NOTHING:
-                    sawOpcodeAfterNothing(seen);
+            case SAW_NOTHING:
+                sawOpcodeAfterNothing(seen);
                 break;
 
-                case SAW_EQUALS:
-                    sawOpcodeAfterEquals(seen);
+            case SAW_EQUALS:
+                sawOpcodeAfterEquals(seen);
                 break;
 
-                case SAW_IFEQ:
-                    sawOpcodeAfterBranch(seen);
+            case SAW_IFEQ:
+                sawOpcodeAfterBranch(seen);
                 break;
             }
 
@@ -189,7 +188,8 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                     // ignore boolean flag stores, as this is a
                     // relatively normal occurrence
                     if (!Values.SIG_PRIMITIVE_BOOLEAN.equals(sig) && !Values.SIG_JAVA_LANG_BOOLEAN.equals(sig)) {
-                        block.storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
+                        block.storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)),
+                                Integer.valueOf(getPC()));
                     }
                 }
             } else if (OpcodeUtils.isReturn(seen)) {
@@ -240,8 +240,10 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                 Integer pc = loadedRegs.get(block.storeRegs.entrySet().iterator().next().getKey());
                 if ((pc == null) || (pc.intValue() < target)) {
 
-                    bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this, blocksInLoop.get(0).storeRegs.values().iterator().next().intValue()));
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this,
+                                            blocksInLoop.get(0).storeRegs.values().iterator().next().intValue()));
                 }
             }
 
@@ -274,8 +276,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a GOTO opcodes
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class uses synchronization
      */
     private boolean prescreen(Method method) {

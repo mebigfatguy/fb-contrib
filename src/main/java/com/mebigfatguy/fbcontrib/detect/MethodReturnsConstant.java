@@ -43,7 +43,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for private methods that can only return one constant value. either the class should not return a value, or perhaps a branch was missed.
+ * looks for private methods that can only return one constant value. either the
+ * class should not return a value, or perhaps a branch was missed.
  */
 @CustomUserValue
 public class MethodReturnsConstant extends BytecodeScanningDetector {
@@ -61,19 +62,18 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     /**
      * constructs a MRC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public MethodReturnsConstant(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to collect all methods that are overloads. These methods should be ignored, as you may differentiate Const based on parameter
+     * implements the visitor to collect all methods that are overloads. These
+     * methods should be ignored, as you may differentiate Const based on parameter
      * type, or value.
      *
-     * @param classContext
-     *            the currently parsed class object
+     * @param classContext the currently parsed class object
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -92,8 +92,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the stack and proceed for private methods
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -104,8 +103,8 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
         }
 
         int aFlags = m.getAccessFlags();
-        if ((((aFlags & Const.ACC_PRIVATE) != 0) || ((aFlags & Const.ACC_STATIC) != 0)) && ((aFlags & Const.ACC_SYNTHETIC) == 0)
-                && (!m.getSignature().endsWith(")Z"))) {
+        if ((((aFlags & Const.ACC_PRIVATE) != 0) || ((aFlags & Const.ACC_STATIC) != 0))
+                && ((aFlags & Const.ACC_SYNTHETIC) == 0) && (!m.getSignature().endsWith(")Z"))) {
             stack.resetForMethodEntry(this);
             returnRegister = Values.NEGATIVE_ONE;
             returnConstant = null;
@@ -116,7 +115,8 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
                 super.visitCode(obj);
                 if ((returnConstant != null)) {
                     BugInstance bi = new BugInstance(this, BugType.MRC_METHOD_RETURNS_CONSTANT.name(),
-                            ((aFlags & Const.ACC_PRIVATE) != 0) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this);
+                            ((aFlags & Const.ACC_PRIVATE) != 0) ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this)
+                                    .addMethod(this);
                     if (returnPC >= 0) {
                         bi.addSourceLine(this, returnPC);
                     }
@@ -133,8 +133,7 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for methods that return a constant
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -233,11 +232,12 @@ public class MethodReturnsConstant extends BytecodeScanningDetector {
     }
 
     /**
-     * adds all methods of a class that are overloaded to a set. This method is O(nlogn) so for large classes might be slow. Assuming on average it's better
-     * than other choices. When a match is found in the j index, it is removed from the array, so it is not scanned with the i index
+     * adds all methods of a class that are overloaded to a set. This method is
+     * O(nlogn) so for large classes might be slow. Assuming on average it's better
+     * than other choices. When a match is found in the j index, it is removed from
+     * the array, so it is not scanned with the i index
      *
-     * @param cls
-     *            the class to look for overloaded methods
+     * @param cls the class to look for overloaded methods
      * @return the set of methods that are overloaded
      */
     private Set<Method> collectOverloadedMethods(JavaClass cls) {

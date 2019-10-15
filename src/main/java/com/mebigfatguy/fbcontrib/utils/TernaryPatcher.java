@@ -26,11 +26,16 @@ import org.apache.bcel.Const;
 import edu.umd.cs.findbugs.OpcodeStack;
 
 /**
- * restores OpcodeStack Item's userValues when a ternary is processed. This class is required because Findbugs has a bug whereby it strips the user value field
- * from all OpcodeStack items when a GOTO is processed when items are on the stack. Normally this is not the case, but in the case of ternary handling there may
- * be N items on the stack before what the ternary pushes. Now clearly the uservalue should be stripped for items pushed on by both branches of the ternary, but
- * items that were on the stack before the ternary was executed should be left alone. This is currently not happening in findbugs. So this class saves off user
- * values across a GOTO involved with a ternary and restores them appropriately.
+ * restores OpcodeStack Item's userValues when a ternary is processed. This
+ * class is required because Findbugs has a bug whereby it strips the user value
+ * field from all OpcodeStack items when a GOTO is processed when items are on
+ * the stack. Normally this is not the case, but in the case of ternary handling
+ * there may be N items on the stack before what the ternary pushes. Now clearly
+ * the uservalue should be stripped for items pushed on by both branches of the
+ * ternary, but items that were on the stack before the ternary was executed
+ * should be left alone. This is currently not happening in findbugs. So this
+ * class saves off user values across a GOTO involved with a ternary and
+ * restores them appropriately.
  */
 public final class TernaryPatcher {
 
@@ -41,12 +46,11 @@ public final class TernaryPatcher {
     }
 
     /**
-     * called before the execution of the parent OpcodeStack.sawOpcode() to save user values if the opcode is a GOTO or GOTO_W.
+     * called before the execution of the parent OpcodeStack.sawOpcode() to save
+     * user values if the opcode is a GOTO or GOTO_W.
      *
-     * @param stack
-     *            the OpcodeStack with the items containing user values
-     * @param opcode
-     *            the opcode currently seen
+     * @param stack  the OpcodeStack with the items containing user values
+     * @param opcode the opcode currently seen
      */
     public static void pre(OpcodeStack stack, int opcode) {
         if (sawGOTO) {
@@ -66,12 +70,11 @@ public final class TernaryPatcher {
     }
 
     /**
-     * called after the execution of the parent OpcodeStack.sawOpcode, to restore the user values after the GOTO or GOTO_W's mergeJumps were processed
+     * called after the execution of the parent OpcodeStack.sawOpcode, to restore
+     * the user values after the GOTO or GOTO_W's mergeJumps were processed
      *
-     * @param stack
-     *            the OpcodeStack with the items containing user values
-     * @param opcode
-     *            the opcode currently seen
+     * @param stack  the OpcodeStack with the items containing user values
+     * @param opcode the opcode currently seen
      */
     public static void post(OpcodeStack stack, int opcode) {
         if (!sawGOTO || (opcode == Const.GOTO) || (opcode == Const.GOTO_W)) {

@@ -40,10 +40,13 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for methods that compare strings against literal strings, where the literal string is passed as the parameter. If the .equals or .compareTo is called
- * on the literal itself, passing the variable as the parameter, you avoid the possibility of a NullPointerException.
+ * looks for methods that compare strings against literal strings, where the
+ * literal string is passed as the parameter. If the .equals or .compareTo is
+ * called on the literal itself, passing the variable as the parameter, you
+ * avoid the possibility of a NullPointerException.
  *
- * Updated for 1.7 to not throw false positives for string-based switch statements (which are susceptible to NPEs). String-based switch generate
+ * Updated for 1.7 to not throw false positives for string-based switch
+ * statements (which are susceptible to NPEs). String-based switch generate
  * String.equals(Constant) bytecodes, and thus, must be accounted for
  */
 @CustomUserValue
@@ -58,8 +61,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
     /**
      * constructs a LSC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public LiteralStringComparison(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -68,8 +70,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and clear the stack
      *
-     * @param classContext
-     *            the context object for the currently parsed class
+     * @param classContext the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -86,8 +87,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a LDC or LDC_W opcodes
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class loads Const
      */
     public boolean prescreen(Method method) {
@@ -98,8 +98,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the opcode stack
      *
-     * @param obj
-     *            the code object for the currently parsed method
+     * @param obj the code object for the currently parsed method
      */
     @Override
     public void visitCode(final Code obj) {
@@ -113,8 +112,7 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
     /**
      * looks for strings comparisons where the stack object is a literal
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(final int seen) {
@@ -123,63 +121,68 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.INVOKEVIRTUAL:
-                    if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand())) {
-                        String calledMethodName = getNameConstantOperand();
-                        String calledMethodSig = getSigConstantOperand();
+            case Const.INVOKEVIRTUAL:
+                if (Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand())) {
+                    String calledMethodName = getNameConstantOperand();
+                    String calledMethodSig = getSigConstantOperand();
 
-                        if (("equals".equals(calledMethodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(calledMethodSig))
-                                || ("compareTo".equals(calledMethodName) && SignatureBuilder.SIG_STRING_TO_INT.equals(calledMethodSig))
-                                || ("equalsIgnoreCase".equals(calledMethodName) && SignatureBuilder.SIG_STRING_TO_BOOLEAN.equals(calledMethodSig))) {
+                    if (("equals".equals(calledMethodName)
+                            && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(calledMethodSig))
+                            || ("compareTo".equals(calledMethodName)
+                                    && SignatureBuilder.SIG_STRING_TO_INT.equals(calledMethodSig))
+                            || ("equalsIgnoreCase".equals(calledMethodName)
+                                    && SignatureBuilder.SIG_STRING_TO_BOOLEAN.equals(calledMethodSig))) {
 
-                            if (stack.getStackDepth() > 0) {
-                                OpcodeStack.Item itm = stack.getStackItem(0);
-                                Object constant = itm.getConstant();
-                                if ((constant != null) && constant.getClass().equals(String.class) && !lookupSwitchOnString()) {
-                                    bugReporter.reportBug(new BugInstance(this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY) // very
-                                                                                                                                // confident
-                                            .addClass(this).addMethod(this).addSourceLine(this));
-                                }
-                            }
-                        } else if (Values.HASHCODE.equals(calledMethodName) && (stack.getStackDepth() > 0)) {
-                            OpcodeStack.Item item = stack.getStackItem(0);
-                            int reg = item.getRegisterNumber();
-                            if (reg >= 0) {
-                                hashCodedStringRef = String.valueOf(reg);
-                            } else {
-                                XField xf = item.getXField();
-                                if (xf != null) {
-                                    hashCodedStringRef = xf.getName();
-                                } else {
-                                    XMethod xm = item.getReturnValueOf();
-                                    if (xm != null) {
-                                        hashCodedStringRef = xm.toString();
-                                    }
-                                }
-
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            Object constant = itm.getConstant();
+                            if ((constant != null) && constant.getClass().equals(String.class)
+                                    && !lookupSwitchOnString()) {
+                                bugReporter
+                                        .reportBug(new BugInstance(this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY) // very
+                                                                                                                         // confident
+                                                .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
-                    }
-                break;
-
-                case Const.TABLESWITCH:
-                case Const.LOOKUPSWITCH:
-                    if (stack.getStackDepth() > 0) {
+                    } else if (Values.HASHCODE.equals(calledMethodName) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
-                        String stringRef = (String) item.getUserValue();
-                        if (stringRef != null) {
-                            int[] offsets = getSwitchOffsets();
-                            BitSet bs = new BitSet();
-                            int pc = getPC();
-                            for (int offset : offsets) {
-                                bs.set(pc + offset);
+                        int reg = item.getRegisterNumber();
+                        if (reg >= 0) {
+                            hashCodedStringRef = String.valueOf(reg);
+                        } else {
+                            XField xf = item.getXField();
+                            if (xf != null) {
+                                hashCodedStringRef = xf.getName();
+                            } else {
+                                XMethod xm = item.getReturnValueOf();
+                                if (xm != null) {
+                                    hashCodedStringRef = xm.toString();
+                                }
                             }
-                            bs.set(pc + getDefaultSwitchOffset());
-                            lookupSwitches.add(new LookupDetails(stringRef, bs));
+
                         }
                     }
+                }
                 break;
-                default:
+
+            case Const.TABLESWITCH:
+            case Const.LOOKUPSWITCH:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    String stringRef = (String) item.getUserValue();
+                    if (stringRef != null) {
+                        int[] offsets = getSwitchOffsets();
+                        BitSet bs = new BitSet();
+                        int pc = getPC();
+                        for (int offset : offsets) {
+                            bs.set(pc + offset);
+                        }
+                        bs.set(pc + getDefaultSwitchOffset());
+                        lookupSwitches.add(new LookupDetails(stringRef, bs));
+                    }
+                }
+                break;
+            default:
                 break;
             }
 
@@ -208,7 +211,8 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
     }
 
     /**
-     * looks to see if the string used in a equals or compareTo is the same as that of a switch statement's switch on string.
+     * looks to see if the string used in a equals or compareTo is the same as that
+     * of a switch statement's switch on string.
      *
      * @return if the string is used in a switch
      */

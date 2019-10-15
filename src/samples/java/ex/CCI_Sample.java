@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -13,7 +14,7 @@ public class CCI_Sample {
         Set<String> values = map.get(key);
 
         if (values == null) {
-            values = Collections.<String> newSetFromMap(new ConcurrentHashMap<String, Boolean>());
+            values = Collections.<String>newSetFromMap(new ConcurrentHashMap<String, Boolean>());
             map.put(key, values);
         }
 

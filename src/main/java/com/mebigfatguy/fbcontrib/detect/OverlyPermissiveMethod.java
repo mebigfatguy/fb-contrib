@@ -57,7 +57,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.classfile.ClassDescriptor;
 
 /**
- * looks for methods that are declared more permissively than the code is using. For instance, declaring a method public, when it could just be declared
+ * looks for methods that are declared more permissively than the code is using.
+ * For instance, declaring a method public, when it could just be declared
  * private.
  */
 public class OverlyPermissiveMethod extends BytecodeScanningDetector {
@@ -80,8 +81,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     /**
      * constructs a OPM detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public OverlyPermissiveMethod(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -127,68 +127,70 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.INVOKEVIRTUAL:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKESTATIC:
-                case Const.INVOKESPECIAL: {
-                    String calledClass = getClassConstantOperand();
-                    String sig = getSigConstantOperand();
-                    MethodInfo mi = Statistics.getStatistics().getMethodStatistics(calledClass, getNameConstantOperand(), sig);
-                    if (mi != null) {
-                        if (seen == Const.INVOKEINTERFACE) {
-                            mi.addCallingAccess(Const.ACC_PUBLIC);
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESTATIC:
+            case Const.INVOKESPECIAL: {
+                String calledClass = getClassConstantOperand();
+                String sig = getSigConstantOperand();
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(calledClass, getNameConstantOperand(),
+                        sig);
+                if (mi != null) {
+                    if (seen == Const.INVOKEINTERFACE) {
+                        mi.addCallingAccess(Const.ACC_PUBLIC);
+                    } else {
+                        String calledPackage;
+                        int slashPos = calledClass.lastIndexOf('/');
+                        if (slashPos >= 0) {
+                            calledPackage = calledClass.substring(0, slashPos);
                         } else {
-                            String calledPackage;
-                            int slashPos = calledClass.lastIndexOf('/');
-                            if (slashPos >= 0) {
-                                calledPackage = calledClass.substring(0, slashPos);
-                            } else {
-                                calledPackage = "";
-                            }
-                            boolean sameClass = calledClass.equals(callingClass);
-                            boolean samePackage = calledPackage.equals(callingPackage);
+                            calledPackage = "";
+                        }
+                        boolean sameClass = calledClass.equals(callingClass);
+                        boolean samePackage = calledPackage.equals(callingPackage);
 
-                            if (sameClass) {
-                                mi.addCallingAccess(Const.ACC_PRIVATE);
-                            } else if (samePackage) {
-                                mi.addCallingAccess(0);
+                        if (sameClass) {
+                            mi.addCallingAccess(Const.ACC_PRIVATE);
+                        } else if (samePackage) {
+                            mi.addCallingAccess(0);
+                        } else {
+                            if (seen == Const.INVOKESTATIC) {
+                                mi.addCallingAccess(Const.ACC_PUBLIC);
+                            } else if (isCallingOnThis(sig)) {
+                                mi.addCallingAccess(Const.ACC_PROTECTED);
                             } else {
-                                if (seen == Const.INVOKESTATIC) {
-                                    mi.addCallingAccess(Const.ACC_PUBLIC);
-                                } else if (isCallingOnThis(sig)) {
-                                    mi.addCallingAccess(Const.ACC_PROTECTED);
-                                } else {
-                                    mi.addCallingAccess(Const.ACC_PUBLIC);
-                                }
+                                mi.addCallingAccess(Const.ACC_PUBLIC);
                             }
                         }
                     }
                 }
+            }
                 break;
 
-                case Const.INVOKEDYNAMIC:
-                    ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
+            case Const.INVOKEDYNAMIC:
+                ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
 
-                    BootstrapMethod bm = getBootstrapMethod(id.getBootstrapMethodAttrIndex());
-                    if (bm != null) {
-                        ConstantPool pool = getConstantPool();
-                        ConstantMethodHandle mh = getFirstMethodHandle(pool, bm);
-                        if (mh != null) {
-                            ConstantCP ref = (ConstantCP) pool.getConstant(mh.getReferenceIndex());
-                            ConstantClass cc = (ConstantClass) pool.getConstant(ref.getClassIndex());
-                            String clz = ((ConstantUtf8) pool.getConstant(cc.getNameIndex())).getBytes();
-                            ConstantNameAndType nameAndType = (ConstantNameAndType) pool.getConstant(ref.getNameAndTypeIndex());
-                            String sig = ((ConstantUtf8) pool.getConstant(nameAndType.getSignatureIndex())).getBytes();
-                            String name = ((ConstantUtf8) pool.getConstant(nameAndType.getNameIndex())).getBytes();
-                            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clz, name, sig);
-                            mi.addCallingAccess(Const.ACC_PUBLIC);
-                        }
-
+                BootstrapMethod bm = getBootstrapMethod(id.getBootstrapMethodAttrIndex());
+                if (bm != null) {
+                    ConstantPool pool = getConstantPool();
+                    ConstantMethodHandle mh = getFirstMethodHandle(pool, bm);
+                    if (mh != null) {
+                        ConstantCP ref = (ConstantCP) pool.getConstant(mh.getReferenceIndex());
+                        ConstantClass cc = (ConstantClass) pool.getConstant(ref.getClassIndex());
+                        String clz = ((ConstantUtf8) pool.getConstant(cc.getNameIndex())).getBytes();
+                        ConstantNameAndType nameAndType = (ConstantNameAndType) pool
+                                .getConstant(ref.getNameAndTypeIndex());
+                        String sig = ((ConstantUtf8) pool.getConstant(nameAndType.getSignatureIndex())).getBytes();
+                        String name = ((ConstantUtf8) pool.getConstant(nameAndType.getNameIndex())).getBytes();
+                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clz, name, sig);
+                        mi.addCallingAccess(Const.ACC_PUBLIC);
                     }
 
+                }
+
                 break;
 
-                default:
+            default:
                 break;
             }
         } finally {
@@ -233,8 +235,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     /**
      * checks to see if an instance method is called on the 'this' object
      *
-     * @param sig
-     *            the signature of the method called to find the called-on object
+     * @param sig the signature of the method called to find the called-on object
      * @return when it is called on this or not
      */
 
@@ -253,7 +254,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * after collecting all method calls, build a report of all methods that have been called, but in a way that is less permissive then is defined.
+     * after collecting all method calls, build a report of all methods that have
+     * been called, but in a way that is less permissive then is defined.
      */
     @Override
     public void report() {
@@ -281,11 +283,12 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                     String clsName = key.getClassName();
                     if (!isDerived(Repository.lookupClass(clsName), key)) {
 
-                        BugInstance bi = new BugInstance(this, BugType.OPM_OVERLY_PERMISSIVE_METHOD.name(), LOW_PRIORITY).addClass(clsName).addMethod(clsName,
-                                key.getMethodName(), key.getSignature(), (declaredAccess & Const.ACC_STATIC) != 0);
+                        BugInstance bi = new BugInstance(this, BugType.OPM_OVERLY_PERMISSIVE_METHOD.name(),
+                                LOW_PRIORITY).addClass(clsName).addMethod(clsName, key.getMethodName(),
+                                        key.getSignature(), (declaredAccess & Const.ACC_STATIC) != 0);
 
-                        String descr = String.format("- Method declared %s but could be declared %s", getDeclaredAccessValue(declaredAccess),
-                                getRequiredAccessValue(mi));
+                        String descr = String.format("- Method declared %s but could be declared %s",
+                                getDeclaredAccessValue(declaredAccess), getRequiredAccessValue(mi));
                         bi.addString(descr);
 
                         bugReporter.reportBug(bi);
@@ -302,10 +305,10 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * looks to see if this method is an implementation of a method in an interface, including generic specified interface methods.
+     * looks to see if this method is an implementation of a method in an interface,
+     * including generic specified interface methods.
      *
-     * @param fqMethod
-     *            the method to check
+     * @param fqMethod the method to check
      * @return if this method is constrained by an interface method
      */
     private boolean isConstrainedByInterface(FQMethod fqMethod) {
@@ -339,8 +342,10 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                                         break;
                                     }
 
-                                    JavaClass infParmClass = Repository.lookupClass(SignatureUtils.stripSignature(infParmType));
-                                    JavaClass fqParmClass = Repository.lookupClass(SignatureUtils.stripSignature(fqParmType));
+                                    JavaClass infParmClass = Repository
+                                            .lookupClass(SignatureUtils.stripSignature(infParmType));
+                                    JavaClass fqParmClass = Repository
+                                            .lookupClass(SignatureUtils.stripSignature(fqParmType));
                                     if (!fqParmClass.instanceOf(infParmClass)) {
                                         matches = false;
                                         break;
@@ -364,12 +369,11 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * looks to see if this method described by key is derived from a superclass or interface
+     * looks to see if this method described by key is derived from a superclass or
+     * interface
      *
-     * @param fqCls
-     *            the class that the method is defined in
-     * @param key
-     *            the information about the method
+     * @param fqCls the class that the method is defined in
+     * @param key   the information about the method
      * @return whether this method derives from something or not
      */
     private boolean isDerived(JavaClass fqCls, FQMethod key) {
@@ -378,7 +382,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                 for (Method infMethod : infCls.getMethods()) {
                     if (key.getMethodName().equals(infMethod.getName())) {
                         if (infMethod.getGenericSignature() != null) {
-                            if (SignatureUtils.compareGenericSignature(infMethod.getGenericSignature(), key.getSignature())) {
+                            if (SignatureUtils.compareGenericSignature(infMethod.getGenericSignature(),
+                                    key.getSignature())) {
                                 return true;
                             }
                         } else if (infMethod.getSignature().equals(key.getSignature())) {
@@ -396,7 +401,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             for (Method superMethod : superClass.getMethods()) {
                 if (key.getMethodName().equals(superMethod.getName())) {
                     if (superMethod.getGenericSignature() != null) {
-                        if (SignatureUtils.compareGenericSignature(superMethod.getGenericSignature(), key.getSignature())) {
+                        if (SignatureUtils.compareGenericSignature(superMethod.getGenericSignature(),
+                                key.getSignature())) {
                             return true;
                         }
                     } else if (superMethod.getSignature().equals(key.getSignature())) {
@@ -413,7 +419,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     }
 
     private static String getDeclaredAccessValue(int declaredAccess) {
-        return DECLARED_ACCESS.get(Integer.valueOf(declaredAccess & (Const.ACC_PRIVATE | Const.ACC_PROTECTED | Const.ACC_PUBLIC)));
+        return DECLARED_ACCESS
+                .get(Integer.valueOf(declaredAccess & (Const.ACC_PRIVATE | Const.ACC_PROTECTED | Const.ACC_PUBLIC)));
     }
 
     private static Object getRequiredAccessValue(MethodInfo mi) {
@@ -439,7 +446,8 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
 
                     return methods[bootstrapIndex];
                 }
-                throw new RuntimeException("Incompatible bcel version, the bcel that is in use, is too old and doesn't have attribute 'BootstrapMethods'");
+                throw new RuntimeException(
+                        "Incompatible bcel version, the bcel that is in use, is too old and doesn't have attribute 'BootstrapMethods'");
             }
         }
 

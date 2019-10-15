@@ -45,7 +45,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for uses of sets or maps where the key is an enum. In these cases, it is more efficient to use EnumSet or EnumMap. It is a jdk1.5 only detector.
+ * looks for uses of sets or maps where the key is an enum. In these cases, it
+ * is more efficient to use EnumSet or EnumMap. It is a jdk1.5 only detector.
  */
 @CustomUserValue
 public class UseEnumCollections extends BytecodeScanningDetector {
@@ -63,18 +64,17 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     /**
      * constructs a UEC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public UseEnumCollections(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to check that the class is greater or equal than 1.5, and set and clear the stack
+     * implements the visitor to check that the class is greater or equal than 1.5,
+     * and set and clear the stack
      *
-     * @param classContext
-     *            the context object for the currently parsed class
+     * @param classContext the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -98,8 +98,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the state
      *
-     * @param obj
-     *            the context object for the currently parsed method
+     * @param obj the context object for the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -130,7 +129,8 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 String signature = getSigConstantOperand();
                 if ("java/util/EnumSet".equals(clsName) && signature.endsWith(")Ljava/util/EnumSet;")) {
                     collectionType = CollectionType.ENUM;
-                } else if ("com/google/common/collect/Maps".equals(clsName) || "com/google/common/collect/Sets".equals(clsName)) {
+                } else if ("com/google/common/collect/Maps".equals(clsName)
+                        || "com/google/common/collect/Sets".equals(clsName)) {
                     if (methodName.startsWith("newEnum")) {
                         collectionType = CollectionType.ENUM;
                     } else if (methodName.startsWith("newHash")) {
@@ -184,7 +184,8 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
-                if (Values.SLASHED_JAVA_UTIL_MAP.equals(clsName) && "put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)) {
+                if (Values.SLASHED_JAVA_UTIL_MAP.equals(clsName) && "put".equals(methodName)
+                        && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)) {
                     bug = isEnum(1) && couldBeEnumCollection(2) && !alreadyReported(2);
                 } else if (Values.SLASHED_JAVA_UTIL_SET.equals(clsName) && "add".equals(methodName)
                         && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature)) {
@@ -192,8 +193,9 @@ public class UseEnumCollections extends BytecodeScanningDetector {
                 }
 
                 if (bug) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.UEC_USE_ENUM_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.UEC_USE_ENUM_COLLECTIONS.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                     throw new StopOpcodeParsingException();
                 }
             }
@@ -203,7 +205,8 @@ public class UseEnumCollections extends BytecodeScanningDetector {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
             TernaryPatcher.post(stack, seen);
-            if (((collectionType != null) && (collectionType != CollectionType.UNKNOWN)) && (stack.getStackDepth() > 0)) {
+            if (((collectionType != null) && (collectionType != CollectionType.UNKNOWN))
+                    && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(collectionType);
             }
@@ -211,14 +214,13 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the item at the stackPos location on the stack is an enum, and doesn't implement any interfaces
+     * returns whether the item at the stackPos location on the stack is an enum,
+     * and doesn't implement any interfaces
      *
-     * @param stackPos
-     *            the position on the opstack to check
+     * @param stackPos the position on the opstack to check
      *
      * @return whether the class is an enum
-     * @throws ClassNotFoundException
-     *             if the class can not be loaded
+     * @throws ClassNotFoundException if the class can not be loaded
      */
     private boolean isEnum(int stackPos) throws ClassNotFoundException {
         if (stack.getStackDepth() <= stackPos) {
@@ -241,10 +243,10 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the item at the stackpos location isn't an enum collection but could be
+     * returns whether the item at the stackpos location isn't an enum collection
+     * but could be
      *
-     * @param stackPos
-     *            the position on the opstack to check
+     * @param stackPos the position on the opstack to check
      *
      * @return whether the collection should be converted to an enum collection
      */
@@ -267,8 +269,7 @@ public class UseEnumCollections extends BytecodeScanningDetector {
     /**
      * returns whether the collection has already been reported on
      *
-     * @param stackPos
-     *            the position on the opstack to check
+     * @param stackPos the position on the opstack to check
      *
      * @return whether the collection has already been reported.
      */

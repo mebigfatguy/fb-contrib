@@ -40,9 +40,11 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that use Class.forName("XXX") to load a class object for a class that is already referenced by this class. It is simpler to just use
- * XXX.class, and doing so protects the integrity of this code from such transformations as obfuscation. Use of Class.forName should only be used when the class
- * in question isn't already statically bound to this context.
+ * looks for methods that use Class.forName("XXX") to load a class object for a
+ * class that is already referenced by this class. It is simpler to just use
+ * XXX.class, and doing so protects the integrity of this code from such
+ * transformations as obfuscation. Use of Class.forName should only be used when
+ * the class in question isn't already statically bound to this context.
  */
 public class SloppyClassReflection extends BytecodeScanningDetector {
     enum State {
@@ -57,8 +59,7 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
     /**
      * constructs a SCR detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SloppyClassReflection(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -67,8 +68,7 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
     /**
      * overrides the visitor to collect all class references
      *
-     * @param classContext
-     *            the class context of the currently visited class
+     * @param classContext the class context of the currently visited class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -87,8 +87,7 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
     /**
      * overrides the visitor reset the opcode stack
      *
-     * @param obj
-     *            the method object of the currently parsed method
+     * @param obj the method object of the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -132,51 +131,51 @@ public class SloppyClassReflection extends BytecodeScanningDetector {
     /**
      * overrides the visitor to find class loading that is non obfuscation proof
      *
-     * @param seen
-     *            the opcode that is being visited
+     * @param seen the opcode that is being visited
      */
     @Override
     public void sawOpcode(int seen) {
         switch (state) {
-            case COLLECT:
-                if ((seen == Const.INVOKESTATIC) || (seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKESPECIAL)) {
-                    refClasses.add(getClassConstantOperand());
-                    String signature = getSigConstantOperand();
-                    Type[] argTypes = Type.getArgumentTypes(signature);
-                    for (Type t : argTypes) {
-                        addType(t);
-                    }
-                    Type resultType = Type.getReturnType(signature);
-                    addType(resultType);
+        case COLLECT:
+            if ((seen == Const.INVOKESTATIC) || (seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)
+                    || (seen == Const.INVOKESPECIAL)) {
+                refClasses.add(getClassConstantOperand());
+                String signature = getSigConstantOperand();
+                Type[] argTypes = Type.getArgumentTypes(signature);
+                for (Type t : argTypes) {
+                    addType(t);
                 }
+                Type resultType = Type.getReturnType(signature);
+                addType(resultType);
+            }
             break;
 
-            case SEEN_NOTHING:
-                if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
-                    Constant c = getConstantRefOperand();
-                    if (c instanceof ConstantString) {
-                        clsName = ((ConstantString) c).getBytes(getConstantPool());
-                        state = State.SEEN_LDC;
-                    }
+        case SEEN_NOTHING:
+            if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
+                Constant c = getConstantRefOperand();
+                if (c instanceof ConstantString) {
+                    clsName = ((ConstantString) c).getBytes(getConstantPool());
+                    state = State.SEEN_LDC;
                 }
+            }
             break;
 
-            case SEEN_LDC:
-                if ((seen == Const.INVOKESTATIC) && "forName".equals(getNameConstantOperand()) && "java/lang/Class".equals(getClassConstantOperand())
-                        && refClasses.contains(clsName)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SCR_SLOPPY_CLASS_REFLECTION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this));
-                }
-                state = State.SEEN_NOTHING;
+        case SEEN_LDC:
+            if ((seen == Const.INVOKESTATIC) && "forName".equals(getNameConstantOperand())
+                    && "java/lang/Class".equals(getClassConstantOperand()) && refClasses.contains(clsName)) {
+                bugReporter.reportBug(new BugInstance(this, BugType.SCR_SLOPPY_CLASS_REFLECTION.name(), NORMAL_PRIORITY)
+                        .addClass(this).addMethod(this).addSourceLine(this));
+            }
+            state = State.SEEN_NOTHING;
             break;
         }
     }
 
     /**
-     * add the type string represented by the type to the refClasses set if it is a reference
+     * add the type string represented by the type to the refClasses set if it is a
+     * reference
      *
-     * @param t
-     *            the type to add
+     * @param t the type to add
      */
     private void addType(Type t) {
         String signature = t.getSignature();

@@ -1,4 +1,5 @@
 package ex;
+
 public class NSE_Sample {
     class One {
         private int o;

@@ -32,30 +32,33 @@ public class SignatureUtilsTest {
     @DataProvider(name = "namesToSignatures")
     public Object[][] namesToSignatures() {
         String sigString = "Ljava/lang/String;";
-        return new Object[][] { { "java.lang.String", sigString }, { "java/lang/String", sigString }, { sigString, sigString }, { "B", "B" }, { "S", "S" },
-                { "C", "C" }, { "I", "I" }, { "J", "J" }, { "F", "F" }, { "D", "D" }, { "Z", "Z" }, { "", "" }, { null, null }, };
+        return new Object[][] { { "java.lang.String", sigString }, { "java/lang/String", sigString },
+                { sigString, sigString }, { "B", "B" }, { "S", "S" }, { "C", "C" }, { "I", "I" }, { "J", "J" },
+                { "F", "F" }, { "D", "D" }, { "Z", "Z" }, { "", "" }, { null, null }, };
     }
 
     @DataProvider(name = "signaturesToSlashedNames")
     public Object[][] signaturesToSlashedNames() {
         String slashedString = "java/lang/String";
-        return new Object[][] { { "Ljava/lang/String;", slashedString }, { slashedString, slashedString }, { "B", "B" }, { "S", "S" }, { "C", "C" },
-                { "I", "I" }, { "J", "J" }, { "F", "F" }, { "D", "D" }, { "Z", "Z" }, { "", "" }, { null, null }, };
+        return new Object[][] { { "Ljava/lang/String;", slashedString }, { slashedString, slashedString }, { "B", "B" },
+                { "S", "S" }, { "C", "C" }, { "I", "I" }, { "J", "J" }, { "F", "F" }, { "D", "D" }, { "Z", "Z" },
+                { "", "" }, { null, null }, };
     }
 
     @DataProvider(name = "signaturesToDottedNames")
     public Object[][] signaturesToDottedNames() {
         String dottedString = "java.lang.String";
-        return new Object[][] { { "Ljava/lang/String;", dottedString }, { "java/lang/String", dottedString }, { dottedString, dottedString }, { "B", "B" },
-                { "S", "S" }, { "C", "C" }, { "I", "I" }, { "J", "J" }, { "F", "F" }, { "D", "D" }, { "Z", "Z" }, { "", "" }, };
+        return new Object[][] { { "Ljava/lang/String;", dottedString }, { "java/lang/String", dottedString },
+                { dottedString, dottedString }, { "B", "B" }, { "S", "S" }, { "C", "C" }, { "I", "I" }, { "J", "J" },
+                { "F", "F" }, { "D", "D" }, { "Z", "Z" }, { "", "" }, };
     }
 
     @DataProvider(name = "namesToArrays")
     public Object[][] namesToArrays() {
         String sigStringArray = "[Ljava/lang/String;";
-        return new Object[][] { { "java.lang.String", sigStringArray }, { "java/lang/String", sigStringArray }, { sigStringArray, "[[Ljava/lang/String;" },
-                { "B", "[B" }, { "S", "[S" }, { "C", "[C" }, { "I", "[I" }, { "J", "[J" }, { "F", "[F" }, { "D", "[D" }, { "Z", "[Z" }, { "", "" },
-                { null, null }, };
+        return new Object[][] { { "java.lang.String", sigStringArray }, { "java/lang/String", sigStringArray },
+                { sigStringArray, "[[Ljava/lang/String;" }, { "B", "[B" }, { "S", "[S" }, { "C", "[C" }, { "I", "[I" },
+                { "J", "[J" }, { "F", "[F" }, { "D", "[D" }, { "Z", "[Z" }, { "", "" }, { null, null }, };
     }
 
     @Test
@@ -63,7 +66,8 @@ public class SignatureUtilsTest {
         Map<Integer, String> expected = new HashMap<>(2);
         expected.put(1, "I");
         expected.put(2, "Ljava/lang/Object;");
-        assertEquals(SignatureUtils.getParameterSlotAndSignatures(false, "add(ILjava/lang/Object;)Ljava/lang/Object;"), expected);
+        assertEquals(SignatureUtils.getParameterSlotAndSignatures(false, "add(ILjava/lang/Object;)Ljava/lang/Object;"),
+                expected);
     }
 
     @Test
@@ -71,7 +75,8 @@ public class SignatureUtilsTest {
         Map<Integer, String> expected = new HashMap<>(2);
         expected.put(0, "I");
         expected.put(1, "Ljava/lang/Object;");
-        assertEquals(SignatureUtils.getParameterSlotAndSignatures(true, "add(ILjava/lang/Object;)Ljava/lang/Object;"), expected);
+        assertEquals(SignatureUtils.getParameterSlotAndSignatures(true, "add(ILjava/lang/Object;)Ljava/lang/Object;"),
+                expected);
     }
 
     @Test
@@ -79,17 +84,20 @@ public class SignatureUtilsTest {
         Map<Integer, String> expected = new HashMap<>(2);
         expected.put(0, "I");
         expected.put(1, "Ljava/util/List;");
-        assertEquals(SignatureUtils.getParameterSlotAndSignatures(true, "add(I!+Ljava/util/List;)Ljava/lang/Object;"), expected);
+        assertEquals(SignatureUtils.getParameterSlotAndSignatures(true, "add(I!+Ljava/util/List;)Ljava/lang/Object;"),
+                expected);
     }
 
     @Test
     public void shouldGetParameterSignatures() {
-        assertEquals(SignatureUtils.getParameterSignatures("add(ILjava/lang/Object;)Ljava/lang/Object;"), Arrays.asList("I", "Ljava/lang/Object;"));
+        assertEquals(SignatureUtils.getParameterSignatures("add(ILjava/lang/Object;)Ljava/lang/Object;"),
+                Arrays.asList("I", "Ljava/lang/Object;"));
     }
 
     @Test
     public void shouldGetParameterSignaturesWithWonkyEclipseMethod() {
-        assertEquals(SignatureUtils.getParameterSignatures("add(I!+Ljava/util/List;)Ljava/lang/Object;"), Arrays.asList("I", "Ljava/util/List;"));
+        assertEquals(SignatureUtils.getParameterSignatures("add(I!+Ljava/util/List;)Ljava/lang/Object;"),
+                Arrays.asList("I", "Ljava/util/List;"));
     }
 
     @Test
@@ -99,7 +107,8 @@ public class SignatureUtilsTest {
 
     @Test
     public void shouldIgnoreEclipseParameterSignatures() {
-        assertEquals(SignatureUtils.getParameterSignatures("wonky(!Ljava/lang/Object;++)Ljava/lang/Object;"), Arrays.asList("Ljava/lang/Object;"));
+        assertEquals(SignatureUtils.getParameterSignatures("wonky(!Ljava/lang/Object;++)Ljava/lang/Object;"),
+                Arrays.asList("Ljava/lang/Object;"));
     }
 
     @Test(dataProvider = "namesToSignatures")

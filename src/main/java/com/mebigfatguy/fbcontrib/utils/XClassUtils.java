@@ -39,13 +39,12 @@ public final class XClassUtils {
     }
 
     /**
-     * Returns an <code>XClass</code> object for the given <code>ClassDescriptor</code> object.
+     * Returns an <code>XClass</code> object for the given
+     * <code>ClassDescriptor</code> object.
      *
-     * @param classDesc
-     *            the class descriptor for which to find the XClass object
+     * @param classDesc the class descriptor for which to find the XClass object
      * @return the class
-     * @throws AssertionError
-     *             if the analysis of the class failed
+     * @throws AssertionError if the analysis of the class failed
      */
     public static XClass getXClass(final ClassDescriptor classDesc) throws AssertionError {
         try {
@@ -60,11 +59,9 @@ public final class XClassUtils {
     /**
      * Returns an <code>XClass</code> object for the given slashed class name.
      *
-     * @param slashedClassName
-     *            the class name for which to find the XClass object
+     * @param slashedClassName the class name for which to find the XClass object
      * @return the class
-     * @throws AssertionError
-     *             if the analysis of the class failed
+     * @throws AssertionError if the analysis of the class failed
      */
     public static XClass getXClass(String slashedClassName) {
         return getXClass(DescriptorFactory.createClassDescriptor(slashedClassName));
@@ -73,12 +70,9 @@ public final class XClassUtils {
     /**
      * Looks for the method up the class hierarchy.
      *
-     * @param xClass
-     *            the class where to look for the method
-     * @param methodName
-     *            the name of the method to look for
-     * @param methodSig
-     *            the signature of the method to look for
+     * @param xClass     the class where to look for the method
+     * @param methodName the name of the method to look for
+     * @param methodSig  the signature of the method to look for
      * @return the method
      */
     @Nullable
@@ -101,12 +95,9 @@ public final class XClassUtils {
     /**
      * Looks for the method up the class hierarchy.
      *
-     * @param slashedClassName
-     *            the class slashed name where to look for the method
-     * @param methodName
-     *            the name of the method to look for
-     * @param methodSig
-     *            the signature of the method to look for
+     * @param slashedClassName the class slashed name where to look for the method
+     * @param methodName       the name of the method to look for
+     * @param methodSig        the signature of the method to look for
      * @return the method
      */
     @Nullable

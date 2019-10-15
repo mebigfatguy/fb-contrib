@@ -44,22 +44,24 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for constructors, private methods or static methods that declare that they throw specific checked exceptions, but that do not. This just causes callers
- * of these methods to do extra work to handle an exception that will never be thrown. also looks for throws clauses where two exceptions declared to be thrown
- * are related through inheritance.
+ * looks for constructors, private methods or static methods that declare that
+ * they throw specific checked exceptions, but that do not. This just causes
+ * callers of these methods to do extra work to handle an exception that will
+ * never be thrown. also looks for throws clauses where two exceptions declared
+ * to be thrown are related through inheritance.
  */
 public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
     private static final String IGNORE_INHERITED_METHODS_PROPERTY = "fb-contrib.bed.ignore_inherited";
 
     private static final Set<String> safeClasses = UnmodifiableSet.create(
-    // @formatter:off
+            // @formatter:off
             Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_INTEGER,
             Values.SLASHED_JAVA_LANG_LONG, Values.SLASHED_JAVA_LANG_FLOAT, Values.SLASHED_JAVA_LANG_DOUBLE,
             Values.SLASHED_JAVA_LANG_SHORT, Values.SLASHED_JAVA_LANG_BYTE, Values.SLASHED_JAVA_LANG_BOOLEAN
     // @formatter:on
     );
-    
+
     private static final boolean IGNORE_INHERITED_METHODS = Boolean.getBoolean(IGNORE_INHERITED_METHODS_PROPERTY);
 
     private final BugReporter bugReporter;
@@ -88,8 +90,7 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     /**
      * overrides the visitor to create the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      *
      */
     @Override
@@ -110,10 +111,10 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to see if the method declares that it throws any checked exceptions.
+     * implements the visitor to see if the method declares that it throws any
+     * checked exceptions.
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -122,21 +123,23 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
         if (method.isSynthetic()) {
             return;
         }
-        
+
         if (IGNORE_INHERITED_METHODS) {
-	        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
-	        if (mi != null && mi.isDerived()) {
-	        	return;
-	        }
+            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(),
+                    getMethodSig());
+            if (mi != null && mi.isDerived()) {
+                return;
+            }
         }
-        
+
         declaredCheckedExceptions.clear();
         stack.resetForMethodEntry(this);
 
         ExceptionTable et = method.getExceptionTable();
         if (et != null) {
             if (classIsFinal || classIsAnonymous || method.isStatic() || method.isPrivate() || method.isFinal()
-                    || ((Values.CONSTRUCTOR.equals(method.getName()) && !isAnonymousInnerCtor(method, getThisClass())))) {
+                    || ((Values.CONSTRUCTOR.equals(method.getName())
+                            && !isAnonymousInnerCtor(method, getThisClass())))) {
                 String[] exNames = et.getExceptionNames();
                 for (String exName : exNames) {
                     try {
@@ -152,8 +155,8 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                     try {
                         super.visitCode(obj);
                         if (!declaredCheckedExceptions.isEmpty()) {
-                            BugInstance bi = new BugInstance(this, BugType.BED_BOGUS_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this, 0);
+                            BugInstance bi = new BugInstance(this, BugType.BED_BOGUS_EXCEPTION_DECLARATION.name(),
+                                    NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, 0);
                             for (String ex : declaredCheckedExceptions) {
                                 bi.addString(ex.replaceAll("/", "."));
                             }
@@ -184,8 +187,10 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
                         }
 
                         if (!parentEx.equals(exceptionClass)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.BED_HIERARCHICAL_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addString(childEx.getClassName() + " derives from " + parentEx.getClassName()));
+                            bugReporter.reportBug(new BugInstance(this,
+                                    BugType.BED_HIERARCHICAL_EXCEPTION_DECLARATION.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addString(childEx.getClassName()
+                                                    + " derives from " + parentEx.getClassName()));
                             return;
                         }
 
@@ -198,21 +203,23 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     }
 
     /**
-     * checks to see if this method is a constructor of an instance based inner class, the handling of the Exception table for this method is odd, -- doesn't
+     * checks to see if this method is a constructor of an instance based inner
+     * class, the handling of the Exception table for this method is odd, -- doesn't
      * seem correct, in some cases. So just ignore these cases
      *
-     * @param m
-     *            the method to check
-     * @param cls
-     *            the cls that owns the method
-     * @return whether this method is a ctor of an instance based anonymous inner class
+     * @param m   the method to check
+     * @param cls the cls that owns the method
+     * @return whether this method is a ctor of an instance based anonymous inner
+     *         class
      */
     private static boolean isAnonymousInnerCtor(Method m, JavaClass cls) {
-        return Values.CONSTRUCTOR.equals(m.getName()) && (cls.getClassName().lastIndexOf(Values.INNER_CLASS_SEPARATOR) >= 0);
+        return Values.CONSTRUCTOR.equals(m.getName())
+                && (cls.getClassName().lastIndexOf(Values.INNER_CLASS_SEPARATOR) >= 0);
     }
 
     /**
-     * implements the visitor to look for method calls that could throw the exceptions that are listed in the declaration.
+     * implements the visitor to look for method calls that could throw the
+     * exceptions that are listed in the declaration.
      */
     @Override
     public void sawOpcode(int seen) {
@@ -276,15 +283,17 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     }
 
     /**
-     * removes this thrown exception the list of declared thrown exceptions, including all exceptions in this exception's hierarchy. If an exception class is
-     * found that can't be loaded, then just clear the list of declared checked exceptions and get out.
+     * removes this thrown exception the list of declared thrown exceptions,
+     * including all exceptions in this exception's hierarchy. If an exception class
+     * is found that can't be loaded, then just clear the list of declared checked
+     * exceptions and get out.
      *
-     * @param thrownException
-     *            the exception and it's hierarchy to remove
+     * @param thrownException the exception and it's hierarchy to remove
      */
     private void removeThrownExceptionHierarchy(String thrownException) {
         try {
-            if (Values.DOTTED_JAVA_LANG_EXCEPTION.equals(thrownException) || Values.DOTTED_JAVA_LANG_THROWABLE.equals(thrownException)) {
+            if (Values.DOTTED_JAVA_LANG_EXCEPTION.equals(thrownException)
+                    || Values.DOTTED_JAVA_LANG_THROWABLE.equals(thrownException)) {
                 // Exception/Throwable can be thrown even tho the method isn't declared to throw
                 // Exception/Throwable in the case of templated Exceptions
                 clearExceptions();
@@ -311,10 +320,10 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     }
 
     /**
-     * removes the declared checked exception, and if that was the last declared exception, stops opcode parsing by throwing exception
+     * removes the declared checked exception, and if that was the last declared
+     * exception, stops opcode parsing by throwing exception
      *
-     * @param clsName
-     *            the name of the exception to remove
+     * @param clsName the name of the exception to remove
      */
     private void removeException(String clsName) {
         declaredCheckedExceptions.remove(clsName);
@@ -324,7 +333,8 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
     }
 
     /**
-     * clears all declared checked exceptions and throws an exception to stop opcode parsing
+     * clears all declared checked exceptions and throws an exception to stop opcode
+     * parsing
      */
     private void clearExceptions() {
         declaredCheckedExceptions.clear();

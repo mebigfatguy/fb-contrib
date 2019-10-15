@@ -58,8 +58,11 @@ import edu.umd.cs.findbugs.classfile.FieldDescriptor;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * looks for deletion of items from a collection using the remove method of the collection at the same time that the collection is being iterated on. If this
- * occurs the iterator will become invalid and throw a ConcurrentModificationException. Instead, the remove should be called on the iterator itself.
+ * looks for deletion of items from a collection using the remove method of the
+ * collection at the same time that the collection is being iterated on. If this
+ * occurs the iterator will become invalid and throw a
+ * ConcurrentModificationException. Instead, the remove should be called on the
+ * iterator itself.
  */
 @CustomUserValue
 public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
@@ -85,7 +88,8 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(
             new QMethod("entrySet", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_SET).toString()),
             new QMethod("keySet", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_SET).toString()),
-            new QMethod("values", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_COLLECTION).toString()));
+            new QMethod("values",
+                    new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_COLLECTION).toString()));
 
     private static final Map<QMethod, Integer> modifyingMethods;
 
@@ -93,16 +97,19 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         Map<QMethod, Integer> mm = new HashMap<>();
         mm.put(new QMethod("add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), Values.ONE);
         mm.put(new QMethod("addAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
-        mm.put(new QMethod("addAll", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION)
-                .withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.TWO);
+        mm.put(new QMethod("addAll",
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION)
+                        .withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()),
+                Values.TWO);
         mm.put(new QMethod("clear", SignatureBuilder.SIG_VOID_TO_VOID), Values.ZERO);
         mm.put(new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT), Values.ONE);
         mm.put(new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
         mm.put(new QMethod("retainAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
-        modifyingMethods = Collections.<QMethod, Integer> unmodifiableMap(mm);
+        modifyingMethods = Collections.<QMethod, Integer>unmodifiableMap(mm);
     }
 
-    private static final QMethod ITERATOR = new QMethod("iterator", new SignatureBuilder().withReturnType("java/util/Iterator").toString());
+    private static final QMethod ITERATOR = new QMethod("iterator",
+            new SignatureBuilder().withReturnType("java/util/Iterator").toString());
     private static final QMethod REMOVE = new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
     private static final QMethod HASNEXT = new QMethod("hasNext", SignatureBuilder.SIG_VOID_TO_BOOLEAN);
 
@@ -114,18 +121,17 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     /**
      * constructs a DWI detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public DeletingWhileIterating(BugReporter bugReporter) {
         super(bugReporter, Values.SLASHED_JAVA_UTIL_COLLECTION);
     }
 
     /**
-     * implements the visitor to setup the opcode stack, collectionGroups, groupToIterator and loops
+     * implements the visitor to setup the opcode stack, collectionGroups,
+     * groupToIterator and loops
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -147,10 +153,10 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the stack, collectionGroups, groupToIterator and loops
+     * implements the visitor to reset the stack, collectionGroups, groupToIterator
+     * and loops
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -163,10 +169,10 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     }
 
     /**
-     * implements the visitor to look for deletes on collections that are being iterated
+     * implements the visitor to look for deletes on collections that are being
+     * iterated
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -197,11 +203,13 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                                 if (loop != null) {
                                     int pc = getPC();
                                     if (loop.hasPC(pc)) {
-                                        boolean needPop = !Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(signature));
+                                        boolean needPop = !Values.SIG_VOID
+                                                .equals(SignatureUtils.getReturnSignature(signature));
 
                                         if (!breakFollows(loop, needPop) && !returnFollows(needPop)) {
-                                            bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                            bugReporter.reportBug(new BugInstance(this,
+                                                    BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
+                                                            .addClass(this).addMethod(this).addSourceLine(this));
                                         }
                                     }
                                 }
@@ -219,13 +227,15 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                                     if (loop != null) {
                                         int pc = getPC();
                                         if (loop.hasPC(pc)) {
-                                            boolean needPop = !Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(signature));
+                                            boolean needPop = !Values.SIG_VOID
+                                                    .equals(SignatureUtils.getReturnSignature(signature));
                                             boolean breakFollows = breakFollows(loop, needPop);
                                             boolean returnFollows = !breakFollows && returnFollows(needPop);
 
                                             if (!breakFollows && !returnFollows) {
-                                                bugReporter.reportBug(new BugInstance(this, BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
-                                                        .addClass(this).addMethod(this).addSourceLine(this));
+                                                bugReporter.reportBug(new BugInstance(this,
+                                                        BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
+                                                                .addClass(this).addMethod(this).addSourceLine(this));
                                             }
                                         }
                                     }
@@ -233,7 +243,8 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                             }
                         }
                     }
-                } else if ("java/util/Iterator".equals(className) && HASNEXT.equals(methodInfo) && (stack.getStackDepth() > 0)) {
+                } else if ("java/util/Iterator".equals(className) && HASNEXT.equals(methodInfo)
+                        && (stack.getStackDepth() > 0)) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     Integer id = (Integer) itm.getUserValue();
                     if (id != null) {
@@ -246,8 +257,8 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
 
                     Integer id = (Integer) itm.getUserValue();
                     if (id == null) {
-                        FieldAnnotation fa = FieldAnnotation
-                                .fromFieldDescriptor(new FieldDescriptor(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false));
+                        FieldAnnotation fa = FieldAnnotation.fromFieldDescriptor(new FieldDescriptor(
+                                getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false));
                         itm = new OpcodeStack.Item(itm.getSignature(), fa, stack.getStackItem(1).getRegisterNumber());
                         removeFromCollectionGroup(itm);
                         groupId = findCollectionGroup(itm, true);
@@ -334,12 +345,11 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     }
 
     /**
-     * looks to see if the following instruction is a GOTO, preceded by potentially a pop
+     * looks to see if the following instruction is a GOTO, preceded by potentially
+     * a pop
      *
-     * @param loop
-     *            the loop structure we are checking
-     * @param needsPop
-     *            whether we expect to see a pop next
+     * @param loop     the loop structure we are checking
+     * @param needsPop whether we expect to see a pop next
      *
      * @return whether a GOTO is found
      */
@@ -367,12 +377,15 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     }
 
     /**
-     * This attempts to see if there is some form of a return statement following the collection modifying statement in the loop. It is a bad cheat, because, we
-     * may allow a POP, or an ALOAD/ILOAD etc before the return. this is sloppy tho as it might be a multibyte instruction. It also might be a complex piece of
-     * code to load the return, or the method may not allow returns. But hopefully it's better than it was.
+     * This attempts to see if there is some form of a return statement following
+     * the collection modifying statement in the loop. It is a bad cheat, because,
+     * we may allow a POP, or an ALOAD/ILOAD etc before the return. this is sloppy
+     * tho as it might be a multibyte instruction. It also might be a complex piece
+     * of code to load the return, or the method may not allow returns. But
+     * hopefully it's better than it was.
      *
-     * @param couldSeePop
-     *            if the preceding instruction returns a value, and thus might need to be popped
+     * @param couldSeePop if the preceding instruction returns a value, and thus
+     *                    might need to be popped
      *
      * @return when a following instruction issues some sort of return
      */
@@ -399,8 +412,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     /**
      * returns whether the class name is derived from java.util.Collection
      *
-     * @param className
-     *            the class to check
+     * @param className the class to check
      * @return whether the class is a collection
      */
     private boolean isCollection(@SlashedClassName String className) {
@@ -414,10 +426,10 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     }
 
     /**
-     * given an register or field, look to see if this thing is associated with an already discovered loop
+     * given an register or field, look to see if this thing is associated with an
+     * already discovered loop
      *
-     * @param itm
-     *            the item containing the register or field
+     * @param itm the item containing the register or field
      * @return the group element
      */
     private static Comparable<?> getGroupElement(OpcodeStack.Item itm) {
@@ -559,7 +571,8 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     }
 
     /**
-     * represents aliases of some kind to some sort of a collection, or a related object like a keySet, or an iterator
+     * represents aliases of some kind to some sort of a collection, or a related
+     * object like a keySet, or an iterator
      */
     static class GroupPair {
         private final Set<Comparable<?>> groupMembers;

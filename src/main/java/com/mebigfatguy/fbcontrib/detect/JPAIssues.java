@@ -97,8 +97,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     /**
      * constructs a JPA detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
 
     public JPAIssues(BugReporter bugReporter) {
@@ -113,11 +112,11 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find @Entity classes that have both generated @Ids and have implemented hashCode/equals. Also looks for eager one to many join
+     * implements the visitor to find @Entity classes that have both generated @Ids
+     * and have implemented hashCode/equals. Also looks for eager one to many join
      * fetches as that leads to 1+n queries.
      *
-     * @param clsContext
-     *            the context object of the currently parsed class
+     * @param clsContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext clsContext) {
@@ -127,10 +126,14 @@ public class JPAIssues extends BytecodeScanningDetector {
 
             if (isEntity) {
                 if (hasHCEquals && hasId && hasGeneratedValue) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_HC_EQUALS_ON_MANAGED_ENTITY.name(), LOW_PRIORITY).addClass(cls));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.JPAI_HC_EQUALS_ON_MANAGED_ENTITY.name(), LOW_PRIORITY)
+                                    .addClass(cls));
                 }
                 if (hasEagerOneToMany && !hasFetch) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_INEFFICIENT_EAGER_FETCH.name(), LOW_PRIORITY).addClass(cls));
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.JPAI_INEFFICIENT_EAGER_FETCH.name(), LOW_PRIORITY)
+                                    .addClass(cls));
                 }
             }
 
@@ -145,11 +148,13 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for non public methods that have an @Transactional annotation applied to it. Spring only scans public methods for special
-     * handling. It also looks to see if the exceptions thrown by the method line up with the declared exceptions handled in the @Transactional annotation.
+     * implements the visitor to look for non public methods that have
+     * an @Transactional annotation applied to it. Spring only scans public methods
+     * for special handling. It also looks to see if the exceptions thrown by the
+     * method line up with the declared exceptions handled in the @Transactional
+     * annotation.
      *
-     * @param obj
-     *            the currently parse method
+     * @param obj the currently parse method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -159,16 +164,19 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
         methodTransType = getTransactionalType(obj);
         if ((methodTransType != TransactionalType.NONE) && !obj.isPublic()) {
-            bugReporter
-                    .reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, obj));
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(cls, obj));
         }
 
         if ((methodTransType == TransactionalType.WRITE) && (runtimeExceptionClass != null)) {
             try {
                 Set<JavaClass> annotatedRollBackExceptions = getAnnotatedRollbackExceptions(obj);
                 Set<JavaClass> declaredExceptions = getDeclaredExceptions(obj);
-                reportExceptionMismatch(obj, annotatedRollBackExceptions, declaredExceptions, false, BugType.JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING);
-                reportExceptionMismatch(obj, declaredExceptions, annotatedRollBackExceptions, true, BugType.JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING);
+                reportExceptionMismatch(obj, annotatedRollBackExceptions, declaredExceptions, false,
+                        BugType.JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING);
+                reportExceptionMismatch(obj, declaredExceptions, annotatedRollBackExceptions, true,
+                        BugType.JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING);
             } catch (ClassNotFoundException cnfe) {
                 bugReporter.reportMissingClass(cnfe);
             }
@@ -178,12 +186,13 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to reset the opcode stack, Note that the synthetic check is done in both visitMethod and visitCode as visitMethod is not a proper
-     * listener stopping method. We don't want to report issues reported in visitMethod if it is synthetic, but we also don't want it to get into sawOpcode, so
-     * that is why it is done here as well.
+     * implements the visitor to reset the opcode stack, Note that the synthetic
+     * check is done in both visitMethod and visitCode as visitMethod is not a
+     * proper listener stopping method. We don't want to report issues reported in
+     * visitMethod if it is synthetic, but we also don't want it to get into
+     * sawOpcode, so that is why it is done here as well.
      *
-     * @param obj
-     *            the currently parsed code block
+     * @param obj the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -200,11 +209,12 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls to @Transactional methods that do not go through a spring proxy. These methods are easily seen as internal class
-     * calls. There are other cases as well, from external/internal classes but these aren't reported.
+     * implements the visitor to look for calls to @Transactional methods that do
+     * not go through a spring proxy. These methods are easily seen as internal
+     * class calls. There are other cases as well, from external/internal classes
+     * but these aren't reported.
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -212,24 +222,25 @@ public class JPAIssues extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case Const.INVOKEVIRTUAL:
-                case Const.INVOKEINTERFACE: {
-                    userValue = processInvoke();
-                    break;
-                }
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE: {
+                userValue = processInvoke();
+                break;
+            }
 
-                case Const.POP: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (itm.getUserValue() == JPAUserValue.MERGE) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.JPAI_IGNORED_MERGE_RESULT.name(), LOW_PRIORITY).addClass(this).addMethod(this)
-                                    .addSourceLine(this));
-                        }
+            case Const.POP: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (itm.getUserValue() == JPAUserValue.MERGE) {
+                        bugReporter
+                                .reportBug(new BugInstance(this, BugType.JPAI_IGNORED_MERGE_RESULT.name(), LOW_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                     }
-                    break;
                 }
+                break;
+            }
 
-                default:
+            default:
                 break;
             }
         } finally {
@@ -248,13 +259,15 @@ public class JPAIssues extends BytecodeScanningDetector {
         String signature = getSigConstantOperand();
 
         TransactionalType calledMethodTransType = getTransactionalType(new FQMethod(dottedCls, methodName, signature));
-        if ((calledMethodTransType != TransactionalType.NONE) && !TransactionalType.isContainedBy(calledMethodTransType, methodTransType)) {
+        if ((calledMethodTransType != TransactionalType.NONE)
+                && !TransactionalType.isContainedBy(calledMethodTransType, methodTransType)) {
             int numParameters = SignatureUtils.getNumParameters(signature);
             if (stack.getStackDepth() > numParameters) {
                 OpcodeStack.Item itm = stack.getStackItem(numParameters);
                 if (itm.getRegisterNumber() == 0) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), isPublic ? NORMAL_PRIORITY : LOW_PRIORITY)
-                            .addClass(this).addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(),
+                            isPublic ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this)
+                                    .addSourceLine(this));
                 }
             }
         }
@@ -267,10 +280,10 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * parses the current class for spring-tx and jpa annotations, as well as hashCode and equals methods.
+     * parses the current class for spring-tx and jpa annotations, as well as
+     * hashCode and equals methods.
      *
-     * @param clz
-     *            the currently parsed class
+     * @param clz the currently parsed class
      */
     private void catalogClass(JavaClass clz) {
         transactionalMethods = new HashMap<>();
@@ -291,7 +304,8 @@ public class JPAIssues extends BytecodeScanningDetector {
             catalogFieldOrMethod(m);
 
             if (("equals".equals(m.getName()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(m.getSignature()))
-                    || (Values.HASHCODE.equals(m.getName()) && SignatureBuilder.SIG_VOID_TO_INT.equals(m.getSignature()))) {
+                    || (Values.HASHCODE.equals(m.getName())
+                            && SignatureBuilder.SIG_VOID_TO_INT.equals(m.getSignature()))) {
                 hasHCEquals = true;
             }
         }
@@ -304,73 +318,71 @@ public class JPAIssues extends BytecodeScanningDetector {
     /**
      * parses a field or method for spring-tx or jpa annotations
      *
-     * @param fm
-     *            the currently parsed field or method
+     * @param fm the currently parsed field or method
      */
     private void catalogFieldOrMethod(FieldOrMethod fm) {
         for (AnnotationEntry entry : fm.getAnnotationEntries()) {
             String type = entry.getAnnotationType();
             switch (type) {
-                case "Lorg/springframework/transaction/annotation/Transactional;":
-                    if (fm instanceof Method) {
-                        boolean isWrite = true;
-                        for (ElementValuePair pair : entry.getElementValuePairs()) {
-                            if ("readOnly".equals(pair.getNameString())) {
-                                isWrite = "false".equals(pair.getValue().stringifyValue());
-                                break;
-                            }
-                        }
-                        transactionalMethods.put(new FQMethod(cls.getClassName(), fm.getName(), fm.getSignature()),
-                                isWrite ? TransactionalType.WRITE : TransactionalType.READ);
-                    }
-                break;
-
-                case "Ljavax/persistence/Id;":
-                    hasId = true;
-                break;
-
-                case "Ljavax/persistence/GeneratedValue;":
-                    hasGeneratedValue = true;
-                break;
-
-                case "Ljavax/persistence/OneToMany;":
+            case "Lorg/springframework/transaction/annotation/Transactional;":
+                if (fm instanceof Method) {
+                    boolean isWrite = true;
                     for (ElementValuePair pair : entry.getElementValuePairs()) {
-                        if ("fetch".equals(pair.getNameString()) && "EAGER".equals(pair.getValue().stringifyValue())) {
-                            hasEagerOneToMany = true;
+                        if ("readOnly".equals(pair.getNameString())) {
+                            isWrite = "false".equals(pair.getValue().stringifyValue());
                             break;
                         }
                     }
+                    transactionalMethods.put(new FQMethod(cls.getClassName(), fm.getName(), fm.getSignature()),
+                            isWrite ? TransactionalType.WRITE : TransactionalType.READ);
+                }
                 break;
 
-                case "Lorg/hibernate/annotations/Fetch;":
-                case "Lorg/eclipse/persistence/annotations/JoinFetch;":
-                case "Lorg/eclipse/persistence/annotations/BatchFetch;":
-                    hasFetch = true;
+            case "Ljavax/persistence/Id;":
+                hasId = true;
                 break;
 
-                default:
+            case "Ljavax/persistence/GeneratedValue;":
+                hasGeneratedValue = true;
+                break;
+
+            case "Ljavax/persistence/OneToMany;":
+                for (ElementValuePair pair : entry.getElementValuePairs()) {
+                    if ("fetch".equals(pair.getNameString()) && "EAGER".equals(pair.getValue().stringifyValue())) {
+                        hasEagerOneToMany = true;
+                        break;
+                    }
+                }
+                break;
+
+            case "Lorg/hibernate/annotations/Fetch;":
+            case "Lorg/eclipse/persistence/annotations/JoinFetch;":
+            case "Lorg/eclipse/persistence/annotations/BatchFetch;":
+                hasFetch = true;
+                break;
+
+            default:
                 break;
             }
         }
     }
 
     /**
-     * compares the current methods exceptions to those declared in the spring-tx's @Transactional method, both rollbackFor and noRollbackFor. It looks both
-     * ways, exceptions thrown that aren't handled by rollbacks/norollbacks, and Spring declarations that aren't actually thrown.
+     * compares the current methods exceptions to those declared in the
+     * spring-tx's @Transactional method, both rollbackFor and noRollbackFor. It
+     * looks both ways, exceptions thrown that aren't handled by
+     * rollbacks/norollbacks, and Spring declarations that aren't actually thrown.
      *
-     * @param method
-     *            the currently parsed method
-     * @param expectedExceptions
-     *            exceptions declared in the @Transactional annotation
-     * @param actualExceptions
-     *            non-runtime exceptions that are thrown by the method
-     * @param checkByDirectionally
-     *            whether to check both ways
-     * @param bugType
-     *            what type of bug to report if found
+     * @param method               the currently parsed method
+     * @param expectedExceptions   exceptions declared in the @Transactional
+     *                             annotation
+     * @param actualExceptions     non-runtime exceptions that are thrown by the
+     *                             method
+     * @param checkByDirectionally whether to check both ways
+     * @param bugType              what type of bug to report if found
      */
-    private void reportExceptionMismatch(Method method, Set<JavaClass> expectedExceptions, Set<JavaClass> actualExceptions, boolean checkByDirectionally,
-            BugType bugType) {
+    private void reportExceptionMismatch(Method method, Set<JavaClass> expectedExceptions,
+            Set<JavaClass> actualExceptions, boolean checkByDirectionally, BugType bugType) {
         try {
             for (JavaClass declEx : actualExceptions) {
                 boolean handled = false;
@@ -382,8 +394,8 @@ public class JPAIssues extends BytecodeScanningDetector {
                 }
 
                 if (!handled && !expectedExceptions.contains(declEx)) {
-                    bugReporter.reportBug(new BugInstance(this, bugType.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, method)
-                            .addString("Exception: " + declEx.getClassName()));
+                    bugReporter.reportBug(new BugInstance(this, bugType.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(cls, method).addString("Exception: " + declEx.getClassName()));
                 }
             }
         } catch (ClassNotFoundException cnfe) {
@@ -392,22 +404,21 @@ public class JPAIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * parses an spring-tx @Transactional annotations for rollbackFor/noRollbackfor attributes of a @Transactional annotation.
+     * parses an spring-tx @Transactional annotations for rollbackFor/noRollbackfor
+     * attributes of a @Transactional annotation.
      *
-     * @param method
-     *            the currently parsed method
+     * @param method the currently parsed method
      *
      * @return the exception classes declared in the @Transactional annotation
      *
-     * @throws ClassNotFoundException
-     *             if exception classes are not found
+     * @throws ClassNotFoundException if exception classes are not found
      */
     private Set<JavaClass> getAnnotatedRollbackExceptions(Method method) throws ClassNotFoundException {
 
         for (AnnotationEntry annotation : method.getAnnotationEntries()) {
             if ("Lorg/springframework/transaction/annotation/Transactional;".equals(annotation.getAnnotationType())) {
                 if (annotation.getNumElementValuePairs() == 0) {
-                    return Collections.<JavaClass> emptySet();
+                    return Collections.<JavaClass>emptySet();
                 }
                 Set<JavaClass> rollbackExceptions = new HashSet<>();
                 for (ElementValuePair pair : annotation.getElementValuePairs()) {
@@ -428,24 +439,23 @@ public class JPAIssues extends BytecodeScanningDetector {
             }
         }
 
-        return Collections.<JavaClass> emptySet();
+        return Collections.<JavaClass>emptySet();
     }
 
     /**
-     * retrieves the set of non-runtime exceptions that are declared to be thrown by the method
+     * retrieves the set of non-runtime exceptions that are declared to be thrown by
+     * the method
      *
-     * @param method
-     *            the currently parsed method
+     * @param method the currently parsed method
      *
      * @return the set of exceptions thrown
      *
-     * @throws ClassNotFoundException
-     *             if an exception class is not found
+     * @throws ClassNotFoundException if an exception class is not found
      */
     private Set<JavaClass> getDeclaredExceptions(Method method) throws ClassNotFoundException {
         ExceptionTable et = method.getExceptionTable();
         if ((et == null) || (et.getLength() == 0)) {
-            return Collections.<JavaClass> emptySet();
+            return Collections.<JavaClass>emptySet();
         }
 
         Set<JavaClass> exceptions = new HashSet<>();
@@ -462,8 +472,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     /**
      * returns the type of transactional annotation is applied to this method
      *
-     * @param method
-     *            the method to check for transactional methods
+     * @param method the method to check for transactional methods
      * @return whether the method is Transactional non, read or write
      */
     private TransactionalType getTransactionalType(Method method) {
@@ -473,8 +482,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     /**
      * returns the type of transactional annotation is applied to this method
      *
-     * @param method
-     *            the method to check for transactional methods
+     * @param method the method to check for transactional methods
      * @return whether the method is Transactional non, read or write
      */
     private TransactionalType getTransactionalType(FQMethod method) {

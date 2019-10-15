@@ -46,8 +46,10 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
- * looks for classes that have dependencies on each other in a circular way. Class initialization can be compromised in this scenario, and usually points to a
- * bad data model. Consider using interfaces to break this hard circular dependency.
+ * looks for classes that have dependencies on each other in a circular way.
+ * Class initialization can be compromised in this scenario, and usually points
+ * to a bad data model. Consider using interfaces to break this hard circular
+ * dependency.
  */
 public class FindClassCircularDependencies extends BytecodeScanningDetector {
 
@@ -59,8 +61,7 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     /**
      * constructs a FCCD detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public FindClassCircularDependencies(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -73,7 +74,8 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     }
 
     @Override
-    public void visitAnnotation(@DottedClassName String annotationClass, Map<String, ElementValue> map, boolean runtimeVisible) {
+    public void visitAnnotation(@DottedClassName String annotationClass, Map<String, ElementValue> map,
+            boolean runtimeVisible) {
         if (!runtimeVisible) {
             return;
         }
@@ -151,10 +153,10 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
     }
 
     /**
-     * returns a set of dependent class names for a class, and if it doesn't exist create the set install it, and then return;
+     * returns a set of dependent class names for a class, and if it doesn't exist
+     * create the set install it, and then return;
      *
-     * @param clsName
-     *            the class for which you are trying to get dependencies
+     * @param clsName the class for which you are trying to get dependencies
      * @return the active set of classes that are dependent on the specified class
      */
     private Set<String> getDependenciesForClass(String clsName) {
@@ -182,7 +184,8 @@ public class FindClassCircularDependencies extends BytecodeScanningDetector {
             Set<String> loop = lf.findLoop(dependencyGraph, clsName);
             boolean pruneLeaves;
             if (loop != null) {
-                BugInstance bug = new BugInstance(this, BugType.FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY.name(), NORMAL_PRIORITY);
+                BugInstance bug = new BugInstance(this, BugType.FCCD_FIND_CLASS_CIRCULAR_DEPENDENCY.name(),
+                        NORMAL_PRIORITY);
                 for (String loopCls : loop) {
                     bug.addClass(loopCls);
                 }

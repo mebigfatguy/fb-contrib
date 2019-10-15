@@ -38,21 +38,27 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that implement awt or swing listeners and perform time consuming operations. Doing these operations in the gui thread will cause the
- * interface to appear sluggish and non-responsive to the user. It is better to use a separate thread to do the time consuming work so that the user has a
+ * looks for methods that implement awt or swing listeners and perform time
+ * consuming operations. Doing these operations in the gui thread will cause the
+ * interface to appear sluggish and non-responsive to the user. It is better to
+ * use a separate thread to do the time consuming work so that the user has a
  * better experience.
  */
 public class SluggishGui extends BytecodeScanningDetector {
 
-    private static final Set<String> expensiveCalls = UnmodifiableSet.create("java/io/BufferedOutputStream:<init>", "java/io/DataOutputStream:<init>",
-            "java/io/FileOutputStream:<init>", "java/io/ObjectOutputStream:<init>", "java/io/PipedOutputStream:<init>", "java/io/BufferedInputStream:<init>",
-            "java/io/DataInputStream:<init>", "java/io/FileInputStream:<init>", "java/io/ObjectInputStream:<init>", "java/io/PipedInputStream:<init>",
-            "java/io/BufferedWriter:<init>", "java/io/FileWriter:<init>", "java/io/OutpuStreamWriter:<init>", "java/io/BufferedReader:<init>",
-            "java/io/FileReader:<init>", "java/io/InputStreamReader:<init>", "java/io/RandomAccessFile:<init>", "java/lang/Class:getResourceAsStream",
-            "java/lang/ClassLoader:getResourceAsStream", "java/lang/ClassLoader:loadClass", "java/sql/DriverManager:getConnection",
-            "java/sql/Connection:createStatement", "java/sql/Connection:prepareStatement", "java/sql/Connection:prepareCall",
-            "javax/sql/DataSource:getConnection", "javax/xml/parsers/DocumentBuilder:parse", "javax/xml/parsers/DocumentBuilder:parse",
-            "javax/xml/parsers/SAXParser:parse", "javax/xml/transform/Transformer:transform");
+    private static final Set<String> expensiveCalls = UnmodifiableSet.create("java/io/BufferedOutputStream:<init>",
+            "java/io/DataOutputStream:<init>", "java/io/FileOutputStream:<init>", "java/io/ObjectOutputStream:<init>",
+            "java/io/PipedOutputStream:<init>", "java/io/BufferedInputStream:<init>", "java/io/DataInputStream:<init>",
+            "java/io/FileInputStream:<init>", "java/io/ObjectInputStream:<init>", "java/io/PipedInputStream:<init>",
+            "java/io/BufferedWriter:<init>", "java/io/FileWriter:<init>", "java/io/OutpuStreamWriter:<init>",
+            "java/io/BufferedReader:<init>", "java/io/FileReader:<init>", "java/io/InputStreamReader:<init>",
+            "java/io/RandomAccessFile:<init>", "java/lang/Class:getResourceAsStream",
+            "java/lang/ClassLoader:getResourceAsStream", "java/lang/ClassLoader:loadClass",
+            "java/sql/DriverManager:getConnection", "java/sql/Connection:createStatement",
+            "java/sql/Connection:prepareStatement", "java/sql/Connection:prepareCall",
+            "javax/sql/DataSource:getConnection", "javax/xml/parsers/DocumentBuilder:parse",
+            "javax/xml/parsers/DocumentBuilder:parse", "javax/xml/parsers/SAXParser:parse",
+            "javax/xml/transform/Transformer:transform");
 
     private BugReporter bugReporter;
     private Set<String> expensiveThisCalls;
@@ -65,8 +71,7 @@ public class SluggishGui extends BytecodeScanningDetector {
     /**
      * constructs a SG detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SluggishGui(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -75,8 +80,7 @@ public class SluggishGui extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset look for gui interfaces
      *
-     * @param classContext
-     *            the context object for the currently parsed class
+     * @param classContext the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -108,8 +112,7 @@ public class SluggishGui extends BytecodeScanningDetector {
     /**
      * overrides the visitor to visit all of the collected listener methods
      *
-     * @param obj
-     *            the context object of the currently parsed class
+     * @param obj the context object of the currently parsed class
      */
     @Override
     public void visitAfter(JavaClass obj) {
@@ -127,8 +130,7 @@ public class SluggishGui extends BytecodeScanningDetector {
     /**
      * overrides the visitor collect method info
      *
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -137,10 +139,10 @@ public class SluggishGui extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to segregate method into two, those that implement listeners, and those that don't. The ones that don't are processed first.
+     * overrides the visitor to segregate method into two, those that implement
+     * listeners, and those that don't. The ones that don't are processed first.
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -164,13 +166,13 @@ public class SluggishGui extends BytecodeScanningDetector {
     /**
      * overrides the visitor to look for the execution of expensive calls
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
 
-        if ((seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESPECIAL) || (seen == Const.INVOKESTATIC)) {
+        if ((seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESPECIAL)
+                || (seen == Const.INVOKESTATIC)) {
             String clsName = getClassConstantOperand();
             String mName = getNameConstantOperand();
             String methodInfo = clsName + ':' + mName;
@@ -178,7 +180,8 @@ public class SluggishGui extends BytecodeScanningDetector {
 
             if (expensiveCalls.contains(methodInfo) || expensiveThisCalls.contains(thisMethodInfo)) {
                 if (isListenerMethod) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SG_SLUGGISH_GUI.name(), NORMAL_PRIORITY).addClass(this)
+                    bugReporter.reportBug(new BugInstance(this, BugType.SG_SLUGGISH_GUI.name(), NORMAL_PRIORITY)
+                            .addClass(this)
                             .addMethod(this.getClassContext().getJavaClass(), listenerCode.get(this.getCode())));
                 } else {
                     expensiveThisCalls.add(getMethodName() + ':' + getMethodSig());

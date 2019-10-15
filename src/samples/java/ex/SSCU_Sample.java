@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.Set;
 
 import org.apache.jena.ext.com.google.common.collect.Sets;

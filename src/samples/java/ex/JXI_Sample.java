@@ -1,4 +1,5 @@
 package ex;
+
 import java.io.InputStream;
 
 import javax.ws.rs.Consumes;
@@ -81,7 +82,8 @@ public class JXI_Sample {
 
     @POST
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    public void fpDoubleFormDataParam(@Suspended AsyncResponse asyncResponse, @FormDataParam("uploadId") FormDataBodyPart uploadIdFormData,
+    public void fpDoubleFormDataParam(@Suspended AsyncResponse asyncResponse,
+            @FormDataParam("uploadId") FormDataBodyPart uploadIdFormData,
             @FormDataParam("objectId") FormDataBodyPart objectIdFormData) {
     }
 

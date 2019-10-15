@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -44,14 +45,14 @@ public class BL_Sample {
 
     public String fpBuryingSwitch(String data) {
         switch (data) {
-            case "a":
-                return fpBuryingSwitch(data + "fe") + data;
-            case "b":
-                return fpBuryingSwitch(data + "fi") + data;
-            case "c":
-                return fpBuryingSwitch(data + "fo") + data;
-            case "d":
-                return fpBuryingSwitch(data + "fum") + data;
+        case "a":
+            return fpBuryingSwitch(data + "fe") + data;
+        case "b":
+            return fpBuryingSwitch(data + "fi") + data;
+        case "c":
+            return fpBuryingSwitch(data + "fo") + data;
+        case "d":
+            return fpBuryingSwitch(data + "fum") + data;
         }
         return "";
     }
@@ -88,23 +89,23 @@ public class BL_Sample {
             return s + "baz";
         } else if (s.equals("baz")) {
             switch (t) {
-                case 0:
-                    for (int i = 0; i < t; i++) {
-                        s += "0";
-                    }
-                    return s;
+            case 0:
+                for (int i = 0; i < t; i++) {
+                    s += "0";
+                }
+                return s;
 
-                case 1:
-                    for (int i = 0; i < t; i++) {
-                        s += "1";
-                    }
-                    return s;
+            case 1:
+                for (int i = 0; i < t; i++) {
+                    s += "1";
+                }
+                return s;
 
-                default:
-                    for (int i = 0; i < t; i++) {
-                        s += "1";
-                    }
-                    return s;
+            default:
+                for (int i = 0; i < t; i++) {
+                    s += "1";
+                }
+                return s;
             }
         }
 
@@ -146,7 +147,8 @@ public class BL_Sample {
 
         BL_Sample that = (BL_Sample) o;
 
-        return Objects.equals(f1, that.f1) && Objects.equals(f2, that.f2) && Objects.equals(f3, that.f3) && Objects.equals(f4, that.f4);
+        return Objects.equals(f1, that.f1) && Objects.equals(f2, that.f2) && Objects.equals(f3, that.f3)
+                && Objects.equals(f4, that.f4);
     }
 
     private List<String> getDetails() {

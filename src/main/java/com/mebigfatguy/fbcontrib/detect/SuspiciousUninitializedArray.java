@@ -47,8 +47,10 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for creation of arrays, that are not populated before being returned for a method. While it is possible that the method that called this method will do
- * the work of populated the array, it seems odd that this would be the case.
+ * looks for creation of arrays, that are not populated before being returned
+ * for a method. While it is possible that the method that called this method
+ * will do the work of populated the array, it seems odd that this would be the
+ * case.
  */
 @CustomUserValue
 public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
@@ -75,8 +77,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     /**
      * constructs a SUA detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SuspiciousUninitializedArray(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -85,8 +86,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -106,10 +106,10 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to check to see if the method returns an array, and if so resets the stack for this method.
+     * overrides the visitor to check to see if the method returns an array, and if
+     * so resets the stack for this method.
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -148,12 +148,13 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to annotate new array creation with a user value that denotes it as being uninitialized, and then if the array is populated to
-     * remove that user value. It then finds return values that have uninitialized arrays. byte arrays are not collected as creating a blank byte array is
+     * overrides the visitor to annotate new array creation with a user value that
+     * denotes it as being uninitialized, and then if the array is populated to
+     * remove that user value. It then finds return values that have uninitialized
+     * arrays. byte arrays are not collected as creating a blank byte array is
      * probably a reasonably normal occurrence.
      *
-     * @param seen
-     *            the context parameter of the currently parsed op code
+     * @param seen the context parameter of the currently parsed op code
      */
     @Override
     public void sawOpcode(int seen) {
@@ -162,182 +163,182 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.NEWARRAY: {
-                    if (!isTOS0()) {
-                        int typeCode = getIntConstant();
-                        if ((typeCode != Const.T_BYTE)
-                                && returnArraySig.equals(SignatureUtils.toArraySignature(SignatureUtils.getTypeCodeSignature(typeCode)))) {
-                            userValue = SUAUserValue.UNINIT_ARRAY;
-                        }
-                    }
-                }
-                break;
-
-                case Const.ANEWARRAY: {
-                    if (!isTOS0()) {
-                        String sig = SignatureUtils.toArraySignature(getClassConstantOperand());
-                        if (returnArraySig.equals(sig)) {
-                            userValue = SUAUserValue.UNINIT_ARRAY;
-                        }
-                    }
-                }
-                break;
-
-                case Const.MULTIANEWARRAY: {
-                    if (returnArraySig.equals(getClassConstantOperand())) {
+            case Const.NEWARRAY: {
+                if (!isTOS0()) {
+                    int typeCode = getIntConstant();
+                    if ((typeCode != Const.T_BYTE) && returnArraySig
+                            .equals(SignatureUtils.toArraySignature(SignatureUtils.getTypeCodeSignature(typeCode)))) {
                         userValue = SUAUserValue.UNINIT_ARRAY;
                     }
                 }
+            }
                 break;
 
-                case Const.INVOKEVIRTUAL:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKESPECIAL:
-                case Const.INVOKESTATIC:
-                case Const.INVOKEDYNAMIC: {
-                    String methodSig = getSigConstantOperand();
-                    List<String> types = SignatureUtils.getParameterSignatures(methodSig);
-                    for (int t = 0; t < types.size(); t++) {
-                        String parmSig = types.get(t);
-                        if (returnArraySig.equals(parmSig) || Values.SIG_JAVA_LANG_OBJECT.equals(parmSig)
-                                || SignatureBuilder.SIG_OBJECT_ARRAY.equals(parmSig)) {
-                            int parmIndex = types.size() - t - 1;
-                            if (stack.getStackDepth() > parmIndex) {
-                                OpcodeStack.Item item = stack.getStackItem(parmIndex);
-                                SUAUserValue uv = (SUAUserValue) item.getUserValue();
-                                if (uv != null) {
-                                    int reg;
-                                    if (uv.isRegister()) {
-                                        reg = uv.getRegister();
-                                    } else {
-                                        reg = item.getRegisterNumber();
-                                    }
-                                    item.setUserValue(null);
-                                    if (reg >= 0) {
-                                        clearAliases(reg);
-                                        storedUVs.remove(reg);
-                                    }
+            case Const.ANEWARRAY: {
+                if (!isTOS0()) {
+                    String sig = SignatureUtils.toArraySignature(getClassConstantOperand());
+                    if (returnArraySig.equals(sig)) {
+                        userValue = SUAUserValue.UNINIT_ARRAY;
+                    }
+                }
+            }
+                break;
+
+            case Const.MULTIANEWARRAY: {
+                if (returnArraySig.equals(getClassConstantOperand())) {
+                    userValue = SUAUserValue.UNINIT_ARRAY;
+                }
+            }
+                break;
+
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESPECIAL:
+            case Const.INVOKESTATIC:
+            case Const.INVOKEDYNAMIC: {
+                String methodSig = getSigConstantOperand();
+                List<String> types = SignatureUtils.getParameterSignatures(methodSig);
+                for (int t = 0; t < types.size(); t++) {
+                    String parmSig = types.get(t);
+                    if (returnArraySig.equals(parmSig) || Values.SIG_JAVA_LANG_OBJECT.equals(parmSig)
+                            || SignatureBuilder.SIG_OBJECT_ARRAY.equals(parmSig)) {
+                        int parmIndex = types.size() - t - 1;
+                        if (stack.getStackDepth() > parmIndex) {
+                            OpcodeStack.Item item = stack.getStackItem(parmIndex);
+                            SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                            if (uv != null) {
+                                int reg;
+                                if (uv.isRegister()) {
+                                    reg = uv.getRegister();
+                                } else {
+                                    reg = item.getRegisterNumber();
+                                }
+                                item.setUserValue(null);
+                                if (reg >= 0) {
+                                    clearAliases(reg);
+                                    storedUVs.remove(reg);
                                 }
                             }
                         }
                     }
                 }
+            }
                 break;
 
-                case Const.AALOAD: {
-                    if (stack.getStackDepth() >= 2) {
-                        OpcodeStack.Item item = stack.getStackItem(1);
-                        SUAUserValue uv = (SUAUserValue) item.getUserValue();
-                        if ((uv != null) && (uv.isUnitializedArray())) {
-                            userValue = new SUAUserValue(item.getRegisterNumber());
-                        }
+            case Const.AALOAD: {
+                if (stack.getStackDepth() >= 2) {
+                    OpcodeStack.Item item = stack.getStackItem(1);
+                    SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                    if ((uv != null) && (uv.isUnitializedArray())) {
+                        userValue = new SUAUserValue(item.getRegisterNumber());
                     }
                 }
+            }
                 break;
 
-                case Const.IASTORE:
-                case Const.LASTORE:
-                case Const.FASTORE:
-                case Const.DASTORE:
-                case Const.AASTORE:
-                case Const.BASTORE:
-                case Const.CASTORE:
-                case Const.SASTORE: {
-                    if (stack.getStackDepth() >= 3) {
-                        OpcodeStack.Item item = stack.getStackItem(2);
-                        SUAUserValue uv = (SUAUserValue) item.getUserValue();
-                        int reg;
-                        if ((uv != null) && uv.isRegister()) {
-                            reg = uv.getRegister();
-                        } else {
-                            reg = item.getRegisterNumber();
-                        }
-                        item.setUserValue(null);
-                        if (reg >= 0) {
-                            clearAliases(reg);
-                            storedUVs.remove(reg);
-                        }
+            case Const.IASTORE:
+            case Const.LASTORE:
+            case Const.FASTORE:
+            case Const.DASTORE:
+            case Const.AASTORE:
+            case Const.BASTORE:
+            case Const.CASTORE:
+            case Const.SASTORE: {
+                if (stack.getStackDepth() >= 3) {
+                    OpcodeStack.Item item = stack.getStackItem(2);
+                    SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                    int reg;
+                    if ((uv != null) && uv.isRegister()) {
+                        reg = uv.getRegister();
                     } else {
-                        // error condition - stack isn't right
-                        uninitializedRegs.clear();
+                        reg = item.getRegisterNumber();
                     }
-                }
-                break;
-
-                case Const.ASTORE:
-                case Const.ASTORE_0:
-                case Const.ASTORE_1:
-                case Const.ASTORE_2:
-                case Const.ASTORE_3: {
-                    int reg = RegisterUtils.getAStoreReg(this, seen);
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        SUAUserValue uv = (SUAUserValue) item.getUserValue();
-                        storedUVs.put(Integer.valueOf(reg), uv);
-                        uninitializedRegs.set(reg, (uv != null) && (uv.isUnitializedArray()));
-                        Integer aliasReg = arrayAliases.get(reg);
-                        if (aliasReg != null) {
-                            uninitializedRegs.set(aliasReg, (uv != null) && (uv.isUnitializedArray()));
-                        }
-
-                        int targetReg = item.getRegisterNumber();
-                        if ((targetReg >= 0) && (targetReg != reg)) {
-                            arrayAliases.put(reg, targetReg);
-                        } else if ((uv != null) && uv.isRegister()) {
-                            arrayAliases.put(reg, uv.getRegister());
-                        } else {
-                            arrayAliases.remove(reg);
-                        }
-                    } else {
+                    item.setUserValue(null);
+                    if (reg >= 0) {
                         clearAliases(reg);
-                        storedUVs.remove(Integer.valueOf(reg));
+                        storedUVs.remove(reg);
                     }
+                } else {
+                    // error condition - stack isn't right
+                    uninitializedRegs.clear();
+                }
+            }
+                break;
+
+            case Const.ASTORE:
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3: {
+                int reg = RegisterUtils.getAStoreReg(this, seen);
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                    storedUVs.put(Integer.valueOf(reg), uv);
+                    uninitializedRegs.set(reg, (uv != null) && (uv.isUnitializedArray()));
+                    Integer aliasReg = arrayAliases.get(reg);
+                    if (aliasReg != null) {
+                        uninitializedRegs.set(aliasReg, (uv != null) && (uv.isUnitializedArray()));
+                    }
+
+                    int targetReg = item.getRegisterNumber();
+                    if ((targetReg >= 0) && (targetReg != reg)) {
+                        arrayAliases.put(reg, targetReg);
+                    } else if ((uv != null) && uv.isRegister()) {
+                        arrayAliases.put(reg, uv.getRegister());
+                    } else {
+                        arrayAliases.remove(reg);
+                    }
+                } else {
+                    clearAliases(reg);
+                    storedUVs.remove(Integer.valueOf(reg));
+                }
+            }
+                break;
+
+            case Const.ALOAD:
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3: {
+                int reg = RegisterUtils.getALoadReg(this, seen);
+                userValue = storedUVs.get(Integer.valueOf(reg));
+            }
+                break;
+
+            case Const.PUTFIELD: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    item.setUserValue(null);
+                    int reg = item.getRegisterNumber();
+                    if (reg >= 0) {
+                        clearAliases(reg);
+                        storedUVs.remove(reg);
+                    }
+                }
+            }
+                break;
+
+            case Const.ARETURN: {
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    SUAUserValue uv = (SUAUserValue) item.getUserValue();
+                    if ((uv != null) && (uv.isUnitializedArray())) {
+                        bugReporter.reportBug(new BugInstance(this, BugType.SUA_SUSPICIOUS_UNINITIALIZED_ARRAY.name(),
+                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                    }
+                }
+            }
+                break;
+
+            case Const.DUP:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    userValue = (SUAUserValue) item.getUserValue();
                 }
                 break;
 
-                case Const.ALOAD:
-                case Const.ALOAD_0:
-                case Const.ALOAD_1:
-                case Const.ALOAD_2:
-                case Const.ALOAD_3: {
-                    int reg = RegisterUtils.getALoadReg(this, seen);
-                    userValue = storedUVs.get(Integer.valueOf(reg));
-                }
-                break;
-
-                case Const.PUTFIELD: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        item.setUserValue(null);
-                        int reg = item.getRegisterNumber();
-                        if (reg >= 0) {
-                            clearAliases(reg);
-                            storedUVs.remove(reg);
-                        }
-                    }
-                }
-                break;
-
-                case Const.ARETURN: {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        SUAUserValue uv = (SUAUserValue) item.getUserValue();
-                        if ((uv != null) && (uv.isUnitializedArray())) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SUA_SUSPICIOUS_UNINITIALIZED_ARRAY.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
-                    }
-                }
-                break;
-
-                case Const.DUP:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        userValue = (SUAUserValue) item.getUserValue();
-                    }
-                break;
-
-                default:
+            default:
                 break;
             }
         } finally {

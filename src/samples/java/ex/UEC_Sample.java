@@ -62,7 +62,7 @@ public class UEC_Sample {
     }
 
     public Set<Suite> getSuites() {
-        return EnumSet.<Suite> allOf(Suite.class);
+        return EnumSet.<Suite>allOf(Suite.class);
     }
 
     public void uecFP2() {

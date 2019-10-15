@@ -1,4 +1,5 @@
 package ex;
+
 public class SGSU_Sample {
     private SGSU_Sample foo;
     private SGSU_Sample foo2;

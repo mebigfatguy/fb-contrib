@@ -1,4 +1,5 @@
 package ex;
+
 import javax.persistence.Cache;
 
 public class SJVU_Sample {

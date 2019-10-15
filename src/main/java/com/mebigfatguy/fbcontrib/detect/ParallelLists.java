@@ -41,8 +41,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for classes that maintain two or more lists or arrays associated one-for-one through the same index to hold two or more pieces of related information.
- * It would be better to create a new class that holds all of these pieces of information, and place instances of this class in one list.
+ * looks for classes that maintain two or more lists or arrays associated
+ * one-for-one through the same index to hold two or more pieces of related
+ * information. It would be better to create a new class that holds all of these
+ * pieces of information, and place instances of this class in one list.
  */
 public class ParallelLists extends BytecodeScanningDetector {
     private BugReporter bugReporter;
@@ -53,8 +55,7 @@ public class ParallelLists extends BytecodeScanningDetector {
     /**
      * constructs a PL detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ParallelLists(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -74,7 +75,8 @@ public class ParallelLists extends BytecodeScanningDetector {
                     if (sig.startsWith("java/util/") && sig.endsWith("List")) {
                         listFields.add(f.getName());
                     }
-                } else if (sig.startsWith(Values.SIG_ARRAY_PREFIX) && !sig.startsWith(Values.SIG_ARRAY_OF_ARRAYS_PREFIX)) {
+                } else if (sig.startsWith(Values.SIG_ARRAY_PREFIX)
+                        && !sig.startsWith(Values.SIG_ARRAY_OF_ARRAYS_PREFIX)) {
                     listFields.add(f.getName());
                 }
             }
@@ -93,8 +95,7 @@ public class ParallelLists extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack, and the file maps
      *
-     * @param obj
-     *            the currently parsed method code block
+     * @param obj the currently parsed method code block
      */
     @Override
     public void visitCode(final Code obj) {
@@ -113,7 +114,8 @@ public class ParallelLists extends BytecodeScanningDetector {
                 String methodName = getNameConstantOperand();
                 String methodSig = getSigConstantOperand();
 
-                if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "get".equals(methodName) && SignatureBuilder.SIG_INT_TO_OBJECT.equals(methodSig)) {
+                if (Values.SLASHED_JAVA_UTIL_LIST.equals(className) && "get".equals(methodName)
+                        && SignatureBuilder.SIG_INT_TO_OBJECT.equals(methodSig)) {
                     checkParms();
                 }
             } else if ((seen >= Const.IFEQ) && (seen <= Const.RETURN)) {
@@ -132,8 +134,7 @@ public class ParallelLists extends BytecodeScanningDetector {
     /**
      * fetch the register from a integer op code
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      *
      * @return the register in use
      */
@@ -155,8 +156,8 @@ public class ParallelLists extends BytecodeScanningDetector {
             if ((indexReg >= 0) && (field != null) && listFields.contains(field.getName())) {
                 String f = indexToFieldMap.get(Integer.valueOf(indexReg));
                 if ((f != null) && !f.equals(field.getName())) {
-                    bugReporter
-                            .reportBug(new BugInstance(this, "PL_PARALLEL_LISTS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this, getPC()));
+                    bugReporter.reportBug(new BugInstance(this, "PL_PARALLEL_LISTS", NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this, getPC()));
                     listFields.remove(field.getName());
                     indexToFieldMap.clear();
                 } else {

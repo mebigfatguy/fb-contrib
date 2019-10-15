@@ -142,11 +142,11 @@ public class PSC_Sample {
         List<Integer> dest = new ArrayList<>();
         for (Integer s : source) {
             switch (s.intValue()) {
-                case 0:
-                    dest.add(s);
+            case 0:
+                dest.add(s);
                 break;
-                case 1:
-                    dest.remove(s);
+            case 1:
+                dest.remove(s);
                 break;
             }
         }

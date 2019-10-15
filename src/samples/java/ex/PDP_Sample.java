@@ -57,29 +57,29 @@ public class PDP_Sample {
         String s = "";
 
         switch (type) {
-            case 0:
-                Number n = (Number) c;
-                s += n.intValue();
+        case 0:
+            Number n = (Number) c;
+            s += n.intValue();
             break;
 
-            case 1:
-                s += s;
+        case 1:
+            s += s;
             break;
 
-            case 2:
-                s += "0";
+        case 2:
+            s += "0";
             break;
 
-            case 3:
-                s += '3';
+        case 3:
+            s += '3';
             break;
 
-            case 4:
-                s = null;
+        case 4:
+            s = null;
             break;
 
-            case 5:
-                s = s.substring(0, 1);
+        case 5:
+            s = s.substring(0, 1);
             break;
         }
 
@@ -90,17 +90,17 @@ public class PDP_Sample {
         String s = "";
 
         switch (type) {
-            case 0:
-                Number n = (Number) c;
-                s += n.intValue();
+        case 0:
+            Number n = (Number) c;
+            s += n.intValue();
             break;
 
-            case 1000:
-                s += s;
+        case 1000:
+            s += s;
             break;
 
-            case 10000:
-                s += "0";
+        case 10000:
+            s += "0";
             break;
         }
 

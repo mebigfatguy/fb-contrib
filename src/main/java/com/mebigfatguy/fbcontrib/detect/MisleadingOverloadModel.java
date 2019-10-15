@@ -34,8 +34,9 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for classes that define both static and instance methods with the same name. This 'overloading' is confusing as one method is instance based the other
- * class based, and points to a confusion in implementation.
+ * looks for classes that define both static and instance methods with the same
+ * name. This 'overloading' is confusing as one method is instance based the
+ * other class based, and points to a confusion in implementation.
  */
 public class MisleadingOverloadModel extends PreorderVisitor implements Detector {
     enum MethodFoundType {
@@ -47,8 +48,7 @@ public class MisleadingOverloadModel extends PreorderVisitor implements Detector
     /**
      * constructs a MOM detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public MisleadingOverloadModel(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -82,8 +82,9 @@ public class MisleadingOverloadModel extends PreorderVisitor implements Detector
 
             declMethods.put(methodName, newType);
             if (report) {
-                bugReporter.reportBug(new BugInstance(this, BugType.MOM_MISLEADING_OVERLOAD_MODEL.name(), NORMAL_PRIORITY).addClass(cls)
-                        .addMethod(XFactory.createXMethod(clsName, m)).addString(methodName));
+                bugReporter
+                        .reportBug(new BugInstance(this, BugType.MOM_MISLEADING_OVERLOAD_MODEL.name(), NORMAL_PRIORITY)
+                                .addClass(cls).addMethod(XFactory.createXMethod(clsName, m)).addString(methodName));
             }
         }
     }

@@ -33,8 +33,10 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that are defined to return Boolean, but return null. This thus allows three return values, Boolean.FALSE, Boolean.TRUE and null. If three
- * values intended, it would be more clear to just create an enumeration with three values and return that type.
+ * looks for methods that are defined to return Boolean, but return null. This
+ * thus allows three return values, Boolean.FALSE, Boolean.TRUE and null. If
+ * three values intended, it would be more clear to just create an enumeration
+ * with three values and return that type.
  */
 public class TristateBooleanPattern extends BytecodeScanningDetector {
     private BugReporter bugReporter;
@@ -43,8 +45,7 @@ public class TristateBooleanPattern extends BytecodeScanningDetector {
     /**
      * constructs a TBP detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public TristateBooleanPattern(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -53,8 +54,7 @@ public class TristateBooleanPattern extends BytecodeScanningDetector {
     /**
      * implements the visitor to allocate the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -70,8 +70,7 @@ public class TristateBooleanPattern extends BytecodeScanningDetector {
      * implements the visitor to filter out methods that don't return Boolean,
      *
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -99,8 +98,9 @@ public class TristateBooleanPattern extends BytecodeScanningDetector {
             if ((seen == Const.ARETURN) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item item = stack.getStackItem(0);
                 if (item.isNull()) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.TBP_TRISTATE_BOOLEAN_PATTERN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.TBP_TRISTATE_BOOLEAN_PATTERN.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                     throw new StopOpcodeParsingException();
                 }
             }

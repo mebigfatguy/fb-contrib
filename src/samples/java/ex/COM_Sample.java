@@ -59,11 +59,11 @@ public class COM_Sample {
 }
 
 class OS357 extends ByteArrayOutputStream {
-	
-	@Override
-	public void close() {
-		//  removes throws clause
-	}
+
+    @Override
+    public void close() {
+        // removes throws clause
+    }
 }
 
 interface Inf {

@@ -35,8 +35,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for code that appears to be using two forms of similar apis, an older one, and a new one. It finds code that creates newer api objects by first
- * instantiating older api objects, and converting them into the new form. It is simpler just to create the new object directly.
+ * looks for code that appears to be using two forms of similar apis, an older
+ * one, and a new one. It finds code that creates newer api objects by first
+ * instantiating older api objects, and converting them into the new form. It is
+ * simpler just to create the new object directly.
  */
 public class UnnecessaryApiConversion extends BytecodeScanningDetector {
 
@@ -78,21 +80,22 @@ public class UnnecessaryApiConversion extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case Const.INVOKEVIRTUAL:
-                    FQMethod conversionMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
-                    LegacyInfo legacyInfo = conversions.get(conversionMethod);
-                    if ((legacyInfo != null) && (stack.getStackDepth() > 0)) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        XMethod xm = itm.getReturnValueOf();
-                        if ((xm != null) && (xm.getName().equals(legacyInfo.methodName)
-                                && (xm.getClassName().equals(conversionMethod.getClassName().replace('/', '.'))))) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, legacyInfo.bugType.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                        }
+            case Const.INVOKEVIRTUAL:
+                FQMethod conversionMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+                        getSigConstantOperand());
+                LegacyInfo legacyInfo = conversions.get(conversionMethod);
+                if ((legacyInfo != null) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    XMethod xm = itm.getReturnValueOf();
+                    if ((xm != null) && (xm.getName().equals(legacyInfo.methodName)
+                            && (xm.getClassName().equals(conversionMethod.getClassName().replace('/', '.'))))) {
+                        bugReporter.reportBug(new BugInstance(this, legacyInfo.bugType.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
                     }
+                }
                 break;
 
-                default:
+            default:
                 break;
             }
         } finally {

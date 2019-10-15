@@ -38,18 +38,14 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
     private static final String SSCU_EXCEPTION_PACKAGES = "fb-contrib.sscu.exceptions";
 
     private static final Set<String> SUSPICIOUS_ROOTS = UnmodifiableSet.create(
-    // @formatter:off
-        "/org/",
-        "/com/",
-        "/edu/"
+            // @formatter:off
+            "/org/", "/com/", "/edu/"
     // @formatter:on
     );
 
     private final List<String> knownExceptions = UnmodifiableList.create(
-    // @formatter:off
-        "uk/org/lidalia/",
-        "au/com/bytecode/",
-        "uk/org/okapibarcode"
+            // @formatter:off
+            "uk/org/lidalia/", "au/com/bytecode/", "uk/org/okapibarcode"
     // @formatter:on
     );
 
@@ -79,8 +75,8 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
                         String invokedPrefix = invokedCls.substring(0, rootPos);
                         String[] parts = invokedPrefix.split("/");
                         if (!SignatureUtils.similarPackages(invokedCls, getClassName(), Math.min(2, parts.length))) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SSCU_SUSPICIOUS_SHADED_CLASS_USE.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.SSCU_SUSPICIOUS_SHADED_CLASS_USE.name(),
+                                    NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }
@@ -89,11 +85,11 @@ public class SuspiciousShadedClassUse extends BytecodeScanningDetector {
     }
 
     /**
-     * determines if a suspected class is actually one of the known classes that have taken a bad package form by putting a tld later on in the package
+     * determines if a suspected class is actually one of the known classes that
+     * have taken a bad package form by putting a tld later on in the package
      * structure
      *
-     * @param clsName
-     *            the classname to check
+     * @param clsName the classname to check
      * @return whether the classname is an exception
      */
     private boolean isKnownException(@SlashedClassName String clsName) {

@@ -32,12 +32,15 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for classes that implement Serializable and implements readObject and writeObject by just calling the readDefaultObject or writeDefaultObject of the
- * stream parameter. As this is the standard behavior implementing these methods is not needed.
+ * looks for classes that implement Serializable and implements readObject and
+ * writeObject by just calling the readDefaultObject or writeDefaultObject of
+ * the stream parameter. As this is the standard behavior implementing these
+ * methods is not needed.
  */
 public class NeedlessCustomSerialization extends BytecodeScanningDetector {
 
-    public static final String SIG_WRITE_OBJECT = new SignatureBuilder().withMethodName("writeObject").withParamTypes("java/io/ObjectOutputStream").toString();
+    public static final String SIG_WRITE_OBJECT = new SignatureBuilder().withMethodName("writeObject")
+            .withParamTypes("java/io/ObjectOutputStream").toString();
 
     enum State {
         SEEN_NOTHING, SEEN_ALOAD1, SEEN_INVOKEVIRTUAL, SEEN_RETURN, SEEN_INVALID
@@ -52,8 +55,7 @@ public class NeedlessCustomSerialization extends BytecodeScanningDetector {
     /**
      * constructs a NCS detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public NeedlessCustomSerialization(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -82,7 +84,8 @@ public class NeedlessCustomSerialization extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the method to check for either readObject or writeObject methods and if so, reset the stack
+     * overrides the method to check for either readObject or writeObject methods
+     * and if so, reset the stack
      */
     @Override
     public void visitCode(Code obj) {
@@ -99,8 +102,9 @@ public class NeedlessCustomSerialization extends BytecodeScanningDetector {
             state = State.SEEN_NOTHING;
             super.visitCode(obj);
             if (state != State.SEEN_INVALID) {
-                bugReporter.reportBug(new BugInstance(this, BugType.NCS_NEEDLESS_CUSTOM_SERIALIZATION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this, 1));
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.NCS_NEEDLESS_CUSTOM_SERIALIZATION.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this, 1));
             }
         }
     }
@@ -108,38 +112,38 @@ public class NeedlessCustomSerialization extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         switch (state) {
-            case SEEN_NOTHING:
-                if (seen == Const.ALOAD_1) {
-                    state = State.SEEN_ALOAD1;
-                } else {
-                    state = State.SEEN_INVALID;
-                }
-            break;
-
-            case SEEN_ALOAD1:
+        case SEEN_NOTHING:
+            if (seen == Const.ALOAD_1) {
+                state = State.SEEN_ALOAD1;
+            } else {
                 state = State.SEEN_INVALID;
-                if (seen == Const.INVOKEVIRTUAL) {
-                    String nameAndSignature = getNameConstantOperand() + getSigConstantOperand();
-                    if ((inReadObject && "defaultReadObject()V".equals(nameAndSignature))
-                            || (inWriteObject && "defaultWriteObject()V".equals(nameAndSignature))) {
-                        state = State.SEEN_INVOKEVIRTUAL;
-                    }
-                }
+            }
             break;
 
-            case SEEN_INVOKEVIRTUAL:
-                if (seen == Const.RETURN) {
-                    state = State.SEEN_RETURN;
-                } else {
-                    state = State.SEEN_INVALID;
+        case SEEN_ALOAD1:
+            state = State.SEEN_INVALID;
+            if (seen == Const.INVOKEVIRTUAL) {
+                String nameAndSignature = getNameConstantOperand() + getSigConstantOperand();
+                if ((inReadObject && "defaultReadObject()V".equals(nameAndSignature))
+                        || (inWriteObject && "defaultWriteObject()V".equals(nameAndSignature))) {
+                    state = State.SEEN_INVOKEVIRTUAL;
                 }
+            }
             break;
 
-            case SEEN_RETURN:
+        case SEEN_INVOKEVIRTUAL:
+            if (seen == Const.RETURN) {
+                state = State.SEEN_RETURN;
+            } else {
                 state = State.SEEN_INVALID;
+            }
             break;
 
-            case SEEN_INVALID:
+        case SEEN_RETURN:
+            state = State.SEEN_INVALID;
+            break;
+
+        case SEEN_INVALID:
             // if you reach here, never leave
             break;
         }

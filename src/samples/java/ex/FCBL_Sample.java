@@ -20,7 +20,7 @@ public final class FCBL_Sample {
     private int multiMethodFP; // no warning (used in a couple methods)
     private String test; // warning
     private String testNestedIfs;// no warning (in one branch of the if, this is
-                                    // read first)
+                                 // read first)
     private int x = 1; // warning
     private int y = 2; // no warning (read first in method1)
     private boolean ret; // warning (shielded in foo)
@@ -82,8 +82,8 @@ public final class FCBL_Sample {
         }
 
         test = "WooWoo".toLowerCase(Locale.ENGLISH); // hides the PME warning
-                                                        // and the standard
-                                                        // DM_CONVERT_CASE
+                                                     // and the standard
+                                                     // DM_CONVERT_CASE
         if (in.length() > 1) {
             test = "woowoo";
             System.out.println(test);
@@ -103,9 +103,9 @@ public final class FCBL_Sample {
         }
 
         testNestedIfs = "WooWoo".toLowerCase(Locale.ENGLISH); // hides the PME
-                                                                // warning and the
-                                                                // standard
-                                                                // DM_CONVERT_CASE
+                                                              // warning and the
+                                                              // standard
+                                                              // DM_CONVERT_CASE
         if (in.length() > 1) {
             testNestedIfs = "woowoo";
         }

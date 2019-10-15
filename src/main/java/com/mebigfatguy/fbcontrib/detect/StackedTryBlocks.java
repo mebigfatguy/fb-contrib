@@ -33,8 +33,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for two or more try catch blocks that are consecutive and catch the same kind of exception, and throw the same exception always. These blocks can be
- * coalesced into one.
+ * looks for two or more try catch blocks that are consecutive and catch the
+ * same kind of exception, and throw the same exception always. These blocks can
+ * be coalesced into one.
  */
 
 @CustomUserValue
@@ -63,8 +64,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the opcode stack
      *
-     * @param classContext
-     *            the currently parsed class
+     * @param classContext the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -79,11 +79,11 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for 'idea' try catch blocks to find issues specifically, method needs two or more try catch blocks that only catch one
+     * overrides the visitor to look for 'idea' try catch blocks to find issues
+     * specifically, method needs two or more try catch blocks that only catch one
      * exception type.
      *
-     * @param obj
-     *            the currently parsed code object
+     * @param obj the currently parsed code object
      */
     @Override
     public void visitCode(Code obj) {
@@ -92,7 +92,8 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
             XMethod xMethod = getXMethod();
             if (xMethod != null) {
                 String[] tes = xMethod.getThrownExceptions();
-                Set<String> thrownExceptions = new HashSet<>(Arrays.<String> asList((tes == null) ? new String[0] : tes));
+                Set<String> thrownExceptions = new HashSet<>(
+                        Arrays.<String>asList((tes == null) ? new String[0] : tes));
 
                 blocks = new ArrayList<>();
                 inBlocks = new ArrayList<>();
@@ -113,7 +114,8 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                 Iterator<TryBlock> it = blocks.iterator();
                 while (it.hasNext()) {
                     TryBlock block = it.next();
-                    if (block.hasMultipleHandlers() || block.isFinally() || block.catchIsThrown(getConstantPool(), thrownExceptions)) {
+                    if (block.hasMultipleHandlers() || block.isFinally()
+                            || block.catchIsThrown(getConstantPool(), thrownExceptions)) {
                         it.remove();
                     }
                 }
@@ -128,13 +130,18 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                         for (int i = 1; i < blocks.size(); i++) {
                             TryBlock secondBlock = blocks.get(i);
 
-                            if (!blocksSplitAcrossTransitions(firstBlock, secondBlock) && (firstBlock.getCatchType() == secondBlock.getCatchType())
+                            if (!blocksSplitAcrossTransitions(firstBlock, secondBlock)
+                                    && (firstBlock.getCatchType() == secondBlock.getCatchType())
                                     && firstBlock.getThrowSignature().equals(secondBlock.getThrowSignature())
                                     && firstBlock.getMessage().equals(secondBlock.getMessage())
                                     && firstBlock.getExceptionSignature().equals(secondBlock.getExceptionSignature())) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.STB_STACKED_TRY_BLOCKS.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLineRange(this, firstBlock.getStartPC(), firstBlock.getEndHandlerPC())
-                                        .addSourceLineRange(this, secondBlock.getStartPC(), secondBlock.getEndHandlerPC()));
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.STB_STACKED_TRY_BLOCKS.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this)
+                                                .addSourceLineRange(this, firstBlock.getStartPC(),
+                                                        firstBlock.getEndHandlerPC())
+                                                .addSourceLineRange(this, secondBlock.getStartPC(),
+                                                        secondBlock.getEndHandlerPC()));
                             }
 
                             firstBlock = secondBlock;
@@ -150,10 +157,10 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to document what catch blocks do with regard to rethrowing the exceptions, and if the message is a static message
+     * overrides the visitor to document what catch blocks do with regard to
+     * rethrowing the exceptions, and if the message is a static message
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
 
     @Override
@@ -217,7 +224,8 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
             }
 
             if (innerBlock.inCatch()) {
-                if (((seen >= Const.IFEQ) && ((seen <= Const.RET))) || (seen == Const.GOTO_W) || OpcodeUtils.isReturn(seen)) {
+                if (((seen >= Const.IFEQ) && ((seen <= Const.RET))) || (seen == Const.GOTO_W)
+                        || OpcodeUtils.isReturn(seen)) {
                     blocks.remove(innerBlock);
                     inBlocks.remove(inBlocks.size() - 1);
                 } else if (seen == Const.ATHROW) {
@@ -240,7 +248,8 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
                         String signature = getSigConstantOperand();
                         List<String> types = SignatureUtils.getParameterSignatures(signature);
                         if (!types.isEmpty()) {
-                            if (Values.SIG_JAVA_LANG_STRING.equals(types.get(0)) && (stack.getStackDepth() >= types.size())) {
+                            if (Values.SIG_JAVA_LANG_STRING.equals(types.get(0))
+                                    && (stack.getStackDepth() >= types.size())) {
                                 OpcodeStack.Item item = stack.getStackItem(types.size() - 1);
                                 message = (String) item.getConstant();
                                 if (message == null) {
@@ -267,8 +276,7 @@ public class StackedTryBlocks extends BytecodeScanningDetector {
     /**
      * looks for an existing try block that has this pc as a start of the try
      *
-     * @param pc
-     *            the current program counter
+     * @param pc the current program counter
      * @return the tryblock if this statement starts it, else null
      */
     @Nullable

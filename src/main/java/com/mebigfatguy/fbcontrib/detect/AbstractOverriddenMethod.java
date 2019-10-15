@@ -31,7 +31,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * finds methods that are declared abstract but override concrete methods in a superclass.
+ * finds methods that are declared abstract but override concrete methods in a
+ * superclass.
  */
 public class AbstractOverriddenMethod extends PreorderVisitor implements Detector {
     private BugReporter bugReporter;
@@ -41,8 +42,7 @@ public class AbstractOverriddenMethod extends PreorderVisitor implements Detecto
     /**
      * constructs a AOM detector given the reporter to report bugs on
      * 
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public AbstractOverriddenMethod(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -51,8 +51,7 @@ public class AbstractOverriddenMethod extends PreorderVisitor implements Detecto
     /**
      * implements the detector to collect the super classes
      * 
-     * @param classContext
-     *            the context object for the currently parsed class
+     * @param classContext the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -74,8 +73,7 @@ public class AbstractOverriddenMethod extends PreorderVisitor implements Detecto
     /**
      * overrides the visitor to find abstract methods that override concrete ones
      * 
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -90,7 +88,8 @@ public class AbstractOverriddenMethod extends PreorderVisitor implements Detecto
                 if (m.isPrivate() || m.isAbstract())
                     continue;
                 if (methodName.equals(m.getName()) && methodSig.equals(m.getSignature())) {
-                    BugInstance bug = new BugInstance(this, BugType.AOM_ABSTRACT_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this);
+                    BugInstance bug = new BugInstance(this, BugType.AOM_ABSTRACT_OVERRIDDEN_METHOD.name(),
+                            NORMAL_PRIORITY).addClass(this).addMethod(this);
 
                     Code code = obj.getCode();
                     if (code != null)

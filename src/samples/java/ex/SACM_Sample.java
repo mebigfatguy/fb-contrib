@@ -1,4 +1,5 @@
 package ex;
+
 public class SACM_Sample {
     public String test(int i) {
         String[] giantSounds = new String[] { "fee", "fi", "fo", "fum", "burp", "fart" };

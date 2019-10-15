@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.Map;
 import java.util.Set;
 
@@ -52,11 +53,11 @@ public class ISB_Sample {
 
         return foo;
     }
-    
+
     public String concatString334(String str1, String str2) {
-    	StringBuilder str = new StringBuilder();
-    	str.append("Result: "+str1 + str2);
-    	return str.toString();
+        StringBuilder str = new StringBuilder();
+        str.append("Result: " + str1 + str2);
+        return str.toString();
     }
 
     public String testFPISB9(int x) {
@@ -123,13 +124,15 @@ public class ISB_Sample {
     public String xform(String a) {
         return a;
     }
-    
-    enum MonsterSpeak {UNGA, BUNGA}
-    
+
+    enum MonsterSpeak {
+        UNGA, BUNGA
+    }
+
     public String speak(MonsterSpeak s) {
         return "hello" + 1 + s.toString();
     }
-    
+
     public String fpSpeak(MonsterSpeak s) {
         return 1 + s.toString();
     }

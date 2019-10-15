@@ -45,32 +45,24 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for fields that are implementations of java.util.Map, but that are only ever iterated over. This probably means that this data structure should be a
- * List of some class that holds two values, or at the least Pair. Map was probably chosen as it was the easiest thing to use, but belies the point of the data
- * structure.
+ * looks for fields that are implementations of java.util.Map, but that are only
+ * ever iterated over. This probably means that this data structure should be a
+ * List of some class that holds two values, or at the least Pair. Map was
+ * probably chosen as it was the easiest thing to use, but belies the point of
+ * the data structure.
  */
 @CustomUserValue
 public class DubiousMapCollection extends BytecodeScanningDetector {
 
-    private static final Set<String> SPECIAL_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR, Values.STATIC_INITIALIZER);
-    private static final Set<String> MAP_METHODS = UnmodifiableSet.create("computeIfAbsent", "containsKey", "equals", "get", "getOrDefault", "remove",
-            "removeEldestEntry", "values");
+    private static final Set<String> SPECIAL_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR,
+            Values.STATIC_INITIALIZER);
+    private static final Set<String> MAP_METHODS = UnmodifiableSet.create("computeIfAbsent", "containsKey", "equals",
+            "get", "getOrDefault", "remove", "removeEldestEntry", "values");
 
     private static final Set<String> MODIFYING_METHODS = UnmodifiableSet.create(
-    // @formatter:off
-        "clear",
-        "put",
-        "putAll",
-        "remove",
-        "compute",
-        "computeIfAbsent",
-        "computeIfPresent",
-        "forEach",
-        "merge",
-        "putIfAbsent",
-        "remove",
-        "replace",
-        "replaceAll"
+            // @formatter:off
+            "clear", "put", "putAll", "remove", "compute", "computeIfAbsent", "computeIfPresent", "forEach", "merge",
+            "putIfAbsent", "remove", "replace", "replaceAll"
     // @formatter:on
     );
 
@@ -107,7 +99,9 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
             super.visitClassContext(classContext);
 
             for (FieldAnnotation mapField : mapFields.values()) {
-                bugReporter.reportBug(new BugInstance(this, BugType.DMC_DUBIOUS_MAP_COLLECTION.toString(), NORMAL_PRIORITY).addClass(this).addField(mapField));
+                bugReporter
+                        .reportBug(new BugInstance(this, BugType.DMC_DUBIOUS_MAP_COLLECTION.toString(), NORMAL_PRIORITY)
+                                .addClass(this).addField(mapField));
             }
         } finally {
             mapFields = null;
@@ -118,7 +112,8 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     @Override
     public void visitField(Field obj) {
         if (obj.isPrivate() && isMap(obj)) {
-            mapFields.put(obj.getName(), new FieldAnnotation(getDottedClassName(), obj.getName(), obj.getSignature(), obj.isStatic()));
+            mapFields.put(obj.getName(),
+                    new FieldAnnotation(getDottedClassName(), obj.getName(), obj.getSignature(), obj.isStatic()));
         }
     }
 
@@ -230,7 +225,8 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     }
 
     /**
-     * parses all the parameters of a called method and removes any of the parameters that are maps currently being looked at for this detector
+     * parses all the parameters of a called method and removes any of the
+     * parameters that are maps currently being looked at for this detector
      */
     private void processMethodCall() {
         int numParams = SignatureUtils.getNumParameters(getSigConstantOperand());

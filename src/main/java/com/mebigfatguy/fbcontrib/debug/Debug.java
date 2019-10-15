@@ -33,9 +33,8 @@ public final class Debug {
 
     static {
         try {
-            out = new PrintStream(
-                    new BufferedOutputStream(
-                            Files.newOutputStream(Paths.get(System.getProperty("java.io.tmpdir"), "fb-contrib.txt"), StandardOpenOption.APPEND)),
+            out = new PrintStream(new BufferedOutputStream(Files.newOutputStream(
+                    Paths.get(System.getProperty("java.io.tmpdir"), "fb-contrib.txt"), StandardOpenOption.APPEND)),
                     false, StandardCharsets.UTF_8.name());
             out.println("===== fb-contrib console =====");
         } catch (IOException e) {
@@ -59,10 +58,8 @@ public final class Debug {
      *
      * e.g. Debug.println(getPC(), "Hello world"); will print [PC:42] Hello world
      *
-     * @param pc
-     *            the program counter
-     * @param obj
-     *            the object to output
+     * @param pc  the program counter
+     * @param obj the object to output
      */
     public static void println(int pc, Object obj) {
         out.printf("[PC:%d] %s%n", Integer.valueOf(pc), obj);

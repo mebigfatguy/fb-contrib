@@ -32,9 +32,12 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Looks for methods that call wait, notify or notifyAll on an instance of a java.lang.Thread. Since the internal workings of the threads is to synchronize on
- * the thread itself, introducing client calls will confuse the thread state of the object in question, and will cause spurious thread state changes, either
- * waking threads up when not intended, or removing the the thread from the runnable state.
+ * Looks for methods that call wait, notify or notifyAll on an instance of a
+ * java.lang.Thread. Since the internal workings of the threads is to
+ * synchronize on the thread itself, introducing client calls will confuse the
+ * thread state of the object in question, and will cause spurious thread state
+ * changes, either waking threads up when not intended, or removing the the
+ * thread from the runnable state.
  */
 public class SpuriousThreadStates extends BytecodeScanningDetector {
     private BugReporter bugReporter;
@@ -43,8 +46,7 @@ public class SpuriousThreadStates extends BytecodeScanningDetector {
     /**
      * constructs a STS detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SpuriousThreadStates(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -85,7 +87,8 @@ public class SpuriousThreadStates extends BytecodeScanningDetector {
                         } else if ("wait".equals(methodName)) {
                             if (SignatureBuilder.SIG_LONG_TO_VOID.equals(signature) && (stack.getStackDepth() > 1)) {
                                 itm = stack.getStackItem(1);
-                            } else if (SignatureBuilder.SIG_LONG_AND_INT_TO_VOID.equals(signature) && (stack.getStackDepth() > 2)) {
+                            } else if (SignatureBuilder.SIG_LONG_AND_INT_TO_VOID.equals(signature)
+                                    && (stack.getStackDepth() > 2)) {
                                 itm = stack.getStackItem(2);
                             }
                         }
@@ -109,8 +112,8 @@ public class SpuriousThreadStates extends BytecodeScanningDetector {
                         }
 
                         if (found) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, "STS_SPURIOUS_THREAD_STATES", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, "STS_SPURIOUS_THREAD_STATES", NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }

@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.StringTokenizer;
 
 public class USS_Sample {

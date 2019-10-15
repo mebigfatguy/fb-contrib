@@ -53,8 +53,10 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that catch exceptions, and rethrow another exception without encapsulating the original exception within it. Doing this loses the stack
- * history, and where the original problem occurred. This makes finding and fixing errors difficult.
+ * looks for methods that catch exceptions, and rethrow another exception
+ * without encapsulating the original exception within it. Doing this loses the
+ * stack history, and where the original problem occurred. This makes finding
+ * and fixing errors difficult.
  */
 @CustomUserValue
 public class LostExceptionStackTrace extends BytecodeScanningDetector {
@@ -81,8 +83,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     /**
      * constructs a LEST detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public LostExceptionStackTrace(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -91,8 +92,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     /**
      * implements the visitor to make sure the jdk is 1.4 or better
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -114,10 +114,8 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a catch block and an ATHROW opcode
      *
-     * @param code
-     *            the context object of the current code block
-     * @param method
-     *            the context object of the current method
+     * @param code   the context object of the current code block
+     * @param method the context object of the current method
      * @return if the class throws exceptions
      */
     public boolean prescreen(Code code, Method method) {
@@ -137,8 +135,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     /**
      * implements the visitor to filter out methods that don't throw exceptions
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -153,10 +150,10 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * collects all the valid exception objects (ones where start and finish are before the target
+     * collects all the valid exception objects (ones where start and finish are
+     * before the target
      *
-     * @param exs
-     *            the exceptions from the class file
+     * @param exs the exceptions from the class file
      * @return the filtered exceptions
      */
     public CodeException[] collectExceptions(CodeException... exs) {
@@ -170,7 +167,8 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to find throwing alternative exceptions from a catch block, without forwarding along the original exception
+     * implements the visitor to find throwing alternative exceptions from a catch
+     * block, without forwarding along the original exception
      */
     @Override
     public void sawOpcode(int seen) {
@@ -213,7 +211,8 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                                 JavaClass exClass = Repository.lookupClass(className);
                                 if (exClass.instanceOf(throwableClass)) {
                                     String sig = getSigConstantOperand();
-                                    if ((sig.indexOf("Exception") >= 0) || (sig.indexOf("Throwable") >= 0) || (sig.indexOf("Error") >= 0)) {
+                                    if ((sig.indexOf("Exception") >= 0) || (sig.indexOf("Throwable") >= 0)
+                                            || (sig.indexOf("Error") >= 0)) {
                                         markAsValid = true;
                                         break;
                                     }
@@ -255,11 +254,14 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                         } else if (seen == Const.ATHROW) {
                             if (stack.getStackDepth() > 0) {
                                 OpcodeStack.Item itm = stack.getStackItem(0);
-                                if ((itm.getRegisterNumber() != catchInfo.getRegister()) && (itm.getUserValue() == null)) {
+                                if ((itm.getRegisterNumber() != catchInfo.getRegister())
+                                        && (itm.getUserValue() == null)) {
                                     if (!isPre14Class(itm.getJavaClass())) {
-                                        int priority = getPrevOpcode(1) == Const.MONITOREXIT ? LOW_PRIORITY : NORMAL_PRIORITY;
-                                        bugReporter.reportBug(new BugInstance(this, BugType.LEST_LOST_EXCEPTION_STACK_TRACE.name(), priority).addClass(this)
-                                                .addMethod(this).addSourceLine(this));
+                                        int priority = getPrevOpcode(1) == Const.MONITOREXIT ? LOW_PRIORITY
+                                                : NORMAL_PRIORITY;
+                                        bugReporter.reportBug(
+                                                new BugInstance(this, BugType.LEST_LOST_EXCEPTION_STACK_TRACE.name(),
+                                                        priority).addClass(this).addMethod(this).addSourceLine(this));
                                     }
                                     it.remove();
                                     break;
@@ -301,7 +303,8 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
                 }
             }
 
-            lastWasExitPoint = (seen == Const.GOTO) || (seen == Const.GOTO_W) || (seen == Const.ATHROW) || OpcodeUtils.isReturn(seen);
+            lastWasExitPoint = (seen == Const.GOTO) || (seen == Const.GOTO_W) || (seen == Const.ATHROW)
+                    || OpcodeUtils.isReturn(seen);
         } finally {
             TernaryPatcher.pre(stack, seen);
             stack.sawOpcode(this, seen);
@@ -314,15 +317,14 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the method called might be a method that builds an exception using the original exception. It does so by looking to see if the method
+     * returns whether the method called might be a method that builds an exception
+     * using the original exception. It does so by looking to see if the method
      * returns an exception, and if one of the parameters is the original exception
      *
-     * @param excReg
-     *            the register of the original exception caught
+     * @param excReg the register of the original exception caught
      * @return whether this method call could be an exception builder method
      *
-     * @throws ClassNotFoundException
-     *             if the class of the return type can't be found
+     * @throws ClassNotFoundException if the class of the return type can't be found
      */
     public boolean isPossibleExBuilder(int excReg) throws ClassNotFoundException {
         String sig = getSigConstantOperand();
@@ -348,8 +350,7 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     /**
      * returns whether the class in question was compiled with a jdk less than 1.4
      *
-     * @param cls
-     *            the class to check
+     * @param cls the class to check
      * @return whether the class is compiled with a jdk less than 1.4
      */
     private static boolean isPre14Class(JavaClass cls) {
@@ -379,15 +380,13 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * looks to update the catchinfo block with the register used for the exception variable. If their is a local variable table, but the local variable can't
-     * be found return false, signifying an empty catch block.
+     * looks to update the catchinfo block with the register used for the exception
+     * variable. If their is a local variable table, but the local variable can't be
+     * found return false, signifying an empty catch block.
      *
-     * @param ci
-     *            the catchinfo record for the catch starting at this pc
-     * @param seen
-     *            the opcode of the currently visited instruction
-     * @param pc
-     *            the current pc
+     * @param ci   the catchinfo record for the catch starting at this pc
+     * @param seen the opcode of the currently visited instruction
+     * @param pc   the current pc
      *
      * @return whether the catch block is empty
      */
@@ -413,12 +412,11 @@ public class LostExceptionStackTrace extends BytecodeScanningDetector {
     }
 
     /**
-     * add a catch block info record for the catch block that is guessed to be in the range of start to finish
+     * add a catch block info record for the catch block that is guessed to be in
+     * the range of start to finish
      *
-     * @param start
-     *            the handler pc
-     * @param finish
-     *            the guessed end of the catch block
+     * @param start  the handler pc
+     * @param finish the guessed end of the catch block
      */
     private void addCatchBlock(int start, int finish) {
         CatchInfo ci = new CatchInfo(start, finish);

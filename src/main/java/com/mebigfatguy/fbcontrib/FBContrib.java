@@ -21,7 +21,8 @@ package com.mebigfatguy.fbcontrib;
 import javax.swing.JOptionPane;
 
 /**
- * a simple main app that gives information. This is the jar double-click class. Not used under normal situations.
+ * a simple main app that gives information. This is the jar double-click class.
+ * Not used under normal situations.
  */
 public final class FBContrib {
 
@@ -31,8 +32,7 @@ public final class FBContrib {
     /**
      * shows the simple help
      *
-     * @param args
-     *            standard command line args
+     * @param args standard command line args
      */
     public static void main(final String[] args) {
         JOptionPane.showMessageDialog(null,

@@ -37,24 +37,23 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for common methods that are believed to be non mutating, where the value is discarded. Since the method makes no changes to the object, calling this
- * method is useless. The method call can be removed.
+ * looks for common methods that are believed to be non mutating, where the
+ * value is discarded. Since the method makes no changes to the object, calling
+ * this method is useless. The method call can be removed.
  */
 @CustomUserValue
 public class NonProductiveMethodCall extends BytecodeScanningDetector {
 
     private static final Set<Pattern> IMMUTABLE_METHODS = UnmodifiableSet.create(
-    // @formatter:off
+            // @formatter:off
             Pattern.compile(".*@toString\\(\\)Ljava/lang/String;"),
             Pattern.compile("java/lang/.+@.+Value\\(\\)[BCDFIJSZ]"),
-            Pattern.compile(".*@equals\\(Ljava/lang/Object;\\)Z"),
-            Pattern.compile(".*@hashCode\\(\\)I"),
-            Pattern.compile(".*@clone\\(\\).+"),
-            Pattern.compile("java/util/.+@toArray\\(\\)\\[.+"),
+            Pattern.compile(".*@equals\\(Ljava/lang/Object;\\)Z"), Pattern.compile(".*@hashCode\\(\\)I"),
+            Pattern.compile(".*@clone\\(\\).+"), Pattern.compile("java/util/.+@toArray\\(\\)\\[.+"),
             Pattern.compile("java/time/(?:Instant|((?:Local|Zoned)(?:Date)?(?:Time)?))@(?:plus|minus|with).*"),
             Pattern.compile("java/nio/file/Path@.*\\)((?!Ljava/nio/file/WatchKey;).)*"),
             Pattern.compile("java/lang/Enum@.*")
-            // @formatter:on
+    // @formatter:on
     );
 
     private BugReporter bugReporter;
@@ -63,8 +62,7 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
     /**
      * constructs a NPMC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public NonProductiveMethodCall(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -86,8 +84,7 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -96,10 +93,10 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for return values of common immutable method calls, that are thrown away.
+     * implements the visitor to look for return values of common immutable method
+     * calls, that are thrown away.
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -108,32 +105,33 @@ public class NonProductiveMethodCall extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.INVOKEVIRTUAL:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKESTATIC:
-                    String sig = getSigConstantOperand();
-                    if (!sig.endsWith(Values.SIG_VOID)) {
-                        methodInfo = getClassConstantOperand() + '@' + getNameConstantOperand() + getSigConstantOperand();
-                    }
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESTATIC:
+                String sig = getSigConstantOperand();
+                if (!sig.endsWith(Values.SIG_VOID)) {
+                    methodInfo = getClassConstantOperand() + '@' + getNameConstantOperand() + getSigConstantOperand();
+                }
                 break;
 
-                case Const.POP:
-                case Const.POP2:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        String mInfo = (String) item.getUserValue();
-                        if (mInfo != null) {
-                            for (Pattern p : IMMUTABLE_METHODS) {
-                                Matcher m = p.matcher(mInfo);
+            case Const.POP:
+            case Const.POP2:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    String mInfo = (String) item.getUserValue();
+                    if (mInfo != null) {
+                        for (Pattern p : IMMUTABLE_METHODS) {
+                            Matcher m = p.matcher(mInfo);
 
-                                if (m.matches()) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.NPMC_NON_PRODUCTIVE_METHOD_CALL.name(), NORMAL_PRIORITY).addClass(this)
-                                            .addMethod(this).addSourceLine(this).addString(mInfo));
-                                    break;
-                                }
+                            if (m.matches()) {
+                                bugReporter.reportBug(new BugInstance(this,
+                                        BugType.NPMC_NON_PRODUCTIVE_METHOD_CALL.name(), NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this).addString(mInfo));
+                                break;
                             }
                         }
                     }
+                }
                 break;
             }
 

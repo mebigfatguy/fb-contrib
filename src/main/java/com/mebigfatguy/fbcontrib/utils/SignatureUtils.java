@@ -39,15 +39,18 @@ import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * a collection of static methods for parsing signatures to find information out about them
+ * a collection of static methods for parsing signatures to find information out
+ * about them
  */
 public final class SignatureUtils {
 
-    public static final Set<String> PRIMITIVE_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_INT,
-            Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_FLOAT, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_BOOLEAN,
-            Values.SIG_VOID, "", null);
+    public static final Set<String> PRIMITIVE_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_BYTE,
+            Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_CHAR,
+            Values.SIG_PRIMITIVE_FLOAT, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_BOOLEAN, Values.SIG_VOID, "",
+            null);
 
-    private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_DOUBLE);
+    private static final Set<String> TWO_SLOT_TYPES = UnmodifiableSet.create(Values.SIG_PRIMITIVE_LONG,
+            Values.SIG_PRIMITIVE_DOUBLE);
 
     private static final Pattern CLASS_COMPONENT_DELIMITER = Pattern.compile("\\$");
     private static final Pattern ANONYMOUS_COMPONENT = Pattern.compile("^[1-9][0-9]{0,9}$");
@@ -71,7 +74,8 @@ public final class SignatureUtils {
     private SignatureUtils() {
     }
 
-    public static boolean isInheritedMethod(JavaClass cls, String methodName, String signature) throws ClassNotFoundException {
+    public static boolean isInheritedMethod(JavaClass cls, String methodName, String signature)
+            throws ClassNotFoundException {
         JavaClass[] infs = cls.getAllInterfaces();
         if (findInheritedMethod(infs, methodName, signature) != null) {
             return true;
@@ -89,8 +93,7 @@ public final class SignatureUtils {
     /**
      * parses the package name from a fully qualified class name
      *
-     * @param className
-     *            the class in question
+     * @param className the class in question
      *
      * @return the package of the class
      */
@@ -103,14 +106,12 @@ public final class SignatureUtils {
     }
 
     /**
-     * returns whether or not the two packages have the same first 'depth' parts, if they exist
+     * returns whether or not the two packages have the same first 'depth' parts, if
+     * they exist
      *
-     * @param packName1
-     *            the first package to check
-     * @param packName2
-     *            the second package to check
-     * @param depth
-     *            the number of package parts to check
+     * @param packName1 the first package to check
+     * @param packName2 the second package to check
+     * @param depth     the number of package parts to check
      *
      * @return if they are similar
      */
@@ -143,8 +144,7 @@ public final class SignatureUtils {
     /**
      * converts a primitive type code to a signature
      *
-     * @param typeCode
-     *            the raw JVM type value
+     * @param typeCode the raw JVM type value
      * @return the signature of the type
      */
     public static String getTypeCodeSignature(int typeCode) {
@@ -170,11 +170,11 @@ public final class SignatureUtils {
     /**
      * returns a Map that represents the type of the parameter in slot x
      *
-     * @param methodIsStatic
-     *            if the method is static, causes where to start counting from, slot 0 or 1
-     * @param methodSignature
-     *            the signature of the method to parse
-     * @return a map of parameter types (expect empty slots when doubles/longs are used
+     * @param methodIsStatic  if the method is static, causes where to start
+     *                        counting from, slot 0 or 1
+     * @param methodSignature the signature of the method to parse
+     * @return a map of parameter types (expect empty slots when doubles/longs are
+     *         used
      */
     public static Map<Integer, String> getParameterSlotAndSignatures(boolean methodIsStatic, String methodSignature) {
 
@@ -214,8 +214,7 @@ public final class SignatureUtils {
     /**
      * returns a List of parameter signatures
      *
-     * @param methodSignature
-     *            the signature of the method to parse
+     * @param methodSignature the signature of the method to parse
      * @return a list of parameter signatures
      */
     public static List<String> getParameterSignatures(String methodSignature) {
@@ -248,10 +247,10 @@ public final class SignatureUtils {
     /**
      * gets the return type signature from a method signature
      *
-     * @param methodSig
-     *            the signature of the method
+     * @param methodSig the signature of the method
      *
-     * @return the signature of the return type, or ? if a bogus method signature is given
+     * @return the signature of the return type, or ? if a bogus method signature is
+     *         given
      *
      */
     public static String getReturnSignature(String methodSig) {
@@ -266,8 +265,7 @@ public final class SignatureUtils {
     /**
      * returns the number of parameters in this method signature
      *
-     * @param methodSignature
-     *            the method signature to parse
+     * @param methodSignature the method signature to parse
      * @return the number of parameters
      */
     public static int getNumParameters(String methodSignature) {
@@ -296,8 +294,7 @@ public final class SignatureUtils {
     /**
      * returns the first open register slot after parameters
      *
-     * @param m
-     *            the method for which you want the parameters
+     * @param m the method for which you want the parameters
      * @return the first available register slot
      */
     public static int getFirstRegisterSlot(Method m) {
@@ -344,7 +341,8 @@ public final class SignatureUtils {
             genReturnSig = genReturnSig.substring(0, bracketPos) + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
         }
 
-        return regReturnParms.getSignature().equals(genReturnSig) || genReturnSig.startsWith(Values.SIG_GENERIC_TEMPLATE);
+        return regReturnParms.getSignature().equals(genReturnSig)
+                || genReturnSig.startsWith(Values.SIG_GENERIC_TEMPLATE);
     }
 
     public static int getSignatureSize(String signature) {
@@ -354,8 +352,7 @@ public final class SignatureUtils {
     /**
      * converts a signature, like Ljava/lang/String; into a dotted class name.
      *
-     * @param signature
-     *            a class signature, must not be null
+     * @param signature a class signature, must not be null
      *
      * @return the dotted class name
      */
@@ -366,13 +363,13 @@ public final class SignatureUtils {
     /**
      * converts a signature, like Ljava/lang/String; into a slashed class name.
      *
-     * @param signature
-     *            the class signature
+     * @param signature the class signature
      *
      * @return the slashed class name
      */
     public static @SlashedClassName String trimSignature(String signature) {
-        if ((signature != null) && signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
+        if ((signature != null) && signature.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)
+                && signature.endsWith(Values.SIG_QUALIFIED_CLASS_SUFFIX)) {
             return signature.substring(1, signature.length() - 1);
         }
 
@@ -380,10 +377,10 @@ public final class SignatureUtils {
     }
 
     /**
-     * returns a slashed or dotted class name into a signature, like java/lang/String -- Ljava/lang/String; Primitives and arrays are accepted.
+     * returns a slashed or dotted class name into a signature, like
+     * java/lang/String -- Ljava/lang/String; Primitives and arrays are accepted.
      *
-     * @param className
-     *            the class name to convert
+     * @param className the class name to convert
      * @return the signature format of the class
      */
     @Nullable
@@ -401,15 +398,16 @@ public final class SignatureUtils {
                 return primitive;
             }
 
-            return Values.SIG_QUALIFIED_CLASS_PREFIX + className.replace('.', '/') + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+            return Values.SIG_QUALIFIED_CLASS_PREFIX + className.replace('.', '/')
+                    + Values.SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
         }
     }
 
     /**
-     * Converts a type name into an array signature. Accepts slashed or dotted classnames, or type signatures.
+     * Converts a type name into an array signature. Accepts slashed or dotted
+     * classnames, or type signatures.
      *
-     * @param typeName
-     *            the class name to generate an array signature from
+     * @param typeName the class name to generate an array signature from
      *
      * @return the array signature
      */
@@ -423,8 +421,7 @@ public final class SignatureUtils {
     }
 
     /**
-     * @param className
-     *            the name of the class
+     * @param className the name of the class
      *
      * @return the class name, discarding any anonymous component
      */
@@ -438,17 +435,16 @@ public final class SignatureUtils {
     }
 
     public static boolean isPlainStringConvertableClass(@SlashedClassName String className) {
-        return Values.SLASHED_JAVA_LANG_STRINGBUILDER.equals(className) || Values.SLASHED_JAVA_LANG_STRINGBUFFER.equals(className)
+        return Values.SLASHED_JAVA_LANG_STRINGBUILDER.equals(className)
+                || Values.SLASHED_JAVA_LANG_STRINGBUFFER.equals(className)
                 || Values.SLASHED_JAVA_UTIL_UUID.equals(className);
     }
 
     /**
      * Eclipse makes weird class signatures.
      *
-     * @param sig
-     *            the signature in type table
-     * @param startIndex
-     *            the index into the signature where the wonkyness begins
+     * @param sig        the signature in type table
+     * @param startIndex the index into the signature where the wonkyness begins
      *
      * @return if this signature has eclipse meta chars
      */

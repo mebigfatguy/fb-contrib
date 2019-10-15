@@ -42,7 +42,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that make static method calls using an instance reference. For documentation purposes, it is better to call the method using the class
+ * looks for methods that make static method calls using an instance reference.
+ * For documentation purposes, it is better to call the method using the class
  * name. This may represent a change in definition that should be noticed.
  */
 public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
@@ -53,8 +54,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
     /**
      * constructs a SMII detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public StaticMethodInstanceInvocation(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -75,8 +75,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a INVOKESTATIC opcodes
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class uses synchronization
      */
     private boolean prescreen(Method method) {
@@ -87,8 +86,7 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
     /**
      * implement the visitor to reset the stack
      *
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -101,10 +99,10 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for static method calls from instance variables
+     * implements the visitor to look for static method calls from instance
+     * variables
      *
-     * @param seen
-     *            the opcode of the currently visited instruction
+     * @param seen the opcode of the currently visited instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -125,15 +123,17 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
                 if (method.indexOf(Values.SYNTHETIC_MEMBER_CHAR) < 0) {
                     PopInfo pInfo = popStack.get(0);
                     int numArguments = SignatureUtils.getNumParameters(getSigConstantOperand());
-                    if (((numArguments > 0) || (pInfo.popPC == (getPC() - 1))) && (numArguments == (stack.getStackDepth() - pInfo.popDepth))
+                    if (((numArguments > 0) || (pInfo.popPC == (getPC() - 1)))
+                            && (numArguments == (stack.getStackDepth() - pInfo.popDepth))
                             && classDefinesStaticMethod(SignatureUtils.stripSignature(pInfo.popSignature))) {
                         int lineNumber = -1;
                         if (lineNumberTable != null) {
                             lineNumber = lineNumberTable.getSourceLine(getPC());
                         }
                         if (pInfo.popLineNum == lineNumber) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SMII_STATIC_METHOD_INSTANCE_INVOCATION.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.SMII_STATIC_METHOD_INSTANCE_INVOCATION.name(),
+                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
                         popStack.clear();
                     }
@@ -143,7 +143,8 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
             if ((seen == Const.PUTFIELD) || (seen == Const.ATHROW) || (seen == Const.GOTO) || (seen == Const.GOTO_W)
                     || ((seen >= Const.IFEQ) && (seen <= Const.IF_ACMPNE)) || OpcodeUtils.isAStore(seen)) {
                 popStack.clear();
-            } else if ((seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKESTATIC)) {
+            } else if ((seen == Const.INVOKESPECIAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKEVIRTUAL)
+                    || (seen == Const.INVOKESTATIC)) {
                 if (Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(getSigConstantOperand()))) {
                     popStack.clear();
                 }
@@ -176,7 +177,8 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
         JavaClass cls = Repository.lookupClass(popSignature);
         Method[] methods = cls.getMethods();
         for (Method m : methods) {
-            if (m.isStatic() && m.getName().equals(getNameConstantOperand()) && m.getSignature().equals(getSigConstantOperand())) {
+            if (m.isStatic() && m.getName().equals(getNameConstantOperand())
+                    && m.getSignature().equals(getSigConstantOperand())) {
                 return true;
             }
         }
@@ -185,7 +187,8 @@ public class StaticMethodInstanceInvocation extends BytecodeScanningDetector {
     }
 
     /**
-     * holds information about a POP instruction, what was popped, where it occurred, etc.
+     * holds information about a POP instruction, what was popped, where it
+     * occurred, etc.
      */
     static class PopInfo {
         int popPC;

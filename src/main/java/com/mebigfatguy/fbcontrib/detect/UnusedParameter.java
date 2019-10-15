@@ -45,13 +45,15 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for private or static methods that have parameters that aren't used. These parameters can be removed.
+ * looks for private or static methods that have parameters that aren't used.
+ * These parameters can be removed.
  */
 @CustomUserValue
 public class UnusedParameter extends BytecodeScanningDetector {
 
-    private static Set<String> IGNORE_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR, Values.STATIC_INITIALIZER, "main", "premain", "agentmain",
-            "writeObject", "readObject", "readObjectNoData", "writeReplace", "readResolve", "writeExternal", "readExternal");
+    private static Set<String> IGNORE_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR, Values.STATIC_INITIALIZER,
+            "main", "premain", "agentmain", "writeObject", "readObject", "readObjectNoData", "writeReplace",
+            "readResolve", "writeExternal", "readExternal");
 
     private BugReporter bugReporter;
 
@@ -62,8 +64,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
     /**
      * constructs a UP detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public UnusedParameter(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -72,8 +73,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
     /**
      * implements the visitor to create parm bitset
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -92,8 +92,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
     /**
      * implements the visitor to clear the parm set, and check for potential methods
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -107,7 +106,8 @@ public class UnusedParameter extends BytecodeScanningDetector {
         }
 
         int accessFlags = m.getAccessFlags();
-        if (((accessFlags & (Const.ACC_STATIC | Const.ACC_PRIVATE)) == 0) || ((accessFlags & Const.ACC_SYNTHETIC) != 0)) {
+        if (((accessFlags & (Const.ACC_STATIC | Const.ACC_PRIVATE)) == 0)
+                || ((accessFlags & Const.ACC_SYNTHETIC) != 0)) {
             return;
         }
 
@@ -140,7 +140,8 @@ public class UnusedParameter extends BytecodeScanningDetector {
                     LocalVariable lv = (lvt == null) ? null : lvt.getLocalVariable(reg, 0);
                     if (lv != null) {
                         String parmName = lv.getName();
-                        bugReporter.reportBug(new BugInstance(this, BugType.UP_UNUSED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                        bugReporter.reportBug(new BugInstance(this, BugType.UP_UNUSED_PARAMETER.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this)
                                 .addString("Parameter " + regToParm.get(Integer.valueOf(reg)) + ": " + parmName));
                     }
                     reg = unusedParms.nextSetBit(reg + 1);
@@ -154,8 +155,7 @@ public class UnusedParameter extends BytecodeScanningDetector {
     /**
      * implements the visitor to look for usage of parmeter registers.
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {

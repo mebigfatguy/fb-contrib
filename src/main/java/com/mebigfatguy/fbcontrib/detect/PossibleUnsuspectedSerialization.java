@@ -34,8 +34,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for serialization of non-static inner classes. As this serializes the enclosing class, it may unintentially bring in more to the serialization than is
- * wanted
+ * looks for serialization of non-static inner classes. As this serializes the
+ * enclosing class, it may unintentially bring in more to the serialization than
+ * is wanted
  */
 public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
 
@@ -45,8 +46,7 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
     /**
      * constructs a PUS detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public PossibleUnsuspectedSerialization(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -55,8 +55,7 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
     /**
      * implements the visitor to setup and tear down the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -71,8 +70,7 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack
      *
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -81,10 +79,10 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for serialization of an object that is an non-static inner class.
+     * implements the visitor to look for serialization of an object that is an
+     * non-static inner class.
      *
-     * @param seen
-     *            the context object of the currently parsed instruction
+     * @param seen the context object of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -99,9 +97,11 @@ public class PossibleUnsuspectedSerialization extends BytecodeScanningDetector {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         JavaClass cls = item.getJavaClass();
 
-                        if ((cls != null) && (cls.getClassName().indexOf(Values.INNER_CLASS_SEPARATOR) >= 0) && hasOuterClassSyntheticReference(cls)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                        if ((cls != null) && (cls.getClassName().indexOf(Values.INNER_CLASS_SEPARATOR) >= 0)
+                                && hasOuterClassSyntheticReference(cls)) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION.name(),
+                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }

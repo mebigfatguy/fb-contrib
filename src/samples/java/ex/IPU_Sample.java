@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.Properties;
 
 public class IPU_Sample {

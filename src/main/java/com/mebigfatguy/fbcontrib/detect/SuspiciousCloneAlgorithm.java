@@ -41,12 +41,14 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for implementation of clone() where a store is made to a member of the source object.
+ * looks for implementation of clone() where a store is made to a member of the
+ * source object.
  */
 @CustomUserValue
 public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
 
-    public static final String SIG_VOID_TO_OBJECT = new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+    public static final String SIG_VOID_TO_OBJECT = new SignatureBuilder()
+            .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
 
     private static JavaClass cloneableClass;
     private static Map<String, Integer> changingMethods;
@@ -73,8 +75,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
     /**
      * constructs a SCA detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SuspiciousCloneAlgorithm(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -83,8 +84,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
     /**
      * override the visitor to look for classes that implement Cloneable
      *
-     * @param classContext
-     *            the context object of the class to be checked
+     * @param classContext the context object of the class to be checked
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -108,8 +108,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
     /**
      * override the visitor to only continue for the clone method
      *
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -120,10 +119,10 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
     }
 
     /**
-     * override the visitor to look for stores to member fields of the source object on a clone
+     * override the visitor to look for stores to member fields of the source object
+     * on a clone
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -132,57 +131,58 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.ALOAD_0:
-                    srcField = true;
+            case Const.ALOAD_0:
+                srcField = true;
                 break;
 
-                case Const.DUP:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        if (item.getUserValue() != null) {
-                            srcField = true;
+            case Const.DUP:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if (item.getUserValue() != null) {
+                        srcField = true;
+                    }
+                }
+                break;
+
+            case Const.GETFIELD:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if (item.getRegisterNumber() == 0) {
+                        srcField = true;
+                    }
+                }
+                break;
+
+            case Const.PUTFIELD:
+                if (stack.getStackDepth() >= 2) {
+                    OpcodeStack.Item item = stack.getStackItem(1);
+                    if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
+                    }
+                }
+
+                break;
+
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKEVIRTUAL:
+                String sig = getSigConstantOperand();
+                int numArgs = SignatureUtils.getNumParameters(sig);
+                if (stack.getStackDepth() > numArgs) {
+                    OpcodeStack.Item item = stack.getStackItem(numArgs);
+                    if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
+                        String name = getNameConstantOperand();
+                        Integer priority = changingMethods.get(name);
+                        if (priority != null) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(),
+                                    priority.intValue()).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
+                }
                 break;
 
-                case Const.GETFIELD:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        if (item.getRegisterNumber() == 0) {
-                            srcField = true;
-                        }
-                    }
-                break;
-
-                case Const.PUTFIELD:
-                    if (stack.getStackDepth() >= 2) {
-                        OpcodeStack.Item item = stack.getStackItem(1);
-                        if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
-                    }
-
-                break;
-
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKEVIRTUAL:
-                    String sig = getSigConstantOperand();
-                    int numArgs = SignatureUtils.getNumParameters(sig);
-                    if (stack.getStackDepth() > numArgs) {
-                        OpcodeStack.Item item = stack.getStackItem(numArgs);
-                        if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
-                            String name = getNameConstantOperand();
-                            Integer priority = changingMethods.get(name);
-                            if (priority != null) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), priority.intValue()).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
-                            }
-                        }
-                    }
-                break;
-
-                default:
+            default:
                 break;
             }
         } finally {

@@ -19,7 +19,8 @@
 package com.mebigfatguy.fbcontrib.utils;
 
 /**
- * a collection of static methods for working with retrieving arbitrary code bytes in a code byte array
+ * a collection of static methods for working with retrieving arbitrary code
+ * bytes in a code byte array
  *
  */
 public final class CodeByteUtils {
@@ -30,10 +31,8 @@ public final class CodeByteUtils {
     /**
      * returns the code byte at a specific offset as an int
      *
-     * @param bytes
-     *            the code bytes
-     * @param offset
-     *            the offset into the code
+     * @param bytes  the code bytes
+     * @param offset the offset into the code
      * @return the byte as an int
      */
     public static int getbyte(byte[] bytes, int offset) {
@@ -43,10 +42,8 @@ public final class CodeByteUtils {
     /**
      * returns the code short at a specific offset as an int
      *
-     * @param bytes
-     *            the code bytes
-     * @param offset
-     *            the offset into the code
+     * @param bytes  the code bytes
+     * @param offset the offset into the code
      * @return the short as an int
      */
     public static int getshort(byte[] bytes, int offset) {

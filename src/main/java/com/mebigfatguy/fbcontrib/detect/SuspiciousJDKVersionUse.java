@@ -53,8 +53,10 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for calls to classes and methods that do not exist in the JDK for which this class is compiled. This can happen if you specify the -source and -target
- * options of the javac compiler, and specify a target that is less than the jdk version of the javac compiler.
+ * looks for calls to classes and methods that do not exist in the JDK for which
+ * this class is compiled. This can happen if you specify the -source and
+ * -target options of the javac compiler, and specify a target that is less than
+ * the jdk version of the javac compiler.
  */
 public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     private static final Map<Integer, String> VER_REG_EX = new HashMap<>();
@@ -84,28 +86,13 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     }
 
     private static Set<String> knownJDKJavaxPackageRoots = UnmodifiableSet.create(
-    // @formatter:off
-        "javax/accessibility/",
-        "javax/activation/",
-        "javax/activity/",
-        "javax/annotation/",
-        "javax/imageio/",
-        "javax/jws/",
-        "javax/lang/",
-        "javax/management/",
-        "javax/naming/",
-        "javax/net/",
-        "javax/print/",
-        "javax/rmi/",
-        "javax/script/",
-        "javax/security/",
-        "javax/smartcardio/",
-        "javax/sound/",
-        "javax/sql/",
-        "javax/swing/",
-        "javax/tools/",
-        "javax/transaction/"
-        // "javax/xml/" // javax.xml might be internal or external, hard to tell, so just don't report it
+            // @formatter:off
+            "javax/accessibility/", "javax/activation/", "javax/activity/", "javax/annotation/", "javax/imageio/",
+            "javax/jws/", "javax/lang/", "javax/management/", "javax/naming/", "javax/net/", "javax/print/",
+            "javax/rmi/", "javax/script/", "javax/security/", "javax/smartcardio/", "javax/sound/", "javax/sql/",
+            "javax/swing/", "javax/tools/", "javax/transaction/"
+    // "javax/xml/" // javax.xml might be internal or external, hard to tell, so
+    // just don't report it
     // @formatter:on
     );
 
@@ -174,7 +161,7 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         String clsName;
         try {
             if ((seen == Const.INVOKEVIRTUAL) // Interfaces are more difficult, ignore
-                                        // for now
+                    // for now
                     || (seen == Const.INVOKESTATIC) || (seen == Const.INVOKESPECIAL)) {
                 clsName = getClassConstantOperand();
                 if ((clsName.startsWith("java/")) || (clsName.startsWith("javax/"))) {
@@ -190,8 +177,9 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
                     }
 
                     if (!isValid(validMethods, clsName)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this).addCalledMethod(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this).addCalledMethod(this));
                     }
                 }
             }
@@ -222,7 +210,8 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
         }
     }
 
-    private boolean isValid(Map<String, Set<String>> validMethods, String clsName) throws IOException, ClassNotFoundException {
+    private boolean isValid(Map<String, Set<String>> validMethods, String clsName)
+            throws IOException, ClassNotFoundException {
 
         Set<String> methodInfos = validMethods.get(clsName);
         if (methodInfos == null) {
@@ -233,8 +222,9 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
                     return true;
                 }
 
-                bugReporter.reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this).addClass(clsName));
+                bugReporter
+                        .reportBug(new BugInstance(this, BugType.SJVU_SUSPICIOUS_JDK_VERSION_USE.name(), HIGH_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this).addClass(clsName));
             } else if (clsName.startsWith("java/")) {
                 JavaClass calledClass = null;
                 try (InputStream is = new BufferedInputStream(jdkZip.getInputStream(ze))) {
@@ -268,11 +258,11 @@ public class SuspiciousJDKVersionUse extends BytecodeScanningDetector {
     }
 
     /**
-     * checks to see if this class is a javax.xxxx.Foo class if so, looks to see if the package is at least in the jdk if a whole new package comes into javax
-     * in rt.jar, this will be missed. Need a better solution here.
+     * checks to see if this class is a javax.xxxx.Foo class if so, looks to see if
+     * the package is at least in the jdk if a whole new package comes into javax in
+     * rt.jar, this will be missed. Need a better solution here.
      *
-     * @param className
-     *            the slashed class in question
+     * @param className the slashed class in question
      * @return whether it is in the default jdk rt.jar
      */
     private boolean isJavaXExternal(String className) {

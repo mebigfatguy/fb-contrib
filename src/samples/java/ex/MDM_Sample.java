@@ -1,4 +1,5 @@
 package ex;
+
 import java.math.BigDecimal;
 import java.net.InetAddress;
 import java.net.ServerSocket;
@@ -14,8 +15,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 
 public class MDM_Sample implements Runnable {
     private ReentrantLock myLock;
-    
-    
+
     public MDM_Sample() throws Exception {
         boolean b;
 
@@ -107,7 +107,7 @@ public class MDM_Sample implements Runnable {
 
     private static void touch(Object o) {
     }
-    
+
     private void fpAssertReentrantLock() {
         assert myLock.isHeldByCurrentThread();
     }

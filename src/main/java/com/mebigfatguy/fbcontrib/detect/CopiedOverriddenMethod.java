@@ -54,7 +54,8 @@ import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Looks for methods that are direct copies of the implementation in the super class. This detector doesn't handle multi-level inheritance, ie child to
+ * Looks for methods that are direct copies of the implementation in the super
+ * class. This detector doesn't handle multi-level inheritance, ie child to
  * grandparent. Could be done.
  */
 public class CopiedOverriddenMethod extends BytecodeScanningDetector {
@@ -72,18 +73,17 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     /**
      * constructs a COM detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public CopiedOverriddenMethod(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * overrides the visitor to accept classes derived from non java.lang.Object classes.
+     * overrides the visitor to accept classes derived from non java.lang.Object
+     * classes.
      *
-     * @param clsContext
-     *            the context object of the currently parsed class
+     * @param clsContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext clsContext) {
@@ -102,7 +102,8 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
                     if (m.isPublic() && !m.isAbstract() && !m.isSynthetic() && !Values.CONSTRUCTOR.equals(methodName)
                             && !Values.STATIC_INITIALIZER.equals(methodName)) {
                         String methodInfo = methodName + ':' + m.getSignature();
-                        superclassCode.put(methodInfo, new CodeInfo(m.getCode(), m.getExceptionTable(), m.getAccessFlags()));
+                        superclassCode.put(methodInfo,
+                                new CodeInfo(m.getCode(), m.getExceptionTable(), m.getAccessFlags()));
                     }
                 }
                 cls.accept(this);
@@ -120,8 +121,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     /**
      * overrides the visitor to get the methodInfo
      *
-     * @param obj
-     *            the method object for the currently parsed method
+     * @param obj the method object for the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -129,10 +129,10 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to find code blocks of methods that are the same as its parents
+     * overrides the visitor to find code blocks of methods that are the same as its
+     * parents
      *
-     * @param obj
-     *            the code object of the currently parsed method
+     * @param obj the code object of the currently parsed method
      */
     @Override
     public void visitCode(Code obj) {
@@ -144,13 +144,17 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
 
             CodeInfo superCode = superclassCode.remove(curMethodInfo);
             if (superCode != null) {
-                if (sameAccess(getMethod().getAccessFlags(), superCode.getAccess()) && coversExceptions(getMethod().getExceptionTable(), superCode) && codeEquals(obj, superCode.getCode())) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.COM_COPIED_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(classContext, this, getPC()));
+                if (sameAccess(getMethod().getAccessFlags(), superCode.getAccess())
+                        && coversExceptions(getMethod().getExceptionTable(), superCode)
+                        && codeEquals(obj, superCode.getCode())) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.COM_COPIED_OVERRIDDEN_METHOD.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(classContext, this, getPC()));
                     return;
                 }
 
-                if ((getMethod().getAccessFlags() & Const.ACC_SYNCHRONIZED) != (superCode.getAccess() & Const.ACC_SYNCHRONIZED)) {
+                if ((getMethod().getAccessFlags() & Const.ACC_SYNCHRONIZED) != (superCode.getAccess()
+                        & Const.ACC_SYNCHRONIZED)) {
                     return;
                 }
 
@@ -168,10 +172,10 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for an exact call to the parent class's method using this methods parm.
+     * overrides the visitor to look for an exact call to the parent class's method
+     * using this methods parm.
      *
-     * @param seen
-     *            the currently parsed instruction
+     * @param seen the currently parsed instruction
      *
      */
     @Override
@@ -202,8 +206,8 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
         } else {
             int expectedInstruction = getExpectedReturnInstruction(getMethod().getReturnType());
             if ((seen == expectedInstruction) && (getNextPC() == getCode().getCode().length)) {
-                bugReporter.reportBug(
-                        new BugInstance(this, BugType.COM_PARENT_DELEGATED_CALL.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                bugReporter.reportBug(new BugInstance(this, BugType.COM_PARENT_DELEGATED_CALL.name(), NORMAL_PRIORITY)
+                        .addClass(this).addMethod(this).addSourceLine(this));
             } else {
                 throw new StopOpcodeParsingException();
             }
@@ -213,16 +217,16 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     private boolean isExpectedParmInstruction(int seen, int parmOffset, Type type) {
 
         switch (getExpectedReturnInstruction(type)) {
-            case Const.ARETURN:
-                return isExpectedParmInstruction(Const.ALOAD_0, Const.ALOAD, seen, parmOffset);
-            case Const.DRETURN:
-                return isExpectedParmInstruction(Const.DLOAD_0, Const.DLOAD, seen, parmOffset);
-            case Const.FRETURN:
-                return isExpectedParmInstruction(Const.FLOAD_0, Const.FLOAD, seen, parmOffset);
-            case Const.LRETURN:
-                return isExpectedParmInstruction(Const.LLOAD_0, Const.LLOAD, seen, parmOffset);
-            default:
-                return isExpectedParmInstruction(Const.ILOAD_0, Const.ILOAD, seen, parmOffset);
+        case Const.ARETURN:
+            return isExpectedParmInstruction(Const.ALOAD_0, Const.ALOAD, seen, parmOffset);
+        case Const.DRETURN:
+            return isExpectedParmInstruction(Const.DLOAD_0, Const.DLOAD, seen, parmOffset);
+        case Const.FRETURN:
+            return isExpectedParmInstruction(Const.FLOAD_0, Const.FLOAD, seen, parmOffset);
+        case Const.LRETURN:
+            return isExpectedParmInstruction(Const.LLOAD_0, Const.LLOAD, seen, parmOffset);
+        default:
+            return isExpectedParmInstruction(Const.ILOAD_0, Const.ILOAD, seen, parmOffset);
         }
     }
 
@@ -251,51 +255,48 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
     /**
      * determines if two access flags contain the same access modifiers
      *
-     * @param parentAccess
-     *            the access flags of the parent method
-     * @param childAccess
-     *            the access flats of the child method
+     * @param parentAccess the access flags of the parent method
+     * @param childAccess  the access flats of the child method
      * @return whether the access modifiers are the same
      */
     private static boolean sameAccess(int parentAccess, int childAccess) {
-        return ((parentAccess & (Const.ACC_PUBLIC | Const.ACC_PROTECTED)) == (childAccess & (Const.ACC_PUBLIC | Const.ACC_PROTECTED)));
+        return ((parentAccess & (Const.ACC_PUBLIC | Const.ACC_PROTECTED)) == (childAccess
+                & (Const.ACC_PUBLIC | Const.ACC_PROTECTED)));
     }
-    
-    
+
     /**
-     * determines if the parents exceptions are represented in the child's exceptions
-     * if will false negative, if the child throws clause contains all the subclasses of a parents throws clause
+     * determines if the parents exceptions are represented in the child's
+     * exceptions if will false negative, if the child throws clause contains all
+     * the subclasses of a parents throws clause
      *
-     * @param thisExceptions
-     *            the exception table found in this class's method
-     * @param superInfo
-     *            the code info for the super class method
-     * @return whether all the super classes throws clauses are declared by the child
+     * @param thisExceptions the exception table found in this class's method
+     * @param superInfo      the code info for the super class method
+     * @return whether all the super classes throws clauses are declared by the
+     *         child
      */
     private static boolean coversExceptions(ExceptionTable thisExceptions, CodeInfo superInfo) {
-    	if (!superInfo.hasExceptions()) {
-    		return true;
-    	}
-    	
-    	if (thisExceptions == null || thisExceptions.getNumberOfExceptions() == 0) {
-    		return false;
-    	}
-    	
-    	for (String ex : thisExceptions.getExceptionNames()) {
-    		superInfo.removeException(ex);
-    	}
-    	
-    	return !superInfo.hasExceptions();
+        if (!superInfo.hasExceptions()) {
+            return true;
+        }
+
+        if (thisExceptions == null || thisExceptions.getNumberOfExceptions() == 0) {
+            return false;
+        }
+
+        for (String ex : thisExceptions.getExceptionNames()) {
+            superInfo.removeException(ex);
+        }
+
+        return !superInfo.hasExceptions();
 
     }
 
     /**
-     * compares two code blocks to see if they are equal with regard to instructions and field accesses
+     * compares two code blocks to see if they are equal with regard to instructions
+     * and field accesses
      *
-     * @param child
-     *            the first code block
-     * @param parent
-     *            the second code block
+     * @param child  the first code block
+     * @param parent the second code block
      *
      * @return whether the code blocks are the same
      */
@@ -345,7 +346,8 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
                     return false;
                 }
 
-                if (childFSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX) || childFSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
+                if (childFSig.startsWith(Values.SIG_QUALIFIED_CLASS_PREFIX)
+                        || childFSig.startsWith(Values.SIG_ARRAY_PREFIX)) {
                     ReferenceType childRefType = ((FieldInstruction) childin).getReferenceType(childPoolGen);
                     ReferenceType parentRefType = ((FieldInstruction) parentin).getReferenceType(parentPoolGen);
                     if (!childRefType.getSignature().equals(parentRefType.getSignature())) {
@@ -381,7 +383,8 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
                 if (childValue instanceof ConstantClass) {
                     ConstantClass childClass = (ConstantClass) childValue;
                     ConstantClass parentClass = (ConstantClass) parentValue;
-                    if (!childClass.getBytes(childPoolGen.getConstantPool()).equals(parentClass.getBytes(parentPoolGen.getConstantPool()))) {
+                    if (!childClass.getBytes(childPoolGen.getConstantPool())
+                            .equals(parentClass.getBytes(parentPoolGen.getConstantPool()))) {
                         return false;
                     }
                 } else if (!childValue.equals(parentValue)) {
@@ -424,9 +427,9 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
         public CodeInfo(Code c, ExceptionTable et, int acc) {
             code = c;
             if (et == null) {
-            	exceptions = Collections.emptySet();
+                exceptions = Collections.emptySet();
             } else {
-            	exceptions = new HashSet<>(Arrays.asList(et.getExceptionNames()));
+                exceptions = new HashSet<>(Arrays.asList(et.getExceptionNames()));
             }
             access = acc;
         }
@@ -434,13 +437,13 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
         public Code getCode() {
             return code;
         }
-        
+
         public void removeException(String ex) {
-        	exceptions.remove(ex);
+            exceptions.remove(ex);
         }
-        
+
         public boolean hasExceptions() {
-        	return !exceptions.isEmpty();
+            return !exceptions.isEmpty();
         }
 
         public int getAccess() {

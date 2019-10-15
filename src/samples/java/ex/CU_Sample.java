@@ -1,4 +1,5 @@
 package ex;
+
 public class CU_Sample implements Cloneable {
 
     @Override

@@ -1,4 +1,5 @@
 package ex;
+
 public class CBX_Sample {
     public String testBuildXML(int val, String info) {
         StringBuffer sb = new StringBuffer();

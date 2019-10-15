@@ -23,7 +23,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**
- * a factory for creating unmodifiable HashSets by presenting values to a var-args creator method.
+ * a factory for creating unmodifiable HashSets by presenting values to a
+ * var-args creator method.
  */
 public final class UnmodifiableSet {
 
@@ -37,6 +38,6 @@ public final class UnmodifiableSet {
             s.add(t);
         }
 
-        return Collections.<T> unmodifiableSet(s);
+        return Collections.<T>unmodifiableSet(s);
     }
 }

@@ -46,61 +46,37 @@ import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 public class JAXRSIssues extends PreorderVisitor implements Detector {
 
     private static final Set<String> METHOD_ANNOTATIONS = UnmodifiableSet.create(
-    //@formatter:off
-            "Ljavax/ws/rs/HEAD;",
-            "Ljavax/ws/rs/GET;",
-            "Ljavax/ws/rs/PUT;",
-            "Ljavax/ws/rs/POST;",
-            "Ljavax/ws/rs/DELETE;",
-            "Ljavax/ws/rs/POST;"
-            //@formatter:on
+            // @formatter:off
+            "Ljavax/ws/rs/HEAD;", "Ljavax/ws/rs/GET;", "Ljavax/ws/rs/PUT;", "Ljavax/ws/rs/POST;",
+            "Ljavax/ws/rs/DELETE;", "Ljavax/ws/rs/POST;"
+    // @formatter:on
     );
 
     private static final Set<String> PARAM_ANNOTATIONS = UnmodifiableSet.create(
-    //@formatter:off
-            "Ljavax/ws/rs/PathParam;",
-            "Ljavax/ws/rs/CookieParam;",
-            "Ljavax/ws/rs/FormParam;",
-            "Ljavax/ws/rs/HeaderParam;",
-            "Ljavax/ws/rs/MatrixParam;",
-            "Ljavax/ws/rs/QueryParam;",
-            "Ljavax/ws/rs/BeanParam;",
-            "Ljavax/ws/rs/container/Suspended;",
-            "Ljavax/ws/rs/core/Context;",
-            "Lcom/wordnik/swagger/annotations/ApiParam;",
-            "Lio/swagger/annotations/ApiParam;",
-            "Lorg/glassfish/jersey/media/multipart/FormDataParam;",
-            "Lcom/sun/jersey/multipart/FormDataParam;"
-            //@formatter:on
+            // @formatter:off
+            "Ljavax/ws/rs/PathParam;", "Ljavax/ws/rs/CookieParam;", "Ljavax/ws/rs/FormParam;",
+            "Ljavax/ws/rs/HeaderParam;", "Ljavax/ws/rs/MatrixParam;", "Ljavax/ws/rs/QueryParam;",
+            "Ljavax/ws/rs/BeanParam;", "Ljavax/ws/rs/container/Suspended;", "Ljavax/ws/rs/core/Context;",
+            "Lcom/wordnik/swagger/annotations/ApiParam;", "Lio/swagger/annotations/ApiParam;",
+            "Lorg/glassfish/jersey/media/multipart/FormDataParam;", "Lcom/sun/jersey/multipart/FormDataParam;"
+    // @formatter:on
     );
 
     private static final Set<String> NATIVE_JAXRS_TYPES = UnmodifiableSet.create(
-    //@formatter:off
-            Values.SIG_JAVA_LANG_STRING,
-            SignatureBuilder.SIG_BYTE_ARRAY,
-            "Ljava/io/InputStream;",
-            "Ljava/io/Reader;",
-            "Ljava/io/File;",
-            "Ljavax/activation/DataSource;",
-            "Ljavax/xml/transform/Source;",
-            "Ljavax/xml/bin/JAXBElement;",
-            "Ljavax/ws/rc/core/MultivaluedMap;"
-            //@formatter:on
+            // @formatter:off
+            Values.SIG_JAVA_LANG_STRING, SignatureBuilder.SIG_BYTE_ARRAY, "Ljava/io/InputStream;", "Ljava/io/Reader;",
+            "Ljava/io/File;", "Ljavax/activation/DataSource;", "Ljavax/xml/transform/Source;",
+            "Ljavax/xml/bin/JAXBElement;", "Ljavax/ws/rc/core/MultivaluedMap;"
+    // @formatter:on
     );
 
     private static final Set<String> VALID_CONTEXT_TYPES = UnmodifiableSet.create(
-    //@formatter:off
-            "Ljavax/ws/rs/core/Application;",
-            "Ljavax/ws/rs/core/UriInfo;",
-            "Ljavax/ws/rs/core/HttpHeaders;",
-            "Ljavax/ws/rs/core/Request;",
-            "Ljavax/ws/rs/core/SecurityContext;",
-            "Ljavax/ws/rs/ext/Providers;",
-            "Ljavax/servlet/ServletConfig;",
-            "Ljavax/servlet/ServletContext;",
-            "Ljavax/servlet/http/HttpServletRequest;",
-            "Ljavax/servlet/http/HttpServletResponse;"
-            //@formatter:on
+            // @formatter:off
+            "Ljavax/ws/rs/core/Application;", "Ljavax/ws/rs/core/UriInfo;", "Ljavax/ws/rs/core/HttpHeaders;",
+            "Ljavax/ws/rs/core/Request;", "Ljavax/ws/rs/core/SecurityContext;", "Ljavax/ws/rs/ext/Providers;",
+            "Ljavax/servlet/ServletConfig;", "Ljavax/servlet/ServletContext;",
+            "Ljavax/servlet/http/HttpServletRequest;", "Ljavax/servlet/http/HttpServletResponse;"
+    // @formatter:on
     );
 
     private BugReporter bugReporter;
@@ -142,29 +118,31 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         for (AnnotationEntry entry : obj.getAnnotationEntries()) {
             String annotationType = entry.getAnnotationType();
             switch (annotationType) {
-                case "Ljavax/ws/rs/GET;":
-                    hasGet = true;
+            case "Ljavax/ws/rs/GET;":
+                hasGet = true;
+                isJAXRS = true;
+                break;
+
+            case "Ljavax/ws/rs/Consumes;":
+                hasConsumes = true;
+                break;
+
+            case "Ljavax/ws/rs/Path;":
+                path = getDefaultAnnotationValue(entry);
+                break;
+
+            default:
+                // it is fine that GET is not captured here
+                if (METHOD_ANNOTATIONS.contains(annotationType)) {
                     isJAXRS = true;
-                break;
-
-                case "Ljavax/ws/rs/Consumes;":
-                    hasConsumes = true;
-                break;
-
-                case "Ljavax/ws/rs/Path;":
-                    path = getDefaultAnnotationValue(entry);
-                break;
-
-                default:
-                    // it is fine that GET is not captured here
-                    if (METHOD_ANNOTATIONS.contains(annotationType)) {
-                        isJAXRS = true;
-                    }
+                }
                 break;
             }
 
             if (hasGet && hasConsumes) {
-                bugReporter.reportBug(new BugInstance(this, BugType.JXI_GET_ENDPOINT_CONSUMES_CONTENT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.JXI_GET_ENDPOINT_CONSUMES_CONTENT.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this));
                 break;
             }
         }
@@ -192,14 +170,17 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                         if ((path != null) && "Ljavax/ws/rs/PathParam;".equals(annotationType)) {
                             String parmPath = getDefaultAnnotationValue(a);
                             if ((parmPath != null) && (!path.matches(".*\\{" + parmPath + "\\b.*"))) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addString("Path param: " + parmPath));
+                                bugReporter.reportBug(new BugInstance(this,
+                                        BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addString("Path param: " + parmPath));
                             }
                         } else if ("Ljavax/ws/rs/core/Context;".equals(annotationType)) {
                             String parmSig = parmTypes[parmIndex].getSignature();
                             if (!VALID_CONTEXT_TYPES.contains(parmSig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_INVALID_CONTEXT_PARAMETER_TYPE.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addString("Parameter signature: " + parmSig));
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.JXI_INVALID_CONTEXT_PARAMETER_TYPE.name(),
+                                                NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                                        .addString("Parameter signature: " + parmSig));
                             }
                         }
                     }
@@ -207,11 +188,13 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
 
                 if (!foundParamAnnotation) {
 
-                    if ((!sawBareParm) && (hasConsumes || NATIVE_JAXRS_TYPES.contains(parmTypes[parmIndex].getSignature()))) {
+                    if ((!sawBareParm)
+                            && (hasConsumes || NATIVE_JAXRS_TYPES.contains(parmTypes[parmIndex].getSignature()))) {
                         sawBareParm = true;
                     } else {
-                        bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addString("Parameter " + (parmIndex + 1)));
+                        bugReporter.reportBug(new BugInstance(this,
+                                BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addString("Parameter " + (parmIndex + 1)));
                         break;
                     }
 

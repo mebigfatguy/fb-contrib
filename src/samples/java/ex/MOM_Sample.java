@@ -1,4 +1,5 @@
 package ex;
+
 public class MOM_Sample {
     public void test(int i) {
     }

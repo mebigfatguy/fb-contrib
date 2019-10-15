@@ -32,9 +32,12 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for java.util.Properties use where values other than String are placed in the properties object. As the Properties object was intended to be a String
- * to String only collection, putting other types in the Properties object is incorrect, and takes advantage of a poor design decision by the original
- * Properties class designers to derive from Hashtable, rather than using aggregation.
+ * looks for java.util.Properties use where values other than String are placed
+ * in the properties object. As the Properties object was intended to be a
+ * String to String only collection, putting other types in the Properties
+ * object is incorrect, and takes advantage of a poor design decision by the
+ * original Properties class designers to derive from Hashtable, rather than
+ * using aggregation.
  */
 public class ImproperPropertiesUse extends BytecodeScanningDetector {
 
@@ -44,8 +47,7 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
     /**
      * constructs a IPU detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ImproperPropertiesUse(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -54,8 +56,7 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
     /**
      * implements the listener to set up and tear down the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -70,8 +71,7 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack
      *
-     * @param obj
-     *            the context object for the currently parsed code block
+     * @param obj the context object for the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -80,11 +80,11 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for calls to java.utils.Properties.put, where the value is a non String. Reports both cases, where if it is a string, at a
+     * implements the visitor to look for calls to java.utils.Properties.put, where
+     * the value is a non String. Reports both cases, where if it is a string, at a
      * lower lever.
      *
-     * @param seen
-     *            the currently parsed op code
+     * @param seen the currently parsed op code
      */
 
     @Override
@@ -102,14 +102,16 @@ public class ImproperPropertiesUse extends BytecodeScanningDetector {
                             OpcodeStack.Item valueItem = stack.getStackItem(0);
                             String valueSig = valueItem.getSignature();
                             if (Values.SIG_JAVA_LANG_STRING.equals(valueSig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(), LOW_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(),
+                                                LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                             } else if (Values.SIG_JAVA_LANG_OBJECT.equals(valueSig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE_SETPROPERTY.name(),
+                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                             } else {
-                                bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.IPU_IMPROPER_PROPERTIES_USE.name(),
+                                        NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
                     }

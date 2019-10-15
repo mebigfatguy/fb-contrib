@@ -1,4 +1,5 @@
 package ex;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -95,25 +96,25 @@ public class STB_Sample {
 
     public int fpStackedAcrossCases(int choice, String val) throws STBException {
         switch (choice) {
-            case 0:
-                return Integer.parseInt(val);
+        case 0:
+            return Integer.parseInt(val);
 
-            case 1:
-                switch (val) {
-                    case "A":
-                        try {
-                            return Integer.parseInt(val + "0");
-                        } catch (NumberFormatException e) {
-                            throw new STBException("The lotto machine is broken");
-                        }
-
-                    case "B":
-                        try {
-                            return Integer.parseInt(val + "00");
-                        } catch (NumberFormatException e) {
-                            throw new STBException("The lotto machine is broken");
-                        }
+        case 1:
+            switch (val) {
+            case "A":
+                try {
+                    return Integer.parseInt(val + "0");
+                } catch (NumberFormatException e) {
+                    throw new STBException("The lotto machine is broken");
                 }
+
+            case "B":
+                try {
+                    return Integer.parseInt(val + "00");
+                } catch (NumberFormatException e) {
+                    throw new STBException("The lotto machine is broken");
+                }
+            }
         }
 
         return 0;

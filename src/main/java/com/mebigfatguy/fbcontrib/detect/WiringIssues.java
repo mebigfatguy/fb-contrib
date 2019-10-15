@@ -45,7 +45,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 /**
  * looks for various issues around @Autowired/@Inject fields in DI classes
  * <ul>
- * <li>Injecting the same bean twice into the same class hierarchy, even with different field names</li>
+ * <li>Injecting the same bean twice into the same class hierarchy, even with
+ * different field names</li>
  * </ul>
  */
 public class WiringIssues extends BytecodeScanningDetector {
@@ -59,8 +60,7 @@ public class WiringIssues extends BytecodeScanningDetector {
     /**
      * constructs a WI detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public WiringIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -85,16 +85,16 @@ public class WiringIssues extends BytecodeScanningDetector {
                     String qualifier = "";
                     for (AnnotationEntry entry : field.getAnnotationEntries()) {
                         switch (entry.getAnnotationType()) {
-                            case SPRING_AUTOWIRED:
-                                if (!loadedParents) {
-                                    loadParentAutowireds(cls.getSuperClass(), wiredFields);
-                                    loadedParents = true;
-                                }
-                                hasAutowired = true;
+                        case SPRING_AUTOWIRED:
+                            if (!loadedParents) {
+                                loadParentAutowireds(cls.getSuperClass(), wiredFields);
+                                loadedParents = true;
+                            }
+                            hasAutowired = true;
                             break;
 
-                            case SPRING_QUALIFIER:
-                                qualifier = entry.getElementValuePairs()[0].getValue().stringifyValue();
+                        case SPRING_QUALIFIER:
+                            qualifier = entry.getElementValuePairs()[0].getValue().stringifyValue();
                             break;
                         }
                     }
@@ -105,8 +105,10 @@ public class WiringIssues extends BytecodeScanningDetector {
                         if (existingAnnotation == null) {
                             wiredFields.put(wt, FieldAnnotation.fromBCELField(cls.getClassName(), field));
                         } else {
-                            bugReporter.reportBug(new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY).addClass(cls)
-                                    .addField(FieldAnnotation.fromBCELField(cls, field)).addField(existingAnnotation));
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.WI_DUPLICATE_WIRED_TYPES.name(), NORMAL_PRIORITY)
+                                            .addClass(cls).addField(FieldAnnotation.fromBCELField(cls, field))
+                                            .addField(existingAnnotation));
                             wiredFields.remove(wt);
                         }
                     }
@@ -146,8 +148,9 @@ public class WiringIssues extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > numParms) {
                         OpcodeStack.Item itm = stack.getStackItem(numParms);
                         if (itm.getRegisterNumber() != 0) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.WI_MANUALLY_ALLOCATING_AN_AUTOWIRED_BEAN.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.WI_MANUALLY_ALLOCATING_AN_AUTOWIRED_BEAN.name(),
+                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                 }
@@ -158,17 +161,16 @@ public class WiringIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * loads all the types that are injected by @Autowired annotations in super classes
+     * loads all the types that are injected by @Autowired annotations in super
+     * classes
      *
-     * @param cls
-     *            the class who's parents you want to load
-     * @param wiredFields
-     *            the collected map of autowired types
-     * @throws ClassNotFoundException
-     *             if a parent class can't be loaded
+     * @param cls         the class who's parents you want to load
+     * @param wiredFields the collected map of autowired types
+     * @throws ClassNotFoundException if a parent class can't be loaded
      */
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Only a few cases need special handling")
-    private void loadParentAutowireds(JavaClass cls, Map<WiringType, FieldAnnotation> wiredFields) throws ClassNotFoundException {
+    private void loadParentAutowireds(JavaClass cls, Map<WiringType, FieldAnnotation> wiredFields)
+            throws ClassNotFoundException {
 
         if (Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
             return;
@@ -185,12 +187,12 @@ public class WiringIssues extends BytecodeScanningDetector {
                 String qualifier = "";
                 for (AnnotationEntry entry : field.getAnnotationEntries()) {
                     switch (entry.getAnnotationType()) {
-                        case SPRING_AUTOWIRED:
-                            hasAutowired = true;
+                    case SPRING_AUTOWIRED:
+                        hasAutowired = true;
                         break;
 
-                        case SPRING_QUALIFIER:
-                            qualifier = entry.getElementValuePairs()[0].getValue().stringifyValue();
+                    case SPRING_QUALIFIER:
+                        qualifier = entry.getElementValuePairs()[0].getValue().stringifyValue();
                         break;
                     }
                 }
@@ -204,7 +206,8 @@ public class WiringIssues extends BytecodeScanningDetector {
     }
 
     /**
-     * represents the type of object that is to be wired in, including an optional qualifier name
+     * represents the type of object that is to be wired in, including an optional
+     * qualifier name
      */
     static class WiringType {
         String signature;
@@ -224,12 +227,14 @@ public class WiringIssues extends BytecodeScanningDetector {
             }
 
             WiringType that = (WiringType) o;
-            return signature.equals(that.signature) && Objects.equals(genericSignature, that.genericSignature) && qualifier.equals(that.qualifier);
+            return signature.equals(that.signature) && Objects.equals(genericSignature, that.genericSignature)
+                    && qualifier.equals(that.qualifier);
         }
 
         @Override
         public int hashCode() {
-            return signature.hashCode() ^ qualifier.hashCode() ^ ((genericSignature == null) ? 0 : genericSignature.hashCode());
+            return signature.hashCode() ^ qualifier.hashCode()
+                    ^ ((genericSignature == null) ? 0 : genericSignature.hashCode());
         }
 
         @Override

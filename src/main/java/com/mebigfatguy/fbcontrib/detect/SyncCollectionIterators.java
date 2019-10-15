@@ -42,13 +42,16 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * Looks for use of iterators on synchronized collections built from the Collections class. As the collection in question was built thru
- * Collections.synchronizedXXX, an assumption is made that this collection must be multithreaded safe. However, iterator access is used, which is explicitly
- * unsafe. When iterators are to be used, synchronization should be done manually.
+ * Looks for use of iterators on synchronized collections built from the
+ * Collections class. As the collection in question was built thru
+ * Collections.synchronizedXXX, an assumption is made that this collection must
+ * be multithreaded safe. However, iterator access is used, which is explicitly
+ * unsafe. When iterators are to be used, synchronization should be done
+ * manually.
  */
 public class SyncCollectionIterators extends BytecodeScanningDetector {
-    private static final Set<String> synchCollectionNames = UnmodifiableSet.create("synchronizedSet", "synchronizedMap", "synchronizedList",
-            "synchronizedSortedSet", "synchronizedSortedMap");
+    private static final Set<String> synchCollectionNames = UnmodifiableSet.create("synchronizedSet", "synchronizedMap",
+            "synchronizedList", "synchronizedSortedSet", "synchronizedSortedMap");
 
     private static final Set<String> mapToSetMethods = UnmodifiableSet.create("keySet", "entrySet", "values");
 
@@ -67,8 +70,7 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
     /**
      * constructs a SCI detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SyncCollectionIterators(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -107,16 +109,16 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (state) {
-                case SEEN_NOTHING:
-                    sawOpcodeAfterNothing(seen);
+            case SEEN_NOTHING:
+                sawOpcodeAfterNothing(seen);
                 break;
 
-                case SEEN_SYNC:
-                    sawOpcodeAfterSync(seen);
+            case SEEN_SYNC:
+                sawOpcodeAfterSync(seen);
                 break;
 
-                case SEEN_LOAD:
-                    sawOpcodeAfterLoad(seen);
+            case SEEN_LOAD:
+                sawOpcodeAfterLoad(seen);
                 break;
             }
 
@@ -190,9 +192,11 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
         } else if (calledClass.startsWith("java/util/")) {
             if ("iterator".equals(getNameConstantOperand())) {
                 state = State.SEEN_NOTHING;
-                if (monitorObjects.isEmpty() || !syncIsMap(monitorObjects.get(monitorObjects.size() - 1), collectionInfo)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                if (monitorObjects.isEmpty()
+                        || !syncIsMap(monitorObjects.get(monitorObjects.size() - 1), collectionInfo)) {
+                    bugReporter
+                            .reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
             /* don't change state at this point */

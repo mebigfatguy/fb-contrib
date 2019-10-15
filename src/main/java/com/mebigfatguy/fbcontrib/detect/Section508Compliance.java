@@ -50,7 +50,8 @@ import edu.umd.cs.findbugs.ba.XFactory;
 import edu.umd.cs.findbugs.ba.XField;
 
 /**
- * looks for interfaces that ignore 508 compliance, including not using JLabel.setLabelFor, Using null layouts,
+ * looks for interfaces that ignore 508 compliance, including not using
+ * JLabel.setLabelFor, Using null layouts,
  */
 @CustomUserValue
 public class Section508Compliance extends BytecodeScanningDetector {
@@ -99,44 +100,72 @@ public class Section508Compliance extends BytecodeScanningDetector {
         String awtFrame = "java/awt/Frame";
         String awtGraphics = "java/awt/GraphicsConfiguration";
         String swingIcon = "javax/swing/Icon";
-        displayTextMethods.put(new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon, Values.SIG_PRIMITIVE_INT).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).toString()), Values.TWO);
-        displayTextMethods.put(new FQMethod("javax/swing/JButton", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JButton", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JFrame", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JFrame", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, awtGraphics).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
         displayTextMethods.put(
-                new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
-                        new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()),
+                new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID),
+                Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR, new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon, Values.SIG_PRIMITIVE_INT).toString()),
                 Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN, awtGraphics).toString()),
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JLabel", Values.CONSTRUCTOR, new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).toString()),
                 Values.TWO);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING).toString()), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.ONE);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JButton", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID),
+                Values.ZERO);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JButton", Values.CONSTRUCTOR,
+                        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon).toString()),
+                Values.ONE);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JFrame", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID),
+                Values.ZERO);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JFrame", Values.CONSTRUCTOR,
+                        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, awtGraphics).toString()),
+                Values.ONE);
         displayTextMethods.put(
                 new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
-                        new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN, awtGraphics).toString()),
+                        new SignatureBuilder().withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING).toString()),
+                Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder()
+                .withParamTypes(awtDialog, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()),
+                Values.ONE);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(awtDialog,
+                        Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN, awtGraphics).toString()),
+                Values.TWO);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR,
+                        new SignatureBuilder().withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING).toString()),
+                Values.ZERO);
+        displayTextMethods.put(new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder()
+                .withParamTypes(awtFrame, Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()),
+                Values.ONE);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JDialog", Values.CONSTRUCTOR, new SignatureBuilder().withParamTypes(awtFrame,
+                        Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN, awtGraphics).toString()),
                 Values.TWO);
         displayTextMethods.put(new FQMethod(awtDialog, "setTitle", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
         displayTextMethods.put(new FQMethod(awtFrame, "setTitle", SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenu", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenu", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon).toString()), Values.ONE);
-        displayTextMethods.put(new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR,
-                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).toString()), Values.ONE);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JMenu", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID),
+                Values.ZERO);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JMenu", Values.CONSTRUCTOR, new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_BOOLEAN).toString()),
+                Values.ONE);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR, SignatureBuilder.SIG_STRING_TO_VOID),
+                Values.ZERO);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR,
+                        new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_STRING, swingIcon).toString()),
+                Values.ONE);
+        displayTextMethods.put(
+                new FQMethod("javax/swing/JMenuItem", Values.CONSTRUCTOR, new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_STRING, Values.SIG_PRIMITIVE_INT).toString()),
+                Values.ONE);
     }
 
     private final BugReporter bugReporter;
@@ -147,8 +176,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
     /**
      * constructs a S508C detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public Section508Compliance(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -160,8 +188,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and clear the stack
      *
-     * @param classContext
-     *            the context object of the currently visited class
+     * @param classContext the context object of the currently visited class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -169,7 +196,9 @@ public class Section508Compliance extends BytecodeScanningDetector {
             if ((jcomponentClass != null) && (accessibleClass != null)) {
                 JavaClass cls = classContext.getJavaClass();
                 if (cls.instanceOf(jcomponentClass) && !cls.implementationOf(accessibleClass)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_ACCESSIBLE_JCOMPONENT.name(), NORMAL_PRIORITY).addClass(cls));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.S508C_NON_ACCESSIBLE_JCOMPONENT.name(), NORMAL_PRIORITY)
+                                    .addClass(cls));
                 }
             }
 
@@ -178,7 +207,8 @@ public class Section508Compliance extends BytecodeScanningDetector {
             localLabels = new HashMap<>();
             super.visitClassContext(classContext);
             for (XField fa : fieldLabels) {
-                bugReporter.reportBug(new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY).addClass(this).addField(fa));
+                bugReporter.reportBug(new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY)
+                        .addClass(this).addField(fa));
             }
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
@@ -192,8 +222,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
     /**
      * looks for fields that are JLabels and stores them in a set
      *
-     * @param obj
-     *            the field object of the current field
+     * @param obj the field object of the current field
      */
     @Override
     public void visitField(Field obj) {
@@ -208,8 +237,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the stack
      *
-     * @param obj
-     *            the context object for the currently visited code block
+     * @param obj the context object for the currently visited code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -217,7 +245,8 @@ public class Section508Compliance extends BytecodeScanningDetector {
         localLabels.clear();
         super.visitCode(obj);
         for (SourceLineAnnotation sla : localLabels.values()) {
-            BugInstance bug = new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this);
+            BugInstance bug = new BugInstance(this, BugType.S508C_NO_SETLABELFOR.name(), NORMAL_PRIORITY).addClass(this)
+                    .addMethod(this);
 
             if (sla != null) {
                 bug.addSourceLine(sla);
@@ -230,8 +259,7 @@ public class Section508Compliance extends BytecodeScanningDetector {
     /**
      * implements the visitor to find 508 compliance concerns
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -244,7 +272,8 @@ public class Section508Compliance extends BytecodeScanningDetector {
             if (OpcodeUtils.isAStore(seen)) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
-                    if ("Ljavax/swing/JLabel;".equals(item.getSignature()) && (S508UserValue.SAW_TEXT_LABEL == item.getUserValue())) {
+                    if ("Ljavax/swing/JLabel;".equals(item.getSignature())
+                            && (S508UserValue.SAW_TEXT_LABEL == item.getUserValue())) {
                         int reg = RegisterUtils.getAStoreReg(this, seen);
                         localLabels.put(Integer.valueOf(reg), SourceLineAnnotation.fromVisitedInstruction(this));
                     }
@@ -253,7 +282,8 @@ public class Section508Compliance extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     if (S508UserValue.SAW_TEXT_LABEL != item.getUserValue()) {
-                        FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), getNameConstantOperand(), getSigConstantOperand(), false);
+                        FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), getNameConstantOperand(),
+                                getSigConstantOperand(), false);
                         fieldLabels.remove(XFactory.createXField(fa));
                     }
                 }
@@ -337,20 +367,24 @@ public class Section508Compliance extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for calls to set a readable string that is generated from a static constant, as these strings are not translatable. also looks for setting readable
-     * strings that are appended together. This is likely not to be internationalizable.
+     * looks for calls to set a readable string that is generated from a static
+     * constant, as these strings are not translatable. also looks for setting
+     * readable strings that are appended together. This is likely not to be
+     * internationalizable.
      */
     private void processFaultyGuiStrings() {
-        FQMethod methodInfo = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+        FQMethod methodInfo = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
+                getSigConstantOperand());
         Integer parmIndex = displayTextMethods.get(methodInfo);
         if ((parmIndex != null) && (stack.getStackDepth() > parmIndex.intValue())) {
             OpcodeStack.Item item = stack.getStackItem(parmIndex.intValue());
             if (item.getConstant() != null) {
-                bugReporter.reportBug(new BugInstance(this, BugType.S508C_NON_TRANSLATABLE_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this));
+                bugReporter
+                        .reportBug(new BugInstance(this, BugType.S508C_NON_TRANSLATABLE_STRING.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
             } else if (S508UserValue.APPENDED_STRING == item.getUserValue()) {
-                bugReporter.reportBug(
-                        new BugInstance(this, BugType.S508C_APPENDED_STRING.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                bugReporter.reportBug(new BugInstance(this, BugType.S508C_APPENDED_STRING.name(), NORMAL_PRIORITY)
+                        .addClass(this).addMethod(this).addSourceLine(this));
 
             }
         }
@@ -359,25 +393,24 @@ public class Section508Compliance extends BytecodeScanningDetector {
     /**
      * looks for containers where a null layout is installed
      *
-     * @param className
-     *            class that a method call is made on
-     * @param methodName
-     *            name of the method that is called
+     * @param className  class that a method call is made on
+     * @param methodName name of the method that is called
      */
     private void processNullLayouts(String className, String methodName) {
-        if ("java/awt/Container".equals(className) && "setLayout".equals(methodName) && (stack.getStackDepth() > 0) && stack.getStackItem(0).isNull()) {
-            bugReporter.reportBug(new BugInstance(this, BugType.S508C_NULL_LAYOUT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+        if ("java/awt/Container".equals(className) && "setLayout".equals(methodName) && (stack.getStackDepth() > 0)
+                && stack.getStackItem(0).isNull()) {
+            bugReporter.reportBug(new BugInstance(this, BugType.S508C_NULL_LAYOUT.name(), NORMAL_PRIORITY)
+                    .addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 
     /**
-     * looks for calls to set the color of components where the color isn't from UIManager
+     * looks for calls to set the color of components where the color isn't from
+     * UIManager
      *
-     * @param methodName
-     *            the method that is called
+     * @param methodName the method that is called
      *
-     * @throws ClassNotFoundException
-     *             if the gui component class can't be found
+     * @throws ClassNotFoundException if the gui component class can't be found
      */
     private void processSetColorOps(String methodName) throws ClassNotFoundException {
         if ("setBackground".equals(methodName) || "setForeground".equals(methodName)) {
@@ -387,9 +420,11 @@ public class Section508Compliance extends BytecodeScanningDetector {
                 if (S508UserValue.FROM_UIMANAGER != item.getUserValue()) {
                     item = stack.getStackItem(argCount);
                     JavaClass cls = item.getJavaClass();
-                    if (((jcomponentClass != null) && cls.instanceOf(jcomponentClass)) || ((componentClass != null) && cls.instanceOf(componentClass))) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, BugType.S508C_SET_COMP_COLOR.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                    if (((jcomponentClass != null) && cls.instanceOf(jcomponentClass))
+                            || ((componentClass != null) && cls.instanceOf(componentClass))) {
+                        bugReporter
+                                .reportBug(new BugInstance(this, BugType.S508C_SET_COMP_COLOR.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
             }
@@ -397,13 +432,12 @@ public class Section508Compliance extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for calls to setSize on components, rather than letting the layout manager set them
+     * looks for calls to setSize on components, rather than letting the layout
+     * manager set them
      *
-     * @param methodName
-     *            the method that was called on a component
+     * @param methodName the method that was called on a component
      *
-     * @throws ClassNotFoundException
-     *             if the gui class wasn't found
+     * @throws ClassNotFoundException if the gui class wasn't found
      */
     private void processSetSizeOps(String methodName) throws ClassNotFoundException {
         if ("setSize".equals(methodName)) {
@@ -412,8 +446,8 @@ public class Section508Compliance extends BytecodeScanningDetector {
                 OpcodeStack.Item item = stack.getStackItem(argCount);
                 JavaClass cls = item.getJavaClass();
                 if ((cls != null) && cls.instanceOf(windowClass)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.S508C_NO_SETSIZE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.S508C_NO_SETSIZE.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
         }

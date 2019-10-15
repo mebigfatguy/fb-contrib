@@ -40,10 +40,8 @@ public final class RegisterUtils {
     /**
      * returns the register used to store a reference
      *
-     * @param dbc
-     *            the dismantle byte code parsing the class
-     * @param seen
-     *            the opcode of the store
+     * @param dbc  the dismantle byte code parsing the class
+     * @param seen the opcode of the store
      * @return the register stored into
      */
     public static int getAStoreReg(final DismantleBytecode dbc, final int seen) {
@@ -60,10 +58,8 @@ public final class RegisterUtils {
     /**
      * returns the register used to load a reference
      *
-     * @param dbc
-     *            the dismantle byte code parsing the class
-     * @param seen
-     *            the opcode of the load
+     * @param dbc  the dismantle byte code parsing the class
+     * @param seen the opcode of the load
      * @return the register loaded from
      */
     public static int getALoadReg(DismantleBytecode dbc, int seen) {
@@ -79,14 +75,13 @@ public final class RegisterUtils {
     /**
      * returns the register used in a store operation
      *
-     * @param dbc
-     *            the dismantle byte code parsing the class
-     * @param seen
-     *            the opcode of the store
+     * @param dbc  the dismantle byte code parsing the class
+     * @param seen the opcode of the store
      * @return the register stored into
      */
     public static int getStoreReg(DismantleBytecode dbc, int seen) {
-        if ((seen == Const.ASTORE) || (seen == Const.ISTORE) || (seen == Const.LSTORE) || (seen == Const.FSTORE) || (seen == Const.DSTORE)) {
+        if ((seen == Const.ASTORE) || (seen == Const.ISTORE) || (seen == Const.LSTORE) || (seen == Const.FSTORE)
+                || (seen == Const.DSTORE)) {
             return dbc.getRegisterOperand();
         }
         if (OpcodeUtils.isIStore(seen)) {
@@ -106,14 +101,13 @@ public final class RegisterUtils {
     /**
      * returns the register used in a load operation
      *
-     * @param dbc
-     *            the dismantle byte code parsing the class
-     * @param seen
-     *            the opcode of the load
+     * @param dbc  the dismantle byte code parsing the class
+     * @param seen the opcode of the load
      * @return the register stored into
      */
     public static int getLoadReg(DismantleBytecode dbc, int seen) {
-        if ((seen == Const.ALOAD) || (seen == Const.ILOAD) || (seen == Const.LLOAD) || (seen == Const.FLOAD) || (seen == Const.DLOAD)) {
+        if ((seen == Const.ALOAD) || (seen == Const.ILOAD) || (seen == Const.LLOAD) || (seen == Const.FLOAD)
+                || (seen == Const.DLOAD)) {
             return dbc.getRegisterOperand();
         }
         if (OpcodeUtils.isILoad(seen)) {
@@ -133,12 +127,9 @@ public final class RegisterUtils {
     /**
      * returns the end pc of the visible range of this register at this pc
      *
-     * @param lvt
-     *            the local variable table for this method
-     * @param reg
-     *            the register to examine
-     * @param curPC
-     *            the pc of the current instruction
+     * @param lvt   the local variable table for this method
+     * @param reg   the register to examine
+     * @param curPC the pc of the current instruction
      * @return the endpc
      */
     public static int getLocalVariableEndRange(LocalVariableTable lvt, int reg, int curPC) {
@@ -155,8 +146,8 @@ public final class RegisterUtils {
     /**
      * gets the set of registers used for parameters
      *
-     * @param obj
-     *            the context object for the method to find the parameter registers of
+     * @param obj the context object for the method to find the parameter registers
+     *            of
      *
      * @return the set of registers that parameters are using
      */

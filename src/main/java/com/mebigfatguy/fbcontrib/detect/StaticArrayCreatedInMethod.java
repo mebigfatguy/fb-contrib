@@ -30,8 +30,9 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
- * looks for creation of arrays where the contents are Const, or static defined as static fields so the method doesn't constantly recreate the array each time
- * it is called.
+ * looks for creation of arrays where the contents are Const, or static defined
+ * as static fields so the method doesn't constantly recreate the array each
+ * time it is called.
  */
 public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
     enum State {
@@ -48,10 +49,10 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor by forwarding calls for methods that are the static initializer
+     * implements the visitor by forwarding calls for methods that are the static
+     * initializer
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -62,88 +63,88 @@ public class StaticArrayCreatedInMethod extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for creation of local arrays using constant values
+     * implements the visitor to look for creation of local arrays using constant
+     * values
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
         int index;
 
         switch (state) {
-            case SEEN_NOTHING:
-                if (seen == Const.BIPUSH) {
-                    arraySize = getIntConstant();
-                    if (arraySize > 0) {
-                        state = State.SEEN_ARRAY_SIZE;
-                    }
-                } else if ((seen >= Const.ICONST_M1) && (seen <= Const.ICONST_5)) {
-                    arraySize = seen - Const.ICONST_M1 - 1;
-                    if (arraySize > 0) {
-                        state = State.SEEN_ARRAY_SIZE;
-                    }
+        case SEEN_NOTHING:
+            if (seen == Const.BIPUSH) {
+                arraySize = getIntConstant();
+                if (arraySize > 0) {
+                    state = State.SEEN_ARRAY_SIZE;
                 }
+            } else if ((seen >= Const.ICONST_M1) && (seen <= Const.ICONST_5)) {
+                arraySize = seen - Const.ICONST_M1 - 1;
+                if (arraySize > 0) {
+                    state = State.SEEN_ARRAY_SIZE;
+                }
+            }
             break;
 
-            case SEEN_ARRAY_SIZE:
-                if ((seen == Const.ANEWARRAY) || (seen == Const.NEWARRAY)) {
-                    state = State.SEEN_NEWARRAY;
-                    storeCount = 0;
-                } else {
-                    state = State.SEEN_NOTHING;
-                }
-            break;
-
-            case SEEN_NEWARRAY:
-                if (seen == Const.DUP) {
-                    state = State.SEEN_DUP;
-                } else {
-                    state = State.SEEN_NOTHING;
-                }
-            break;
-
-            case SEEN_DUP:
-                if (seen == Const.BIPUSH) {
-                    index = getIntConstant();
-                } else if ((seen >= Const.ICONST_M1) && (seen <= Const.ICONST_5)) {
-                    index = seen - Const.ICONST_M1 - 1;
-                } else {
-                    state = State.SEEN_NOTHING;
-                    return;
-                }
-                if (index != storeCount) {
-                    state = State.SEEN_NOTHING;
-                } else {
-                    state = State.SEEN_INDEX;
-                }
-            break;
-
-            case SEEN_INDEX:
-                if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
-                    state = State.SEEN_LDC;
-                } else {
-                    state = State.SEEN_NOTHING;
-                }
-            break;
-
-            case SEEN_LDC:
-                if ((seen >= Const.IASTORE) && (seen <= Const.SASTORE)) {
-                    if ((++storeCount) == arraySize) {
-                        state = State.SEEN_INDEX_STORE;
-                    } else {
-                        state = State.SEEN_NEWARRAY;
-                    }
-                }
-            break;
-
-            case SEEN_INDEX_STORE:
-                if (OpcodeUtils.isAStore(seen)) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.SACM_STATIC_ARRAY_CREATED_IN_METHOD.name(),
-                            (arraySize < 3) ? LOW_PRIORITY : ((arraySize < 10) ? NORMAL_PRIORITY : HIGH_PRIORITY)).addClass(this).addMethod(this)
-                                    .addSourceLine(this, getPC()));
-                }
+        case SEEN_ARRAY_SIZE:
+            if ((seen == Const.ANEWARRAY) || (seen == Const.NEWARRAY)) {
+                state = State.SEEN_NEWARRAY;
+                storeCount = 0;
+            } else {
                 state = State.SEEN_NOTHING;
+            }
+            break;
+
+        case SEEN_NEWARRAY:
+            if (seen == Const.DUP) {
+                state = State.SEEN_DUP;
+            } else {
+                state = State.SEEN_NOTHING;
+            }
+            break;
+
+        case SEEN_DUP:
+            if (seen == Const.BIPUSH) {
+                index = getIntConstant();
+            } else if ((seen >= Const.ICONST_M1) && (seen <= Const.ICONST_5)) {
+                index = seen - Const.ICONST_M1 - 1;
+            } else {
+                state = State.SEEN_NOTHING;
+                return;
+            }
+            if (index != storeCount) {
+                state = State.SEEN_NOTHING;
+            } else {
+                state = State.SEEN_INDEX;
+            }
+            break;
+
+        case SEEN_INDEX:
+            if ((seen == Const.LDC) || (seen == Const.LDC_W)) {
+                state = State.SEEN_LDC;
+            } else {
+                state = State.SEEN_NOTHING;
+            }
+            break;
+
+        case SEEN_LDC:
+            if ((seen >= Const.IASTORE) && (seen <= Const.SASTORE)) {
+                if ((++storeCount) == arraySize) {
+                    state = State.SEEN_INDEX_STORE;
+                } else {
+                    state = State.SEEN_NEWARRAY;
+                }
+            }
+            break;
+
+        case SEEN_INDEX_STORE:
+            if (OpcodeUtils.isAStore(seen)) {
+                bugReporter.reportBug(new BugInstance(this, BugType.SACM_STATIC_ARRAY_CREATED_IN_METHOD.name(),
+                        (arraySize < 3) ? LOW_PRIORITY : ((arraySize < 10) ? NORMAL_PRIORITY : HIGH_PRIORITY))
+                                .addClass(this).addMethod(this).addSourceLine(this, getPC()));
+            }
+            state = State.SEEN_NOTHING;
             break;
         }
     }

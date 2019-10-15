@@ -40,21 +40,21 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for classes that implement interfaces by relying on methods being implemented in super classes, even though the superclass knows nothing about the
- * interface being implemented by the child.
+ * looks for classes that implement interfaces by relying on methods being
+ * implemented in super classes, even though the superclass knows nothing about
+ * the interface being implemented by the child.
  */
 public class SpoiledChildInterfaceImplementor implements Detector {
 
     private static final Set<QMethod> OBJECT_METHODS = UnmodifiableSet.create(
-    // @formatter:off
+            // @formatter:off
             new QMethod("equals", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
             new QMethod(Values.HASHCODE, SignatureBuilder.SIG_VOID_TO_INT),
             new QMethod(Values.TOSTRING, SignatureBuilder.SIG_VOID_TO_STRING),
             new QMethod("clone", SignatureBuilder.SIG_VOID_TO_OBJECT),
             new QMethod("notify", SignatureBuilder.SIG_VOID_TO_VOID),
             new QMethod("notifyAll", SignatureBuilder.SIG_VOID_TO_VOID),
-            new QMethod("wait", SignatureBuilder.SIG_LONG_TO_VOID),
-            new QMethod("wait", "(JI)V"),
+            new QMethod("wait", SignatureBuilder.SIG_LONG_TO_VOID), new QMethod("wait", "(JI)V"),
             new QMethod("wait", SignatureBuilder.SIG_VOID_TO_VOID)
     // @formatter:on
     );
@@ -63,8 +63,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     /**
      * constructs a SCII detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SpoiledChildInterfaceImplementor(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -73,8 +72,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     /**
      * looks for classes that implement interfaces but don't provide those methods
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -101,9 +99,13 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                             JavaClass superCls = cls.getSuperClass();
                             filterSuperInterfaceMethods(inf, infMethods, superCls);
                             if (!infMethods.isEmpty() && !superCls.implementationOf(inf)) {
-                                int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
-                                BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
-                                        .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
+                                int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls)
+                                        ? NORMAL_PRIORITY
+                                        : LOW_PRIORITY;
+                                BugInstance bi = new BugInstance(this,
+                                        BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
+                                                .addString("Implementing interface: " + inf.getClassName())
+                                                .addString("Methods:");
                                 for (QMethod methodInfo : infMethods) {
                                     bi.addString('\t' + methodInfo.toString());
                                 }
@@ -132,8 +134,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     /**
      * builds a set of all non constructor or static initializer method/signatures
      *
-     * @param cls
-     *            the class to build the method set from
+     * @param cls the class to build the method set from
      * @return a set of method names/signatures
      */
     private static Set<QMethod> buildMethodSet(JavaClass cls) {
@@ -169,15 +170,13 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     }
 
     /**
-     * removes methods found in an interface when a super interface having the same methods is implemented in a parent. While this is somewhat hinky, we'll
-     * allow it.
+     * removes methods found in an interface when a super interface having the same
+     * methods is implemented in a parent. While this is somewhat hinky, we'll allow
+     * it.
      *
-     * @param inf
-     *            the interface to look for super interfaces for
-     * @param infMethods
-     *            the remaining methods that are needed to be found
-     * @param cls
-     *            the super class to look for these methods in
+     * @param inf        the interface to look for super interfaces for
+     * @param infMethods the remaining methods that are needed to be found
+     * @param cls        the super class to look for these methods in
      */
     private void filterSuperInterfaceMethods(JavaClass inf, Set<QMethod> infMethods, JavaClass cls) {
         try {

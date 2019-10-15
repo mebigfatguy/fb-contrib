@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-
 @SuppressWarnings("all")
 public class NAB_Sample {
     public void testDupCtor() {
@@ -140,16 +139,16 @@ public class NAB_Sample {
         Integer j = (i == null) ? data.length : i;
         return j;
     }
-    
+
     public void testFNTernary365() {
-    	System.err.println(Arrays.asList( new Object[] {"1", false}));
-    	System.err.println(processTwo((Math.random() > 0.5 ? "" : "1"), false));
+        System.err.println(Arrays.asList(new Object[] { "1", false }));
+        System.err.println(processTwo((Math.random() > 0.5 ? "" : "1"), false));
     }
-    
-    public static <E> List<E>  processTwo(E e1, E e2) {
-    	List<E> l = new ArrayList<>();
-    	l.add(e1);
-    	l.add(e2);
-    	return l;
+
+    public static <E> List<E> processTwo(E e1, E e2) {
+        List<E> l = new ArrayList<>();
+        l.add(e1);
+        l.add(e2);
+        return l;
     }
 }

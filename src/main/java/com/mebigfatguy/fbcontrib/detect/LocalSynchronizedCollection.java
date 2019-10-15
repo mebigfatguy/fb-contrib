@@ -32,8 +32,10 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 
 /**
- * looks for allocations of synchronized collections that are stored in local variables, and never stored in fields or returned from methods. As local variables
- * are by definition thread safe, using synchronized collections in this context makes no sense.
+ * looks for allocations of synchronized collections that are stored in local
+ * variables, and never stored in fields or returned from methods. As local
+ * variables are by definition thread safe, using synchronized collections in
+ * this context makes no sense.
  */
 @CustomUserValue
 public class LocalSynchronizedCollection extends LocalTypeDetector {
@@ -66,8 +68,7 @@ public class LocalSynchronizedCollection extends LocalTypeDetector {
     /**
      * constructs a LSYC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public LocalSynchronizedCollection(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -90,7 +91,8 @@ public class LocalSynchronizedCollection extends LocalTypeDetector {
 
     @Override
     protected void reportBug(RegisterInfo cri) {
-        bugReporter.reportBug(new BugInstance(this, BugType.LSYC_LOCAL_SYNCHRONIZED_COLLECTION.name(), cri.getPriority()).addClass(this).addMethod(this)
-                .addSourceLine(cri.getSourceLineAnnotation()));
+        bugReporter
+                .reportBug(new BugInstance(this, BugType.LSYC_LOCAL_SYNCHRONIZED_COLLECTION.name(), cri.getPriority())
+                        .addClass(this).addMethod(this).addSourceLine(cri.getSourceLineAnnotation()));
     }
 }

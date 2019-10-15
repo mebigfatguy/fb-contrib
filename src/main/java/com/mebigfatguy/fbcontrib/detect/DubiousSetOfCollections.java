@@ -35,8 +35,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
- * looks for uses of sets or keySets of maps that contain other collections. As collection typically implement hashCode, equals and compareTo by iterating the
- * contents of the collection this can be costly from a performance point of view.
+ * looks for uses of sets or keySets of maps that contain other collections. As
+ * collection typically implement hashCode, equals and compareTo by iterating
+ * the contents of the collection this can be costly from a performance point of
+ * view.
  */
 public class DubiousSetOfCollections extends BytecodeScanningDetector {
 
@@ -60,18 +62,17 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     /**
      * constructs a DSOC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public DubiousSetOfCollections(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implement the visitor to set up the opcode stack, and make sure that collection, set and map classes could be loaded.
+     * implement the visitor to set up the opcode stack, and make sure that
+     * collection, set and map classes could be loaded.
      *
-     * @param clsContext
-     *            the context object of the currently parsed class
+     * @param clsContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext clsContext) {
@@ -90,8 +91,7 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack
      *
-     * @param code
-     *            the context object of the currently parsed code block
+     * @param code the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code code) {
@@ -100,10 +100,10 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor look for adds to sets or puts to maps where the element to be added is a collection.
+     * implements the visitor look for adds to sets or puts to maps where the
+     * element to be added is a collection.
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -115,22 +115,24 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
                 String methodName = getNameConstantOperand();
                 String signature = getSigConstantOperand();
 
-                if ("add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature) && isImplementationOf(clsName, setCls)) {
+                if ("add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature)
+                        && isImplementationOf(clsName, setCls)) {
                     if (stack.getStackDepth() > 1) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         JavaClass entryCls = item.getJavaClass();
                         if (isImplementationOf(entryCls, collectionCls)) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.DSOC_DUBIOUS_SET_OF_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.DSOC_DUBIOUS_SET_OF_COLLECTIONS.name(),
+                                    NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
-                } else if ("put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature) && isImplementationOf(clsName, setCls)
-                        && (stack.getStackDepth() > 2)) {
+                } else if ("put".equals(methodName) && SignatureBuilder.SIG_TWO_OBJECTS_TO_OBJECT.equals(signature)
+                        && isImplementationOf(clsName, setCls) && (stack.getStackDepth() > 2)) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     JavaClass entryCls = item.getJavaClass();
                     if (isImplementationOf(entryCls, collectionCls)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.DSOC_DUBIOUS_SET_OF_COLLECTIONS.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.DSOC_DUBIOUS_SET_OF_COLLECTIONS.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
             }
@@ -144,10 +146,8 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     /**
      * returns whether the class implements the interface
      *
-     * @param clsName
-     *            the name of the class
-     * @param inf
-     *            the interface to check
+     * @param clsName the name of the class
+     * @param inf     the interface to check
      * @return if the class implements the interface
      */
     private boolean isImplementationOf(@SlashedClassName String clsName, JavaClass inf) {
@@ -168,10 +168,8 @@ public class DubiousSetOfCollections extends BytecodeScanningDetector {
     /**
      * returns whether the class implements the interface
      *
-     * @param cls
-     *            the class
-     * @param inf
-     *            the interface to check
+     * @param cls the class
+     * @param inf the interface to check
      * @return if the class implements the interface
      */
     private boolean isImplementationOf(JavaClass cls, JavaClass inf) {

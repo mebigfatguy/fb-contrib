@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.Date;
 
 public class STS_Sample {
@@ -13,9 +14,11 @@ public class STS_Sample {
         new Reader(calculator).start();
 
         // starting the calculator thread
-        System.out.println(new Date() + ": I will start now a delaty time of" + " 2 seconds before starting the calculator thread");
+        System.out.println(new Date() + ": I will start now a delaty time of"
+                + " 2 seconds before starting the calculator thread");
         Thread.sleep(2000);
-        System.out.println(new Date() + ": I just finished the 2 seconds delay " + " and I will start the calculator thread");
+        System.out.println(
+                new Date() + ": I just finished the 2 seconds delay " + " and I will start the calculator thread");
         calculator.start();
     }
 

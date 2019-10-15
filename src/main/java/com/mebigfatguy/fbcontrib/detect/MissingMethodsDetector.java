@@ -149,20 +149,20 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-                case Const.INVOKESPECIAL:
+            case Const.INVOKESPECIAL:
                 userObject = sawInvokeSpecial(userObject);
                 break;
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKEVIRTUAL:
                 sawInvokeInterfaceVirtual();
                 break;
-                case Const.INVOKESTATIC:
+            case Const.INVOKESTATIC:
                 userObject = sawInvokeStatic(userObject);
                 //$FALL-THROUGH$
-                case Const.INVOKEDYNAMIC:
+            case Const.INVOKEDYNAMIC:
                 processMethodParms();
                 break;
-                case Const.ARETURN:
+            case Const.ARETURN:
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     clearUserValue(item);
@@ -175,48 +175,48 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 }
                 break;
 
-                case Const.ASTORE_0:
-                case Const.ASTORE_1:
-                case Const.ASTORE_2:
-                case Const.ASTORE_3:
-                case Const.ASTORE:
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3:
+            case Const.ASTORE:
                 sawAStore(seen);
                 break;
 
-                case Const.ALOAD_0:
-                case Const.ALOAD_1:
-                case Const.ALOAD_2:
-                case Const.ALOAD_3:
-                case Const.ALOAD:
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3:
+            case Const.ALOAD:
                 userObject = sawLoad(seen, userObject);
                 break;
 
-                case Const.AASTORE:
+            case Const.AASTORE:
                 if (stack.getStackDepth() >= 3) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     clearUserValue(item);
                 }
                 break;
 
-                case Const.PUTFIELD:
+            case Const.PUTFIELD:
                 sawPutField();
                 break;
 
-                case Const.GETFIELD:
+            case Const.GETFIELD:
                 userObject = sawGetField(userObject);
                 break;
 
-                case Const.PUTSTATIC:
+            case Const.PUTSTATIC:
                 sawPutStatic();
                 break;
 
-                case Const.GETSTATIC:
+            case Const.GETSTATIC:
                 userObject = sawGetStatic(userObject);
                 break;
 
-                case Const.GOTO:
-                case Const.IFNULL:
-                case Const.IFNONNULL:
+            case Const.GOTO:
+            case Const.IFNULL:
+            case Const.IFNONNULL:
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     Object uo = item.getUserValue();

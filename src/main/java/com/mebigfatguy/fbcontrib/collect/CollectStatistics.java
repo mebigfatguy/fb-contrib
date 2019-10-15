@@ -47,11 +47,12 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.SignatureParser;
 
 /**
- * a first pass detector to collect various statistics used in second pass detectors.
+ * a first pass detector to collect various statistics used in second pass
+ * detectors.
  */
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
     private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
-    // @formatter:off
+            // @formatter:off
             new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
             new SignatureBuilder().withMethodName(Values.TOSTRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING)
                     .toString(),
@@ -62,7 +63,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     );
 
     private static final Set<String> BEAN_ANNOTATIONS = UnmodifiableSet.create(
-    // @formatter:off
+            // @formatter:off
             "Lorg/springframework/stereotype/Component;", "Lorg/springframework/stereotype/Controller;",
             "Lorg/springframework/stereotype/Repository;", "Lorg/springframework/stereotype/Service;"
     // @formatter:on
@@ -78,10 +79,10 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     private QMethod curMethod;
 
     /**
-     * constructs a CollectStatistics detector which clears the singleton that holds the statistics for all classes parsed in the first pass.
+     * constructs a CollectStatistics detector which clears the singleton that holds
+     * the statistics for all classes parsed in the first pass.
      *
-     * @param bugReporter
-     *            unused, but required by reflection contract
+     * @param bugReporter unused, but required by reflection contract
      */
     // required for reflection
     @SuppressWarnings("PMD.UnusedFormalParameter")
@@ -93,8 +94,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     /**
      * implements the visitor to collect statistics on this class
      *
-     * @param classContext
-     *            the currently class
+     * @param classContext the currently class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -127,7 +127,6 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         }
     }
 
-
     @Override
     public void visitCode(Code obj) {
 
@@ -144,16 +143,17 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         String clsName = getClassName();
         Method method = getMethod();
         int accessFlags = method.getAccessFlags();
-        
+
         boolean isDerived = false;
-    	if (!constrainingMethods.isEmpty()) {
-	    	QMethod qm = new QMethod(method.getName(), method.getSignature());
-	    	isDerived = isConstrained(qm);
-    	}
-    	
-        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, code.length,
-                numMethodCalls, isDerived);
-        if ((clsName.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0) || ((accessFlags & (Const.ACC_ABSTRACT | Const.ACC_INTERFACE | Const.ACC_ANNOTATION)) != 0)) {
+        if (!constrainingMethods.isEmpty()) {
+            QMethod qm = new QMethod(method.getName(), method.getSignature());
+            isDerived = isConstrained(qm);
+        }
+
+        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(),
+                accessFlags, code.length, numMethodCalls, isDerived);
+        if (clsName.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0
+                || (accessFlags & (Const.ACC_ABSTRACT | Const.ACC_INTERFACE | Const.ACC_ANNOTATION)) != 0) {
             mi.addCallingAccess(Const.ACC_PUBLIC);
         } else if ((accessFlags & Const.ACC_PRIVATE) == 0) {
             if (isAssociationedWithAnnotations(method)) {
@@ -176,41 +176,42 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     public void sawOpcode(int seen) {
         try {
             switch (seen) {
-                case Const.INVOKEVIRTUAL:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKESPECIAL:
-                case Const.INVOKESTATIC:
-                case Const.INVOKEDYNAMIC:
-                    numMethodCalls++;
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESPECIAL:
+            case Const.INVOKESTATIC:
+            case Const.INVOKEDYNAMIC:
+                numMethodCalls++;
 
-                    if (seen != Const.INVOKESTATIC) {
-                        int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
-                        if (stack.getStackDepth() > numParms) {
-                            OpcodeStack.Item itm = stack.getStackItem(numParms);
-                            if (itm.getRegisterNumber() == 0) {
-                                Set<CalledMethod> calledMethods;
+                if (seen != Const.INVOKESTATIC) {
+                    int numParms = SignatureUtils.getNumParameters(getSigConstantOperand());
+                    if (stack.getStackDepth() > numParms) {
+                        OpcodeStack.Item itm = stack.getStackItem(numParms);
+                        if (itm.getRegisterNumber() == 0) {
+                            Set<CalledMethod> calledMethods;
 
-                                if (curMethod == null) {
-                                    curMethod = new QMethod(getMethodName(), getMethodSig());
-                                    calledMethods = new HashSet<>();
-                                    selfCallTree.put(curMethod, calledMethods);
-                                } else {
-                                    calledMethods = selfCallTree.get(curMethod);
-                                }
-
-                                calledMethods
-                                        .add(new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()), seen == Const.INVOKESPECIAL));
+                            if (curMethod == null) {
+                                curMethod = new QMethod(getMethodName(), getMethodSig());
+                                calledMethods = new HashSet<>();
+                                selfCallTree.put(curMethod, calledMethods);
+                            } else {
+                                calledMethods = selfCallTree.get(curMethod);
                             }
+
+                            calledMethods.add(
+                                    new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()),
+                                            seen == Const.INVOKESPECIAL));
                         }
                     }
+                }
                 break;
 
-                case Const.PUTSTATIC:
-                case Const.PUTFIELD:
-                    modifiesState = true;
+            case Const.PUTSTATIC:
+            case Const.PUTFIELD:
+                modifiesState = true;
                 break;
 
-                default:
+            default:
                 break;
             }
         } finally {
@@ -231,7 +232,8 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                 Map.Entry<QMethod, Set<CalledMethod>> callerEntry = callerIt.next();
                 QMethod caller = callerEntry.getKey();
 
-                MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(), caller.getSignature());
+                MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(),
+                        caller.getSignature());
                 if (callerMi == null) {
                     // odd, shouldn't happen
                     foundNewCall = true;
@@ -246,7 +248,8 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                             foundNewCall = true;
                             break;
                         }
-                        MethodInfo calleeMi = statistics.getMethodStatistics(clsName, calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
+                        MethodInfo calleeMi = statistics.getMethodStatistics(clsName,
+                                calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
                         if (calleeMi == null) {
                             // a super or sub class probably implements this method so just assume it
                             // modifies state
@@ -279,97 +282,98 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
         return !CollectionUtils.isEmpty(m.getAnnotationEntries());
     }
-    
+
     private Set<QMethod> buildConstrainingMethods(JavaClass cls) {
-    	
-    	Set<QMethod> constraints = new HashSet<>();
-    	try {
-	    	for (JavaClass inf : cls.getInterfaces()) {
-	    		for (Method m : inf.getMethods()) {
-	    			constraints.add(new QMethod(m.getName(), m.getSignature()));
-	    		}
-	    	}
-	    	
-	    	for (JavaClass parent : cls.getSuperClasses()) {
-	    		if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
-	    			for (Method m : parent.getMethods()) {
-	    				constraints.add(new QMethod(m.getName(), m.getSignature()));
-	    			}
-    				constraints.addAll(buildConstrainingMethods(parent));
-	    		}
-	    	}
-    	} catch (ClassNotFoundException e) {
-    		bugReporter.reportMissingClass(e);
-    	}
-    	
-    	return constraints;
+
+        Set<QMethod> constraints = new HashSet<>();
+        try {
+            for (JavaClass inf : cls.getInterfaces()) {
+                for (Method m : inf.getMethods()) {
+                    constraints.add(new QMethod(m.getName(), m.getSignature()));
+                }
+            }
+
+            for (JavaClass parent : cls.getSuperClasses()) {
+                if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
+                    for (Method m : parent.getMethods()) {
+                        constraints.add(new QMethod(m.getName(), m.getSignature()));
+                    }
+                    constraints.addAll(buildConstrainingMethods(parent));
+                }
+            }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
+
+        return constraints;
     }
-    
+
     private boolean isConstrained(QMethod m) {
-    	if (constrainingMethods.contains(m)) {
-    		return true;
-    	}
-    	
-    	SignatureParser mp = new SignatureParser(m.getSignature());
-    	int numParms = mp.getNumParameters();
-    	
-    	for (QMethod constraint : constrainingMethods) {
-    		if (m.getMethodName().equals(constraint.getMethodName())) {
-    			SignatureParser cp = new SignatureParser(constraint.getSignature());
-    			if (numParms == cp.getNumParameters()) {
-    				String[] mParms = mp.getArguments();
-    				String[] cParms = cp.getArguments();
-    				
-    				boolean matches = true;
-    				for (int i = 0; i < numParms; i++) {
-    					if (Values.SIG_JAVA_LANG_OBJECT.equals(cParms[i])) {
-    						matches = mParms[i].charAt(0) == 'L';
-    					} else {
-    						matches = cParms[i].equals(mParms[i]);
-    						if (!matches && cParms[i].charAt(0) == 'L' && mParms[i].charAt(0) == 'L') {
-    							try {
-    							JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cParms[i]));
-    							JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mParms[i]));
-    							matches = mc.instanceOf(cc);
-    							} catch (ClassNotFoundException e) {
-    								bugReporter.reportMissingClass(e);
-    								matches = false;
-    							}
-    						}
-    					}
-    					
-    					if (!matches) 
-    						break;
-    				}
-    				if (matches) {
-    					if (Values.SIG_JAVA_LANG_OBJECT.equals(cp.getReturnTypeSignature())) {
-    						matches = mp.getReturnTypeSignature().charAt(0) == 'L';
-    					} else {
-    						String cRet = cp.getReturnTypeSignature();
-    						String mRet = mp.getReturnTypeSignature();
-    						matches = cRet.equals(mRet);
-    						if (!matches  && cRet.charAt(0) == 'L' && mRet.charAt(0) == 'L') {
-    							try {
-    							JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cRet));
-    							JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mRet));
-    							matches = mc.instanceOf(cc);
-    							} catch (ClassNotFoundException e) {
-    								bugReporter.reportMissingClass(e);
-    								matches = false;
-    							}
-    						}
-    					}
-    				}
-    				
-    				if (matches) {
-    					return true;
-    				}
-    			}
-    			
-    		}
-    	}
-    	
-    	return false;
+        if (constrainingMethods.contains(m)) {
+            return true;
+        }
+
+        SignatureParser mp = new SignatureParser(m.getSignature());
+        int numParms = mp.getNumParameters();
+
+        for (QMethod constraint : constrainingMethods) {
+            if (m.getMethodName().equals(constraint.getMethodName())) {
+                SignatureParser cp = new SignatureParser(constraint.getSignature());
+                if (numParms == cp.getNumParameters()) {
+                    String[] mParms = mp.getArguments();
+                    String[] cParms = cp.getArguments();
+
+                    boolean matches = true;
+                    for (int i = 0; i < numParms; i++) {
+                        if (Values.SIG_JAVA_LANG_OBJECT.equals(cParms[i])) {
+                            matches = mParms[i].charAt(0) == 'L';
+                        } else {
+                            matches = cParms[i].equals(mParms[i]);
+                            if (!matches && cParms[i].charAt(0) == 'L' && mParms[i].charAt(0) == 'L') {
+                                try {
+                                    JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cParms[i]));
+                                    JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mParms[i]));
+                                    matches = mc.instanceOf(cc);
+                                } catch (ClassNotFoundException e) {
+                                    bugReporter.reportMissingClass(e);
+                                    matches = false;
+                                }
+                            }
+                        }
+
+                        if (!matches) {
+                            break;
+                        }
+                    }
+                    if (matches) {
+                        if (Values.SIG_JAVA_LANG_OBJECT.equals(cp.getReturnTypeSignature())) {
+                            matches = mp.getReturnTypeSignature().charAt(0) == 'L';
+                        } else {
+                            String cRet = cp.getReturnTypeSignature();
+                            String mRet = mp.getReturnTypeSignature();
+                            matches = cRet.equals(mRet);
+                            if (!matches && cRet.charAt(0) == 'L' && mRet.charAt(0) == 'L') {
+                                try {
+                                    JavaClass cc = Repository.lookupClass(SignatureUtils.stripSignature(cRet));
+                                    JavaClass mc = Repository.lookupClass(SignatureUtils.stripSignature(mRet));
+                                    matches = mc.instanceOf(cc);
+                                } catch (ClassNotFoundException e) {
+                                    bugReporter.reportMissingClass(e);
+                                    matches = false;
+                                }
+                            }
+                        }
+                    }
+
+                    if (matches) {
+                        return true;
+                    }
+                }
+
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -397,7 +401,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
             CalledMethod that = (CalledMethod) obj;
 
-            return (isSuper == that.isSuper) && callee.equals(that.callee);
+            return isSuper == that.isSuper && callee.equals(that.callee);
         }
     }
 }

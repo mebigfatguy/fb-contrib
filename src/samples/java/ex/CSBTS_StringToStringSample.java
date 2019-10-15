@@ -1,4 +1,5 @@
 package ex;
+
 import org.apache.commons.lang3.builder.ToStringBuilder;
 
 public class CSBTS_StringToStringSample {
@@ -46,7 +47,8 @@ public class CSBTS_StringToStringSample {
         // representation for derived types
         System.out.println("P " + ToStringBuilder.reflectionToString(p));
         GenderPerson p2 = new GenderPerson("Jane Doe", 2, SEX.Female);
-        System.out.println("GP " + new ToStringBuilder(p2).append("name", p2.name).append("age", p2.age).append("sex", p2.sex).toString());
+        System.out.println("GP " + new ToStringBuilder(p2).append("name", p2.name).append("age", p2.age)
+                .append("sex", p2.sex).toString());
         // Y now has an append
         y.append("name", p.name);
         System.out.println("P - Once Again " + y.toString());

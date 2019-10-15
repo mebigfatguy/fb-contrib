@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.concurrent.TimeUnit;
 
 public class CTU_Sample {

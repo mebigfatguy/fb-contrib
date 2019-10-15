@@ -44,7 +44,8 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for try/finally blocks that manage resources, without using try-with-resources
+ * looks for try/finally blocks that manage resources, without using
+ * try-with-resources
  */
 public class UseTryWithResources extends BytecodeScanningDetector {
 
@@ -113,8 +114,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             super.visitCode(obj);
 
             if ((closePC >= 0) && (suppressedPC < 0)) {
-                bugReporter.reportBug(new BugInstance(this, BugType.UTWR_USE_TRY_WITH_RESOURCES.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                        .addSourceLine(this, bugPC));
+                bugReporter.reportBug(new BugInstance(this, BugType.UTWR_USE_TRY_WITH_RESOURCES.name(), NORMAL_PRIORITY)
+                        .addClass(this).addMethod(this).addSourceLine(this, bugPC));
             }
         }
     }
@@ -147,20 +148,22 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             }
 
             switch (state) {
-                case SEEN_NOTHING:
-                    sawOpcodeAfterNothing(seen);
+            case SEEN_NOTHING:
+                sawOpcodeAfterNothing(seen);
                 break;
 
-                case SEEN_IFNULL:
-                    sawOpcodeAfterNullCheck(seen);
+            case SEEN_IFNULL:
+                sawOpcodeAfterNullCheck(seen);
                 break;
 
-                case SEEN_ALOAD:
-                    sawOpcodeAfterLoad(seen, pc);
+            case SEEN_ALOAD:
+                sawOpcodeAfterLoad(seen, pc);
                 break;
             }
 
-            lastGotoPC = (((seen == Const.GOTO) || (seen == Const.GOTO_W)) && (getBranchOffset() > 0)) ? getBranchTarget() : -1;
+            lastGotoPC = (((seen == Const.GOTO) || (seen == Const.GOTO_W)) && (getBranchOffset() > 0))
+                    ? getBranchTarget()
+                    : -1;
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         } finally {
@@ -177,7 +180,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
             lastNullCheckedReg = -1;
         }
 
-        if ((bugPC >= 0) && ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) && "addSuppressed".equals(getNameConstantOperand())
+        if ((bugPC >= 0) && ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE))
+                && "addSuppressed".equals(getNameConstantOperand())
                 && SignatureBuilder.SIG_THROWABLE_TO_VOID.equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).instanceOf(throwableClass)) {
             closePC = -1;
@@ -199,7 +203,8 @@ public class UseTryWithResources extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterLoad(int seen, int pc) throws ClassNotFoundException {
-        if (((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) && "close".equals(getNameConstantOperand())
+        if (((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE))
+                && "close".equals(getNameConstantOperand())
                 && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())
                 && Repository.lookupClass(getClassConstantOperand()).implementationOf(autoCloseableClass)) {
             TryBlock tb = findEnclosingFinally(pc);

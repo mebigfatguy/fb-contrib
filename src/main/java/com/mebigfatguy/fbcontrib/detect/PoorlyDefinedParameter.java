@@ -39,8 +39,10 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 
 /**
- * looks for non derivable method that declare parameters and then cast those parameters to more specific types in the method. This is misleading and dangerous
- * as you are not documenting through parameter types what is necessary for these parameters to function correctly.
+ * looks for non derivable method that declare parameters and then cast those
+ * parameters to more specific types in the method. This is misleading and
+ * dangerous as you are not documenting through parameter types what is
+ * necessary for these parameters to function correctly.
  */
 public class PoorlyDefinedParameter extends BytecodeScanningDetector {
     enum State {
@@ -59,8 +61,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
     /**
      * constructs a PDP detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public PoorlyDefinedParameter(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -69,8 +70,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
     /**
      * implements the visitor to see if the method has parameters
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -100,8 +100,7 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a checkcast instruction
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class does checkcast instructions
      */
     private boolean prescreen(Method method) {
@@ -110,22 +109,23 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for check casts of parameters to more specific types
+     * implements the visitor to look for check casts of parameters to more specific
+     * types
      */
     @Override
     public void sawOpcode(int seen) {
         if (downwardBranchTarget == -1) {
             switch (state) {
-                case SAW_NOTHING:
-                    sawOpcodeAfterNothing(seen);
+            case SAW_NOTHING:
+                sawOpcodeAfterNothing(seen);
                 break;
 
-                case SAW_LOAD:
-                    sawOpcodeAfterLoad(seen);
+            case SAW_LOAD:
+                sawOpcodeAfterLoad(seen);
                 break;
 
-                case SAW_CHECKCAST:
-                    sawOpcodeAfterCheckCast(seen);
+            case SAW_CHECKCAST:
+                sawOpcodeAfterCheckCast(seen);
                 break;
             }
 
@@ -191,8 +191,8 @@ public class PoorlyDefinedParameter extends BytecodeScanningDetector {
             parmName = "(" + loadedReg + ')';
         }
 
-        BugInstance bug = new BugInstance(this, BugType.PDP_POORLY_DEFINED_PARAMETER.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this)
-                .addString(parmName);
+        BugInstance bug = new BugInstance(this, BugType.PDP_POORLY_DEFINED_PARAMETER.name(), NORMAL_PRIORITY)
+                .addClass(this).addMethod(this).addSourceLine(this).addString(parmName);
         Integer lr = Integer.valueOf(loadedReg);
         BugInfo bi = bugs.get(lr);
         if (bi == null) {

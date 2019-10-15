@@ -38,8 +38,10 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for construction of new objects, and then the immediate testing whether the object is null or not. As the new operator will always succeed, or through
- * an exception, this test is unnecessary and represents a misunderstanding as to how the jvm works.
+ * looks for construction of new objects, and then the immediate testing whether
+ * the object is null or not. As the new operator will always succeed, or
+ * through an exception, this test is unnecessary and represents a
+ * misunderstanding as to how the jvm works.
  */
 @CustomUserValue
 public class UnnecessaryNewNullCheck extends BytecodeScanningDetector {
@@ -99,88 +101,89 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector {
             }
 
             switch (seen) {
-                case Const.NEW:
-                case Const.ANEWARRAY:
-                case Const.MULTIANEWARRAY:
+            case Const.NEW:
+            case Const.ANEWARRAY:
+            case Const.MULTIANEWARRAY:
+                sawAlloc = true;
+                break;
+
+            case Const.INVOKESPECIAL:
+                if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
                     sawAlloc = true;
+                }
                 break;
 
-                case Const.INVOKESPECIAL:
-                    if (Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
-                        sawAlloc = true;
+            case Const.ASTORE:
+            case Const.ASTORE_0:
+            case Const.ASTORE_1:
+            case Const.ASTORE_2:
+            case Const.ASTORE_3:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    int reg = RegisterUtils.getAStoreReg(this, seen);
+                    if (item.getUserValue() == null) {
+                        allocationRegs.clear(reg);
+                    } else {
+                        allocationRegs.set(reg);
                     }
+                }
                 break;
 
-                case Const.ASTORE:
-                case Const.ASTORE_0:
-                case Const.ASTORE_1:
-                case Const.ASTORE_2:
-                case Const.ASTORE_3:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        int reg = RegisterUtils.getAStoreReg(this, seen);
-                        if (item.getUserValue() == null) {
-                            allocationRegs.clear(reg);
-                        } else {
-                            allocationRegs.set(reg);
-                        }
+            case Const.ALOAD:
+            case Const.ALOAD_0:
+            case Const.ALOAD_1:
+            case Const.ALOAD_2:
+            case Const.ALOAD_3:
+                int reg = RegisterUtils.getALoadReg(this, seen);
+                sawAlloc = (allocationRegs.get(reg));
+                break;
+
+            case Const.IFNONNULL:
+            case Const.IFNULL:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if ((item.getUserValue() != null) && AttributesUtils.isValidLineNumber(getCode(), getPC())) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.UNNC_UNNECESSARY_NEW_NULL_CHECK.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                     }
+                }
+                transitionPoints.set(getBranchTarget());
+                allocationRegs.clear();
                 break;
 
-                case Const.ALOAD:
-                case Const.ALOAD_0:
-                case Const.ALOAD_1:
-                case Const.ALOAD_2:
-                case Const.ALOAD_3:
-                    int reg = RegisterUtils.getALoadReg(this, seen);
-                    sawAlloc = (allocationRegs.get(reg));
+            case Const.IFEQ:
+            case Const.IFNE:
+            case Const.IFLT:
+            case Const.IFGE:
+            case Const.IFGT:
+            case Const.IFLE:
+            case Const.IF_ICMPEQ:
+            case Const.IF_ICMPNE:
+            case Const.IF_ICMPLT:
+            case Const.IF_ICMPGE:
+            case Const.IF_ICMPGT:
+            case Const.IF_ICMPLE:
+            case Const.IF_ACMPEQ:
+            case Const.IF_ACMPNE:
+            case Const.GOTO:
+            case Const.GOTO_W:
+                transitionPoints.set(getBranchTarget());
+                allocationRegs.clear();
                 break;
 
-                case Const.IFNONNULL:
-                case Const.IFNULL:
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        if ((item.getUserValue() != null) && AttributesUtils.isValidLineNumber(getCode(), getPC())) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.UNNC_UNNECESSARY_NEW_NULL_CHECK.name(), NORMAL_PRIORITY).addClass(this)
-                                    .addMethod(this).addSourceLine(this));
-                        }
-                    }
-                    transitionPoints.set(getBranchTarget());
-                    allocationRegs.clear();
+            case Const.TABLESWITCH:
+            case Const.LOOKUPSWITCH:
+            case Const.IRETURN:
+            case Const.LRETURN:
+            case Const.FRETURN:
+            case Const.DRETURN:
+            case Const.ARETURN:
+            case Const.RETURN:
+            case Const.ATHROW:
+                allocationRegs.clear();
                 break;
-
-                case Const.IFEQ:
-                case Const.IFNE:
-                case Const.IFLT:
-                case Const.IFGE:
-                case Const.IFGT:
-                case Const.IFLE:
-                case Const.IF_ICMPEQ:
-                case Const.IF_ICMPNE:
-                case Const.IF_ICMPLT:
-                case Const.IF_ICMPGE:
-                case Const.IF_ICMPGT:
-                case Const.IF_ICMPLE:
-                case Const.IF_ACMPEQ:
-                case Const.IF_ACMPNE:
-                case Const.GOTO:
-                case Const.GOTO_W:
-                    transitionPoints.set(getBranchTarget());
-                    allocationRegs.clear();
-                break;
-
-                case Const.TABLESWITCH:
-                case Const.LOOKUPSWITCH:
-                case Const.IRETURN:
-                case Const.LRETURN:
-                case Const.FRETURN:
-                case Const.DRETURN:
-                case Const.ARETURN:
-                case Const.RETURN:
-                case Const.ATHROW:
-                    allocationRegs.clear();
-                break;
-                default:
+            default:
                 break;
             }
         } finally {
@@ -197,6 +200,7 @@ public class UnnecessaryNewNullCheck extends BytecodeScanningDetector {
 
     private boolean prescreen() {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(getMethod());
-        return (bytecodeSet != null) && (bytecodeSet.get(Const.NEW) || bytecodeSet.get(Const.ANEWARRAY) || bytecodeSet.get(Const.MULTIANEWARRAY));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.NEW) || bytecodeSet.get(Const.ANEWARRAY)
+                || bytecodeSet.get(Const.MULTIANEWARRAY));
     }
 }

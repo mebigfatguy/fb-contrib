@@ -88,11 +88,11 @@ public class PMB_Sample {
     public void remove(String s) {
         data.remove(s);
     }
-    
+
     public X instanceJAXBFactory(String xml) throws JAXBException {
-    	JAXBContext jc = JAXBContext.newInstance(X.class);
-    	Unmarshaller unmarshaller = jc.createUnmarshaller();
-    	return (X) unmarshaller.unmarshal( new ByteArrayInputStream(xml.getBytes()));
+        JAXBContext jc = JAXBContext.newInstance(X.class);
+        Unmarshaller unmarshaller = jc.createUnmarshaller();
+        return (X) unmarshaller.unmarshal(new ByteArrayInputStream(xml.getBytes()));
     }
 
     public void fpInnerDoesRemove() {
@@ -125,8 +125,8 @@ public class PMB_Sample {
             fpEmptyWithIterator.put(key, "foo");
         }
     }
-    
+
     class X {
     }
-    
+
 }

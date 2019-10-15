@@ -41,8 +41,10 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for for loops that iterate over a java.util.List using an integer index, and get, rather than using an Iterator. An iterator may perform better
- * depending List implementation, but more importantly will allow the code to be converted to other collections type.
+ * looks for for loops that iterate over a java.util.List using an integer
+ * index, and get, rather than using an Iterator. An iterator may perform better
+ * depending List implementation, but more importantly will allow the code to be
+ * converted to other collections type.
  */
 public class ListIndexedIterating extends BytecodeScanningDetector {
     enum State {
@@ -68,8 +70,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
     /**
      * constructs a LII detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ListIndexedIterating(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -78,8 +79,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
     /**
      * overrides the interface to create and clear the stack and loops tracker
      *
-     * @param classContext
-     *            the context object for the currently parsed class
+     * @param classContext the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -96,20 +96,19 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a IINC and GOTO or GOTO_W opcodes
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class uses synchronization
      */
     private boolean prescreen(Method method) {
         BitSet bytecodeSet = getClassContext().getBytecodeSet(method);
-        return (bytecodeSet != null) && (bytecodeSet.get(Const.IINC)) && (bytecodeSet.get(Const.GOTO) || bytecodeSet.get(Const.GOTO_W));
+        return (bytecodeSet != null) && (bytecodeSet.get(Const.IINC))
+                && (bytecodeSet.get(Const.GOTO) || bytecodeSet.get(Const.GOTO_W));
     }
 
     /**
      * overrides the visitor to reset the opcode stack
      *
-     * @param obj
-     *            the code object for the currently parsed Code
+     * @param obj the code object for the currently parsed Code
      */
     @Override
     public void visitCode(final Code obj) {
@@ -134,8 +133,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
     /**
      * overrides the visitor to find list indexed iterating
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(final int seen) {
@@ -149,34 +147,34 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
     /**
      * the first pass of the method opcode to collet for loops information
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     private void sawOpcodeLoop(final int seen) {
         try {
             stack.mergeJumps(this);
 
             switch (state) {
-                case SAW_NOTHING:
-                    if ((seen == Const.IINC) && (getIntConstant() == 1)) {
-                        loopReg = getRegisterOperand();
-                        state = State.SAW_IINC;
-                    }
+            case SAW_NOTHING:
+                if ((seen == Const.IINC) && (getIntConstant() == 1)) {
+                    loopReg = getRegisterOperand();
+                    state = State.SAW_IINC;
+                }
                 break;
 
-                case SAW_IINC:
-                    if ((seen == Const.GOTO) || (seen == Const.GOTO_W)) {
-                        int branchTarget = getBranchTarget();
-                        int pc = getPC();
-                        if (branchTarget < pc) {
-                            possibleForLoops.add(new ForLoop(branchTarget, pc, loopReg));
-                        }
+            case SAW_IINC:
+                if ((seen == Const.GOTO) || (seen == Const.GOTO_W)) {
+                    int branchTarget = getBranchTarget();
+                    int pc = getPC();
+                    if (branchTarget < pc) {
+                        possibleForLoops.add(new ForLoop(branchTarget, pc, loopReg));
                     }
-                    state = State.SAW_NOTHING;
+                }
+                state = State.SAW_NOTHING;
                 break;
             }
 
-            if ((seen == Const.INVOKEINTERFACE) && Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand()) && "size".equals(getNameConstantOperand())
+            if ((seen == Const.INVOKEINTERFACE) && Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())
+                    && "size".equals(getNameConstantOperand())
                     && SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand())) {
                 sawListSize = true;
             }
@@ -188,8 +186,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
     /**
      * the second pass to look for get methods on the for loop reg
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     private void sawOpcodeBug(final int seen) {
         try {
@@ -199,85 +196,88 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
             while (it.hasNext()) {
                 ForLoop fl = it.next();
                 switch (fl.getLoopState()) {
-                    case LOOP_NOT_STARTED:
-                        if (getPC() == fl.getLoopStart()) {
-                            if (OpcodeUtils.isILoad(seen) && (RegisterUtils.getLoadReg(this, seen) == fl.getLoopReg())) {
-                                fl.setLoopState(LoopState.LOOP_INDEX_LOADED_FOR_TEST);
-                                continue;
-                            }
-
-                            it.remove();
-                        }
-                    break;
-
-                    case LOOP_INDEX_LOADED_FOR_TEST:
-                        if (getPC() >= fl.getLoopEnd()) {
-                            it.remove();
+                case LOOP_NOT_STARTED:
+                    if (getPC() == fl.getLoopStart()) {
+                        if (OpcodeUtils.isILoad(seen) && (RegisterUtils.getLoadReg(this, seen) == fl.getLoopReg())) {
+                            fl.setLoopState(LoopState.LOOP_INDEX_LOADED_FOR_TEST);
                             continue;
                         }
-                        if (seen == Const.IF_ICMPGE) {
-                            if (stack.getStackDepth() > 1) {
-                                OpcodeStack.Item itm = stack.getStackItem(0);
-                                if (itm.getConstant() != null) {
-                                    it.remove();
-                                    continue;
-                                }
-                                XMethod constantSource = itm.getReturnValueOf();
-                                if (constantSource != null) {
-                                    if (!"size".equals(constantSource.getMethodDescriptor().getName())) {
-                                        it.remove();
-                                        continue;
-                                    }
-                                } else if (getPrevOpcode(1) != Const.ARRAYLENGTH) {
-                                    it.remove();
-                                    continue;
-                                }
+
+                        it.remove();
+                    }
+                    break;
+
+                case LOOP_INDEX_LOADED_FOR_TEST:
+                    if (getPC() >= fl.getLoopEnd()) {
+                        it.remove();
+                        continue;
+                    }
+                    if (seen == Const.IF_ICMPGE) {
+                        if (stack.getStackDepth() > 1) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (itm.getConstant() != null) {
+                                it.remove();
+                                continue;
                             }
-                            int branchTarget = getBranchTarget();
-                            if ((branchTarget >= (fl.getLoopEnd() + 3)) && (branchTarget <= (fl.getLoopEnd() + 5))) {
-                                fl.setLoopState(LoopState.LOOP_IN_BODY);
+                            XMethod constantSource = itm.getReturnValueOf();
+                            if (constantSource != null) {
+                                if (!"size".equals(constantSource.getMethodDescriptor().getName())) {
+                                    it.remove();
+                                    continue;
+                                }
+                            } else if (getPrevOpcode(1) != Const.ARRAYLENGTH) {
+                                it.remove();
                                 continue;
                             }
                         }
+                        int branchTarget = getBranchTarget();
+                        if ((branchTarget >= (fl.getLoopEnd() + 3)) && (branchTarget <= (fl.getLoopEnd() + 5))) {
+                            fl.setLoopState(LoopState.LOOP_IN_BODY);
+                            continue;
+                        }
+                    }
                     break;
 
-                    case LOOP_IN_BODY:
-                    case LOOP_IN_BODY_WITH_GET:
-                        if ((getPC() == fl.getLoopEnd()) && (fl.getLoopState() == LoopState.LOOP_IN_BODY_WITH_GET)) {
-                            bugReporter.reportBug(new BugInstance(this, "LII_LIST_INDEXED_ITERATING", NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                    .addSourceLineRange(this, fl.getLoopStart(), fl.getLoopEnd()));
-                            it.remove();
-                        }
-                        if (getPC() > fl.getLoopEnd()) {
-                            it.remove();
-                        }
+                case LOOP_IN_BODY:
+                case LOOP_IN_BODY_WITH_GET:
+                    if ((getPC() == fl.getLoopEnd()) && (fl.getLoopState() == LoopState.LOOP_IN_BODY_WITH_GET)) {
+                        bugReporter.reportBug(
+                                new BugInstance(this, "LII_LIST_INDEXED_ITERATING", NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLineRange(this, fl.getLoopStart(), fl.getLoopEnd()));
+                        it.remove();
+                    }
+                    if (getPC() > fl.getLoopEnd()) {
+                        it.remove();
+                    }
 
-                        if (OpcodeUtils.isILoad(seen)) {
-                            loopReg = RegisterUtils.getLoadReg(this, seen);
-                            if (loopReg == fl.getLoopReg()) {
-                                fl.setLoopRegLoaded(true);
-                            }
-                        } else if (fl.getLoopRegLoaded()) {
-                            boolean sawGet = ((seen == Const.INVOKEINTERFACE) && Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())
-                                    && "get".equals(getNameConstantOperand()) && SignatureBuilder.SIG_INT_TO_OBJECT.equals(getSigConstantOperand()));
-                            if (!sawGet) {
-                                it.remove();
-                            } else {
-                                fl.setLoopState(LoopState.LOOP_IN_BODY_WITH_GET);
-                                if (stack.getStackDepth() > 1) {
-                                    OpcodeStack.Item itm = stack.getStackItem(0);
-                                    if (!itm.couldBeZero()) {
+                    if (OpcodeUtils.isILoad(seen)) {
+                        loopReg = RegisterUtils.getLoadReg(this, seen);
+                        if (loopReg == fl.getLoopReg()) {
+                            fl.setLoopRegLoaded(true);
+                        }
+                    } else if (fl.getLoopRegLoaded()) {
+                        boolean sawGet = ((seen == Const.INVOKEINTERFACE)
+                                && Values.SLASHED_JAVA_UTIL_LIST.equals(getClassConstantOperand())
+                                && "get".equals(getNameConstantOperand())
+                                && SignatureBuilder.SIG_INT_TO_OBJECT.equals(getSigConstantOperand()));
+                        if (!sawGet) {
+                            it.remove();
+                        } else {
+                            fl.setLoopState(LoopState.LOOP_IN_BODY_WITH_GET);
+                            if (stack.getStackDepth() > 1) {
+                                OpcodeStack.Item itm = stack.getStackItem(0);
+                                if (!itm.couldBeZero()) {
+                                    it.remove();
+                                } else {
+                                    itm = stack.getStackItem(1);
+                                    if (fl.isSecondItem(itm)) {
                                         it.remove();
-                                    } else {
-                                        itm = stack.getStackItem(1);
-                                        if (fl.isSecondItem(itm)) {
-                                            it.remove();
-                                        }
                                     }
                                 }
-                                fl.setLoopRegLoaded(false);
                             }
+                            fl.setLoopRegLoaded(false);
                         }
+                    }
                     break;
                 }
             }
@@ -301,12 +301,9 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
         /**
          * constructs a for loop information block
          *
-         * @param start
-         *            the start of the for loop
-         * @param end
-         *            the end of the for loop
-         * @param reg
-         *            the loop register
+         * @param start the start of the for loop
+         * @param end   the end of the for loop
+         * @param reg   the loop register
          */
         public ForLoop(final int start, final int end, final int reg) {
             loopStart = start;
@@ -347,8 +344,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
         /**
          * sets the current state of the for loop
          *
-         * @param state
-         *            the new state
+         * @param state the new state
          */
         public void setLoopState(final LoopState state) {
             loopState = state;
@@ -366,8 +362,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
         /**
          * mark that the loop register has been loaded with an iload instruction
          *
-         * @param loaded
-         *            the flag of whether the loop register is loaded
+         * @param loaded the flag of whether the loop register is loaded
          */
         public void setLoopRegLoaded(final boolean loaded) {
             loopRegLoaded = loaded;
@@ -385,8 +380,7 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
         /**
          * returns whether this is the second time the loop register is found
          *
-         * @param itm
-         *            the item on the stack
+         * @param itm the item on the stack
          *
          * @return whether this is the second time the loop register is found
          */
@@ -420,7 +414,8 @@ public class ListIndexedIterating extends BytecodeScanningDetector {
                     return true;
                 }
 
-                if ((loopCollectionItem.getFieldLoadedFromRegister() != itm.getFieldLoadedFromRegister()) || (itm.getFieldLoadedFromRegister() == -1)
+                if ((loopCollectionItem.getFieldLoadedFromRegister() != itm.getFieldLoadedFromRegister())
+                        || (itm.getFieldLoadedFromRegister() == -1)
                         || (!newField.getName().equals(seenField.getName()))) {
                     return true;
                 }

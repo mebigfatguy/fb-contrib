@@ -35,7 +35,6 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
-
 public final class SerialVersionCalc {
 
     enum ModifierType {
@@ -53,7 +52,7 @@ public final class SerialVersionCalc {
         }
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             DataOutputStream dos = new DataOutputStream(baos)) {
+                DataOutputStream dos = new DataOutputStream(baos)) {
 
             dos.writeUTF(cls.getClassName());
             dos.writeInt(filterModifiers(cls.getModifiers(), ModifierType.CLASS));
@@ -74,7 +73,7 @@ public final class SerialVersionCalc {
             return 0;
         }
     }
-    
+
     private static void writeInterfaces(DataOutput out, JavaClass cls) throws IOException {
         String[] infs = cls.getInterfaceNames();
         if (infs.length > 0) {
@@ -110,7 +109,7 @@ public final class SerialVersionCalc {
             for (Method sinit : methods) {
                 if ("<clinit>".equals(sinit.getName())) {
                     out.writeUTF("<clinit>");
-	                out.writeInt(Const.ACC_STATIC);
+                    out.writeInt(Const.ACC_STATIC);
                     out.writeUTF("()V");
                     break;
                 }
@@ -133,7 +132,7 @@ public final class SerialVersionCalc {
             }
         }
     }
-    
+
     private static int filterModifiers(int modifier, ModifierType type) {
 
         switch (type) {

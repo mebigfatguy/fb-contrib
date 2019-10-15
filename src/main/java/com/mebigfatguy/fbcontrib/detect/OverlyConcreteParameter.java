@@ -241,13 +241,13 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
     public void sawOpcode(final int seen) {
 
         try {
-        	if (ternaryTarget != -1 && getPC() > ternaryTarget) {
-        		ternary1Value = null;
-        		ternary2Value = null;
-        		ternaryTarget = -1;
-        	} else if (getPC() == ternaryTarget && stack.getStackDepth() > 0) {
-        		ternary2Value = stack.getStackItem(0);
-        	}
+            if (ternaryTarget != -1 && getPC() > ternaryTarget) {
+                ternary1Value = null;
+                ternary2Value = null;
+                ternaryTarget = -1;
+            } else if (getPC() == ternaryTarget && stack.getStackDepth() > 0) {
+                ternary2Value = stack.getStackItem(0);
+            }
 
             stack.precomputation(this);
 
@@ -285,8 +285,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     removeParmDefiner(itm);
                     if (ternaryTarget == getPC()) {
-                    	removeParmDefiner(ternary1Value);
-                    	removeParmDefiner(ternary2Value);
+                        removeParmDefiner(ternary1Value);
+                        removeParmDefiner(ternary2Value);
                     }
                 } else {
                     parameterDefiners.clear();
@@ -330,10 +330,10 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     parameterDefiners.clear();
                 }
             } else if (((seen == Const.GOTO) || (seen == Const.GOTO_W)) && getBranchOffset() > 0) {
-            	if (stack.getStackDepth() > 0) {
-            		ternary1Value = stack.getStackItem(0);
-            		ternaryTarget = getBranchTarget();
-            	}
+                if (stack.getStackDepth() > 0) {
+                    ternary1Value = stack.getStackItem(0);
+                    ternaryTarget = getBranchTarget();
+                }
             }
 
             if (parameterDefiners.isEmpty()) {
@@ -346,14 +346,15 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
 
     /**
      * removes a parameter from the definer list, if the item is in fact a parameter
+     * 
      * @param itm the possible parameter
      */
     private void removeParmDefiner(OpcodeStack.Item itm) {
-    	if (itm == null) {
-    		return;
-    	}
+        if (itm == null) {
+            return;
+        }
 
-    	int reg = itm.getRegisterNumber();
+        int reg = itm.getRegisterNumber();
         int parm = reg;
         if (!methodIsStatic) {
             parm--;
@@ -577,7 +578,8 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         Map<JavaClass, List<MethodInfo>> definers = new HashMap<>();
 
         for (JavaClass ci : cls.getAllInterfaces()) {
-            if (cls.equals(ci) || !cls.isPublic() || "java.lang.Comparable".equals(ci.getClassName()) || "java.lang.constant.Constable".equals(ci.getClassName())) {
+            if (cls.equals(ci) || !cls.isPublic() || "java.lang.Comparable".equals(ci.getClassName())
+                    || "java.lang.constant.Constable".equals(ci.getClassName())) {
                 continue;
             }
             List<MethodInfo> methodInfos = getPublicMethodInfos(ci);

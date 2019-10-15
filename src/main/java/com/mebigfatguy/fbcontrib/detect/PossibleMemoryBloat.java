@@ -50,33 +50,40 @@ import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
- * looks for classes that maintain collections or StringBuffer/StringBuilders in static member variables, and that do not appear to provide a way to clear or
- * remove items from these members. Such class fields are likely causes of memory bloat.
+ * looks for classes that maintain collections or StringBuffer/StringBuilders in
+ * static member variables, and that do not appear to provide a way to clear or
+ * remove items from these members. Such class fields are likely causes of
+ * memory bloat.
  *
  */
 @CustomUserValue
 public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
-    private static final Set<String> bloatableSigs = UnmodifiableSet.create("Ljava/util/concurrent/ArrayBlockingQueue;", "Ljava/util/ArrayList;",
-            "Ljava/util/concurrent/BlockingQueue;", "Ljava/util/Collection;", "Ljava/util/concurrent/ConcurrentHashMap;",
-            "Ljava/util/concurrent/ConcurrentSkipListMap;", "Ljava/util/concurrent/ConcurrentSkipListSet;", "Ljava/util/concurrent/CopyOnWriteArraySet;",
-            "Ljava/util/EnumSet;", "Ljava/util/EnumMap;", "Ljava/util/HashMap;", "Ljava/util/HashSet;", "Ljava/util/Hashtable;", "Ljava/util/IdentityHashMap;",
-            "Ljava/util/concurrent/LinkedBlockingQueue;", "Ljava/util/LinkedHashMap;", "Ljava/util/LinkedHashSet;", "Ljava/util/LinkedList;",
-            "Ljava/util/List;", "Ljava/util/concurrent/PriorityBlockingQueue;", "Ljava/util/PriorityQueue;", "Ljava/util/Map;", "Ljava/util/Queue;",
-            "Ljava/util/Set;", "Ljava/util/SortedSet;", "Ljava/util/SortedMap;", "Ljava/util/Stack;", Values.SIG_JAVA_UTIL_STRINGBUFFER, Values.SIG_JAVA_UTIL_STRINGBUILDER,
+    private static final Set<String> bloatableSigs = UnmodifiableSet.create("Ljava/util/concurrent/ArrayBlockingQueue;",
+            "Ljava/util/ArrayList;", "Ljava/util/concurrent/BlockingQueue;", "Ljava/util/Collection;",
+            "Ljava/util/concurrent/ConcurrentHashMap;", "Ljava/util/concurrent/ConcurrentSkipListMap;",
+            "Ljava/util/concurrent/ConcurrentSkipListSet;", "Ljava/util/concurrent/CopyOnWriteArraySet;",
+            "Ljava/util/EnumSet;", "Ljava/util/EnumMap;", "Ljava/util/HashMap;", "Ljava/util/HashSet;",
+            "Ljava/util/Hashtable;", "Ljava/util/IdentityHashMap;", "Ljava/util/concurrent/LinkedBlockingQueue;",
+            "Ljava/util/LinkedHashMap;", "Ljava/util/LinkedHashSet;", "Ljava/util/LinkedList;", "Ljava/util/List;",
+            "Ljava/util/concurrent/PriorityBlockingQueue;", "Ljava/util/PriorityQueue;", "Ljava/util/Map;",
+            "Ljava/util/Queue;", "Ljava/util/Set;", "Ljava/util/SortedSet;", "Ljava/util/SortedMap;",
+            "Ljava/util/Stack;", Values.SIG_JAVA_UTIL_STRINGBUFFER, Values.SIG_JAVA_UTIL_STRINGBUILDER,
             "Ljava/util/TreeMap;", "Ljava/util/TreeSet;", "Ljava/util/Vector;");
 
     private static final Set<String> nonBloatableSigs = UnmodifiableSet.create("Ljava/util/WeakHashMap;");
 
-    private static final Set<String> decreasingMethods = UnmodifiableSet.create("clear", "delete", "deleteCharAt", "drainTo", "poll", "pollFirst", "pollLast",
-            "pop", "remove", "removeAll", "removeAllElements", "removeElementAt", "removeRange", "setLength", "take");
+    private static final Set<String> decreasingMethods = UnmodifiableSet.create("clear", "delete", "deleteCharAt",
+            "drainTo", "poll", "pollFirst", "pollLast", "pop", "remove", "removeAll", "removeAllElements",
+            "removeElementAt", "removeRange", "setLength", "take");
 
-    private static final Set<String> increasingMethods = UnmodifiableSet.create("add", "addAll", "addElement", "addFirst", "addLast", "append",
-            "insertElementAt", "offer", "put");
+    private static final Set<String> increasingMethods = UnmodifiableSet.create("add", "addAll", "addElement",
+            "addFirst", "addLast", "append", "insertElementAt", "offer", "put");
 
     private static final Set<String> mapSubsets = UnmodifiableSet.create("keySet", "entrySet", "values");
-    
-    private static final FQMethod jaxbNewInstance = new FQMethod("javax/xml/bind/JAXBContext", "newInstance", "([Ljava/lang/Class;)Ljavax/xml/bind/JAXBContext;");
+
+    private static final FQMethod jaxbNewInstance = new FQMethod("javax/xml/bind/JAXBContext", "newInstance",
+            "([Ljava/lang/Class;)Ljavax/xml/bind/JAXBContext;");
 
     private final BugReporter bugReporter;
     private Map<XField, FieldAnnotation> bloatableCandidates;
@@ -90,18 +97,18 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     /**
      * constructs a PMB detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public PossibleMemoryBloat(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * collects static fields that are likely bloatable objects and if found allows the visitor to proceed, at the end report all leftover fields
+     * collects static fields that are likely bloatable objects and if found allows
+     * the visitor to proceed, at the end report all leftover fields
      *
-     * @param classContext
-     *            the class context object of the currently parsed java class
+     * @param classContext the class context object of the currently parsed java
+     *                     class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -131,7 +138,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
     private void reportThreadLocalBugs() {
         for (FieldAnnotation fieldAn : threadLocalNonStaticFields) {
-            bugReporter.reportBug(new BugInstance(this, BugType.PMB_INSTANCE_BASED_THREAD_LOCAL.name(), NORMAL_PRIORITY).addClass(this).addField(fieldAn));
+            bugReporter.reportBug(new BugInstance(this, BugType.PMB_INSTANCE_BASED_THREAD_LOCAL.name(), NORMAL_PRIORITY)
+                    .addClass(this).addField(fieldAn));
         }
 
     }
@@ -140,7 +148,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         for (Entry<XField, FieldAnnotation> entry : bloatableFields.entrySet()) {
             FieldAnnotation fieldAn = entry.getValue();
             if (fieldAn != null) {
-                bugReporter.reportBug(new BugInstance(this, BugType.PMB_POSSIBLE_MEMORY_BLOAT.name(), NORMAL_PRIORITY).addClass(this).addField(fieldAn));
+                bugReporter.reportBug(new BugInstance(this, BugType.PMB_POSSIBLE_MEMORY_BLOAT.name(), NORMAL_PRIORITY)
+                        .addClass(this).addField(fieldAn));
             }
         }
     }
@@ -152,7 +161,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             String sig = f.getSignature();
             if (f.isStatic()) {
                 if (bloatableSigs.contains(sig)) {
-                    bloatableCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()),
+                    bloatableCandidates.put(
+                            XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()),
                             FieldAnnotation.fromBCELField(cls, f));
                 }
             } else if ("Ljava/lang/ThreadLocal;".equals(sig)) {
@@ -164,8 +174,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     /**
      * implements the visitor to collect the method name
      *
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -175,8 +184,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     /**
      * implements the visitor to reset the opcode stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -189,18 +197,19 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         }
 
         super.visitCode(obj);
-        
+
         for (Integer pc : jaxbContextRegs.values()) {
-        	bugReporter.reportBug(new BugInstance(this, BugType.PMB_LOCAL_BASED_JAXB_CONTEXT.name(), "<clinit>".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY)
-        			.addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
+            bugReporter.reportBug(new BugInstance(this, BugType.PMB_LOCAL_BASED_JAXB_CONTEXT.name(),
+                    "<clinit>".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this, pc.intValue()));
         }
     }
 
     /**
-     * implements the visitor to look for methods that empty a bloatable field if found, remove these fields from the current list
+     * implements the visitor to look for methods that empty a bloatable field if
+     * found, remove these fields from the current list
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -230,22 +239,23 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                         if (field != null) {
                             if (mapSubsets.contains(calledMethod)) {
                                 userValue = field;
-                            } else if ("remove".equals(calledMethod) && "java/util/Iterator".equals(getClassConstantOperand())) {
+                            } else if ("remove".equals(calledMethod)
+                                    && "java/util/Iterator".equals(getClassConstantOperand())) {
                                 bloatableCandidates.remove(field);
                                 bloatableFields.remove(field);
                             }
                         }
                     }
-                    
+
                     for (int i = 0; i < argCount; i++) {
-                    	itm = stack.getStackItem(i);
-                    	jaxbContextRegs.remove(itm.getRegisterNumber());
+                        itm = stack.getStackItem(i);
+                        jaxbContextRegs.remove(itm.getRegisterNumber());
                     }
                 }
             } else if (seen == Const.PUTFIELD) {
                 if (stack.getStackDepth() > 0) {
-                	OpcodeStack.Item item = stack.getStackItem(0);
-	                jaxbContextRegs.remove(item.getRegisterNumber());
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    jaxbContextRegs.remove(item.getRegisterNumber());
                 }
             } else if (seen == Const.PUTSTATIC) {
                 if (stack.getStackDepth() > 0) {
@@ -254,7 +264,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                         XField field = item.getXField();
                         bloatableFields.remove(field);
                     }
-                    
+
                     jaxbContextRegs.remove(item.getRegisterNumber());
                 }
             }
@@ -267,14 +277,15 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     userValues.put(RegisterUtils.getAStoreReg(this, seen), (XField) itm.getUserValue());
-                    
-            		XMethod xm = itm.getReturnValueOf();
-            		if (xm != null) {
-            			FQMethod calledMethod = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
-                    	if (jaxbNewInstance.equals(calledMethod)) {
-                    		jaxbContextRegs.put(RegisterUtils.getAStoreReg(this, seen), getPC());
-                    	}
-            		}
+
+                    XMethod xm = itm.getReturnValueOf();
+                    if (xm != null) {
+                        FQMethod calledMethod = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(),
+                                xm.getSignature());
+                        if (jaxbNewInstance.equals(calledMethod)) {
+                            jaxbContextRegs.put(RegisterUtils.getAStoreReg(this, seen), getPC());
+                        }
+                    }
                 }
             }
         } finally {

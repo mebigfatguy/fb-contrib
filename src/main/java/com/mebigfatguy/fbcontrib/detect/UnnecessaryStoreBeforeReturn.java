@@ -40,7 +40,8 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Looks for methods that store the return result in a local variable, and then immediately returns that local variable.
+ * Looks for methods that store the return result in a local variable, and then
+ * immediately returns that local variable.
  */
 @CustomUserValue
 public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
@@ -115,8 +116,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     /**
      * constructs a USBR detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public UnnecessaryStoreBeforeReturn(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -125,8 +125,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and clear the branchTargets
      *
-     * @param classContext
-     *            the context object for the currently parsed class
+     * @param classContext the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -143,10 +142,10 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to make sure method returns a value, and then clears the targets
+     * implements the visitor to make sure method returns a value, and then clears
+     * the targets
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -168,10 +167,10 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to look for store of registers immediately before returns of that register
+     * implements the visitor to look for store of registers immediately before
+     * returns of that register
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -180,31 +179,32 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (state) {
-                case SEEN_NOTHING:
-                    if (!catchTargets.get(getPC()) && lookForStore(seen) && (stack.getStackDepth() >= 1)) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        Integer reg = (Integer) item.getUserValue();
-                        if ((reg == null) || (reg.intValue() != storeReg)) {
-                            state = State.SEEN_STORE;
-                        }
+            case SEEN_NOTHING:
+                if (!catchTargets.get(getPC()) && lookForStore(seen) && (stack.getStackDepth() >= 1)) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    Integer reg = (Integer) item.getUserValue();
+                    if ((reg == null) || (reg.intValue() != storeReg)) {
+                        state = State.SEEN_STORE;
                     }
+                }
                 break;
 
-                case SEEN_STORE:
-                    if (branchTargets.get(getPC())) {
-                        state = State.SEEN_NOTHING;
-                        break;
-                    }
-
-                    state = lookForLoad(seen) ? State.SEEN_LOAD : State.SEEN_NOTHING;
-                break;
-
-                case SEEN_LOAD:
-                    if ((seen >= Const.IRETURN) && (seen <= Const.ARETURN)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.USBR_UNNECESSARY_STORE_BEFORE_RETURN.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addSourceLine(this));
-                    }
+            case SEEN_STORE:
+                if (branchTargets.get(getPC())) {
                     state = State.SEEN_NOTHING;
+                    break;
+                }
+
+                state = lookForLoad(seen) ? State.SEEN_LOAD : State.SEEN_NOTHING;
+                break;
+
+            case SEEN_LOAD:
+                if ((seen >= Const.IRETURN) && (seen <= Const.ARETURN)) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.USBR_UNNECESSARY_STORE_BEFORE_RETURN.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
+                }
+                state = State.SEEN_NOTHING;
                 break;
             }
 
@@ -229,8 +229,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     /**
      * checks if the current opcode is a store, if so saves the register
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      * @return if a store was seen
      */
     private boolean lookForStore(int seen) {
@@ -245,8 +244,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     /**
      * looks for a load of the register that was just stored
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      * @return if the load was seen
      */
     private boolean lookForLoad(int seen) {
@@ -261,10 +259,10 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     }
 
     /**
-     * looks for instructions that are binary operators, and if it is saves the left hand side register (if it exists) in the userValue.
+     * looks for instructions that are binary operators, and if it is saves the left
+     * hand side register (if it exists) in the userValue.
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      * @return the lhs register number if it exists or -1
      */
     private int processBinOp(int seen) {

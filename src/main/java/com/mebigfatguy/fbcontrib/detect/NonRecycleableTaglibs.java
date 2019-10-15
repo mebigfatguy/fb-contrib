@@ -43,17 +43,21 @@ import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for tag libraries that are not recycleable because backing members of taglib attributes are set in areas besides the setter method for the attribute.
+ * looks for tag libraries that are not recycleable because backing members of
+ * taglib attributes are set in areas besides the setter method for the
+ * attribute.
  */
 @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "STT_TOSTRING_MAP_KEYING", justification = "Well-defined String keys are appropriate here")
 public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     private static final int MAX_ATTRIBUTE_CODE_LENGTH = 60;
 
-    private static final Set<String> tagClasses = UnmodifiableSet.create("javax.servlet.jsp.tagext.TagSupport", "javax.servlet.jsp.tagext.BodyTagSupport");
+    private static final Set<String> tagClasses = UnmodifiableSet.create("javax.servlet.jsp.tagext.TagSupport",
+            "javax.servlet.jsp.tagext.BodyTagSupport");
 
-    private static final Set<String> validAttrTypes = UnmodifiableSet.create(Values.SIG_PRIMITIVE_BYTE, Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_DOUBLE,
-            Values.SIG_PRIMITIVE_FLOAT, Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_SHORT, Values.SIG_PRIMITIVE_BOOLEAN,
-            Values.SIG_JAVA_LANG_STRING, "Ljava/util/Date;");
+    private static final Set<String> validAttrTypes = UnmodifiableSet.create(Values.SIG_PRIMITIVE_BYTE,
+            Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_FLOAT,
+            Values.SIG_PRIMITIVE_INT, Values.SIG_PRIMITIVE_LONG, Values.SIG_PRIMITIVE_SHORT,
+            Values.SIG_PRIMITIVE_BOOLEAN, Values.SIG_JAVA_LANG_STRING, "Ljava/util/Date;");
 
     private final BugReporter bugReporter;
     /**
@@ -69,18 +73,17 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     /**
      * constructs a NRTL detector given the reporter to report bugs on.
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public NonRecycleableTaglibs(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
     }
 
     /**
-     * implements the visitor to look for classes that extend the TagSupport or BodyTagSupport class
+     * implements the visitor to look for classes that extend the TagSupport or
+     * BodyTagSupport class
      *
-     * @param classContext
-     *            the context object for the currently parsed class
+     * @param classContext the context object for the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -113,8 +116,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     /**
      * collect all possible attributes given the name of methods available.
      *
-     * @param cls
-     *            the class to look for setter methods to infer properties
+     * @param cls the class to look for setter methods to infer properties
      * @return the map of possible attributes/types
      */
     private static Map<QMethod, String> getAttributes(JavaClass cls) {
@@ -142,8 +144,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     /**
      * implements the visitor to
      *
-     * @param obj
-     *            the context object for the currently parsed code object
+     * @param obj the context object for the currently parsed code object
      */
     @Override
     public void visitCode(Code obj) {
@@ -156,8 +157,7 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     /**
      * implements the visitor to record storing of fields, and where they occur
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -173,7 +173,8 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
             FieldAnnotation fa = new FieldAnnotation(getDottedClassName(), fieldName, fieldSig, false);
             fieldAnnotations.put(fieldName, fa);
-            fields.put(new AbstractMap.SimpleImmutableEntry(fieldName, fieldSig), SourceLineAnnotation.fromVisitedInstruction(this));
+            fields.put(new AbstractMap.SimpleImmutableEntry(fieldName, fieldSig),
+                    SourceLineAnnotation.fromVisitedInstruction(this));
         }
     }
 
@@ -199,15 +200,17 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
 
             String fieldName = fieldInfo.getKey();
 
-            for (Map.Entry<QMethod, Map<Map.Entry<String, String>, SourceLineAnnotation>> fwEntry : methodWrites.entrySet()) {
+            for (Map.Entry<QMethod, Map<Map.Entry<String, String>, SourceLineAnnotation>> fwEntry : methodWrites
+                    .entrySet()) {
                 if (fwEntry.getKey().equals(methodInfo)) {
                     continue;
                 }
 
                 SourceLineAnnotation sla = fwEntry.getValue().get(fieldInfo);
                 if (sla != null) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.NRTL_NON_RECYCLEABLE_TAG_LIB.name(), NORMAL_PRIORITY).addClass(this)
-                            .addField(fieldAnnotations.get(fieldName)).addSourceLine(sla));
+                    bugReporter.reportBug(
+                            new BugInstance(this, BugType.NRTL_NON_RECYCLEABLE_TAG_LIB.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addField(fieldAnnotations.get(fieldName)).addSourceLine(sla));
                     break;
                 }
             }

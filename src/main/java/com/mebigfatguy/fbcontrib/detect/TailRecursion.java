@@ -33,8 +33,9 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for methods that make a recursive call to itself as the last statement in the method. This tail recursion could be converted into a simple loop which
- * would improve the performance and stack requirements.
+ * looks for methods that make a recursive call to itself as the last statement
+ * in the method. This tail recursion could be converted into a simple loop
+ * which would improve the performance and stack requirements.
  */
 public class TailRecursion extends BytecodeScanningDetector {
     public static final int TAILRECURSIONFUDGE = 6;
@@ -48,8 +49,7 @@ public class TailRecursion extends BytecodeScanningDetector {
     /**
      * constructs a TR detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public TailRecursion(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -58,8 +58,7 @@ public class TailRecursion extends BytecodeScanningDetector {
     /**
      * implements the visitor to create and clear the stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -72,10 +71,10 @@ public class TailRecursion extends BytecodeScanningDetector {
     }
 
     /**
-     * implements the visitor to figure the pc where the method call must occur depending on whether the method returns a value, or not.
+     * implements the visitor to figure the pc where the method call must occur
+     * depending on whether the method returns a value, or not.
      *
-     * @param obj
-     *            the context object of the currently parsed method
+     * @param obj the context object of the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -99,8 +98,7 @@ public class TailRecursion extends BytecodeScanningDetector {
     /**
      * implements the visitor to find methods that employ tail recursion
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -116,8 +114,8 @@ public class TailRecursion extends BytecodeScanningDetector {
     }
 
     private void checkForTailRecursion() {
-        boolean isRecursion = getMethodName().equals(getNameConstantOperand()) && getMethodSig().equals(getSigConstantOperand())
-                && getClassName().equals(getClassConstantOperand());
+        boolean isRecursion = getMethodName().equals(getNameConstantOperand())
+                && getMethodSig().equals(getSigConstantOperand()) && getClassName().equals(getClassConstantOperand());
 
         if (isRecursion && !isStatic) {
             int numParms = SignatureUtils.getNumParameters(getMethodSig());
@@ -128,7 +126,8 @@ public class TailRecursion extends BytecodeScanningDetector {
         }
 
         if (isRecursion && possibleTailRecursion && (getPC() >= trPCPos)) {
-            bugReporter.reportBug(new BugInstance(this, BugType.TR_TAIL_RECURSION.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+            bugReporter.reportBug(new BugInstance(this, BugType.TR_TAIL_RECURSION.name(), NORMAL_PRIORITY)
+                    .addClass(this).addMethod(this).addSourceLine(this));
         } else {
             possibleTailRecursion = false;
         }

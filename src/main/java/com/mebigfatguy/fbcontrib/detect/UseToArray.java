@@ -37,8 +37,10 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 
 /**
- * looks for code that builds an array of values from a collection, by manually looping over the elements of the collection, and adding them to the array. It is
- * simpler and cleaner to use mycollection.toArray(new type[mycollection.size()].
+ * looks for code that builds an array of values from a collection, by manually
+ * looping over the elements of the collection, and adding them to the array. It
+ * is simpler and cleaner to use mycollection.toArray(new
+ * type[mycollection.size()].
  */
 @CustomUserValue
 public class UseToArray extends AbstractCollectionScanningDetector {
@@ -48,8 +50,7 @@ public class UseToArray extends AbstractCollectionScanningDetector {
     /**
      * constructs a UTA detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public UseToArray(BugReporter bugReporter) {
         super(bugReporter, Values.SLASHED_JAVA_UTIL_COLLECTION);
@@ -58,8 +59,7 @@ public class UseToArray extends AbstractCollectionScanningDetector {
     /**
      * implements the visitor to reset the uservalues
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -74,8 +74,7 @@ public class UseToArray extends AbstractCollectionScanningDetector {
     /**
      * implements the visitor to look for manual copying of collections to arrays
      *
-     * @param seen
-     *            the opcode of the currently parsed instruction
+     * @param seen the opcode of the currently parsed instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -107,8 +106,8 @@ public class UseToArray extends AbstractCollectionScanningDetector {
                             sawAlias = true;
                         }
                     }
-                } else if (("keySet".equals(methodName) || "values".equals(methodName) || "iterator".equals(methodName) || "next".equals(methodName))
-                        && (stack.getStackDepth() > 0)) {
+                } else if (("keySet".equals(methodName) || "values".equals(methodName) || "iterator".equals(methodName)
+                        || "next".equals(methodName)) && (stack.getStackDepth() > 0)) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     reg = isLocalCollection(itm);
                     if (reg >= 0) {
@@ -147,8 +146,8 @@ public class UseToArray extends AbstractCollectionScanningDetector {
                     OpcodeStack.Item valueItem = stack.getStackItem(0);
                     reg = isLocalCollection(arItem);
                     if ((reg >= 0) && (idxItem.getUserValue() != null) && (valueItem.getUserValue() != null)) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, BugType.UTA_USE_TO_ARRAY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.UTA_USE_TO_ARRAY.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
             } else if ((seen == Const.CHECKCAST) && (stack.getStackDepth() > 0)) {

@@ -68,8 +68,10 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
- * Looks for allocations and initializations of java collections, but that are never read from or accessed to gain information. This represents a collection of
- * no use, and most probably can be removed. It is similar to a dead local store.
+ * Looks for allocations and initializations of java collections, but that are
+ * never read from or accessed to gain information. This represents a collection
+ * of no use, and most probably can be removed. It is similar to a dead local
+ * store.
  */
 @CustomUserValue
 @SuppressWarnings({ "PMD.ReplaceHashtableWithMap", "PMD.ReplaceVectorWithList" })
@@ -147,34 +149,42 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     static {
         Set<FQMethod> cfm = new HashSet<>(25);
         cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayList", noParamsReturnType(ArrayList.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithCapacity",
-                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithExpectedSize",
-                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithCapacity", new SignatureBuilder()
+                .withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newArrayListWithExpectedSize", new SignatureBuilder()
+                .withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(ArrayList.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Lists", "newLinkedList", noParamsReturnType(LinkedList.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Lists", "newCopyOnWriteArrayList", noParamsReturnType(CopyOnWriteArrayList.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Lists", "newCopyOnWriteArrayList",
+                noParamsReturnType(CopyOnWriteArrayList.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newHashSet", noParamsReturnType(HashSet.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newHashSetWithExpectedSize", noParamsReturnType(HashSet.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newHashSetWithExpectedSize",
+                noParamsReturnType(HashSet.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newConcurrentHashSet", noParamsReturnType(Set.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSet", noParamsReturnType(LinkedHashSet.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSet",
+                noParamsReturnType(LinkedHashSet.class)));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newLinkedHashSetWithExpectedSize",
-                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(LinkedHashSet.class).toString()));
+                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(LinkedHashSet.class)
+                        .toString()));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet", noParamsReturnType(TreeSet.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet",
-                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_UTIL_COMPARATOR).withReturnType(TreeSet.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newTreeSet", new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_UTIL_COMPARATOR).withReturnType(TreeSet.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Sets", "newIdentityHashSet", noParamsReturnType(Set.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Sets", "newCopyOnWriteArraySet", noParamsReturnType(CopyOnWriteArraySet.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Sets", "newCopyOnWriteArraySet",
+                noParamsReturnType(CopyOnWriteArraySet.class)));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMap", noParamsReturnType(HashMap.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMapWithExpectedSize",
-                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(HashMap.class).toString()));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newLinkedHashMap", noParamsReturnType(LinkedHashMap.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newConcurrentMap", noParamsReturnType(ConcurrentHashMap.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newHashMapWithExpectedSize", new SignatureBuilder()
+                .withParamTypes(Values.SIG_PRIMITIVE_INT).withReturnType(HashMap.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newLinkedHashMap",
+                noParamsReturnType(LinkedHashMap.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newConcurrentMap",
+                noParamsReturnType(ConcurrentHashMap.class)));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", noParamsReturnType(TreeMap.class)));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap",
-                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_UTIL_COMPARATOR).withReturnType(TreeMap.class).toString()));
-        cfm.add(new FQMethod("com/google/common/collect/Maps", "newIdentityHashMap", noParamsReturnType(IdentityHashMap.class)));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newTreeMap", new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_UTIL_COMPARATOR).withReturnType(TreeMap.class).toString()));
+        cfm.add(new FQMethod("com/google/common/collect/Maps", "newIdentityHashMap",
+                noParamsReturnType(IdentityHashMap.class)));
 
-        collectionFactoryMethods = Collections.<FQMethod> unmodifiableSet(cfm);
+        collectionFactoryMethods = Collections.<FQMethod>unmodifiableSet(cfm);
     }
 
     private static String noParamsReturnType(Class<?> type) {
@@ -184,18 +194,17 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * constructs a WOC detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public WriteOnlyCollection(BugReporter bugReporter) {
         super(bugReporter);
     }
 
     /**
-     * overrides the visitor to see what how many register slots are taken by parameters.
+     * overrides the visitor to see what how many register slots are taken by
+     * parameters.
      *
-     * @param obj
-     *            the currently parsed method
+     * @param obj the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -206,8 +215,7 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     /**
      * overrides the visitor to look for PUTFIELDS of collections
      *
-     * @param seen
-     *            the currently parsed opcode
+     * @param seen the currently parsed opcode
      */
     @Override
     public void sawOpcode(int seen) {
@@ -224,7 +232,8 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     }
 
     /**
-     * implements the MissingMethodsDetector to generate a Bug Instance when a bug is found around collections stored in fields
+     * implements the MissingMethodsDetector to generate a Bug Instance when a bug
+     * is found around collections stored in fields
      *
      * @return the BugInstance
      */
@@ -234,7 +243,8 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     }
 
     /**
-     * implements the MissingMethodsDetector to generate a Bug Instance when a bug is found around collections stored in a local variable
+     * implements the MissingMethodsDetector to generate a Bug Instance when a bug
+     * is found around collections stored in a local variable
      *
      * @return the BugInstance
      */
@@ -244,10 +254,10 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     }
 
     /**
-     * implements the MissingMethodsDetector to determine whether this class type is a collection
+     * implements the MissingMethodsDetector to determine whether this class type is
+     * a collection
      *
-     * @param type
-     *            the class type to check
+     * @param type the class type to check
      * @return whether this class is a collection
      */
     @Override
@@ -256,14 +266,12 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     }
 
     /**
-     * implements the MissingMethodsDetector to determine whether this factory-like method returns a collection
+     * implements the MissingMethodsDetector to determine whether this factory-like
+     * method returns a collection
      *
-     * @param clsName
-     *            the clsName the class name of the factory
-     * @param methodName
-     *            the method name of the factory
-     * @param signature
-     *            the signature of the factory method
+     * @param clsName    the clsName the class name of the factory
+     * @param methodName the method name of the factory
+     * @param signature  the signature of the factory method
      *
      * @return whether this class is a collection
      */
@@ -273,11 +281,12 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
     }
 
     /**
-     * determines if the method is returns information that could be used by the caller
+     * determines if the method is returns information that could be used by the
+     * caller
      *
-     * @param methodName
-     *            collection method name
-     * @return true if the caller could use the return value to learn something about the collection
+     * @param methodName collection method name
+     * @return true if the caller could use the return value to learn something
+     *         about the collection
      */
     @Override
     protected boolean isMethodThatShouldBeCalled(String methodName) {

@@ -46,7 +46,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
 
 /**
- * finds methods that excessively use methods from another class. This probably means these methods should be defined in that other class.
+ * finds methods that excessively use methods from another class. This probably
+ * means these methods should be defined in that other class.
  */
 public class ClassEnvy extends BytecodeScanningDetector {
 
@@ -55,7 +56,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
 
     private static final String ENVY_PERCENT_PROPERTY = "fb-contrib.ce.percent";
     private static final Set<String> ignorableInterfaces = UnmodifiableSet.create(
-    // @formatter:off
+            // @formatter:off
             "java.io.Serializable", "java.lang.Cloneable", "java.lang.Comparable"
     // @formatter:on
     );
@@ -82,8 +83,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     /**
      * constructs a CE detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ClassEnvy(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -104,8 +104,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     /**
      * overrides the visitor to collect package and class names
      *
-     * @param classContext
-     *            the context object that holds the JavaClass being parsed
+     * @param classContext the context object that holds the JavaClass being parsed
      */
     @Override
     public void visitClassContext(final ClassContext classContext) {
@@ -128,8 +127,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     /**
      * overrides the visitor to check whether the method is static
      *
-     * @param obj
-     *            the method currently being parsed
+     * @param obj the method currently being parsed
      */
     @Override
     public void visitMethod(final Method obj) {
@@ -138,10 +136,10 @@ public class ClassEnvy extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for the method that uses another class the most, and if it exceeds the threshold reports it
+     * overrides the visitor to look for the method that uses another class the
+     * most, and if it exceeds the threshold reports it
      *
-     * @param obj
-     *            the code that is currently being parsed
+     * @param obj the code that is currently being parsed
      */
     @Override
     @SuppressWarnings("unchecked")
@@ -185,16 +183,16 @@ public class ClassEnvy extends BytecodeScanningDetector {
                 }
             }
 
-            bugReporter.reportBug(new BugInstance(this, BugType.CE_CLASS_ENVY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
-                    .addSourceLineRange(this, 0, obj.getCode().length - 1).addString(bestEnvy));
+            bugReporter.reportBug(new BugInstance(this, BugType.CE_CLASS_ENVY.name(), NORMAL_PRIORITY).addClass(this)
+                    .addMethod(this).addSourceLineRange(this, 0, obj.getCode().length - 1).addString(bestEnvy));
         }
     }
 
     /**
-     * overrides the visitor to look for method calls, and populate a class access count map based on the owning class of methods called.
+     * overrides the visitor to look for method calls, and populate a class access
+     * count map based on the owning class of methods called.
      *
-     * @param seen
-     *            the opcode currently being parsed
+     * @param seen the opcode currently being parsed
      */
     @Override
     public void sawOpcode(final int seen) {
@@ -229,8 +227,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     /**
      * return whether or not a class implements a common or marker interface
      *
-     * @param name
-     *            the class name to check
+     * @param name the class name to check
      *
      * @return if this class implements a common or marker interface
      */
@@ -259,8 +256,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     /**
      * increment the count of class access of the class on the stack
      *
-     * @param classAtStackIndex
-     *            the position on the stack of the class in question
+     * @param classAtStackIndex the position on the stack of the class in question
      *
      * @return true if the class is counted
      */
@@ -285,10 +281,10 @@ public class ClassEnvy extends BytecodeScanningDetector {
     }
 
     /**
-     * increment the count of class access of the specified class if it is in a similar package to the caller, and is not general purpose
+     * increment the count of class access of the specified class if it is in a
+     * similar package to the caller, and is not general purpose
      *
-     * @param calledClass
-     *            the class to check
+     * @param calledClass the class to check
      */
     private void countClassAccess(final @DottedClassName String calledClass) {
         if (calledClass.equals(clsName) || isAssociatedClass(calledClass)) {
@@ -311,10 +307,10 @@ public class ClassEnvy extends BytecodeScanningDetector {
     }
 
     /**
-     * returns whether the called class is an inner class, or super class of the current class
+     * returns whether the called class is an inner class, or super class of the
+     * current class
      *
-     * @param calledClass
-     *            the class to check
+     * @param calledClass the class to check
      * @return if the class is related to this class
      */
     private boolean isAssociatedClass(@DottedClassName String calledClass) {
@@ -340,8 +336,7 @@ public class ClassEnvy extends BytecodeScanningDetector {
     /**
      * add the current line number to a set of line numbers
      *
-     * @param lineNumbers
-     *            the current set of line numbers
+     * @param lineNumbers the current set of line numbers
      */
     private void addLineNumber(BitSet lineNumbers) {
         LineNumberTable lnt = getCode().getLineNumberTable();
@@ -358,10 +353,10 @@ public class ClassEnvy extends BytecodeScanningDetector {
     }
 
     /**
-     * checks to see if the specified class is a built in class, or implements a simple interface
+     * checks to see if the specified class is a built in class, or implements a
+     * simple interface
      *
-     * @param className
-     *            the class in question
+     * @param className the class in question
      *
      * @return whether or not the class is general purpose
      */
@@ -377,8 +372,8 @@ public class ClassEnvy extends BytecodeScanningDetector {
             JavaClass[] infs = cls.getAllInterfaces();
             for (JavaClass inf : infs) {
                 String infName = inf.getClassName();
-                if ("java.io.Serializable".equals(infName) || "java.lang.Cloneable".equals(infName) || "java.lang.Comparable".equals(infName)
-                        || "java.lang.Runnable".equals(infName)) {
+                if ("java.io.Serializable".equals(infName) || "java.lang.Cloneable".equals(infName)
+                        || "java.lang.Comparable".equals(infName) || "java.lang.Runnable".equals(infName)) {
                     continue;
                 }
                 if (infName.startsWith("java.lang.") || infName.startsWith("javax.lang.")) {
@@ -389,7 +384,8 @@ public class ClassEnvy extends BytecodeScanningDetector {
             for (JavaClass sup : sups) {
                 String supName = sup.getClassName();
                 if (Values.DOTTED_JAVA_LANG_OBJECT.equals(supName) || Values.DOTTED_JAVA_LANG_EXCEPTION.equals(supName)
-                        || Values.DOTTED_JAVA_LANG_RUNTIMEEXCEPTION.equals(supName) || "java.lang.Throwable".equals(supName)) {
+                        || Values.DOTTED_JAVA_LANG_RUNTIMEEXCEPTION.equals(supName)
+                        || "java.lang.Throwable".equals(supName)) {
                     continue;
                 }
                 if (supName.startsWith("java.lang.") || supName.startsWith("javax.lang.")) {

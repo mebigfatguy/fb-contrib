@@ -47,37 +47,50 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * Looks for jdk method calls where a parameter expects a constant value, because the api was created before enums. Reports values that are not considered valid
- * values, and may cause problems with use.
+ * Looks for jdk method calls where a parameter expects a constant value,
+ * because the api was created before enums. Reports values that are not
+ * considered valid values, and may cause problems with use.
  */
 public class InvalidConstantArgument extends BytecodeScanningDetector {
 
     private static final List<InvalidPattern> PATTERNS = UnmodifiableList.create(
-    // @formatter:off
-            new InvalidPattern("javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V",
-                    ParameterInfo.createIntegerParameterInfo(0, false, JOptionPane.ERROR_MESSAGE, JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE)),
+            // @formatter:off
+            new InvalidPattern(
+                    "javax/swing/JOptionPane#showMessageDialog\\(Ljava/awt/Component;Ljava/lang/Object;Ljava/lang/String;I\\)V",
+                    ParameterInfo.createIntegerParameterInfo(0, false, JOptionPane.ERROR_MESSAGE,
+                            JOptionPane.INFORMATION_MESSAGE, JOptionPane.PLAIN_MESSAGE, JOptionPane.WARNING_MESSAGE)),
             new InvalidPattern("javax/swing/BorderFactory#createBevelBorder\\(I.*\\)Ljavax/swing/border/Border;",
                     ParameterInfo.createIntegerParameterInfo(0, true, BevelBorder.LOWERED, BevelBorder.RAISED)),
             new InvalidPattern("javax/swing/BorderFactory#createEtchedBorder\\(I.*\\)Ljavax/swing/border/Border;",
                     ParameterInfo.createIntegerParameterInfo(0, true, EtchedBorder.LOWERED, EtchedBorder.RAISED)),
             new InvalidPattern("javax/swing/JScrollBar#\\<init\\>\\(I.*\\)V",
                     ParameterInfo.createIntegerParameterInfo(0, true, Adjustable.HORIZONTAL, Adjustable.VERTICAL)),
-            // TODO: Until travis-ci issue uncovered, add type param as integer on next three.
+            // TODO: Until travis-ci issue uncovered, add type param as integer on next
+            // three.
             new InvalidPattern("java/lang/Thread#setPriority\\(I\\)V",
-                    new ParameterInfo<Integer>(0, true, Range.createIntegerRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY))),
+                    new ParameterInfo<Integer>(0, true,
+                            Range.createIntegerRange(Thread.MIN_PRIORITY, Thread.MAX_PRIORITY))),
             new InvalidPattern("java/math/BigDecimal#divide\\(Ljava/math/BigDecimal;.*I\\)Ljava/math/BigDecimal;",
-                    new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
+                    new ParameterInfo<Integer>(0, false,
+                            Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
             new InvalidPattern("java/math/BigDecimal#setScale\\(II\\)Ljava/math/BigDecimal;",
-                    new ParameterInfo<Integer>(0, false, Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
-            new InvalidPattern("java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;", ParameterInfo.createIntegerParameterInfo(0, true,
-                    ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE)),
+                    new ParameterInfo<Integer>(0, false,
+                            Range.createIntegerRange(BigDecimal.ROUND_UP, BigDecimal.ROUND_UNNECESSARY))),
+            new InvalidPattern("java/sql/Connection#createStatement\\(II\\)Ljava/sql/Statement;",
+                    ParameterInfo.createIntegerParameterInfo(0, true, ResultSet.TYPE_FORWARD_ONLY,
+                            ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE)),
             new InvalidPattern("java/sql/Connection#createStatement\\(III?\\)Ljava/sql/Statement;",
-                    ParameterInfo.createIntegerParameterInfo(0, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE),
-                    ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE)),
+                    ParameterInfo.createIntegerParameterInfo(0, true, ResultSet.TYPE_FORWARD_ONLY,
+                            ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE),
+                    ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.CONCUR_READ_ONLY,
+                            ResultSet.CONCUR_UPDATABLE)),
 
-            new InvalidPattern("java/sql/Connection#prepare[^\\(]+\\(Ljava/lang/String;III?\\)Ljava/sql/PreparedStatement;",
-                    ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.TYPE_FORWARD_ONLY, ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE),
-                    ParameterInfo.createIntegerParameterInfo(2, true, ResultSet.CONCUR_READ_ONLY, ResultSet.CONCUR_UPDATABLE))
+            new InvalidPattern(
+                    "java/sql/Connection#prepare[^\\(]+\\(Ljava/lang/String;III?\\)Ljava/sql/PreparedStatement;",
+                    ParameterInfo.createIntegerParameterInfo(1, true, ResultSet.TYPE_FORWARD_ONLY,
+                            ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.TYPE_SCROLL_SENSITIVE),
+                    ParameterInfo.createIntegerParameterInfo(2, true, ResultSet.CONCUR_READ_ONLY,
+                            ResultSet.CONCUR_UPDATABLE))
     // @formatter:on
     );
 
@@ -87,8 +100,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     /**
      * constructs a ICA detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public InvalidConstantArgument(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -97,8 +109,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     /**
      * overrides the visitor to initialize the opcode stack
      *
-     * @param classContext
-     *            the context of the currently parsed class
+     * @param classContext the context of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -113,8 +124,7 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     /**
      * overrides the visitor to reset the opcode stack
      *
-     * @param obj
-     *            the currently parsed method
+     * @param obj the currently parsed method
      */
     @Override
     public void visitMethod(Method obj) {
@@ -126,33 +136,37 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             switch (seen) {
-                case Const.INVOKESPECIAL:
-                case Const.INVOKESTATIC:
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKEVIRTUAL:
-                    String sig = getSigConstantOperand();
-                    String mInfo = getClassConstantOperand() + '#' + getNameConstantOperand() + sig;
-                    for (InvalidPattern entry : PATTERNS) {
-                        Matcher m = entry.getPattern().matcher(mInfo);
-                        if (m.matches()) {
-                            for (ParameterInfo<?> info : entry.getParmInfo()) {
-                                int parmOffset = info.fromStart ? SignatureUtils.getNumParameters(sig) - info.parameterOffset - 1 : info.parameterOffset;
-                                if (stack.getStackDepth() > parmOffset) {
-                                    OpcodeStack.Item item = stack.getStackItem(parmOffset);
+            case Const.INVOKESPECIAL:
+            case Const.INVOKESTATIC:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKEVIRTUAL:
+                String sig = getSigConstantOperand();
+                String mInfo = getClassConstantOperand() + '#' + getNameConstantOperand() + sig;
+                for (InvalidPattern entry : PATTERNS) {
+                    Matcher m = entry.getPattern().matcher(mInfo);
+                    if (m.matches()) {
+                        for (ParameterInfo<?> info : entry.getParmInfo()) {
+                            int parmOffset = info.fromStart
+                                    ? SignatureUtils.getNumParameters(sig) - info.parameterOffset - 1
+                                    : info.parameterOffset;
+                            if (stack.getStackDepth() > parmOffset) {
+                                OpcodeStack.Item item = stack.getStackItem(parmOffset);
 
-                                    Comparable cons = (Comparable) item.getConstant();
-                                    if (!info.isValid(cons)) {
-                                        int badParm = 1
-                                                + (info.fromStart ? info.parameterOffset : SignatureUtils.getNumParameters(sig) - info.parameterOffset - 1);
-                                        bugReporter.reportBug(new BugInstance(this, BugType.ICA_INVALID_CONSTANT_ARGUMENT.name(), NORMAL_PRIORITY)
-                                                .addClass(this).addMethod(this).addSourceLine(this).addString("Parameter " + badParm));
-                                        break;
-                                    }
+                                Comparable cons = (Comparable) item.getConstant();
+                                if (!info.isValid(cons)) {
+                                    int badParm = 1 + (info.fromStart ? info.parameterOffset
+                                            : SignatureUtils.getNumParameters(sig) - info.parameterOffset - 1);
+                                    bugReporter.reportBug(
+                                            new BugInstance(this, BugType.ICA_INVALID_CONSTANT_ARGUMENT.name(),
+                                                    NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this)
+                                                            .addString("Parameter " + badParm));
+                                    break;
                                 }
                             }
-                            break;
                         }
+                        break;
                     }
+                }
                 break;
             }
         } finally {
@@ -184,8 +198,9 @@ public class InvalidConstantArgument extends BytecodeScanningDetector {
     }
 
     /**
-     * holds information about parameters that expect constant values that should have been enums but were created pre enums. It specifies the legal values, and
-     * what offset from the start or end of the method the parm is
+     * holds information about parameters that expect constant values that should
+     * have been enums but were created pre enums. It specifies the legal values,
+     * and what offset from the start or end of the method the parm is
      */
     static class ParameterInfo<T extends Comparable<T>> {
         final int parameterOffset;

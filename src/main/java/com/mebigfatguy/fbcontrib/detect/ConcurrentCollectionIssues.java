@@ -40,7 +40,8 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 /**
  * looks for various issues with concurrent collections including
  * <ul>
- * <li>calls to checking and inserting a collection into a key on null, instead of using putIfAbsent</li>
+ * <li>calls to checking and inserting a collection into a key on null, instead
+ * of using putIfAbsent</li>
  * </ul>
  */
 @CustomUserValue
@@ -60,8 +61,7 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
     /**
      * constructs a CCI detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public ConcurrentCollectionIssues(final BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -77,8 +77,7 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
     /**
      * overrides the visitor to initialize the opcode stack
      *
-     * @param classContext
-     *            the currently parsed class
+     * @param classContext the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -99,8 +98,7 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
     /**
      * implements the visitor to see if reset the opcode stack
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -120,61 +118,65 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
             stack.precomputation(this);
 
             switch (seen) {
-                case Const.INVOKESPECIAL:
-                    if ("java/util/concurrent/ConcurrentHashMap".equals(getClassConstantOperand()) && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
-                        userValue = CCIUserValue.CONCURRENT_HASHMAP;
-                    }
+            case Const.INVOKESPECIAL:
+                if ("java/util/concurrent/ConcurrentHashMap".equals(getClassConstantOperand())
+                        && Values.CONSTRUCTOR.equals(getNameConstantOperand())) {
+                    userValue = CCIUserValue.CONCURRENT_HASHMAP;
+                }
                 break;
 
-                case Const.INVOKEINTERFACE:
-                case Const.INVOKEVIRTUAL:
-                    if ("get".equals(getNameConstantOperand())) {
-                        if (stack.getStackDepth() >= 2) {
-                            OpcodeStack.Item itm = stack.getStackItem(1);
-                            if (itm.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP) {
-                                userValue = CCIUserValue.CONCURRENT_HASHMAP_VALUE;
-                            }
-                        }
-                    } else if ("put".equals(getNameConstantOperand()) && (endNullCheckPC > getPC()) && (stack.getStackDepth() >= 3)) {
-                        OpcodeStack.Item mapItem = stack.getStackItem(2);
-
-                        if (mapItem.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP) {
-                            OpcodeStack.Item valueItem = stack.getStackItem(0);
-                            JavaClass valueClass = valueItem.getJavaClass();
-                            if ((valueClass != null) && (valueClass.instanceOf(collectionClass) || valueClass.instanceOf(mapClass))) {
-
-                                bugReporter.reportBug(new BugInstance(this, BugType.CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
-                            }
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKEVIRTUAL:
+                if ("get".equals(getNameConstantOperand())) {
+                    if (stack.getStackDepth() >= 2) {
+                        OpcodeStack.Item itm = stack.getStackItem(1);
+                        if (itm.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP) {
+                            userValue = CCIUserValue.CONCURRENT_HASHMAP_VALUE;
                         }
                     }
-                break;
+                } else if ("put".equals(getNameConstantOperand()) && (endNullCheckPC > getPC())
+                        && (stack.getStackDepth() >= 3)) {
+                    OpcodeStack.Item mapItem = stack.getStackItem(2);
 
-                case Const.PUTFIELD:
-                case Const.PUTSTATIC:
-                    if (stack.getStackDepth() >= 1) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        CCIUserValue uv = (CCIUserValue) itm.getUserValue();
-                        if (uv != null) {
-                            fieldUserValues.put(getNameConstantOperand(), uv);
-                        } else {
-                            fieldUserValues.remove(getNameConstantOperand());
+                    if (mapItem.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP) {
+                        OpcodeStack.Item valueItem = stack.getStackItem(0);
+                        JavaClass valueClass = valueItem.getJavaClass();
+                        if ((valueClass != null)
+                                && (valueClass.instanceOf(collectionClass) || valueClass.instanceOf(mapClass))) {
+
+                            bugReporter.reportBug(new BugInstance(this,
+                                    BugType.CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
+                }
                 break;
 
-                case Const.GETFIELD:
-                case Const.GETSTATIC:
-                    userValue = fieldUserValues.get(getNameConstantOperand());
-                break;
-
-                case Const.IFNONNULL:
-                    if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        if (itm.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP_VALUE) {
-                            endNullCheckPC = getBranchTarget();
-                        }
+            case Const.PUTFIELD:
+            case Const.PUTSTATIC:
+                if (stack.getStackDepth() >= 1) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    CCIUserValue uv = (CCIUserValue) itm.getUserValue();
+                    if (uv != null) {
+                        fieldUserValues.put(getNameConstantOperand(), uv);
+                    } else {
+                        fieldUserValues.remove(getNameConstantOperand());
                     }
+                }
+                break;
+
+            case Const.GETFIELD:
+            case Const.GETSTATIC:
+                userValue = fieldUserValues.get(getNameConstantOperand());
+                break;
+
+            case Const.IFNONNULL:
+                if ((getBranchOffset() > 0) && (stack.getStackDepth() > 0)) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (itm.getUserValue() == CCIUserValue.CONCURRENT_HASHMAP_VALUE) {
+                        endNullCheckPC = getBranchTarget();
+                    }
+                }
                 break;
             }
 

@@ -44,14 +44,17 @@ import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for exceptions that are thrown with static strings as messages. Using static strings doesn't differentiate one use of this method versus another, and
- * so it may be difficult to determine how this exception occurred without showing context.
+ * looks for exceptions that are thrown with static strings as messages. Using
+ * static strings doesn't differentiate one use of this method versus another,
+ * and so it may be difficult to determine how this exception occurred without
+ * showing context.
  */
 @CustomUserValue
 public class WeakExceptionMessaging extends BytecodeScanningDetector {
 
     private static JavaClass exceptionClass;
-    private static final Set<String> ignorableExceptionTypes = UnmodifiableSet.create("java.lang.UnsupportedOperationException");
+    private static final Set<String> ignorableExceptionTypes = UnmodifiableSet
+            .create("java.lang.UnsupportedOperationException");
 
     static {
         try {
@@ -67,8 +70,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     /**
      * constructs a WEM detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public WeakExceptionMessaging(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -77,8 +79,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     /**
      * overrides the visitor to initialize and tear down the opcode stack
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -95,8 +96,7 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     /**
      * looks for methods that contain a ATHROW opcodes, ignoring static initializers
      *
-     * @param method
-     *            the context object of the current method
+     * @param method the context object of the current method
      * @return if the class uses throws
      */
     public boolean prescreen(Method method) {
@@ -109,10 +109,10 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to prescreen the method to look for throws calls and only forward onto bytecode scanning if there
+     * overrides the visitor to prescreen the method to look for throws calls and
+     * only forward onto bytecode scanning if there
      *
-     * @param obj
-     *            the context object of the currently parsed code block
+     * @param obj the context object of the currently parsed code block
      */
     @Override
     public void visitCode(Code obj) {
@@ -124,10 +124,10 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
     }
 
     /**
-     * overrides the visitor to look for throws instructions using exceptions with static messages
+     * overrides the visitor to look for throws instructions using exceptions with
+     * static messages
      *
-     * @param seen
-     *            the opcode of the currently visited instruction
+     * @param seen the opcode of the currently visited instruction
      */
     @Override
     public void sawOpcode(int seen) {
@@ -160,13 +160,15 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
                     }
                     stringParms++;
                     int stackOffset = argTypes.size() - t - 1;
-                    if ((stack.getStackDepth() > stackOffset) && (stack.getStackItem(stackOffset).getUserValue() == null)) {
+                    if ((stack.getStackDepth() > stackOffset)
+                            && (stack.getStackItem(stackOffset).getUserValue() == null)) {
                         return;
                     }
                 }
-                if (Values.SLASHED_JAVA_LANG_EXCEPTION.equals(clsName) && SignatureBuilder.SIG_THROWABLE_TO_VOID.equals(getSigConstantOperand())) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                if (Values.SLASHED_JAVA_LANG_EXCEPTION.equals(clsName)
+                        && SignatureBuilder.SIG_THROWABLE_TO_VOID.equals(getSigConstantOperand())) {
+                    bugReporter.reportBug(new BugInstance(this, BugType.WEM_OBSCURING_EXCEPTION.name(), LOW_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this));
                 }
                 allConstantStrings = stringParms > 0;
             }
@@ -193,8 +195,8 @@ public class WeakExceptionMessaging extends BytecodeScanningDetector {
         }
         JavaClass exClass = item.getJavaClass();
         if ((exClass == null) || !ignorableExceptionTypes.contains(exClass.getClassName())) {
-            bugReporter.reportBug(
-                    new BugInstance(this, BugType.WEM_WEAK_EXCEPTION_MESSAGING.name(), LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+            bugReporter.reportBug(new BugInstance(this, BugType.WEM_WEAK_EXCEPTION_MESSAGING.name(), LOW_PRIORITY)
+                    .addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 }

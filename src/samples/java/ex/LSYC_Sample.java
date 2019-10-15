@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -21,7 +22,7 @@ public class LSYC_Sample {
     }
 
     public void test2(Set<String> s) {
-        Set<String> ss = Collections.<String> synchronizedSet(s);
+        Set<String> ss = Collections.<String>synchronizedSet(s);
         for (String st : ss) {
             System.out.println(st);
         }
@@ -69,14 +70,14 @@ public class LSYC_Sample {
         // no tag, but probably should.
         return new StringBuffer().append("Hello").append("World").toString();
     }
-    
+
     public void testSBReallyRequred(Pattern p, String s, String repl) {
         Matcher matcher = p.matcher(s);
         StringBuffer stringBuffer = new StringBuffer();
         while (matcher.find()) {
             matcher.appendReplacement(stringBuffer, repl);
         }
-        matcher.appendTail(stringBuffer); 
+        matcher.appendTail(stringBuffer);
     }
 
 }
