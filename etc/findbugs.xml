@@ -23,7 +23,7 @@
 
 	<!-- Detectors -->
 
-    <!-- COMMENT OUT FOR RELEASE -->
+    <!-- COMMENT OUT FOR RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -31,7 +31,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-    <!-- COMMENT OUT FOR RELEASE -->
+         COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -332,11 +332,11 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="slow" reports="CE_CLASS_ENVY" />
     
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+    <!-- COMMENT OUT FOR POINT RELEASE 
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousArgumentTypes" speed="fast" reports="SAT_SUSPICIOUS_ARGUMENT_TYPES" />
 
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+         COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
 
