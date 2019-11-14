@@ -40,10 +40,14 @@ import edu.umd.cs.findbugs.ba.AnalysisContext;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
- * looks for classes that implement interfaces by relying on methods being implemented in super classes, even though the superclass knows nothing about the
- * interface being implemented by the child.
+ * looks for classes that implement interfaces by relying on methods being
+ * implemented in super classes, even though the superclass knows nothing about
+ * the interface being implemented by the child.
  */
 public class SpoiledChildInterfaceImplementor implements Detector {
+
+    private static final Set<String> IGNORED_SUPERCLASSES = UnmodifiableSet.create(Values.DOTTED_JAVA_LANG_OBJECT,
+            Values.DOTTED_JAVA_LANG_ENUM);
 
     private static final Set<QMethod> OBJECT_METHODS = UnmodifiableSet.create(
     // @formatter:off
@@ -63,8 +67,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     /**
      * constructs a SCII detector given the reporter to report bugs on
      *
-     * @param bugReporter
-     *            the sync of bug reports
+     * @param bugReporter the sync of bug reports
      */
     public SpoiledChildInterfaceImplementor(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -73,8 +76,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     /**
      * looks for classes that implement interfaces but don't provide those methods
      *
-     * @param classContext
-     *            the context object of the currently parsed class
+     * @param classContext the context object of the currently parsed class
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
@@ -85,7 +87,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                 return;
             }
 
-            if (Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getSuperclassName())) {
+            if (IGNORED_SUPERCLASSES.contains(cls.getSuperclassName())) {
                 return;
             }
 
@@ -101,9 +103,13 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                             JavaClass superCls = cls.getSuperClass();
                             filterSuperInterfaceMethods(inf, infMethods, superCls);
                             if (!infMethods.isEmpty() && !superCls.implementationOf(inf)) {
-                                int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
-                                BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
-                                        .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
+                                int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls)
+                                        ? NORMAL_PRIORITY
+                                        : LOW_PRIORITY;
+                                BugInstance bi = new BugInstance(this,
+                                        BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
+                                                .addString("Implementing interface: " + inf.getClassName())
+                                                .addString("Methods:");
                                 for (QMethod methodInfo : infMethods) {
                                     bi.addString('\t' + methodInfo.toString());
                                 }
@@ -132,8 +138,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     /**
      * builds a set of all non constructor or static initializer method/signatures
      *
-     * @param cls
-     *            the class to build the method set from
+     * @param cls the class to build the method set from
      * @return a set of method names/signatures
      */
     private static Set<QMethod> buildMethodSet(JavaClass cls) {
@@ -148,7 +153,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
 
             if (m.isSynthetic()) {
                 BitSet bytecodeSet = ClassContext.getBytecodeSet(cls, m);
-                isSyntheticForParentCall = (bytecodeSet != null) && bytecodeSet.get(Constants.INVOKESPECIAL);
+                isSyntheticForParentCall = bytecodeSet != null && bytecodeSet.get(Constants.INVOKESPECIAL);
             } else {
                 isSyntheticForParentCall = false;
             }
@@ -169,15 +174,13 @@ public class SpoiledChildInterfaceImplementor implements Detector {
     }
 
     /**
-     * removes methods found in an interface when a super interface having the same methods is implemented in a parent. While this is somewhat hinky, we'll
-     * allow it.
+     * removes methods found in an interface when a super interface having the same
+     * methods is implemented in a parent. While this is somewhat hinky, we'll allow
+     * it.
      *
-     * @param inf
-     *            the interface to look for super interfaces for
-     * @param infMethods
-     *            the remaining methods that are needed to be found
-     * @param cls
-     *            the super class to look for these methods in
+     * @param inf        the interface to look for super interfaces for
+     * @param infMethods the remaining methods that are needed to be found
+     * @param cls        the super class to look for these methods in
      */
     private void filterSuperInterfaceMethods(JavaClass inf, Set<QMethod> infMethods, JavaClass cls) {
         try {

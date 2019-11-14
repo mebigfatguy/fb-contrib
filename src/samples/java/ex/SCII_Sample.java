@@ -1,4 +1,5 @@
 package ex;
+
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.Comparator;
@@ -61,6 +62,13 @@ class OverEndulgentParent {
     class CC extends BB implements C {
 
     }
+}
+
+interface Namer {
+    public String name();
+}
+
+enum FPIssue374EnumAsSuper implements Namer {
 }
 
 enum FPInterfaceOverridesObject implements Comparator<FP> {
