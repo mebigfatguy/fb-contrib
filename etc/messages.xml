@@ -5950,6 +5950,19 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="WI_WIRING_OF_STATIC_FIELD">
+        <ShortDescription>Static field is autowired</ShortDescription>
+        <LongDescription>Static Field {1} is autowired</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>Autowiring of static fields does not work using simple @Autowire annotations, not should you attempt to do 
+            so as it's an anti pattern. Use PostConstruct methods to initialize static fields if you must do something 
+            like this.</p>
+            ]]>
+        </Details>
+    
+    </BugPattern>
 
     <BugPattern type="CCI_CONCURRENT_COLLECTION_ISSUES_USE_PUT_IS_RACY">
     	<ShortDescription>Method gets and sets a value of a ConcurrentHashMap in a racy manner</ShortDescription>

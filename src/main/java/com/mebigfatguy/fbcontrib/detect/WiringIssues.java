@@ -125,6 +125,20 @@ public class WiringIssues extends BytecodeScanningDetector {
     }
 
     @Override
+    public void visitField(Field obj) {
+        if (obj.isStatic()) {
+            for (AnnotationEntry entry : obj.getAnnotationEntries()) {
+                if (SPRING_AUTOWIRED.equals(entry.getAnnotationType())) {
+                    bugReporter
+                            .reportBug(new BugInstance(this, BugType.WI_WIRING_OF_STATIC_FIELD.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addField(this));
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
         for (AnnotationEntry annotation : m.getAnnotationEntries()) {
