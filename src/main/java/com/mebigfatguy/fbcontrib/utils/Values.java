@@ -75,6 +75,8 @@ public final class Values {
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_CLASS = "java.lang.Class";
     @DottedClassName
+    public static final String DOTTED_JAVA_LANG_ENUM = "java.lang.Enum";
+    @DottedClassName
     public static final String DOTTED_JAVA_LANG_THROWABLE = "java.lang.Throwable";
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_EXCEPTION = "java.lang.Exception";

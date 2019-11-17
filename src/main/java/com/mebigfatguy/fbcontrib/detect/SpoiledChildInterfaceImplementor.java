@@ -46,6 +46,9 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class SpoiledChildInterfaceImplementor implements Detector {
 
+    private static final Set<String> IGNORED_SUPERCLASSES = UnmodifiableSet.create(Values.DOTTED_JAVA_LANG_OBJECT,
+            Values.DOTTED_JAVA_LANG_ENUM);
+
     private static final Set<QMethod> OBJECT_METHODS = UnmodifiableSet.create(
             // @formatter:off
             new QMethod("equals", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
@@ -83,7 +86,7 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                 return;
             }
 
-            if (Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getSuperclassName())) {
+            if (IGNORED_SUPERCLASSES.contains(cls.getSuperclassName())) {
                 return;
             }
 

@@ -64,6 +64,13 @@ class OverEndulgentParent {
     }
 }
 
+interface Namer {
+    public String name();
+}
+
+enum FPIssue374EnumAsSuper implements Namer {
+}
+
 enum FPInterfaceOverridesObject implements Comparator<FP> {
     FPEXAMPLE;
 
