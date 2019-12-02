@@ -121,7 +121,7 @@ public class SPP_Sample implements Serializable {
     }
 
     public boolean testUselessTrinary(boolean b) {
-        return (b ? true : false);
+        return b ? true : false;
     }
 
     public void testDoubleAppendLiteral(StringBuilder sb, String s) {
@@ -131,6 +131,13 @@ public class SPP_Sample implements Serializable {
 
     public String testFormatLiteral() {
         return String.format("This string is not parameterized");
+    }
+
+    public void testThisAsParm() {
+        caller(this);
+    }
+
+    private void caller(SPP_Sample s) {
     }
 
     public String testFPDoubleAppendListeralStatic() {
@@ -148,30 +155,30 @@ public class SPP_Sample implements Serializable {
     }
 
     public boolean testFPTrinaryOnInt(String s) {
-        return (s.length() != 0);
+        return s.length() != 0;
     }
 
     public void testSuspiciousStringTests(String s) {
         int a = 0, b = 0, c = 0, d = 0;
         String e = "Foo";
 
-        if ((s == null) || (s.length() > 0)) {
+        if (s == null || s.length() > 0) {
             System.out.println("Booya");
         }
-        if ((s == null) || (s.length() != 0)) {
+        if (s == null || s.length() != 0) {
             System.out.println("Booya");
         }
-        if ((s != null) && (s.length() == 0)) {
+        if (s != null && s.length() == 0) {
             System.out.println("Booya");
         }
 
-        if ((e == null) || (e.length() > 0)) {
+        if (e == null || e.length() > 0) {
             System.out.println("Booya");
         }
-        if ((e == null) || (e.length() != 0)) {
+        if (e == null || e.length() != 0) {
             System.out.println("Booya");
         }
-        if ((e != null) && (e.length() == 0)) {
+        if (e != null && e.length() == 0) {
             System.out.println("Booya");
         }
     }
@@ -180,27 +187,27 @@ public class SPP_Sample implements Serializable {
         int a = 0, b = 0, c = 0, d = 0;
         String e = "Foo";
 
-        if ((s == null) || (s.length() == 0)) {
+        if (s == null || s.length() == 0) {
             System.out.println("Booya");
         }
 
-        if ((s != null) && (s.length() >= 0)) {
+        if (s != null && s.length() >= 0) {
             System.out.println("Booya");
         }
 
-        if ((s != null) && (s.length() != 0)) {
+        if (s != null && s.length() != 0) {
             System.out.println("Booya");
         }
 
-        if ((e == null) || (e.length() == 0)) {
+        if (e == null || e.length() == 0) {
             System.out.println("Booya");
         }
 
-        if ((e != null) && (e.length() >= 0)) {
+        if (e != null && e.length() >= 0) {
             System.out.println("Booya");
         }
 
-        if ((e != null) && (e.length() != 0)) {
+        if (e != null && e.length() != 0) {
             System.out.println("Booya");
         }
 
@@ -208,7 +215,7 @@ public class SPP_Sample implements Serializable {
         Iterator<String> it = m.iterator();
         while (it.hasNext()) {
             s = it.next();
-            if ((s == null) || (s.length() == 0)) {
+            if (s == null || s.length() == 0) {
                 continue;
             }
 
@@ -228,7 +235,7 @@ public class SPP_Sample implements Serializable {
         while (tokenizer.hasMoreTokens()) {
             String sField = tokenizer.nextToken();
 
-            if ((sField == null) || (sField.length() == 0)) {
+            if (sField == null || sField.length() == 0) {
                 continue;
             }
 
@@ -303,7 +310,7 @@ public class SPP_Sample implements Serializable {
     }
 
     public boolean testEmptyIgnoreCase(String s) {
-        return (s.equalsIgnoreCase(""));
+        return s.equalsIgnoreCase("");
     }
 
     public void testTrim(String s) {
@@ -326,14 +333,14 @@ public class SPP_Sample implements Serializable {
     }
 
     public boolean nullAndInstanceOf(Object o) {
-        if ((o != null) && (o instanceof String)) {
+        if (o != null && o instanceof String) {
             return true;
         }
         return false;
     }
 
     public boolean nullAndInstanceOf(double d1, double d2, double d3, Object o) {
-        if ((o != null) && (o instanceof String) && (d1 < d2)) {
+        if (o != null && o instanceof String && d1 < d2) {
             return true;
         }
         return false;
@@ -393,7 +400,7 @@ public class SPP_Sample implements Serializable {
     }
 
     public boolean fpNullAndInstanceOfUnrelated(Throwable t, Object tag) {
-        if ((tag != null) && (t instanceof RuntimeException)) {
+        if (tag != null && t instanceof RuntimeException) {
             return true;
         }
 
@@ -422,7 +429,7 @@ public class SPP_Sample implements Serializable {
     }
 
     public void fpGitHubIssue81(PreparedStatement sqlQuery, String name) throws SQLException {
-        if ((name != null) && !(name = name.trim()).equals("")) {
+        if (name != null && !(name = name.trim()).equals("")) {
             sqlQuery.setString(1, name + "%");
         }
     }
