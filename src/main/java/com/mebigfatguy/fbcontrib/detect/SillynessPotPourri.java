@@ -1000,7 +1000,11 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
      */
     private void checkThisParm() {
         int parmCnt = SignatureUtils.getNumParameters(getSigConstantOperand());
-        if ( parmCnt == 0 || stack.getStackDepth() < parmCnt + 1) {
+        if (parmCnt == 0 || stack.getStackDepth() < parmCnt + 1) {
+            return;
+        }
+
+        if (!SignatureUtils.similarPackages(getClassName(), getClassConstantOperand(), 2)) {
             return;
         }
 
