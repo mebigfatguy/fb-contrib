@@ -996,11 +996,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 
     /**
      * checks to see if the object that the method is being called on is also passed
-     * as a parameter
+     * as a parameter. To rule out simple mathish like calls like a.mul(a); only
+     * check two plus parameter calls.
      */
     private void checkThisParm() {
         int parmCnt = SignatureUtils.getNumParameters(getSigConstantOperand());
-        if (parmCnt == 0 || stack.getStackDepth() < parmCnt + 1) {
+        if (parmCnt <= 1 || stack.getStackDepth() < parmCnt + 1) {
             return;
         }
 
