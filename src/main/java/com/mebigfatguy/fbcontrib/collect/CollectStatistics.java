@@ -289,6 +289,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         try {
             for (JavaClass inf : cls.getInterfaces()) {
                 String infName = inf.getClassName();
+                // If 'infName' exists in visitedClasses, this check will be 'false'
                 if (visitedClasses.add(infName)) {
 
                     for (Method m : inf.getMethods()) {
@@ -299,6 +300,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
             for (JavaClass parent : cls.getSuperClasses()) {
                 String clsName = parent.getClassName();
+                // If 'clsName' exists in visitedClasses, this check will be 'false'
                 if (visitedClasses.add(clsName)) {
 
                     if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
