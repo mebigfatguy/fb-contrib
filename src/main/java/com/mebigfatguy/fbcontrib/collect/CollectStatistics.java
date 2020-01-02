@@ -289,7 +289,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
         try {
             for (JavaClass inf : cls.getInterfaces()) {
                 String infName = inf.getClassName();
-                if (!visitedClasses.add(infName)) {
+                if (visitedClasses.add(infName)) {
 
                     for (Method m : inf.getMethods()) {
                         constraints.add(new QMethod(m.getName(), m.getSignature()));
@@ -299,7 +299,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
 
             for (JavaClass parent : cls.getSuperClasses()) {
                 String clsName = parent.getClassName();
-                if (!visitedClasses.add(clsName)) {
+                if (visitedClasses.add(clsName)) {
 
                     if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
                         for (Method m : parent.getMethods()) {
