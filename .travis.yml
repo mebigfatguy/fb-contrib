@@ -1,11 +1,13 @@
 language: java
 
-install: ./mvnw install -DskipTests=true -Dmaven.javadoc.skip=true -Dfindbugs.skip=true -B -V
-
 jdk:
     - openjdk11
     - openjdk8
 
-cache:
-    directories:
-        - $HOME/.m2
+install:
+  - chmod -R 777 ./travis/install.sh
+  - ./travis/install.sh
+
+after_success:
+  - chmod -R 777 ./travis/after_success.sh
+  - ./travis/after_success.sh
