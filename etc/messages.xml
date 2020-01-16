@@ -2649,7 +2649,7 @@ if (!date1.equals( date2 ))
 			a potential cause of memory bloat.</p>
 
 			<p>
-			If this collection is a list, set or otherwise of static things (e.g. a List&gt;String&gt; for month names), consider
+			If this collection is a list, set or otherwise of static things (e.g. a List&lt;String&gt; for month names), consider
 			adding all of the elements in a static initializer, which can only be called once:<br/>
 <pre><code>
 private static List&lt;String&gt; monthNames = new ArrayList&lt;String&gt;();
