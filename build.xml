@@ -42,17 +42,17 @@
 	
 	<target name="infra_jars" description="pull jars needed to build sb-contrib to ${user.dir}/.ant/lib">
 		<mkdir dir="${user.home}/.ant/lib" />
-		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/2.0.1/yank-2.0.1.jar" dest="${user.home}/.ant/lib"/>
+		<get src="https://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/2.0.1/yank-2.0.1.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://bitbucket.org/kjlubick/bugrankcheckstyle/downloads/bug-rank-check-style-1.0.0.jar" dest="${user.home}/.ant/lib"/>
-		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/vcsversion/vcsversion/0.4.0/vcsversion-0.4.0.jar" dest="${user.home}/.ant/lib"/>
-		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/fb-delta/fb-delta/0.6.0/fb-delta-0.6.0.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
-		<get src="http://repo1.maven.org/maven2/com/mebigfatguy/stringliterals/stringliterals/0.2.0/stringliterals-0.2.0.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
+		<get src="https://repo1.maven.org/maven2/com/mebigfatguy/vcsversion/vcsversion/0.4.0/vcsversion-0.4.0.jar" dest="${user.home}/.ant/lib"/>
+		<get src="https://repo1.maven.org/maven2/com/mebigfatguy/fb-delta/fb-delta/0.6.0/fb-delta-0.6.0.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
+		<get src="https://repo1.maven.org/maven2/com/mebigfatguy/stringliterals/stringliterals/0.2.0/stringliterals-0.2.0.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
 	</target>
 	
 	<target name="yank" xmlns:yank="antlib:com.mebigfatguy.yank" unless="no.yank">
         <mkdir dir="${lib.dir}" />
         <yank:yank yankFile="${basedir}/yank.csv" destination="${lib.dir}" proxyServer="${proxy.server}" source="true" separateClassifierTypes="true" checkSHADigests="true">
-            <server url="http://repo1.maven.org/maven2" />
+            <server url="https://repo1.maven.org/maven2" />
             <generateVersions propertyFileName="${basedir}/version.properties" />
         </yank:yank>
     </target>
@@ -66,7 +66,7 @@
     	<echo message=""/>
         <echo message="    This project uses yank (https://github.com/mebigfatguy/yank) for dependency management"/>
         <echo message="    download yank.jar and place in ~/.ant/lib directory"/>
-        <echo message="    http://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.mebigfatguy.yank%22"/>
+        <echo message="    https://search.maven.org/#search%7Cga%7C1%7Cg%3A%22com.mebigfatguy.yank%22"/>
         
     	<echo message="===="/>
     	<echo message="    Additionally, this project uses bug-rank-check-style to validate etc/bugrank.txt"/>
@@ -75,16 +75,16 @@
         <echo message="===="/>
     	<echo message="    Finally, this project uses vcsversion to inject the git version information into the manifest file"/>
     	<echo message="    and can be downloaded and placed in ~/.ant/lib as well"/>
-    	<echo message="    http://search.maven.org/#search%7Cga%7C1%7Cvcsversion"/>
+    	<echo message="    https://search.maven.org/#search%7Cga%7C1%7Cvcsversion"/>
         <echo message="===="/>
     	<echo message="    If you want to generate delta reports between two sample.xml runs, this project also uses fb-delta to do"/>
     	<echo message="    delta-ing between two samples.xml files, to report what has been 'fixed' and what is 'new'"/>
     	<echo message="    and can be downloaded and placed in ~/.ant/lib as well"/>
-    	<echo message="    http://search.maven.org/#search%7Cga%7C1%7Cfb-delta"/>
+    	<echo message="    https://search.maven.org/#search%7Cga%7C1%7Cfb-delta"/>
         <echo message="===="/>
     	<echo message="    If you want to generate a report of all string literals used in the code base, this project also uses stringliterals to do"/>
     	<echo message="    that, and can be downloaded and placed in ~/.ant/lib as well"/>
-    	<echo message="    http://search.maven.org/#search%7Cga%7C1%7Cstringliterals"/>
+    	<echo message="    https://search.maven.org/#search%7Cga%7C1%7Cstringliterals"/>
         <echo message="===="/>
 
     	<echo message="    This task can be automated by running ant infra_jars"/>
