@@ -26,6 +26,7 @@ import java.util.Set;
 import javax.annotation.Nullable;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantNameAndType;
@@ -90,6 +91,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
     // @formatter:on
     );
 
+    private JavaClass SUPPLIER_CLASS;
+
     private static final BitSet INVOKE_OPS = new BitSet();
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -111,6 +114,12 @@ public class OptionalIssues extends BytecodeScanningDetector {
      */
     public OptionalIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+
+        try {
+            SUPPLIER_CLASS = Repository.lookupClass("java/util/function/Supplier");
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
     }
 
     /**
@@ -226,9 +235,12 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
                         FQMethod method = op.getMethod();
                         if (method == null) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL.name(),
-                                            LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (SUPPLIER_CLASS != null && !itm.getJavaClass().instanceOf(SUPPLIER_CLASS)) {
+                                bugReporter.reportBug(new BugInstance(this,
+                                        BugType.OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL.name(), LOW_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
+                            }
                         } else {
                             Method getMethod = getLambdaMethod(method.getMethodName());
                             if (getMethod != null) {
@@ -253,6 +265,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 }
                 break;
             }
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
         } finally {
             stack.sawOpcode(this, seen);
             int stackDepth = stack.getStackDepth();
@@ -364,7 +378,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
         @Override
         public int hashCode() {
-            return opcode ^ ((method != null) ? method.hashCode() : -1);
+            return opcode ^ (method != null ? method.hashCode() : -1);
         }
 
         @Override

@@ -66,7 +66,7 @@ public class OI_Sample {
         return Optional.of(null);
     }
 
-    public String get(String parameterName, Supplier<String> defaultValueSupplier) {
+    public String fpGet384(String parameterName, Supplier<String> defaultValueSupplier) {
         return this.<String>get(parameterName).orElseGet(defaultValueSupplier);
     }
 }
