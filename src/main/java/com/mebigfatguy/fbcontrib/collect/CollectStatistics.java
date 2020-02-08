@@ -291,7 +291,6 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                 String infName = inf.getClassName();
                 // If 'infName' exists in visitedClasses, this check will be 'false'
                 if (visitedClasses.add(infName)) {
-
                     for (Method m : inf.getMethods()) {
                         constraints.add(new QMethod(m.getName(), m.getSignature()));
                     }

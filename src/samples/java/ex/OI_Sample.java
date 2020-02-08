@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.OptionalDouble;
 import java.util.OptionalInt;
+import java.util.function.Supplier;
 
 public class OI_Sample {
 
@@ -59,5 +60,13 @@ public class OI_Sample {
 
     public Long fpBoxingIsTooCommon(Optional<Long> o) {
         return o.orElse(0L);
+    }
+
+    private Optional<String> get(String name) {
+        return Optional.of(null);
+    }
+
+    public String get(String parameterName, Supplier<String> defaultValueSupplier) {
+        return this.<String>get(parameterName).orElseGet(defaultValueSupplier);
     }
 }

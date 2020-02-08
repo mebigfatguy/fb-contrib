@@ -3284,6 +3284,21 @@ if ({{FLAWED_TEST_LOGIC}}) {
 			]]>
 		</Details>
 	</BugPattern>
+	
+	<BugPattern type="SPP_PASSING_THIS_AS_PARM">
+	   <ShortDescription>Method call passes object that the method is called on as a parameter</ShortDescription>
+	   <LongDescription>Method call in {1} passes object that the method is called on as a parameter</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This method calls an instance method passing the object that the method is called on as a parameter, such as
+	       <code>
+	           foo.someMethod(foo);
+	       </code>
+	       As you already have access to this object thru this, you don't need to pass it.
+	       </p>
+	       ]]>
+	   </Details>
+	</BugPattern>
 
 	<BugPattern type="MUI_USE_CONTAINSKEY">
 		<ShortDescription>Method calls keySet() just to call contains, use containsKey instead</ShortDescription>
