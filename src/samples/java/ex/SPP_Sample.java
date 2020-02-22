@@ -98,12 +98,6 @@ public class SPP_Sample implements Serializable {
         StringBuffer sb = new StringBuffer("");
     }
 
-    public void equalsOnEnum(Flap f) {
-        if (f.equals(Flap.Jack)) {
-            System.out.println("Flap Jacks");
-        }
-    }
-
     public void testCPPBoolean(Boolean a, Boolean b, Boolean c, Boolean d, Boolean e) {
         if (b && b.booleanValue()) {
             System.out.println("Booya");
