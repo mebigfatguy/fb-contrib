@@ -336,7 +336,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousArgumentTypes" speed="fast" reports="SAT_SUSPICIOUS_ARGUMENT_TYPES" />
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.EnumIssues" speed="fast" reports="ENMI_ONE_ENUM_VALUE" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.EnumIssues" speed="fast" reports="ENMI_NULL_ENUM_VALUE,ENMI_ONE_ENUM_VALUE" />
 
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -651,5 +651,6 @@
 	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_ADD" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_REMOVE" category="CORRECTNESS" experimental="true" />
     <BugPattern abbrev="SAT" type="SAT_SUSPICIOUS_ARGUMENT_TYPES" category="CORRECTNESS" experimental="true" />
+    <BugPattern abbrev="ENMI" type="ENMI_NULL_ENUM_VALUE" category="CORRECTNESS" experimental="true" />
     <BugPattern abbrev="ENMI" type="ENMI_ONE_ENUM_VALUE" category="CORRECTNESS" experimental="true" />
 </FindbugsPlugin>

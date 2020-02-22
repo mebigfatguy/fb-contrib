@@ -18,10 +18,14 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.LocalVariable;
+import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -34,6 +38,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class EnumIssues extends BytecodeScanningDetector {
     private final BugReporter bugReporter;
     private OpcodeStack stack;
+    private LocalVariableTable variableTable;
     private String clsName;
     private boolean isEnum;
     private boolean inEnumInitializer;
@@ -77,6 +82,7 @@ public class EnumIssues extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
 
         inEnumInitializer = isEnum && getMethod().getName().equals(Values.STATIC_INITIALIZER);
+        variableTable = getMethod().getLocalVariableTable();
         super.visitCode(obj);
 
         if (inEnumInitializer && numEnumValues <= 1) {
@@ -90,14 +96,59 @@ public class EnumIssues extends BytecodeScanningDetector {
         try {
             if (inEnumInitializer) {
                 if (seen == PUTSTATIC) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
-                    String sig = item.getSignature();
-                    if (clsName.equals(SignatureUtils.stripSignature(sig))) {
-                        numEnumValues++;
+                    if (stack.getStackDepth() > 0) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        String sig = item.getSignature();
+                        if (clsName.equals(SignatureUtils.stripSignature(sig))) {
+                            numEnumValues++;
+                        }
                     }
+                }
+            } else {
+                switch (seen) {
+                case PUTFIELD:
+                case PUTSTATIC:
+                    if (stack.getStackDepth() >= 1) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        if (item.isNull()) {
+                            String fieldCls = SignatureUtils.stripSignature(getSigConstantOperand());
+                            JavaClass cls = Repository.lookupClass(fieldCls);
+                            if (cls.isEnum()) {
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.ENMI_NULL_ENUM_VALUE.name(), NORMAL_PRIORITY)
+                                                .addClass(this).addMethod(this).addSourceLine(this));
+                            }
+                        }
+                    }
+                    break;
 
+                case ASTORE:
+                case ASTORE_0:
+                case ASTORE_1:
+                case ASTORE_2:
+                case ASTORE_3:
+                    if (variableTable != null && stack.getStackDepth() >= 1) {
+                        OpcodeStack.Item item = stack.getStackItem(0);
+                        if (item.isNull()) {
+                            int reg = RegisterUtils.getAStoreReg(this, seen);
+                            LocalVariable lv = getMethod().getLocalVariableTable()
+                                    .getLocalVariable(RegisterUtils.getAStoreReg(this, seen), getNextPC());
+                            if (lv != null) {
+                                String localType = SignatureUtils.stripSignature(lv.getSignature());
+                                JavaClass cls = Repository.lookupClass(localType);
+                                if (cls.isEnum()) {
+                                    bugReporter.reportBug(
+                                            new BugInstance(this, BugType.ENMI_NULL_ENUM_VALUE.name(), NORMAL_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                }
+                            }
+                        }
+                    }
+                    break;
                 }
             }
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
         } finally {
             stack.sawOpcode(this, seen);
         }

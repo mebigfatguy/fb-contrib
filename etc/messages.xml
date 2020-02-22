@@ -6525,8 +6525,19 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             ]]>
         </Details> 
     </BugPattern>
-    
-    
+        
+    <BugPattern type="ENMI_NULL_ENUM_VALUE">
+        <ShortDescription>This method sets an enum reference to null</ShortDescription>
+        <LongDescription>This method {1} sets an enum reference to null</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method sets the value of an enum reference to null. An enum should never have a null value.
+            If there is a state where you do not know what the value of an enum should be, than that should be one of the
+            proper enum value. So add a MyEnum.UNKNOWN or such. This keeps the logic of switch statements, etc, much simpler.
+            ]]>
+        </Details> 
+    </BugPattern>
+ 
     <BugPattern type="ENMI_ONE_ENUM_VALUE">
         <ShortDescription>This enum class only declares one enum value</ShortDescription>
         <LongDescription>This enum class {0} only declares one enum value</LongDescription>
