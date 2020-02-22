@@ -3169,18 +3169,6 @@ if (myString.indexOf('e') != -1) {
 		</Details>
 	</BugPattern>
 
-	<BugPattern type="SPP_EQUALS_ON_ENUM">
-		<ShortDescription>Method calls equals on an enum instance</ShortDescription>
-		<LongDescription>Method {1} calls equals on an enum instance</LongDescription>
-		<Details>
-			<![CDATA[
-			<p>This method calls the equals(Object) method on an enum instance. Since enums values are singletons,
-			you can use == to safely compare two enum values. In fact, the implementation for Enum.equals does just
-			that.</p>
-			]]>
-		</Details>
-	</BugPattern>
-
 	<BugPattern type="SPP_INVALID_BOOLEAN_NULL_CHECK">
 		<ShortDescription>Method uses invalid C++ style null check on Boolean</ShortDescription>
 		<LongDescription>Method {1} uses invalid C++ style null check on Boolean</LongDescription>
@@ -6526,9 +6514,21 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details> 
     </BugPattern>
         
+    <BugPattern type="ENMI_EQUALS_ON_ENUM">
+        <ShortDescription>Method calls equals on an enum instance</ShortDescription>
+        <LongDescription>Method {1} calls equals on an enum instance</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method calls the equals(Object) method on an enum instance. Since enums values are singletons,
+            you can use == to safely compare two enum values. In fact, the implementation for Enum.equals does just
+            that.</p>
+            ]]>
+        </Details>
+    </BugPattern>
+    
     <BugPattern type="ENMI_NULL_ENUM_VALUE">
-        <ShortDescription>This method sets an enum reference to null</ShortDescription>
-        <LongDescription>This method {1} sets an enum reference to null</LongDescription>
+        <ShortDescription>Method sets an enum reference to null</ShortDescription>
+        <LongDescription>Method {1} sets an enum reference to null</LongDescription>
         <Details>
             <![CDATA[
             <p>This method sets the value of an enum reference to null. An enum should never have a null value.
@@ -6539,8 +6539,8 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     </BugPattern>
  
     <BugPattern type="ENMI_ONE_ENUM_VALUE">
-        <ShortDescription>This enum class only declares one enum value</ShortDescription>
-        <LongDescription>This enum class {0} only declares one enum value</LongDescription>
+        <ShortDescription>Enum class only declares one enum value</ShortDescription>
+        <LongDescription>Enum class {0} only declares one enum value</LongDescription>
         <Details>
             <![CDATA[
             <p>This enum class only declares one value (or perhaps 0!). As such it is pointless, as its value will always be the same thing.

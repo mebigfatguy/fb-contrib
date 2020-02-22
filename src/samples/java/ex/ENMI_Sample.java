@@ -1,5 +1,7 @@
 package ex;
 
+import ex.SPP_Sample.Flap;
+
 public class ENMI_Sample {
 
     public enum Johnny {
@@ -23,5 +25,11 @@ public class ENMI_Sample {
             }
         }
 
+    }
+
+    public void equalsOnEnum(Flap f) {
+        if (f.equals(Flap.Jack)) {
+            System.out.println("Flap Jacks");
+        }
     }
 }

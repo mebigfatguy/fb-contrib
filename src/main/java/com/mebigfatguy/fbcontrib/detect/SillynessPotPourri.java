@@ -849,10 +849,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private void equalsSilliness(String className) {
         try {
             JavaClass cls = Repository.lookupClass(className);
-            if (cls.isEnum()) {
-                bugReporter.reportBug(new BugInstance(this, BugType.SPP_EQUALS_ON_ENUM.name(), NORMAL_PRIORITY)
-                        .addClass(this).addMethod(this).addSourceLine(this));
-            } else {
+            if (!cls.isEnum()) {
                 if (stack.getStackDepth() >= 2) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     cls = item.getJavaClass();

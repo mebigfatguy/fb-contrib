@@ -26,6 +26,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
@@ -142,6 +143,19 @@ public class EnumIssues extends BytecodeScanningDetector {
                                                     .addClass(this).addMethod(this).addSourceLine(this));
                                 }
                             }
+                        }
+                    }
+                    break;
+
+                case INVOKEVIRTUAL:
+                    if ("equals".equals(getNameConstantOperand())
+                            && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
+
+                        JavaClass cls = Repository.lookupClass(getClassConstantOperand());
+                        if (cls.isEnum()) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.ENMI_EQUALS_ON_ENUM.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                     break;
