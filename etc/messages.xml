@@ -1769,6 +1769,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
             <p>It is a fast detector</p>
             ]]>
         </Details>
+    </Detector>    
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.EnumIssues">
+        <Details>
+            <![CDATA[
+            <p>Looks for various issues with uses of enum objects.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
     </Detector>
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
@@ -6515,6 +6525,20 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             ]]>
         </Details> 
     </BugPattern>
+    
+    
+    <BugPattern type="ENMI_ONE_ENUM_VALUE">
+        <ShortDescription>This enum class only declares one enum value</ShortDescription>
+        <LongDescription>This enum class {0} only declares one enum value</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This enum class only declares one value (or perhaps 0!). As such it is pointless, as its value will always be the same thing.
+            Therefore use of this enum is just bloating the code base. One exception is if you are using a null value as a second value.
+            This is a mistake, and should be replaced with a second enum value, even if it's NULL, or UNKNOWN, or NON_INTITIALIZED or some other
+            sentinel value.
+            ]]>
+        </Details> 
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -6665,4 +6689,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="FII">FunctionalInterface Issues</BugCode>
 	<BugCode abbrev="SUI">Set Usage Issues</BugCode>
     <BugCode abbrev="SAT">Suspicious Argument Types</BugCode>
+    <BugCode abbrev="ENMI">Enum Issues</BugCode>
 </MessageCollection>

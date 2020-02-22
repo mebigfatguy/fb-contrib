@@ -335,6 +335,8 @@
     <!-- COMMENT OUT FOR POINT RELEASE -->
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousArgumentTypes" speed="fast" reports="SAT_SUSPICIOUS_ARGUMENT_TYPES" />
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.EnumIssues" speed="fast" reports="ENMI_ONE_ENUM_VALUE" />
 
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -636,17 +638,18 @@
 	<BugPattern abbrev="MUI" type="MUI_CALLING_SIZE_ON_SUBCONTAINER" category="CORRECTNESS" />
 	<BugPattern abbrev="MUI" type="MUI_NULL_CHECK_ON_MAP_SUBSET_ACCESSOR" category="CORRECTNESS" />
 	<BugPattern abbrev="MUI" type="MUI_USE_CONTAINSKEY" category="CORRECTNESS" />
-	<BugPattern abbrev="LUI" type="LUI_USE_SINGLETON_LIST" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="LUI" type="LUI_USE_COLLECTION_ADD" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="LUI" type="LUI_USE_GET0" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="FII" type="FII_USE_METHOD_REFERENCE" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="FII" type="FII_AVOID_CONTAINS_ON_COLLECTED_STREAM" category="CORRECTNESS" experimental="true "/>
-	<BugPattern abbrev="FII" type="FII_USE_ANY_MATCH" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="FII" type="FII_USE_FIND_FIRST" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="FII" type="FII_COMBINE_FILTERS" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="FII" type="FII_USE_FUNCTION_IDENTITY" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="FII" type="FII_AVOID_SIZE_ON_COLLECTED_STREAM" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="LUI" type="LUI_USE_SINGLETON_LIST" category="CORRECTNESS" />
+	<BugPattern abbrev="LUI" type="LUI_USE_COLLECTION_ADD" category="CORRECTNESS" />
+	<BugPattern abbrev="LUI" type="LUI_USE_GET0" category="CORRECTNESS" />
+	<BugPattern abbrev="FII" type="FII_USE_METHOD_REFERENCE" category="CORRECTNESS" />
+	<BugPattern abbrev="FII" type="FII_AVOID_CONTAINS_ON_COLLECTED_STREAM"/>
+	<BugPattern abbrev="FII" type="FII_USE_ANY_MATCH" category="CORRECTNESS"/>
+	<BugPattern abbrev="FII" type="FII_USE_FIND_FIRST" category="CORRECTNESS"/>
+	<BugPattern abbrev="FII" type="FII_COMBINE_FILTERS" category="CORRECTNESS"/>
+	<BugPattern abbrev="FII" type="FII_USE_FUNCTION_IDENTITY" category="CORRECTNESS"/>
+	<BugPattern abbrev="FII" type="FII_AVOID_SIZE_ON_COLLECTED_STREAM" category="CORRECTNESS"/>
 	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_ADD" category="CORRECTNESS" experimental="true" />
 	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_REMOVE" category="CORRECTNESS" experimental="true" />
     <BugPattern abbrev="SAT" type="SAT_SUSPICIOUS_ARGUMENT_TYPES" category="CORRECTNESS" experimental="true" />
+    <BugPattern abbrev="ENMI" type="ENMI_ONE_ENUM_VALUE" category="CORRECTNESS" experimental="true" />
 </FindbugsPlugin>
