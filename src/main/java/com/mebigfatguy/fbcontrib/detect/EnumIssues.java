@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -96,7 +97,7 @@ public class EnumIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             if (inEnumInitializer) {
-                if (seen == PUTSTATIC) {
+                if (seen == Const.PUTSTATIC) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         String sig = item.getSignature();
@@ -107,8 +108,8 @@ public class EnumIssues extends BytecodeScanningDetector {
                 }
             } else {
                 switch (seen) {
-                case PUTFIELD:
-                case PUTSTATIC:
+                case Const.PUTFIELD:
+                case Const.PUTSTATIC:
                     if (stack.getStackDepth() >= 1) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         if (item.isNull()) {
@@ -123,11 +124,11 @@ public class EnumIssues extends BytecodeScanningDetector {
                     }
                     break;
 
-                case ASTORE:
-                case ASTORE_0:
-                case ASTORE_1:
-                case ASTORE_2:
-                case ASTORE_3:
+                case Const.ASTORE:
+                case Const.ASTORE_0:
+                case Const.ASTORE_1:
+                case Const.ASTORE_2:
+                case Const.ASTORE_3:
                     if (variableTable != null && stack.getStackDepth() >= 1) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         if (item.isNull()) {
@@ -147,7 +148,7 @@ public class EnumIssues extends BytecodeScanningDetector {
                     }
                     break;
 
-                case INVOKEVIRTUAL:
+                case Const.INVOKEVIRTUAL:
                     if ("equals".equals(getNameConstantOperand())
                             && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
 
