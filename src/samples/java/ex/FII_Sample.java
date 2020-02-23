@@ -1,6 +1,7 @@
 package ex;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -26,7 +27,7 @@ public class FII_Sample {
     }
 
     public void addBitSet(BitSet bs, List<Integer> ints) {
-        ints.forEach(i -> bs.set(i));    
+        ints.forEach(i -> bs.set(i));
     }
 
     public List<Bauble> getfpFreeBees(List<Bauble> baubles) {
@@ -57,7 +58,8 @@ public class FII_Sample {
     }
 
     public List<Bauble> backToBackFilter(Set<Bauble> baubles) {
-        return baubles.stream().filter(b -> b.getName().equals("diamonds")).filter(b -> b.isFree()).collect(Collectors.toList());
+        return baubles.stream().filter(b -> b.getName().equals("diamonds")).filter(b -> b.isFree())
+                .collect(Collectors.toList());
     }
 
     public Map<String, Bauble> mapIdentity(List<Bauble> baubles) {
@@ -73,7 +75,8 @@ public class FII_Sample {
     }
 
     public BigDecimal fpCastEliminatesMethodReference282(List<Bauble> baubles) {
-        return baubles.stream().filter(b -> b.getName().equals("special")).map(b -> (BigDecimal) b.getCost()).findFirst().get();
+        return baubles.stream().filter(b -> b.getName().equals("special")).map(b -> (BigDecimal) b.getCost())
+                .findFirst().get();
     }
 
     public static <T> Stream<T> fpIiteratorToFiniteStream283(Iterator<T> iterator, boolean parallel) {
@@ -87,14 +90,17 @@ public class FII_Sample {
             return m;
         });
     }
-    
-	public static void foo(Consumer<Void> consumer) {
-	}
 
-	public static void bar342(Runnable runnable) {
-		foo(_unused -> runnable.run());
-	}
+    public boolean fpGeneratedDoubleLambdas(int[] updateCount) {
+        return Arrays.stream(updateCount).mapToObj(i -> i == 1 ? Boolean.TRUE : Boolean.FALSE).allMatch(b -> b);
+    }
 
+    public static void foo(Consumer<Void> consumer) {
+    }
+
+    public static void bar342(Runnable runnable) {
+        foo(_unused -> runnable.run());
+    }
 
     public void put(Function<Map<String, Object>, Map<String, Object>> updateFunction) {
     }
@@ -139,23 +145,18 @@ public class FII_Sample {
             return this != GiantSpeak.BLUB;
         }
     }
-    
-    final class FP363
-    {
-        public void example(Foo363 foo, String string)
-        {
-            perform(() -> foo.foo(string));  // (*)
+
+    final class FP363 {
+        public void example(Foo363 foo, String string) {
+            perform(() -> foo.foo(string)); // (*)
         }
-        
-        private void perform(Runnable action)
-        {
+
+        private void perform(Runnable action) {
             action.run();
         }
     }
 
-
-    abstract class Foo363
-    {
+    abstract class Foo363 {
         public abstract void foo(String string);
     }
 }
