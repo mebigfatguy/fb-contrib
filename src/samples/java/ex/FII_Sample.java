@@ -1,6 +1,7 @@
 package ex;
 
 import java.math.BigDecimal;
+import java.util.Arrays;
 import java.util.BitSet;
 import java.util.EnumSet;
 import java.util.Iterator;
@@ -88,6 +89,10 @@ public class FII_Sample {
             m.putAll(m);
             return m;
         });
+    }
+
+    public boolean fpGeneratedDoubleLambdas(int[] updateCount) {
+        return Arrays.stream(updateCount).mapToObj(i -> i == 1 ? Boolean.TRUE : Boolean.FALSE).allMatch(b -> b);
     }
 
     public static void foo(Consumer<Void> consumer) {
