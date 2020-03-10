@@ -35,6 +35,10 @@ public class OPM_Sample extends OPMSuper implements Comparator<String> {
         List<String> l = getFoo(new ArrayList<String>());
     }
 
+    public Boolean isFoo390() {
+        return true;
+    }
+
     @Override
     public List<String> getFoo(List<String> l) {
         return l;
