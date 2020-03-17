@@ -120,6 +120,8 @@
 		<path id="fb-contrib.samples.classpath">
             <pathelement location="${lib.dir}/akka-actor_2.12-${akka-actor_2.12.version}.jar" />
             <pathelement location="${lib.dir}/akka-http_2.12-${akka-http_2.12.version}.jar" />
+            <pathelement location="${lib.dir}/akka-http-core_2.12-${akka-http-core_2.12.version}.jar" />
+            <pathelement location="${lib.dir}/akka-stream_2.12-${akka-stream_2.12.version}.jar" />
 			<pathelement location="${lib.dir}/asm-debug-all-${asm-debug-all.version}.jar" />
 			<pathelement location="${lib.dir}/javax.servlet.jsp-api-${javax.servlet.jsp-api.version}.jar" />
 			<pathelement location="${lib.dir}/junit-${junit.version}.jar" />
