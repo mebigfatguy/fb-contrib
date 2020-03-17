@@ -15,8 +15,10 @@ samples/*.class
 .settings/org.eclipse.m2e.core.prefs
 javadoc
 version.properties
+.metadata/
 .~lock.yank.*
 /classes
 user.properties
 .idea/
 *.iml
+*.orig

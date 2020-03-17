@@ -44,5 +44,8 @@
 	<classpathentry kind="lib" path="lib/hamcrest-library-1.3.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/findbugs"/>
 	<classpathentry kind="lib" path="lib/mockito-core-2.23.4.jar"/>
+	<classpathentry kind="lib" path="lib/akka-actor_2.12-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/akka-http_2.12-10.1.11.jar"/>
+	<classpathentry kind="lib" path="lib/scala-library-2.12.10.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
