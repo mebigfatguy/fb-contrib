@@ -56,6 +56,28 @@
 			]]>
 		</Details>
 	</Detector>
+	
+		<Detector class="com.mebigfatguy.fbcontrib.detect.InefficientAppendableAppend">
+		<Details>
+			<![CDATA[
+			<p>Looks for appending CharSequence.toString inside of calls to Appendable append.</p>
+			<pre>
+				StringBuilder sb = new StringBuilder();
+				sb.append(a + b);
+				return sb.toString();
+			</pre>
+			You should use the .append method to append values
+			<pre>
+				sb.append(a).append(b);
+			</pre>
+			<p>It is a fast detector.</p>
+			]]>
+		</Details>
+	</Detector>
+	
+	
+	
+	
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SyncCollectionIterators">
 		<Details>
@@ -6515,9 +6537,24 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             ]]>
         </Details> 
     </BugPattern>
+	
+	<BugPattern type="IAA_INEFFICIENT_APPENDABLE_APPEND">
+		<ShortDescription>Method concatenates the result of a toString() call</ShortDescription>
+		<LongDescription>Method {1} concatenates the result of a toString() call</LongDescription>
+		<Details>
+			<![CDATA[
+			<p>This method concatenates the output of a <code>toString()</code> call on a <code>CharSequence</code> into a <code>Appendable</code>.
+			It is simpler just to pass the <code>CharSequence</code>object you want to append to the append call as that gives better performance.</p>
+
+			<p>
+			
+			</p>
+			]]>
+		</Details>
+	</BugPattern>
 
 	<!-- BugCode -->
-
+	<BugCode abbrev="IAA">Inefficient Appendable Appending</BugCode>
 	<BugCode abbrev="ISB">Inefficient String Buffering</BugCode>
 	<BugCode abbrev="SCI">Synchronized Collection Iterators</BugCode>
 	<BugCode abbrev="CC">Cyclomatic Complexity</BugCode>
