@@ -39,6 +39,7 @@ import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.generic.Type;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
@@ -153,7 +154,12 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     if (numParms < 1 || numParms > 2) {
                         functionalInterfaceInfo.remove(m.getName());
                     } else {
-                        isParmLambda = numParms == 2;
+                        Type t = m.getReturnType();
+                        if (!t.getSignature().startsWith("L")) {
+                            // javac generates a lambda for your to do unboxing, so don't report
+                            functionalInterfaceInfo.remove(m.getName());
+                        } else {
+                            isParmLambda = numParms == 2;
                         if (isParmLambda) {
                             Iterator<FIInfo> it = fiis.iterator();
                             while (it.hasNext()) {
@@ -168,11 +174,12 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                 functionalInterfaceInfo.remove(getMethod().getName());
                                 return;
                             }
-                        }
-                        try {
-                            anonState = AnonState.SEEN_NOTHING;
-                            super.visitCode(obj);
-                        } catch (StopOpcodeParsingException e) {
+                            }
+                            try {
+                                anonState = AnonState.SEEN_NOTHING;
+                                super.visitCode(obj);
+                            } catch (StopOpcodeParsingException e) {
+                            }
                         }
                     }
                 }
@@ -246,8 +253,8 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
                         String clsName = getClassConstantOperand();
                         String methodName = getNameConstantOperand();
-                        if ((clsName.startsWith("java/lang/")
-                                && (methodName.endsWith("Value") || "valueOf".equals(methodName)))) {
+                        if (clsName.startsWith("java/lang/")
+                                && (methodName.endsWith("Value") || "valueOf".equals(methodName))) {
                             break;
                         }
 
@@ -310,7 +317,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     if (CONTAINS.equals(m)) {
                         if (stack.getStackDepth() >= 2) {
                             OpcodeStack.Item itm = stack.getStackItem(1);
-                            if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT_ITEM == itm.getUserValue())) {
+                            if (itm.getRegisterNumber() < 0 && FIIUserValue.COLLECT_ITEM == itm.getUserValue()) {
                                 bugReporter.reportBug(
                                         new BugInstance(this, BugType.FII_AVOID_CONTAINS_ON_COLLECTED_STREAM.name(),
                                                 NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
@@ -319,7 +326,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     } else if (SIZE.equals(m)) {
                         if (stack.getStackDepth() >= 1) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
-                            if ((itm.getRegisterNumber() < 0) && (FIIUserValue.COLLECT_ITEM == itm.getUserValue())) {
+                            if (itm.getRegisterNumber() < 0 && FIIUserValue.COLLECT_ITEM == itm.getUserValue()) {
                                 bugReporter.reportBug(
                                         new BugInstance(this, BugType.FII_AVOID_SIZE_ON_COLLECTED_STREAM.name(),
                                                 NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
@@ -333,7 +340,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         } else if (FILTER.equals(fqm)) {
                             if (stack.getStackDepth() > 1) {
                                 OpcodeStack.Item itm = stack.getStackItem(1);
-                                if ((itm.getUserValue() == FIIUserValue.FILTER_ITEM) && (itm.getRegisterNumber() < 0)) {
+                                if (itm.getUserValue() == FIIUserValue.FILTER_ITEM && itm.getRegisterNumber() < 0) {
                                     bugReporter.reportBug(
                                             new BugInstance(this, BugType.FII_COMBINE_FILTERS.name(), LOW_PRIORITY)
                                                     .addClass(this).addMethod(this).addSourceLine(this));
@@ -352,8 +359,8 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                 OpcodeStack.Item itm = stack.getStackItem(0);
                                 if (Values.ZERO.equals(itm.getConstant())) {
                                     itm = stack.getStackItem(1);
-                                    if ((itm.getUserValue() == FIIUserValue.COLLECT_ITEM)
-                                            && (itm.getRegisterNumber() < 0)) {
+                                    if (itm.getUserValue() == FIIUserValue.COLLECT_ITEM
+                                            && itm.getRegisterNumber() < 0) {
                                         bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FIND_FIRST.name(),
                                                 NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                                     }
@@ -369,7 +376,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     if (ISPRESENT.equals(fqm)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
-                            if ((itm.getUserValue() == FIIUserValue.FINDFIRST_ITEM) && (itm.getRegisterNumber() < 0)) {
+                            if (itm.getUserValue() == FIIUserValue.FINDFIRST_ITEM && itm.getRegisterNumber() < 0) {
                                 bugReporter
                                         .reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), LOW_PRIORITY)
                                                 .addClass(this).addMethod(this).addSourceLine(this));
@@ -381,7 +388,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
             }
         } finally {
             stack.sawOpcode(this, seen);
-            if ((userValue != null) && (stack.getStackDepth() > 0)) {
+            if (userValue != null && stack.getStackDepth() > 0) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(userValue);
             }
@@ -431,7 +438,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         String signature = nameAndType.getSignature(cp);
         int numParms = SignatureUtils.getNumParameters(signature);
 
-        if (((numParms == 1) && signature.endsWith("V")) || ((numParms == 2) && !signature.endsWith("V"))) {
+        if (numParms == 1 && signature.endsWith("V") || numParms == 2 && !signature.endsWith("V")) {
             return null;
         }
 

@@ -1791,6 +1791,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
             <p>It is a fast detector</p>
             ]]>
         </Details>
+    </Detector>    
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.EnumIssues">
+        <Details>
+            <![CDATA[
+            <p>Looks for various issues with uses of enum objects.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
     </Detector>
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
@@ -3177,18 +3187,6 @@ if (myString.indexOf('e') != -1) {
 			<p>This method calls the StringBuffer or StringBuilder constructor passing in a constant empty string ("").
 			This is the same as calling the default constructor, but makes the code work harder. Consider passing in a
 			default size instead.</p>
-			]]>
-		</Details>
-	</BugPattern>
-
-	<BugPattern type="SPP_EQUALS_ON_ENUM">
-		<ShortDescription>Method calls equals on an enum instance</ShortDescription>
-		<LongDescription>Method {1} calls equals on an enum instance</LongDescription>
-		<Details>
-			<![CDATA[
-			<p>This method calls the equals(Object) method on an enum instance. Since enums values are singletons,
-			you can use == to safely compare two enum values. In fact, the implementation for Enum.equals does just
-			that.</p>
 			]]>
 		</Details>
 	</BugPattern>
@@ -6537,6 +6535,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             ]]>
         </Details> 
     </BugPattern>
+
 	
 	<BugPattern type="IAA_INEFFICIENT_APPENDABLE_APPEND">
 		<ShortDescription>Method concatenates the result of a toString() call</ShortDescription>
@@ -6545,13 +6544,52 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 			<![CDATA[
 			<p>This method concatenates the output of a <code>toString()</code> call on a <code>CharSequence</code> into a <code>Appendable</code>.
 			It is simpler just to pass the <code>CharSequence</code>object you want to append to the append call as that gives better performance.</p>
-
-			<p>
+				<p>
 			
 			</p>
 			]]>
 		</Details>
 	</BugPattern>
+
+        
+    <BugPattern type="ENMI_EQUALS_ON_ENUM">
+        <ShortDescription>Method calls equals on an enum instance</ShortDescription>
+        <LongDescription>Method {1} calls equals on an enum instance</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method calls the equals(Object) method on an enum instance. Since enums values are singletons,
+            you can use == to safely compare two enum values. In fact, the implementation for Enum.equals does just
+            that.</p>
+            ]]>
+        </Details>
+    </BugPattern>
+    
+    <BugPattern type="ENMI_NULL_ENUM_VALUE">
+        <ShortDescription>Method sets an enum reference to null</ShortDescription>
+        <LongDescription>Method {1} sets an enum reference to null</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method sets the value of an enum reference to null. An enum should never have a null value.
+            If there is a state where you do not know what the value of an enum should be, than that should be one of the
+            proper enum value. So add a MyEnum.UNKNOWN or such. This keeps the logic of switch statements, etc, much simpler.
+            ]]>
+        </Details> 
+    </BugPattern>
+ 
+    <BugPattern type="ENMI_ONE_ENUM_VALUE">
+        <ShortDescription>Enum class only declares one enum value</ShortDescription>
+        <LongDescription>Enum class {0} only declares one enum value</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This enum class only declares one value (or perhaps 0!). As such it is pointless, as its value will always be the same thing.
+            Therefore use of this enum is just bloating the code base. One exception is if you are using a null value as a second value.
+            This is a mistake, and should be replaced with a second enum value, even if it's NULL, or UNKNOWN, or NON_INTITIALIZED or some other
+            sentinel value.
+            ]]>
+        </Details> 
+    </BugPattern>
+
+		
 
 	<!-- BugCode -->
 	<BugCode abbrev="IAA">Inefficient Appendable Appending</BugCode>
@@ -6702,4 +6740,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="FII">FunctionalInterface Issues</BugCode>
 	<BugCode abbrev="SUI">Set Usage Issues</BugCode>
     <BugCode abbrev="SAT">Suspicious Argument Types</BugCode>
+    <BugCode abbrev="ENMI">Enum Issues</BugCode>
 </MessageCollection>

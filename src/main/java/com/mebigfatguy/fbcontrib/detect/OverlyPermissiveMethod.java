@@ -168,6 +168,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                 break;
 
             case Const.INVOKEDYNAMIC:
+                // older than dirt
                 ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
 
                 BootstrapMethod bm = getBootstrapMethod(id.getBootstrapMethodAttrIndex());
@@ -212,7 +213,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     }
 
     private boolean isAssumedPublic(String methodName) {
-        return (cls.isEnum() && "valueOf".equals(methodName));
+        return cls.isEnum() && "valueOf".equals(methodName);
     }
 
     private boolean isGetterSetter(String methodName, String methodSignature) {
@@ -220,16 +221,30 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             int numParameters = SignatureUtils.getNumParameters(methodSignature);
             boolean voidReturn = Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(methodSignature));
 
-            if ((numParameters == 0) && !voidReturn && (methodName.charAt(0) == 'g')) {
+            if (methodName.length() <= 3 || Character.isLowerCase(methodName.charAt(3))) {
+                return false;
+            }
+
+            if (numParameters == 0 && !voidReturn && methodName.charAt(0) == 'g') {
                 return true;
             }
 
-            if ((numParameters == 1) && voidReturn && (methodName.charAt(0) == 's')) {
+            if (numParameters == 1 && voidReturn && methodName.charAt(0) == 's') {
                 return true;
+            }
+        } else if (methodName.startsWith("is")) {
+            if (methodName.length() <= 2 || Character.isLowerCase(methodName.charAt(2))) {
+                return false;
+            }
+            int numParameters = SignatureUtils.getNumParameters(methodSignature);
+
+            if (numParameters == 0) {
+                String returnSig = SignatureUtils.getReturnSignature(methodSignature);
+                return Values.SIG_PRIMITIVE_BOOLEAN.equals(returnSig) || Values.SIG_JAVA_UTIL_BOOLEAN.equals(returnSig);
             }
         }
-
         return false;
+
     }
 
     /**
@@ -337,7 +352,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                                 String infParmType = infTypes.get(i);
                                 String fqParmType = fqTypes.get(i);
                                 if (infParmType.equals(fqParmType)) {
-                                    if ((infParmType.charAt(0) != 'L') || (fqParmType.charAt(0) != 'L')) {
+                                    if (infParmType.charAt(0) != 'L' || fqParmType.charAt(0) != 'L') {
                                         matches = false;
                                         break;
                                     }
@@ -394,7 +409,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
             }
 
             JavaClass superClass = fqCls.getSuperClass();
-            if ((superClass == null) || Values.DOTTED_JAVA_LANG_OBJECT.equals(superClass.getClassName())) {
+            if (superClass == null || Values.DOTTED_JAVA_LANG_OBJECT.equals(superClass.getClassName())) {
                 return false;
             }
 
