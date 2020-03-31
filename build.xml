@@ -242,6 +242,7 @@
 
 	<target name="html" depends="-init" description="generates dynamic html">
 		<xslt basedir="${etc.dir}" destdir="${htdocs.dir}" style="${etc.dir}/bugdescriptions.xsl" in="${etc.dir}/messages.xml" out="${htdocs.dir}/bugdescriptions.html" />
+		<xslt basedir="${etc.dir}" destdir="${htdocs.dir}" style="${etc.dir}/bugdescriptions.xsl" in="${etc.dir}/messages.zh_cn.xml" out="${htdocs.dir}/bugdescriptions.zh_cn.html" />
 	</target>
 
 	<target name="srczip" description="builds the source distribution zip file">
