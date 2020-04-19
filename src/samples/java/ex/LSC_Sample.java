@@ -1,4 +1,5 @@
 package ex;
+
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -170,7 +171,7 @@ public class LSC_Sample {
         return 4;
 
     }
-    
+
     public String fpStringBufferForMatcher(String input) {
         Pattern p = Pattern.compile("12.*myshoe");
         Matcher matcher = p.matcher(input);
@@ -179,9 +180,16 @@ public class LSC_Sample {
             String prefix = matcher.group(1);
             matcher.appendReplacement(stringBuffer, "shobeydobee" + prefix);
         }
-        matcher.appendTail(stringBuffer); 
-        
+        matcher.appendTail(stringBuffer);
+
         return stringBuffer.toString();
+    }
+
+    String loc;
+
+    public String fp393() {
+        String newLocale = "de_DE".equals(loc) ? "fr_FR" : "de_DE";
+        return newLocale;
     }
 
 }
