@@ -43,12 +43,12 @@ public class SerialVersionCalc {
 
     public static long uuid(JavaClass cls) throws IOException {
 
-        if (cls.isEnum()) {
+        if (cls.isEnum() || cls.isInterface()) {
             return 0;
         }
 
         try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
-             DataOutputStream dos = new DataOutputStream(baos)) {
+                DataOutputStream dos = new DataOutputStream(baos)) {
 
             dos.writeUTF(cls.getClassName());
             dos.writeInt(filterModifiers(cls.getModifiers(), ModifierType.CLASS));
@@ -69,7 +69,7 @@ public class SerialVersionCalc {
             return 0;
         }
     }
-    
+
     private static void writeInterfaces(DataOutput out, JavaClass cls) throws IOException {
         String[] infs = cls.getInterfaceNames();
         if (infs.length > 0) {
@@ -87,7 +87,7 @@ public class SerialVersionCalc {
             fields = fields.clone();
             Arrays.sort(fields, new FieldSorter());
             for (Field field : fields) {
-                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
+                if (!field.isPrivate() || !field.isStatic() && !field.isTransient()) {
                     out.writeUTF(field.getName());
                     out.writeInt(filterModifiers(field.getModifiers(), ModifierType.FIELD));
                     out.writeUTF(field.getSignature());
@@ -128,7 +128,7 @@ public class SerialVersionCalc {
             }
         }
     }
-    
+
     private static int filterModifiers(int modifier, ModifierType type) {
 
         switch (type) {
