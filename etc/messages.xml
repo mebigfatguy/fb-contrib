@@ -2057,7 +2057,7 @@ str.compareTo("someOtherString");</code></pre>
 			you have something like:<br/>
 <pre><code>
 List&lt;String&gt; words = new ArrayList&lt;String&gt;();
-List&lt;Integer&gt; wordCounts = new ArrayList&lt;String&gt;();
+List&lt;Integer&gt; wordCounts = new ArrayList&lt;Integer&gt;();
 </code></pre>
 			where the elements of the list at index 0 are related, the elements at index 1 are related and so on. </p>
 			<p>
