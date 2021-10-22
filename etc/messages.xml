@@ -6122,7 +6122,20 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	<Details>
     		<![CDATA[
     		<p>This method uses Optional.equals(Optional.empty()). It is more readable and more clear just to use the Optional.isPresent()
-    		method to determine whether the reference exists or not.
+    		method to determine whether the reference exists or not. Use
+    		<br/>
+    		<pre><code>
+            Optional f = getSomeOptional();
+    		if (!f.isPresent()) {
+    		}
+    		</code></pre>
+    		rather than
+    		<br/>
+    		<pre><code>
+   			Optional f = getSomeOptional();
+   			if (f.equals(Optional.empty()) {
+   			}
+    		</code></pre>
     		</p>
     		]]>
     	</Details>    
