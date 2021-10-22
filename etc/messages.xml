@@ -1780,6 +1780,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
             ]]>
         </Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.AkkaIssues">
+        <Details>
+            <![CDATA[
+            <p>Looks for various issues with uses of Akka.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -6105,6 +6115,31 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="OI_OPTIONAL_ISSUES_ISPRESENT_PREFERRED">
+    	<ShortDescription>Method uses Optional.equals(Optional.empty()), when Optional.isPresent is more readable</ShortDescription>
+    	<LongDescription>Method {1} uses Optional.equals(Optional.empty()), when Optional.isPresent is more readable</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method uses Optional.equals(Optional.empty()). It is more readable and more clear just to use the Optional.isPresent()
+    		method to determine whether the reference exists or not. Use
+    		<br/>
+    		<pre><code>
+            Optional f = getSomeOptional();
+    		if (!f.isPresent()) {
+    		}
+    		</code></pre>
+    		rather than
+    		<br/>
+    		<pre><code>
+   			Optional f = getSomeOptional();
+   			if (f.equals(Optional.empty()) {
+   			}
+    		</code></pre>
+    		</p>
+    		]]>
+    	</Details>    
+    </BugPattern>
 
     <BugPattern type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT">
     	<ShortDescription>Method constructs a Date object, merely to convert it to an Instant object</ShortDescription>
@@ -6550,6 +6585,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             ]]>
         </Details> 
     </BugPattern>
+    
+        <BugPattern type="AKI_SUPERFLUOUS_ROUTE_SPECIFICATION">
+        <ShortDescription>Method specifies superfluous routes thru route() or concat()</ShortDescription>
+        <LongDescription>Method {1} specifies superfluous routes thru route() or concat()</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method uses the route() or concat() method to build optional routes but only passes 1 route to the method. 
+            This just causes an extra route specification to be created for no reason. Only use route() or concat() when you have more than
+            one route to combine into one.
+            ]]>
+        </Details> 
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -6701,4 +6748,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 	<BugCode abbrev="SUI">Set Usage Issues</BugCode>
     <BugCode abbrev="SAT">Suspicious Argument Types</BugCode>
     <BugCode abbrev="ENMI">Enum Issues</BugCode>
+    <BugCode abbrev="AKI">Akka Issues</BugCode>
 </MessageCollection>

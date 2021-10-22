@@ -39,5 +39,8 @@
 	<classpathentry kind="lib" path="lib/asm-tree-6.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.10.jar"/>
 	<classpathentry kind="lib" path="lib/jsr305-3.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/akka-actor_2.12-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/akka-http_2.12-10.1.11.jar"/>
+	<classpathentry kind="lib" path="lib/akka-http-core_2.12-10.1.11.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>

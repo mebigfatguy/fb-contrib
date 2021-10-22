@@ -47,7 +47,7 @@ public final class SerialVersionCalc {
 
     public static long uuid(JavaClass cls) throws IOException {
 
-        if (cls.isEnum()) {
+        if (cls.isEnum() || cls.isInterface()) {
             return 0;
         }
 
@@ -91,7 +91,7 @@ public final class SerialVersionCalc {
             fields = fields.clone();
             Arrays.sort(fields, new FieldSorter());
             for (Field field : fields) {
-                if (!field.isPrivate() || (!field.isStatic() && !field.isTransient())) {
+                if (!field.isPrivate() || !field.isStatic() && !field.isTransient()) {
                     out.writeUTF(field.getName());
                     out.writeInt(filterModifiers(field.getModifiers(), ModifierType.FIELD));
                     out.writeUTF(field.getSignature());

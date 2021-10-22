@@ -185,4 +185,11 @@ public class LSC_Sample {
         return stringBuffer.toString();
     }
 
+    String loc;
+
+    public String fp393() {
+        String newLocale = "de_DE".equals(loc) ? "fr_FR" : "de_DE";
+        return newLocale;
+    }
+
 }
