@@ -206,16 +206,23 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 String methodName = getNameConstantOperand();
                 curCalledMethod = new FQMethod(clsName, methodName, getSigConstantOperand());
 
-                if ("java/util/Optional".equals(clsName) && "of".equals(methodName)) {
-                    if (stack.getStackDepth() > 0) {
-                        OpcodeStack.Item itm = stack.getStackItem(0);
-                        String itmSig = itm.getSignature();
-                        if (BOXED_OPTIONAL_TYPES.contains(itmSig)) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(),
-                                            LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
-                        }
-                    }
+                if ("java/util/Optional".equals(clsName)) {
+                	 if ("of".equals(methodName)) {
+	                    if (stack.getStackDepth() > 0) {
+	                        OpcodeStack.Item itm = stack.getStackItem(0);
+	                        String itmSig = itm.getSignature();
+	                        if (BOXED_OPTIONAL_TYPES.contains(itmSig)) {
+	                            bugReporter.reportBug(
+	                                    new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(),
+	                                            LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+	                        }
+	                    }
+                	 } else if ("equals".equals(methodName)) {
+                         bugReporter.reportBug(
+                                 new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_ISPRESENT_PREFERRED.name(),
+                                         LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+
+                	 }
                 }
                 break;
 

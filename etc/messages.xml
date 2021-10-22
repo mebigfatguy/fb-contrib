@@ -6115,6 +6115,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		]]>
     	</Details>
     </BugPattern>
+    
+    <BugPattern type="OI_OPTIONAL_ISSUES_ISPRESENT_PREFERRED">
+    	<ShortDescription>Method uses Optional.equals(Optional.empty()), when Optional.isPresent is more readable</ShortDescription>
+    	<LongDescription>Method {1} uses Optional.equals(Optional.empty()), when Optional.isPresent is more readable</LongDescription>
+    	<Details>
+    		<![CDATA[
+    		<p>This method uses Optional.equals(Optional.empty()). It is more readable and more clear just to use the Optional.isPresent()
+    		method to determine whether the reference exists or not.
+    		</p>
+    		]]>
+    	</Details>    
+    </BugPattern>
 
     <BugPattern type="UAC_UNNECESSARY_API_CONVERSION_DATE_TO_INSTANT">
     	<ShortDescription>Method constructs a Date object, merely to convert it to an Instant object</ShortDescription>

@@ -69,4 +69,8 @@ public class OI_Sample {
     public String fpGet384(String parameterName, Supplier<String> defaultValueSupplier) {
         return this.<String>get(parameterName).orElseGet(defaultValueSupplier);
     }
+    
+    public boolean equalsToEmpty(Optional<String> foo) {
+    	return foo.equals(Optional.empty());
+    }
 }
