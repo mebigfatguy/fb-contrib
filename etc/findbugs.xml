@@ -331,6 +331,7 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.SetUsageIssues" speed="fast" reports="SUI_CONTAINS_BEFORE_ADD,SUI_CONTAINS_BEFORE_REMOVE"/>
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ClassEnvy" speed="slow" reports="CE_CLASS_ENVY" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.InefficientAppendableAppend" speed="fast" reports="IAA_INEFFICIENT_APPENDABLE_APPEND" />
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
 
@@ -342,7 +343,7 @@
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
-
+	<BugPattern abbrev="IAA" type="IAA_INEFFICIENT_APPENDABLE_APPEND" category="PERFORMANCE" />
 	<BugPattern abbrev="ISB" type="ISB_INEFFICIENT_STRING_BUFFERING" category="PERFORMANCE" />
 	<BugPattern abbrev="ISB" type="ISB_EMPTY_STRING_APPENDING" category="PERFORMANCE" />
 	<BugPattern abbrev="ISB" type="ISB_TOSTRING_APPENDING" category="CORRECTNESS" />
