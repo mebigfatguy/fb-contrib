@@ -1,5 +1,6 @@
 package ex;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
@@ -15,6 +16,8 @@ public class NMCS_Sample {
         test1.add("two");
         test1.add("three");
     }
+
+    private static Map<String, String> fp = new HashMap<>();
 
     private Map<String, String> test2 = new Hashtable<String, String>();
 
@@ -34,7 +37,7 @@ public class NMCS_Sample {
         return sb.toString();
     }
 
-    public String test2() {
+    public String test2(String s) {
         test2 = new Hashtable<String, String>();
 
         return test2.get("foo");
@@ -48,6 +51,10 @@ public class NMCS_Sample {
 
     public List<String> test4(boolean b1, boolean b2) {
         return b1 ? test4 : b2 ? new Vector<String>() : test4;
+    }
+
+    public void fpComputeIfAbsent(String val) {
+        fp.computeIfAbsent(val, this::test2);
     }
 
 }

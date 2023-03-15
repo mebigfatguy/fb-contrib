@@ -106,6 +106,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         riskyMethodNameContents.add("close");
         riskyMethodNameContents.add("copy");
         riskyMethodNameContents.add("currentTimeMillis");
+        riskyMethodNameContents.add("insert");
         riskyMethodNameContents.add("nanoTime");
         riskyMethodNameContents.add("new");
         riskyMethodNameContents.add("noneOf");
@@ -117,6 +118,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         riskyMethodNameContents.add("emptySet");
         riskyMethodNameContents.add("emptyMap");
         riskyMethodNameContents.add("generate");
+        riskyMethodNameContents.add("stream");
 
         String userNameProp = System.getProperty(PRMC_RISKY_FIELD_USER_KEY);
         if (userNameProp != null) {
@@ -174,7 +176,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
     }
 
     private static final Set<FQMethod> commonMethods = UnmodifiableSet.create(
-            // @formatter:off
+    // @formatter:off
             new FQMethod("java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"),
             new FQMethod("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;"),
             new FQMethod("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;"),

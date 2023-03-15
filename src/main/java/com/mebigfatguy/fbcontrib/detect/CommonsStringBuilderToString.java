@@ -144,8 +144,12 @@ public class CommonsStringBuilderToString extends OpcodeStackDetector {
                         && TOSTRINGBUILDER_CTOR_SIGS.contains(calledMethodSig)) {
                     stackTracker.add(new StringBuilderInvokedStatus(-1, false));
                 } else if ("append".equals(calledMethodName)) {
-                    StringBuilderInvokedStatus p = stackTracker.pop();
-                    stackTracker.add(new StringBuilderInvokedStatus(p.register, true));
+                    if (stackTracker.size() > 0) {
+                        StringBuilderInvokedStatus p = stackTracker.pop();
+                        stackTracker.add(new StringBuilderInvokedStatus(p.register, true));
+                    } else {
+                        stackTracker.add(new StringBuilderInvokedStatus(0, true));
+                    }
                 } else if (Values.TOSTRING.equals(calledMethodName)
                         && SignatureBuilder.SIG_VOID_TO_STRING.equals(calledMethodSig)) {
                     StringBuilderInvokedStatus p = stackTracker.pop();

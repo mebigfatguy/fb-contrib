@@ -6,6 +6,8 @@ import java.net.ServerSocket;
 import java.security.SecureRandom;
 import java.util.Locale;
 import java.util.Random;
+import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -15,7 +17,7 @@ import javax.net.ssl.SSLServerSocketFactory;
 
 public class MDM_Sample implements Runnable {
     private ReentrantLock myLock;
-
+    private CyclicBarrier barrier;
     public MDM_Sample() throws Exception {
         boolean b;
 
@@ -110,5 +112,10 @@ public class MDM_Sample implements Runnable {
 
     private void fpAssertReentrantLock() {
         assert myLock.isHeldByCurrentThread();
+    }
+
+    private void fpCyclicBarrier() throws Exception {
+        barrier.await(1, TimeUnit.MINUTES);
+
     }
 }

@@ -4,6 +4,7 @@ import java.nio.ByteBuffer;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -157,6 +158,12 @@ public class PRMC_Sample {
     public void fpWithGenericReturn() {
         Set<String> s = ImmutableSet.of();
         Set<Integer> i = ImmutableSet.of();
+    }
+
+    public String fpStream(Collection<String> c) {
+        String s1 = c.stream().filter((s) -> s.startsWith("A")).findFirst().get();
+        String s2 = c.stream().filter((s) -> s.startsWith("B")).findFirst().get();
+        return s1 + s2;
     }
 
     void willThrow() {

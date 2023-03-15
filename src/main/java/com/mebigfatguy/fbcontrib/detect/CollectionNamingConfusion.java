@@ -137,8 +137,9 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     private boolean checkConfusedName(String methodOrVariableName, String signature) {
         try {
             String name = methodOrVariableName.toLowerCase(Locale.ENGLISH);
-            if ((name.endsWith("map") || (name.endsWith("set") && !name.endsWith("toset")) || name.endsWith("list")
-                    || name.endsWith("queue")) && signature.startsWith("Ljava/util/")) {
+            if ((name.endsWith("map") || (name.endsWith("set") && !name.endsWith("offset")) || name.endsWith("list")
+                    || name.endsWith("deque") || name.endsWith("queue") || name.endsWith("stack"))
+                    && signature.startsWith("Ljava/util/")) {
                 String clsName = SignatureUtils.stripSignature(signature);
                 JavaClass cls = Repository.lookupClass(clsName);
                 if ((cls.implementationOf(mapInterface) && !name.endsWith("map"))

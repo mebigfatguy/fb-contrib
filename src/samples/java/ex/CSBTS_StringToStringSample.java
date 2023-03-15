@@ -54,4 +54,18 @@ public class CSBTS_StringToStringSample {
         System.out.println("P - Once Again " + y.toString());
         System.out.println("P - Again " + x.toString());
     }
+
+    public class FPAppend extends ToStringBuilder {
+
+        FPAppend(Object object) {
+            super(object);
+        }
+
+        @Override
+        public ToStringBuilder append(Object obj) {
+            return super.append(obj);
+        }
+
+    }
+
 }
