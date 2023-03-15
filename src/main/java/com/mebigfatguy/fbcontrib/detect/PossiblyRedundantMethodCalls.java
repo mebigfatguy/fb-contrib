@@ -116,6 +116,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 		riskyMethodNameContents.add("emptySet");
 		riskyMethodNameContents.add("emptyMap");
 		riskyMethodNameContents.add("generate");
+		riskyMethodNameContents.add("stream");
 
 		String userNameProp = System.getProperty(PRMC_RISKY_FIELD_USER_KEY);
 		if (userNameProp != null) {
@@ -173,7 +174,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 	}
 
 	private static final Set<FQMethod> commonMethods = UnmodifiableSet.create(
-			// @formatter:off
+	// @formatter:off
 			new FQMethod("java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"),
 			new FQMethod("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;"),
 			new FQMethod("java/lang/Character", "valueOf", "(C)Ljava/lang/Character;"),
@@ -404,7 +405,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 									bugReporter.reportBug(
 											new BugInstance(this, BugType.PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS.name(),
 													getBugPriority(methodName, mi)).addClass(this).addMethod(this)
-															.addSourceLine(this).addString(methodName + signature));
+													.addSourceLine(this).addString(methodName + signature));
 								}
 							}
 						}
