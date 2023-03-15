@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mebigfatguy.fb-contrib</groupId>
     <artifactId>fb-contrib</artifactId>
-    <version>7.4.8-SNAPSHOT</version>
+    <version>7.6.0</version>
 
     <!-- TODO: Delete this and replace with enforcer plugin.  This is for maven plugins only!  Latest maven will through warnings. -->
     <prerequisites>
