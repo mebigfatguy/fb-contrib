@@ -9,52 +9,52 @@ import java.util.Set;
 import java.util.Vector;
 
 public class NMCS_Sample {
-	private static List<String> test1 = new Vector<String>();
+    private static List<String> test1 = new Vector<String>();
 
-	static {
-		test1.add("one");
-		test1.add("two");
-		test1.add("three");
-	}
+    static {
+        test1.add("one");
+        test1.add("two");
+        test1.add("three");
+    }
 
-	private static Map<String, String> fp = new HashMap<>();
+    private static Map<String, String> fp = new HashMap<>();
 
-	private Map<String, String> test2 = new Hashtable<String, String>();
+    private Map<String, String> test2 = new Hashtable<String, String>();
 
-	private Set<String> test3 = new HashSet<String>();
+    private Set<String> test3 = new HashSet<String>();
 
-	private List<String> test4 = new Vector<String>();
+    private List<String> test4 = new Vector<String>();
 
-	public String test1() {
-		StringBuffer sb = new StringBuffer();
-		String comma = "";
-		for (String s : test1) {
-			sb.append(comma);
-			comma = ",";
-			sb.append(s);
-		}
+    public String test1() {
+        StringBuffer sb = new StringBuffer();
+        String comma = "";
+        for (String s : test1) {
+            sb.append(comma);
+            comma = ",";
+            sb.append(s);
+        }
 
-		return sb.toString();
-	}
+        return sb.toString();
+    }
 
-	public String test2(String s) {
-		test2 = new Hashtable<String, String>();
+    public String test2(String s) {
+        test2 = new Hashtable<String, String>();
 
-		return test2.get("foo");
-	}
+        return test2.get("foo");
+    }
 
-	public Set<String> test3() {
-		Set<String> temp = test3;
-		temp.add("Foo");
-		return temp;
-	}
+    public Set<String> test3() {
+        Set<String> temp = test3;
+        temp.add("Foo");
+        return temp;
+    }
 
-	public List<String> test4(boolean b1, boolean b2) {
-		return b1 ? test4 : b2 ? new Vector<String>() : test4;
-	}
+    public List<String> test4(boolean b1, boolean b2) {
+        return b1 ? test4 : b2 ? new Vector<String>() : test4;
+    }
 
-	public void fpComputeIfAbsent(String val) {
-		fp.computeIfAbsent(val, this::test2);
-	}
+    public void fpComputeIfAbsent(String val) {
+        fp.computeIfAbsent(val, this::test2);
+    }
 
 }
