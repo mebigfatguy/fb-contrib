@@ -74,9 +74,10 @@ public class NeedlessMemberCollectionSynchronization extends BytecodeScanningDet
 	private static Set<String> syncCollections = UnmodifiableSet.create("java/util/Vector", "java/util/Hashtable");
 
 	private static Set<String> modifyingMethods = UnmodifiableSet.create("add", "addAll", "addFirst", "addElement",
-			"addLast", "clear", "computeIfAbsent", "insertElementAt", "put", "remove", "removeAll", "removeAllElements",
-			"removeElement", "removeElementAt", "removeFirst", "removeLast", "removeRange", "retainAll", "set",
-			"setElementAt", "setSize");
+			"addLast", "clear", "compute", "computeIfAbsent", "computeIfPresent", "insertElementAt", "merge", "put",
+			"putAll", "putIfAbsent", "remove", "removeAll", "removeAllElements", "removeElement", "removeElementAt",
+			"removeFirst", "removeLast", "removeRange", "replace", "replaceAll", "retainAll", "set", "setElementAt",
+			"setSize");
 
 	private enum State {
 		IN_METHOD, IN_CLINIT, IN_INIT
