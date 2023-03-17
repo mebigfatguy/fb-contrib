@@ -87,6 +87,8 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
     private static final String MBEAN_CLASS = "org/meanbean/test/BeanTester";
     private static final String MBEAN_METHOD = "testBean";
 
+    private static final String RESULTSACTION_CLASS = "org/springframework/test/web/servlet/ResultActions";
+
     private BugReporter bugReporter;
     private JavaClass testCaseClass;
     private JavaClass testAnnotationClass;
@@ -336,6 +338,11 @@ public class UnitTestAssertionOddities extends BytecodeScanningDetector {
                 if (MBEAN_CLASS.equals(className)) {
                     String methodName = getNameConstantOperand();
                     if (MBEAN_METHOD.equals(methodName)) {
+                        sawAssert = true;
+                    }
+                } else if (RESULTSACTION_CLASS.equals(className)) {
+                    String methodName = getMethodName();
+                    if ("andExpect".equals(methodName) || "andExpectAll".equals(methodName)) {
                         sawAssert = true;
                     }
                 }
