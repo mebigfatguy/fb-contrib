@@ -99,8 +99,9 @@ public class EnumIssues extends BytecodeScanningDetector {
                 if (seen == PUTSTATIC) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
-                        String sig = item.getSignature();
-                        if (clsName.equals(SignatureUtils.stripSignature(sig))) {
+                        String sig = SignatureUtils
+                                .getNonAnonymousPortion(SignatureUtils.stripSignature(item.getSignature()));
+                        if (clsName.equals(sig)) {
                             numEnumValues++;
                         }
                     }

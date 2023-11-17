@@ -33,3 +33,10 @@ public class ENMI_Sample {
         }
     }
 }
+
+enum ENMIFP {
+    C1 {
+    },
+    C2 {
+    }
+}
