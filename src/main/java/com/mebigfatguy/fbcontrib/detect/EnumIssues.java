@@ -43,6 +43,7 @@ public class EnumIssues extends BytecodeScanningDetector {
     private String clsName;
     private boolean isEnum;
     private boolean inEnumInitializer;
+    private boolean isAnonEnum;
     private int numEnumValues;
 
     /**
@@ -83,10 +84,11 @@ public class EnumIssues extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
 
         inEnumInitializer = isEnum && getMethod().getName().equals(Values.STATIC_INITIALIZER);
+        isAnonEnum = false;
         variableTable = getMethod().getLocalVariableTable();
         super.visitCode(obj);
 
-        if (inEnumInitializer && numEnumValues <= 1) {
+        if (inEnumInitializer && numEnumValues <= 1 && !isAnonEnum) {
             bugReporter.reportBug(new BugInstance(this, BugType.ENMI_ONE_ENUM_VALUE.name(), NORMAL_PRIORITY)
                     .addClass(this).addMethod(this).addSourceLine(this));
         }
@@ -99,9 +101,12 @@ public class EnumIssues extends BytecodeScanningDetector {
                 if (seen == PUTSTATIC) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item item = stack.getStackItem(0);
-                        String sig = SignatureUtils
-                                .getNonAnonymousPortion(SignatureUtils.stripSignature(item.getSignature()));
-                        if (clsName.equals(sig)) {
+                        String sig = SignatureUtils.stripSignature(item.getSignature());
+                        String anonSig = SignatureUtils.getNonAnonymousPortion(sig);
+                        if (!sig.equals(anonSig)) {
+                            isAnonEnum = true;
+                        }
+                        if (clsName.equals(anonSig)) {
                             numEnumValues++;
                         }
                     }
