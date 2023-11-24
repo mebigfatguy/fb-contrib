@@ -99,7 +99,9 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             "Ljavax/servlet/ServletConfig;",
             "Ljavax/servlet/ServletContext;",
             "Ljavax/servlet/http/HttpServletRequest;",
-            "Ljavax/servlet/http/HttpServletResponse;"
+            "Ljavax/servlet/http/HttpServletResponse;",
+            
+            "Lorg/glassfish/jersey/server/CloseableService;"
             //@formatter:on
     );
 
@@ -142,29 +144,31 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         for (AnnotationEntry entry : obj.getAnnotationEntries()) {
             String annotationType = entry.getAnnotationType();
             switch (annotationType) {
-                case "Ljavax/ws/rs/GET;":
-                    hasGet = true;
+            case "Ljavax/ws/rs/GET;":
+                hasGet = true;
+                isJAXRS = true;
+                break;
+
+            case "Ljavax/ws/rs/Consumes;":
+                hasConsumes = true;
+                break;
+
+            case "Ljavax/ws/rs/Path;":
+                path = getDefaultAnnotationValue(entry);
+                break;
+
+            default:
+                // it is fine that GET is not captured here
+                if (METHOD_ANNOTATIONS.contains(annotationType)) {
                     isJAXRS = true;
-                break;
-
-                case "Ljavax/ws/rs/Consumes;":
-                    hasConsumes = true;
-                break;
-
-                case "Ljavax/ws/rs/Path;":
-                    path = getDefaultAnnotationValue(entry);
-                break;
-
-                default:
-                    // it is fine that GET is not captured here
-                    if (METHOD_ANNOTATIONS.contains(annotationType)) {
-                        isJAXRS = true;
-                    }
+                }
                 break;
             }
 
             if (hasGet && hasConsumes) {
-                bugReporter.reportBug(new BugInstance(this, BugType.JXI_GET_ENDPOINT_CONSUMES_CONTENT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
+                bugReporter.reportBug(
+                        new BugInstance(this, BugType.JXI_GET_ENDPOINT_CONSUMES_CONTENT.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this));
                 break;
             }
         }
@@ -192,14 +196,16 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                         if ((path != null) && "Ljavax/ws/rs/PathParam;".equals(annotationType)) {
                             String parmPath = getDefaultAnnotationValue(a);
                             if ((parmPath != null) && (!path.matches(".*\\{" + parmPath + "\\b.*"))) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY).addClass(this)
+                                bugReporter.reportBug(new BugInstance(this,
+                                        BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY).addClass(this)
                                         .addMethod(this).addString("Path param: " + parmPath));
                             }
                         } else if ("Ljavax/ws/rs/core/Context;".equals(annotationType)) {
                             String parmSig = parmTypes[parmIndex].getSignature();
                             if (!VALID_CONTEXT_TYPES.contains(parmSig)) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.JXI_INVALID_CONTEXT_PARAMETER_TYPE.name(), NORMAL_PRIORITY).addClass(this)
-                                        .addMethod(this).addString("Parameter signature: " + parmSig));
+                                bugReporter.reportBug(new BugInstance(this,
+                                        BugType.JXI_INVALID_CONTEXT_PARAMETER_TYPE.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addString("Parameter signature: " + parmSig));
                             }
                         }
                     }
@@ -207,11 +213,13 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
 
                 if (!foundParamAnnotation) {
 
-                    if ((!sawBareParm) && (hasConsumes || NATIVE_JAXRS_TYPES.contains(parmTypes[parmIndex].getSignature()))) {
+                    if ((!sawBareParm)
+                            && (hasConsumes || NATIVE_JAXRS_TYPES.contains(parmTypes[parmIndex].getSignature()))) {
                         sawBareParm = true;
                     } else {
-                        bugReporter.reportBug(new BugInstance(this, BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY).addClass(this)
-                                .addMethod(this).addString("Parameter " + (parmIndex + 1)));
+                        bugReporter.reportBug(new BugInstance(this,
+                                BugType.JXI_UNDEFINED_PARAMETER_SOURCE_IN_ENDPOINT.name(), NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addString("Parameter " + (parmIndex + 1)));
                         break;
                     }
 
