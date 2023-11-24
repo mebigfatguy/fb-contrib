@@ -75,7 +75,10 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             "Ljavax/ws/rs/core/Application;", "Ljavax/ws/rs/core/UriInfo;", "Ljavax/ws/rs/core/HttpHeaders;",
             "Ljavax/ws/rs/core/Request;", "Ljavax/ws/rs/core/SecurityContext;", "Ljavax/ws/rs/ext/Providers;",
             "Ljavax/servlet/ServletConfig;", "Ljavax/servlet/ServletContext;",
-            "Ljavax/servlet/http/HttpServletRequest;", "Ljavax/servlet/http/HttpServletResponse;"
+            "Ljavax/servlet/http/HttpServletRequest;", "Ljavax/servlet/http/HttpServletResponse;",
+            "Ljavax/servlet/http/HttpServletResponse;",
+            
+            "Lorg/glassfish/jersey/server/CloseableService;"
     // @formatter:on
     );
 

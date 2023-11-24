@@ -40,3 +40,10 @@ enum ENMIFP {
     C2 {
     }
 }
+
+enum ENMISingletonFP {
+    INSTANCE {
+        public void doIt() {
+        };
+    }
+}
