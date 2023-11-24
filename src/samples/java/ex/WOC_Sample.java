@@ -71,6 +71,13 @@ public class WOC_Sample {
         memberSet.add("fo");
         fpSet.add("boo");
         helper(0, m);
+
+        List l = new ArrayList<String>();
+
+        l.add("a");
+        l.add("b");
+
+        doSomethingWithList(l);
     }
 
     public void testFPWOCCopy() {
@@ -109,7 +116,13 @@ public class WOC_Sample {
     }
 
     private void helper(int i, Map<String, String> x) {
-        System.out.println(x.get(i));
+        System.out.println(x.get(String.valueOf(i)));
+    }
+
+    private void doSomethingWithList(List<String> l) {
+        for (String s : l) {
+            System.out.println(s);
+        }
     }
 
     // no tag, put in anonymous class
