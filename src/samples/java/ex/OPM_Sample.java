@@ -109,16 +109,16 @@ class GitHubIssue206 {
 class GitHubIssue437 implements GHI437Inf {
 
     @Override
-    public Integer[] getObj(String type) {
+    public Integer[] getObj(int type) {
         return new Integer[0];
     }
 
     public void tryIt() {
         GitHubIssue437 ghi = new GitHubIssue437();
-        ghi.getObj("");
+        ghi.getObj(1);
     }
 }
 
 interface GHI437Inf {
-    Object getObj(String type);
+    Object getObj(int type);
 }

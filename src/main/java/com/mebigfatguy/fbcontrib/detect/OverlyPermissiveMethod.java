@@ -351,7 +351,7 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
                             for (int i = 0; i < infTypes.size(); i++) {
                                 String infParmType = infTypes.get(i);
                                 String fqParmType = fqTypes.get(i);
-                                if (infParmType.equals(fqParmType)) {
+                                if (!infParmType.equals(fqParmType)) {
                                     if (infParmType.charAt(0) != 'L' || fqParmType.charAt(0) != 'L') {
                                         matches = false;
                                         break;
