@@ -1,4 +1,5 @@
 package ex;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
@@ -36,7 +37,7 @@ public class WOC_Sample {
             System.out.println("woops");
         }
     }
-    
+
     public void testGuavaWOCSimple() {
         // tag WOC_WRITE_ONLY_COLLECTION_LOCAL
         Set<String> s = Sets.newHashSet();
@@ -46,10 +47,10 @@ public class WOC_Sample {
             System.out.println("woops");
         }
     }
-    
+
     public void testIterateEmpty() {
         Set<String> ss = new HashSet<String>();
-        
+
         for (String s : ss) {
         }
     }
@@ -70,6 +71,13 @@ public class WOC_Sample {
         memberSet.add("fo");
         fpSet.add("boo");
         helper(0, m);
+
+        List l = new ArrayList<String>();
+
+        l.add("a");
+        l.add("b");
+
+        doSomethingWithList(l);
     }
 
     public void testFPWOCCopy() {
@@ -104,11 +112,17 @@ public class WOC_Sample {
         s.add("foo");
         s.add("bar");
 
-        return b ? s : Collections.<String> emptySet();
+        return b ? s : Collections.<String>emptySet();
     }
 
     private void helper(int i, Map<String, String> x) {
-        System.out.println(x.get(i));
+        System.out.println(x.get(String.valueOf(i)));
+    }
+
+    private void doSomethingWithList(List<String> l) {
+        for (String s : l) {
+            System.out.println(s);
+        }
     }
 
     // no tag, put in anonymous class
