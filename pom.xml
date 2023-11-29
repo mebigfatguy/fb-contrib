@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mebigfatguy.fb-contrib</groupId>
     <artifactId>fb-contrib</artifactId>
-    <version>7.6.1</version>
+    <version>7.6.2</version>
 
     <!-- TODO: Delete this and replace with enforcer plugin.  This is for maven plugins only!  Latest maven will through warnings. -->
     <prerequisites>
@@ -98,6 +98,9 @@
         </contributor>
         <contributor>
         	<name>Pavel Roskin</name>
+        </contributor>
+        <contributor>
+        	<name>Kevin Seymour</name>
         </contributor>
     </contributors>
 
