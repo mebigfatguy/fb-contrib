@@ -130,7 +130,6 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
         nim.add("addLast");
         nim.add("clear");
         nim.add("ensureCapacity");
-        nim.add("forEach");
         nim.add("insertElementAt");
         nim.add("push");
         nim.add("put");
