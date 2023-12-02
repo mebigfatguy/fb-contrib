@@ -48,6 +48,7 @@ Contributors
 * Rubén López
 * Pavel Roskin
 * Kevin Seymour
+* Piotrek Żygieło
 
 
 fb-contrib has two main branches, 'findbugs' and 'spotbugs'. Code is committed to findbugs, and then merged to spotbugs.
