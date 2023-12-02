@@ -151,6 +151,10 @@ public class LO_Sample {
             l3.error("Whoops", fts.toString(null));
         }
 
+        public void fp419IgnoreToStringOnException(RuntimeException e) {
+            l3.error("Whoops {}", e.toString());
+        }
+
         public class Inner {
             public void fpUseAnon() {
                 ActionListener l = new ActionListener() {

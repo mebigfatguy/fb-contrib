@@ -187,6 +187,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         String ldcClassName = null;
         String seenMethodName = null;
+        String callingClsName = null;
         boolean seenToString = false;
         boolean seenFormatterLogger = false;
         int exMessageReg = -1;
@@ -234,7 +235,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         }
                     }
                 } else if ("getMessage".equals(mthName)) {
-                    String callingClsName = getClassConstantOperand();
+                    callingClsName = getClassConstantOperand();
                     JavaClass cls = Repository.lookupClass(callingClsName);
                     if (cls.instanceOf(throwableClass) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item exItem = stack.getStackItem(0);
@@ -244,7 +245,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                     checkForProblemsWithLoggerMethods();
                 } else if (Values.TOSTRING.equals(mthName)
                         && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())) {
-                    String callingClsName = getClassConstantOperand();
+                    callingClsName = getClassConstantOperand();
                     if (SignatureUtils.isPlainStringConvertableClass(callingClsName) && (stack.getStackDepth() > 0)) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         // if the stringbuilder was previously stored, don't report it
@@ -330,7 +331,7 @@ public class LoggerOddities extends BytecodeScanningDetector {
                 } else if (simpleFormat) {
                     item.setUserValue(new LOUserValue<>(LOUserValue.LOType.SIMPLE_FORMAT, Boolean.TRUE));
                 } else if (seenToString) {
-                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.TOSTRING, null));
+                    item.setUserValue(new LOUserValue<>(LOUserValue.LOType.TOSTRING, callingClsName));
                 } else if (seenFormatterLogger) {
                     item.setUserValue(new LOUserValue<>(LOUserValue.LOType.FORMATTER_LOGGER, null));
                 }
@@ -469,11 +470,10 @@ public class LoggerOddities extends BytecodeScanningDetector {
                         boolean hasEx = hasExceptionOnStack();
                         if ((!hasEx && (expectedParms != actualParms)) || (hasEx
                                 && ((expectedParms != (actualParms - 1)) && (expectedParms != actualParms)))) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(),
-                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this)
-                                                    .addString("Expected: " + expectedParms)
-                                                    .addString("Actual: " + actualParms));
+                            bugReporter.reportBug(new BugInstance(this,
+                                    BugType.LO_INCORRECT_NUMBER_OF_ANCHOR_PARAMETERS.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this)
+                                    .addString("Expected: " + expectedParms).addString("Actual: " + actualParms));
                         }
                     }
                 }
@@ -503,7 +503,29 @@ public class LoggerOddities extends BytecodeScanningDetector {
             foundToString = ((uv != null) && ((uv.getType() == LOUserValue.LOType.TOSTRING)
                     || (uv.getType() == LOUserValue.LOType.METHOD_NAME)));
             if (foundToString) {
-                break;
+                String callingClassName = (String) uv.getValue();
+                if (callingClassName != null) {
+                    try {
+                        JavaClass cls = Repository.lookupClass(callingClassName);
+                        if (Values.DOTTED_JAVA_LANG_EXCEPTION.equals(cls.getClassName())) {
+                            foundToString = false;
+                        } else {
+                            JavaClass[] supers = cls.getSuperClasses();
+
+                            for (JavaClass spr : supers) {
+                                if (Values.DOTTED_JAVA_LANG_EXCEPTION.equals(spr.getClassName())) {
+                                    foundToString = false;
+                                    break;
+                                }
+                            }
+                        }
+                    } catch (ClassNotFoundException cnfe) {
+                        bugReporter.reportMissingClass(cnfe);
+                    }
+                }
+                if (foundToString) {
+                    break;
+                }
             }
         }
 
@@ -740,6 +762,5 @@ public class LoggerOddities extends BytecodeScanningDetector {
         public String toString() {
             return ToString.build(this);
         }
-
     }
 }
