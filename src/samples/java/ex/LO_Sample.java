@@ -127,7 +127,8 @@ public class LO_Sample {
             // no tag An additional exception argument is allowed if found
             l3.error("This is a problem {}", "hello", new IOException("Yikes"));
             // no tag An additional exception argument is allowed if found
-            l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello", "hello", new RuntimeException("yikes"));
+            l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello", "hello",
+                    new RuntimeException("yikes"));
             // no tag
             l3.error("This is a problem {} and this {}", "hello", new RuntimeException("yikes"));
         }
@@ -148,6 +149,10 @@ public class LO_Sample {
 
         public void fpFalseToString(FunnyToString fts) {
             l3.error("Whoops", fts.toString(null));
+        }
+
+        public void fp419IgnoreToStringOnException(RuntimeException e) {
+            l3.error("Whoops {}", e.toString());
         }
 
         public class Inner {
@@ -265,19 +270,25 @@ public class LO_Sample {
         // tag LO_SUSPECT_LOG_CLASS
         private static org.apache.logging.log4j.Logger l1 = org.apache.logging.log4j.LogManager.getLogger(String.class);
         // no tag
-        private static org.apache.logging.log4j.Logger l2 = org.apache.logging.log4j.LogManager.getLogger("com.foo.LO_Sample");
+        private static org.apache.logging.log4j.Logger l2 = org.apache.logging.log4j.LogManager
+                .getLogger("com.foo.LO_Sample");
         // no tag
-        private static final org.apache.logging.log4j.Logger l3 = org.apache.logging.log4j.LogManager.getLogger(LO_Sample.class);
+        private static final org.apache.logging.log4j.Logger l3 = org.apache.logging.log4j.LogManager
+                .getLogger(LO_Sample.class);
         // tag LO_SUSPECT_LOG_CLASS
-        private static org.apache.logging.log4j.Logger l4 = org.apache.logging.log4j.LogManager.getLogger(ActionEvent.class.getName());
+        private static org.apache.logging.log4j.Logger l4 = org.apache.logging.log4j.LogManager
+                .getLogger(ActionEvent.class.getName());
         // no tag
-        private static org.apache.logging.log4j.Logger l5 = org.apache.logging.log4j.LogManager.getLogger(LO_Sample.class.getName());
+        private static org.apache.logging.log4j.Logger l5 = org.apache.logging.log4j.LogManager
+                .getLogger(LO_Sample.class.getName());
         // no tag
-        private static org.apache.logging.log4j.Logger l6 = org.apache.logging.log4j.LogManager.getLogger("my.nasty.logger.LOGGER");
+        private static org.apache.logging.log4j.Logger l6 = org.apache.logging.log4j.LogManager
+                .getLogger("my.nasty.logger.LOGGER");
 
         public static org.apache.logging.log4j.Logger l7 = org.apache.logging.log4j.LogManager.getLogger(Log4j2.class);
 
-        private static org.apache.logging.log4j.Logger l8 = org.apache.logging.log4j.LogManager.getFormatterLogger(Log4j2.class);
+        private static org.apache.logging.log4j.Logger l8 = org.apache.logging.log4j.LogManager
+                .getFormatterLogger(Log4j2.class);
 
         // no tag
         private org.apache.logging.log4j.Logger someLocalLogger;
@@ -375,7 +386,8 @@ public class LO_Sample {
             // no tag An additional exception argument is allowed if found
             l3.error("This is a problem {}", "hello", new IOException("Yikes"));
             // no tag An additional exception argument is allowed if found
-            l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello", "hello", new RuntimeException("yikes"));
+            l3.error("This is a problem {} and this {} and this {} and this {}", "hello", "hello", "hello", "hello",
+                    new RuntimeException("yikes"));
             // no tag
             l3.error("This is a problem {} and this {}", "hello", new RuntimeException("yikes"));
         }
