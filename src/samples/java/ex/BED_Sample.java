@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Optional;
@@ -112,6 +113,10 @@ public class BED_Sample {
         return p;
     }
 
+    private void fp406(String p) throws UnsupportedEncodingException {
+        byte[] v = p.getBytes("UTF8");
+    }
+
     static class FPAnonBase {
 
         FPAnonBase(InputStream is) throws IOException {
@@ -131,6 +136,7 @@ public class BED_Sample {
 
     /* is caught based on the option fb-contrib.bed.ignore_inherited */
     static class ChildBED extends BaseBED {
+        @Override
         public void foo() throws IOException {
         }
     }

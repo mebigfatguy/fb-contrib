@@ -31,6 +31,7 @@ import org.apache.bcel.classfile.Method;
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
@@ -54,12 +55,18 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
     private static final String IGNORE_INHERITED_METHODS_PROPERTY = "fb-contrib.bed.ignore_inherited";
 
-    private static final Set<String> safeClasses = UnmodifiableSet.create(
+    private static final Set<String> SAFE_CLASSES = UnmodifiableSet.create(
             // @formatter:off
             Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_STRING, Values.SLASHED_JAVA_LANG_INTEGER,
             Values.SLASHED_JAVA_LANG_LONG, Values.SLASHED_JAVA_LANG_FLOAT, Values.SLASHED_JAVA_LANG_DOUBLE,
             Values.SLASHED_JAVA_LANG_SHORT, Values.SLASHED_JAVA_LANG_BYTE, Values.SLASHED_JAVA_LANG_BOOLEAN
-    // @formatter:on
+    //@formatter:on
+    );
+
+    private static final Set<FQMethod> SAFE_EXCEPTION_METHODS = UnmodifiableSet.create(
+    //@formatter:off
+            new FQMethod(Values.SLASHED_JAVA_LANG_STRING, "getBytes", "(Ljava/lang/String;)[B")
+    //@formatter:on
     );
 
     private static final boolean IGNORE_INHERITED_METHODS = Boolean.getBoolean(IGNORE_INHERITED_METHODS_PROPERTY);
@@ -229,7 +236,8 @@ public class BogusExceptionDeclaration extends BytecodeScanningDetector {
 
             if (OpcodeUtils.isStandardInvoke(seen)) {
                 String clsName = getClassConstantOperand();
-                if (!safeClasses.contains(clsName)) {
+                if (!SAFE_CLASSES.contains(clsName) || SAFE_EXCEPTION_METHODS
+                        .contains(new FQMethod(clsName, getNameConstantOperand(), getSigConstantOperand()))) {
                     try {
                         JavaClass cls = Repository.lookupClass(clsName);
                         Method[] methods = cls.getMethods();
