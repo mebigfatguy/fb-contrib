@@ -166,6 +166,12 @@ public class PRMC_Sample {
         return s1 + s2;
     }
 
+    public void fp416IgnoreLength(StringBuilder s) {
+        s.insert(s.length() - 2, "(?:");
+        s.insert(s.length() - 2, ",");
+        s.insert(s.length() - 2, "|$)");
+    }
+
     void willThrow() {
         throw new RuntimeException("kaboom!");
     }
