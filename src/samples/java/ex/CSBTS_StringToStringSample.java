@@ -68,4 +68,15 @@ public class CSBTS_StringToStringSample {
 
     }
 
+    public class CustomToStringBuilder409 extends ToStringBuilder {
+
+        CustomToStringBuilder409(Object object) {
+            super(object);
+        }
+
+        @Override
+        public ToStringBuilder append(Object obj) {
+            return super.append(obj);
+        }
+    }
 }
