@@ -21,7 +21,7 @@ For SpotBugs
 
        GroupId: com.mebigfatguy.sb-contrib
     ArtifactId: sb-contrib
-       
+       Version: 7.6.3
        
 Developer
 * Dave Brosius
