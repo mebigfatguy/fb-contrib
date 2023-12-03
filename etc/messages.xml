@@ -1980,8 +1980,9 @@ private void appendToList(List&lt;String&gt; list) {
 			<![CDATA[
 			<p>This method declares a RuntimeException derived class in its throws clause.
 			This may indicate a misunderstanding as to how unchecked exceptions are handled.
-			If it is felt that a RuntimeException is so prevalent that it should be declared, it
-			is probably a better idea to prevent the occurrence in code.</p>
+			If it is felt that a RuntimeException is so prevalent that it should be declared for 
+			documentation purposes, using javadoc's @throws clause is a better idea, as it doesn't 
+			needless pollute the method signature,</p>
 			]]>
 		</Details>
 	</BugPattern>
