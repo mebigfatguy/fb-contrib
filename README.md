@@ -10,10 +10,17 @@ For information see http://fb-contrib.sf.net
 
 Available on [maven.org](http://search.maven.org/#search%7Cgav%7C1%7Cg%3A%22com.mebigfatguy.fb-contrib%22%20AND%20a%3A%22fb-contrib%22)
 
-       GroupId: com.mebigfatguy.fb-contrib
-    ArtifactId: fb-contrib of sb-contrib
-       Version: 7.6.3
+for FindBugs:
 
+       GroupId: com.mebigfatguy.fb-contrib
+    ArtifactId: fb-contrib
+       Version: 7.6.3
+       
+For SpotBugs
+
+       GroupId: com.mebigfatguy.sb-contrib
+    ArtifactId: sb-contrib
+       Version: 7.6.3
 
 Developer
 * Dave Brosius
