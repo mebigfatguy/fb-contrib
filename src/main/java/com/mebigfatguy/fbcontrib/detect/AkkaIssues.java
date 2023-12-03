@@ -39,8 +39,10 @@ public class AkkaIssues extends BytecodeScanningDetector {
 
     private BugReporter bugReporter;
     private OpcodeStack stack;
-    private JavaClass routeDirectivesClass;
+    private JavaClass akkaRouteDirectivesClass;
+    private JavaClass pekkoRouteDirectivesClass;
     private boolean hasAkka;
+    private boolean hasPekko;
 
     /**
      * constructs a AKI detector given the reporter to report bugs on
@@ -51,16 +53,23 @@ public class AkkaIssues extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
 
         try {
-            routeDirectivesClass = Repository.lookupClass("akka.http.javadsl.server.directives.RouteDirectives");
+            akkaRouteDirectivesClass = Repository.lookupClass("akka.http.javadsl.server.directives.RouteDirectives");
             hasAkka = true;
         } catch (ClassNotFoundException e) {
             hasAkka = false;
+        }
+        try {
+            pekkoRouteDirectivesClass = Repository
+                    .lookupClass("org.apache.pekko.http.javadsl.server.directives.RouteDirectives");
+            hasPekko = true;
+        } catch (ClassNotFoundException e) {
+            hasPekko = false;
         }
     }
 
     @Override
     public void visitClassContext(ClassContext classContext) {
-        if (!hasAkka) {
+        if (!hasAkka && !hasPekko) {
             return;
         }
 
@@ -89,7 +98,7 @@ public class AkkaIssues extends BytecodeScanningDetector {
                 if ("route".equals(methodName) || "concat".equals(methodName)) {
                     String clsName = getClassConstantOperand();
                     JavaClass cls = Repository.lookupClass(clsName);
-                    if (cls.instanceOf(routeDirectivesClass)) {
+                    if (cls.instanceOf(akkaRouteDirectivesClass) || cls.instanceOf(pekkoRouteDirectivesClass)) {
                         OpcodeStack.Item itm = null;
                         int bogusSize = -1;
                         if ("route".equals(methodName)) {
@@ -107,9 +116,15 @@ public class AkkaIssues extends BytecodeScanningDetector {
                         if (itm != null) {
                             Integer size = (Integer) itm.getUserValue();
                             if (size != null && size.intValue() == bogusSize) {
-                                bugReporter.reportBug(
-                                        new BugInstance(this, BugType.AKI_SUPERFLUOUS_ROUTE_SPECIFICATION.name(),
-                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                                if (hasAkka) {
+                                    bugReporter.reportBug(new BugInstance(this,
+                                            BugType.AKI_SUPERFLUOUS_ROUTE_SPECIFICATION.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
+                                } else if (hasPekko) {
+                                    bugReporter.reportBug(new BugInstance(this,
+                                            BugType.PKI_SUPERFLUOUS_ROUTE_SPECIFICATION.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
+                                }
                             }
                         }
                     }
