@@ -6762,5 +6762,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     <BugCode abbrev="SAT">Suspicious Argument Types</BugCode>
     <BugCode abbrev="ENMI">Enum Issues</BugCode>
     <BugCode abbrev="AKI">Akka Issues</BugCode>
-    <BugCode abbrev="PKI">Akka Issues</BugCode>
+    <BugCode abbrev="PKI">Pekko Issues</BugCode>
 </MessageCollection>
