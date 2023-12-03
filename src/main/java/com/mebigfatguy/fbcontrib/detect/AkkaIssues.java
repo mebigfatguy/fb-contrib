@@ -98,7 +98,8 @@ public class AkkaIssues extends BytecodeScanningDetector {
                 if ("route".equals(methodName) || "concat".equals(methodName)) {
                     String clsName = getClassConstantOperand();
                     JavaClass cls = Repository.lookupClass(clsName);
-                    if (cls.instanceOf(akkaRouteDirectivesClass) || cls.instanceOf(pekkoRouteDirectivesClass)) {
+                    if ((hasAkka && cls.instanceOf(akkaRouteDirectivesClass))
+                            || (hasPekko && cls.instanceOf(pekkoRouteDirectivesClass))) {
                         OpcodeStack.Item itm = null;
                         int bogusSize = -1;
                         if ("route".equals(methodName)) {
