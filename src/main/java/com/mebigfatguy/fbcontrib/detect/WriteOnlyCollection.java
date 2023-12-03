@@ -182,6 +182,192 @@ public class WriteOnlyCollection extends MissingMethodsDetector {
                 .withParamTypes(Values.SLASHED_JAVA_UTIL_COMPARATOR).withReturnType(TreeMap.class).toString()));
         cfm.add(new FQMethod("com/google/common/collect/Maps", "newIdentityHashMap",
                 noParamsReturnType(IdentityHashMap.class)));
+        cfm.add(new FQMethod("java/util/List", "of", new SignatureBuilder().withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder().withParamTypes(Values.SIG_OBJECT_ARRAY).withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of", new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/List", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of", new SignatureBuilder().withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder().withParamTypes(Values.SIG_OBJECT_ARRAY).withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of", new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                        Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Set", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of", new SignatureBuilder().withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of",
+                new SignatureBuilder().withParamTypes(Values.SIG_OBJECT_ARRAY).withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of",
+                new SignatureBuilder()
+                        .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of", new SignatureBuilder().withParamTypes(
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of", new SignatureBuilder().withParamTypes(
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of", new SignatureBuilder().withParamTypes(
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                .withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Map", "of", new SignatureBuilder().withParamTypes(
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT,
+                Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Collections", "emptyList",
+                new SignatureBuilder().withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/Collections", "emptySet",
+                new SignatureBuilder().withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Collections", "emptyMap",
+                new SignatureBuilder().withReturnType(Map.class).build()));
+        cfm.add(new FQMethod("java/util/Collections", "singletonList", new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(List.class).build()));
+        cfm.add(new FQMethod("java/util/Collections", "singleton", new SignatureBuilder()
+                .withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Set.class).build()));
+        cfm.add(new FQMethod("java/util/Collections", "singletonMap",
+                new SignatureBuilder().withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT, Values.SLASHED_JAVA_LANG_OBJECT)
+                        .withReturnType(Map.class).build()));
 
         collectionFactoryMethods = Collections.<FQMethod>unmodifiableSet(cfm);
     }

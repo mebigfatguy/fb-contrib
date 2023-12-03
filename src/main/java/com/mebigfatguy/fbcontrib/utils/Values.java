@@ -67,6 +67,7 @@ public final class Values {
     public static final char SIG_QUALIFIED_CLASS_SUFFIX_CHAR = ';';
     public static final String SIG_ARRAY_PREFIX = "[";
     public static final String SIG_ARRAY_OF_ARRAYS_PREFIX = "[[";
+    public static final String SIG_OBJECT_ARRAY = "[Ljava/lang/Object;";
 
     @DottedClassName
     public static final String DOTTED_JAVA_LANG_OBJECT = "java.lang.Object";
