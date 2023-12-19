@@ -41,7 +41,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class IncorrectInternalClassUse implements Detector {
 
     private static final Set<String> internalPackages = UnmodifiableSet.create(
-            // @formatter:off
+    // @formatter:off
             "com/apple/eawt/", "com/sun/org/apache/xml/internal/", "com/sun/net/ssl/", "com/sun/crypto/provider/",
             "com/sun/image/codec/jpeg/", "com/sun/rowset/", "com/sun/tools/javac/", "sun/", "java/awt/peer/",
             "java/awt/dnd/peer/", "jdk/nashorn/internal/", "org/apache/commons/digester/annotations/internal",
@@ -81,7 +81,7 @@ public class IncorrectInternalClassUse implements Detector {
         if (!isInternal(cls.getClassName())) {
             ConstantPool pool = cls.getConstantPool();
             int numItems = pool.getLength();
-            for (int i = 0; i < numItems; i++) {
+            for (int i = 1; i < numItems; i++) {
                 Constant c = pool.getConstant(i);
                 if (c instanceof ConstantClass) {
                     String clsName = ((ConstantClass) c).getBytes(pool);
