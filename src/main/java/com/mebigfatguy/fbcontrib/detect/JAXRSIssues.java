@@ -204,6 +204,9 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                 }
 
                 parmIndex++;
+                if (parmIndex >= numParms) {
+                    return;
+                }
             }
 
         }
