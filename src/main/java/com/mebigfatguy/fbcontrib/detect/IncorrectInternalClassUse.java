@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
@@ -53,7 +54,7 @@ public class IncorrectInternalClassUse implements Detector {
     );
 
     private static final Set<String> externalPackages = UnmodifiableSet.create(
-            // @formatter:off
+    // @formatter:off
             "org/apache/xerces/xni/", "org/apache/xerces/xs/", "org/apache/xalan/extensions"
     // @formatter:on
     );
@@ -81,7 +82,13 @@ public class IncorrectInternalClassUse implements Detector {
         if (!isInternal(cls.getClassName())) {
             ConstantPool pool = cls.getConstantPool();
             int numItems = pool.getLength();
+            byte lastTag = Const.CONSTANT_Class;
             for (int i = 1; i < numItems; i++) {
+                if (lastTag == Const.CONSTANT_Double || lastTag == Const.CONSTANT_Long) {
+                    lastTag = Const.CONSTANT_Class;
+                    continue;
+                }
+
                 Constant c = pool.getConstant(i);
                 if (c instanceof ConstantClass) {
                     String clsName = ((ConstantClass) c).getBytes(pool);
@@ -91,6 +98,7 @@ public class IncorrectInternalClassUse implements Detector {
                                         .addClass(cls).addString(clsName));
                     }
                 }
+                lastTag = c.getTag();
             }
         }
     }
