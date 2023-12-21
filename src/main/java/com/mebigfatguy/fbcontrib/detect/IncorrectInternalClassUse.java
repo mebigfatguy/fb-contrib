@@ -20,6 +20,7 @@ package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Set;
 
+import org.apache.bcel.Constants;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantClass;
 import org.apache.bcel.classfile.ConstantPool;
@@ -101,7 +102,14 @@ public class IncorrectInternalClassUse implements Detector {
         if (!isInternal(cls.getClassName())) {
             ConstantPool pool = cls.getConstantPool();
             int numItems = pool.getLength();
+
+            byte lastTag = Constants.CONSTANT_Class;
             for (int i = 1; i < numItems; i++) {
+                if (lastTag == Constants.CONSTANT_Double || lastTag == Constants.CONSTANT_Long) {
+                    lastTag = Constants.CONSTANT_Class;
+                    continue;
+                }
+
                 Constant c = pool.getConstant(i);
                 if (c instanceof ConstantClass) {
                     String clsName = ((ConstantClass) c).getBytes(pool);
@@ -111,6 +119,7 @@ public class IncorrectInternalClassUse implements Detector {
                                         .addClass(cls).addString(clsName));
                     }
                 }
+                lastTag = c.getTag();
             }
         }
     }
