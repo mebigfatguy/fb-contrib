@@ -29,7 +29,7 @@ import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 /**
  * an automatic toString() builder using reflection
  */
-public class ToString {
+public final class ToString {
 
     /**
      * holds objects that have already been converted to string to avoid infinite
