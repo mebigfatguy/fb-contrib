@@ -124,18 +124,19 @@ public class FinalParameters extends BytecodeScanningDetector {
         try {
             srcLineAnnotation = SourceLineAnnotation.forEntireMethod(getClassContext().getJavaClass(), obj);
             if (srcLineAnnotation != null) {
-                SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder();
-                SourceFile sourceFile = sourceFinder.findSourceFile(srcLineAnnotation.getPackageName(),
-                        srcLineAnnotation.getSourceFile());
-                try (BufferedReader sourceReader = new BufferedReader(
-                        new InputStreamReader(sourceFile.getInputStream(), StandardCharsets.UTF_8))) {
+                try (SourceFinder sourceFinder = AnalysisContext.currentAnalysisContext().getSourceFinder()) {
+                    SourceFile sourceFile = sourceFinder.findSourceFile(srcLineAnnotation.getPackageName(),
+                            srcLineAnnotation.getSourceFile());
+                    try (BufferedReader sourceReader = new BufferedReader(
+                            new InputStreamReader(sourceFile.getInputStream(), StandardCharsets.UTF_8))) {
 
-                    List<String> lines = new ArrayList<>(100);
-                    String line;
-                    while ((line = sourceReader.readLine()) != null) {
-                        lines.add(line);
+                        List<String> lines = new ArrayList<>(100);
+                        String line;
+                        while ((line = sourceReader.readLine()) != null) {
+                            lines.add(line);
+                        }
+                        sourceLines = lines.toArray(new String[0]);
                     }
-                    sourceLines = lines.toArray(new String[0]);
                 }
             }
         } catch (IOException ioe) {
