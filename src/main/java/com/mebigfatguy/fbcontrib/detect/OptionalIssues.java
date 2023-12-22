@@ -399,6 +399,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
             return opcode ^ (method != null ? method.hashCode() : -1);
         }
 
+        @SuppressWarnings("PMD")
         @Override
         public boolean equals(Object o) {
             if (!(o instanceof ActiveStackOp)) {
