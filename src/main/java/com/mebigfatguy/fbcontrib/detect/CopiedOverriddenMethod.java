@@ -237,6 +237,7 @@ public class CopiedOverriddenMethod extends BytecodeScanningDetector {
         return (constant == seen) && (parmOffset == getRegisterOperand());
     }
 
+    @SuppressWarnings("PMD")
     private static int getExpectedReturnInstruction(Type type) {
 
         if ((type == Type.OBJECT) || (type == Type.STRING) || (type == Type.STRINGBUFFER) || (type == Type.THROWABLE)) {
