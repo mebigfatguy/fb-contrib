@@ -22,3 +22,11 @@ user.properties
 *.iml
 *.orig
 .mvn/wrapper/maven-wrapper.jar
+
+# Eclipse
+.classpath
+.factorypath
+.project
+.settings
+
+.fbExcludeFilterFile

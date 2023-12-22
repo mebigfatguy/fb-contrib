@@ -149,6 +149,7 @@ public class BuryingLogic extends BytecodeScanningDetector {
         }
     }
 
+    @SuppressWarnings("PMD")
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
