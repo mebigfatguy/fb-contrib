@@ -138,7 +138,6 @@ public class EnumIssues extends BytecodeScanningDetector {
                     if (variableTable != null && stack.getStackDepth() >= 1) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         if (item.isNull()) {
-                            int reg = RegisterUtils.getAStoreReg(this, seen);
                             LocalVariable lv = getMethod().getLocalVariableTable()
                                     .getLocalVariable(RegisterUtils.getAStoreReg(this, seen), getNextPC());
                             if (lv != null) {
