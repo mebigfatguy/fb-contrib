@@ -18,6 +18,7 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
@@ -93,7 +94,7 @@ public class AkkaIssues extends BytecodeScanningDetector {
         Integer userValue = null;
         try {
             switch (seen) {
-            case INVOKEVIRTUAL:
+            case Const.INVOKEVIRTUAL:
                 String methodName = getNameConstantOperand();
                 if ("route".equals(methodName) || "concat".equals(methodName)) {
                     String clsName = getClassConstantOperand();
@@ -132,7 +133,7 @@ public class AkkaIssues extends BytecodeScanningDetector {
                 }
                 break;
 
-            case ANEWARRAY:
+            case Const.ANEWARRAY:
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     userValue = (Integer) itm.getConstant();
