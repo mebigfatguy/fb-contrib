@@ -289,7 +289,7 @@
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-beans</artifactId>
-            <version>4.3.25.RELEASE</version>
+            <version>5.2.22.RELEASE</version>
             <scope>test</scope>
         </dependency>
         <dependency>
