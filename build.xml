@@ -129,6 +129,7 @@
 			<pathelement location="${lib.dir}/jsr305-${jsr305.version}.jar" />
 			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
 			<pathelement location="${lib.dir}/javax.servlet-api-${javax.servlet-api.version}.jar" />
+			<pathelement location="${lib.dir}/jakarta.xml.bind-api-${jakarta.xml.bind-api.version}.jar" />
 			<pathelement location="${lib.dir}/log4j-${log4j.version}.jar" />
 			<pathelement location="${lib.dir}/log4j-api-${log4j-api.version}.jar" />
             <pathelement location="${lib.dir}/commons-collections-${commons-collections.version}.jar" />
