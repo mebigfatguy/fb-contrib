@@ -643,7 +643,7 @@
 	<BugPattern abbrev="LUI" type="LUI_USE_COLLECTION_ADD" category="CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_GET0" category="CORRECTNESS" />
 	<BugPattern abbrev="FII" type="FII_USE_METHOD_REFERENCE" category="CORRECTNESS" />
-	<BugPattern abbrev="FII" type="FII_AVOID_CONTAINS_ON_COLLECTED_STREAM"/>
+	<BugPattern abbrev="FII" type="FII_AVOID_CONTAINS_ON_COLLECTED_STREAM" category="CORRECTNESS" />
 	<BugPattern abbrev="FII" type="FII_USE_ANY_MATCH" category="CORRECTNESS"/>
 	<BugPattern abbrev="FII" type="FII_USE_FIND_FIRST" category="CORRECTNESS"/>
 	<BugPattern abbrev="FII" type="FII_COMBINE_FILTERS" category="CORRECTNESS"/>
