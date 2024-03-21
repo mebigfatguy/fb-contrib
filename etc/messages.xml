@@ -2704,7 +2704,7 @@ static {
 	
 	<BugPattern type="PMB_LOCAL_BASED_JAXB_CONTEXT">
 	   <ShortDescription>Local JAXBContext created on demand</ShortDescription>
-	   <LongDescription>Method {1} createa a local JAXBContext on demand</LongDescription>
+	   <LongDescription>Method {1} creates a local JAXBContext on demand</LongDescription>
 	   <Details>
 	       <![CDATA[
 	       <p>This method creates a JAXBContext and stores it in a local variable. This
