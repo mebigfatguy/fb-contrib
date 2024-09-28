@@ -59,7 +59,7 @@
     </target>
     
     <target name="info">
-        <echo message="sb-contrib - a spotbugs plugin"/>
+        <echo message="sb-contrib - a findbugs plugin"/>
         <echo message=""/>
     	<echo message="    This project requires three jars to build sb-contrib: yank, bug-rank-check-style, vcsversion and" />
     	<echo message="    and optionally fb-delta, to generate delta's of bug reports, as well as stringliterals to dump"/>
@@ -100,9 +100,9 @@
 		<mkdir dir="${samples.classes.dir}" />
 		<mkdir dir="${javadoc.dir}" />
 		<path id="sb-contrib.classpath">
-			<pathelement location="${lib.dir}/spotbugs-${spotbugs.version}.jar" />
+			<pathelement location="${lib.dir}/findbugs-${findbugs.version}.jar" />
 			<pathelement location="${lib.dir}/bcel-${bcel.version}.jar" />
-			<pathelement location="${lib.dir}/spotbugs-annotations-${spotbugs-annotations.version}.jar" />
+			<pathelement location="${lib.dir}/findbugs-annotations-${findbugs-annotations.version}.jar" />
 			<pathelement location="${lib.dir}/asm-${asm.version}.jar" />
 			<pathelement location="${lib.dir}/asm-tree-${asm-tree.version}.jar" />
 			<pathelement location="${lib.dir}/jsr305-${jsr305.version}.jar" />
@@ -115,8 +115,8 @@
             <pathelement location="${lib.dir}/byte-buddy-${byte-buddy.version}.jar" />
             <pathelement location="${lib.dir}/objenesis-${objenesis.version}.jar" />
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
-			<pathelement location="${spotbugs.dir}/lib/dom4j-1.6.1.jar" />
-			<pathelement location="${spotbugs.dir}/lib/jaxen-1.1.6.jar" />
+			<pathelement location="${findbugs.dir}/lib/dom4j-1.6.1.jar" />
+			<pathelement location="${findbugs.dir}/lib/jaxen-1.1.6.jar" />
 			
 		</path>
 		<path id="sb-contrib.samples.classpath">
@@ -277,9 +277,9 @@
 	<target name="build" depends="-init, validate_xml, compile, compile_test, compile_samples, test, jar" description="builds the plugin jar">
 	</target>
 
-	<target name="install" depends="build" description="installs the plugin into spotbugs">
-		<echo message="Spotbugs: ${spotbugs.dir}/plugin"/>		
-		<copy todir="${spotbugs.dir}/plugin">
+	<target name="install" depends="build" description="installs the plugin into findbugs">
+		<echo message="findbugs: ${findbugs.dir}/plugin"/>		
+		<copy todir="${findbugs.dir}/plugin">
 			<fileset dir="${target.dir}">
 				<include name="sb-contrib-${sb-contrib.version}.jar" />
 			</fileset>
@@ -288,7 +288,7 @@
 	
 	<target name="sample_delta" depends="install" xmlns:fbdelta="antlib:com.mebigfatguy.fbdelta" description="compares this runs reported bugs on the sample classes set, against the stored report">
 		<taskdef resource="edu/umd/cs/findbugs/anttask/tasks.properties" classpath="${lib.dir}/findbugs-ant-${findbugs-ant.version}.jar"/>
-		<findbugs reportlevel="low" home="${spotbugs.dir}" auxClassPathRef="sb-contrib.samples.classpath" output="xml:withMessages" jvmargs="-ea -Xmx800m" projectName="Samples" outputFile="${target.dir}/samples.xml">
+		<findbugs reportlevel="low" home="${findbugs.dir}" auxClassPathRef="sb-contrib.samples.classpath" output="xml:withMessages" jvmargs="-ea -Xmx800m" projectName="Samples" outputFile="${target.dir}/samples.xml">
 		      <class location="${samples.classes.dir}" />
 		</findbugs>
 		

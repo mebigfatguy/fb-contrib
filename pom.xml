@@ -142,7 +142,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.build.timestamp.format>E MMM d hh:mm:ss yyyy XX</maven.build.timestamp.format>
-        <spotbugs.version>4.8.3</spotbugs.version>
+        <findbugs.version>3.0.1</findbugs.version>
     </properties>
 
     <dependencyManagement>
@@ -167,9 +167,9 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.spotbugs</groupId>
-            <artifactId>spotbugs</artifactId>
-            <version>${spotbugs.version}</version>
+            <groupId>com.google.code.findbugs</groupId>
+            <artifactId>findbugs</artifactId>
+            <version>${findbugs.version}</version>
             <scope>provided</scope>
             <exclusions>
                 <exclusion>
@@ -384,8 +384,8 @@
                     <version>3.0.0</version>
                 </plugin>
                 <plugin>
-                    <groupId>com.github.spotbugs</groupId>
-                    <artifactId>spotbugs-maven-plugin</artifactId>
+                    <groupId>com.google.code.findbugs</groupId>
+                    <artifactId>findbugs-maven-plugin</artifactId>
                     <version>3.1.12.2</version>
                 </plugin>
                 <plugin>
@@ -565,13 +565,13 @@
                         <configuration>
                             <artifactItems>
                                 <artifactItem>
-                                    <groupId>com.github.spotbugs</groupId>
-                                    <artifactId>spotbugs</artifactId>
-                                    <version>${spotbugs.version}</version>
+                                    <groupId>com.github.findbugs</groupId>
+                                    <artifactId>findbugs</artifactId>
+                                    <version>${findbugs.version}</version>
                                     <type>jar</type>
                                     <overWrite>true</overWrite>
                                     <outputDirectory>
-                                        ${project.build.directory}/spotbugs-${spotbugs.version}.jar/plugin
+                                        ${project.build.directory}/findbugs-${findbugs.version}.jar/plugin
                                     </outputDirectory>
                                 </artifactItem>
                             </artifactItems>
@@ -583,13 +583,13 @@
             </plugin>
 
             <plugin>
-                <groupId>com.github.spotbugs</groupId>
-                <artifactId>spotbugs-maven-plugin</artifactId>
+                <groupId>com.google.code.findbugs</groupId>
+                <artifactId>findbugs-maven-plugin</artifactId>
                 <dependencies>
                     <dependency>
-                        <groupId>com.github.spotbugs</groupId>
-                        <artifactId>spotbugs</artifactId>
-                        <version>${spotbugs.version}</version>
+                        <groupId>com.google.code.findbugs</groupId>
+                        <artifactId>findbugs</artifactId>
+                        <version>${findbugs.version}</version>
                     </dependency>
                 </dependencies>
                 <configuration>
