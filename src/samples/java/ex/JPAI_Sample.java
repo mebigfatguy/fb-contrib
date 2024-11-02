@@ -23,126 +23,134 @@ import org.springframework.transaction.annotation.Transactional;
 
 public class JPAI_Sample {
 
-    EntityManager em;
+	EntityManager em;
 
-    @Transactional
-    private void writeData() {
-    }
+	@Transactional
+	private void writeData() {
+	}
 
-    @Transactional
-    public void writeGoodData() {
-    }
+	@Transactional
+	public void writeGoodData() {
+	}
 
-    private void badWrite() {
-        writeGoodData();
-    }
+	private void badWrite() {
+		writeGoodData();
+	}
 
-    public void ignoreMergeResult(MyEntity e, SubEntity s) {
+	public void ignoreMergeResult(MyEntity e, SubEntity s) {
 
-        em.merge(e);
-        em.merge(s);
+		em.merge(e);
+		em.merge(s);
 
-        List<SubEntity> ss = new ArrayList<SubEntity>();
-        ss.add(s);
-        e.setSubEntities(ss);
+		List<SubEntity> ss = new ArrayList<SubEntity>();
+		ss.add(s);
+		e.setSubEntities(ss);
 
-        em.flush();
-    }
+		em.flush();
+	}
 
-    @Transactional
-    public void noRollbacks(MyEntity e) throws IOException {
+	@Transactional
+	public void noRollbacks(MyEntity e) throws IOException {
 
-    }
+	}
 
-    @Transactional(rollbackFor = { SQLException.class,
-            CloneNotSupportedException.class }, noRollbackFor = IOException.class)
-    public void noDeclaredRollbackExceptions() {
-    }
+	@Transactional(rollbackFor = { SQLException.class,
+			CloneNotSupportedException.class }, noRollbackFor = IOException.class)
+	public void noDeclaredRollbackExceptions() {
+	}
 
-    @Transactional(rollbackFor = SQLException.class, noRollbackFor = IOException.class)
-    public void fpDefinedRollBack(MyEntity e) throws SQLException, FileNotFoundException {
-    }
+	@Transactional(rollbackFor = SQLException.class, noRollbackFor = IOException.class)
+	public void fpDefinedRollBack(MyEntity e) throws SQLException, FileNotFoundException {
+	}
 
-    @Transactional(readOnly = true)
-    public void fpReadOnlyExceptions(MyEntity e) throws IOException {
-    }
+	@Transactional(readOnly = true)
+	public void fpReadOnlyExceptions(MyEntity e) throws IOException {
+	}
 
-    @Entity
-    @Table(name = "MY_ENTITY")
-    public static class MyEntity {
+	@Transactional
+	public void customEx(MyEntity e) throws FP441Exception {
+		// FP441Exception is a runtime exception
+	}
 
-        private Integer id;
-        private List<SubEntity> subEntities;
+	@Entity
+	@Table(name = "MY_ENTITY")
+	public static class MyEntity {
 
-        @Id
-        @SequenceGenerator(name = "MY_ENTITY_SEQ", sequenceName = "MY_ENTITY_SEQ", allocationSize = 100)
-        @GeneratedValue(generator = "MY_ENTITY_SEQ")
-        @Column(name = "ID", nullable = false, unique = true)
-        public Integer getId() {
-            return id;
-        }
+		private Integer id;
+		private List<SubEntity> subEntities;
 
-        public void setId(Integer id) {
-            this.id = id;
-        }
+		@Id
+		@SequenceGenerator(name = "MY_ENTITY_SEQ", sequenceName = "MY_ENTITY_SEQ", allocationSize = 100)
+		@GeneratedValue(generator = "MY_ENTITY_SEQ")
+		@Column(name = "ID", nullable = false, unique = true)
+		public Integer getId() {
+			return id;
+		}
 
-        @OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "myEntity", targetEntity = MyEntity.class)
-        public List<SubEntity> getSubEntities() {
-            return subEntities;
-        }
+		public void setId(Integer id) {
+			this.id = id;
+		}
 
-        public void setSubEntities(List<SubEntity> subEntities) {
-            this.subEntities = subEntities;
-        }
+		@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER, mappedBy = "myEntity", targetEntity = MyEntity.class)
+		public List<SubEntity> getSubEntities() {
+			return subEntities;
+		}
 
-        @Override
-        public int hashCode() {
-            return id.hashCode();
-        }
+		public void setSubEntities(List<SubEntity> subEntities) {
+			this.subEntities = subEntities;
+		}
 
-        @Override
-        public boolean equals(Object o) {
-            if (!(o instanceof MyEntity)) {
-                return false;
-            }
+		@Override
+		public int hashCode() {
+			return id.hashCode();
+		}
 
-            MyEntity that = (MyEntity) o;
-            if (id == null) {
-                return that.id == null;
-            }
+		@Override
+		public boolean equals(Object o) {
+			if (!(o instanceof MyEntity)) {
+				return false;
+			}
 
-            return id.equals(that.id);
-        }
-    }
+			MyEntity that = (MyEntity) o;
+			if (id == null) {
+				return that.id == null;
+			}
 
-    @Entity
-    @Table(name = "SUB_ENTITY")
-    public static class SubEntity {
+			return id.equals(that.id);
+		}
+	}
 
-        public Integer subId;
-        public MyEntity myEntity;
+	@Entity
+	@Table(name = "SUB_ENTITY")
+	public static class SubEntity {
 
-        @Id
-        @SequenceGenerator(name = "SUB_ENTITY_SEQ", sequenceName = "SUB_ENTITY_SEQ", allocationSize = 100)
-        @GeneratedValue(generator = "SUB_ENTITY_SEQ")
-        @Column(name = "SUB_ID", nullable = false, unique = true)
-        public Integer getSubId() {
-            return subId;
-        }
+		public Integer subId;
+		public MyEntity myEntity;
 
-        public void setSubId(Integer subId) {
-            this.subId = subId;
-        }
+		@Id
+		@SequenceGenerator(name = "SUB_ENTITY_SEQ", sequenceName = "SUB_ENTITY_SEQ", allocationSize = 100)
+		@GeneratedValue(generator = "SUB_ENTITY_SEQ")
+		@Column(name = "SUB_ID", nullable = false, unique = true)
+		public Integer getSubId() {
+			return subId;
+		}
 
-        @JoinColumn(name = "ID", referencedColumnName = "ID", nullable = false)
-        @ManyToOne(fetch = FetchType.EAGER, targetEntity = MyEntity.class)
-        public MyEntity getMyEntity() {
-            return myEntity;
-        }
+		public void setSubId(Integer subId) {
+			this.subId = subId;
+		}
 
-        public void setMyEntity(MyEntity myEntity) {
-            this.myEntity = myEntity;
-        }
+		@JoinColumn(name = "ID", referencedColumnName = "ID", nullable = false)
+		@ManyToOne(fetch = FetchType.EAGER, targetEntity = MyEntity.class)
+		public MyEntity getMyEntity() {
+			return myEntity;
+		}
 
-    }
+		public void setMyEntity(MyEntity myEntity) {
+			this.myEntity = myEntity;
+		}
+	}
+
+	public class FP441Exception extends RuntimeException {
+
+	}
 }
