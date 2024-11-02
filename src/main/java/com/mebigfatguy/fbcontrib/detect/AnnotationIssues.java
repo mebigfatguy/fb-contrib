@@ -91,6 +91,7 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 	static {
 		NULLABLE_ANNOTATIONS.add("Lorg/jetbrains/annotations/Nullable;");
 		NULLABLE_ANNOTATIONS.add("Ljavax/annotation/Nullable;");
+		NULLABLE_ANNOTATIONS.add("Ljakarta/annotation/Nullable;");
 		NULLABLE_ANNOTATIONS.add("Ljavax/annotation/CheckForNull;");
 		NULLABLE_ANNOTATIONS.add("Lcom/sun/istack/Nullable;");
 		NULLABLE_ANNOTATIONS.add("Ledu/umd/cs/findbugs/annotations/Nullable;");

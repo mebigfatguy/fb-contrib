@@ -25,6 +25,8 @@ public class PMB_Sample {
     private static Map<String, String> fp_data = new WeakHashMap<>();
 
     private static Map<String, String> fpEmptyWithIterator = new HashMap<>();
+    
+    private static Set<String> fpGrowsInPrivate = new HashSet<>();
 
     private static final Set<String> bloatableSigs = new HashSet<>();
 
@@ -124,6 +126,13 @@ public class PMB_Sample {
 
             fpEmptyWithIterator.put(key, "foo");
         }
+    }
+    
+    private void fpGrowsInPrivate() {
+    	String sample = "Sample";
+    	for (int i = 0; i < sample.length(); i++) {
+    		fpGrowsInPrivate.add(sample.substring(i, i+1));
+    	}
     }
 
     class X {

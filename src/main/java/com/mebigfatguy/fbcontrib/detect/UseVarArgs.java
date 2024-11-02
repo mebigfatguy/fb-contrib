@@ -130,17 +130,19 @@ public class UseVarArgs extends BytecodeScanningDetector {
 				String clsName = getClassConstantOperand();
 				String methodName = getNameConstantOperand();
 				String methodSig = getSigConstantOperand();
-				MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName.replace('.', '/'), methodName,
-						methodSig);
-				if (mi != null && mi.isVarArg()
-						&& stack.getStackDepth() >= SignatureUtils.getNumParameters(methodSig)) {
+				int numParms = SignatureUtils.getNumParameters(methodSig);
+				if (numParms > 0 && stack.getStackDepth() >= numParms) {
 					OpcodeStack.Item item = stack.getStackItem(0);
 					if (item.isNull()) {
-						bugReporter.reportBug(new BugInstance(this, BugType.UVA_REMOVE_NULL_ARG.name(), NORMAL_PRIORITY)
-								.addClass(this).addMethod(this).addSourceLine(this));
+						MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName.replace('.', '/'),
+								methodName, methodSig);
+						if (mi != null && mi.isVarArg()) {
+							bugReporter.reportBug(
+									new BugInstance(this, BugType.UVA_REMOVE_NULL_ARG.name(), NORMAL_PRIORITY)
+											.addClass(this).addMethod(this).addSourceLine(this));
+						}
 					}
 				}
-
 			}
 		} finally {
 			TernaryPatcher.pre(stack, seen);

@@ -93,6 +93,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     private Set<FieldAnnotation> threadLocalNonStaticFields;
     private Map<Integer, XField> userValues;
     private Map<Integer, Integer> jaxbContextRegs;
+    private boolean isPrivateMethod;
 
     /**
      * constructs a PMB detector given the reporter to report bugs on
@@ -179,6 +180,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     @Override
     public void visitMethod(Method obj) {
         methodName = obj.getName();
+        isPrivateMethod = (obj.getAccessFlags() & Const.ACC_PRIVATE) != 0;
     }
 
     /**
@@ -195,7 +197,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName)) {
             return;
         }
-
+        
         super.visitCode(obj);
 
         for (Integer pc : jaxbContextRegs.values()) {
@@ -313,7 +315,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         if (decreasingMethods.contains(mName)) {
             bloatableCandidates.remove(field);
             bloatableFields.remove(field);
-        } else if (increasingMethods.contains(mName)) {
+        } else if (increasingMethods.contains(mName) && !isPrivateMethod) {
             FieldAnnotation fieldAn = bloatableCandidates.get(field);
             if (fieldAn != null) {
                 bloatableFields.put(field, fieldAn);
