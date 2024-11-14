@@ -2708,7 +2708,7 @@ static {
 	
 	<BugPattern type="PMB_LOCAL_BASED_JAXB_CONTEXT">
 	   <ShortDescription>Local JAXBContext created on demand</ShortDescription>
-	   <LongDescription>Method {1} createa a local JAXBContext on demand</LongDescription>
+	   <LongDescription>Method {1} creates a local JAXBContext on demand</LongDescription>
 	   <Details>
 	       <![CDATA[
 	       <p>This method creates a JAXBContext and stores it in a local variable. This
@@ -6208,6 +6208,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     		<p>Unfortunately there isn't just one @Nullable annotation, but this detector will recognize:</p>
     		<ul>
     		<li>org.jetbrains.annotations.Nullable</li>
+	        <li>jakarta.annotation.Nullable</li>
 	        <li>javax.annotation.Nullable</li>
 	        <li>javax.annotation.CheckForNull</li>
 	        <li>edu.umd.cs.findbugs.annotations.Nullable</li>

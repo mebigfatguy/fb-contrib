@@ -21,6 +21,8 @@ package com.mebigfatguy.fbcontrib.detect;
 import java.util.ArrayDeque;
 import java.util.BitSet;
 import java.util.Deque;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
@@ -35,6 +37,8 @@ import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
+import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
@@ -46,7 +50,9 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 import edu.umd.cs.findbugs.ba.XMethod;
 
 /**
@@ -55,6 +61,12 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class OptionalIssues extends BytecodeScanningDetector {
 
+	private enum OptionalType {
+		PLAIN,
+		BOXED
+	}
+	
+	private static final String OPTIONAL_SIGNATURE = "Ljava/util/Optional;";
     private static Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("Ljava/lang/Integer;", "Ljava/lang/Long;",
             "Ljava/lang/Double;");
 
@@ -99,6 +111,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private JavaClass currentClass;
     private Deque<ActiveStackOp> activeStackOps;
+    private Map<OpcodeStack.Item, SourceLineAnnotation> boxedItems = new HashMap<>();
+    private boolean methodIsConstrained;
 
     static {
 		INVOKE_OPS.set(Const.INVOKEINTERFACE);
@@ -155,7 +169,21 @@ public class OptionalIssues extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         activeStackOps.clear();
+        boxedItems.clear();
+        methodIsConstrained = false;
+        
+        String returnType = new SignatureParser(getMethodSig()).getReturnTypeSignature();
+        if (OPTIONAL_SIGNATURE.equals(returnType)) {
+        	MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
+        	methodIsConstrained = mi != null && mi.isDerived();
+        }
         super.visitCode(obj);
+        
+        for (SourceLineAnnotation slAnno : boxedItems.values()) {
+          bugReporter.reportBug(
+          new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(),
+                  LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(slAnno));
+        }
     }
 
     /**
@@ -168,7 +196,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     @Override
     public void sawOpcode(int seen) {
         FQMethod curCalledMethod = null;
-        Boolean sawPlainOptional = null;
+        OptionalType optionalType = null;
 
         try {
             switch (seen) {
@@ -207,9 +235,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         String itmSig = itm.getSignature();
                         if (BOXED_OPTIONAL_TYPES.contains(itmSig)) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(),
-                                            LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        	optionalType = OptionalType.BOXED;
                         }
                     }
                 }
@@ -245,7 +271,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         }
                     }
                     if (OPTIONAL_OR_ELSE_METHOD.equals(curCalledMethod)) {
-                        sawPlainOptional = Boolean.TRUE;
+;                    	optionalType = OptionalType.PLAIN;
                     }
                 } else if (OR_ELSE_GET_METHODS.contains(curCalledMethod)) {
                     if (!activeStackOps.isEmpty()) {
@@ -276,12 +302,18 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         }
                     }
                     if (OPTIONAL_OR_ELSE_GET_METHOD.equals(curCalledMethod)) {
-                        sawPlainOptional = Boolean.TRUE;
+                    	optionalType = OptionalType.PLAIN;
                     }
                 } else if (OPTIONAL_GET_METHOD.equals(curCalledMethod)) {
-                    sawPlainOptional = Boolean.TRUE;
+                	optionalType = OptionalType.PLAIN;
                 }
                 break;
+                
+			case Const.ARETURN:
+				if (methodIsConstrained && stack.getStackDepth() > 0) {
+					boxedItems.remove(stack.getStackItem(0));
+				}
+				break;
             }
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
@@ -295,9 +327,13 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 while (activeStackOps.size() > stackDepth) {
                     activeStackOps.removeFirst();
                 }
-                if (sawPlainOptional != null) {
+                if (optionalType != null) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
-                    itm.setUserValue(sawPlainOptional);
+                    itm.setUserValue(optionalType);
+                    if (optionalType == OptionalType.BOXED) {
+	                    boxedItems.put(itm, SourceLineAnnotation.fromVisitedInstruction(OptionalIssues.this.getClassContext(),
+                    		OptionalIssues.this, getPC()));
+                    }
                 }
             }
         }

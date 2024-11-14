@@ -23,7 +23,7 @@
 
 	<!-- Detectors -->
 
-    <!-- COMMENT OUT FOR RELEASE
+    <!-- COMMENT OUT FOR RELEASE -->
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -31,7 +31,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-         COMMENT OUT FOR RELEASE -->
+    <!-- COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -644,7 +644,7 @@
 	<BugPattern abbrev="LUI" type="LUI_USE_COLLECTION_ADD" category="CORRECTNESS" />
 	<BugPattern abbrev="LUI" type="LUI_USE_GET0" category="CORRECTNESS" />
 	<BugPattern abbrev="FII" type="FII_USE_METHOD_REFERENCE" category="CORRECTNESS" />
-	<BugPattern abbrev="FII" type="FII_AVOID_CONTAINS_ON_COLLECTED_STREAM"/>
+	<BugPattern abbrev="FII" type="FII_AVOID_CONTAINS_ON_COLLECTED_STREAM" category="CORRECTNESS" />
 	<BugPattern abbrev="FII" type="FII_USE_ANY_MATCH" category="CORRECTNESS"/>
 	<BugPattern abbrev="FII" type="FII_USE_FIND_FIRST" category="CORRECTNESS"/>
 	<BugPattern abbrev="FII" type="FII_COMBINE_FILTERS" category="CORRECTNESS"/>

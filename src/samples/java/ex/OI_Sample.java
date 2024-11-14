@@ -6,7 +6,7 @@ import java.util.OptionalDouble;
 import java.util.OptionalInt;
 import java.util.function.Supplier;
 
-public class OI_Sample {
+public class OI_Sample implements OptInf386 {
 
     public String useDelayedExecution(Optional<String> o, String a, String b) {
 
@@ -73,4 +73,12 @@ public class OI_Sample {
     public boolean equalsToEmpty(Optional<String> foo) {
     	return foo.equals(Optional.empty());
     }
+    
+    public 	Optional<Object> fpGetOpt386() {
+    	return Optional.of(Double.valueOf(10));
+    }
+}
+
+interface OptInf386 {
+	Optional<Object> fpGetOpt386();
 }
