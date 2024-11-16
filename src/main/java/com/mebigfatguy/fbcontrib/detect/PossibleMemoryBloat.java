@@ -25,6 +25,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
@@ -85,6 +86,8 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     private static final FQMethod jaxbNewInstance = new FQMethod("javax/xml/bind/JAXBContext", "newInstance",
             "([Ljava/lang/Class;)Ljavax/xml/bind/JAXBContext;");
 
+    private static final Set<String> specialAnnotations = UnmodifiableSet.create("Ljavax/annotation/PostConstruct;", "Ljakarta/annotation/PostConstruct;");
+    
     private final BugReporter bugReporter;
     private Map<XField, FieldAnnotation> bloatableCandidates;
     private Map<XField, FieldAnnotation> bloatableFields;
@@ -94,6 +97,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     private Map<Integer, XField> userValues;
     private Map<Integer, Integer> jaxbContextRegs;
     private boolean isPrivateMethod;
+    private Boolean isSpecialAnnotationMethod;
 
     /**
      * constructs a PMB detector given the reporter to report bugs on
@@ -181,6 +185,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
     public void visitMethod(Method obj) {
         methodName = obj.getName();
         isPrivateMethod = (obj.getAccessFlags() & Const.ACC_PRIVATE) != 0;
+        isSpecialAnnotationMethod = null;
     }
 
     /**
@@ -318,8 +323,33 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         } else if (increasingMethods.contains(mName) && !isPrivateMethod) {
             FieldAnnotation fieldAn = bloatableCandidates.get(field);
             if (fieldAn != null) {
-                bloatableFields.put(field, fieldAn);
+            	if (!specialAnnotationMethod()) {
+            		bloatableFields.put(field, fieldAn);
+            	}
             }
         }
+    }
+    
+    private boolean specialAnnotationMethod() {
+    	if (isSpecialAnnotationMethod != null) {
+    		return isSpecialAnnotationMethod.booleanValue();
+    	}
+    	
+    	AnnotationEntry[] entries = getMethod().getAnnotationEntries();
+    	if (entries == null || entries.length == 0) {
+    		isSpecialAnnotationMethod = Boolean.FALSE;
+    		return false;
+    	}
+    	
+    	for (AnnotationEntry entry : entries) {
+    		String type = entry.getAnnotationType();
+    		isSpecialAnnotationMethod = Boolean.valueOf(specialAnnotations.contains(type));
+    		if (isSpecialAnnotationMethod.booleanValue()) {
+    			return true;
+    		}
+    	}
+    	
+        isSpecialAnnotationMethod = Boolean.FALSE;
+    	return false;
     }
 }
