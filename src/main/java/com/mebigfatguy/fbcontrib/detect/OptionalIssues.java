@@ -111,7 +111,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private JavaClass currentClass;
     private Deque<ActiveStackOp> activeStackOps;
-    private Map<OpcodeStack.Item, SourceLineAnnotation> boxedItems = new HashMap<>();
+    private Map<OpcodeStack.Item, SourceLineAnnotation> boxedItems;
     private Boolean methodIsConstrained;
 
     static {
@@ -151,10 +151,13 @@ public class OptionalIssues extends BytecodeScanningDetector {
             try {
                 stack = new OpcodeStack();
                 activeStackOps = new ArrayDeque<>();
+                boxedItems = new HashMap<>();
                 super.visitClassContext(classContext);
             } finally {
+            	boxedItems = null;
                 activeStackOps = null;
                 stack = null;
+                
             }
         }
         currentClass = null;
