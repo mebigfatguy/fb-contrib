@@ -23,7 +23,7 @@ public class Timing {
 	    Thread t = new Thread(() -> {
 	    	try {
 		    	while (!Thread.interrupted()) {
-		    		Thread.sleep(16000L);
+		    		Thread.sleep(15000L);
 		    		if (System.currentTimeMillis() - updateTime.get() > 15000L) {
 		    			Map<String, TimingInfo> infoMap = timingInfo.getAndSet(null);
 		    			if (infoMap != null && !infoMap.isEmpty()) {
