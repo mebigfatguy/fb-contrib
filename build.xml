@@ -15,6 +15,7 @@
     <property file="version.properties" />
 
 	<property name="src.dir" value="${basedir}/src/main/java" />
+    <property name="aspect.dir" value="${basedir}/src/main/aj" />
 	<property name="lib.dir" value="${basedir}/lib" />
 	<property name="etc.dir" value="${basedir}/etc" />
 	<property name="test.dir" value="${basedir}/src/test/java" />
@@ -117,7 +118,6 @@
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
 			<pathelement location="${spotbugs.dir}/lib/dom4j-1.6.1.jar" />
 			<pathelement location="${spotbugs.dir}/lib/jaxen-1.1.6.jar" />
-			
 		</path>
 		<path id="sb-contrib.samples.classpath">
             <pathelement location="${lib.dir}/akka-actor_2.12-${akka-actor_2.12.version}.jar" />
@@ -158,6 +158,11 @@
             <pathelement location="${lib.dir}/jersey-media-multipart-${jersey-media-multipart.version}.jar" />
 		    <pathelement location="${lib.dir}/scala-library-${scala-library.version}.jar" />
 		</path>
+        <path id="instrument.classpath">
+		    <pathelement location="${lib.dir}/aspectjrt-${aspectjrt.version}.jar" />
+		    <pathelement location="${lib.dir}/aspectjtools-${aspectjtools.version}.jar" />
+		    <pathelement location="${lib.dir}/aspectjweaver-${aspectjweaver.version}.jar" />
+        </path>
 	</target>
 
 	<target name="validate_xml" depends="-init" unless="skip-validate" description="validates the xml files">
@@ -248,6 +253,22 @@
 			</manifest>
 		</jar>
 	</target>
+
+    <target name="instrument" depends="jar">
+        <delete file="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar"/>
+        <delete file="${target.dir}/${ant.project.name}-instrumented-${sb-contrib.version}.jar"/>
+    	<taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="instrument.classpath" />
+        <path id="iajc.classpath">
+    		<path refId="sb-contrib.classpath"/>
+    		<path refId="instrument.classpath"/>
+    	</path>
+    	<iajc inpath="${target.dir}/${ant.project.name}-${sb-contrib.version}.jar" outjar="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar" source="${javac.source}" target="${javac.target}" classpathref="iajc.classpath" sourceRoots="${aspect.dir}"/>
+    	<zip destfile="${target.dir}/${ant.project.name}-instrumented-${sb-contrib.version}.jar">
+	        <zipfileset src="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar" includes="**/*" prefix=""/>
+	        <zipfileset src="${lib.dir}/aspectjrt-${aspectjrt.version}.jar" includes="**/*.class" prefix=""/>
+    	</zip>
+        <delete file="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar"/>
+    </target>
 
 	<target name="html" depends="-init" description="generates dynamic html">
 		<xslt basedir="${etc.dir}" destdir="${htdocs.dir}" style="${etc.dir}/bugdescriptions.xsl" in="${etc.dir}/messages.xml" out="${htdocs.dir}/bugdescriptions.html" />

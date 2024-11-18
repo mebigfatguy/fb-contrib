@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/*.*" kind="src" path="etc"/>
+	<classpathentry kind="src" path="src/main/aj"/>
 	<classpathentry kind="src" output="target/classes/samples" path="src/samples/java"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" output="target/classes/test" path="src/test/java"/>
@@ -49,5 +50,8 @@
 	<classpathentry kind="lib" path="lib/jakarta.xml.bind-api-2.3.3.jar"/>
 	<classpathentry kind="lib" path="lib/akka-stream_2.12-2.6.4.jar"/>
 	<classpathentry kind="lib" path="lib/scala-library-2.12.10.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjrt-1.9.22.1.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjtools-1.9.22.1.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjweaver-1.9.22.1.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
