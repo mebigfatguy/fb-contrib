@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
 	<classpathentry excluding="**/*.*" kind="src" path="etc"/>
+	<classpathentry kind="src" path="src/main/aj"/>
 	<classpathentry kind="src" output="target/classes/samples" path="src/samples/java"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" output="target/classes/test" path="src/test/java"/>
@@ -42,5 +43,8 @@
 	<classpathentry kind="lib" path="lib/findbugs-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/findbugs-annotations-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.16.0.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjrt-1.9.22.1.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjtools-1.9.22.1.jar"/>
+	<classpathentry kind="lib" path="lib/aspectjweaver-1.9.22.1.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>

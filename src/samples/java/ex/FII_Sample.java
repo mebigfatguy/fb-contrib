@@ -69,6 +69,10 @@ public class FII_Sample {
     public int sizeOnACollect(List<Bauble> baubles, String name) {
         return baubles.stream().filter(b -> b.getName().equals(name)).collect(Collectors.toSet()).size();
     }
+    
+    public List<String> streamingRatherThanCC(Set<String> s) {
+    	return s.stream().collect(Collectors.toList());    
+    }
 
     public void fpUnrelatedLambdaValue282(Map<String, Bauble> map, BaubleFactory factory) {
         map.computeIfAbsent("pixie dust", _unused -> factory.getBauble());

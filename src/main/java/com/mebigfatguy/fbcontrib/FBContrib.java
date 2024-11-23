@@ -37,7 +37,7 @@ public final class FBContrib {
     public static void main(final String[] args) {
         JOptionPane.showMessageDialog(null,
                 "To use fb-contrib, copy this jar file into your local SpotBugs plugin directory, and use SpotBugs as usual.\n\nfb-contrib is a trademark of MeBigFatGuy.com",
-                "fb-contrib: copyright 2005-2019", JOptionPane.INFORMATION_MESSAGE);
+                "fb-contrib: copyright 2005-2024", JOptionPane.INFORMATION_MESSAGE);
         System.exit(0);
     }
 }

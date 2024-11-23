@@ -15,6 +15,7 @@
     <property file="version.properties" />
 
 	<property name="src.dir" value="${basedir}/src/main/java" />
+    <property name="aspect.dir" value="${basedir}/src/main/aj" />
 	<property name="lib.dir" value="${basedir}/lib" />
 	<property name="etc.dir" value="${basedir}/etc" />
 	<property name="test.dir" value="${basedir}/src/test/java" />
@@ -31,8 +32,8 @@
 	<property name="javac.debug" value="on" />
 	<property name="test_reports.dir" value="${target.dir}/reports/test"/>
 
-	<property name="fb-contrib.version" value="7.6.8" />
-	<property name="sb-contrib.version" value="7.6.8" />
+	<property name="fb-contrib.version" value="7.6.9-SNAPSHOT" />
+	<property name="sb-contrib.version" value="7.6.9-SNAPSHOT" />
 
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
 	
@@ -43,7 +44,7 @@
 	
 	<target name="infra_jars" description="pull jars needed to build fb-contrib to ${user.dir}/.ant/lib">
 		<mkdir dir="${user.home}/.ant/lib" />
-		<get src="https://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/2.0.1/yank-2.0.1.jar" dest="${user.home}/.ant/lib"/>
+		<get src="https://repo1.maven.org/maven2/com/mebigfatguy/yank/yank/2.0.3/yank-2.0.3.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://bitbucket.org/kjlubick/bugrankcheckstyle/downloads/bug-rank-check-style-1.0.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://repo1.maven.org/maven2/com/mebigfatguy/vcsversion/vcsversion/0.4.0/vcsversion-0.4.0.jar" dest="${user.home}/.ant/lib"/>
 		<get src="https://repo1.maven.org/maven2/com/mebigfatguy/fb-delta/fb-delta/0.6.0/fb-delta-0.6.0.jar" dest="${user.home}/.ant/lib" ignoreerrors="true"/>
@@ -117,7 +118,6 @@
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
 			<pathelement location="${findbugs.dir}/lib/dom4j-1.6.1.jar" />
 			<pathelement location="${findbugs.dir}/lib/jaxen-1.1.6.jar" />
-			
 		</path>
 		<path id="fb-contrib.samples.classpath">
             <pathelement location="${lib.dir}/akka-actor_2.12-${akka-actor_2.12.version}.jar" />
@@ -158,16 +158,23 @@
             <pathelement location="${lib.dir}/jersey-media-multipart-${jersey-media-multipart.version}.jar" />
 		    <pathelement location="${lib.dir}/scala-library-${scala-library.version}.jar" />
 		</path>
+        <path id="instrument.classpath">
+		    <pathelement location="${lib.dir}/aspectjrt-${aspectjrt.version}.jar" />
+		    <pathelement location="${lib.dir}/aspectjtools-${aspectjtools.version}.jar" />
+		    <pathelement location="${lib.dir}/aspectjweaver-${aspectjweaver.version}.jar" />
+        </path>
 	</target>
 
 	<target name="validate_xml" depends="-init" unless="skip-validate" description="validates the xml files">
-		<taskdef name="bug-rank-check-style" classname="text.style.check.BugRankCheckStyleTask"/>
 		<xmlvalidate lenient="false" failonerror="yes">
 			<attribute name="http://apache.org/xml/features/validation/schema" value="true" />
 			<attribute name="http://xml.org/sax/features/namespaces" value="true" />
 			<fileset dir="${etc.dir}" includes="*.xml" excludes="findbugs-exclude.xml,pmd-rules.xml"/>
 		</xmlvalidate>
+<!--
+		<taskdef name="bug-rank-check-style" classname="text.style.check.BugRankCheckStyleTask"/>
 		<bug-rank-check-style findbugsxml="etc/findbugs.xml" failOnMissingDetector="false" />
+-->
 	</target>
 
 	<target name="compile" depends="-init" description="compiles java files">
@@ -246,6 +253,22 @@
 			</manifest>
 		</jar>
 	</target>
+
+    <target name="instrument" depends="jar">
+        <delete file="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar"/>
+        <delete file="${target.dir}/${ant.project.name}-instrumented-${sb-contrib.version}.jar"/>
+    	<taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="instrument.classpath" />
+        <path id="iajc.classpath">
+    		<path refId="sb-contrib.classpath"/>
+    		<path refId="instrument.classpath"/>
+    	</path>
+    	<iajc inpath="${target.dir}/${ant.project.name}-${sb-contrib.version}.jar" outjar="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar" source="${javac.source}" target="${javac.target}" classpathref="iajc.classpath" sourceRoots="${aspect.dir}"/>
+    	<zip destfile="${target.dir}/${ant.project.name}-instrumented-${sb-contrib.version}.jar">
+	        <zipfileset src="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar" includes="**/*" prefix=""/>
+	        <zipfileset src="${lib.dir}/aspectjrt-${aspectjrt.version}.jar" includes="**/*.class" prefix=""/>
+    	</zip>
+        <delete file="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar"/>
+    </target>
 
 	<target name="html" depends="-init" description="generates dynamic html">
 		<xslt basedir="${etc.dir}" destdir="${htdocs.dir}" style="${etc.dir}/bugdescriptions.xsl" in="${etc.dir}/messages.xml" out="${htdocs.dir}/bugdescriptions.html" />

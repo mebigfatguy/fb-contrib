@@ -111,8 +111,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private JavaClass currentClass;
     private Deque<ActiveStackOp> activeStackOps;
-    private Map<OpcodeStack.Item, SourceLineAnnotation> boxedItems = new HashMap<>();
-    private boolean methodIsConstrained;
+    private Map<OpcodeStack.Item, SourceLineAnnotation> boxedItems;
+    private Boolean methodIsConstrained;
 
     static {
 		INVOKE_OPS.set(Const.INVOKEINTERFACE);
@@ -151,10 +151,13 @@ public class OptionalIssues extends BytecodeScanningDetector {
             try {
                 stack = new OpcodeStack();
                 activeStackOps = new ArrayDeque<>();
+                boxedItems = new HashMap<>();
                 super.visitClassContext(classContext);
             } finally {
+            	boxedItems = null;
                 activeStackOps = null;
                 stack = null;
+                
             }
         }
         currentClass = null;
@@ -170,13 +173,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
         activeStackOps.clear();
         boxedItems.clear();
-        methodIsConstrained = false;
+        methodIsConstrained = null;
         
-        String returnType = new SignatureParser(getMethodSig()).getReturnTypeSignature();
-        if (OPTIONAL_SIGNATURE.equals(returnType)) {
-        	MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
-        	methodIsConstrained = mi != null && mi.isDerived();
-        }
         super.visitCode(obj);
         
         for (SourceLineAnnotation slAnno : boxedItems.values()) {
@@ -310,8 +308,11 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 break;
                 
 			case Const.ARETURN:
-				if (methodIsConstrained && stack.getStackDepth() > 0) {
-					boxedItems.remove(stack.getStackItem(0));
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item itm = stack.getStackItem(0);
+					if (boxedItems.containsKey(itm) && isMethodConstrained()) {
+						boxedItems.remove(itm);
+					}
 				}
 				break;
             }
@@ -403,6 +404,20 @@ public class OptionalIssues extends BytecodeScanningDetector {
         }
 
         return false;
+    }
+    
+    private boolean isMethodConstrained() {
+    	if (methodIsConstrained == null) {
+	        String returnType = new SignatureParser(getMethodSig()).getReturnTypeSignature();
+	        if (OPTIONAL_SIGNATURE.equals(returnType)) {
+	        	MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
+	        	methodIsConstrained = Boolean.valueOf(mi != null && mi.isDerived());
+	        } else {
+	        	methodIsConstrained = Boolean.FALSE;
+	        }
+    	}
+    	
+		return methodIsConstrained.booleanValue();
     }
 
     /**
