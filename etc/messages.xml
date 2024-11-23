@@ -6496,6 +6496,25 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details>
     </BugPattern>
     
+    <BugPattern type="FII_USE_COPYCONSTRUCTOR">
+        <ShortDescription>Method calls collect() directly on a stream</ShortDescription>
+        <LongDescription>Method {1} calls collect() directly on a stream</LongDescription>
+        <Details>
+        <![CDATA[
+        	Code perform a "copy constructor" operation by using streams, when it is more simply done
+        	by passing the source collection into a new Collection constructors argument. Use, 
+        	
+        	<code><pre>
+        		Set<String> s = new HashSet<myArrayList);
+        	</pre></code>
+        	
+        	<code><pre>
+        		Set<String> s = myArrayList.stream().collect(Collectors.toSet);
+        	</pre></code>
+        ]]>
+        </Details>
+    </BugPattern>
+    
     <BugPattern type="SUI_CONTAINS_BEFORE_ADD">
         <ShortDescription>Method checks for an item in a set with contains, before using add()</ShortDescription>
         <LongDescription>Method {1} checks for an item in a set with contains, before using add()</LongDescription>
