@@ -6505,8 +6505,10 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         	by passing the source collection into a new Collection constructors argument. Use, 
         	
         	<code><pre>
-        		Set<String> s = new HashSet<myArrayList);
+        		Set<String> s = new HashSet<>(myArrayList);
         	</pre></code>
+
+            instead of:
         	
         	<code><pre>
         		Set<String> s = myArrayList.stream().collect(Collectors.toSet);
