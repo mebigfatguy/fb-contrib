@@ -63,8 +63,16 @@ public class ListUsageIssues extends BytecodeScanningDetector {
             new FQMethod("java/util/Set", "addAll",
                     new SignatureBuilder().withParamTypes(Collection.class).withReturnType(boolean.class).build()));
 
+    private static final Set<FQMethod> EMPTY_COLLECTIONS = UnmodifiableSet.create(
+    		new FQMethod("java/util/Collections", "emptyList", "()Ljava/util/List;"),
+    		new FQMethod("java/util/Collections", "emptySet", "()Ljava/util/Set;"),
+    		new FQMethod("java/util/List", "of", "()Ljava/util/List;"),
+    		new FQMethod("java/util/Set", "of", "()Ljava/util/Set;")
+    );
+    		
+    
     enum LUIUserValue {
-        ONE_ITEM_LIST, LIST_STREAM, STREAM_OPTIONAL
+        ONE_ITEM_LIST, LIST_STREAM, STREAM_OPTIONAL, EMPTY_COLLECTION
     };
 
     private BugReporter bugReporter;
@@ -119,6 +127,8 @@ public class ListUsageIssues extends BytecodeScanningDetector {
                     }
                 } else if (COLLECTIONS_SINGLETONLIST_METHOD.equals(fqm)) {
                     userValue = LUIUserValue.ONE_ITEM_LIST;
+                } else if (EMPTY_COLLECTIONS.contains(fqm)) {
+                	userValue = LUIUserValue.EMPTY_COLLECTION;
                 }
             } else if (seen == Const.INVOKEINTERFACE) {
                 FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
@@ -130,6 +140,10 @@ public class ListUsageIssues extends BytecodeScanningDetector {
                                 && (itm.getXField() == null)) {
                             bugReporter.reportBug(
                                     new BugInstance(this, BugType.LUI_USE_COLLECTION_ADD.name(), NORMAL_PRIORITY)
+                                            .addClass(this).addMethod(this).addSourceLine(this));
+                        } else if (itm.getUserValue() == LUIUserValue.EMPTY_COLLECTION) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.LUI_VACUOUS_ADDALL.name(), NORMAL_PRIORITY)
                                             .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
