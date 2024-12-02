@@ -6372,6 +6372,19 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     	</Details>
     </BugPattern>
     
+    <BugPattern type="LUI_VACUOUS_ADDALL">
+        <ShortDescription>Method passes an empty collection to.addAll()</ShortDescription>
+        <LongDescription>Method {1} passes an empty collection to.addAll()</LongDescription>
+        <Details>
+        <![CDATA[
+        <p>This method creates a empty collection only to pass it into an addAll call of another collection.
+        As this collection has no elements, the call is useless.
+        </p>
+        ]]>
+        </Details>
+    </BugPattern>
+    
+    
     <BugPattern type="FII_AVOID_CONTAINS_ON_COLLECTED_STREAM">
         <ShortDescription>Method calls contains() on a collected lambda expression</ShortDescription>
         <LongDescription>Method {1} calls contains() on a collected lambda expresssion</LongDescription>
@@ -6505,8 +6518,10 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         	by passing the source collection into a new Collection constructors argument. Use, 
         	
         	<code><pre>
-        		Set<String> s = new HashSet<myArrayList);
+        		Set<String> s = new HashSet<>(myArrayList);
         	</pre></code>
+
+            instead of:
         	
         	<code><pre>
         		Set<String> s = myArrayList.stream().collect(Collectors.toSet);
