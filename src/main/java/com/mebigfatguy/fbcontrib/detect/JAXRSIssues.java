@@ -48,7 +48,10 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     private static final Set<String> METHOD_ANNOTATIONS = UnmodifiableSet.create(
             // @formatter:off
             "Ljavax/ws/rs/HEAD;", "Ljavax/ws/rs/GET;", "Ljavax/ws/rs/PUT;", "Ljavax/ws/rs/POST;",
-            "Ljavax/ws/rs/DELETE;", "Ljavax/ws/rs/POST;"
+            "Ljavax/ws/rs/DELETE;", "Ljavax/ws/rs/POST;",
+            "Ljakarta/ws/rs/HEAD;", "Ljakarta/ws/rs/GET;", "Ljakarta/ws/rs/PUT;", "Ljakarta/ws/rs/POST;",
+            "Ljakarta/ws/rs/DELETE;", "Ljakarta/ws/rs/POST;"
+
     // @formatter:on
     );
 
@@ -57,6 +60,9 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             "Ljavax/ws/rs/PathParam;", "Ljavax/ws/rs/CookieParam;", "Ljavax/ws/rs/FormParam;",
             "Ljavax/ws/rs/HeaderParam;", "Ljavax/ws/rs/MatrixParam;", "Ljavax/ws/rs/QueryParam;",
             "Ljavax/ws/rs/BeanParam;", "Ljavax/ws/rs/container/Suspended;", "Ljavax/ws/rs/core/Context;",
+            "Ljakarta/ws/rs/PathParam;", "Ljakarta/ws/rs/CookieParam;", "Ljakarta/ws/rs/FormParam;",
+            "Ljakarta/ws/rs/HeaderParam;", "Ljakarta/ws/rs/MatrixParam;", "Ljakarta/ws/rs/QueryParam;",
+            "Ljakarta/ws/rs/BeanParam;", "Ljakarta/ws/rs/container/Suspended;", "Ljakarta/ws/rs/core/Context;",
             "Lcom/wordnik/swagger/annotations/ApiParam;", "Lio/swagger/annotations/ApiParam;",
             "Lorg/glassfish/jersey/media/multipart/FormDataParam;", "Lcom/sun/jersey/multipart/FormDataParam;"
     // @formatter:on
@@ -65,8 +71,9 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
     private static final Set<String> NATIVE_JAXRS_TYPES = UnmodifiableSet.create(
             // @formatter:off
             Values.SIG_JAVA_LANG_STRING, SignatureBuilder.SIG_BYTE_ARRAY, "Ljava/io/InputStream;", "Ljava/io/Reader;",
-            "Ljava/io/File;", "Ljavax/activation/DataSource;", "Ljavax/xml/transform/Source;",
-            "Ljavax/xml/bin/JAXBElement;", "Ljavax/ws/rc/core/MultivaluedMap;"
+            "Ljava/io/File;", "Ljavax/activation/DataSource;", "Ljakarta/activation/DataSource;", 
+            "Ljavax/xml/transform/Source;",
+            "Ljavax/xml/bin/JAXBElement;", "Ljakarta/xml/bin/JAXBElement;", "Ljavax/ws/rc/core/MultivaluedMap;", "Ljakarta/ws/rc/core/MultivaluedMap;"
     // @formatter:on
     );
 
@@ -77,6 +84,12 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             "Ljavax/servlet/ServletConfig;", "Ljavax/servlet/ServletContext;",
             "Ljavax/servlet/http/HttpServletRequest;", "Ljavax/servlet/http/HttpServletResponse;",
             "Ljavax/servlet/http/HttpServletResponse;",
+            
+            "Ljakarta/ws/rs/core/Application;", "Ljakarta/ws/rs/core/UriInfo;", "Ljakarta/ws/rs/core/HttpHeaders;",
+            "Ljakarta/ws/rs/core/Request;", "Ljakarta/ws/rs/core/SecurityContext;", "Ljakarta/ws/rs/ext/Providers;",
+            "Ljakarta/servlet/ServletConfig;", "Ljakarta/servlet/ServletContext;",
+            "Ljakarta/servlet/http/HttpServletRequest;", "Ljakarta/servlet/http/HttpServletResponse;",
+            "Ljakarta/servlet/http/HttpServletResponse;",
             
             "Lorg/glassfish/jersey/server/CloseableService;"
     // @formatter:on
@@ -96,9 +109,9 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
         pathOnClass = "";
         hasClassConsumes = false;
         for (AnnotationEntry entry : cls.getAnnotationEntries()) {
-            if ("Ljavax/ws/rs/Consumes;".equals(entry.getAnnotationType())) {
+            if ("Ljavax/ws/rs/Consumes;".equals(entry.getAnnotationType()) || "Ljakarta/ws/rs/Consumes;".equals(entry.getAnnotationType())) {
                 hasClassConsumes = true;
-            } else if ("Ljavax/ws/rs/Path;".equals(entry.getAnnotationType())) {
+            } else if ("Ljavax/ws/rs/Path;".equals(entry.getAnnotationType()) || "Ljakarta/ws/rs/Path;".equals(entry.getAnnotationType())) {
                 pathOnClass = getDefaultAnnotationValue(entry);
             }
         }
@@ -122,15 +135,18 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
             String annotationType = entry.getAnnotationType();
             switch (annotationType) {
             case "Ljavax/ws/rs/GET;":
+            case "Ljakarta/ws/rs/GET;":
                 hasGet = true;
                 isJAXRS = true;
                 break;
 
             case "Ljavax/ws/rs/Consumes;":
+            case "Ljakarta/ws/rs/Consumes;":
                 hasConsumes = true;
                 break;
 
             case "Ljavax/ws/rs/Path;":
+            case "Ljakarta/ws/rs/Path;":
                 path = getDefaultAnnotationValue(entry);
                 break;
 
@@ -170,14 +186,14 @@ public class JAXRSIssues extends PreorderVisitor implements Detector {
                     if (PARAM_ANNOTATIONS.contains(annotationType)) {
                         foundParamAnnotation = true;
 
-                        if ((path != null) && "Ljavax/ws/rs/PathParam;".equals(annotationType)) {
+                        if ((path != null) && ("Ljavax/ws/rs/PathParam;".equals(annotationType) || "Ljakarta/ws/rs/PathParam;".equals(annotationType))) {
                             String parmPath = getDefaultAnnotationValue(a);
                             if ((parmPath != null) && (!path.matches(".*\\{" + parmPath + "\\b.*"))) {
                                 bugReporter.reportBug(new BugInstance(this,
                                         BugType.JXI_PARM_PARAM_NOT_FOUND_IN_PATH.name(), NORMAL_PRIORITY).addClass(this)
                                                 .addMethod(this).addString("Path param: " + parmPath));
                             }
-                        } else if ("Ljavax/ws/rs/core/Context;".equals(annotationType)) {
+                        } else if ("Ljavax/ws/rs/core/Context;".equals(annotationType) || "Ljakarta/ws/rs/core/Context;".equals(annotationType)) {
                             String parmSig = parmTypes[parmIndex].getSignature();
                             if (!VALID_CONTEXT_TYPES.contains(parmSig)) {
                                 bugReporter.reportBug(
