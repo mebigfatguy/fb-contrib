@@ -1951,6 +1951,41 @@ private void appendToList(List&lt;String&gt; list) {
 			]]>
 		</Details>
 	</BugPattern>
+	
+	   <BugPattern type="OCP_OVERLY_CONCRETE_COLLECTION_PARAMETER">
+        <ShortDescription>Method needlessly defines Collection parameter with concrete classes</ShortDescription>
+        <LongDescription>{1}: {3}</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method uses specific collection interface/classes for parameters when only methods defined in the
+            Collection class are used. Consider increasing the abstraction of the interface to
+            make low impact changes easier to accomplish in the future.</p>
+
+            <p>Take the following example:<br/>
+<pre><code>
+private void printList(List&lt;String&gt; list) {
+    for (String s : list) {
+        System.out.println(s);
+    }
+}
+</code></pre>
+
+                The parameter list is currently defined as an <code>List</code>, which is a specific collection interface.
+                Specifying <code>List</code> is unnecessary here, because we aren't using any <code>AList</code>-specific methods (like <code>get(0)</code>).
+                Instead of using the concrete definition, it is better to do something like:<br/>
+<pre><code>
+private void printList(Collection&lt;String&gt; list) {
+    ...
+</code></pre>
+                If the design ever changes, e.g. a <code>Set</code> is used instead, this code won't have to change.
+
+            </p>
+
+            <p>IDEs tend to have tools to help generalize parameters.  For example, in Eclipse, the refactoring tool <a href="http://help.eclipse.org/luna/index.jsp?topic=%2Forg.eclipse.jdt.doc.user%2Freference%2Fref-menu-refactor.htm">Generalize Declared Type</a> helps find an appropriate level of concreteness.</p>
+            ]]>
+        </Details>
+    </BugPattern>
+	
 
 	<BugPattern type="LII_LIST_INDEXED_ITERATING">
 		<ShortDescription>Method uses integer based for loops to iterate over a List</ShortDescription>

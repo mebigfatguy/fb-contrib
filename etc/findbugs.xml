@@ -41,7 +41,7 @@
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.CyclomaticComplexity" speed="slow" reports="CC_CYCLOMATIC_COMPLEXITY" />
 
-	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyConcreteParameter" speed="slow" reports="OCP_OVERLY_CONCRETE_PARAMETER" />
+	<Detector class="com.mebigfatguy.fbcontrib.detect.OverlyConcreteParameter" speed="slow" reports="OCP_OVERLY_CONCRETE_PARAMETER,OCP_OVERLY_CONCRETE_COLLECTION_PARAMETER" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ListIndexedIterating" speed="moderate" reports="LII_LIST_INDEXED_ITERATING" />
 
@@ -349,6 +349,7 @@
 	<BugPattern abbrev="SCI" type="SCI_SYNCHRONIZED_COLLECTION_ITERATORS" category="CORRECTNESS" />
 	<BugPattern abbrev="CC" type="CC_CYCLOMATIC_COMPLEXITY" category="STYLE" />
 	<BugPattern abbrev="OCP" type="OCP_OVERLY_CONCRETE_PARAMETER" category="STYLE" />
+	<BugPattern abbrev="OCP" type="OCP_OVERLY_CONCRETE_COLLECTION_PARAMETER" category="STYLE" />
 	<BugPattern abbrev="LII" type="LII_LIST_INDEXED_ITERATING" category="STYLE" />
 	<BugPattern abbrev="UCC" type="UCC_UNRELATED_COLLECTION_CONTENTS" category="STYLE" />
 	<BugPattern abbrev="DRE" type="DRE_DECLARED_RUNTIME_EXCEPTION" category="STYLE" />
