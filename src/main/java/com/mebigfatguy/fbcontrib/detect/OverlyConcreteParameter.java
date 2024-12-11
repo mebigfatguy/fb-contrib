@@ -436,8 +436,9 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
                     parm++; // users expect 1 based parameters
 
                     String infName = definers.keySet().iterator().next().getClassName();
+                    boolean isCollection = "java.util.Collection".equals(infName);
                     bugReporter.reportBug(
-                            new BugInstance(this, BugType.OCP_OVERLY_CONCRETE_PARAMETER.name(), NORMAL_PRIORITY)
+                            new BugInstance(this, isCollection ? BugType.OCP_OVERLY_CONCRETE_COLLECTION_PARAMETER.name() : BugType.OCP_OVERLY_CONCRETE_PARAMETER.name(), NORMAL_PRIORITY)
                                     .addClass(this).addMethod(this).addSourceLine(this, 0)
                                     .addString(getCardinality(parm) + " parameter '" + name + "' could be declared as "
                                             + infName + " instead"));
