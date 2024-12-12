@@ -73,6 +73,10 @@ public class FII_Sample {
     public List<String> streamingRatherThanCC(Set<String> s) {
     	return s.stream().collect(Collectors.toList());    
     }
+    
+    public List<String> mapBeforeLimit(List<Bauble> baubles) {
+    	return baubles.stream().map(Bauble::getName).limit(2).collect(Collectors.toList());
+    }
 
     public void fpUnrelatedLambdaValue282(Map<String, Bauble> map, BaubleFactory factory) {
         map.computeIfAbsent("pixie dust", _unused -> factory.getBauble());
