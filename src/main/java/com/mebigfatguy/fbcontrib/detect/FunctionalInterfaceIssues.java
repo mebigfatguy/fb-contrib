@@ -83,6 +83,9 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     	
     private static final FQMethod GET = new FQMethod("java/util/List", "get", SignatureBuilder.SIG_INT_TO_OBJECT);
 
+    private static final FQMethod MAP = new FQMethod("java/util/stream/Stream", "map", "(Ljava/util/function/Function;)Ljava/util/stream/Stream;");
+    private static final FQMethod LIMIT = new FQMethod("java/util/stream/Stream", "limit", "(J)Ljava/util/stream/Stream;");
+    
     enum ParseState {
         NORMAL, LAMBDA;
     }
@@ -92,7 +95,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     }
 
     enum FIIUserValue {
-    	STREAM_ITEM, COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM;
+    	STREAM_ITEM, COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM, MAP_ITEM;
     }
 
     private BugReporter bugReporter;
@@ -375,6 +378,19 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                     }
                                 }
                             }
+                        } else if (MAP.equals(fqm)) {
+                        	if (stack.getStackDepth() >= 2) {
+                                userValue = FIIUserValue.MAP_ITEM;
+                        	}
+                        } else if (LIMIT.equals(fqm)) {
+                        	if (stack.getStackDepth() >= 2) {
+                                OpcodeStack.Item itm = stack.getStackItem(1);
+                                if (FIIUserValue.MAP_ITEM == itm.getUserValue()) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_MAP_BEFORE_LIMIT.name(),
+                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+
+                                }
+                        	}
                         }
                     }
                     break;

@@ -6565,6 +6565,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details>
     </BugPattern>
     
+    <BugPattern type="FII_AVOID_MAP_BEFORE_LIMIT">
+        <ShortDescription>Method calls limit() directly after calling map</ShortDescription>
+        <LongDescription>Method {1} calls limit() directly after calling map</LongDescription>
+        <Details>
+        <![CDATA[
+            Method calls a map() operation on a stream directly before a limit(n) call, as the map 
+            will not change the count or order of the objects, it is quicker to call limit before the
+            map, so that any objects passed the limit don't need to have a mapping done.
+        ]]>
+        </Details>
+    </BugPattern>
+    
     <BugPattern type="SUI_CONTAINS_BEFORE_ADD">
         <ShortDescription>Method checks for an item in a set with contains, before using add()</ShortDescription>
         <LongDescription>Method {1} checks for an item in a set with contains, before using add()</LongDescription>
