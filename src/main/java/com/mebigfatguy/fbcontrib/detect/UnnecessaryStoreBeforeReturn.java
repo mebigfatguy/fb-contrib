@@ -32,6 +32,7 @@ import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
+import aj.org.objectweb.asm.Opcodes;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -46,7 +47,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
     enum State {
-        SEEN_NOTHING, SEEN_STORE, SEEN_LOAD
+        SEEN_NOTHING, SEEN_STORE, SEEN_LOAD, SEEN_CHECKCAST
     }
 
     private static final BitSet branchInstructions = new BitSet();
@@ -186,8 +187,14 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
                     if ((reg == null) || (reg.intValue() != storeReg)) {
                         state = State.SEEN_STORE;
                     }
+                } else if (seen == Opcodes.CHECKCAST) {
+                	state = State.SEEN_CHECKCAST;
                 }
                 break;
+                
+            case SEEN_CHECKCAST:
+            	state = State.SEEN_NOTHING;
+            	break;
 
             case SEEN_STORE:
                 if (branchTargets.get(getPC())) {
