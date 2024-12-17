@@ -5737,7 +5737,20 @@ for (Person p : people) {
     		<p>A field or variable is named 'var' which will conflict with the built in Java 10 feature using 'var' as a keyword.</p>
     		]]>
     	</Details>
-    </BugPattern>       
+    </BugPattern> 
+    
+    <BugPattern type="IMC_IMMATURE_CLASS_COLLECTION_RETURN">
+        <ShortDescription>Method returns java.util.Collection</ShortDescription>
+        <LongDescription>Method {1} returns java.util.Collection</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method declares that it returns a Collection, when in fact it has created and returned
+            a more specific interface. Since the caller is free to cast any return value to Collection, it is
+            better to return the specific interface created so that it gives the caller the most
+            power. With methods, always expect the least with parameters, and provide the most with return types.</p>
+            ]]>
+        </Details>
+    </BugPattern>      
 
     <BugPattern type="JXI_GET_ENDPOINT_CONSUMES_CONTENT">
     	<ShortDescription>JAX-RS Method implements a GET request but consumes input</ShortDescription>

@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantLong;
 import org.apache.bcel.classfile.ConstantValue;
@@ -27,7 +28,9 @@ import com.mebigfatguy.fbcontrib.utils.Values;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 
 /**
  * looks for classes that aren't fully flushed out to be easily usable for
@@ -62,8 +65,10 @@ public class ImmatureClass extends BytecodeScanningDetector {
     }
 
     private BugReporter bugReporter;
+    private OpcodeStack stack;
     private FieldStatus fieldStatus = FieldStatus.NONE;
     private boolean classIsJPAEntity;
+    private String actualReturnType;
 
     public ImmatureClass(BugReporter reporter) {
         bugReporter = reporter;
@@ -177,7 +182,12 @@ public class ImmatureClass extends BytecodeScanningDetector {
             }
         }
 
-        super.visitClassContext(classContext);
+        try {
+        	stack = new OpcodeStack();
+        	super.visitClassContext(classContext);
+        } finally {
+        	stack = null;
+        }
     }
 
     @Override
@@ -253,6 +263,22 @@ public class ImmatureClass extends BytecodeScanningDetector {
             }
         }
     }
+    
+    public void visitCode(Code obj) {
+
+		stack.resetForMethodEntry(this);
+		
+    	String declaredReturnType = new SignatureParser(getMethodSig()).getReturnTypeSignature();
+    	actualReturnType = null;
+    	
+    	super.visitCode(obj);
+    	
+        if ("Ljava/util/Collection;".equals(declaredReturnType) && !"Ljava/util/Collection;".equals(actualReturnType)) {
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.IMC_IMMATURE_CLASS_COLLECTION_RETURN.name(), NORMAL_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this, 0));
+        }
+    }
 
     /**
      * implements the visitor to check for calls to Throwable.printStackTrace()
@@ -261,12 +287,25 @@ public class ImmatureClass extends BytecodeScanningDetector {
      */
     @Override
     public void sawOpcode(int seen) {
-        if ((seen == Const.INVOKEVIRTUAL) && "printStackTrace".equals(getNameConstantOperand())
-                && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())) {
-            bugReporter
-                    .reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY)
-                            .addClass(this).addMethod(this).addSourceLine(this));
-        }
+    	try {
+	        if ((seen == Const.INVOKEVIRTUAL) && "printStackTrace".equals(getNameConstantOperand())
+	                && SignatureBuilder.SIG_VOID_TO_VOID.equals(getSigConstantOperand())) {
+	            bugReporter
+	                    .reportBug(new BugInstance(this, BugType.IMC_IMMATURE_CLASS_PRINTSTACKTRACE.name(), NORMAL_PRIORITY)
+	                            .addClass(this).addMethod(this).addSourceLine(this));
+	        } else if (seen == Const.ARETURN) {
+	        	if (stack.getStackDepth() > 0) {
+	        		OpcodeStack.Item itm = stack.getStackItem(0);
+	        		if (actualReturnType == null) {
+	        			actualReturnType = itm.getSignature();
+	        		} else if (!actualReturnType.equals(itm.getSignature())) {
+	        			actualReturnType = "";
+	        		}
+	        	}
+	        }
+    	} finally {
+    		stack.sawOpcode(this, seen);
+    	}
     }
 
     /**
