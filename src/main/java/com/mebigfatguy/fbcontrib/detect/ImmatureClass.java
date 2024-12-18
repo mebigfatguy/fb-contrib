@@ -18,6 +18,7 @@ import org.apache.bcel.classfile.LocalVariable;
 import org.apache.bcel.classfile.LocalVariableTable;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SerialVersionCalc;
@@ -274,8 +275,10 @@ public class ImmatureClass extends BytecodeScanningDetector {
     	super.visitCode(obj);
     	
         if ("Ljava/util/Collection;".equals(declaredReturnType) && !"Ljava/util/Collection;".equals(actualReturnType)) {
+            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
+
             bugReporter.reportBug(
-                    new BugInstance(this, BugType.IMC_IMMATURE_CLASS_COLLECTION_RETURN.name(), NORMAL_PRIORITY)
+                    new BugInstance(this, BugType.IMC_IMMATURE_CLASS_COLLECTION_RETURN.name(), mi == null || mi.isDerived() ? LOW_PRIORITY  : NORMAL_PRIORITY)
                             .addClass(this).addMethod(this).addSourceLine(this, 0));
         }
     }
