@@ -67,7 +67,7 @@ Don't have more than one version of either jar in this folder, as it's not clear
 6. Import this project into Eclipse as well.  You may wish to [mark these files as read-only](https://cloud.githubusercontent.com/assets/6819944/3866638/801ae098-1fdc-11e4-9fce-1fdecb81402f.gif), so you modify the "correct" files.
 7. In the fb-contrib project, find the `user.properties.example` file.  Make a copy of it named user.properties (this will not be tracked by version control). Modify the findbugs.dir property to where ever you have the FindBugs distribution installed.  This is the [executable FindBugs](http://findbugs.sourceforge.net/downloads.html) folder, *not* the source folder.  The jar will be "installed" to (findbugs.dir)\plugin.
 For example, If you are using FindBugs with Eclipse (and you extracted Eclipse to C:\\), you'll set this to something like `findbugs.dir=/eclipse/plugins/edu.umd.cs.findbugs.plugin.eclipse_3.0.0.20140706-2cfb468`
-8. Finally, build fb-contrib by finding the [build.xml](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/build.xml) file in Eclipse, right-click it, and select Run As > Ant Build.  The dependencies needed should be downloaded to fb-contrib/lib and the fb-contrib-VERSION.jar should be built.
+8. Finally, build fb-contrib by finding the [build.xml](https://github.com/mebigfatguy/fb-contrib/blob/spotbugs/build.xml) file in Eclipse, right-click it, and select Run As > Ant Build.  The dependencies needed should be downloaded to fb-contrib/lib and the fb-contrib-VERSION.jar should be built.
 
 ## Setting up for Development - Maven
 1. Download/install [Maven](https://maven.apache.org), version 2.2.1 or newer.
@@ -110,7 +110,7 @@ The group ID for sb-contrib is com.mebigfatguy.sb-contrib, and the artifact ID i
 <plugin>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-maven-plugin</artifactId>
-    <version>3.1.12</version>
+    <version>4.9.1.0</version>
     <configuration>
         <plugins>
             <plugin>
@@ -153,16 +153,12 @@ task findbugs(type: FindBugs) {
 ~~~~
 ## Contributing
 Once you have the dev environment set up, feel free to make changes and pull requests.
-Any edits are much appreciated, from finding typos, to adding examples in the [messages](https://github.com/mebigfatguy/fb-contrib/blob/master/etc/messages.xml), to creating new detectors, all help is welcome.
+Any edits are much appreciated, from finding typos, to adding examples in the [messages](https://github.com/mebigfatguy/fb-contrib/blob/spotbugs/etc/messages.xml), to creating new detectors, all help is welcome.
 
 External guides for making detectors:
-- https://www.ibm.com/developerworks/library/j-findbug2/
-- http://kjlubick.github.io/blog/post/1?building-my-first-findbugs-detector
+- [https://www.ibm.com/developerworks/library/j-findbug2/](https://web.archive.org/web/20200809120657/https://www.ibm.com/developerworks/library/j-findbug2/)
 
-Misc references about bytecode:
-- http://www.jroller.com/dbrosius/entry/the_jvm_class_file_format
-
-For making detectors, it best to make several test cases, like those in the [sample directory](https://github.com/mebigfatguy/fb-contrib/tree/master/samples).  Even better is if you can comment where you expect bug markers to appear and why, like [this](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/samples/HES_Sample.java#L313).
+For making detectors, it best to make several test cases, like those in the [sample directory](https://github.com/mebigfatguy/fb-contrib/tree/spotbugs/src/samples/java/ex).  Even better is if you can comment where you expect bug markers to appear and why, like [this](https://github.com/mebigfatguy/fb-contrib/blob/717f757d69c098e1baf786d3e7c03efacf2bbfaf/samples/HES_Sample.java#L313).
 
 In your pull request, give an overview of your changes along with the related commits.
 
