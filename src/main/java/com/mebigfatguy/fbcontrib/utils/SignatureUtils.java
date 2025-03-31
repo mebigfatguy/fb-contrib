@@ -58,7 +58,7 @@ public final class SignatureUtils {
 
     private static final Map<String, String> PRIMITIVE_NAME_TO_SIG = new HashMap<>();
     static {
-        PRIMITIVE_NAME_TO_SIG.put("boolean", "B");
+        PRIMITIVE_NAME_TO_SIG.put("byte", "B");
         PRIMITIVE_NAME_TO_SIG.put("short", "S");
         PRIMITIVE_NAME_TO_SIG.put("int", "I");
         PRIMITIVE_NAME_TO_SIG.put("long", "J");

@@ -15,13 +15,13 @@ for FindBugs:
 
        GroupId: com.mebigfatguy.fb-contrib
     ArtifactId: fb-contrib
-       Version: 7.6.9
+       Version: 7.6.10
        
 For SpotBugs
 
        GroupId: com.mebigfatguy.sb-contrib
     ArtifactId: sb-contrib
-       Version: 7.6.9
+       Version: 7.6.10
        
 Developer
 * Dave Brosius
@@ -50,6 +50,7 @@ Contributors
 * Kevin Seymour
 * Piotrek Żygieło
 * Guillaume Toison
+* Judit Knoll
 
 
 fb-contrib has two main branches, 'findbugs' and 'spotbugs'. Code is committed to spotbugs, and then merged back to findbugs.
@@ -88,7 +89,7 @@ The group ID for fb-contrib is com.mebigfatguy.fb-contrib, and the artifact ID i
             <plugin>
                 <groupId>com.mebigfatguy.fb-contrib</groupId>
                 <artifactId>fb-contrib</artifactId>
-                <version>7.6.9</version>
+                <version>7.6.10</version>
             </plugin>
         </plugins>
     </configuration>
@@ -115,7 +116,7 @@ The group ID for sb-contrib is com.mebigfatguy.sb-contrib, and the artifact ID i
             <plugin>
                 <groupId>com.mebigfatguy.sb-contrib</groupId>
                 <artifactId>sb-contrib</artifactId>
-                <version>7.6.9</version>
+                <version>7.6.10</version>
             </plugin>
         </plugins>
     </configuration>
@@ -141,7 +142,7 @@ dependencies {
     findbugs configurations.findbugsPlugins.dependencies
 
     // To keep everything tidy, we set these apart
-    findbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.6.9'
+    findbugsPlugins 'com.mebigfatguy.fb-contrib:fb-contrib:7.6.10'
 }
 
 task findbugs(type: FindBugs) {
