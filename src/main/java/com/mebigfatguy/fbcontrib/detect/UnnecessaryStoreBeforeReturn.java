@@ -32,7 +32,6 @@ import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.TernaryPatcher;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
-import aj.org.objectweb.asm.Opcodes;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -187,7 +186,7 @@ public class UnnecessaryStoreBeforeReturn extends BytecodeScanningDetector {
                     if ((reg == null) || (reg.intValue() != storeReg)) {
                         state = State.SEEN_STORE;
                     }
-                } else if (seen == Opcodes.CHECKCAST) {
+                } else if (seen == Const.CHECKCAST) {
                 	state = State.SEEN_CHECKCAST;
                 }
                 break;
