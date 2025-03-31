@@ -50,6 +50,7 @@ Contributors
 * Kevin Seymour
 * Piotrek Żygieło
 * Guillaume Toison
+* Judit Knoll
 
 
 fb-contrib has two main branches, 'findbugs' and 'spotbugs'. Code is committed to spotbugs, and then merged back to findbugs.
