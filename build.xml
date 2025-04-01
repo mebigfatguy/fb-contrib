@@ -114,10 +114,12 @@
 			<pathelement location="${lib.dir}/jcommander-${jcommander.version}.jar" />
             <pathelement location="${lib.dir}/mockito-core-${mockito-core.version}.jar" />
             <pathelement location="${lib.dir}/byte-buddy-${byte-buddy.version}.jar" />
+            <pathelement location="${lib.dir}/byte-buddy-agent-${byte-buddy-agent.version}.jar" />
             <pathelement location="${lib.dir}/objenesis-${objenesis.version}.jar" />
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
 			<pathelement location="${lib.dir}/dom4j-1.6.1.jar" />
 			<pathelement location="${lib.dir}/jaxen-1.1.6.jar" />
+			<pathelement location="${lib.dir}/slf4j-api-${slf4j-api.version}.jar" />
 		</path>
 		<path id="sb-contrib.samples.classpath">
             <pathelement location="${lib.dir}/akka-actor_2.12-${akka-actor_2.12.version}.jar" />
@@ -206,7 +208,7 @@
 	
 	<target name="test" depends="compile_test" unless="no.test" description="runs unit tests">
 		<mkdir dir="${test_reports.dir}" />
-		<taskdef resource="testngtasks" classpath="${lib.dir}/testng-${testng.version}.jar"/>
+		<taskdef resource="testngtasks" classpath="${lib.dir}/testng-${testng.version}.jar:${lib.dir}/testng-ant-${testng-ant.version}.jar:${lib.dir}/slf4j-api-${slf4j-api.version}.jar"/>
 
 		<testng outputDir="${test_reports.dir}">
 			<classfileset dir="${test.classes.dir}" includes="**/*.class"/>
