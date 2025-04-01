@@ -551,13 +551,8 @@
                 </dependencies>
                 <configuration>
                     <rulesets>
-                        <ruleset>/rulesets/java/clone.xml</ruleset>
-                        <ruleset>/rulesets/java/finalizers.xml</ruleset>
-                        <ruleset>/rulesets/java/imports.xml</ruleset>
-                        <ruleset>/rulesets/java/logging-java.xml</ruleset>
-                        <ruleset>/rulesets/java/junit.xml</ruleset>
-                        <ruleset>/rulesets/java/migrating.xml</ruleset>
-                        <ruleset>/rulesets/java/unusedcode.xml</ruleset>
+                        <ruleset>category/java/design.xml</ruleset>
+                        <ruleset>category/java/codestyle.xml</ruleset>
                         <ruleset>${project.basedir}/etc/pmd-rules.xml</ruleset>
                     </rulesets>
                 </configuration>
@@ -677,12 +672,10 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
-                <version>3.22.0</version>
+                <version>3.26.0</version>
                 <configuration>
                     <rulesets>
-                        <ruleset>/rulesets/java/basic.xml</ruleset>
-                        <ruleset>/rulesets/java/braces.xml</ruleset>
-                        <ruleset>/rulesets/java/design.xml</ruleset>
+                        <ruleset>category/java/design.xml</ruleset>
                     </rulesets>
                 </configuration>
             </plugin>
