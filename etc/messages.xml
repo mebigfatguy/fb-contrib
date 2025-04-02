@@ -2777,7 +2777,7 @@ static {
 
 	<BugPattern type="FCBL_FIELD_COULD_BE_LOCAL">
 		<ShortDescription>Class defines fields that are used only as locals</ShortDescription>
-		<LongDescription>Class {0} defines fields that are used only as locals</LongDescription>
+		<LongDescription>The {1.name} field in class {0} is used only as a local, but defined on class level</LongDescription>
 		<Details>
 			<![CDATA[
 			<p>This class defines fields that are used in a local only fashion,
