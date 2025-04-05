@@ -6558,8 +6558,8 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     </BugPattern>
     
     <BugPattern type="FII_USE_COPYCONSTRUCTOR">
-        <ShortDescription>Method calls collect() directly on a stream</ShortDescription>
-        <LongDescription>Method {1} calls collect() directly on a stream</LongDescription>
+        <ShortDescription>Method calls collect() directly on a collection stream</ShortDescription>
+        <LongDescription>Method {1} calls collect() directly on a collection stream</LongDescription>
         <Details>
         <![CDATA[
         	Code perform a "copy constructor" operation by using streams, when it is more simply done
