@@ -11,6 +11,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -72,6 +73,10 @@ public class FII_Sample {
     
     public List<String> streamingRatherThanCC(Set<String> s) {
     	return s.stream().collect(Collectors.toList());    
+    }
+    
+    public List<Integer> fpStreamCollect() {
+    	return IntStream.generate(() -> (int) (Math.random() * 10)).limit(5).boxed().collect(Collectors.toList());
     }
     
     public List<String> mapBeforeLimit(List<Bauble> baubles) {

@@ -27,6 +27,7 @@ import java.util.Map;
 import javax.annotation.Nullable;
 
 import org.apache.bcel.Const;
+import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.BootstrapMethod;
 import org.apache.bcel.classfile.BootstrapMethods;
@@ -85,7 +86,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     private static final FQMethod MAP = new FQMethod("java/util/stream/Stream", "map", "(Ljava/util/function/Function;)Ljava/util/stream/Stream;");
     private static final FQMethod LIMIT = new FQMethod("java/util/stream/Stream", "limit", "(J)Ljava/util/stream/Stream;");
-    
+        
     enum ParseState {
         NORMAL, LAMBDA;
     }
@@ -95,9 +96,10 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     }
 
     enum FIIUserValue {
-    	STREAM_ITEM, COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM, MAP_ITEM;
+    	COLLECTION_STREAM_ITEM, COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM, MAP_ITEM;
     }
 
+    private JavaClass collectionClass;
     private BugReporter bugReporter;
     private JavaClass cls;
     private OpcodeStack stack;
@@ -111,6 +113,12 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     public FunctionalInterfaceIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        
+    	try {
+            collectionClass = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_COLLECTION);
+    	} catch (ClassNotFoundException e) {
+    		bugReporter.reportMissingClass(e);
+    	}
     }
 
     @Override
@@ -342,7 +350,11 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         }
                     } else if (STREAM.equals(m)) {
                         if (stack.getStackDepth() >= 1) {
-                            userValue = FIIUserValue.STREAM_ITEM;
+                        	OpcodeStack.Item itm = stack.getStackItem(0);
+                        	JavaClass streamClass = itm.getJavaClass();
+                        	if (streamClass != null && streamClass.instanceOf(collectionClass)) {
+                        		userValue = FIIUserValue.COLLECTION_STREAM_ITEM;
+                        	};
                         }
                     } else {
                         FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
@@ -416,7 +428,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         FIIUserValue uv = (FIIUserValue) itm.getUserValue();
-                        if (uv == FIIUserValue.STREAM_ITEM) {
+                        if (uv == FIIUserValue.COLLECTION_STREAM_ITEM) {
 		                    FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
 		                            getSigConstantOperand());
 		                    if (TOLIST.equals(fqm) || TOSET.equals(fqm)) {
@@ -430,6 +442,8 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                 }
                 }
             }
+        } catch (ClassNotFoundException e) {
+        	bugReporter.reportMissingClass(e);
         } finally {
             stack.sawOpcode(this, seen);
             if (userValue != null && stack.getStackDepth() > 0) {
