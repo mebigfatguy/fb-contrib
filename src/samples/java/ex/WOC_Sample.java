@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.EnumSet;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
@@ -23,6 +24,9 @@ public class WOC_Sample {
     private List<String> fp1 = new ArrayList<String>();
     private List<String> fp2 = new ArrayList<String>();
     private List<String> fp3;
+    
+    enum WOCAWOCA { A, B, C };
+    private Set<WOCAWOCA> fpReturnSet;
 
     public WOC_Sample(List<String> x) {
         fp3 = x;
@@ -213,5 +217,18 @@ public class WOC_Sample {
 
     private class Data {
         Set<String> ss;
+    }
+    
+    public class WocaInner {
+    	// only fails on jdk > 8 because of no access$0 there
+	    public Set<WOCAWOCA> fpReturnOnly(boolean b) {
+	    	if (b) {
+	    		fpReturnSet = EnumSet.noneOf(WOCAWOCA.class);
+	    		fpReturnSet.add(WOCAWOCA.A);
+	    	}
+	    	
+	    	return fpReturnSet;
+	    	
+	    }
     }
 }
