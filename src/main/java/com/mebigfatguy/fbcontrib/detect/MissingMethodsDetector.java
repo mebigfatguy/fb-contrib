@@ -20,12 +20,15 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Field;
 
+import com.mebigfatguy.fbcontrib.utils.FQField;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -48,6 +51,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
     private final BugReporter bugReporter;
     private OpcodeStack stack;
+    private String clsName;
     private String clsSignature;
     /** register to first allocation PC */
     private Map<Integer, Integer> localSpecialObjects;
@@ -55,11 +59,14 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     private Map<String, String> fieldSpecialObjects;
     private boolean sawTernary;
     private boolean isInnerClass;
+    private Map<String, Set<FQField>> savedSpecialFields;
+    private String parentClassName;
 
     protected MissingMethodsDetector(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
+        savedSpecialFields = new HashMap<>();
     }
-
+    
     /**
      * overrides the visitor to initialize and tear down the opcode stack
      *
@@ -67,9 +74,16 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
      */
     @Override
     public void visitClassContext(ClassContext classContext) {
+        clsName = classContext.getJavaClass().getClassName();
         try {
-            String clsName = classContext.getJavaClass().getClassName();
-            isInnerClass = clsName.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0;
+            int innerPos = clsName.indexOf(Values.INNER_CLASS_SEPARATOR);
+            isInnerClass = innerPos >= 0;
+            
+            if (isInnerClass) {
+            	parentClassName = clsName.substring(0, innerPos);
+            } else {
+            	parentClassName = null;
+            }
 
             clsSignature = SignatureUtils.classToSignature(clsName);
             stack = new OpcodeStack();
@@ -90,6 +104,9 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             stack = null;
             localSpecialObjects = null;
             fieldSpecialObjects = null;
+            if (!isInnerClass) {
+            	savedSpecialFields.remove(clsName);
+            }
         }
     }
 
@@ -116,6 +133,15 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
         stack.resetForMethodEntry(this);
         localSpecialObjects.clear();
+        
+        if (!isInnerClass) {
+        	Set<FQField> special = savedSpecialFields.remove(clsName);
+        	if (special != null) {
+	        	for (FQField f : special) {
+	        		fieldSpecialObjects.remove(f.getFieldName());
+	        	}
+        	}
+        }
         sawTernary = false;
         super.visitCode(obj);
 
@@ -165,6 +191,13 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             case Const.ARETURN:
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item item = stack.getStackItem(0);
+                    XField xf = item.getXField();
+                    if (xf != null) {
+                    	if (xf.getClassName() != null && xf.getClassName().equals(parentClassName)) {
+                    		saveSpecialFieldUse(xf.getClassName(), xf.getName(), xf.getSignature());
+                    		break;
+                    	}
+                    }
                     clearUserValue(item);
                 } else {
                     // bad findbugs bug, which clears the stack after an ALOAD, in some cases
@@ -218,7 +251,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             case Const.IFNULL:
             case Const.IFNONNULL:
                 if (stack.getStackDepth() > 0) {
-                    OpcodeStack.Item item = stack.getStackItem(0);
+                     OpcodeStack.Item item = stack.getStackItem(0);
                     Object uo = item.getUserValue();
                     if ((uo != null) && !(uo instanceof Boolean)) {
                         clearUserValue(item);
@@ -242,6 +275,20 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             }
         }
     }
+    
+    public void saveSpecialFieldUse(String parentClassName, String fieldName, String signature) {
+    	Set<FQField> special = savedSpecialFields.get(parentClassName);
+    	if (special == null) {
+    		special = new HashSet<>();
+    		savedSpecialFields.put(parentClassName,  special);
+    	}
+    	special.add(new FQField(parentClassName, fieldName, signature));
+    }
+    
+    protected String getParentClassName() {
+    	return parentClassName;
+    }
+
 
     private void handleTernary(int seen) {
         if (((seen == Const.GETFIELD) || OpcodeUtils.isALoad(seen)) && (stack.getStackDepth() > 0)) {
