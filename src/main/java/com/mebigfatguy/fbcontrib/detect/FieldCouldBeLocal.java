@@ -24,19 +24,13 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import edu.umd.cs.findbugs.ba.AnalysisContext;
-import edu.umd.cs.findbugs.util.ClassName;
-import edu.umd.cs.findbugs.util.NestedAccessUtil;
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
-import org.apache.bcel.classfile.ConstantCP;
-import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
 import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.Field;
@@ -49,7 +43,6 @@ import org.apache.bcel.generic.INVOKESPECIAL;
 import org.apache.bcel.generic.INVOKEVIRTUAL;
 import org.apache.bcel.generic.Instruction;
 import org.apache.bcel.generic.InstructionHandle;
-import org.apache.bcel.generic.InstructionList;
 import org.apache.bcel.generic.ObjectType;
 import org.apache.bcel.generic.ReferenceType;
 
@@ -107,13 +100,15 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 			localizableFields = new HashMap<>();
 			visitedBlocks = new BitSet();
 			clsContext = classContext;
-			JavaClass cls = clsContext.getJavaClass();
-			clsName = cls.getClassName();
+			clsName = clsContext.getJavaClass().getClassName();
 
-			if (cls.isSynthetic()) {
+			// this is a complete hack, but Builder pattern classes break this so just
+			// exclude so named
+			if (clsName.contains("Builder")) {
 				return;
 			}
 			clsSig = SignatureUtils.classToSignature(clsName);
+			JavaClass cls = classContext.getJavaClass();
 			Field[] fields = cls.getFields();
 			ConstantPool cp = classContext.getConstantPoolGen().getConstantPool();
 
@@ -134,8 +129,6 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 			}
 
 			if (!localizableFields.isEmpty()) {
-				// if the field is referenced in nest mate classes, it can't be localized
-				removeFieldsReferencedInNestMates(cls, classContext);
 				buildMethodFieldModifiers(classContext);
 				super.visitClassContext(classContext);
 				for (FieldInfo fi : localizableFields.values()) {
@@ -155,58 +148,6 @@ public class FieldCouldBeLocal extends BytecodeScanningDetector {
 			clsContext = null;
 			methodFieldModifiers = null;
 		}
-	}
-
-	private void removeFieldsReferencedInNestMates(JavaClass cls, ClassContext classContext) {
-		if (NestedAccessUtil.hasNest(cls)) {
-			try {
-				AnalysisContext analysisContext = classContext.getAnalysisContext();
-				String className = ClassName.toSlashedClassName(cls.getClassName());
-				List<String> nestMateClassNames = NestedAccessUtil.getNestMateClassNames(cls, analysisContext);
-				for (String nestMateClassName : nestMateClassNames) {
-					JavaClass nestMateClass = analysisContext.lookupClass(nestMateClassName);
-					ConstantPool cp = nestMateClass.getConstantPool();
-					if (nestMateClass.equals(cls)) {
-						// the visited class is handled elsewhere
-						continue;
-					}
-					for (Method nestMethod : nestMateClass.getMethods()) {
-						processNestMateMethodCode(className, nestMethod.getCode(), cp);
-					}
-				}
-
-			} catch (ClassNotFoundException e) {
-				bugReporter.reportMissingClass(e);
-			}
-		}
-	}
-
-	private void processNestMateMethodCode(String visitedClass, Code methodCode, ConstantPool cp) {
-		if (methodCode != null) {
-			InstructionList instructionList = new InstructionList(methodCode.getCode());
-			for (InstructionHandle ih : instructionList) {
-				Instruction ins = ih.getInstruction();
-				if (ins instanceof FieldInstruction) {
-					FieldInstruction fins = (FieldInstruction) ins;
-					String fieldDefiningClass = getFieldDefiningClassNameFromInstruction(fins, cp);
-					if (fieldDefiningClass.equals(visitedClass)) {
-						String fieldName = getFieldNameFromInstruction(fins, cp);
-						localizableFields.remove(fieldName);
-					}
-				}
-			}
-		}
-	}
-
-	private static String getFieldNameFromInstruction(FieldInstruction fins, ConstantPool cp) {
-		ConstantCP cmr = cp.getConstant(fins.getIndex());
-		ConstantNameAndType cnat = cp.getConstant(cmr.getNameAndTypeIndex());
-		return ((ConstantUtf8)cp.getConstant(cnat.getNameIndex())).getBytes();
-	}
-
-	private static String getFieldDefiningClassNameFromInstruction(FieldInstruction fins, ConstantPool cp) {
-		ConstantCP cmr = cp.getConstant(fins.getIndex());
-		return cp.getConstantString(cmr.getClassIndex(), (byte)7);
 	}
 
 	/**

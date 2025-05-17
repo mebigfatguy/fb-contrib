@@ -127,11 +127,12 @@
             <pathelement location="${lib.dir}/akka-http-core_2.12-${akka-http-core_2.12.version}.jar" />
             <pathelement location="${lib.dir}/akka-stream_2.12-${akka-stream_2.12.version}.jar" />
 			<pathelement location="${lib.dir}/asm-debug-all-${asm-debug-all.version}.jar" />
-			<pathelement location="${lib.dir}/javax.servlet.jsp-api-${javax.servlet.jsp-api.version}.jar" />
+			<pathelement location="${lib.dir}/jakarta.servlet.jsp-api-${jakarta.servlet.jsp-api.version}.jar" />
 			<pathelement location="${lib.dir}/junit-${junit.version}.jar" />
 			<pathelement location="${lib.dir}/jsr305-${jsr305.version}.jar" />
 			<pathelement location="${lib.dir}/testng-${testng.version}.jar" />
-			<pathelement location="${lib.dir}/javax.servlet-api-${javax.servlet-api.version}.jar" />
+			<pathelement location="${lib.dir}/jakarta.servlet-api-${jakarta.servlet-api.version}.jar" />
+            <pathelement location="${lib.dir}/jakarta.ws.rs-api-${jakarta.ws.rs-api.version}.jar" />
 			<pathelement location="${lib.dir}/jakarta.xml.bind-api-${jakarta.xml.bind-api.version}.jar" />
 			<pathelement location="${lib.dir}/log4j-${log4j.version}.jar" />
 			<pathelement location="${lib.dir}/log4j-api-${log4j-api.version}.jar" />
@@ -150,7 +151,7 @@
 			<pathelement location="${lib.dir}/spring-beans-${spring-beans.version}.jar" />
 			<pathelement location="${lib.dir}/spring-context-${spring-context.version}.jar" />
 			<pathelement location="${lib.dir}/spring-tx-${spring-tx.version}.jar" />
-            <pathelement location="${lib.dir}/javax.persistence-${javax.persistence.version}.jar" />
+            <pathelement location="${lib.dir}/jakarta.persistence-api-${jakarta.persistence-api.version}.jar" />
             <pathelement location="${lib.dir}/jaxen-${jaxen.version}.jar" />
 			<pathelement location="${lib.dir}/mockito-core-${mockito-core.version}.jar" />
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
