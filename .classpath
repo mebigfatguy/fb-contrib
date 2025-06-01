@@ -5,20 +5,17 @@
 	<classpathentry kind="src" output="target/classes/samples" path="src/samples/java"/>
 	<classpathentry kind="src" path="src/main/java"/>
 	<classpathentry kind="src" output="target/classes/test" path="src/test/java"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER">
+		<attributes>
+			<attribute name="module" value="true"/>
+		</attributes>
+	</classpathentry>
 	<classpathentry kind="lib" path="lib/backport-util-concurrent-3.1.jar" sourcepath="/home/dave/.m2/repository/backport-util-concurrent/backport-util-concurrent/3.1/backport-util-concurrent-3.1-sources.jar"/>
-	<classpathentry kind="lib" path="lib/javax.servlet-api-3.1.0.jar" sourcepath="lib/sources/javax.servlet-api-3.1.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-1.2.17.jar"/>
-	<classpathentry kind="lib" path="lib/javax.servlet.jsp-api-2.3.1.jar"/>
-	<classpathentry kind="lib" path="lib/junit-4.12.jar"/>
-	<classpathentry kind="lib" path="lib/javax.persistence-2.1.1.jar" sourcepath="/home/dave/.m2/repository/org/eclipse/persistence/javax.persistence/2.1.1/javax.persistence-2.1.1-sources.jar"/>
 	<classpathentry kind="lib" path="lib/threetenbp-1.3.2.jar"/>
 	<classpathentry kind="lib" path="lib/commons-collections-3.2.2.jar" sourcepath="lib/sources/commons-collections-3.2.2-sources.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang3-3.4.jar" sourcepath="lib/sources/commons-lang3-3.4-sources.jar"/>
-	<classpathentry kind="lib" path="lib/guava-19.0.jar" sourcepath="lib/sources/guava-19.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/jena-shaded-guava-3.1.0.jar"/>
 	<classpathentry kind="lib" path="lib/jcommander-1.48.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-2.4.jar" sourcepath="lib/sources/commons-io-2.4-sources.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest-core-1.3.jar"/>
 	<classpathentry kind="lib" path="lib/log4j-api-2.9.1.jar"/>
 	<classpathentry kind="lib" path="lib/hamcrest-library-1.3.jar"/>
@@ -28,16 +25,12 @@
 	<classpathentry kind="lib" path="lib/akka-http-core_2.12-10.1.11.jar"/>
 	<classpathentry kind="lib" path="lib/asm-9.6.jar"/>
 	<classpathentry kind="lib" path="lib/asm-tree-9.6.jar"/>
-	<classpathentry kind="lib" path="lib/bcel-6.10.0.jar"/>
 	<classpathentry kind="lib" path="lib/mockito-core-5.15.2.jar"/>
 	<classpathentry kind="lib" path="lib/slf4j-api-2.0.16.jar"/>
 	<classpathentry kind="lib" path="lib/byte-buddy-1.15.11.jar"/>
 	<classpathentry kind="lib" path="lib/byte-buddy-agent-1.15.11.jar"/>
-	<classpathentry kind="lib" path="lib/testng-7.11.0.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.6.jar"/>
-	<classpathentry kind="lib" path="lib/spotbugs-4.9.3.jar"/>
-	<classpathentry kind="lib" path="lib/spotbugs-annotations-4.9.3.jar"/>
 	<classpathentry kind="lib" path="lib/spring-beans-5.3.39.jar"/>
 	<classpathentry kind="lib" path="lib/spring-context-5.3.39.jar"/>
 	<classpathentry kind="lib" path="lib/spring-tx-5.3.39.jar"/>
@@ -50,11 +43,18 @@
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.5.14.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.4.16.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.18.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-2.18.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.17.0.jar"/>
 	<classpathentry kind="lib" path="lib/guava-33.4.6-jre.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjrt-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjtools-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.9.23.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.18.0.jar"/>
+	<classpathentry kind="lib" path="lib/bcel-6.0.jar"/>
+	<classpathentry kind="lib" path="lib/findbugs-3.0.1.jar"/>
+	<classpathentry kind="lib" path="lib/junit-4.13.2.jar"/>
+	<classpathentry kind="lib" path="lib/testng-7.5.jar"/>
+	<classpathentry kind="lib" path="lib/jakarta.xml.bind-api-2.3.3.jar"/>
+	<classpathentry kind="lib" path="lib/akka-stream_2.12-2.6.4.jar"/>
+	<classpathentry kind="lib" path="lib/scala-library-2.12.10.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
