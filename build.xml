@@ -32,8 +32,8 @@
 	<property name="javac.debug" value="on" />
 	<property name="test_reports.dir" value="${target.dir}/reports/test"/>
 
-	<property name="fb-contrib.version" value="7.6.10-SNAPSHOT" />
-	<property name="sb-contrib.version" value="7.6.10-SNAPSHOT" />
+	<property name="fb-contrib.version" value="7.6.10" />
+	<property name="sb-contrib.version" value="7.6.10" />
 
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
 	
@@ -134,6 +134,7 @@
 			<pathelement location="${lib.dir}/jakarta.servlet-api-${jakarta.servlet-api.version}.jar" />
             <pathelement location="${lib.dir}/jakarta.ws.rs-api-${jakarta.ws.rs-api.version}.jar" />
 			<pathelement location="${lib.dir}/jakarta.xml.bind-api-${jakarta.xml.bind-api.version}.jar" />
+			<pathelement location="${lib.dir}/jakarta.ws.rs-api-${jakarta.ws.rs-api.version}.jar" />
 			<pathelement location="${lib.dir}/log4j-${log4j.version}.jar" />
 			<pathelement location="${lib.dir}/log4j-api-${log4j-api.version}.jar" />
             <pathelement location="${lib.dir}/commons-collections-${commons-collections.version}.jar" />
