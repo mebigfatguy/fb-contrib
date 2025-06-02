@@ -11,8 +11,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Collection;
-import java.util.Collections;
 
 import javax.persistence.Entity;
 
@@ -20,6 +18,9 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.objectweb.asm.AnnotationVisitor;
 import org.objectweb.asm.Opcodes;
+
+import com.google.common.collect.ForwardingList;
+import com.google.common.collect.ImmutableList;
 
 public class IMC_Sample implements Serializable {
 
@@ -55,8 +56,16 @@ public class IMC_Sample implements Serializable {
     public Collection returnsCollection() {
     	return Collections.emptySet();
     }
-}
+    
+    class FP486 extends ForwardingList<String> {
+  	   private ImmutableList<String> filteredEvents;
 
+  	   protected ImmutableList<String> delegate() {
+  	      return filteredEvents;
+  	   }
+    }
+}
+	  
 class NeedsEquals {
     String key;
     String value;

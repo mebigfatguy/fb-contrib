@@ -274,7 +274,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
     	
     	super.visitCode(obj);
     	
-        if ("Ljava/util/Collection;".equals(declaredReturnType) && !"Ljava/util/Collection;".equals(actualReturnType)) {
+        if (!getMethod().isSynthetic() && "Ljava/util/Collection;".equals(declaredReturnType) && !"Ljava/util/Collection;".equals(actualReturnType)) {
             MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
 
             bugReporter.reportBug(
