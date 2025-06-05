@@ -44,6 +44,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
+import com.mebigfatguy.fbcontrib.utils.AttributesUtils;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -91,6 +92,9 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             cls = classContext.getJavaClass();
+            if (AttributesUtils.isRecord(cls)) {
+            	return;
+            }
             ClassDescriptor cd = classContext.getClassDescriptor();
             callingClass = cd.getClassName();
             callingPackage = cd.getPackageName();
