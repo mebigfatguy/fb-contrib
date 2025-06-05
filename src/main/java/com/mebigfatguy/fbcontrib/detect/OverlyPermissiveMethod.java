@@ -91,6 +91,9 @@ public class OverlyPermissiveMethod extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         try {
             cls = classContext.getJavaClass();
+            if (cls.isRecord()) {
+            	return;
+            }
             ClassDescriptor cd = classContext.getClassDescriptor();
             callingClass = cd.getClassName();
             callingPackage = cd.getPackageName();
