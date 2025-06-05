@@ -70,6 +70,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
     private FieldStatus fieldStatus = FieldStatus.NONE;
     private boolean classIsJPAEntity;
     private String actualReturnType;
+    private boolean isRecord;
 
     public ImmatureClass(BugReporter reporter) {
         bugReporter = reporter;
@@ -84,6 +85,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         JavaClass cls = classContext.getJavaClass();
         fieldStatus = FieldStatus.NONE;
+        isRecord = cls.isRecord();
 
         String packageName = cls.getPackageName();
         if (packageName.isEmpty()) {
@@ -202,13 +204,13 @@ public class ImmatureClass extends BytecodeScanningDetector {
         if (!f.isSynthetic() && (f.getName().indexOf(Values.SYNTHETIC_MEMBER_CHAR) < 0)) {
             switch (fieldStatus) {
             case NONE:
-                if (!f.isStatic()) {
+                if (!isRecord && !f.isStatic()) {
                     fieldStatus = FieldStatus.SAW_INSTANCE;
                 }
                 break;
 
             case SAW_INSTANCE:
-                if (f.isStatic()) {
+                if (!isRecord && f.isStatic()) {
                     bugReporter.reportBug(
                             new BugInstance(this, BugType.IMC_IMMATURE_CLASS_WRONG_FIELD_ORDER.name(), LOW_PRIORITY)
                                     .addClass(this).addField(this));
