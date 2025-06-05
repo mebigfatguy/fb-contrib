@@ -18,9 +18,12 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.LineNumber;
 import org.apache.bcel.classfile.LineNumberTable;
+
 
 /**
  * a collection of static methods for working with code attribute queries
@@ -72,5 +75,20 @@ public final class AttributesUtils {
         }
 
         return true;
+    }
+    
+    /**
+     * determines if this class is a record
+     * @param cls the class to check
+     * @return whether the class is a record
+     */
+    public static boolean isRecord(JavaClass cls) {
+    	for (Attribute attribute : cls.getAttributes()) {
+            if ("Record".equals(attribute.getName())) {
+                return true;
+            }
+        }
+    	
+    	return false;
     }
 }
