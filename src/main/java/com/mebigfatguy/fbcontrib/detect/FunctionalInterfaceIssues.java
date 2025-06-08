@@ -63,6 +63,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 /**
  * looks for issues around use of @FunctionalInterface classes, especially in
  * use with Streams..
+ * 
+ * Future Ids: 
+ *    - filter before map, where the filter does what the map does
+ * 
  */
 @CustomUserValue
 public class FunctionalInterfaceIssues extends BytecodeScanningDetector {

@@ -22,7 +22,7 @@ public class DWI_Sample {
         }
     }
 
-    void concurrentModificaitonExceptionTest352() {
+    void concurrentModificationExceptionTest352() {
         ArrayList<Integer> list = new ArrayList<Integer>();
         list.add(2);
         Iterator<Integer> iterator = list.iterator();
@@ -93,5 +93,16 @@ public class DWI_Sample {
                 cow.remove(s);
             }
         }
+    }
+    
+    public void fpCOW() {
+    	List<String> ll = new CopyOnWriteArrayList<>();
+    	ll.add("Fee");
+    	ll.add("Fi");
+    	ll.add("Fo");
+    	ll.add("Fum");
+    	for (String l : ll) {
+    		ll.add("English Mun");
+    	}
     }
 }
