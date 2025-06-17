@@ -107,8 +107,8 @@ public final class SerialVersionCalc {
             Arrays.sort(methods, new MethodSorter());
 
             for (Method sinit : methods) {
-                if ("<clinit>".equals(sinit.getName())) {
-                    out.writeUTF("<clinit>");
+                if (Values.STATIC_INITIALIZER.equals(sinit.getName())) {
+                    out.writeUTF(Values.STATIC_INITIALIZER);
                     out.writeInt(Const.ACC_STATIC);
                     out.writeUTF("()V");
                     break;
@@ -124,7 +124,7 @@ public final class SerialVersionCalc {
             }
 
             for (Method method : methods) {
-                if (!"<clinit>".equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
+                if (!Values.STATIC_INITIALIZER.equals(method.getName()) && !"<init>".equals(method.getName()) && !method.isPrivate()) {
                     out.writeUTF(method.getName());
                     out.writeInt(filterModifiers(method.getModifiers(), ModifierType.METHOD));
                     out.writeUTF(method.getSignature().replace('/', '.')); // how bazaar

@@ -110,7 +110,7 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
-    	if (!(clinitPass ^ getMethodName().equals("<clinit>"))) {
+    	if (!(clinitPass ^ getMethodName().equals(Values.STATIC_INITIALIZER))) {
 	        stack.resetForMethodEntry(this);
 	        endNullCheckPC = -1;
 	
