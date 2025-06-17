@@ -24,6 +24,7 @@ import java.util.Map;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -53,6 +54,7 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private Map<String, CCIUserValue> fieldUserValues;
     private int endNullCheckPC;
+    private boolean clinitPass;
 
     private enum CCIUserValue {
         CONCURRENT_HASHMAP, CONCURRENT_HASHMAP_VALUE;
@@ -86,15 +88,21 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
             if ((collectionClass == null) || (mapClass == null)) {
                 return;
             }
+            
             stack = new OpcodeStack();
             fieldUserValues = new HashMap<>();
-            classContext.getJavaClass().accept(this);
+            JavaClass cls = classContext.getJavaClass();
+            clinitPass = true;
+            cls.accept(this);
+            clinitPass = false;
+            cls.accept(this);
+
         } finally {
             fieldUserValues = null;
             stack = null;
         }
     }
-
+    
     /**
      * implements the visitor to see if reset the opcode stack
      *
@@ -102,10 +110,12 @@ public class ConcurrentCollectionIssues extends BytecodeScanningDetector {
      */
     @Override
     public void visitCode(Code obj) {
-        stack.resetForMethodEntry(this);
-        endNullCheckPC = -1;
-
-        super.visitCode(obj);
+    	if (!(clinitPass ^ getMethodName().equals("<clinit>"))) {
+	        stack.resetForMethodEntry(this);
+	        endNullCheckPC = -1;
+	
+	        super.visitCode(obj);
+    	}
     }
 
     /**
