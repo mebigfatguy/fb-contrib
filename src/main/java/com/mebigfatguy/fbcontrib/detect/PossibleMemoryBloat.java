@@ -207,7 +207,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
         for (Integer pc : jaxbContextRegs.values()) {
             bugReporter.reportBug(new BugInstance(this, BugType.PMB_LOCAL_BASED_JAXB_CONTEXT.name(),
-                    "<clinit>".equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
+            		Values.STATIC_INITIALIZER.equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
                             .addSourceLine(this, pc.intValue()));
         }
     }
