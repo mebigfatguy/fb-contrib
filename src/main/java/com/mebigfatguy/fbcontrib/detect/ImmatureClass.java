@@ -278,10 +278,12 @@ public class ImmatureClass extends BytecodeScanningDetector {
     	
         if (!getMethod().isSynthetic() && "Ljava/util/Collection;".equals(declaredReturnType) && !"Ljava/util/Collection;".equals(actualReturnType)) {
             MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
-
-            bugReporter.reportBug(
-                    new BugInstance(this, BugType.IMC_IMMATURE_CLASS_COLLECTION_RETURN.name(), mi == null || mi.isDerived() ? LOW_PRIORITY  : NORMAL_PRIORITY)
-                            .addClass(this).addMethod(this).addSourceLine(this, 0));
+            
+            if (!mi.isDerived()) {   // should add a check that the derived source is in another root package
+	            bugReporter.reportBug(
+	                    new BugInstance(this, BugType.IMC_IMMATURE_CLASS_COLLECTION_RETURN.name(), mi == null || mi.isDerived() ? LOW_PRIORITY  : NORMAL_PRIORITY)
+	                            .addClass(this).addMethod(this).addSourceLine(this, 0));
+            }
         }
     }
 

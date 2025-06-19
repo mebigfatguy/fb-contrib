@@ -9,8 +9,12 @@ import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+import java.util.AbstractCollection;
+import java.util.AbstractMap;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Iterator;
+import java.util.Set;
 
 import javax.persistence.Entity;
 
@@ -63,6 +67,33 @@ public class IMC_Sample implements Serializable {
   	   protected ImmutableList<String> delegate() {
   	      return filteredEvents;
   	   }
+    }
+    
+    class IMCMap extends AbstractMap<String, String> {
+    	
+    	ValueCollection values;
+
+    	public Collection<String> values() {
+    		return values;
+    	}
+
+		@Override
+		public Set<Entry<String, String>> entrySet() {
+			return null;
+		}
+		
+		class ValueCollection extends AbstractCollection<String> {
+
+			@Override
+			public Iterator<String> iterator() {
+				return null;
+			}
+
+			@Override
+			public int size() {
+				return 0;
+			}
+		}
     }
 }
 	  
