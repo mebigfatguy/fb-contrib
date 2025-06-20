@@ -14,6 +14,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Date;
@@ -266,3 +268,11 @@ class FP367 {
         this.resources = (resources == null) ? new ArrayList<>() : resources;
     }
 }
+
+class FP489 {
+	
+	public boolean dateMe(LocalDate ld, LocalDateTime ldt) {
+		return ld.lengthOfMonth() == ldt.toLocalDate().lengthOfMonth();
+	}
+}
+
