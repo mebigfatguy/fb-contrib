@@ -71,7 +71,9 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
             .create("com.fasterxml.jackson.databind.JsonSerializer", "com.fasterxml.jackson.databind.JsonDeserializer");
 
     private static final Set<String> OVERLY_CONCRETE_INTERFACES = UnmodifiableSet.create("java.util.List");
-
+    
+    private static final Set<String> IGNORED_INTERFACES = UnmodifiableSet.create("java.lang.Comparable", "java.lang.constant.Constable", "java.time.chrono.ChronoLocalDate", "java.time.chrono.ChronoLocalDateTime");
+    
     private final BugReporter bugReporter;
     private JavaClass[] constrainingClasses;
     private Map<Integer, Map<JavaClass, List<MethodInfo>>> parameterDefiners;
@@ -579,8 +581,7 @@ public class OverlyConcreteParameter extends BytecodeScanningDetector {
         Map<JavaClass, List<MethodInfo>> definers = new HashMap<>();
 
         for (JavaClass ci : cls.getAllInterfaces()) {
-            if (cls.equals(ci) || !cls.isPublic() || "java.lang.Comparable".equals(ci.getClassName())
-                    || "java.lang.constant.Constable".equals(ci.getClassName())) {
+            if (cls.equals(ci) || !cls.isPublic() || IGNORED_INTERFACES.contains(ci.getClassName())) {
                 continue;
             }
             List<MethodInfo> methodInfos = getPublicMethodInfos(ci);
