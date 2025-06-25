@@ -19,6 +19,8 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.Locale;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Field;
@@ -38,15 +40,20 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.visitclass.PreorderVisitor;
 
 /**
- * looks for fields and local variables that have Map, Set, List in their names
+ * looks for fields and local variables that have Map, Set, List, Queue, Deque, Stack in their names
  * but the variable is a collection of a different basic type.
  */
 public class CollectionNamingConfusion extends PreorderVisitor implements Detector {
 
+	private static final Pattern LAST_SEGMENTED_VARIABLE = Pattern.compile(".*([A-Z][a-z]+)$");
+	private static final Pattern SINGLE_SEGMENTED_VARIABLE = Pattern.compile("_*([a-z]+)$");
+	
     private JavaClass mapInterface;
     private JavaClass setInterface;
     private JavaClass listInterface;
     private JavaClass queueInterface;
+    private JavaClass dequeInterface;
+    private JavaClass stackClass;
 
     private BugReporter bugReporter;
     private ClassContext clsContext;
@@ -64,12 +71,16 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
             setInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_SET);
             listInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_LIST);
             queueInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_QUEUE);
+            dequeInterface = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_DEQUE);
+            stackClass = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_STACK);
         } catch (ClassNotFoundException cnfe) {
             bugReporter.reportMissingClass(cnfe);
             mapInterface = null;
             setInterface = null;
             listInterface = null;
             queueInterface = null;
+            dequeInterface = null;
+            stackClass = null;
 
         }
     }
@@ -136,16 +147,16 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
     @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "EXS_EXCEPTION_SOFTENING_RETURN_FALSE", justification = "No other simple way to determine whether class exists")
     private boolean checkConfusedName(String methodOrVariableName, String signature) {
         try {
-            String name = methodOrVariableName.toLowerCase(Locale.ENGLISH);
-            if ((name.endsWith("map") || (name.endsWith("set") && !name.endsWith("offset")) || name.endsWith("list")
-                    || name.endsWith("deque") || name.endsWith("queue") || name.endsWith("stack"))
+            String lastSegment = lastNameSegment(methodOrVariableName).toLowerCase(Locale.ENGLISH);
+            if ((lastSegment.equals("map") || lastSegment.equals("set")  || lastSegment.equals("list")
+                    || lastSegment.endsWith("deque") || lastSegment.endsWith("queue") || lastSegment.endsWith("stack"))
                     && signature.startsWith("Ljava/util/")) {
                 String clsName = SignatureUtils.stripSignature(signature);
                 JavaClass cls = Repository.lookupClass(clsName);
-                if ((cls.implementationOf(mapInterface) && !name.endsWith("map"))
-                        || (cls.implementationOf(setInterface) && !name.endsWith("set"))
-                        || ((cls.implementationOf(listInterface) || cls.implementationOf(queueInterface))
-                                && !name.endsWith("list") && !name.endsWith("queue"))) {
+                if ((cls.implementationOf(mapInterface) && !lastSegment.equals("map"))
+                ||  (cls.implementationOf(setInterface) && !lastSegment.equals("set"))
+                ||  ((cls.implementationOf(listInterface) || cls.implementationOf(queueInterface) || cls.implementationOf(dequeInterface) || cls.equals(stackClass))
+                        && !lastSegment.equals("list") && !lastSegment.equals("queue") && !lastSegment.equals("deque") && !lastSegment.equals("stack"))) {
                     return true;
                 }
             }
@@ -154,6 +165,20 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
         }
 
         return false;
+    }
+    
+    public String lastNameSegment(String variableName) {
+    	Matcher m = LAST_SEGMENTED_VARIABLE.matcher(variableName);
+    	if (m.matches()) {
+    		return m.group(1);
+    	}
+    	
+    	m = SINGLE_SEGMENTED_VARIABLE.matcher(variableName);
+    	if (m.matches()) {
+    		return m.group(1);
+    	}
+    	
+    	return "";
     }
 
     /**
