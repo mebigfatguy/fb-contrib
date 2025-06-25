@@ -152,6 +152,10 @@ public final class Values {
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_QUEUE = "java/util/Queue";
     @SlashedClassName
+    public static final String SLASHED_JAVA_UTIL_DEQUE = "java/util/Deque";
+    @SlashedClassName
+    public static final String SLASHED_JAVA_UTIL_STACK = "java/util/Stack";
+    @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_UUID = "java/util/UUID";
 
     public static final String SIG_JAVA_UTIL_BOOLEAN = "Ljava/lang/Boolean;";

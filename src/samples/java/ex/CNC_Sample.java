@@ -1,5 +1,6 @@
 package ex;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -16,6 +17,7 @@ public class CNC_Sample {
     List<Double> bernoulliSet;
 
     LinkedList<String> mLinkedList = new LinkedList<>();
+    List<Integer> spaceOffset = new ArrayList<>();
 
     // tag 3xCNC_COLLECTION_NAMING_CONFUSION
     public void testCNC(Map<String, String> argSet, Set<String> nameList, List<String> nameMap) {

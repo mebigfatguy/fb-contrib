@@ -39,9 +39,6 @@
 	<classpathentry kind="lib" path="lib/jaxen-1.1.6.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-4.9.3.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-annotations-4.9.3.jar"/>
-	<classpathentry kind="lib" path="lib/spring-beans-5.3.39.jar"/>
-	<classpathentry kind="lib" path="lib/spring-context-5.3.39.jar"/>
-	<classpathentry kind="lib" path="lib/spring-tx-5.3.39.jar"/>
 	<classpathentry kind="lib" path="lib/jersey-media-multipart-3.1.10.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta.persistence-api-2.2.3.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta.servlet.jsp-api-2.3.6.jar"/>
@@ -57,5 +54,8 @@
 	<classpathentry kind="lib" path="lib/aspectjrt-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjtools-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.9.23.jar"/>
+	<classpathentry kind="lib" path="lib/spring-beans-6.2.8.jar"/>
+	<classpathentry kind="lib" path="lib/spring-context-6.2.8.jar"/>
+	<classpathentry kind="lib" path="lib/spring-tx-6.2.8.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
