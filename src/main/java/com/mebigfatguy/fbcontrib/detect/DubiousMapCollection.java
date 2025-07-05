@@ -134,7 +134,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
 
-            if (getPC() >= ternaryTarget) {
+            if (ternaryTarget != -1 && getPC() >= ternaryTarget) {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     XField xf = itm.getXField();

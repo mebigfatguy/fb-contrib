@@ -3,12 +3,14 @@ package ex;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DMC_Sample {
+public class DMC_Sample extends DMC_Super {
 
     private static Map<String, Boolean> STUFF = new HashMap<>();
 
     private static Map<String, String> flim = new HashMap<>();
     private static Map<String, String> flam = new HashMap<>();
+    private static Map<String, String> fpCtor = Map.ofEntries(
+    		Map.entry("Map", "passed to ctor"));
 
     static {
         STUFF.put("this", Boolean.TRUE);
@@ -16,6 +18,10 @@ public class DMC_Sample {
         STUFF.put("the", Boolean.TRUE);
         STUFF.put("other", Boolean.FALSE);
         STUFF.put("thing", Boolean.TRUE);
+    }
+    
+    public DMC_Sample() {
+    	super(fpCtor);
     }
 
     public String getInfo(boolean v) {
@@ -34,4 +40,10 @@ public class DMC_Sample {
     public static Map<String, String> fpTernaryGetMapField(boolean b) {
         return b ? flim : flam;
     }
+}
+
+class DMC_Super {
+	public DMC_Super(Map<String, String> m) {
+		
+	}
 }
