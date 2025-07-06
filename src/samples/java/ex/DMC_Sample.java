@@ -3,7 +3,7 @@ package ex;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DMC_Sample extends DMC_Super {
+public class DMC_Sample {
 
     private static Map<String, Boolean> STUFF = new HashMap<>();
 
@@ -20,10 +20,6 @@ public class DMC_Sample extends DMC_Super {
         STUFF.put("thing", Boolean.TRUE);
     }
     
-    public DMC_Sample() {
-    	super(fpCtor);
-    }
-
     public String getInfo(boolean v) {
 
         String data = "";
@@ -40,10 +36,10 @@ public class DMC_Sample extends DMC_Super {
     public static Map<String, String> fpTernaryGetMapField(boolean b) {
         return b ? flim : flam;
     }
+    
+    
+    class FP {
+    	String x = fpCtor.get("huh");
+    }
 }
 
-class DMC_Super {
-	public DMC_Super(Map<String, String> m) {
-		
-	}
-}

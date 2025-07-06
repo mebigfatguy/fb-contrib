@@ -276,13 +276,13 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         }
     }
     
-    public void saveSpecialFieldUse(String parentClassName, String fieldName, String signature) {
-    	Set<FQField> special = savedSpecialFields.get(parentClassName);
+    public void saveSpecialFieldUse(String owningClassName, String fieldName, String signature) {
+    	Set<FQField> special = savedSpecialFields.get(owningClassName);
     	if (special == null) {
     		special = new HashSet<>();
-    		savedSpecialFields.put(parentClassName,  special);
+    		savedSpecialFields.put(owningClassName,  special);
     	}
-    	special.add(new FQField(parentClassName, fieldName, signature));
+    	special.add(new FQField(owningClassName, fieldName, signature));
     }
     
     protected String getParentClassName() {

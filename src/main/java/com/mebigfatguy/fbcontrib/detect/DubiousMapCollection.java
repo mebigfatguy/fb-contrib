@@ -19,6 +19,7 @@
 package com.mebigfatguy.fbcontrib.detect;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
+import com.mebigfatguy.fbcontrib.utils.FQField;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
@@ -72,8 +74,12 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private Map<String, FieldAnnotation> mapFields;
     private XField ternaryAccessedField;
+    private Map<String, Set<XField>> savedSpecialFields;
     private int ternaryTarget;
-    boolean isInSpecial;
+    private boolean isInSpecial;
+    private String clsName;
+    private boolean isInnerClass;
+    private String outerClassName;
 
     public DubiousMapCollection(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -84,6 +90,8 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }
+        
+        savedSpecialFields = new HashMap<>();
     }
 
     @Override
@@ -93,10 +101,30 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
             return;
         }
 
+    	clsName = classContext.getJavaClass().getClassName();
         try {
+        	int innerPos = clsName.indexOf(Values.INNER_CLASS_SEPARATOR);
+        	isInnerClass = innerPos >= 0;
+        	
+        	if (isInnerClass) {
+        		outerClassName = clsName.substring(0, innerPos);
+        	} else {
+        		outerClassName = null;
+        	}
+        	        	
             stack = new OpcodeStack();
             mapFields = new HashMap<>();
             super.visitClassContext(classContext);
+            
+            if (!isInnerClass) {
+            	Set<XField> special = savedSpecialFields.remove(clsName);
+            	if (special != null) {
+    	        	for (XField xf : special) {
+    	        		mapFields.remove(xf.getName());
+    	        	}
+            	}
+            }
+
 
             for (FieldAnnotation mapField : mapFields.values()) {
                 bugReporter
@@ -106,6 +134,10 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         } finally {
             mapFields = null;
             stack = null;
+            if (!isInnerClass) {
+            	savedSpecialFields.remove(clsName);
+            }
+
         }
     }
 
@@ -123,6 +155,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
         ternaryAccessedField = null;
         ternaryTarget = -1;
+        
         try {
             super.visitCode(obj);
         } catch (StopOpcodeParsingException e) {
@@ -160,6 +193,8 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                 if (xf != null) {
                     if (!isInSpecial) {
                         mapFields.remove(xf.getName());
+                		saveSpecialFieldUse(xf);
+
 
                     } else {
                         if (stack.getStackDepth() > 0) {
@@ -169,7 +204,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                             }
                         }
                     }
-                    if (mapFields.isEmpty()) {
+                    if (!isInnerClass && mapFields.isEmpty()) {
                         throw new StopOpcodeParsingException();
                     }
 
@@ -272,13 +307,28 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         XField xf = itm.getXField();
         if (xf != null) {
             mapFields.remove(xf.getName());
+    		saveSpecialFieldUse(xf);
+
             xf = (XField) itm.getUserValue();
             if (xf != null) {
                 mapFields.remove(xf.getName());
             }
-            if (mapFields.isEmpty()) {
+            if (!isInnerClass && mapFields.isEmpty()) {
                 throw new StopOpcodeParsingException();
             }
         }
     }
+    
+    public void saveSpecialFieldUse(XField xf) {
+    	if (xf != null) {
+	    	String owningClassName = xf.getClassName();
+	    	Set<XField> special = savedSpecialFields.get(owningClassName);
+	    	if (special == null) {
+	    		special = new HashSet<>();
+	    		savedSpecialFields.put(owningClassName, special);
+	    	}
+	    	special.add(xf);
+    	}
+    }
+
 }
