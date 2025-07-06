@@ -60,7 +60,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     private boolean sawTernary;
     private boolean isInnerClass;
     private Map<String, Set<FQField>> savedSpecialFields;
-    private String parentClassName;
+    private String outerClassName;
 
     protected MissingMethodsDetector(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
@@ -80,9 +80,9 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             isInnerClass = innerPos >= 0;
             
             if (isInnerClass) {
-            	parentClassName = clsName.substring(0, innerPos);
+            	outerClassName = clsName.substring(0, innerPos);
             } else {
-            	parentClassName = null;
+            	outerClassName = null;
             }
 
             clsSignature = SignatureUtils.classToSignature(clsName);
@@ -193,7 +193,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     XField xf = item.getXField();
                     if (xf != null) {
-                    	if (xf.getClassName() != null && xf.getClassName().equals(parentClassName)) {
+                    	if (xf.getClassName() != null && xf.getClassName().equals(outerClassName)) {
                     		saveSpecialFieldUse(xf.getClassName(), xf.getName(), xf.getSignature());
                     		break;
                     	}
@@ -276,17 +276,17 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         }
     }
     
-    public void saveSpecialFieldUse(String parentClassName, String fieldName, String signature) {
-    	Set<FQField> special = savedSpecialFields.get(parentClassName);
+    public void saveSpecialFieldUse(String owningClassName, String fieldName, String signature) {
+    	Set<FQField> special = savedSpecialFields.get(owningClassName);
     	if (special == null) {
     		special = new HashSet<>();
-    		savedSpecialFields.put(parentClassName,  special);
+    		savedSpecialFields.put(owningClassName,  special);
     	}
-    	special.add(new FQField(parentClassName, fieldName, signature));
+    	special.add(new FQField(owningClassName, fieldName, signature));
     }
     
     protected String getParentClassName() {
-    	return parentClassName;
+    	return outerClassName;
     }
 
 

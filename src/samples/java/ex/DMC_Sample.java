@@ -9,6 +9,8 @@ public class DMC_Sample {
 
     private static Map<String, String> flim = new HashMap<>();
     private static Map<String, String> flam = new HashMap<>();
+    private static Map<String, String> fpCtor = Map.ofEntries(
+    		Map.entry("Map", "passed to ctor"));
 
     static {
         STUFF.put("this", Boolean.TRUE);
@@ -17,7 +19,7 @@ public class DMC_Sample {
         STUFF.put("other", Boolean.FALSE);
         STUFF.put("thing", Boolean.TRUE);
     }
-
+    
     public String getInfo(boolean v) {
 
         String data = "";
@@ -34,4 +36,10 @@ public class DMC_Sample {
     public static Map<String, String> fpTernaryGetMapField(boolean b) {
         return b ? flim : flam;
     }
+    
+    
+    class FP {
+    	String x = fpCtor.get("huh");
+    }
 }
+
