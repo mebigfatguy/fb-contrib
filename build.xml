@@ -346,6 +346,8 @@
         <copy tofile="${sonatype.dir}/sb-contrib-${sb-contrib.version}-sources.jar" file="${target.dir}/sb-contrib-src-${sb-contrib.version}.zip"/>
         <jar destfile="${sonatype.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
         <copy tofile="${sonatype.dir}/sb-contrib-${sb-contrib.version}.pom" file="${basedir}/pom.xml"/>
+        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}.pom" todir="${sonatype.dir}" algorithm="md5"/>        
+        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}.pom" todir="${sonatype.dir}" algorithm="sha1"/>
         <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}.jar" todir="${sonatype.dir}" algorithm="md5"/>        
         <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}.jar" todir="${sonatype.dir}" algorithm="sha1"/>
         <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}-sources.jar" todir="${sonatype.dir}" algorithm="md5"/>        
