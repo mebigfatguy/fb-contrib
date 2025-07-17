@@ -202,9 +202,9 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.PoorlyDefinedParameter" speed="fast" reports="PDP_POORLY_DEFINED_PARAMETER" />
 
 	<Detector class="com.mebigfatguy.fbcontrib.detect.NonSymmetricEquals" speed="fast" reports="NSE_NON_SYMMETRIC_EQUALS" />
-
+<!--
 	<Detector class="com.mebigfatguy.fbcontrib.detect.NonFunctionalField" speed="fast" reports="NFF_NON_FUNCTIONAL_FIELD" />
-	
+-->	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.SuspiciousNullGuard" speed="fast" reports="SNG_SUSPICIOUS_NULL_FIELD_GUARD,SNG_SUSPICIOUS_NULL_LOCAL_GUARD" />
 	
 	<Detector class="com.mebigfatguy.fbcontrib.detect.MoreDumbMethods" speed="fast"
