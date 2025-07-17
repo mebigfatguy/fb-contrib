@@ -32,10 +32,11 @@
 	<property name="javac.debug" value="on" />
 	<property name="test_reports.dir" value="${target.dir}/reports/test"/>
 
-	<property name="fb-contrib.version" value="7.6.12-SNAPSHOT" />
-	<property name="sb-contrib.version" value="7.6.12-SNAPSHOT" />
+	<property name="fb-contrib.version" value="7.6.12" />
+	<property name="sb-contrib.version" value="7.6.12" />
 
 	<property name="sonatype.dir" value="${user.home}/.fb-contrib-${fb-contrib.version}-sonatype" />
+	<property name="sonatype.version.dir" value="${sonatype.dir}/com/mebigfatguy/${ant.project.name}/${ant.project.name}/${fb-contrib.version}" />
 	
 	<target name="clean" description="removes all generated collateral">
 		<delete dir="${target.dir}" />
@@ -223,6 +224,7 @@
 	<target name="jar" depends="compile" xmlns:vcs="antlib:com.mebigfatguy.vcsversion" description="produces the fb-contrib jar file">
 		<vcs:vcsversion vcs="git" revisionProperty="_rev_" dateProperty="_date_" branchProperty="_branch_" urlProperty="_url_"/>
 		<jar destfile="${target.dir}/fb-contrib-${fb-contrib.version}.jar">
+            <zipfileset dir="${basedir}" includes="pom.xml" prefix="META-INF/maven/com.mebigfatguy.${ant.project.name}/${ant.project.name}"/>
 			<fileset dir="etc">
 				<include name="findbugs.xml" />
 				<include name="messages*.xml" />
@@ -259,19 +261,19 @@
 	</target>
 
     <target name="instrument" depends="jar">
-        <delete file="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar"/>
-        <delete file="${target.dir}/${ant.project.name}-instrumented-${sb-contrib.version}.jar"/>
+        <delete file="${target.dir}/${ant.project.name}-aj-${fb-contrib.version}.jar"/>
+        <delete file="${target.dir}/${ant.project.name}-instrumented-${fb-contrib.version}.jar"/>
     	<taskdef resource="org/aspectj/tools/ant/taskdefs/aspectjTaskdefs.properties" classpathref="instrument.classpath" />
         <path id="iajc.classpath">
-    		<path refId="sb-contrib.classpath"/>
+    		<path refId="fb-contrib.classpath"/>
     		<path refId="instrument.classpath"/>
     	</path>
-    	<iajc inpath="${target.dir}/${ant.project.name}-${sb-contrib.version}.jar" outjar="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar" source="${javac.source}" target="${javac.target}" classpathref="iajc.classpath" sourceRoots="${aspect.dir}"/>
-    	<zip destfile="${target.dir}/${ant.project.name}-instrumented-${sb-contrib.version}.jar">
-	        <zipfileset src="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar" includes="**/*" prefix=""/>
+    	<iajc inpath="${target.dir}/${ant.project.name}-${fb-contrib.version}.jar" outjar="${target.dir}/${ant.project.name}-aj-${fb-contrib.version}.jar" source="${javac.source}" target="${javac.target}" classpathref="iajc.classpath" sourceRoots="${aspect.dir}"/>
+    	<zip destfile="${target.dir}/${ant.project.name}-instrumented-${fb-contrib.version}.jar">
+	        <zipfileset src="${target.dir}/${ant.project.name}-aj-${fb-contrib.version}.jar" includes="**/*" prefix=""/>
 	        <zipfileset src="${lib.dir}/aspectjrt-${aspectjrt.version}.jar" includes="**/*.class" prefix=""/>
     	</zip>
-        <delete file="${target.dir}/${ant.project.name}-aj-${sb-contrib.version}.jar"/>
+        <delete file="${target.dir}/${ant.project.name}-aj-${fb-contrib.version}.jar"/>
     </target>
 
 	<target name="html" depends="-init" description="generates dynamic html">
@@ -341,30 +343,38 @@
 	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release" />
 
     <target name="sonatype" depends="release" description="prepare an artifact bundle for sonatype">
-        <mkdir dir="${sonatype.dir}"/>
-        <copy todir="${sonatype.dir}" file="${target.dir}/fb-contrib-${fb-contrib.version}.jar"/>
-        <copy tofile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-sources.jar" file="${target.dir}/fb-contrib-src-${fb-contrib.version}.zip"/>
-        <jar destfile="${sonatype.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
-        <copy tofile="${sonatype.dir}/fb-contrib-${fb-contrib.version}.pom" file="${basedir}/pom.xml"/>
-        
+        <mkdir dir="${sonatype.version.dir}"/>
+        <copy todir="${sonatype.version.dir}" file="${target.dir}/fb-contrib-${fb-contrib.version}.jar"/>
+        <copy tofile="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}-sources.jar" file="${target.dir}/fb-contrib-src-${fb-contrib.version}.zip"/>
+        <jar destfile="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
+        <copy tofile="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}.pom" file="${basedir}/pom.xml"/>
+        <checksum file="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}.pom" todir="${sonatype.version.dir}" algorithm="md5"/>        
+        <checksum file="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}.pom" todir="${sonatype.version.dir}" algorithm="sha1"/>
+        <checksum file="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}.jar" todir="${sonatype.version.dir}" algorithm="md5"/>        
+        <checksum file="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}.jar" todir="${sonatype.version.dir}" algorithm="sha1"/>
+        <checksum file="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}-sources.jar" todir="${sonatype.version.dir}" algorithm="md5"/>        
+        <checksum file="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}-sources.jar" todir="${sonatype.version.dir}" algorithm="sha1"/>
+        <checksum file="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" todir="${sonatype.version.dir}" algorithm="md5"/>        
+        <checksum file="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" todir="${sonatype.version.dir}" algorithm="sha1"/>
+
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}.jar" />
+            <arg value="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}.jar" />
         </exec>
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}.pom" />
+            <arg value="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}.pom" />
         </exec>
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}-sources.jar" />
+            <arg value="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}-sources.jar" />
         </exec>        
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" />
+            <arg value="${sonatype.version.dir}/fb-contrib-${fb-contrib.version}-javadoc.jar" />
         </exec>
-        <jar destfile="${sonatype.dir}/bundle.jar" basedir="${sonatype.dir}" includes="fb-contrib*">
-        </jar>
+        <zip destfile="${sonatype.dir}/bundle.jar" basedir="${sonatype.dir}" includes="**/fb-contrib*">
+        </zip>
         <echo message="" />
         <echo message="" />
         <echo message="====================================================================================================================================" />
@@ -374,4 +384,5 @@
         <echo message="see link for details-> https://central.sonatype.org/pages/ossrh-guide.html" />
         <echo message="====================================================================================================================================" />
     </target>
+
 </project>
