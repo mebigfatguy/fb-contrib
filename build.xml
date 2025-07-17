@@ -363,8 +363,8 @@
             <arg value="-abi" />
             <arg value="${sonatype.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" />
         </exec>
-        <jar destfile="${sonatype.dir}/bundle.jar" basedir="${sonatype.dir}" includes="sb-contrib*">
-        </jar>
+        <zip destfile="${sonatype.dir}/bundle.jar" basedir="${sonatype.dir}" includes="sb-contrib*">
+        </zip>
         <echo message="" />
         <echo message="" />
         <echo message="====================================================================================================================================" />
