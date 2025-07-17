@@ -36,6 +36,7 @@
 	<property name="sb-contrib.version" value="7.6.12" />
 
 	<property name="sonatype.dir" value="${user.home}/.sb-contrib-${sb-contrib.version}-sonatype" />
+	<property name="sonatype.version.dir" value="${sonatype.dir}/com/mebigfatguy/${ant.project.name}/${ant.project.name}/${sb-contrib.version}" />
 	
 	<target name="clean" description="removes all generated collateral">
 		<delete dir="${target.dir}" />
@@ -341,37 +342,37 @@
 	<target name="release" depends="build, srczip, html, javadoc" description="prepares everything for a release" />
 
     <target name="sonatype" depends="release" description="prepare an artifact bundle for sonatype">
-        <mkdir dir="${sonatype.dir}"/>
-        <copy todir="${sonatype.dir}" file="${target.dir}/sb-contrib-${sb-contrib.version}.jar"/>
-        <copy tofile="${sonatype.dir}/sb-contrib-${sb-contrib.version}-sources.jar" file="${target.dir}/sb-contrib-src-${sb-contrib.version}.zip"/>
-        <jar destfile="${sonatype.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
-        <copy tofile="${sonatype.dir}/sb-contrib-${sb-contrib.version}.pom" file="${basedir}/pom.xml"/>
-        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}.pom" todir="${sonatype.dir}" algorithm="md5"/>        
-        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}.pom" todir="${sonatype.dir}" algorithm="sha1"/>
-        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}.jar" todir="${sonatype.dir}" algorithm="md5"/>        
-        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}.jar" todir="${sonatype.dir}" algorithm="sha1"/>
-        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}-sources.jar" todir="${sonatype.dir}" algorithm="md5"/>        
-        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}-sources.jar" todir="${sonatype.dir}" algorithm="sha1"/>
-        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" todir="${sonatype.dir}" algorithm="md5"/>        
-        <checksum file="${sonatype.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" todir="${sonatype.dir}" algorithm="sha1"/>
+        <mkdir dir="${sonatype.version.dir}"/>
+        <copy todir="${sonatype.version.dir}" file="${target.dir}/sb-contrib-${sb-contrib.version}.jar"/>
+        <copy tofile="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}-sources.jar" file="${target.dir}/sb-contrib-src-${sb-contrib.version}.zip"/>
+        <jar destfile="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" basedir="${target.dir}" includes="javadoc/**"/>
+        <copy tofile="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}.pom" file="${basedir}/pom.xml"/>
+        <checksum file="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}.pom" todir="${sonatype.version.dir}" algorithm="md5"/>        
+        <checksum file="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}.pom" todir="${sonatype.version.dir}" algorithm="sha1"/>
+        <checksum file="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}.jar" todir="${sonatype.version.dir}" algorithm="md5"/>        
+        <checksum file="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}.jar" todir="${sonatype.version.dir}" algorithm="sha1"/>
+        <checksum file="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}-sources.jar" todir="${sonatype.version.dir}" algorithm="md5"/>        
+        <checksum file="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}-sources.jar" todir="${sonatype.version.dir}" algorithm="sha1"/>
+        <checksum file="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" todir="${sonatype.version.dir}" algorithm="md5"/>        
+        <checksum file="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" todir="${sonatype.version.dir}" algorithm="sha1"/>
 
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/sb-contrib-${sb-contrib.version}.jar" />
+            <arg value="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}.jar" />
         </exec>
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/sb-contrib-${sb-contrib.version}.pom" />
+            <arg value="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}.pom" />
         </exec>
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/sb-contrib-${sb-contrib.version}-sources.jar" />
+            <arg value="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}-sources.jar" />
         </exec>        
         <exec executable="gpg">
             <arg value="-abi" />
-            <arg value="${sonatype.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" />
+            <arg value="${sonatype.version.dir}/sb-contrib-${sb-contrib.version}-javadoc.jar" />
         </exec>
-        <zip destfile="${sonatype.dir}/bundle.jar" basedir="${sonatype.dir}" includes="sb-contrib*">
+        <zip destfile="${sonatype.dir}/bundle.jar" basedir="${sonatype.dir}" includes="**/sb-contrib*">
         </zip>
         <echo message="" />
         <echo message="" />
