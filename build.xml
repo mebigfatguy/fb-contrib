@@ -222,7 +222,7 @@
 	<target name="jar" depends="compile" xmlns:vcs="antlib:com.mebigfatguy.vcsversion" description="produces the sb-contrib jar file">
 		<vcs:vcsversion vcs="git" revisionProperty="_rev_" dateProperty="_date_" branchProperty="_branch_" urlProperty="_url_"/>
 		<jar destfile="${target.dir}/sb-contrib-${sb-contrib.version}.jar">
-            <zipfileset dir="${basedir}" includes="pom.xml" prefix="META-INF/maven"/>
+            <zipfileset dir="${basedir}" includes="pom.xml" prefix="META-INF/maven/com.mebigfatguy.${ant.project.name}/${ant.project.name}"/>
 			<fileset dir="etc">
 				<include name="findbugs.xml" />
 				<include name="messages*.xml" />
