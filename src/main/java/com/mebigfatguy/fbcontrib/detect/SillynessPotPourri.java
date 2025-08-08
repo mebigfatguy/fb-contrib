@@ -158,6 +158,17 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             isInterface = classContext.getJavaClass().isInterface();
             possibleStatics = new HashSet<>();
             super.visitClassContext(classContext);
+            
+            if (!possibleStatics.isEmpty()) {
+            	for (PossibleInstanceToStaticField field : possibleStatics) {
+            		if (!field.isDeleted()) {
+            			bugReporter.reportBug(                                
+            				new BugInstance(this, BugType.SPP_FIELD_COULD_BE_STATIC.name(), NORMAL_PRIORITY)
+                            .addClass(this).addField(new FieldDescriptor(getClassName(), field.getFieldName(), field.getFieldClassName(), false)));
+            		}
+                }
+            }
+
         } finally {
             stack = null;
             lastPCs = null;
@@ -183,19 +194,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         Arrays.fill(lastPCs, -1);
         branchTargets.clear();
         trimLocations.clear();
-        possibleStatics.clear();
         isCtor = getMethod().getName().equals("<init>");
         super.visitCode(obj);
-        
-        if (!possibleStatics.isEmpty()) {
-        	for (PossibleInstanceToStaticField field : possibleStatics) {
-        		if (!field.isDeleted()) {
-        			bugReporter.reportBug(                                
-        				new BugInstance(this, BugType.SPP_FIELD_COULD_BE_STATIC.name(), NORMAL_PRIORITY)
-                        .addClass(this).addField(new FieldDescriptor(getClassName(), field.getFieldName(), field.getFieldClassName(), false)));
-        		}
-            }
-        }
     }
 
     /**
