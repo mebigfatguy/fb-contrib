@@ -37,7 +37,7 @@
 	<classpathentry kind="lib" path="lib/testng-7.11.0.jar"/>
 	<classpathentry kind="lib" path="lib/dom4j-1.6.1.jar"/>
 	<classpathentry kind="lib" path="lib/jaxen-1.1.6.jar"/>
-	<classpathentry kind="lib" path="lib/spotbugs-4.9.3.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-4.9.3.jar" sourcepath="lib/sources/spotbugs-4.9.3-sources.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-annotations-4.9.3.jar"/>
 	<classpathentry kind="lib" path="lib/jersey-media-multipart-3.1.10.jar"/>
 	<classpathentry kind="lib" path="lib/jakarta.persistence-api-2.2.3.jar"/>
@@ -48,14 +48,14 @@
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.5.14.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.4.16.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.18.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-io-2.18.0.jar"/>
-	<classpathentry kind="lib" path="lib/commons-lang3-3.17.0.jar"/>
-	<classpathentry kind="lib" path="lib/guava-33.4.6-jre.jar"/>
+	<classpathentry kind="lib" path="lib/guava-33.4.6-jre.jar" sourcepath="lib/sources/guava-33.4.6-jre-sources.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjrt-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjtools-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/spring-beans-6.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/spring-context-6.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/spring-tx-6.2.8.jar"/>
+	<classpathentry kind="lib" path="lib/commons-io-2.19.0.jar"/>
+	<classpathentry kind="lib" path="lib/commons-lang3-3.18.0.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>

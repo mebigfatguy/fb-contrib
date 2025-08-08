@@ -3348,6 +3348,17 @@ if ({{FLAWED_TEST_LOGIC}}) {
 	   </Details>
 	</BugPattern>
 
+	<BugPattern type="SPP_FIELD_COULD_BE_STATIC">
+	   <ShortDescription>Instance field likely could be defined as static</ShortDescription>
+	   <LongDescription>Instance field {1} likely could be defined as static</LongDescription>
+	   <Details>
+	       <![CDATA[
+	       <p>This instance field appears to only be set to a literal value in a constructor, and never reset. Thus it is likely that this field could just be defined as a static field instead.
+	       </p>
+	       ]]>
+	   </Details>
+	</BugPattern>
+
 	<BugPattern type="MUI_USE_CONTAINSKEY">
 		<ShortDescription>Method calls keySet() just to call contains, use containsKey instead</ShortDescription>
 		<LongDescription>Method {1} calls keySet() just to call contains, use containsKey instead</LongDescription>

@@ -87,6 +87,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private static final Pattern APPEND_PATTERN = Pattern.compile("([0-9]+):(.*)");
 
     private static JavaClass calendarClass;
+    
+    private static final Set<String> POSSIBLE_STATIC_FIELD_CLASSES = UnmodifiableSet.create("I", "J", "java.lang.Integer", "java.lang.Long", "java.lang.String");
 
     static {
         try {
@@ -124,7 +126,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private Map<Integer, BitSet> branchTargets;
     private Set<String> staticConstants;
     private Map<SPPUserValue, Integer> trimLocations;
+    private Map<String, String> possibleStatics;
     private boolean isInterface;
+    private boolean isCtor;
 
     /**
      * constructs a SPP detector given the reporter to report bugs on
@@ -152,6 +156,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             branchTargets = new HashMap<>();
             trimLocations = new HashMap<>();
             isInterface = classContext.getJavaClass().isInterface();
+            possibleStatics = new HashMap<>();
             super.visitClassContext(classContext);
         } finally {
             stack = null;
@@ -159,6 +164,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             branchTargets = null;
             trimLocations = null;
             staticConstants = null;
+            possibleStatics = null;
         }
     }
 
@@ -177,7 +183,17 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         Arrays.fill(lastPCs, -1);
         branchTargets.clear();
         trimLocations.clear();
+        possibleStatics.clear();
+        isCtor = getMethod().getName().equals("<init>");
         super.visitCode(obj);
+        
+        if (!possibleStatics.isEmpty()) {
+        	for (Map.Entry<String, String> field : possibleStatics.entrySet()) {
+        		bugReporter.reportBug(                                
+        				new BugInstance(this, BugType.SPP_FIELD_COULD_BE_STATIC.name(), NORMAL_PRIORITY)
+                        .addClass(this).addField(new FieldDescriptor(getClassName(), field.getKey(), field.getValue(), false)));
+        	}
+        }
     }
 
     /**
@@ -294,6 +310,10 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     }
                 }
                 break;
+                
+            case Const.PUTFIELD:
+                checkPossibleStatic();
+            	break;
 
             default:
                 if (OpcodeUtils.isALoad(seen)) {
@@ -612,6 +632,28 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 }
             }
         }
+    }
+    
+    private void checkPossibleStatic() {
+    	String fieldName = getNameConstantOperand();
+    	if (!isCtor) {
+    		possibleStatics.remove(fieldName);
+    	} else {
+        	String ownerClass = SignatureUtils.trimSignature(getClassConstantOperand());
+        	if (ownerClass.equals(getClassName()) && !fieldName.contains("$")) {
+        		String fieldClass = SignatureUtils.stripSignature(getSigConstantOperand());
+	    		if (POSSIBLE_STATIC_FIELD_CLASSES.contains(fieldClass)) {
+	    			if (stack.getStackDepth() > 0) {
+	    				OpcodeStack.Item value = stack.getStackItem(0);
+	    				if (value.getConstant() != null) {
+	    					possibleStatics.put(fieldName, fieldClass);
+	    				} else {
+	    		    		possibleStatics.remove(fieldName);
+	    				}
+	    			}
+	    		}
+        	}
+    	}
     }
 
     private static boolean isBranchByteCode(int seen) {
