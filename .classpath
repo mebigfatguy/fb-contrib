@@ -40,7 +40,6 @@
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.5.14.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.4.16.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.18.0.jar"/>
-	<classpathentry kind="lib" path="lib/guava-33.4.6-jre.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjrt-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjtools-1.9.23.jar" sourcepath="lib/sources/bcel-6.0-sources.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.9.23.jar"/>

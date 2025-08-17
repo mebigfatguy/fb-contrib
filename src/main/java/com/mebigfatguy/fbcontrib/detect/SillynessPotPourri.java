@@ -87,6 +87,8 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private static final Pattern APPEND_PATTERN = Pattern.compile("([0-9]+):(.*)");
 
     private static JavaClass calendarClass;
+    
+    private static final Set<String> POSSIBLE_STATIC_FIELD_CLASSES = UnmodifiableSet.create("I", "J", "java.lang.Integer", "java.lang.Long", "java.lang.String");
 
     static {
         try {
@@ -124,7 +126,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private Map<Integer, BitSet> branchTargets;
     private Set<String> staticConstants;
     private Map<SPPUserValue, Integer> trimLocations;
+    private Set<PossibleInstanceToStaticField> possibleStatics;
     private boolean isInterface;
+    private boolean isCtor;
 
     /**
      * constructs a SPP detector given the reporter to report bugs on
@@ -152,13 +156,26 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             branchTargets = new HashMap<>();
             trimLocations = new HashMap<>();
             isInterface = classContext.getJavaClass().isInterface();
+            possibleStatics = new HashSet<>();
             super.visitClassContext(classContext);
+            
+            if (!possibleStatics.isEmpty()) {
+            	for (PossibleInstanceToStaticField field : possibleStatics) {
+            		if (!field.isDeleted()) {
+            			bugReporter.reportBug(                                
+            				new BugInstance(this, BugType.SPP_FIELD_COULD_BE_STATIC.name(), NORMAL_PRIORITY)
+                            .addClass(this).addField(new FieldDescriptor(getClassName(), field.getFieldName(), field.getFieldClassName(), false)));
+            		}
+                }
+            }
+
         } finally {
             stack = null;
             lastPCs = null;
             branchTargets = null;
             trimLocations = null;
             staticConstants = null;
+            possibleStatics = null;
         }
     }
 
@@ -177,6 +194,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         Arrays.fill(lastPCs, -1);
         branchTargets.clear();
         trimLocations.clear();
+        isCtor = getMethod().getName().equals("<init>");
         super.visitCode(obj);
     }
 
@@ -294,6 +312,10 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     }
                 }
                 break;
+                
+            case Const.PUTFIELD:
+                checkPossibleStatic();
+            	break;
 
             default:
                 if (OpcodeUtils.isALoad(seen)) {
@@ -612,6 +634,38 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                 }
             }
         }
+    }
+    
+    private void checkPossibleStatic() {
+    	String ownerClass = SignatureUtils.trimSignature(getClassConstantOperand());
+    	String fieldName = getNameConstantOperand();
+    	if (!ownerClass.equals(getClassName()) || (fieldName.contains("$"))) {
+    		return;
+    	}
+
+		String fieldClass = SignatureUtils.stripSignature(getSigConstantOperand());
+		PossibleInstanceToStaticField field = new PossibleInstanceToStaticField(fieldClass, fieldName);
+
+    	if (!isCtor) {
+    		field.delete();
+    		possibleStatics.remove(field);
+    		possibleStatics.add(field);
+    	} else {
+    		if (POSSIBLE_STATIC_FIELD_CLASSES.contains(fieldClass)) {
+    			if (stack.getStackDepth() > 0) {
+    				OpcodeStack.Item value = stack.getStackItem(0);
+    				if (value.getConstant() != null) {
+    					if (!possibleStatics.contains(field)) {
+    						possibleStatics.add(new PossibleInstanceToStaticField(fieldClass, fieldName));
+    					}
+    				} else {
+    		    		field.delete();
+    		    		possibleStatics.remove(field);
+    		    		possibleStatics.add(field);
+    				}
+    			}
+    		}
+    	}
     }
 
     private static boolean isBranchByteCode(int seen) {
@@ -1210,4 +1264,49 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             return ToString.build(this);
         }
     }
+    
+    static class PossibleInstanceToStaticField {
+    	private String fieldClassName;
+    	private String fieldName;
+    	private boolean delete;
+    	
+    	PossibleInstanceToStaticField(String fldClassName, String fldName) {
+    		fieldClassName = fldClassName;
+    		fieldName = fldName;
+    		delete = false;
+    	}
+    	
+    	public String getFieldClassName() {
+			return fieldClassName;
+		}
+
+		public String getFieldName() {
+			return fieldName;
+		}
+
+		public boolean isDeleted() {
+    		return delete;
+    	}
+
+    	public void delete() {
+    		delete = true;
+    	}
+    	
+    	
+    	public int hashCode() {
+    		return fieldClassName.hashCode() ^ fieldName.hashCode();
+    	}
+    	
+    	public boolean equals(Object o) {
+    		if (o instanceof PossibleInstanceToStaticField) {
+    			PossibleInstanceToStaticField that = (PossibleInstanceToStaticField) o;
+    			
+    			return this.fieldClassName.equals(that.fieldClassName) && this.fieldName.equals(that.fieldName);
+    		}
+    		
+    		return false;
+    	}
+    }
+    
+    
 }
