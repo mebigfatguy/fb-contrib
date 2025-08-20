@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.BitSet;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -63,6 +64,7 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
+import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -127,6 +129,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private Set<String> staticConstants;
     private Map<SPPUserValue, Integer> trimLocations;
     private Set<PossibleInstanceToStaticField> possibleStatics;
+    private String clsName;
     private boolean isInterface;
     private boolean isCtor;
 
@@ -138,6 +141,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     public SillynessPotPourri(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
         toStringClasses = new HashSet<>();
+        possibleStatics = new HashSet<>();
     }
 
     @Override
@@ -145,6 +149,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         if (!isInterface && "serialVersionUID".equals(field.getName()) && field.isStatic() && !field.isPrivate()) {
             bugReporter.reportBug(new BugInstance(this, BugType.SPP_SERIALVER_SHOULD_BE_PRIVATE.name(), LOW_PRIORITY)
                     .addClass(this).addField(this));
+        }
+        
+        if (!field.isStatic() && field.isPrivate() && !field.isSynthetic() && !field.isEnum()) {
+        	if (POSSIBLE_STATIC_FIELD_CLASSES.contains(SignatureUtils.stripSignature(field.getSignature()))) {
+        		possibleStatics.add(new PossibleInstanceToStaticField(clsName, field.getName()));
+        	}
         }
     }
 
@@ -156,15 +166,20 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             branchTargets = new HashMap<>();
             trimLocations = new HashMap<>();
             isInterface = classContext.getJavaClass().isInterface();
-            possibleStatics = new HashSet<>();
+            clsName = classContext.getJavaClass().getClassName();
             super.visitClassContext(classContext);
             
             if (!possibleStatics.isEmpty()) {
-            	for (PossibleInstanceToStaticField field : possibleStatics) {
-            		if (!field.isDeleted()) {
-            			bugReporter.reportBug(                                
-            				new BugInstance(this, BugType.SPP_FIELD_COULD_BE_STATIC.name(), NORMAL_PRIORITY)
-                            .addClass(this).addField(new FieldDescriptor(getClassName(), field.getFieldName(), field.getFieldClassName(), false)));
+            	Iterator<PossibleInstanceToStaticField> it = possibleStatics.iterator();
+            	while (it.hasNext()) {
+            		PossibleInstanceToStaticField field = it.next();
+            		if (field.getFieldClassName().equals(clsName)) {
+	            		if (!field.isDeleted()) {
+	            			bugReporter.reportBug(                                
+	            				new BugInstance(this, BugType.SPP_FIELD_COULD_BE_STATIC.name(), NORMAL_PRIORITY)
+	                            .addClass(this).addField(new FieldDescriptor(getClassName(), field.getFieldName(), field.getFieldClassName(), false)));
+	            		}
+	            		it.remove();
             		}
                 }
             }
@@ -175,7 +190,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
             branchTargets = null;
             trimLocations = null;
             staticConstants = null;
-            possibleStatics = null;
+            clsName = null;
         }
     }
 
@@ -639,32 +654,28 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     private void checkPossibleStatic() {
     	String ownerClass = SignatureUtils.trimSignature(getClassConstantOperand());
     	String fieldName = getNameConstantOperand();
-    	if (!ownerClass.equals(getClassName()) || (fieldName.contains("$"))) {
-    		return;
-    	}
-
-		String fieldClass = SignatureUtils.stripSignature(getSigConstantOperand());
-		PossibleInstanceToStaticField field = new PossibleInstanceToStaticField(fieldClass, fieldName);
-
-    	if (!isCtor) {
-    		field.delete();
-    		possibleStatics.remove(field);
-    		possibleStatics.add(field);
-    	} else {
-    		if (POSSIBLE_STATIC_FIELD_CLASSES.contains(fieldClass)) {
-    			if (stack.getStackDepth() > 0) {
-    				OpcodeStack.Item value = stack.getStackItem(0);
-    				if (value.getConstant() != null) {
-    					if (!possibleStatics.contains(field)) {
-    						possibleStatics.add(new PossibleInstanceToStaticField(fieldClass, fieldName));
-    					}
-    				} else {
-    		    		field.delete();
-    		    		possibleStatics.remove(field);
-    		    		possibleStatics.add(field);
-    				}
-    			}
-    		}
+    	
+    	String clsName = getClassName();    	
+    	if (clsName.startsWith(ownerClass) && (clsName.length() == ownerClass.length() || clsName.charAt(ownerClass.length()) == '$')) {
+    		
+			String fieldClass = SignatureUtils.stripSignature(getSigConstantOperand());
+			PossibleInstanceToStaticField field = new PossibleInstanceToStaticField(ownerClass.replace('/', '.'), fieldName);
+	
+			if (POSSIBLE_STATIC_FIELD_CLASSES.contains(fieldClass)) {
+				if (stack.getStackDepth() > 0) {
+					OpcodeStack.Item value = stack.getStackItem(0);
+					if (!isCtor || value.getConstant() == null) {
+		    		 	if (possibleStatics.remove(field)) {
+		    				field.delete();
+		    				possibleStatics.add(field);
+		    		 	} else {
+							// a future outer class
+		    				field.delete();
+		    				possibleStatics.add(field);
+						}
+					}
+				}
+			}
     	}
     }
 
@@ -1268,14 +1279,14 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     static class PossibleInstanceToStaticField {
     	private String fieldClassName;
     	private String fieldName;
-    	private boolean delete;
+    	private boolean delete; 
     	
     	PossibleInstanceToStaticField(String fldClassName, String fldName) {
     		fieldClassName = fldClassName;
     		fieldName = fldName;
-    		delete = false;
+    		delete = false;    	
     	}
-    	
+    	    	
     	public String getFieldClassName() {
 			return fieldClassName;
 		}
@@ -1291,8 +1302,7 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     	public void delete() {
     		delete = true;
     	}
-    	
-    	
+    	    	
     	public int hashCode() {
     		return fieldClassName.hashCode() ^ fieldName.hashCode();
     	}
@@ -1306,7 +1316,10 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     		
     		return false;
     	}
+
+    	public String toString() {
+    		return ToString.build(this);
+    	}
+
     }
-    
-    
 }

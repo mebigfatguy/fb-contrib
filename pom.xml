@@ -6,7 +6,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>com.mebigfatguy.sb-contrib</groupId>
     <artifactId>sb-contrib</artifactId>
-    <version>7.6.13</version>
+    <version>7.6.14-SNAPSHOT</version>
 
     <!-- TODO: Oss parent is obsolete, define items directly for releasing -->
     <parent>
