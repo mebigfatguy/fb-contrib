@@ -1,5 +1,7 @@
 package ex;
 
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Optional;
 import java.util.OptionalDouble;
@@ -45,9 +47,9 @@ public class OI_Sample implements OptInf386 {
 
     public String fpDelayedOK(Optional<String> o, String a, String b) {
 
-        return o.orElseGet(() -> String.format("%s boo %s hiss", a, b));
+    	return o.orElseGet(() -> String.format("%s boo %s hiss", a, b));
     }
-
+    
     public String fpImmediateOK(Optional<String> o, final String a) {
 
         return o.orElse(a);
@@ -60,6 +62,10 @@ public class OI_Sample implements OptInf386 {
 
     public Long fpBoxingIsTooCommon(Optional<Long> o) {
         return o.orElse(0L);
+    }
+    
+    public Collection<String> fpemptySetIsTooCommon(Optional<Collection<String>> c) {
+    	return c.orElse(Collections.emptySet());
     }
 
     private Optional<String> get(String name) {

@@ -103,9 +103,26 @@ public class OptionalIssues extends BytecodeScanningDetector {
             "Lcom/google/common/base/Optional;", "Lorg/openjdk/jmh/util/Optional;"
     // @formatter:on
     );
-
+    
+    private static final Set<FQMethod> TRIVIAL_METHODS = UnmodifiableSet.create(
+    // @formatter:off
+            new FQMethod("java/util/Collections", "emptyList", "()Ljava/util/List;"),
+            new FQMethod("java/util/Collections", "emptySet", "()Ljava/util/Set;"),
+            new FQMethod("java/util/Collections", "emptyMap", "()Ljava/util/Map;"),
+            new FQMethod("java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;"),
+            new FQMethod("java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"),
+            new FQMethod("java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;"),
+            new FQMethod("java/lang/Short", "valueOf", "(S)Ljava/lang/Short;"),
+            new FQMethod("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"),
+            new FQMethod("java/lang/Float", "valueOf", "(D)Ljava/lang/Float;"),
+            new FQMethod("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"),
+            new FQMethod("com/google/collect/ImmutableList", "of", "()Ljava/util/List;"),
+            new FQMethod("com/google/collect/ImmutableSet", "of", "()Ljava/util/Set;"),
+            new FQMethod("com/google/collect/ImmutableMap", "of", "()Ljava/util/Map;")
+    // @formatter:on
+    );
+ 		
     private JavaClass SUPPLIER_CLASS;
-
     private static final BitSet INVOKE_OPS = new BitSet();
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -362,8 +379,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
                 return false;
             }
 
-            if ("valueOf".equals(method.getMethodName()) && method.getClassName().startsWith("java/lang/")) {
-                return true;
+            if (TRIVIAL_METHODS.contains(method)) {
+            	return true;
             }
         }
 
