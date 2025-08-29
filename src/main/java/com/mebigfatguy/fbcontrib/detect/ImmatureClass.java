@@ -374,7 +374,7 @@ public class ImmatureClass extends BytecodeScanningDetector {
         AnnotationEntry[] annotations = cls.getAnnotationEntries();
         if (annotations != null) {
             for (AnnotationEntry annotation : annotations) {
-                if ("Ljavax/persistence/Entity;".equals(annotation.getAnnotationType())) {
+                if ("Ljavax/persistence/Entity;".equals(annotation.getAnnotationType()) || "Ljakarta/persistence/Entity;".equals(annotation.getAnnotationType())) {
                     return true;
                 }
             }

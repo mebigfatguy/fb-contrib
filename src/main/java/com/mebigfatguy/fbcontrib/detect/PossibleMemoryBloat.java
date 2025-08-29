@@ -83,8 +83,10 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
     private static final Set<String> mapSubsets = UnmodifiableSet.create("keySet", "entrySet", "values");
 
-    private static final FQMethod jaxbNewInstance = new FQMethod("javax/xml/bind/JAXBContext", "newInstance",
+    private static final FQMethod javaxJaxbNewInstance = new FQMethod("javax/xml/bind/JAXBContext", "newInstance",
             "([Ljava/lang/Class;)Ljavax/xml/bind/JAXBContext;");
+    private static final FQMethod jakartaJaxbNewInstance = new FQMethod("jakarta/xml/bind/JAXBContext", "newInstance",
+            "([Ljava/lang/Class;)Ljakarta/xml/bind/JAXBContext;");
 
     private static final Set<String> specialAnnotations = UnmodifiableSet.create("Ljavax/annotation/PostConstruct;", "Ljakarta/annotation/PostConstruct;");
     
@@ -289,7 +291,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                     if (xm != null) {
                         FQMethod calledMethod = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(),
                                 xm.getSignature());
-                        if (jaxbNewInstance.equals(calledMethod)) {
+                        if (javaxJaxbNewInstance.equals(calledMethod) || jakartaJaxbNewInstance.equals(calledMethod)) {
                             jaxbContextRegs.put(RegisterUtils.getAStoreReg(this, seen), getPC());
                         }
                     }

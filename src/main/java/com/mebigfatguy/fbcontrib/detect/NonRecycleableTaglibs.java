@@ -52,7 +52,8 @@ public class NonRecycleableTaglibs extends BytecodeScanningDetector {
     private static final int MAX_ATTRIBUTE_CODE_LENGTH = 60;
 
     private static final Set<String> tagClasses = UnmodifiableSet.create("javax.servlet.jsp.tagext.TagSupport",
-            "javax.servlet.jsp.tagext.BodyTagSupport");
+            "javax.servlet.jsp.tagext.BodyTagSupport", "jakarta.servlet.jsp.tagext.TagSupport",
+            "jakarta.servlet.jsp.tagext.BodyTagSupport");
 
     private static final Set<String> validAttrTypes = UnmodifiableSet.create(Values.SIG_PRIMITIVE_BYTE,
             Values.SIG_PRIMITIVE_CHAR, Values.SIG_PRIMITIVE_DOUBLE, Values.SIG_PRIMITIVE_FLOAT,

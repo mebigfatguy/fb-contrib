@@ -47,8 +47,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * with different cases like 'id' and 'Id'.
  */
 public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
-    private static final String HTTP_SESSION = "javax/servlet/http/HttpSession";
-    private static final String HTTP_SERVLET_REQUEST = "javax/servlet/http/HttpServletRequest";
+    private static final String JAVAX_HTTP_SESSION = "javax/servlet/http/HttpSession";
+    private static final String JAKARTA_HTTP_SESSION = "jakarta/servlet/http/HttpSession";
+    private static final String JAVAX_HTTP_SERVLET_REQUEST = "javax/servlet/http/HttpServletRequest";
+    private static final String JAKARTA_HTTP_SERVLET_REQUEST = "jakarta/servlet/http/HttpServletRequest";
     private static final String GET_ATTRIBUTE = "getAttribute";
     private static final String SET_ATTRIBUTE = "setAttribute";
     private static final String GET_PARAMETER = "getParameter";
@@ -201,7 +203,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
     private KeyType isKeyAccessMethod(int seen) {
         if (seen == Const.INVOKEINTERFACE) {
             String clsName = getClassConstantOperand();
-            if (HTTP_SESSION.equals(clsName)) {
+            if (JAVAX_HTTP_SESSION.equals(clsName) || JAKARTA_HTTP_SESSION.equals(clsName)) {
                 String methodName = getNameConstantOperand();
                 if (GET_ATTRIBUTE.equals(methodName)) {
                     String signature = getSigConstantOperand();
@@ -210,7 +212,7 @@ public class InconsistentKeyNameCasing extends BytecodeScanningDetector {
                     String signature = getSigConstantOperand();
                     return (SET_ATTRIBUTE_SIG.equals(signature)) ? KeyType.ATTRIBUTE : null;
                 }
-            } else if (HTTP_SERVLET_REQUEST.equals(clsName)) {
+            } else if (JAVAX_HTTP_SERVLET_REQUEST.equals(clsName) || JAKARTA_HTTP_SERVLET_REQUEST.equals(clsName)) {
                 String methodName = getNameConstantOperand();
                 if (GET_PARAMETER.equals(methodName)) {
                     String signature = getSigConstantOperand();

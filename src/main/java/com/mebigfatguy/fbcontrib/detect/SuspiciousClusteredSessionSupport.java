@@ -112,7 +112,7 @@ public class SuspiciousClusteredSessionSupport extends BytecodeScanningDetector 
 
             if (seen == Const.INVOKEINTERFACE) {
                 String clsName = getClassConstantOperand();
-                if ("javax/servlet/http/HttpSession".equals(clsName)) {
+                if ("javax/servlet/http/HttpSession".equals(clsName) || "jakarta/servlet/http/HttpSession".equals(clsName)) {
                     String methodName = getNameConstantOperand();
                     if ("getAttribute".equals(methodName)) {
                         if (stack.getStackDepth() > 0) {
