@@ -84,7 +84,34 @@ public class EXS_Sample extends Super {
             return false;
         }
     }
+    
+    public long fpRTToRT447(String s) {
+    	try {
+    		throw new MyRTE447();
+    	} catch (MyRTE447 r) {
+    		MyRTE447 rr = r.embellish("important!");
+    		if (s == null) {
+    			throw r;
+    		} else {
+    			throw rr;
+    		}
+    	}
+    }
 }
+
+class MyRTE447 extends RuntimeException {
+	String data;
+
+	public MyRTE447() {
+	}
+
+	MyRTE447 embellish(String s) {
+		data = s;
+		return this;
+	}
+}
+
+
 
 class Super {
     public void constrainedNone() {

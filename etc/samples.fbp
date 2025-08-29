@@ -33,7 +33,7 @@
   <AuxClasspathEntry>././../lib/jakarta.servlet.jsp-api-2.3.6.jar</AuxClasspathEntry>
   <AuxClasspathEntry>././../lib/jakarta.servlet-api-4.0.4.jar</AuxClasspathEntry>
   <AuxClasspathEntry>././../lib/commons-io-2.18.0.jar</AuxClasspathEntry>
-  <AuxClasspathEntry>././../lib/log4j-api-2.9.1.jar</AuxClasspathEntry>
+  <AuxClasspathEntry>./../lib/commons-io-2.18.0.jar</AuxClasspathEntry>
   <AuxClasspathEntry>./../lib/testng-7.5.jar</AuxClasspathEntry>
   <AuxClasspathEntry>../lib/log4j-1.2.17.jar</AuxClasspathEntry>
   <SrcDir>././././../src/samples/java</SrcDir>
