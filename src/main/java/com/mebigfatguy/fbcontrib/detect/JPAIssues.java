@@ -65,16 +65,16 @@ public class JPAIssues extends BytecodeScanningDetector {
     enum TransactionalType {
         NONE, READ, WRITE;
 
-        public static boolean isContainedBy(TransactionalType type, TransactionalType containedType) {
+        public static boolean isContainedBy(TransactionalType type, TransactionalType containedClassType, TransactionalType containedType) {
             if (type == NONE) {
                 return true;
             }
 
-            if ((type == READ) && ((containedType == READ) || (containedType == WRITE))) {
+            if ((type == READ) && ((containedType == READ) || (containedType == WRITE) || (containedClassType == READ) || (containedClassType == WRITE))) {
                 return true;
             }
 
-            return ((type == WRITE) && (containedType == WRITE));
+            return ((type == WRITE) && ((containedType == WRITE) || (containedClassType == WRITE)));
         }
     }
 
@@ -85,6 +85,7 @@ public class JPAIssues extends BytecodeScanningDetector {
     private JavaClass cls;
     private OpcodeStack stack;
     private Map<FQMethod, TransactionalType> transactionalMethods;
+    private TransactionalType clsTransactionalType;
     private boolean isEntity;
     private boolean hasId;
     private boolean hasGeneratedValue;
@@ -257,10 +258,10 @@ public class JPAIssues extends BytecodeScanningDetector {
         String dottedCls = getDottedClassConstantOperand();
         String methodName = getNameConstantOperand();
         String signature = getSigConstantOperand();
-
+        
         TransactionalType calledMethodTransType = getTransactionalType(new FQMethod(dottedCls, methodName, signature));
         if ((calledMethodTransType != TransactionalType.NONE)
-                && !TransactionalType.isContainedBy(calledMethodTransType, methodTransType)) {
+                && !TransactionalType.isContainedBy(calledMethodTransType, clsTransactionalType, methodTransType)) {
             int numParameters = SignatureUtils.getNumParameters(signature);
             if (stack.getStackDepth() > numParameters) {
                 OpcodeStack.Item itm = stack.getStackItem(numParameters);
@@ -272,7 +273,7 @@ public class JPAIssues extends BytecodeScanningDetector {
             }
         }
 
-        if ("javax.persistence.EntityManager".equals(dottedCls) && "merge".equals(methodName)) {
+        if (("javax.persistence.EntityManager".equals(dottedCls) || "jakarta.persistence.EntityManager".equals(dottedCls)) && "merge".equals(methodName)) {
             return JPAUserValue.MERGE;
         }
 
@@ -294,9 +295,18 @@ public class JPAIssues extends BytecodeScanningDetector {
         hasHCEquals = false;
 
         for (AnnotationEntry entry : clz.getAnnotationEntries()) {
-            if ("Ljavax/persistence/Entity;".equals(entry.getAnnotationType())) {
+            if ("Ljavax/persistence/Entity;".equals(entry.getAnnotationType())
+            ||  "Ljakarta/persistence/Entity;".equals(entry.getAnnotationType())) {
                 isEntity = true;
-                break;
+            } else if ("Lorg/springframework/transaction/annotation/Transactional;".equals(entry.getAnnotationType())) {
+                boolean isWrite = true;
+                for (ElementValuePair pair : entry.getElementValuePairs()) {
+                    if ("readOnly".equals(pair.getNameString())) {
+                        isWrite = "false".equals(pair.getValue().stringifyValue());
+                        break;
+                    }
+                }
+                clsTransactionalType = isWrite ? TransactionalType.WRITE : TransactionalType.READ;
             }
         }
 
@@ -339,14 +349,17 @@ public class JPAIssues extends BytecodeScanningDetector {
                 break;
 
             case "Ljavax/persistence/Id;":
+            case "Ljakarta/persistence/Id;":
                 hasId = true;
                 break;
 
             case "Ljavax/persistence/GeneratedValue;":
+            case "Ljakarta/persistence/GeneratedValue;":
                 hasGeneratedValue = true;
                 break;
 
             case "Ljavax/persistence/OneToMany;":
+            case "Ljakarta/persistence/OneToMany;":
                 for (ElementValuePair pair : entry.getElementValuePairs()) {
                     if ("fetch".equals(pair.getNameString()) && "EAGER".equals(pair.getValue().stringifyValue())) {
                         hasEagerOneToMany = true;
