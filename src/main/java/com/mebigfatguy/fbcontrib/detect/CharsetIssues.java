@@ -171,6 +171,8 @@ public class CharsetIssues extends BytecodeScanningDetector {
                 Values.ZERO);
         unreplaceable.put(new FQMethod("javax/servlet/ServletResponse", "setCharacterEncoding",
                 SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
+        unreplaceable.put(new FQMethod("jakarta/servlet/ServletResponse", "setCharacterEncoding",
+                SignatureBuilder.SIG_STRING_TO_VOID), Values.ZERO);
         unreplaceable.put(new FQMethod("java/beans/XMLEncoder", Values.CONSTRUCTOR,
                 new SignatureBuilder().withParamTypes("java/io/OutputStream", Values.SLASHED_JAVA_LANG_STRING,
                         Values.SIG_PRIMITIVE_BOOLEAN, Values.SIG_PRIMITIVE_INT).toString()),

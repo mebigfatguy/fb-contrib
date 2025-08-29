@@ -57,7 +57,7 @@ public class UnsynchronizedSingletonFieldWrites extends BytecodeScanningDetector
 
     private static final Set<String> IGNORABLE_METHOD_ANNOTATIONS = UnmodifiableSet.create(
             // @formatter:off
-            "Ljavax/annotation/PostConstruct;", "Lorg/springframework/beans/factory/annotation/Autowired;"
+            "Ljavax/annotation/PostConstruct;", "Ljakarta/annotation/PostConstruct;", "Lorg/springframework/beans/factory/annotation/Autowired;"
     // @formatter:on
     );
 
