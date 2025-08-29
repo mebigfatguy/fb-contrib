@@ -116,6 +116,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
             new FQMethod("java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"),
             new FQMethod("java/lang/Float", "valueOf", "(D)Ljava/lang/Float;"),
             new FQMethod("java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"),
+            new FQMethod("java/lang/Enum", "name", "()Ljava/lang/String;"),
+            new FQMethod("java/lang/Enum", "ordinal", "()I"),
             new FQMethod("com/google/collect/ImmutableList", "of", "()Ljava/util/List;"),
             new FQMethod("com/google/collect/ImmutableSet", "of", "()Ljava/util/Set;"),
             new FQMethod("com/google/collect/ImmutableMap", "of", "()Ljava/util/Map;")
