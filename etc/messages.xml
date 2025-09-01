@@ -6585,7 +6585,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </pre></code>
         do
         <code></pre>
-        baubles.stream().filter(b -> b.getName("orb")).toArray()
+        baubles.stream().filter(b -> b.getName("orb")).toArray(Bauble[]::new)
         </pre></code>
         </p>
         ]]>
