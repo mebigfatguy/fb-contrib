@@ -73,6 +73,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     private static final QMethod CONTAINS = new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
     private static final QMethod SIZE = new QMethod("size", SignatureBuilder.SIG_VOID_TO_INT);
+    private static final QMethod TOARRAY = new QMethod("toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;");
     private static final QMethod STREAM = new QMethod("stream", "()Ljava/util/stream/Stream;");
 
     private static final FQMethod COLLECT = new FQMethod("java/util/stream/Stream", "collect",
@@ -352,6 +353,16 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                                 NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
+                    } else if (TOARRAY.equals(m)) {
+                        if (stack.getStackDepth() >= 2) {
+                            OpcodeStack.Item itm = stack.getStackItem(1);
+                            if (itm.getRegisterNumber() < 0 && FIIUserValue.COLLECT_ITEM == itm.getUserValue()) {
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.FII_AVOID_TOARRAY_ON_COLLECTED_STREAM.name(),
+                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                            }
+                        }
+
                     } else if (STREAM.equals(m)) {
                         if (stack.getStackDepth() >= 1) {
                         	OpcodeStack.Item itm = stack.getStackItem(0);
