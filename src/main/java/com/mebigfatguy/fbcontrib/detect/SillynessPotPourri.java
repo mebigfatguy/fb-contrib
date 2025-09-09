@@ -33,6 +33,7 @@ import javax.annotation.Nullable;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
+import org.apache.bcel.classfile.AnnotationEntry;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantDouble;
@@ -64,7 +65,6 @@ import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
-import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
 import edu.umd.cs.findbugs.ba.XField;
 import edu.umd.cs.findbugs.ba.XMethod;
@@ -153,7 +153,13 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
         
         if (!field.isStatic() && field.isPrivate() && !field.isSynthetic() && !field.isEnum()) {
         	if (POSSIBLE_STATIC_FIELD_CLASSES.contains(SignatureUtils.stripSignature(field.getSignature()))) {
-        		possibleStatics.add(new PossibleInstanceToStaticField(clsName, field.getName()));
+        		
+        		PossibleInstanceToStaticField possibleField = new PossibleInstanceToStaticField(clsName, field.getName());
+        		if (hasRuntimeAnnotation(field)) {
+        			possibleField.delete();
+        		}
+        		
+        		possibleStatics.add(possibleField);
         	}
         }
     }
@@ -1219,6 +1225,19 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
                     .addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
         }
     }
+    
+    private boolean hasRuntimeAnnotation(Field field) {
+		AnnotationEntry[] annotations = field.getAnnotationEntries();
+		if (annotations != null) {
+			for (AnnotationEntry annotation : annotations) {
+				if (annotation.isRuntimeVisible()) {
+					return true;
+				}
+			}
+		}
+
+		return false;
+    }
 
     enum SPPMethod {
         APPEND, GETPROPERTIES, ICONST, IGNORECASE, ITERATOR, TOCHARARRAY, SIZE, TRIM, COMPARETO
@@ -1320,6 +1339,5 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     	public String toString() {
     		return ToString.build(this);
     	}
-
     }
 }
