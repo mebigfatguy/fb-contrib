@@ -167,7 +167,7 @@ public class CollectionNamingConfusion extends PreorderVisitor implements Detect
         return false;
     }
     
-    public String lastNameSegment(String variableName) {
+    private String lastNameSegment(String variableName) {
     	Matcher m = LAST_SEGMENTED_VARIABLE.matcher(variableName);
     	if (m.matches()) {
     		return m.group(1);

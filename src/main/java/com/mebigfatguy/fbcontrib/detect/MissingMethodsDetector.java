@@ -278,7 +278,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         }
     }
     
-    public void saveSpecialFieldUse(String owningClassName, String fieldName, String signature) {
+    protected void saveSpecialFieldUse(String owningClassName, String fieldName, String signature) {
     	Set<FQField> special = savedSpecialFields.get(owningClassName);
     	if (special == null) {
     		special = new HashSet<>();
