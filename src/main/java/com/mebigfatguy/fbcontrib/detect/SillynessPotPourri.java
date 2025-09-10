@@ -671,14 +671,9 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
 					OpcodeStack.Item value = stack.getStackItem(0);
 					if (!isCtor || value.getConstant() == null) {
 						PossibleInstanceToStaticField field = new PossibleInstanceToStaticField(ownerClass.replace('/', '.'), fieldName);
-		    		 	if (possibleStatics.remove(field)) {
-		    				field.delete();
-		    				possibleStatics.add(field);
-		    		 	} else {
-							// a future outer class
-		    				field.delete();
-		    				possibleStatics.add(field);
-						}
+		    		 	possibleStatics.remove(field);
+	    				field.delete();
+	    				possibleStatics.add(field);
 					}
 				}
 			}
