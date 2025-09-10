@@ -75,7 +75,7 @@ public class Timing {
     	}
     }
     
-    class TimingInfo {
+    static class TimingInfo {
     	long numberOfCalls;
     	long totalTime;
     	long longestTime;
