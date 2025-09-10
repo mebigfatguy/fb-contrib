@@ -123,16 +123,8 @@ public class OptionalIssues extends BytecodeScanningDetector {
             new FQMethod("com/google/collect/ImmutableMap", "of", "()Ljava/util/Map;")
     // @formatter:on
     );
- 		
-    private JavaClass SUPPLIER_CLASS;
     private static final BitSet INVOKE_OPS = new BitSet();
-    private BugReporter bugReporter;
-    private OpcodeStack stack;
-    private JavaClass currentClass;
-    private Deque<ActiveStackOp> activeStackOps;
-    private Map<OpcodeStack.Item, SourceLineAnnotation> boxedItems;
-    private Boolean methodIsConstrained;
-
+    
     static {
 		INVOKE_OPS.set(Const.INVOKEINTERFACE);
 		INVOKE_OPS.set(Const.INVOKEVIRTUAL);
@@ -140,6 +132,15 @@ public class OptionalIssues extends BytecodeScanningDetector {
 		INVOKE_OPS.set(Const.INVOKESPECIAL);
 		INVOKE_OPS.set(Const.INVOKEDYNAMIC);
     }
+ 		
+    private JavaClass SUPPLIER_CLASS;
+    private BugReporter bugReporter;
+    private OpcodeStack stack;
+    private JavaClass currentClass;
+    private Deque<ActiveStackOp> activeStackOps;
+    private Map<OpcodeStack.Item, SourceLineAnnotation> boxedItems;
+    private Boolean methodIsConstrained;
+
 
     /**
      * constructs a OI detector given the reporter to report bugs on
