@@ -500,7 +500,6 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     	
 		public LocalUse(int pc) {
 			this.pc = pc;
-			this.used = used;
 		}
 		
 		public int getPc() {
