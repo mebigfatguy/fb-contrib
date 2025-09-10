@@ -665,12 +665,12 @@ public class SillynessPotPourri extends BytecodeScanningDetector {
     	if (clsName.startsWith(ownerClass) && (clsName.length() == ownerClass.length() || clsName.charAt(ownerClass.length()) == '$')) {
     		
 			String fieldClass = SignatureUtils.stripSignature(getSigConstantOperand());
-			PossibleInstanceToStaticField field = new PossibleInstanceToStaticField(ownerClass.replace('/', '.'), fieldName);
 	
 			if (POSSIBLE_STATIC_FIELD_CLASSES.contains(fieldClass)) {
 				if (stack.getStackDepth() > 0) {
 					OpcodeStack.Item value = stack.getStackItem(0);
 					if (!isCtor || value.getConstant() == null) {
+						PossibleInstanceToStaticField field = new PossibleInstanceToStaticField(ownerClass.replace('/', '.'), fieldName);
 		    		 	if (possibleStatics.remove(field)) {
 		    				field.delete();
 		    				possibleStatics.add(field);
