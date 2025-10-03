@@ -221,24 +221,27 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                             OpcodeStack.Item itm = stack.getStackItem(numArgs.intValue());
                             int id = findCollectionGroup(itm, true);
                             if (id >= 0) {
-                                Integer it = groupToIterator.get(Integer.valueOf(id));
-                                if (it != null) {
-                                    Loop loop = loops.get(it);
-                                    if (loop != null) {
-                                        int pc = getPC();
-                                        if (loop.hasPC(pc)) {
-                                            boolean needPop = !Values.SIG_VOID
-                                                    .equals(SignatureUtils.getReturnSignature(signature));
-                                            boolean breakFollows = breakFollows(loop, needPop);
-                                            boolean returnFollows = !breakFollows && returnFollows(needPop);
-
-                                            if (!breakFollows && !returnFollows) {
-                                                bugReporter.reportBug(new BugInstance(this,
-                                                        BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
-                                                                .addClass(this).addMethod(this).addSourceLine(this));
-                                            }
-                                        }
-                                    }
+                                GroupPair pair = collectionGroups.get(id);
+                                if  (pair.isStandardCollection()) {
+	                                Integer it = groupToIterator.get(Integer.valueOf(id));
+	                                if (it != null) {
+	                                    Loop loop = loops.get(it);
+	                                    if (loop != null) {
+	                                        int pc = getPC();
+	                                        if (loop.hasPC(pc)) {
+	                                            boolean needPop = !Values.SIG_VOID
+	                                                    .equals(SignatureUtils.getReturnSignature(signature));
+	                                            boolean breakFollows = breakFollows(loop, needPop);
+	                                            boolean returnFollows = !breakFollows && returnFollows(needPop);
+	
+	                                            if (!breakFollows && !returnFollows) {
+	                                                bugReporter.reportBug(new BugInstance(this,
+	                                                        BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
+	                                                                .addClass(this).addMethod(this).addSourceLine(this));
+	                                            }
+	                                        }
+	                                    }
+	                                }
                                 }
                             }
                         }

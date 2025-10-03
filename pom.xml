@@ -7,7 +7,7 @@
 
     <groupId>com.mebigfatguy.fb-contrib</groupId>
     <artifactId>fb-contrib</artifactId>
-    <version>7.6.14</version>
+    <version>7.6.15-SNAPSHOT</version>
 
 
     <!-- TODO: Oss parent is obsolete, define items directly for releasing -->
@@ -436,7 +436,7 @@
                 <plugin>
                     <groupId>com.google.code.findbugs</groupId>
                     <artifactId>findbugs-maven-plugin</artifactId>
-                    <version>4.9.3.0</version>
+                    <version>4.9.6.0</version>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>

@@ -151,7 +151,7 @@ public class UseVarArgs extends BytecodeScanningDetector {
 		}
 	}
 
-	public boolean methodHasConvertableLastParam(Method method) throws ClassNotFoundException {
+	private boolean methodHasConvertableLastParam(Method method) throws ClassNotFoundException {
 		if (Values.CONSTRUCTOR.equals(getMethodName()) && javaClass.getClassName().contains("$")) {
 			return false;
 		}

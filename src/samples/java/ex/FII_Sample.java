@@ -71,6 +71,10 @@ public class FII_Sample {
         return baubles.stream().filter(b -> b.getName().equals(name)).collect(Collectors.toSet()).size();
     }
     
+    public Bauble[] toArrayOnACollect(List<Bauble> baubles, String name) {
+        return baubles.stream().filter(b -> b.getName().equals(name)).collect(Collectors.toSet()).toArray(new Bauble[0]);
+    }
+    
     public List<String> streamingRatherThanCC(Set<String> s) {
     	return s.stream().collect(Collectors.toList());    
     }

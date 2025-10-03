@@ -54,7 +54,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     private String clsName;
     private String clsSignature;
     /** register to first allocation PC */
-    private Map<Integer, Integer> localSpecialObjects;
+    private Map<Integer, LocalUse> localSpecialObjects;
     /** fieldname to field sig */
     private Map<String, String> fieldSpecialObjects;
     private boolean sawTernary;
@@ -145,9 +145,11 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         sawTernary = false;
         super.visitCode(obj);
 
-        for (Integer pc : localSpecialObjects.values()) {
-            bugReporter.reportBug(
-                    makeLocalBugInstance().addClass(this).addMethod(this).addSourceLine(this, pc.intValue()));
+        for (LocalUse lu : localSpecialObjects.values()) {
+        	if (!lu.isUsed()) {
+	            bugReporter.reportBug(
+	                    makeLocalBugInstance().addClass(this).addMethod(this).addSourceLine(this, lu.getPc()));
+        	}
         }
     }
 
@@ -203,7 +205,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                     // bad findbugs bug, which clears the stack after an ALOAD, in some cases
                     int prevOp = getPrevOpcode(1);
                     if (OpcodeUtils.isALoad(prevOp)) {
-                        localSpecialObjects.clear();
+                    	clearLocalObjects();
                     }
                 }
                 break;
@@ -276,7 +278,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         }
     }
     
-    public void saveSpecialFieldUse(String owningClassName, String fieldName, String signature) {
+    protected void saveSpecialFieldUse(String owningClassName, String fieldName, String signature) {
     	Set<FQField> special = savedSpecialFields.get(owningClassName);
     	if (special == null) {
     		special = new HashSet<>();
@@ -406,7 +408,9 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             if (uo != null) {
                 if (uo instanceof Boolean) {
                     int reg = RegisterUtils.getAStoreReg(this, seen);
-                    localSpecialObjects.put(Integer.valueOf(reg), Integer.valueOf(getPC()));
+                    if (!localSpecialObjects.containsKey(reg)) {
+                    	localSpecialObjects.put(Integer.valueOf(reg), new LocalUse(getPC()));
+                    }
                     if (getPrevOpcode(1) == Const.DUP) {
                         item = stack.getStackItem(1);
                         item.setUserValue(Integer.valueOf(reg));
@@ -426,11 +430,17 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     private void clearUserValue(OpcodeStack.Item item) {
         Object uo = item.getUserValue();
         if (uo instanceof Integer) {
-            localSpecialObjects.remove(uo);
+        	LocalUse lu = localSpecialObjects.get(uo);
+        	if (lu != null) {
+        		lu.setUsed(true);
+        	}
         } else if (uo instanceof String) {
             fieldSpecialObjects.remove(uo);
         } else if (uo instanceof Boolean) {
-            localSpecialObjects.remove(Integer.valueOf(item.getRegisterNumber()));
+        	LocalUse lu = localSpecialObjects.get(Integer.valueOf(item.getRegisterNumber()));
+        	if (lu != null) {
+        		lu.setUsed(true);
+        	}
         }
         item.setUserValue(null);
     }
@@ -455,7 +465,6 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 clearUserValue(stack.getStackItem(i));
             }
         }
-
     }
 
     /**
@@ -466,6 +475,12 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
      */
     protected void clearSpecialField(String name) {
         fieldSpecialObjects.remove(name);
+    }
+    
+    private void clearLocalObjects() {
+    	for (LocalUse lu : localSpecialObjects.values()) {
+    		lu.setUsed(true);
+    	}
     }
 
     protected abstract BugInstance makeFieldBugInstance();
@@ -478,5 +493,42 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             String signature);
 
     protected abstract boolean isMethodThatShouldBeCalled(String methodName);
+    
+    private static class LocalUse {
+    	int pc;
+    	boolean used;
+    	
+		public LocalUse(int pc) {
+			this.pc = pc;
+		}
+		
+		public int getPc() {
+			return pc;
+		}
+
+		public void setPc(int pc) {
+			this.pc = pc;
+		}
+
+		public boolean isUsed() {
+			return used;
+		}
+		public void setUsed(boolean used) {
+			this.used = used;
+		}
+    	
+    	public int hashCode() {
+    		return pc | (used ? 1 : 2);
+    	}
+    	
+    	public boolean equals(Object o) {
+    		if (o instanceof LocalUse) {
+    			LocalUse that = (LocalUse) o;
+    			return pc == that.pc && used == that.used;
+    		}
+    		
+    		return false;
+    	}
+    }
 
 }

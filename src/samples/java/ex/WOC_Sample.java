@@ -3,6 +3,7 @@ package ex;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.EnumSet;
 import java.util.HashMap;
@@ -117,6 +118,27 @@ public class WOC_Sample {
         s.add("bar");
 
         return b ? s : Collections.<String>emptySet();
+    }
+    
+    public void testFPResetCollectionInLoop(List<String> input) {
+    	Set<String> collect = new HashSet<>();
+    	
+    	for (String i : input) {
+    		if (includeElem(i)) {
+    			collect.add(i);
+    			if (collect.size() > 5) {
+    				process(collect);
+    				collect = new HashSet<>();
+    			}
+    		}
+    	}
+    }
+    
+    private boolean includeElem(String s) {
+    	return (s.length() > 10);
+    }
+    
+    private void process(Collection<String> c) {
     }
 
     private void helper(int i, Map<String, String> x) {

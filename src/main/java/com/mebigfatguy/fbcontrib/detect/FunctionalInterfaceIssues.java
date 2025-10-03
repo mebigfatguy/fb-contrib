@@ -59,10 +59,14 @@ import edu.umd.cs.findbugs.OpcodeStack;
 import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.SourceLineAnnotation;
 import edu.umd.cs.findbugs.ba.ClassContext;
+import edu.umd.cs.findbugs.ba.SignatureParser;
 
 /**
  * looks for issues around use of @FunctionalInterface classes, especially in
  * use with Streams..
+ * 
+ * The first pass walks thru all the regular methods looking for InvokeVirtuals
+ * The second pass walks thru all the synthetic methods looking for anonymous methods
  * 
  * Future Ids: 
  *    - filter before map, where the filter does what the map does
@@ -73,6 +77,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     private static final QMethod CONTAINS = new QMethod("contains", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
     private static final QMethod SIZE = new QMethod("size", SignatureBuilder.SIG_VOID_TO_INT);
+    private static final QMethod TOARRAY = new QMethod("toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;");
     private static final QMethod STREAM = new QMethod("stream", "()Ljava/util/stream/Stream;");
 
     private static final FQMethod COLLECT = new FQMethod("java/util/stream/Stream", "collect",
@@ -253,8 +258,11 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                             }
                         }
 
-                        anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
-                        throw new StopOpcodeParsingException();
+                        SignatureParser sp = new SignatureParser(getMethod().getSignature());
+                        if (sp.getReturnTypeSignature().equals(sp.getParameter(0))) {
+	                        anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
+	                        throw new StopOpcodeParsingException();
+                        }
                     } else if (seen == Const.ALOAD_1) {
                         if (!isParmLambda) {
                             functionalInterfaceInfo.remove(getMethod().getName());
@@ -352,6 +360,16 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                                 NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
+                    } else if (TOARRAY.equals(m)) {
+                        if (stack.getStackDepth() >= 2) {
+                            OpcodeStack.Item itm = stack.getStackItem(1);
+                            if (itm.getRegisterNumber() < 0 && FIIUserValue.COLLECT_ITEM == itm.getUserValue()) {
+                                bugReporter.reportBug(
+                                        new BugInstance(this, BugType.FII_AVOID_TOARRAY_ON_COLLECTED_STREAM.name(),
+                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                            }
+                        }
+
                     } else if (STREAM.equals(m)) {
                         if (stack.getStackDepth() >= 1) {
                         	OpcodeStack.Item itm = stack.getStackItem(0);
