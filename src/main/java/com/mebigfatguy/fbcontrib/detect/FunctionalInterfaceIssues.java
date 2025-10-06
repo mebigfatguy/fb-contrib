@@ -147,10 +147,13 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
                     for (Map.Entry<String, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
                         for (FIInfo fii : entry.getValue()) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, anonymousBugType.get(entry.getKey()).name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(cls, fii.getMethod())
-                                            .addSourceLine(fii.getSrcLine()));
+                        	BugType bugType = anonymousBugType.get(entry.getKey());
+                        	if (bugType != null) {
+	                            bugReporter.reportBug(
+	                                    new BugInstance(this, bugType.name(), NORMAL_PRIORITY)
+	                                            .addClass(this).addMethod(cls, fii.getMethod())
+	                                            .addSourceLine(fii.getSrcLine()));
+                        	}
                         }
                     }
                 }
