@@ -46,7 +46,6 @@
 	<classpathentry kind="lib" path="lib/httpclient-cache-4.5.14.jar"/>
 	<classpathentry kind="lib" path="lib/httpcore-4.4.16.jar"/>
 	<classpathentry kind="lib" path="lib/commons-codec-1.18.0.jar"/>
-	<classpathentry kind="lib" path="lib/guava-33.4.6-jre.jar" sourcepath="lib/sources/guava-33.4.6-jre-sources.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjrt-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjtools-1.9.23.jar"/>
 	<classpathentry kind="lib" path="lib/aspectjweaver-1.9.23.jar"/>
@@ -55,7 +54,9 @@
 	<classpathentry kind="lib" path="lib/spring-tx-6.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.19.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.18.0.jar"/>
-	<classpathentry kind="lib" path="lib/spotbugs-4.9.6.jar"/>
-	<classpathentry kind="lib" path="lib/spotbugs-annotations-4.9.6.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-4.9.8.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-ant-4.9.8.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-annotations-4.9.8.jar"/>
+	<classpathentry kind="lib" path="lib/guava-33.5.0-jre.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>
