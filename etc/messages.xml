@@ -6512,7 +6512,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <p>
         and instead of
         <code><pre>
-        baubles.stream().map(Bauble::getName).count() < 1;
+        baubles.stream().map(Bauble::getName).count() &lt; 1;
         </pre></code>
         do
         <code></pre>
