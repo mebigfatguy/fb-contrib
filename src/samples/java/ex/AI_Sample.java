@@ -1,6 +1,10 @@
 package ex;
 
 import java.io.IOException;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.lang.reflect.Constructor;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
@@ -140,5 +144,14 @@ public class AI_Sample {
             return null;
         }
     }
-
+    
+    public @AINullable String getAIString(String s) {
+    	return s;
+    }
+    
+    @Target(ElementType.TYPE_USE)
+    @Retention(RetentionPolicy.RUNTIME)
+    @interface AINullable {   	
+    }
 }
+
