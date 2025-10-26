@@ -6495,8 +6495,42 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <LongDescription>Method {1} suboptimally finds any match in a stream</LongDescription>
         <Details>
         <![CDATA[
-        <p>This method looks for one item in a stream using filter().findFirst.isPresent() when .anyMatch() will do the same thing more succintly</p>
-        ]]></Details>
+        <p>This method uses a suboptimal way of determinng whether there are any items in a stream that match some value.
+        Either it uses collect(), and checks the size, or uses the count() stream action. Either way, it is simpler and
+        economical to just use anyMatch, as as soon as an item is found, you can stop the stream.
+        </p>
+        <p>
+        Instead of
+        <code><pre>
+        baubles.stream().map(Bauble::getName).collect(Collectors.toSet()).contains(name)
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().anyMatch(b -> name.equals(b.getName()))
+        </pre></code>
+        </p>
+        <p>
+        and instead of
+        <code><pre>
+        baubles.stream().map(Bauble::getName).count() < 1;
+        </pre></code>
+        do
+        <code></pre>
+        !baubles.stream().anyMatch(b -> name.equals(b.getName()))
+        </pre></code>
+        </p>
+        <p>
+        and instead of
+        <code><pre>
+        baubles.stream().map(Bauble::getName).count() > 0;
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().anyMatch(b -> name.equals(b.getName()))
+        </pre></code>
+        </p>
+        ]]>
+        </Details>
     </BugPattern>
     
     <BugPattern type="FII_USE_FIND_FIRST">

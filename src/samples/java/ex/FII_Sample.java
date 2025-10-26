@@ -86,6 +86,14 @@ public class FII_Sample {
     public List<String> mapBeforeLimit(List<Bauble> baubles) {
     	return baubles.stream().map(Bauble::getName).limit(2).collect(Collectors.toList());
     }
+    
+    public boolean anyMatchVsCount(com.sun.tools.javac.util.List<Bauble> baubles, boolean b) {
+    	if (b) {
+    		return baubles.stream().map(Bauble::getName).count() > 0;
+    	} else {
+        	return baubles.stream().map(Bauble::getName).count() >= 1;
+    	}
+    }
 
     public void fpUnrelatedLambdaValue282(Map<String, Bauble> map, BaubleFactory factory) {
         map.computeIfAbsent("pixie dust", _unused -> factory.getBauble());
