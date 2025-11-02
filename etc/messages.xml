@@ -1794,6 +1794,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
             ]]>
         </Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues">
+        <Details>
+            <![CDATA[
+            <p>Looks for various issues with uses of Mockito.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -6790,6 +6800,21 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             ]]>
         </Details> 
     </BugPattern>
+    
+    <BugPattern type="MK_UNNEEDED_OPENMOCKS">
+        <ShortDescription>Class uses MockitoExtension so doesn't need to openMocks</ShortDescription>
+        <LongDescription>Class {0} uses MockitoExtension so doesn't need to openMocks</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class defines that it uses 
+            <code>@ExtendWith(MockitoExtension.class)</code>
+            therefore there is no need to use
+            <code>MockitoAnnotations.openMocks(this)</code>
+            This also often means that the throws Exception clause on a method that is defined on a @BeforeEach is unneeded.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -6943,4 +6968,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     <BugCode abbrev="ENMI">Enum Issues</BugCode>
     <BugCode abbrev="AKI">Akka Issues</BugCode>
     <BugCode abbrev="PKI">Pekko Issues</BugCode>
+    <BugCode abbrev="MK">Mockito Issues</BugCode>
 </MessageCollection>

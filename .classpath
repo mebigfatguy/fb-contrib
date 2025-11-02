@@ -54,7 +54,7 @@
 	<classpathentry kind="lib" path="lib/spring-tx-6.2.8.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.19.0.jar"/>
 	<classpathentry kind="lib" path="lib/commons-lang3-3.18.0.jar"/>
-	<classpathentry kind="lib" path="lib/spotbugs-4.9.8.jar"/>
+	<classpathentry kind="lib" path="lib/spotbugs-4.9.8.jar" sourcepath="lib/sources/spotbugs-4.9.8-sources.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-ant-4.9.8.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-annotations-4.9.8.jar"/>
 	<classpathentry kind="lib" path="lib/guava-33.5.0-jre.jar"/>

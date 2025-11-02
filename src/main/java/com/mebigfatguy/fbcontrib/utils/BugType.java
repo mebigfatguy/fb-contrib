@@ -22,7 +22,7 @@ package com.mebigfatguy.fbcontrib.utils;
  * an enumeration of all the bug instance types that fb-contrib produces
  */
 public enum BugType {
-	// @formatter:off
+    // @formatter:off
     ABC_ARRAY_BASED_COLLECTIONS,
     ACEM_ABSTRACT_CLASS_EMPTY_METHODS,
     AFBR_ABNORMAL_FINALLY_BLOCK_RETURN,
@@ -183,6 +183,7 @@ public enum BugType {
     MDM_THREAD_PRIORITIES,
     MDM_THREAD_YIELD,
     MDM_WAIT_WITHOUT_TIMEOUT,
+    MK_UNNEEDED_OPENMOCKS,
     MOM_MISLEADING_OVERLOAD_MODEL,
     MRC_METHOD_RETURNS_CONSTANT,
     MUC_MODIFYING_UNMODIFIABLE_COLLECTION,
