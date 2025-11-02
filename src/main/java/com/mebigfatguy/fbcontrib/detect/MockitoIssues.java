@@ -83,10 +83,10 @@ public class MockitoIssues extends BytecodeScanningDetector {
 
         for (AnnotationEntry ann : obj.getAnnotationEntries()) {
             if (ann.isRuntimeVisible()) {
-                if ("org.mockito.Mock".equals(SignatureUtils.stripSignature(ann.getAnnotationType()))) {
+                if ("Lorg/mockito/Mock;".equals(ann.getAnnotationType())) {
                     mockedFields.add(obj.getName());
                     sawAnnotatedField = true;
-                } else if ("org.mockito.Spy".equals(SignatureUtils.stripSignature(ann.getAnnotationType()))) {
+                } else if ("Lorg/mockito/Spy;".equals(ann.getAnnotationType())) {
                     spiedFields.add(obj.getName());
                     sawAnnotatedField = true;
                 }
@@ -125,6 +125,7 @@ public class MockitoIssues extends BytecodeScanningDetector {
                     }
                 }
             }
+            break;
         }
     }
 
