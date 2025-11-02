@@ -340,7 +340,7 @@
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues" speed="fast" reports="MK_UNNEEDED_OPENMOCKS" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues" speed="fast" reports="MK_MOCKED_FIELD_REASSIGNED,MK_SPIED_FIELD_REASSIGNED,MK_UNNEEDED_OPENMOCKS" />
 
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -668,5 +668,7 @@
     <BugPattern abbrev="ENMI" type="ENMI_EQUALS_ON_ENUM" category="CORRECTNESS" />
     <BugPattern abbrev="AKI" type="AKI_SUPERFLUOUS_ROUTE_SPECIFICATION" category="CORRECTNESS" />
     <BugPattern abbrev="PKI" type="PKI_SUPERFLUOUS_ROUTE_SPECIFICATION" category="CORRECTNESS" />
+    <BugPattern abbrev="MK" type="MK_MOCKED_FIELD_REASSIGNED" category="CORRECTNESS" />
+    <BugPattern abbrev="MK" type="MK_SPIED_FIELD_REASSIGNED" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_UNNEEDED_OPENMOCKS" category="CORRECTNESS" />
 </FindbugsPlugin>

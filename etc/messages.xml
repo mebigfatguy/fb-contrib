@@ -6801,6 +6801,30 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details> 
     </BugPattern>
     
+    <BugPattern type="MK_MOCKED_FIELD_REASSIGNED">
+        <ShortDescription>Mocked Field is reassigned</ShortDescription>
+        <LongDescription>Mocked Field {1} is reassigned</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class annotates a field with @Mock, but then in code reassigns the reference to something else
+            thereby rendering the @Mocking pointless.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
+
+    <BugPattern type="MK_SPIED_FIELD_REASSIGNED">
+        <ShortDescription>Spied Field is reassigned</ShortDescription>
+        <LongDescription>Spied Field {1} is reassigned</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class annotates a field with @Spy, but then in code reassigns the reference to something else
+            thereby rendering the @Mocking pointless.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
+
     <BugPattern type="MK_UNNEEDED_OPENMOCKS">
         <ShortDescription>Class uses MockitoExtension so doesn't need to openMocks</ShortDescription>
         <LongDescription>Class {0} uses MockitoExtension so doesn't need to openMocks</LongDescription>
