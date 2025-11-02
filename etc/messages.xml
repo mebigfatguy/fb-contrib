@@ -6803,7 +6803,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     
     <BugPattern type="MK_MOCKED_FIELD_REASSIGNED">
         <ShortDescription>Mocked Field is reassigned</ShortDescription>
-        <LongDescription>Mocked Field {1} is reassigned</LongDescription>
+        <LongDescription>Mocked Field {2} is reassigned</LongDescription>
         <Details>
             <![CDATA[
             <p>This class annotates a field with @Mock, but then in code reassigns the reference to something else
@@ -6815,7 +6815,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
 
     <BugPattern type="MK_SPIED_FIELD_REASSIGNED">
         <ShortDescription>Spied Field is reassigned</ShortDescription>
-        <LongDescription>Spied Field {1} is reassigned</LongDescription>
+        <LongDescription>Spied Field {2} is reassigned</LongDescription>
         <Details>
             <![CDATA[
             <p>This class annotates a field with @Spy, but then in code reassigns the reference to something else
