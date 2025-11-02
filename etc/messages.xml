@@ -6801,6 +6801,19 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details> 
     </BugPattern>
     
+    
+    <BugPattern type="MK_CAPTOR_IN_WHEN">
+        <ShortDescription>Mockito capture performed in a Mockito.when</ShortDescription>
+        <LongDescription>Mockito capture performed in a Mockito.when in {1}</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method captures values inside a Mockito.when. Capturing should only happen inside
+            Mockito.verify calls.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
+
     <BugPattern type="MK_MOCKED_FIELD_REASSIGNED">
         <ShortDescription>Mocked Field is reassigned</ShortDescription>
         <LongDescription>Mocked Field {2} is reassigned</LongDescription>
