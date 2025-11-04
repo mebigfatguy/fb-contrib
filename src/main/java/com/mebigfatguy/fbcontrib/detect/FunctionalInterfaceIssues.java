@@ -75,6 +75,7 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
 
 /*
  * .count() > n use limit(n+1).count() > n
+ * Arrays.asList(myArray).stream, use Arrays.stream(myArray)
  */
 @CustomUserValue
 public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
