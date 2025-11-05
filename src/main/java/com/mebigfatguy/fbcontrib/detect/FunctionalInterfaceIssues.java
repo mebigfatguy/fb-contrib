@@ -66,11 +66,10 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
  * use with Streams..
  * 
  * The first pass walks thru all the regular methods looking for InvokeVirtuals
- * The second pass walks thru all the synthetic methods looking for anonymous methods
+ * The second pass walks thru all the synthetic methods looking for anonymous
+ * methods
  * 
- * Future Ids: 
- *    - filter before map, where the filter does what the map does
- * 
+ * Future Ids: - filter before map, where the filter does what the map does
  */
 @CustomUserValue
 public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
@@ -80,22 +79,20 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     private static final QMethod TOARRAY = new QMethod("toArray", "([Ljava/lang/Object;)[Ljava/lang/Object;");
     private static final QMethod STREAM = new QMethod("stream", "()Ljava/util/stream/Stream;");
 
-    private static final FQMethod COLLECT = new FQMethod("java/util/stream/Stream", "collect",
-            "(Ljava/util/stream/Collector;)Ljava/lang/Object;");
-    private static final FQMethod FILTER = new FQMethod("java/util/stream/Stream", "filter",
-            "(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;");
-    private static final FQMethod FINDFIRST = new FQMethod("java/util/stream/Stream", "findFirst",
-            "()Ljava/util/Optional;");
-    private static final FQMethod ISPRESENT = new FQMethod("java/util/Optional", "isPresent",
-            SignatureBuilder.SIG_VOID_TO_BOOLEAN);
+    private static final FQMethod ASLIST = new FQMethod("java/util/Arrays", "asList", "([Ljava/lang/Object;)Ljava/util/List;");
+    private static final FQMethod COLLECT = new FQMethod("java/util/stream/Stream", "collect", "(Ljava/util/stream/Collector;)Ljava/lang/Object;");
+    private static final FQMethod FILTER = new FQMethod("java/util/stream/Stream", "filter", "(Ljava/util/function/Predicate;)Ljava/util/stream/Stream;");
+    private static final FQMethod FINDFIRST = new FQMethod("java/util/stream/Stream", "findFirst", "()Ljava/util/Optional;");
+    private static final FQMethod ISPRESENT = new FQMethod("java/util/Optional", "isPresent", SignatureBuilder.SIG_VOID_TO_BOOLEAN);
     private static final FQMethod TOLIST = new FQMethod("java/util/stream/Collectors", "toList", "()Ljava/util/stream/Collector;");
     private static final FQMethod TOSET = new FQMethod("java/util/stream/Collectors", "toSet", "()Ljava/util/stream/Collector;");
-    	
+    private static final FQMethod COUNT = new FQMethod("java/util/stream/Stream", "count", "()J");
+
     private static final FQMethod GET = new FQMethod("java/util/List", "get", SignatureBuilder.SIG_INT_TO_OBJECT);
 
     private static final FQMethod MAP = new FQMethod("java/util/stream/Stream", "map", "(Ljava/util/function/Function;)Ljava/util/stream/Stream;");
     private static final FQMethod LIMIT = new FQMethod("java/util/stream/Stream", "limit", "(J)Ljava/util/stream/Stream;");
-        
+
     enum ParseState {
         NORMAL, LAMBDA;
     }
@@ -105,7 +102,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     }
 
     enum FIIUserValue {
-    	COLLECTION_STREAM_ITEM, COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM, MAP_ITEM;
+        COLLECTION_STREAM_ITEM, COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM, MAP_ITEM, COUNT_ITEM, COUNT_0_ITEM, COUNT_1_ITEM, COUNT_N_ITEM, ASLIST;
     }
 
     private JavaClass collectionClass;
@@ -122,12 +119,12 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     public FunctionalInterfaceIssues(BugReporter bugReporter) {
         this.bugReporter = bugReporter;
-        
-    	try {
+
+        try {
             collectionClass = Repository.lookupClass(Values.SLASHED_JAVA_UTIL_COLLECTION);
-    	} catch (ClassNotFoundException e) {
-    		bugReporter.reportMissingClass(e);
-    	}
+        } catch (ClassNotFoundException e) {
+            bugReporter.reportMissingClass(e);
+        }
     }
 
     @Override
@@ -147,10 +144,11 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
                     for (Map.Entry<String, List<FIInfo>> entry : functionalInterfaceInfo.entrySet()) {
                         for (FIInfo fii : entry.getValue()) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, anonymousBugType.get(entry.getKey()).name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(cls, fii.getMethod())
-                                            .addSourceLine(fii.getSrcLine()));
+                            BugType bugType = anonymousBugType.get(entry.getKey());
+                            if (bugType != null) {
+                                bugReporter.reportBug(new BugInstance(this, bugType.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, fii.getMethod())
+                                        .addSourceLine(fii.getSrcLine()));
+                            }
                         }
                     }
                 }
@@ -184,20 +182,20 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                             functionalInterfaceInfo.remove(m.getName());
                         } else {
                             isParmLambda = numParms == 2;
-                        if (isParmLambda) {
-                            Iterator<FIInfo> it = fiis.iterator();
-                            while (it.hasNext()) {
-                                FIInfo fi = it.next();
-                                if (!fi.getMethod().isStatic()) {
-                                    it.remove();
+                            if (isParmLambda) {
+                                Iterator<FIInfo> it = fiis.iterator();
+                                while (it.hasNext()) {
+                                    FIInfo fi = it.next();
+                                    if (!fi.getMethod().isStatic()) {
+                                        it.remove();
+                                    }
                                 }
-                            }
 
-                            if (fiis.isEmpty()) {
-                                isParmLambda = false;
-                                functionalInterfaceInfo.remove(getMethod().getName());
-                                return;
-                            }
+                                if (fiis.isEmpty()) {
+                                    isParmLambda = false;
+                                    functionalInterfaceInfo.remove(getMethod().getName());
+                                    return;
+                                }
                             }
                             try {
                                 anonState = AnonState.SEEN_NOTHING;
@@ -260,8 +258,8 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
                         SignatureParser sp = new SignatureParser(getMethod().getSignature());
                         if (sp.getReturnTypeSignature().equals(sp.getParameter(0))) {
-	                        anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
-	                        throw new StopOpcodeParsingException();
+                            anonymousBugType.put(getMethod().getName(), BugType.FII_USE_FUNCTION_IDENTITY);
+                            throw new StopOpcodeParsingException();
                         }
                     } else if (seen == Const.ALOAD_1) {
                         if (!isParmLambda) {
@@ -280,8 +278,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
                         String clsName = getClassConstantOperand();
                         String methodName = getNameConstantOperand();
-                        if (clsName.startsWith("java/lang/")
-                                && (methodName.endsWith("Value") || "valueOf".equals(methodName))) {
+                        if (clsName.startsWith("java/lang/") && (methodName.endsWith("Value") || "valueOf".equals(methodName))) {
                             break;
                         }
 
@@ -332,8 +329,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
                         int lastOp = getPrevOpcode(1);
                         FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this),
-                                (lastOp == Const.GETFIELD) || (lastOp == Const.GETSTATIC)
-                                        || OpcodeUtils.isALoad(lastOp));
+                                (lastOp == Const.GETFIELD) || (lastOp == Const.GETSTATIC) || OpcodeUtils.isALoad(lastOp));
                         fiis.add(fii);
                     }
                     break;
@@ -346,50 +342,51 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         if (stack.getStackDepth() >= 2) {
                             OpcodeStack.Item itm = stack.getStackItem(1);
                             if (itm.getRegisterNumber() < 0 && FIIUserValue.COLLECT_ITEM == itm.getUserValue()) {
-                                bugReporter.reportBug(
-                                        new BugInstance(this, BugType.FII_AVOID_CONTAINS_ON_COLLECTED_STREAM.name(),
-                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_CONTAINS_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
                     } else if (SIZE.equals(m)) {
                         if (stack.getStackDepth() >= 1) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             if (itm.getRegisterNumber() < 0 && FIIUserValue.COLLECT_ITEM == itm.getUserValue()) {
-                                bugReporter.reportBug(
-                                        new BugInstance(this, BugType.FII_AVOID_SIZE_ON_COLLECTED_STREAM.name(),
-                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_SIZE_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
                             }
                         }
                     } else if (TOARRAY.equals(m)) {
                         if (stack.getStackDepth() >= 2) {
                             OpcodeStack.Item itm = stack.getStackItem(1);
                             if (itm.getRegisterNumber() < 0 && FIIUserValue.COLLECT_ITEM == itm.getUserValue()) {
-                                bugReporter.reportBug(
-                                        new BugInstance(this, BugType.FII_AVOID_TOARRAY_ON_COLLECTED_STREAM.name(),
-                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_TOARRAY_ON_COLLECTED_STREAM.name(), NORMAL_PRIORITY)
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
 
                     } else if (STREAM.equals(m)) {
                         if (stack.getStackDepth() >= 1) {
-                        	OpcodeStack.Item itm = stack.getStackItem(0);
-                        	JavaClass streamClass = itm.getJavaClass();
-                        	if (streamClass != null && streamClass.instanceOf(collectionClass)) {
-                        		userValue = FIIUserValue.COLLECTION_STREAM_ITEM;
-                        	};
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (itm.getUserValue() == FIIUserValue.ASLIST) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ARRAYS_STREAM.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                            } else {
+                                JavaClass streamClass = itm.getJavaClass();
+                                if (streamClass != null && streamClass.instanceOf(collectionClass)) {
+                                    userValue = FIIUserValue.COLLECTION_STREAM_ITEM;
+                                }
+                            }
+
                         }
                     } else {
-                        FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
-                                getSigConstantOperand());
+                        FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                         if (COLLECT.equals(fqm)) {
                             userValue = FIIUserValue.COLLECT_ITEM;
                         } else if (FILTER.equals(fqm)) {
                             if (stack.getStackDepth() > 1) {
                                 OpcodeStack.Item itm = stack.getStackItem(1);
                                 if (itm.getUserValue() == FIIUserValue.FILTER_ITEM && itm.getRegisterNumber() < 0) {
-                                    bugReporter.reportBug(
-                                            new BugInstance(this, BugType.FII_COMBINE_FILTERS.name(), LOW_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_COMBINE_FILTERS.name(), LOW_PRIORITY).addClass(this).addMethod(this)
+                                            .addSourceLine(this));
                                 }
                             }
                             userValue = FIIUserValue.FILTER_ITEM;
@@ -405,73 +402,139 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                 OpcodeStack.Item itm = stack.getStackItem(0);
                                 if (Values.ZERO.equals(itm.getConstant())) {
                                     itm = stack.getStackItem(1);
-                                    if (itm.getUserValue() == FIIUserValue.COLLECT_ITEM
-                                            && itm.getRegisterNumber() < 0) {
-                                        bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FIND_FIRST.name(),
-                                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                                    if (itm.getUserValue() == FIIUserValue.COLLECT_ITEM && itm.getRegisterNumber() < 0) {
+                                        bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_FIND_FIRST.name(), NORMAL_PRIORITY).addClass(this)
+                                                .addMethod(this).addSourceLine(this));
                                     }
                                 }
                             }
                         } else if (MAP.equals(fqm)) {
-                        	if (stack.getStackDepth() >= 2) {
+                            if (stack.getStackDepth() >= 2) {
                                 userValue = FIIUserValue.MAP_ITEM;
-                        	}
+                            }
                         } else if (LIMIT.equals(fqm)) {
-                        	if (stack.getStackDepth() >= 2) {
+                            if (stack.getStackDepth() >= 2) {
                                 OpcodeStack.Item itm = stack.getStackItem(1);
                                 if (FIIUserValue.MAP_ITEM == itm.getUserValue()) {
-                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_MAP_BEFORE_LIMIT.name(),
-                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                                    bugReporter.reportBug(new BugInstance(this, BugType.FII_AVOID_MAP_BEFORE_LIMIT.name(), NORMAL_PRIORITY).addClass(this)
+                                            .addMethod(this).addSourceLine(this));
 
                                 }
-                        	}
+                            }
+                        } else if (COUNT.equals(fqm)) {
+                            userValue = FIIUserValue.COUNT_ITEM;
                         }
                     }
                     break;
                 }
 
                 case Const.INVOKEVIRTUAL: {
-                    FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
-                            getSigConstantOperand());
+                    FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
                     if (ISPRESENT.equals(fqm)) {
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             if (itm.getUserValue() == FIIUserValue.FINDFIRST_ITEM && itm.getRegisterNumber() < 0) {
-                                bugReporter
-                                        .reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), LOW_PRIORITY)
-                                                .addClass(this).addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                        .addSourceLine(this));
                             }
                         }
                     }
                     break;
                 }
-                
+
                 case Const.INVOKESTATIC: {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         FIIUserValue uv = (FIIUserValue) itm.getUserValue();
                         if (uv == FIIUserValue.COLLECTION_STREAM_ITEM) {
-		                    FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
-		                            getSigConstantOperand());
-		                    if (TOLIST.equals(fqm) || TOSET.equals(fqm)) {
-                                bugReporter
-                                .reportBug(new BugInstance(this, BugType.FII_USE_COPYCONSTRUCTOR.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
-		                    }
+                            FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                            if (TOLIST.equals(fqm) || TOSET.equals(fqm)) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_COPYCONSTRUCTOR.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
+                            }
                         }
                     }
-                	break;
+
+                    FQMethod fqm = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
+                    if (ASLIST.equals(fqm)) {
+                        userValue = FIIUserValue.ASLIST;
+                    }
+                    break;
+                }
+
+                case Const.LCMP: {
+                    if (stack.getStackDepth() >= 2) {
+                        OpcodeStack.Item itm = stack.getStackItem(1);
+                        if (itm.getUserValue() == FIIUserValue.COUNT_ITEM) {
+                            OpcodeStack.Item con = stack.getStackItem(0);
+                            Long v = (Long) con.getConstant();
+                            if (v != null) {
+                                if (v.longValue() == 0) {
+                                    userValue = FIIUserValue.COUNT_0_ITEM;
+                                } else if (v.longValue() == 1) {
+                                    userValue = FIIUserValue.COUNT_1_ITEM;
+                                } else {
+                                    userValue = FIIUserValue.COUNT_N_ITEM;
+                                }
+                            } else {
+                                userValue = FIIUserValue.COUNT_N_ITEM;
+                            }
+                        }
+                    }
+                    break;
+                }
+                case Const.IFLE: {
+                    if (stack.getStackDepth() >= 1) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (itm.getUserValue() == FIIUserValue.COUNT_0_ITEM) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                    .addSourceLine(this));
+                        } else {
+                            checkLimit();
+                        }
+                    }
+                    break;
+                }
+                case Const.IFLT: {
+                    if (stack.getStackDepth() >= 1) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (itm.getUserValue() == FIIUserValue.COUNT_1_ITEM) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                    .addSourceLine(this));
+                        } else {
+                            checkLimit();
+                        }
+                    }
+                    break;
+                }
+
+                case Const.IFGT:
+                case Const.IFGE:
+                case Const.IFEQ:
+                case Const.IFNE: {
+                    if (stack.getStackDepth() >= 1) {
+                        checkLimit();
+                    }
+                    break;
                 }
                 }
             }
         } catch (ClassNotFoundException e) {
-        	bugReporter.reportMissingClass(e);
+            bugReporter.reportMissingClass(e);
         } finally {
             stack.sawOpcode(this, seen);
             if (userValue != null && stack.getStackDepth() > 0) {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(userValue);
             }
+        }
+    }
+
+    public void checkLimit() {
+        OpcodeStack.Item itm = stack.getStackItem(0);
+        if (itm.getUserValue() == FIIUserValue.COUNT_N_ITEM) {
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.FII_USE_ANY_LIMIT_WITH_COUNT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 

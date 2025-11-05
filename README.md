@@ -1,5 +1,6 @@
-fb-contrib
-==========
+
+<img width="200" height="192" alt="spotbugs-med" src="https://github.com/user-attachments/assets/ced8e768-36c6-469c-bc9a-096cb7f832e3" />
+
 
 [![Build Status](https://travis-ci.org/mebigfatguy/fb-contrib.svg?branch=master)](https://travis-ci.org/mebigfatguy/fb-contrib)
 [![Open Source Helpers](https://www.codetriage.com/mebigfatguy/fb-contrib/badges/users.svg)](https://www.codetriage.com/mebigfatguy/fb-contrib)
@@ -110,7 +111,7 @@ The group ID for sb-contrib is com.mebigfatguy.sb-contrib, and the artifact ID i
 <plugin>
     <groupId>com.github.spotbugs</groupId>
     <artifactId>spotbugs-maven-plugin</artifactId>
-    <version>4.9.6.0</version>
+    <version>4.9.8.1</version>
     <configuration>
         <plugins>
             <plugin>

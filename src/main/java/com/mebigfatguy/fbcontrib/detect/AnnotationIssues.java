@@ -18,6 +18,9 @@
  */
 package com.mebigfatguy.fbcontrib.detect;
 
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -30,9 +33,13 @@ import java.util.Set;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.classfile.AnnotationEntry;
+import org.apache.bcel.classfile.Attribute;
 import org.apache.bcel.classfile.Code;
+import org.apache.bcel.classfile.Constant;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
+import org.apache.bcel.classfile.Unknown;
 
 import com.mebigfatguy.fbcontrib.collect.MethodInfo;
 import com.mebigfatguy.fbcontrib.collect.Statistics;
@@ -342,6 +349,33 @@ public class AnnotationIssues extends BytecodeScanningDetector {
 			String annotationType = entry.getAnnotationType();
 			if (NULLABLE_ANNOTATIONS.contains(annotationType)) {
 				return true;
+			}
+		}
+		
+		for (Attribute att : m.getAttributes()) {
+			if ("RuntimeVisibleTypeAnnotations".equals(att.getName())) {
+				try (DataInputStream dis = new DataInputStream(new ByteArrayInputStream((((Unknown) att).getBytes())))) {
+					int numTargets = dis.readUnsignedShort();
+					// only look at the first one, as parsing is more difficult
+					int targetType = dis.readUnsignedByte();
+					if (targetType == 20) {
+						int typePathLength = dis.readUnsignedByte();
+						if (typePathLength == 0) {
+							int typeIndex = dis.readUnsignedShort();
+							Constant c = att.getConstantPool().getConstant(typeIndex);
+							if (c instanceof ConstantUtf8) {
+								String annotationType = new String(((ConstantUtf8) c).getBytes());
+								if (NULLABLE_ANNOTATIONS.contains(annotationType)) {
+									return true;
+								}
+
+							}
+						}
+					}
+					
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 

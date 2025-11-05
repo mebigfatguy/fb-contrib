@@ -23,7 +23,7 @@
 
 	<!-- Detectors -->
 
-    <!-- COMMENT OUT FOR RELEASE 
+    <!-- COMMENT OUT FOR RELEASE -->
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -31,7 +31,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-    COMMENT OUT FOR RELEASE -->
+    <!-- COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -326,7 +326,7 @@
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.ListUsageIssues" speed="fast" reports="LUI_USE_SINGLETON_LIST,LUI_USE_COLLECTION_ADD,LUI_USE_GET0,LUI_VACUOUS_ADDALL"/>
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_REFERENCE,FII_AVOID_CONTAINS_ON_COLLECTED_STREAM,FII_USE_ANY_MATCH,FII_USE_FIND_FIRST,FII_COMBINE_FILTERS,FII_USE_FUNCTION_IDENTITY,FII_AVOID_SIZE_ON_COLLECTED_STREAM,FII_USE_COPYCONSTRUCTOR,FII_AVOID_MAP_BEFORE_LIMIT,FII_AVOID_TOARRAY_ON_COLLECTED_STREAM" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.FunctionalInterfaceIssues" speed="fast" reports="FII_USE_METHOD_REFERENCE,FII_AVOID_CONTAINS_ON_COLLECTED_STREAM,FII_USE_ANY_MATCH,FII_USE_FIND_FIRST,FII_COMBINE_FILTERS,FII_USE_FUNCTION_IDENTITY,FII_AVOID_SIZE_ON_COLLECTED_STREAM,FII_USE_COPYCONSTRUCTOR,FII_AVOID_MAP_BEFORE_LIMIT,FII_AVOID_TOARRAY_ON_COLLECTED_STREAM,FII_USE_ARRAYS_STREAM,FII_USE_ANY_LIMIT_WITH_COUNT" />
     
     <Detector class="com.mebigfatguy.fbcontrib.detect.SetUsageIssues" speed="fast" reports="SUI_CONTAINS_BEFORE_ADD,SUI_CONTAINS_BEFORE_REMOVE"/>
     
@@ -339,6 +339,9 @@
     <Detector class="com.mebigfatguy.fbcontrib.detect.AkkaIssues" speed="fast" reports="AKI_SUPERFLUOUS_ROUTE_SPECIFICATION,PKI_SUPERFLUOUS_ROUTE_SPECIFICATION" />
     
     <!-- COMMENT OUT FOR POINT RELEASE -->
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues" speed="fast" reports="MK_CAPTOR_IN_WHEN,MK_MOCKED_FIELD_REASSIGNED,MK_SPIED_FIELD_REASSIGNED,MK_UNNEEDED_OPENMOCKS" />
+
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -657,12 +660,18 @@
 	<BugPattern abbrev="FII" type="FII_AVOID_MAP_BEFORE_LIMIT" category="CORRECTNESS"/>
 	<BugPattern abbrev="FII" type="FII_USE_COPYCONSTRUCTOR" category="CORRECTNESS"/>
 	<BugPattern abbrev="FII" type="FII_AVOID_TOARRAY_ON_COLLECTED_STREAM" category="CORRECTNESS"/>
-	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_ADD" category="CORRECTNESS" experimental="true" />
-	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_REMOVE" category="CORRECTNESS" experimental="true" />
-    <BugPattern abbrev="SAT" type="SAT_SUSPICIOUS_ARGUMENT_TYPES" category="CORRECTNESS" experimental="true" />
-    <BugPattern abbrev="ENMI" type="ENMI_NULL_ENUM_VALUE" category="CORRECTNESS" experimental="true" />
-    <BugPattern abbrev="ENMI" type="ENMI_ONE_ENUM_VALUE" category="CORRECTNESS" experimental="true" />
-    <BugPattern abbrev="ENMI" type="ENMI_EQUALS_ON_ENUM" category="CORRECTNESS" experimental="true" />
-    <BugPattern abbrev="AKI" type="AKI_SUPERFLUOUS_ROUTE_SPECIFICATION" category="CORRECTNESS" experimental="true" />
-    <BugPattern abbrev="PKI" type="PKI_SUPERFLUOUS_ROUTE_SPECIFICATION" category="CORRECTNESS" experimental="true" />
+	<BugPattern abbrev="FII" type="FII_USE_ARRAYS_STREAM" category="CORRECTNESS"/>
+	<BugPattern abbrev="FII" type="FII_USE_ANY_LIMIT_WITH_COUNT" category="CORRECTNESS" />
+	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_ADD" category="CORRECTNESS"/>
+	<BugPattern abbrev="SUI" type="SUI_CONTAINS_BEFORE_REMOVE" category="CORRECTNESS" />
+    <BugPattern abbrev="SAT" type="SAT_SUSPICIOUS_ARGUMENT_TYPES" category="CORRECTNESS" />
+    <BugPattern abbrev="ENMI" type="ENMI_NULL_ENUM_VALUE" category="CORRECTNESS"/>
+    <BugPattern abbrev="ENMI" type="ENMI_ONE_ENUM_VALUE" category="CORRECTNESS" />
+    <BugPattern abbrev="ENMI" type="ENMI_EQUALS_ON_ENUM" category="CORRECTNESS" />
+    <BugPattern abbrev="AKI" type="AKI_SUPERFLUOUS_ROUTE_SPECIFICATION" category="CORRECTNESS" />
+    <BugPattern abbrev="PKI" type="PKI_SUPERFLUOUS_ROUTE_SPECIFICATION" category="CORRECTNESS" />
+    <BugPattern abbrev="MK" type="MK_CAPTOR_IN_WHEN" category="CORRECTNESS" />
+    <BugPattern abbrev="MK" type="MK_MOCKED_FIELD_REASSIGNED" category="CORRECTNESS" />
+    <BugPattern abbrev="MK" type="MK_SPIED_FIELD_REASSIGNED" category="CORRECTNESS" />
+    <BugPattern abbrev="MK" type="MK_UNNEEDED_OPENMOCKS" category="CORRECTNESS" />
 </FindbugsPlugin>

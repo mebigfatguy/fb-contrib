@@ -55,5 +55,6 @@
 	<classpathentry kind="lib" path="lib/bcel-6.0.jar"/>
 	<classpathentry kind="lib" path="lib/findbugs-3.0.1.jar"/>
 	<classpathentry kind="lib" path="lib/commons-io-2.19.0.jar"/>
+	<classpathentry kind="lib" path="lib/guava-33.5.0-jre.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>

@@ -59,8 +59,7 @@ public class FII_Sample {
     }
 
     public List<Bauble> backToBackFilter(Set<Bauble> baubles) {
-        return baubles.stream().filter(b -> b.getName().equals("diamonds")).filter(b -> b.isFree())
-                .collect(Collectors.toList());
+        return baubles.stream().filter(b -> b.getName().equals("diamonds")).filter(b -> b.isFree()).collect(Collectors.toList());
     }
 
     public Map<String, Bauble> mapIdentity(List<Bauble> baubles) {
@@ -70,21 +69,33 @@ public class FII_Sample {
     public int sizeOnACollect(List<Bauble> baubles, String name) {
         return baubles.stream().filter(b -> b.getName().equals(name)).collect(Collectors.toSet()).size();
     }
-    
+
     public Bauble[] toArrayOnACollect(List<Bauble> baubles, String name) {
         return baubles.stream().filter(b -> b.getName().equals(name)).collect(Collectors.toSet()).toArray(new Bauble[0]);
     }
-    
+
     public List<String> streamingRatherThanCC(Set<String> s) {
-    	return s.stream().collect(Collectors.toList());    
+        return s.stream().collect(Collectors.toList());
     }
-    
+
     public List<Integer> fpStreamCollect() {
-    	return IntStream.generate(() -> (int) (Math.random() * 10)).limit(5).boxed().collect(Collectors.toList());
+        return IntStream.generate(() -> (int) (Math.random() * 10)).limit(5).boxed().collect(Collectors.toList());
     }
-    
+
     public List<String> mapBeforeLimit(List<Bauble> baubles) {
-    	return baubles.stream().map(Bauble::getName).limit(2).collect(Collectors.toList());
+        return baubles.stream().map(Bauble::getName).limit(2).collect(Collectors.toList());
+    }
+
+    public boolean anyMatchVsCount(List<Bauble> baubles, boolean b) {
+        if (b) {
+            return baubles.stream().map(Bauble::getName).count() > 0;
+        } else {
+            return baubles.stream().map(Bauble::getName).count() >= 1;
+        }
+    }
+
+    public boolean matchLimit(List<Bauble> baubles, int matchCnt) {
+        return baubles.stream().map(Bauble::getName).count() == matchCnt;
     }
 
     public void fpUnrelatedLambdaValue282(Map<String, Bauble> map, BaubleFactory factory) {
@@ -92,8 +103,7 @@ public class FII_Sample {
     }
 
     public BigDecimal fpCastEliminatesMethodReference282(List<Bauble> baubles) {
-        return baubles.stream().filter(b -> b.getName().equals("special")).map(b -> (BigDecimal) b.getCost())
-                .findFirst().get();
+        return baubles.stream().filter(b -> b.getName().equals("special")).map(b -> (BigDecimal) b.getCost()).findFirst().get();
     }
 
     public static <T> Stream<T> fpIiteratorToFiniteStream283(Iterator<T> iterator, boolean parallel) {

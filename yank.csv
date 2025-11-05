@@ -53,7 +53,7 @@ commons-collections,commons-collections,3.2.2,8ad72fe39fa8c91eaaf12aadb21e0c3661
 ,,,,,,,
 org.slf4j,slf4j-api,2.0.16,0172931663a09a1fa515567af5fbef00897d3c04,,,,
 ,,,,,,,
-com.google.guava,guava,33.4.6-jre,4437fb72c3cc5d29554b588d9a97bea12d6a42e1,,,,
+com.google.guava,guava,33.5.0-jre,8699de25f2f979108d6c1b804a7ba38cda1116bc,,,,
 ,,,,,,,
 org.apache.httpcomponents,httpclient,4.5.14,1194890e6f56ec29177673f2f12d0b8e627dec98,,,,
 ,httpcore,4.4.16,51cf043c87253c9f58b539c9f7e44c8894223850,,,,

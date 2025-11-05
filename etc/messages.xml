@@ -1794,6 +1794,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
             ]]>
         </Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues">
+        <Details>
+            <![CDATA[
+            <p>Looks for various issues with uses of Mockito.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -6495,8 +6505,42 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <LongDescription>Method {1} suboptimally finds any match in a stream</LongDescription>
         <Details>
         <![CDATA[
-        <p>This method looks for one item in a stream using filter().findFirst.isPresent() when .anyMatch() will do the same thing more succintly</p>
-        ]]></Details>
+        <p>This method uses a suboptimal way of determinng whether there are any items in a stream that match some value.
+        Either it uses collect(), and checks the size, or uses the count() stream action. Either way, it is simpler and
+        economical to just use anyMatch, as as soon as an item is found, you can stop the stream.
+        </p>
+        <p>
+        Instead of
+        <code><pre>
+        baubles.stream().map(Bauble::getName).collect(Collectors.toSet()).contains(name)
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().anyMatch(b -> name.equals(b.getName()))
+        </pre></code>
+        </p>
+        <p>
+        and instead of
+        <code><pre>
+        baubles.stream().map(Bauble::getName).count() &lt; 1;
+        </pre></code>
+        do
+        <code></pre>
+        !baubles.stream().anyMatch(b -> name.equals(b.getName()))
+        </pre></code>
+        </p>
+        <p>
+        and instead of
+        <code><pre>
+        baubles.stream().map(Bauble::getName).count() > 0;
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().anyMatch(b -> name.equals(b.getName()))
+        </pre></code>
+        </p>
+        ]]>
+        </Details>
     </BugPattern>
     
     <BugPattern type="FII_USE_FIND_FIRST">
@@ -6568,7 +6612,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details>
     </BugPattern>
     
-        <BugPattern type="FII_AVOID_TOARRAY_ON_COLLECTED_STREAM">
+    <BugPattern type="FII_AVOID_TOARRAY_ON_COLLECTED_STREAM">
         <ShortDescription>Method calls toArray(new Proto[]) on a collected lambda expression</ShortDescription>
         <LongDescription>Method {1} calls toArray(new Proto[]) on a collected lambda expresssion</LongDescription>
         <Details>
@@ -6624,6 +6668,46 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="FII_USE_ARRAYS_STREAM">
+        <ShortDescription>Method converts an array to a Collection to build a stream</ShortDescription>
+        <LongDescription>Method {1} converts an array to a Collection to build a stream</LongDescription>
+        <Details>
+        <![CDATA[
+            Method converts an array to a collection, just to get a stream from it, like this
+            <code>
+            Arrays.asList(baubles).stream()....
+            </code>
+            It would be simple to use Arrays.stream, as
+            <code>
+            Arrays.stream(baubles)....
+            </code>
+        ]]>
+        </Details>
+    </BugPattern> 
+    
+    <BugPattern type="FII_USE_ANY_LIMIT_WITH_COUNT">
+        <ShortDescription>Method compares the count of a stream against a value without limiting the stream</ShortDescription>
+        <LongDescription>Method {1} compares the count of a stream against a value without limiting the stream</LongDescription>
+        <Details>
+        <![CDATA[
+            This method uses Stream.count() and compares the value against an integer. There is no need to do a complete count of the stream,
+            you just need to determine how the stream count compares to the provided value. So you can limit() the stream 1 more than the 
+            expected count.
+            
+            So instead of 
+            <code>
+            baubles.stream().count() > 5
+            </code>
+            use
+            <code>
+            baubles.stream().limit(6).count() > 5;
+            </code>
+        ]]>
+        </Details>
+    </BugPattern>     
+    
+    FII_USE_ANY_LIMIT_WITH_COUNT
     
     <BugPattern type="SUI_CONTAINS_BEFORE_ADD">
         <ShortDescription>Method checks for an item in a set with contains, before using add()</ShortDescription>
@@ -6753,6 +6837,58 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             <p>This method uses the route() or concat() method to build optional routes but only passes 1 route to the method. 
             This just causes an extra route specification to be created for no reason. Only use route() or concat() when you have more than
             one route to combine into one.
+            ]]>
+        </Details> 
+    </BugPattern>
+    
+    
+    <BugPattern type="MK_CAPTOR_IN_WHEN">
+        <ShortDescription>Mockito capture performed in a Mockito.when</ShortDescription>
+        <LongDescription>Mockito capture performed in a Mockito.when in {1}</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method captures values inside a Mockito.when. Capturing should only happen inside
+            Mockito.verify calls.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
+
+    <BugPattern type="MK_MOCKED_FIELD_REASSIGNED">
+        <ShortDescription>Mocked Field is reassigned</ShortDescription>
+        <LongDescription>Mocked Field {2} is reassigned</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class annotates a field with @Mock, but then in code reassigns the reference to something else
+            thereby rendering the @Mocking pointless.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
+
+    <BugPattern type="MK_SPIED_FIELD_REASSIGNED">
+        <ShortDescription>Spied Field is reassigned</ShortDescription>
+        <LongDescription>Spied Field {2} is reassigned</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class annotates a field with @Spy, but then in code reassigns the reference to something else
+            thereby rendering the @Mocking pointless.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
+
+    <BugPattern type="MK_UNNEEDED_OPENMOCKS">
+        <ShortDescription>Class uses MockitoExtension so doesn't need to openMocks</ShortDescription>
+        <LongDescription>Class {0} uses MockitoExtension so doesn't need to openMocks</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class defines that it uses 
+            <code>@ExtendWith(MockitoExtension.class)</code>
+            therefore there is no need to use
+            <code>MockitoAnnotations.openMocks(this)</code>
+            This also often means that the throws Exception clause on a method that is defined on a @BeforeEach is unneeded.
+            </p>
             ]]>
         </Details> 
     </BugPattern>
@@ -6909,4 +7045,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     <BugCode abbrev="ENMI">Enum Issues</BugCode>
     <BugCode abbrev="AKI">Akka Issues</BugCode>
     <BugCode abbrev="PKI">Pekko Issues</BugCode>
+    <BugCode abbrev="MK">Mockito Issues</BugCode>
 </MessageCollection>
