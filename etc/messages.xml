@@ -6612,7 +6612,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details>
     </BugPattern>
     
-        <BugPattern type="FII_AVOID_TOARRAY_ON_COLLECTED_STREAM">
+    <BugPattern type="FII_AVOID_TOARRAY_ON_COLLECTED_STREAM">
         <ShortDescription>Method calls toArray(new Proto[]) on a collected lambda expression</ShortDescription>
         <LongDescription>Method {1} calls toArray(new Proto[]) on a collected lambda expresssion</LongDescription>
         <Details>
@@ -6668,6 +6668,23 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         ]]>
         </Details>
     </BugPattern>
+    
+    <BugPattern type="FII_USE_ARRAYS_STREAM">
+        <ShortDescription>Method converts an array to a Collection to build a stream</ShortDescription>
+        <LongDescription>Method {1} converts an array to a Collection to build a stream</LongDescription>
+        <Details>
+        <![CDATA[
+            Method converts an array to a collection, just to get a stream from it, like this
+            <code>
+            Arrays.asList(baubles).stream()....
+            </code>
+            It would be simple to use Arrays.stream, as
+            <code>
+            Arrays.stream(baubles)....
+            </code>
+        ]]>
+        </Details>
+    </BugPattern>    
     
     <BugPattern type="SUI_CONTAINS_BEFORE_ADD">
         <ShortDescription>Method checks for an item in a set with contains, before using add()</ShortDescription>
