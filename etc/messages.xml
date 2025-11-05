@@ -6684,7 +6684,30 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             </code>
         ]]>
         </Details>
-    </BugPattern>    
+    </BugPattern> 
+    
+    <BugPattern type="FII_USE_ANY_LIMIT_WITH_COUNT">
+        <ShortDescription>Method compares the count of a stream against a value without limiting the stream</ShortDescription>
+        <LongDescription>Method {1} compares the count of a stream against a value without limiting the stream</LongDescription>
+        <Details>
+        <![CDATA[
+            This method uses Stream.count() and compares the value against an integer. There is no need to do a complete count of the stream,
+            you just need to determine how the stream count compares to the provided value. So you can limit() the stream 1 more than the 
+            expected count.
+            
+            So instead of 
+            <code>
+            baubles.stream().count() > 5
+            </code>
+            use
+            <code>
+            baubles.stream().limit(6).count() > 5;
+            </code>
+        ]]>
+        </Details>
+    </BugPattern>     
+    
+    FII_USE_ANY_LIMIT_WITH_COUNT
     
     <BugPattern type="SUI_CONTAINS_BEFORE_ADD">
         <ShortDescription>Method checks for an item in a set with contains, before using add()</ShortDescription>

@@ -70,12 +70,6 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
  * methods
  * 
  * Future Ids: - filter before map, where the filter does what the map does
- * 
- */
-
-/*
- * .count() > n use limit(n+1).count() > n Arrays.asList(myArray).stream, use
- * Arrays.stream(myArray)
  */
 @CustomUserValue
 public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
@@ -108,7 +102,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     }
 
     enum FIIUserValue {
-        COLLECTION_STREAM_ITEM, COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM, MAP_ITEM, COUNT_ITEM, COUNT_0_ITEM, COUNT_1_ITEM, ASLIST;
+        COLLECTION_STREAM_ITEM, COLLECT_ITEM, FILTER_ITEM, FINDFIRST_ITEM, MAP_ITEM, COUNT_ITEM, COUNT_0_ITEM, COUNT_1_ITEM, COUNT_N_ITEM, ASLIST;
     }
 
     private JavaClass collectionClass;
@@ -479,7 +473,11 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                                     userValue = FIIUserValue.COUNT_0_ITEM;
                                 } else if (v.longValue() == 1) {
                                     userValue = FIIUserValue.COUNT_1_ITEM;
+                                } else {
+                                    userValue = FIIUserValue.COUNT_N_ITEM;
                                 }
+                            } else {
+                                userValue = FIIUserValue.COUNT_N_ITEM;
                             }
                         }
                     }
@@ -491,6 +489,8 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         if (itm.getUserValue() == FIIUserValue.COUNT_0_ITEM) {
                             bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                     .addSourceLine(this));
+                        } else {
+                            checkLimit();
                         }
                     }
                     break;
@@ -501,7 +501,19 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         if (itm.getUserValue() == FIIUserValue.COUNT_1_ITEM) {
                             bugReporter.reportBug(new BugInstance(this, BugType.FII_USE_ANY_MATCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                     .addSourceLine(this));
+                        } else {
+                            checkLimit();
                         }
+                    }
+                    break;
+                }
+
+                case Const.IFGT:
+                case Const.IFGE:
+                case Const.IFEQ:
+                case Const.IFNE: {
+                    if (stack.getStackDepth() >= 1) {
+                        checkLimit();
                     }
                     break;
                 }
@@ -515,6 +527,14 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                 OpcodeStack.Item itm = stack.getStackItem(0);
                 itm.setUserValue(userValue);
             }
+        }
+    }
+
+    public void checkLimit() {
+        OpcodeStack.Item itm = stack.getStackItem(0);
+        if (itm.getUserValue() == FIIUserValue.COUNT_N_ITEM) {
+            bugReporter.reportBug(
+                    new BugInstance(this, BugType.FII_USE_ANY_LIMIT_WITH_COUNT.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 
