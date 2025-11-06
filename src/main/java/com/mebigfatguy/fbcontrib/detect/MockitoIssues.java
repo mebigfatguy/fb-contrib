@@ -11,6 +11,7 @@ import org.apache.bcel.classfile.ElementValue;
 import org.apache.bcel.classfile.ElementValuePair;
 import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
+import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
@@ -26,7 +27,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class MockitoIssues extends BytecodeScanningDetector {
 
     enum MKUserValue {
-        CAPTOR
+        CAPTOR, MOCK, SPY
     };
 
     private BugReporter bugReporter;
@@ -34,6 +35,7 @@ public class MockitoIssues extends BytecodeScanningDetector {
     private OpcodeStack stack;
     private boolean sawMockitoExtension;
     private boolean sawAnnotatedField;
+    private boolean inBeforeEach;
     private Set<String> mockedFields;
     private Set<String> spiedFields;
 
@@ -121,6 +123,20 @@ public class MockitoIssues extends BytecodeScanningDetector {
     }
 
     @Override
+    public void visitMethod(Method obj) {
+        inBeforeEach = false;
+        if (sawMockitoExtension) {
+            for (AnnotationEntry ae : obj.getAnnotationEntries()) {
+                if ("Lorg/junit/jupiter/api/BeforeEach;".equals(ae.getAnnotationType())) {
+                    inBeforeEach = true;
+                    break;
+                }
+            }
+        }
+        super.visitMethod(obj);
+    }
+
+    @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
         super.visitCode(obj);
@@ -139,6 +155,16 @@ public class MockitoIssues extends BytecodeScanningDetector {
                         if ("openMocks".equals(methodName)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.MK_UNNEEDED_OPENMOCKS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                     .addSourceLine(this));
+                        }
+                    }
+                }
+                if (inBeforeEach) {
+                    String methodName = getNameConstantOperand();
+                    if ("org/mockito/Mockito".equals(clsName)) {
+                        if ("mock".equals(methodName)) {
+                            userValue = MKUserValue.MOCK;
+                        } else if ("spy".equals(methodName)) {
+                            userValue = MKUserValue.SPY;
                         }
                     }
                 }
@@ -183,10 +209,22 @@ public class MockitoIssues extends BytecodeScanningDetector {
                         if (mockedFields.contains(fieldName)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.MK_MOCKED_FIELD_REASSIGNED.name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(this).addSourceLine(this));
+                            return;
                         } else if (spiedFields.contains(fieldName)) {
                             bugReporter.reportBug(new BugInstance(this, BugType.MK_SPIED_FIELD_REASSIGNED.name(), NORMAL_PRIORITY).addClass(this)
                                     .addMethod(this).addSourceLine(this));
+                            return;
+                        }
 
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (itm.getUserValue() == MKUserValue.MOCK) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.MK_MOCKED_FIELD_IN_CODE.name(), LOW_PRIORITY).addClass(this).addMethod(this)
+                                        .addSourceLine(this));
+                            } else if (itm.getUserValue() == MKUserValue.SPY) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.MK_SPIED_FIELD_IN_CODE.name(), LOW_PRIORITY).addClass(this).addMethod(this)
+                                        .addSourceLine(this));
+                            }
                         }
                     }
                 }
