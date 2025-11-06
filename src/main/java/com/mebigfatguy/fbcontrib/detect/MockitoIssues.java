@@ -62,16 +62,31 @@ public class MockitoIssues extends BytecodeScanningDetector {
             sawMockitoExtension = false;
             sawAnnotatedField = false;
             outer: for (AnnotationEntry ann : cls.getAnnotationEntries()) {
-                if (ann.isRuntimeVisible() && "org.junit.jupiter.api.extension.ExtendWith".equals(SignatureUtils.stripSignature(ann.getAnnotationType()))) {
-                    for (ElementValuePair evp : ann.getElementValuePairs()) {
-                        if ("value".equals(evp.getNameString()) && evp.getValue() instanceof ArrayElementValue) {
-                            ArrayElementValue aev = (ArrayElementValue) evp.getValue();
-                            for (ElementValue sev : aev.getElementValuesArray()) {
-                                String annotationClsAttr = SignatureUtils.stripSignature(sev.stringifyValue());
+                if (ann.isRuntimeVisible()) {
+                    if ("org.junit.jupiter.api.extension.ExtendWith".equals(SignatureUtils.stripSignature(ann.getAnnotationType()))) {
+                        for (ElementValuePair evp : ann.getElementValuePairs()) {
+                            if ("value".equals(evp.getNameString()) && evp.getValue() instanceof ArrayElementValue) {
+                                ArrayElementValue aev = (ArrayElementValue) evp.getValue();
+                                for (ElementValue sev : aev.getElementValuesArray()) {
+                                    String annotationClsAttr = SignatureUtils.stripSignature(sev.stringifyValue());
 
-                                if ("org.mockito.junit.jupiter.MockitoExtension".equals(annotationClsAttr)) {
-                                    sawMockitoExtension = true;
-                                    break outer;
+                                    if ("org.mockito.junit.jupiter.MockitoExtension".equals(annotationClsAttr)) {
+                                        sawMockitoExtension = true;
+                                        break outer;
+                                    }
+                                }
+                            }
+                        }
+                    } else if ("org.testng.annotations.Listeners".equals(SignatureUtils.stripSignature(ann.getAnnotationType()))) {
+                        for (ElementValuePair evp : ann.getElementValuePairs()) {
+                            if ("value".equals(evp.getNameString()) && evp.getValue() instanceof ArrayElementValue) {
+                                ArrayElementValue aev = (ArrayElementValue) evp.getValue();
+                                for (ElementValue sev : aev.getElementValuesArray()) {
+                                    String annotationClsAttr = SignatureUtils.stripSignature(sev.stringifyValue());
+                                    if ("org.mockito.testng.MockitoTestNGListener".equals(annotationClsAttr)) {
+                                        sawMockitoExtension = true;
+                                        break outer;
+                                    }
                                 }
                             }
                         }
