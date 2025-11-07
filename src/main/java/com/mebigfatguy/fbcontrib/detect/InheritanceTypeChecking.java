@@ -161,13 +161,12 @@ public class InheritanceTypeChecking extends BytecodeScanningDetector {
                         int priority = NORMAL_PRIORITY;
                         for (String type : instanceOfTypes) {
                             if (!SignatureUtils.similarPackages(clsName, type, 2)) {
-                                priority = LOW_PRIORITY;
+                                bugReporter.reportBug(new BugInstance(bsd, "ITC_INHERITANCE_TYPE_CHECKING", NORMAL_PRIORITY).addClass(bsd).addMethod(bsd)
+                                        .addSourceLine(bsd, firstPC));
                                 break;
                             }
                         }
 
-                        bugReporter.reportBug(new BugInstance(bsd, "ITC_INHERITANCE_TYPE_CHECKING", priority)
-                                .addClass(bsd).addMethod(bsd).addSourceLine(bsd, firstPC));
                         return IfStatement.Action.REMOVE_ACTION;
                     }
                 }
