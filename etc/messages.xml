@@ -6854,6 +6854,20 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details> 
     </BugPattern>
 
+
+
+    <BugPattern type="MK_MOCKED_FIELD_IN_CODE">
+        <ShortDescription>Mocked Field is set in code rather than thru annotations</ShortDescription>
+        <LongDescription>Mocked Field {2} is set in code rather than thru annotations</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class defines a field that will be mocked in a method. It is more readable to
+            just add a @Mock annotation to it.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
+
     <BugPattern type="MK_MOCKED_FIELD_REASSIGNED">
         <ShortDescription>Mocked Field is reassigned</ShortDescription>
         <LongDescription>Mocked Field {2} is reassigned</LongDescription>
@@ -6861,6 +6875,18 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             <![CDATA[
             <p>This class annotates a field with @Mock, but then in code reassigns the reference to something else
             thereby rendering the @Mocking pointless.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
+    
+    <BugPattern type="MK_SPIED_FIELD_IN_CODE">
+        <ShortDescription>Spied Field is set in code rather than thru annotations</ShortDescription>
+        <LongDescription>Spied Field {2} is set in code rather than thru annotations</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class defines a field that will be spied in a method. It is more readable to
+            just add a @Spy annotation to it.
             </p>
             ]]>
         </Details> 

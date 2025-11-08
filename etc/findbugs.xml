@@ -23,7 +23,7 @@
 
 	<!-- Detectors -->
 
-    <!-- COMMENT OUT FOR RELEASE -->
+    <!-- COMMENT OUT FOR RELEASE
 
     <Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger" speed="fast"/>
 
@@ -31,7 +31,7 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.BloatedAssignmentScope" speed="fast" reports="BAS_BLOATED_ASSIGNMENT_SCOPE" hidden="true" />
 
-    <!-- COMMENT OUT FOR RELEASE -->
+    <COMMENT OUT FOR RELEASE -->
 
 	<Detector class="com.mebigfatguy.fbcontrib.collect.CollectStatistics" speed="fast" reports="" hidden="true" />
 
@@ -338,9 +338,11 @@
 
     <Detector class="com.mebigfatguy.fbcontrib.detect.AkkaIssues" speed="fast" reports="AKI_SUPERFLUOUS_ROUTE_SPECIFICATION,PKI_SUPERFLUOUS_ROUTE_SPECIFICATION" />
     
-    <!-- COMMENT OUT FOR POINT RELEASE -->
+
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues" speed="fast" reports="MK_CAPTOR_IN_WHEN,MK_MOCKED_FIELD_REASSIGNED,MK_SPIED_FIELD_REASSIGNED,MK_UNNEEDED_OPENMOCKS" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues" speed="fast" reports="MK_CAPTOR_IN_WHEN,MK_MOCKED_FIELD_REASSIGNED,MK_SPIED_FIELD_REASSIGNED,MK_UNNEEDED_OPENMOCKS,MK_MOCKED_FIELD_IN_CODE,MK_SPIED_FIELD_IN_CODE" />
+
+    <!-- COMMENT OUT FOR POINT RELEASE -->
 
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
@@ -671,7 +673,9 @@
     <BugPattern abbrev="AKI" type="AKI_SUPERFLUOUS_ROUTE_SPECIFICATION" category="CORRECTNESS" />
     <BugPattern abbrev="PKI" type="PKI_SUPERFLUOUS_ROUTE_SPECIFICATION" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_CAPTOR_IN_WHEN" category="CORRECTNESS" />
+    <BugPattern abbrev="MK" type="MK_MOCKED_FIELD_IN_CODE" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_MOCKED_FIELD_REASSIGNED" category="CORRECTNESS" />
+    <BugPattern abbrev="MK" type="MK_SPIED_FIELD_IN_CODE" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_SPIED_FIELD_REASSIGNED" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_UNNEEDED_OPENMOCKS" category="CORRECTNESS" />
 </FindbugsPlugin>
