@@ -122,6 +122,15 @@ public class FII_Sample {
         return Arrays.stream(updateCount).mapToObj(i -> i == 1 ? Boolean.TRUE : Boolean.FALSE).allMatch(b -> b);
     }
 
+    public Stream<String> asList(String allLines) {
+        return Arrays.asList(allLines.split("\n")).stream();
+    }
+
+    public Stream<String> fpAsListStored502(String allLines) {
+        List<String> lines = Arrays.asList(allLines.split("\n"));
+        return lines.stream();
+    }
+
     public static void foo(Consumer<Void> consumer) {
     }
 

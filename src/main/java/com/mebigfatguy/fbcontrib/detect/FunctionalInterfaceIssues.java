@@ -517,6 +517,21 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     }
                     break;
                 }
+
+                case Const.ASTORE_0:
+                case Const.ASTORE_1:
+                case Const.ASTORE_2:
+                case Const.ASTORE_3:
+                case Const.ASTORE:
+                case Const.PUTFIELD: {
+                    if (stack.getStackDepth() >= 1) {
+                        OpcodeStack.Item itm = stack.getStackItem(0);
+                        if (itm.getUserValue() == FIIUserValue.ASLIST || itm.getUserValue() == FIIUserValue.COUNT_ITEM) {
+                            itm.setUserValue(null);
+                        }
+                    }
+                    break;
+                }
                 }
             }
         } catch (ClassNotFoundException e) {
