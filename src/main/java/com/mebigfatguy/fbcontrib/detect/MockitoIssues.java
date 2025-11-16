@@ -158,18 +158,13 @@ public class MockitoIssues extends BytecodeScanningDetector {
                         }
                     }
                 }
-                if (inBeforeEach) {
-                    String methodName = getNameConstantOperand();
-                    if ("org/mockito/Mockito".equals(clsName)) {
-                        if ("mock".equals(methodName)) {
-                            userValue = MKUserValue.MOCK;
-                        } else if ("spy".equals(methodName)) {
-                            userValue = MKUserValue.SPY;
-                        }
-                    }
-                }
+                String methodName = getNameConstantOperand();
                 if ("org/mockito/Mockito".equals(clsName)) {
-                    if ("when".equals(getNameConstantOperand())) {
+                    if ("mock".equals(methodName)) {
+                        userValue = MKUserValue.MOCK;
+                    } else if ("spy".equals(methodName)) {
+                        userValue = MKUserValue.SPY;
+                    } else if ("when".equals(getNameConstantOperand())) {
                         userValue = processCaptor();
                         if (userValue == MKUserValue.CAPTOR) {
                             bugReporter.reportBug(new BugInstance(this, BugType.MK_CAPTOR_IN_WHEN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
@@ -216,14 +211,16 @@ public class MockitoIssues extends BytecodeScanningDetector {
                             return;
                         }
 
-                        if (stack.getStackDepth() > 0) {
-                            OpcodeStack.Item itm = stack.getStackItem(0);
-                            if (itm.getUserValue() == MKUserValue.MOCK) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.MK_MOCKED_FIELD_IN_CODE.name(), LOW_PRIORITY).addClass(this).addMethod(this)
-                                        .addSourceLine(this));
-                            } else if (itm.getUserValue() == MKUserValue.SPY) {
-                                bugReporter.reportBug(new BugInstance(this, BugType.MK_SPIED_FIELD_IN_CODE.name(), LOW_PRIORITY).addClass(this).addMethod(this)
-                                        .addSourceLine(this));
+                        if (inBeforeEach) {
+                            if (stack.getStackDepth() > 0) {
+                                OpcodeStack.Item itm = stack.getStackItem(0);
+                                if (itm.getUserValue() == MKUserValue.MOCK) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.MK_MOCKED_FIELD_IN_CODE.name(), LOW_PRIORITY).addClass(this)
+                                            .addMethod(this).addSourceLine(this));
+                                } else if (itm.getUserValue() == MKUserValue.SPY) {
+                                    bugReporter.reportBug(new BugInstance(this, BugType.MK_SPIED_FIELD_IN_CODE.name(), LOW_PRIORITY).addClass(this)
+                                            .addMethod(this).addSourceLine(this));
+                                }
                             }
                         }
                     }
