@@ -27,7 +27,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class MockitoIssues extends BytecodeScanningDetector {
 
     enum MKUserValue {
-        CAPTOR, MOCK, SPY
+        CAPTOR, MOCK, SPY, SPIED_OBJ
     };
 
     private BugReporter bugReporter;
@@ -165,6 +165,14 @@ public class MockitoIssues extends BytecodeScanningDetector {
                     } else if ("spy".equals(methodName)) {
                         userValue = MKUserValue.SPY;
                     } else if ("when".equals(getNameConstantOperand())) {
+                        if (stack.getStackDepth() > 0) {
+                            OpcodeStack.Item itm = stack.getStackItem(0);
+                            if (itm.getUserValue() == MKUserValue.SPIED_OBJ) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.MK_USE_DORETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                        .addSourceLine(this));
+                            }
+                        }
+
                         userValue = processCaptor();
                         if (userValue == MKUserValue.CAPTOR) {
                             bugReporter.reportBug(new BugInstance(this, BugType.MK_CAPTOR_IN_WHEN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
@@ -187,12 +195,18 @@ public class MockitoIssues extends BytecodeScanningDetector {
                 } else {
                     userValue = processCaptor();
                 }
+                if (userValue == null) {
+                    userValue = checkForSpiedObjectCall();
+                }
                 break;
             }
 
             case Const.INVOKEINTERFACE:
             case Const.INVOKESPECIAL: {
                 userValue = processCaptor();
+                if (userValue == null) {
+                    userValue = checkForSpiedObjectCall();
+                }
                 break;
             }
 
@@ -227,6 +241,18 @@ public class MockitoIssues extends BytecodeScanningDetector {
                 }
                 break;
             }
+
+            case Const.GETFIELD: {
+                if (!spiedFields.isEmpty()) {
+                    String clsName = getClassConstantOperand().replace('/', '.');
+                    if (clsName.equals(cls.getClassName())) {
+                        String fieldName = getNameConstantOperand();
+                        if (spiedFields.contains(fieldName)) {
+                            userValue = MKUserValue.SPIED_OBJ;
+                        }
+                    }
+                }
+            }
             }
         } finally {
             stack.sawOpcode(this, seen);
@@ -235,6 +261,20 @@ public class MockitoIssues extends BytecodeScanningDetector {
                 item.setUserValue(userValue);
             }
         }
+    }
+
+    private MKUserValue checkForSpiedObjectCall() {
+        String sig = getSigConstantOperand();
+        if (!SignatureUtils.getReturnSignature(sig).startsWith("L")) {
+            return null;
+        }
+
+        int numParams = SignatureUtils.getNumParameters(sig);
+        if (stack.getStackDepth() > numParams) {
+            OpcodeStack.Item itm = stack.getStackItem(numParams);
+            return (MKUserValue) itm.getUserValue();
+        }
+        return null;
     }
 
     private MKUserValue processCaptor() {
