@@ -6495,6 +6495,14 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <code></pre>
         baubles.stream().map(Bauble::getName).collect(Collectors.toSet())
         </pre></code>
+        or if the lambda expression is a where the parameter is passed a method reference like
+        <code><pre>
+        baubles.stream().map(b -> magic.getSpell(bauble)).collect(Collectors.toSet())
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().map(magic::getSpell).collect(Collectors.toSet())
+        </pre></code>
         </p>
     	]]>
     	</Details>

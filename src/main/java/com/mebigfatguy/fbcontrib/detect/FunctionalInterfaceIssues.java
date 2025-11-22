@@ -98,7 +98,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
     }
 
     enum AnonState {
-        SEEN_NOTHING, SEEN_ALOAD_0, SEEN_ALOAD_1, SEEN_INVOKE
+        SEEN_NOTHING, SEEN_ALOAD_0, SEEN_ALOAD_1, SEEN_GETFIELD, SEEN_INVOKE
     }
 
     enum FIIUserValue {
@@ -232,6 +232,15 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                     }
                     break;
 
+                case SEEN_GETFIELD:
+                    if (seen == Const.ALOAD_1) {
+                        anonState = AnonState.SEEN_ALOAD_1;
+                    } else {
+                        functionalInterfaceInfo.remove(getMethod().getName());
+                        throw new StopOpcodeParsingException();
+                    }
+                    break;
+
                 case SEEN_ALOAD_0:
                     if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)) {
                         String signature = getSigConstantOperand();
@@ -268,6 +277,13 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                         }
 
                         anonState = AnonState.SEEN_ALOAD_1;
+                    } else if (seen == Const.GETFIELD) {
+                        if (isParmLambda) {
+                            functionalInterfaceInfo.remove(getMethod().getName());
+                            throw new StopOpcodeParsingException();
+                        }
+
+                        anonState = AnonState.SEEN_GETFIELD;
                     } else {
                         functionalInterfaceInfo.remove(getMethod().getName());
                         throw new StopOpcodeParsingException();
@@ -329,7 +345,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
                         int lastOp = getPrevOpcode(1);
                         FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this),
-                                (lastOp == Const.GETFIELD) || (lastOp == Const.GETSTATIC) || OpcodeUtils.isALoad(lastOp));
+                                (lastOp == Const.GETFIELD) || (lastOp == Const.GETSTATIC) || OpcodeUtils.isALoad(lastOp), cmh.getReferenceKind());
                         fiis.add(fii);
                     }
                     break;
@@ -580,7 +596,7 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
     @Nullable
     private String getAnonymousName(ConstantMethodHandle cmh) {
-        if (cmh == null || cmh.getReferenceKind() != Const.REF_invokeStatic) {
+        if (cmh == null || (cmh.getReferenceKind() != Const.REF_invokeStatic && cmh.getReferenceKind() != Const.REF_invokeSpecial)) {
             return null;
         }
 
@@ -622,11 +638,13 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
         private Method method;
         private SourceLineAnnotation srcLine;
         private boolean precededByExplicitStackOp;
+        private int refKind;
 
-        public FIInfo(Method method, SourceLineAnnotation srcLine, boolean precededByExplicitStackOp) {
+        public FIInfo(Method method, SourceLineAnnotation srcLine, boolean precededByExplicitStackOp, int referenceKind) {
             this.method = method;
             this.srcLine = srcLine;
             this.precededByExplicitStackOp = precededByExplicitStackOp;
+            this.refKind = referenceKind;
         }
 
         public Method getMethod() {
@@ -639,6 +657,10 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
 
         public boolean wasPrecededByExplicitStackOp() {
             return precededByExplicitStackOp;
+        }
+
+        public int getReferenceKind() {
+            return refKind;
         }
 
         @Override
