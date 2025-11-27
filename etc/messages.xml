@@ -6495,6 +6495,14 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <code></pre>
         baubles.stream().map(Bauble::getName).collect(Collectors.toSet())
         </pre></code>
+        or if the lambda expression is a where the parameter is passed a method reference like
+        <code><pre>
+        baubles.stream().map(b -> magic.getSpell(bauble)).collect(Collectors.toSet())
+        </pre></code>
+        do
+        <code></pre>
+        baubles.stream().map(magic::getSpell).collect(Collectors.toSet())
+        </pre></code>
         </p>
     	]]>
     	</Details>
@@ -6918,6 +6926,20 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             ]]>
         </Details> 
     </BugPattern>
+    
+        <BugPattern type="MK_USE_DORETURN">
+        <ShortDescription>Method calls Mockito.when on a spied object</ShortDescription>
+        <LongDescription>Method {1} calls Mockito.when on a spied object</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>Since the object is spied, calling Mockito.when(..) will execute the actual method which could cause unwanted side effects. Instead, when using
+            spied objects, use doReturn().when(...), which will not execute the original code.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
+    
+    
 
 	<!-- BugCode -->
 

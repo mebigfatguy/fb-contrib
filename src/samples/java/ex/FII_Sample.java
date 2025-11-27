@@ -17,6 +17,8 @@ import java.util.stream.StreamSupport;
 
 public class FII_Sample {
 
+    BaubleCauldron cauldron = new BaubleCauldron();
+
     public List<Bauble> getFreeBees(List<Bauble> baubles) {
 
         return baubles.stream().filter(b -> b.isFree()).collect(Collectors.toList());
@@ -25,6 +27,16 @@ public class FII_Sample {
     public List<String> getNames(List<Bauble> baubles) {
 
         return baubles.stream().map(b -> b.getName()).collect(Collectors.toList());
+    }
+
+    public List<String> getMagic(List<Bauble> baubles) {
+        return baubles.stream().map(b -> cauldron.getCaudronSpecial(b)).collect(Collectors.toList());
+    }
+
+    private class BaubleCauldron {
+        public String getCaudronSpecial(Bauble b) {
+            return b.getName() + "Special";
+        }
     }
 
     public void addBitSet(BitSet bs, List<Integer> ints) {
@@ -120,6 +132,15 @@ public class FII_Sample {
 
     public boolean fpGeneratedDoubleLambdas(int[] updateCount) {
         return Arrays.stream(updateCount).mapToObj(i -> i == 1 ? Boolean.TRUE : Boolean.FALSE).allMatch(b -> b);
+    }
+
+    public Stream<String> asList(String allLines) {
+        return Arrays.asList(allLines.split("\n")).stream();
+    }
+
+    public Stream<String> fpAsListStored502(String allLines) {
+        List<String> lines = Arrays.asList(allLines.split("\n"));
+        return lines.stream();
     }
 
     public static void foo(Consumer<Void> consumer) {
