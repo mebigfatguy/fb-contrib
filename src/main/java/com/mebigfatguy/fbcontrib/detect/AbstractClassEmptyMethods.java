@@ -97,13 +97,9 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
     public void visitMethod(Method obj) {
         methodName = obj.getName();
         state = State.SAW_NOTHING;
+
     }
 
-    /**
-     * overrides the visitor to filter out constructors.
-     *
-     * @param obj the code to parse
-     */
     @Override
     public void visitCode(Code obj) {
         if (Values.CONSTRUCTOR.equals(methodName) || Values.STATIC_INITIALIZER.equals(methodName)) {
@@ -111,7 +107,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
         }
 
         Method m = getMethod();
-        if (m.isSynthetic()) {
+        if (m.isSynthetic() || m.isFinal()) {
             return;
         }
 
@@ -131,9 +127,8 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
             switch (state) {
             case SAW_NOTHING:
                 if (seen == Const.RETURN) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
                     state = State.SAW_DONE;
                 } else if (seen == Const.NEW) {
                     String newClass = getClassConstantOperand();
@@ -157,8 +152,7 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
                 break;
 
             case SAW_DUP:
-                if (((seen == Const.LDC) || (seen == Const.LDC_W))
-                        && (getConstantRefOperand() instanceof ConstantString)) {
+                if (((seen == Const.LDC) || (seen == Const.LDC_W)) && (getConstantRefOperand() instanceof ConstantString)) {
                     state = State.SAW_LDC;
                 } else {
                     state = State.SAW_DONE;
@@ -175,9 +169,8 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
 
             case SAW_INVOKESPECIAL:
                 if (seen == Const.ATHROW) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.ACEM_ABSTRACT_CLASS_EMPTY_METHODS.name(), NORMAL_PRIORITY).addClass(this)
+                            .addMethod(this).addSourceLine(this));
                 }
                 state = State.SAW_DONE;
                 break;

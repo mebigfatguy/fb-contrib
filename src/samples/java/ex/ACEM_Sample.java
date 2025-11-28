@@ -16,6 +16,8 @@ public abstract class ACEM_Sample implements Foo {
     public void doFPFoo() {
     }
 
+    public final void finalIssue504() {
+    }
 }
 
 interface Foo {
