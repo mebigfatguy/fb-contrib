@@ -121,7 +121,7 @@
 			<pathelement location="${lib.dir}/dom4j-${dom4j.version}.jar" />
 			<pathelement location="${lib.dir}/jaxen-${jaxen.version}.jar" />
 			<pathelement location="${lib.dir}/slf4j-api-${slf4j-api.version}.jar" />
-			<pathelement location="${lib.dir}/slf4j-simple-${slf4j-api.version}.jar" />
+			<pathelement location="${lib.dir}/slf4j-simple-${slf4j-simple.version}.jar" />
 		</path>
 		<path id="sb-contrib.samples.classpath">
             <pathelement location="${lib.dir}/akka-actor_2.12-${akka-actor_2.12.version}.jar" />
@@ -211,7 +211,7 @@
 	
 	<target name="test" depends="compile_test" unless="no.test" description="runs unit tests">
 		<mkdir dir="${test_reports.dir}" />
-		<taskdef resource="testngtasks" classpath="${lib.dir}/testng-${testng.version}.jar:${lib.dir}/testng-ant-${testng-ant.version}.jar:${lib.dir}/slf4j-api-${slf4j-api.version}.jar"/>
+		<taskdef resource="testngtasks" classpath="${lib.dir}/testng-${testng.version}.jar:${lib.dir}/testng-ant-${testng-ant.version}.jar:${lib.dir}/slf4j-api-${slf4j-api.version}.jar:${lib.dir}/slf4j-simple-${slf4j-simple.version}.jar"/>
 
 		<testng outputDir="${test_reports.dir}">
 			<classfileset dir="${test.classes.dir}" includes="**/*.class"/>
