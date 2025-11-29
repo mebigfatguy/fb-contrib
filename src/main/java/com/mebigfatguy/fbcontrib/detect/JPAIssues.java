@@ -127,14 +127,10 @@ public class JPAIssues extends BytecodeScanningDetector {
 
             if (isEntity) {
                 if (hasHCEquals && hasId && hasGeneratedValue) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.JPAI_HC_EQUALS_ON_MANAGED_ENTITY.name(), LOW_PRIORITY)
-                                    .addClass(cls));
+                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_HC_EQUALS_ON_MANAGED_ENTITY.name(), LOW_PRIORITY).addClass(cls));
                 }
                 if (hasEagerOneToMany && !hasFetch) {
-                    bugReporter
-                            .reportBug(new BugInstance(this, BugType.JPAI_INEFFICIENT_EAGER_FETCH.name(), LOW_PRIORITY)
-                                    .addClass(cls));
+                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_INEFFICIENT_EAGER_FETCH.name(), LOW_PRIORITY).addClass(cls));
                 }
             }
 
@@ -165,19 +161,16 @@ public class JPAIssues extends BytecodeScanningDetector {
         }
         methodTransType = getTransactionalType(obj);
         if ((methodTransType != TransactionalType.NONE) && !obj.isPublic()) {
-            bugReporter.reportBug(
-                    new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY)
-                            .addClass(this).addMethod(cls, obj));
+            bugReporter
+                    .reportBug(new BugInstance(this, BugType.JPAI_TRANSACTION_ON_NON_PUBLIC_METHOD.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, obj));
         }
 
         if ((methodTransType == TransactionalType.WRITE) && (runtimeExceptionClass != null)) {
             try {
                 Set<JavaClass> annotatedRollBackExceptions = getAnnotatedRollbackExceptions(obj);
                 Set<JavaClass> declaredExceptions = getDeclaredExceptions(obj);
-                reportExceptionMismatch(obj, annotatedRollBackExceptions, declaredExceptions, false,
-                        BugType.JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING);
-                reportExceptionMismatch(obj, declaredExceptions, annotatedRollBackExceptions, true,
-                        BugType.JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING);
+                reportExceptionMismatch(obj, annotatedRollBackExceptions, declaredExceptions, false, BugType.JPAI_NON_SPECIFIED_TRANSACTION_EXCEPTION_HANDLING);
+                reportExceptionMismatch(obj, declaredExceptions, annotatedRollBackExceptions, true, BugType.JPAI_UNNECESSARY_TRANSACTION_EXCEPTION_HANDLING);
             } catch (ClassNotFoundException cnfe) {
                 bugReporter.reportMissingClass(cnfe);
             }
@@ -233,9 +226,8 @@ public class JPAIssues extends BytecodeScanningDetector {
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     if (itm.getUserValue() == JPAUserValue.MERGE) {
-                        bugReporter
-                                .reportBug(new BugInstance(this, BugType.JPAI_IGNORED_MERGE_RESULT.name(), LOW_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.JPAI_IGNORED_MERGE_RESULT.name(), LOW_PRIORITY).addClass(this).addMethod(this)
+                                .addSourceLine(this));
                     }
                 }
                 break;
@@ -258,7 +250,7 @@ public class JPAIssues extends BytecodeScanningDetector {
         String dottedCls = getDottedClassConstantOperand();
         String methodName = getNameConstantOperand();
         String signature = getSigConstantOperand();
-        
+
         TransactionalType calledMethodTransType = getTransactionalType(new FQMethod(dottedCls, methodName, signature));
         if ((calledMethodTransType != TransactionalType.NONE)
                 && !TransactionalType.isContainedBy(calledMethodTransType, clsTransactionalType, methodTransType)) {
@@ -266,9 +258,8 @@ public class JPAIssues extends BytecodeScanningDetector {
             if (stack.getStackDepth() > numParameters) {
                 OpcodeStack.Item itm = stack.getStackItem(numParameters);
                 if (itm.getRegisterNumber() == 0) {
-                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(),
-                            isPublic ? NORMAL_PRIORITY : LOW_PRIORITY).addClass(this).addMethod(this)
-                                    .addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.JPAI_NON_PROXIED_TRANSACTION_CALL.name(), isPublic ? NORMAL_PRIORITY : LOW_PRIORITY)
+                            .addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
         }
@@ -295,8 +286,7 @@ public class JPAIssues extends BytecodeScanningDetector {
         hasHCEquals = false;
 
         for (AnnotationEntry entry : clz.getAnnotationEntries()) {
-            if ("Ljavax/persistence/Entity;".equals(entry.getAnnotationType())
-            ||  "Ljakarta/persistence/Entity;".equals(entry.getAnnotationType())) {
+            if ("Ljavax/persistence/Entity;".equals(entry.getAnnotationType()) || "Ljakarta/persistence/Entity;".equals(entry.getAnnotationType())) {
                 isEntity = true;
             } else if ("Lorg/springframework/transaction/annotation/Transactional;".equals(entry.getAnnotationType())) {
                 boolean isWrite = true;
@@ -313,9 +303,8 @@ public class JPAIssues extends BytecodeScanningDetector {
         for (Method m : clz.getMethods()) {
             catalogFieldOrMethod(m);
 
-            if (("equals".equals(m.getName()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(m.getSignature()))
-                    || (Values.HASHCODE.equals(m.getName())
-                            && SignatureBuilder.SIG_VOID_TO_INT.equals(m.getSignature()))) {
+            if ((Values.EQUALS.equals(m.getName()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(m.getSignature()))
+                    || (Values.HASHCODE.equals(m.getName()) && SignatureBuilder.SIG_VOID_TO_INT.equals(m.getSignature()))) {
                 hasHCEquals = true;
             }
         }
@@ -394,8 +383,8 @@ public class JPAIssues extends BytecodeScanningDetector {
      * @param checkByDirectionally whether to check both ways
      * @param bugType              what type of bug to report if found
      */
-    private void reportExceptionMismatch(Method method, Set<JavaClass> expectedExceptions,
-            Set<JavaClass> actualExceptions, boolean checkByDirectionally, BugType bugType) {
+    private void reportExceptionMismatch(Method method, Set<JavaClass> expectedExceptions, Set<JavaClass> actualExceptions, boolean checkByDirectionally,
+            BugType bugType) {
         try {
             for (JavaClass declEx : actualExceptions) {
                 boolean handled = false;
@@ -407,8 +396,8 @@ public class JPAIssues extends BytecodeScanningDetector {
                 }
 
                 if (!handled && !expectedExceptions.contains(declEx)) {
-                    bugReporter.reportBug(new BugInstance(this, bugType.name(), NORMAL_PRIORITY).addClass(this)
-                            .addMethod(cls, method).addString("Exception: " + declEx.getClassName()));
+                    bugReporter.reportBug(new BugInstance(this, bugType.name(), NORMAL_PRIORITY).addClass(this).addMethod(cls, method)
+                            .addString("Exception: " + declEx.getClassName()));
                 }
             }
         } catch (ClassNotFoundException cnfe) {

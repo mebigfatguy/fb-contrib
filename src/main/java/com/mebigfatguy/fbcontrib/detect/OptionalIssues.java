@@ -44,6 +44,7 @@ import com.mebigfatguy.fbcontrib.utils.FQMethod;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.UnmodifiableSet;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -61,21 +62,17 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class OptionalIssues extends BytecodeScanningDetector {
 
-	private enum OptionalType {
-		PLAIN,
-		BOXED
-	}
-	
-	private static final String OPTIONAL_SIGNATURE = "Ljava/util/Optional;";
-    private static Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("Ljava/lang/Integer;", "Ljava/lang/Long;",
-            "Ljava/lang/Double;");
+    private enum OptionalType {
+        PLAIN, BOXED
+    }
 
-    private static final FQMethod OPTIONAL_OR_ELSE_METHOD = new FQMethod("java/util/Optional", "orElse",
-            SignatureBuilder.SIG_OBJECT_TO_OBJECT);
+    private static final String OPTIONAL_SIGNATURE = "Ljava/util/Optional;";
+    private static Set<String> BOXED_OPTIONAL_TYPES = UnmodifiableSet.create("Ljava/lang/Integer;", "Ljava/lang/Long;", "Ljava/lang/Double;");
+
+    private static final FQMethod OPTIONAL_OR_ELSE_METHOD = new FQMethod("java/util/Optional", "orElse", SignatureBuilder.SIG_OBJECT_TO_OBJECT);
     private static final FQMethod OPTIONAL_OR_ELSE_GET_METHOD = new FQMethod("java/util/Optional", "orElseGet",
             "(Ljava/util/function/Supplier;)Ljava/lang/Object;");
-    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get",
-            SignatureBuilder.SIG_VOID_TO_OBJECT);
+    private static final FQMethod OPTIONAL_GET_METHOD = new FQMethod("java/util/Optional", "get", SignatureBuilder.SIG_VOID_TO_OBJECT);
 
     private static final Set<FQMethod> OR_ELSE_METHODS = UnmodifiableSet.create(
     // @formatter:off
@@ -103,7 +100,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
             "Lcom/google/common/base/Optional;", "Lorg/openjdk/jmh/util/Optional;"
     // @formatter:on
     );
-    
+
     private static final Set<FQMethod> TRIVIAL_METHODS = UnmodifiableSet.create(
     // @formatter:off
             new FQMethod("java/util/Collections", "emptyList", "()Ljava/util/List;"),
@@ -124,15 +121,15 @@ public class OptionalIssues extends BytecodeScanningDetector {
     // @formatter:on
     );
     private static final BitSet INVOKE_OPS = new BitSet();
-    
+
     static {
-		INVOKE_OPS.set(Const.INVOKEINTERFACE);
-		INVOKE_OPS.set(Const.INVOKEVIRTUAL);
-		INVOKE_OPS.set(Const.INVOKESTATIC);
-		INVOKE_OPS.set(Const.INVOKESPECIAL);
-		INVOKE_OPS.set(Const.INVOKEDYNAMIC);
+        INVOKE_OPS.set(Const.INVOKEINTERFACE);
+        INVOKE_OPS.set(Const.INVOKEVIRTUAL);
+        INVOKE_OPS.set(Const.INVOKESTATIC);
+        INVOKE_OPS.set(Const.INVOKESPECIAL);
+        INVOKE_OPS.set(Const.INVOKEDYNAMIC);
     }
- 		
+
     private JavaClass SUPPLIER_CLASS;
     private BugReporter bugReporter;
     private OpcodeStack stack;
@@ -140,7 +137,6 @@ public class OptionalIssues extends BytecodeScanningDetector {
     private Deque<ActiveStackOp> activeStackOps;
     private Map<OpcodeStack.Item, SourceLineAnnotation> boxedItems;
     private Boolean methodIsConstrained;
-
 
     /**
      * constructs a OI detector given the reporter to report bugs on
@@ -167,17 +163,17 @@ public class OptionalIssues extends BytecodeScanningDetector {
     public void visitClassContext(ClassContext classContext) {
         currentClass = classContext.getJavaClass();
 
-		if (currentClass.getMajor() >= Const.MAJOR_1_8) {
+        if (currentClass.getMajor() >= Const.MAJOR_1_8) {
             try {
                 stack = new OpcodeStack();
                 activeStackOps = new ArrayDeque<>();
                 boxedItems = new HashMap<>();
                 super.visitClassContext(classContext);
             } finally {
-            	boxedItems = null;
+                boxedItems = null;
                 activeStackOps = null;
                 stack = null;
-                
+
             }
         }
         currentClass = null;
@@ -194,13 +190,12 @@ public class OptionalIssues extends BytecodeScanningDetector {
         activeStackOps.clear();
         boxedItems.clear();
         methodIsConstrained = null;
-        
+
         super.visitCode(obj);
-        
+
         for (SourceLineAnnotation slAnno : boxedItems.values()) {
-          bugReporter.reportBug(
-          new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(),
-                  LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(slAnno));
+            bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_PRIMITIVE_VARIANT_PREFERRED.name(), LOW_PRIORITY).addClass(this)
+                    .addMethod(this).addSourceLine(slAnno));
         }
     }
 
@@ -218,32 +213,30 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
         try {
             switch (seen) {
-			case Const.IFNULL:
-			case Const.IFNONNULL:
+            case Const.IFNULL:
+            case Const.IFNONNULL:
                 if (stack.getStackDepth() > 0) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     if (OPTIONAL_CLASSES.contains(itm.getSignature())) {
-                        bugReporter
-                                .reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_CHECKING_REFERENCE.name(),
-                                        NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_CHECKING_REFERENCE.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
                     }
 
                 }
                 break;
 
-			case Const.INVOKEDYNAMIC:
+            case Const.INVOKEDYNAMIC:
                 // smells like a hack. Not sure how to do this better
                 ConstantInvokeDynamic id = (ConstantInvokeDynamic) getConstantRefOperand();
                 ConstantPool cp = getConstantPool();
                 ConstantNameAndType nameAndType = (ConstantNameAndType) cp.getConstant(id.getNameAndTypeIndex());
                 ConstantUtf8 typeConstant = (ConstantUtf8) cp.getConstant(nameAndType.getSignatureIndex());
-                curCalledMethod = new FQMethod(getClassName(), "lambda$" + id.getBootstrapMethodAttrIndex(),
-                        typeConstant.getBytes());
+                curCalledMethod = new FQMethod(getClassName(), "lambda$" + id.getBootstrapMethodAttrIndex(), typeConstant.getBytes());
                 break;
 
-			case Const.INVOKESTATIC:
-			case Const.INVOKEINTERFACE:
-			case Const.INVOKESPECIAL: {
+            case Const.INVOKESTATIC:
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKESPECIAL: {
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
                 curCalledMethod = new FQMethod(clsName, methodName, getSigConstantOperand());
@@ -253,43 +246,41 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         String itmSig = itm.getSignature();
                         if (BOXED_OPTIONAL_TYPES.contains(itmSig)) {
-                        	optionalType = OptionalType.BOXED;
+                            optionalType = OptionalType.BOXED;
                         }
                     }
                 }
                 break;
             }
 
-			case Const.INVOKEVIRTUAL:
+            case Const.INVOKEVIRTUAL:
                 String clsName = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
-                if ("java/util/Optional".equals(clsName) && ("equals".equals(methodName))) {
+                if ("java/util/Optional".equals(clsName) && (Values.EQUALS.equals(methodName))) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         XMethod m = itm.getReturnValueOf();
                         if (m != null && "java.util.Optional".equals(m.getClassName()) && "empty".equals(m.getName())) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_ISPRESENT_PREFERRED.name(),
-                                            LOW_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_ISPRESENT_PREFERRED.name(), LOW_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
                             return;
                         }
                     }
                 }
 
-                curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(),
-                        getSigConstantOperand());
+                curCalledMethod = new FQMethod(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand());
 
                 if (OR_ELSE_METHODS.contains(curCalledMethod)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
-						if ((itm.getRegisterNumber() < 0) && (itm.getReturnValueOf() != null) && !isTrivialStackOps()) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION.name(),
-                                            NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        if ((itm.getRegisterNumber() < 0) && (itm.getReturnValueOf() != null) && !isTrivialStackOps()) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_IMMEDIATE_EXECUTION.name(), NORMAL_PRIORITY)
+                                    .addClass(this).addMethod(this).addSourceLine(this));
                         }
                     }
                     if (OPTIONAL_OR_ELSE_METHOD.equals(curCalledMethod)) {
-;                    	optionalType = OptionalType.PLAIN;
+                        ;
+                        optionalType = OptionalType.PLAIN;
                     }
                 } else if (OR_ELSE_GET_METHODS.contains(curCalledMethod)) {
                     if (!activeStackOps.isEmpty()) {
@@ -299,8 +290,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         if (method == null) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             if (SUPPLIER_CLASS != null && !itm.getJavaClass().instanceOf(SUPPLIER_CLASS)) {
-                                bugReporter.reportBug(new BugInstance(this,
-                                        BugType.OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL.name(), LOW_PRIORITY)
+                                bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_ORELSEGET_WITH_NULL.name(), LOW_PRIORITY)
                                         .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         } else {
@@ -311,8 +301,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                                     // we are looking for ALOAD, GETFIELD, or LDC followed by ARETURN, that should
                                     // fit in 4 bytes
                                     if (!hasInvoke(byteCode)) {
-                                        bugReporter.reportBug(new BugInstance(this,
-                                                BugType.OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION.name(), LOW_PRIORITY)
+                                        bugReporter.reportBug(new BugInstance(this, BugType.OI_OPTIONAL_ISSUES_USES_DELAYED_EXECUTION.name(), LOW_PRIORITY)
                                                 .addClass(this).addMethod(this).addSourceLine(this));
                                     }
                                 }
@@ -320,21 +309,21 @@ public class OptionalIssues extends BytecodeScanningDetector {
                         }
                     }
                     if (OPTIONAL_OR_ELSE_GET_METHOD.equals(curCalledMethod)) {
-                    	optionalType = OptionalType.PLAIN;
+                        optionalType = OptionalType.PLAIN;
                     }
                 } else if (OPTIONAL_GET_METHOD.equals(curCalledMethod)) {
-                	optionalType = OptionalType.PLAIN;
+                    optionalType = OptionalType.PLAIN;
                 }
                 break;
-                
-			case Const.ARETURN:
-				if (stack.getStackDepth() > 0) {
-					OpcodeStack.Item itm = stack.getStackItem(0);
-					if (boxedItems.containsKey(itm) && isMethodConstrained()) {
-						boxedItems.remove(itm);
-					}
-				}
-				break;
+
+            case Const.ARETURN:
+                if (stack.getStackDepth() > 0) {
+                    OpcodeStack.Item itm = stack.getStackItem(0);
+                    if (boxedItems.containsKey(itm) && isMethodConstrained()) {
+                        boxedItems.remove(itm);
+                    }
+                }
+                break;
             }
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
@@ -352,8 +341,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     itm.setUserValue(optionalType);
                     if (optionalType == OptionalType.BOXED) {
-	                    boxedItems.put(itm, SourceLineAnnotation.fromVisitedInstruction(OptionalIssues.this.getClassContext(),
-                    		OptionalIssues.this, getPC()));
+                        boxedItems.put(itm, SourceLineAnnotation.fromVisitedInstruction(OptionalIssues.this.getClassContext(), OptionalIssues.this, getPC()));
                     }
                 }
             }
@@ -383,7 +371,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
             }
 
             if (TRIVIAL_METHODS.contains(method)) {
-            	return true;
+                return true;
             }
         }
 
@@ -425,19 +413,19 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
         return false;
     }
-    
+
     private boolean isMethodConstrained() {
-    	if (methodIsConstrained == null) {
-	        String returnType = new SignatureParser(getMethodSig()).getReturnTypeSignature();
-	        if (OPTIONAL_SIGNATURE.equals(returnType)) {
-	        	MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
-	        	methodIsConstrained = Boolean.valueOf(mi != null && mi.isDerived());
-	        } else {
-	        	methodIsConstrained = Boolean.FALSE;
-	        }
-    	}
-    	
-		return methodIsConstrained.booleanValue();
+        if (methodIsConstrained == null) {
+            String returnType = new SignatureParser(getMethodSig()).getReturnTypeSignature();
+            if (OPTIONAL_SIGNATURE.equals(returnType)) {
+                MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
+                methodIsConstrained = Boolean.valueOf(mi != null && mi.isDerived());
+            } else {
+                methodIsConstrained = Boolean.FALSE;
+            }
+        }
+
+        return methodIsConstrained.booleanValue();
     }
 
     /**
@@ -478,8 +466,7 @@ public class OptionalIssues extends BytecodeScanningDetector {
 
             ActiveStackOp that = (ActiveStackOp) o;
 
-			return (opcode == that.opcode)
-					&& ((method == that.method) || ((method != null) && method.equals(that.method)));
+            return (opcode == that.opcode) && ((method == that.method) || ((method != null) && method.equals(that.method)));
         }
 
         @Override

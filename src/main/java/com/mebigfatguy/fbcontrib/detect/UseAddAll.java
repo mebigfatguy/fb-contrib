@@ -23,8 +23,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.JavaClass;
 
@@ -109,8 +109,8 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                 int loopPC = loop.getAddPC();
                 if ((endPC - 3) <= pc) {
                     if (loopPC > 0) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.UAA_USE_ADD_ALL.name(), NORMAL_PRIORITY)
-                                .addClass(this).addMethod(this).addSourceLine(this, loopPC));
+                        bugReporter.reportBug(new BugInstance(this, BugType.UAA_USE_ADD_ALL.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                .addSourceLine(this, loopPC));
                     }
                     it.remove();
                 } else if ((endPC > pc) && (loopPC < (pc - 5)) && (loopPC > 0)) {
@@ -136,8 +136,8 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                             }
                         }
                     }
-                } else if ("keySet".equals(methodName) || "values".equals(methodName) || "iterator".equals(methodName)
-                        || "next".equals(methodName) || "hasNext".equals(methodName)) {
+                } else if ("keySet".equals(methodName) || Values.VALUES.equals(methodName) || "iterator".equals(methodName) || "next".equals(methodName)
+                        || "hasNext".equals(methodName)) {
                     if (stack.getStackDepth() > 0) {
                         OpcodeStack.Item itm = stack.getStackItem(0);
                         int reg = isLocalCollection(itm);
@@ -152,8 +152,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                             }
                         }
                     }
-                } else if ("add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature)
-                        && (stack.getStackDepth() > 1)) {
+                } else if ("add".equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature) && (stack.getStackDepth() > 1)) {
                     OpcodeStack.Item colItem = stack.getStackItem(1);
                     OpcodeStack.Item valueItem = stack.getStackItem(0);
                     int reg = isLocalCollection(colItem);
@@ -173,8 +172,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                             uValue = (Comparable<?>) valueItem.getUserValue();
                             if (uValue != null) {
                                 LoopInfo loop = loops.get(uValue);
-                                if ((loop != null) && loop.isInLoop(pc)
-                                        && (this.getCodeByte(getNextPC()) == Const.POP)) {
+                                if ((loop != null) && loop.isInLoop(pc) && (this.getCodeByte(getNextPC()) == Const.POP)) {
                                     loop.foundAdd(pc);
                                 }
                             }
@@ -227,8 +225,7 @@ public class UseAddAll extends AbstractCollectionScanningDetector {
                         sawLoad = true;
                     }
                 }
-            } else if (((seen > Const.IFEQ) && (seen <= Const.GOTO)) || (seen == Const.IFNULL)
-                    || (seen == Const.IFNONNULL)) {
+            } else if (((seen > Const.IFEQ) && (seen <= Const.GOTO)) || (seen == Const.IFNULL) || (seen == Const.IFNONNULL)) {
                 removeLoop(pc);
             } else if ((seen == Const.CHECKCAST) && (stack.getStackDepth() > 0)) {
                 OpcodeStack.Item itm = stack.getStackItem(0);

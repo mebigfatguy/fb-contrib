@@ -90,8 +90,8 @@ public class EnumIssues extends BytecodeScanningDetector {
         super.visitCode(obj);
 
         if (inEnumInitializer && numEnumValues <= 1 && !isAnonEnum) {
-            bugReporter.reportBug(new BugInstance(this, BugType.ENMI_ONE_ENUM_VALUE.name(), NORMAL_PRIORITY)
-                    .addClass(this).addMethod(this).addSourceLine(this));
+            bugReporter
+                    .reportBug(new BugInstance(this, BugType.ENMI_ONE_ENUM_VALUE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
         }
     }
 
@@ -122,9 +122,8 @@ public class EnumIssues extends BytecodeScanningDetector {
                             String fieldCls = SignatureUtils.stripSignature(getSigConstantOperand());
                             JavaClass cls = Repository.lookupClass(fieldCls);
                             if (cls.isEnum()) {
-                                bugReporter.reportBug(
-                                        new BugInstance(this, BugType.ENMI_NULL_ENUM_VALUE.name(), NORMAL_PRIORITY)
-                                                .addClass(this).addMethod(this).addSourceLine(this));
+                                bugReporter.reportBug(new BugInstance(this, BugType.ENMI_NULL_ENUM_VALUE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                        .addSourceLine(this));
                             }
                         }
                     }
@@ -138,15 +137,13 @@ public class EnumIssues extends BytecodeScanningDetector {
                     if (variableTable != null && stack.getStackDepth() >= 1) {
                         OpcodeStack.Item item = stack.getStackItem(0);
                         if (item.isNull()) {
-                            LocalVariable lv = getMethod().getLocalVariableTable()
-                                    .getLocalVariable(RegisterUtils.getAStoreReg(this, seen), getNextPC());
+                            LocalVariable lv = getMethod().getLocalVariableTable().getLocalVariable(RegisterUtils.getAStoreReg(this, seen), getNextPC());
                             if (lv != null) {
                                 String localType = SignatureUtils.stripSignature(lv.getSignature());
                                 JavaClass cls = Repository.lookupClass(localType);
                                 if (cls.isEnum()) {
-                                    bugReporter.reportBug(
-                                            new BugInstance(this, BugType.ENMI_NULL_ENUM_VALUE.name(), NORMAL_PRIORITY)
-                                                    .addClass(this).addMethod(this).addSourceLine(this));
+                                    bugReporter.reportBug(new BugInstance(this, BugType.ENMI_NULL_ENUM_VALUE.name(), NORMAL_PRIORITY).addClass(this)
+                                            .addMethod(this).addSourceLine(this));
                                 }
                             }
                         }
@@ -154,14 +151,12 @@ public class EnumIssues extends BytecodeScanningDetector {
                     break;
 
                 case Const.INVOKEVIRTUAL:
-                    if ("equals".equals(getNameConstantOperand())
-                            && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
+                    if (Values.EQUALS.equals(getNameConstantOperand()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
 
                         JavaClass cls = Repository.lookupClass(getClassConstantOperand());
                         if (cls.isEnum()) {
-                            bugReporter.reportBug(
-                                    new BugInstance(this, BugType.ENMI_EQUALS_ON_ENUM.name(), NORMAL_PRIORITY)
-                                            .addClass(this).addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.ENMI_EQUALS_ON_ENUM.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                    .addSourceLine(this));
                         }
                     }
                     break;

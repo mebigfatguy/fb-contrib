@@ -30,7 +30,6 @@ import org.apache.bcel.classfile.Field;
 import org.apache.bcel.classfile.JavaClass;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
-import com.mebigfatguy.fbcontrib.utils.FQField;
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.StopOpcodeParsingException;
@@ -56,13 +55,12 @@ import edu.umd.cs.findbugs.ba.XField;
 @CustomUserValue
 public class DubiousMapCollection extends BytecodeScanningDetector {
 
-    private static final Set<String> SPECIAL_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR,
-            Values.STATIC_INITIALIZER);
-    private static final Set<String> MAP_METHODS = UnmodifiableSet.create("computeIfAbsent", "containsKey", "equals",
-            "get", "getOrDefault", "remove", "removeEldestEntry", "values");
+    private static final Set<String> SPECIAL_METHODS = UnmodifiableSet.create(Values.CONSTRUCTOR, Values.STATIC_INITIALIZER);
+    private static final Set<String> MAP_METHODS = UnmodifiableSet.create("computeIfAbsent", "containsKey", Values.EQUALS, "get", "getOrDefault", "remove",
+            "removeEldestEntry", Values.VALUES);
 
     private static final Set<String> MODIFYING_METHODS = UnmodifiableSet.create(
-            // @formatter:off
+    // @formatter:off
             "clear", "put", "putAll", "remove", "compute", "computeIfAbsent", "computeIfPresent", "forEach", "merge",
             "putIfAbsent", "remove", "replace", "replaceAll"
     // @formatter:on
@@ -90,7 +88,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         } catch (ClassNotFoundException e) {
             bugReporter.reportMissingClass(e);
         }
-        
+
         savedSpecialFields = new HashMap<>();
     }
 
@@ -101,41 +99,38 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
             return;
         }
 
-    	clsName = classContext.getJavaClass().getClassName();
+        clsName = classContext.getJavaClass().getClassName();
         try {
-        	int innerPos = clsName.indexOf(Values.INNER_CLASS_SEPARATOR);
-        	isInnerClass = innerPos >= 0;
-        	
-        	if (isInnerClass) {
-        		outerClassName = clsName.substring(0, innerPos);
-        	} else {
-        		outerClassName = null;
-        	}
-        	        	
+            int innerPos = clsName.indexOf(Values.INNER_CLASS_SEPARATOR);
+            isInnerClass = innerPos >= 0;
+
+            if (isInnerClass) {
+                outerClassName = clsName.substring(0, innerPos);
+            } else {
+                outerClassName = null;
+            }
+
             stack = new OpcodeStack();
             mapFields = new HashMap<>();
             super.visitClassContext(classContext);
-            
+
             if (!isInnerClass) {
-            	Set<XField> special = savedSpecialFields.remove(clsName);
-            	if (special != null) {
-    	        	for (XField xf : special) {
-    	        		mapFields.remove(xf.getName());
-    	        	}
-            	}
+                Set<XField> special = savedSpecialFields.remove(clsName);
+                if (special != null) {
+                    for (XField xf : special) {
+                        mapFields.remove(xf.getName());
+                    }
+                }
             }
 
-
             for (FieldAnnotation mapField : mapFields.values()) {
-                bugReporter
-                        .reportBug(new BugInstance(this, BugType.DMC_DUBIOUS_MAP_COLLECTION.toString(), NORMAL_PRIORITY)
-                                .addClass(this).addField(mapField));
+                bugReporter.reportBug(new BugInstance(this, BugType.DMC_DUBIOUS_MAP_COLLECTION.toString(), NORMAL_PRIORITY).addClass(this).addField(mapField));
             }
         } finally {
             mapFields = null;
             stack = null;
             if (!isInnerClass) {
-            	savedSpecialFields.remove(clsName);
+                savedSpecialFields.remove(clsName);
             }
 
         }
@@ -144,8 +139,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
     @Override
     public void visitField(Field obj) {
         if (obj.isPrivate() && isMap(obj)) {
-            mapFields.put(obj.getName(),
-                    new FieldAnnotation(getDottedClassName(), obj.getName(), obj.getSignature(), obj.isStatic()));
+            mapFields.put(obj.getName(), new FieldAnnotation(getDottedClassName(), obj.getName(), obj.getSignature(), obj.isStatic()));
         }
     }
 
@@ -155,7 +149,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         stack.resetForMethodEntry(this);
         ternaryAccessedField = null;
         ternaryTarget = -1;
-        
+
         try {
             super.visitCode(obj);
         } catch (StopOpcodeParsingException e) {
@@ -193,8 +187,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
                 if (xf != null) {
                     if (!isInSpecial) {
                         mapFields.remove(xf.getName());
-                		saveSpecialFieldUse(xf);
-
+                        saveSpecialFieldUse(xf);
 
                     } else {
                         if (stack.getStackDepth() > 0) {
@@ -307,7 +300,7 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
         XField xf = itm.getXField();
         if (xf != null) {
             mapFields.remove(xf.getName());
-    		saveSpecialFieldUse(xf);
+            saveSpecialFieldUse(xf);
 
             xf = (XField) itm.getUserValue();
             if (xf != null) {
@@ -318,17 +311,17 @@ public class DubiousMapCollection extends BytecodeScanningDetector {
             }
         }
     }
-    
+
     public void saveSpecialFieldUse(XField xf) {
-    	if (xf != null) {
-	    	String owningClassName = xf.getClassName();
-	    	Set<XField> special = savedSpecialFields.get(owningClassName);
-	    	if (special == null) {
-	    		special = new HashSet<>();
-	    		savedSpecialFields.put(owningClassName, special);
-	    	}
-	    	special.add(xf);
-    	}
+        if (xf != null) {
+            String owningClassName = xf.getClassName();
+            Set<XField> special = savedSpecialFields.get(owningClassName);
+            if (special == null) {
+                special = new HashSet<>();
+                savedSpecialFields.put(owningClassName, special);
+            }
+            special.add(xf);
+        }
     }
 
 }

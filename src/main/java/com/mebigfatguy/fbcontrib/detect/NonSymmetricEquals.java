@@ -30,6 +30,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -85,7 +86,7 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
         String name = m.getName();
         String signature = m.getSignature();
 
-        if ("equals".equals(name) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature) && prescreen(m)) {
+        if (Values.EQUALS.equals(name) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(signature) && prescreen(m)) {
             stack.resetForMethodEntry(this);
             super.visitCode(obj);
         }
@@ -121,12 +122,10 @@ public class NonSymmetricEquals extends BytecodeScanningDetector {
                     if (!thisCls.equals(equalsCls)) {
                         JavaClass thisJavaClass = getClassContext().getJavaClass();
                         JavaClass equalsJavaClass = Repository.lookupClass(equalsCls);
-                        boolean inheritance = thisJavaClass.instanceOf(equalsJavaClass)
-                                || equalsJavaClass.instanceOf(thisJavaClass);
+                        boolean inheritance = thisJavaClass.instanceOf(equalsJavaClass) || equalsJavaClass.instanceOf(thisJavaClass);
 
-                        BugInstance bug = new BugInstance(this, BugType.NSE_NON_SYMMETRIC_EQUALS.name(),
-                                inheritance ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
-                                        .addSourceLine(this).addString(equalsCls);
+                        BugInstance bug = new BugInstance(this, BugType.NSE_NON_SYMMETRIC_EQUALS.name(), inheritance ? LOW_PRIORITY : NORMAL_PRIORITY)
+                                .addClass(this).addMethod(this).addSourceLine(this).addString(equalsCls);
                         Map<String, BugInstance> bugs = possibleBugs.get(thisCls);
                         if (bugs == null) {
                             bugs = new HashMap<>();

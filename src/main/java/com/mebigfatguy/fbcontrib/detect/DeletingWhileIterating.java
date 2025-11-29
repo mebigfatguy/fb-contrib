@@ -88,8 +88,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
     private static final Set<QMethod> collectionMethods = UnmodifiableSet.create(
             new QMethod("entrySet", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_SET).toString()),
             new QMethod("keySet", new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_SET).toString()),
-            new QMethod("values",
-                    new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_COLLECTION).toString()));
+            new QMethod(Values.VALUES, new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_UTIL_COLLECTION).toString()));
 
     private static final Map<QMethod, Integer> modifyingMethods;
 
@@ -97,10 +96,8 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         Map<QMethod, Integer> mm = new HashMap<>();
         mm.put(new QMethod("add", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN), Values.ONE);
         mm.put(new QMethod("addAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
-        mm.put(new QMethod("addAll",
-                new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION)
-                        .withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()),
-                Values.TWO);
+        mm.put(new QMethod("addAll", new SignatureBuilder().withParamTypes(Values.SIG_PRIMITIVE_INT, Values.SLASHED_JAVA_UTIL_COLLECTION)
+                .withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString()), Values.TWO);
         mm.put(new QMethod("clear", SignatureBuilder.SIG_VOID_TO_VOID), Values.ZERO);
         mm.put(new QMethod("remove", SignatureBuilder.SIG_INT_TO_OBJECT), Values.ONE);
         mm.put(new QMethod("removeAll", SignatureBuilder.SIG_COLLECTION_TO_PRIMITIVE_BOOLEAN), Values.ONE);
@@ -108,8 +105,7 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
         modifyingMethods = Collections.<QMethod, Integer>unmodifiableMap(mm);
     }
 
-    private static final QMethod ITERATOR = new QMethod("iterator",
-            new SignatureBuilder().withReturnType("java/util/Iterator").toString());
+    private static final QMethod ITERATOR = new QMethod("iterator", new SignatureBuilder().withReturnType("java/util/Iterator").toString());
     private static final QMethod REMOVE = new QMethod("remove", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN);
     private static final QMethod HASNEXT = new QMethod("hasNext", SignatureBuilder.SIG_VOID_TO_BOOLEAN);
 
@@ -203,13 +199,11 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                                 if (loop != null) {
                                     int pc = getPC();
                                     if (loop.hasPC(pc)) {
-                                        boolean needPop = !Values.SIG_VOID
-                                                .equals(SignatureUtils.getReturnSignature(signature));
+                                        boolean needPop = !Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(signature));
 
                                         if (!breakFollows(loop, needPop) && !returnFollows(needPop)) {
-                                            bugReporter.reportBug(new BugInstance(this,
-                                                    BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
-                                                            .addClass(this).addMethod(this).addSourceLine(this));
+                                            bugReporter.reportBug(new BugInstance(this, BugType.DWI_DELETING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
+                                                    .addClass(this).addMethod(this).addSourceLine(this));
                                         }
                                     }
                                 }
@@ -222,32 +216,29 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
                             int id = findCollectionGroup(itm, true);
                             if (id >= 0) {
                                 GroupPair pair = collectionGroups.get(id);
-                                if  (pair.isStandardCollection()) {
-	                                Integer it = groupToIterator.get(Integer.valueOf(id));
-	                                if (it != null) {
-	                                    Loop loop = loops.get(it);
-	                                    if (loop != null) {
-	                                        int pc = getPC();
-	                                        if (loop.hasPC(pc)) {
-	                                            boolean needPop = !Values.SIG_VOID
-	                                                    .equals(SignatureUtils.getReturnSignature(signature));
-	                                            boolean breakFollows = breakFollows(loop, needPop);
-	                                            boolean returnFollows = !breakFollows && returnFollows(needPop);
-	
-	                                            if (!breakFollows && !returnFollows) {
-	                                                bugReporter.reportBug(new BugInstance(this,
-	                                                        BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
-	                                                                .addClass(this).addMethod(this).addSourceLine(this));
-	                                            }
-	                                        }
-	                                    }
-	                                }
+                                if (pair.isStandardCollection()) {
+                                    Integer it = groupToIterator.get(Integer.valueOf(id));
+                                    if (it != null) {
+                                        Loop loop = loops.get(it);
+                                        if (loop != null) {
+                                            int pc = getPC();
+                                            if (loop.hasPC(pc)) {
+                                                boolean needPop = !Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(signature));
+                                                boolean breakFollows = breakFollows(loop, needPop);
+                                                boolean returnFollows = !breakFollows && returnFollows(needPop);
+
+                                                if (!breakFollows && !returnFollows) {
+                                                    bugReporter.reportBug(new BugInstance(this, BugType.DWI_MODIFYING_WHILE_ITERATING.name(), NORMAL_PRIORITY)
+                                                            .addClass(this).addMethod(this).addSourceLine(this));
+                                                }
+                                            }
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-                } else if ("java/util/Iterator".equals(className) && HASNEXT.equals(methodInfo)
-                        && (stack.getStackDepth() > 0)) {
+                } else if ("java/util/Iterator".equals(className) && HASNEXT.equals(methodInfo) && (stack.getStackDepth() > 0)) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     Integer id = (Integer) itm.getUserValue();
                     if (id != null) {
@@ -260,8 +251,8 @@ public class DeletingWhileIterating extends AbstractCollectionScanningDetector {
 
                     Integer id = (Integer) itm.getUserValue();
                     if (id == null) {
-                        FieldAnnotation fa = FieldAnnotation.fromFieldDescriptor(new FieldDescriptor(
-                                getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false));
+                        FieldAnnotation fa = FieldAnnotation
+                                .fromFieldDescriptor(new FieldDescriptor(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand(), false));
                         itm = new OpcodeStack.Item(itm.getSignature(), fa, stack.getStackItem(1).getRegisterNumber());
                         removeFromCollectionGroup(itm);
                         groupId = findCollectionGroup(itm, true);

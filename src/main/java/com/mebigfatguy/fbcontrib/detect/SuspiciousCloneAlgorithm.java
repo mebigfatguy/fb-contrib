@@ -47,8 +47,7 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 @CustomUserValue
 public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
 
-    public static final String SIG_VOID_TO_OBJECT = new SignatureBuilder()
-            .withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
+    public static final String SIG_VOID_TO_OBJECT = new SignatureBuilder().withReturnType(Values.SLASHED_JAVA_LANG_OBJECT).toString();
 
     private static JavaClass cloneableClass;
     private static Map<String, Integer> changingMethods;
@@ -113,7 +112,7 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         Method m = getMethod();
-        if (!m.isStatic() && "clone".equals(m.getName()) && SIG_VOID_TO_OBJECT.equals(m.getSignature())) {
+        if (!m.isStatic() && Values.CLONE.equals(m.getName()) && SIG_VOID_TO_OBJECT.equals(m.getSignature())) {
             super.visitCode(obj);
         }
     }
@@ -157,9 +156,8 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
                 if (stack.getStackDepth() >= 2) {
                     OpcodeStack.Item item = stack.getStackItem(1);
                     if ((item.getRegisterNumber() == 0) || (item.getUserValue() != null)) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
                     }
                 }
 
@@ -175,8 +173,8 @@ public class SuspiciousCloneAlgorithm extends BytecodeScanningDetector {
                         String name = getNameConstantOperand();
                         Integer priority = changingMethods.get(name);
                         if (priority != null) {
-                            bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(),
-                                    priority.intValue()).addClass(this).addMethod(this).addSourceLine(this));
+                            bugReporter.reportBug(new BugInstance(this, BugType.SCA_SUSPICIOUS_CLONE_ALGORITHM.name(), priority.intValue()).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
                         }
                     }
                 }

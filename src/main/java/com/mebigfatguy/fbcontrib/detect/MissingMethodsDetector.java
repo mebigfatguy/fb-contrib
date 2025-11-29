@@ -66,7 +66,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         this.bugReporter = bugReporter;
         savedSpecialFields = new HashMap<>();
     }
-    
+
     /**
      * overrides the visitor to initialize and tear down the opcode stack
      *
@@ -78,11 +78,11 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
         try {
             int innerPos = clsName.indexOf(Values.INNER_CLASS_SEPARATOR);
             isInnerClass = innerPos >= 0;
-            
+
             if (isInnerClass) {
-            	outerClassName = clsName.substring(0, innerPos);
+                outerClassName = clsName.substring(0, innerPos);
             } else {
-            	outerClassName = null;
+                outerClassName = null;
             }
 
             clsSignature = SignatureUtils.classToSignature(clsName);
@@ -96,8 +96,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 for (Map.Entry<String, String> entry : fieldSpecialObjects.entrySet()) {
                     String fieldName = entry.getKey();
                     String signature = entry.getValue();
-                    bugReporter.reportBug(
-                            makeFieldBugInstance().addClass(this).addField(clsName, fieldName, signature, false));
+                    bugReporter.reportBug(makeFieldBugInstance().addClass(this).addField(clsName, fieldName, signature, false));
                 }
             }
         } finally {
@@ -105,7 +104,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             localSpecialObjects = null;
             fieldSpecialObjects = null;
             if (!isInnerClass) {
-            	savedSpecialFields.remove(clsName);
+                savedSpecialFields.remove(clsName);
             }
         }
     }
@@ -133,23 +132,22 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
         stack.resetForMethodEntry(this);
         localSpecialObjects.clear();
-        
+
         if (!isInnerClass) {
-        	Set<FQField> special = savedSpecialFields.remove(clsName);
-        	if (special != null) {
-	        	for (FQField f : special) {
-	        		fieldSpecialObjects.remove(f.getFieldName());
-	        	}
-        	}
+            Set<FQField> special = savedSpecialFields.remove(clsName);
+            if (special != null) {
+                for (FQField f : special) {
+                    fieldSpecialObjects.remove(f.getFieldName());
+                }
+            }
         }
         sawTernary = false;
         super.visitCode(obj);
 
         for (LocalUse lu : localSpecialObjects.values()) {
-        	if (!lu.isUsed()) {
-	            bugReporter.reportBug(
-	                    makeLocalBugInstance().addClass(this).addMethod(this).addSourceLine(this, lu.getPc()));
-        	}
+            if (!lu.isUsed()) {
+                bugReporter.reportBug(makeLocalBugInstance().addClass(this).addMethod(this).addSourceLine(this, lu.getPc()));
+            }
         }
     }
 
@@ -195,17 +193,17 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     XField xf = item.getXField();
                     if (xf != null) {
-                    	if (xf.getClassName() != null && xf.getClassName().equals(outerClassName)) {
-                    		saveSpecialFieldUse(xf.getClassName(), xf.getName(), xf.getSignature());
-                    		break;
-                    	}
+                        if (xf.getClassName() != null && xf.getClassName().equals(outerClassName)) {
+                            saveSpecialFieldUse(xf.getClassName(), xf.getName(), xf.getSignature());
+                            break;
+                        }
                     }
                     clearUserValue(item);
                 } else {
                     // bad findbugs bug, which clears the stack after an ALOAD, in some cases
                     int prevOp = getPrevOpcode(1);
                     if (OpcodeUtils.isALoad(prevOp)) {
-                    	clearLocalObjects();
+                        clearLocalObjects();
                     }
                 }
                 break;
@@ -253,7 +251,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             case Const.IFNULL:
             case Const.IFNONNULL:
                 if (stack.getStackDepth() > 0) {
-                     OpcodeStack.Item item = stack.getStackItem(0);
+                    OpcodeStack.Item item = stack.getStackItem(0);
                     Object uo = item.getUserValue();
                     if ((uo != null) && !(uo instanceof Boolean)) {
                         clearUserValue(item);
@@ -277,20 +275,19 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
             }
         }
     }
-    
+
     protected void saveSpecialFieldUse(String owningClassName, String fieldName, String signature) {
-    	Set<FQField> special = savedSpecialFields.get(owningClassName);
-    	if (special == null) {
-    		special = new HashSet<>();
-    		savedSpecialFields.put(owningClassName,  special);
-    	}
-    	special.add(new FQField(owningClassName, fieldName, signature));
-    }
-    
-    protected String getParentClassName() {
-    	return outerClassName;
+        Set<FQField> special = savedSpecialFields.get(owningClassName);
+        if (special == null) {
+            special = new HashSet<>();
+            savedSpecialFields.put(owningClassName, special);
+        }
+        special.add(new FQField(owningClassName, fieldName, signature));
     }
 
+    protected String getParentClassName() {
+        return outerClassName;
+    }
 
     private void handleTernary(int seen) {
         if (((seen == Const.GETFIELD) || OpcodeUtils.isALoad(seen)) && (stack.getStackDepth() > 0)) {
@@ -368,7 +365,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 String name = getNameConstantOperand();
                 if (isMethodThatShouldBeCalled(name)) {
                     clearUserValue(item);
-                } else if (!"clone".equals(name)) {
+                } else if (!Values.CLONE.equals(name)) {
                     if ((!Values.SIG_VOID.equals(SignatureUtils.getReturnSignature(sig))) && !nextOpIsPop()) {
                         clearUserValue(item);
                     }
@@ -393,8 +390,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
     // TODO: returning two types of objects,this awful, need to fix at some point
     private Object sawInvokeStatic(Object userObject) {
-        if (doesStaticFactoryReturnNeedToBeWatched(getClassConstantOperand(), getNameConstantOperand(),
-                getSigConstantOperand())) {
+        if (doesStaticFactoryReturnNeedToBeWatched(getClassConstantOperand(), getNameConstantOperand(), getSigConstantOperand())) {
             return Boolean.TRUE;
         }
         return userObject;
@@ -409,7 +405,7 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
                 if (uo instanceof Boolean) {
                     int reg = RegisterUtils.getAStoreReg(this, seen);
                     if (!localSpecialObjects.containsKey(reg)) {
-                    	localSpecialObjects.put(Integer.valueOf(reg), new LocalUse(getPC()));
+                        localSpecialObjects.put(Integer.valueOf(reg), new LocalUse(getPC()));
                     }
                     if (getPrevOpcode(1) == Const.DUP) {
                         item = stack.getStackItem(1);
@@ -430,17 +426,17 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     private void clearUserValue(OpcodeStack.Item item) {
         Object uo = item.getUserValue();
         if (uo instanceof Integer) {
-        	LocalUse lu = localSpecialObjects.get(uo);
-        	if (lu != null) {
-        		lu.setUsed(true);
-        	}
+            LocalUse lu = localSpecialObjects.get(uo);
+            if (lu != null) {
+                lu.setUsed(true);
+            }
         } else if (uo instanceof String) {
             fieldSpecialObjects.remove(uo);
         } else if (uo instanceof Boolean) {
-        	LocalUse lu = localSpecialObjects.get(Integer.valueOf(item.getRegisterNumber()));
-        	if (lu != null) {
-        		lu.setUsed(true);
-        	}
+            LocalUse lu = localSpecialObjects.get(Integer.valueOf(item.getRegisterNumber()));
+            if (lu != null) {
+                lu.setUsed(true);
+            }
         }
         item.setUserValue(null);
     }
@@ -476,11 +472,11 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
     protected void clearSpecialField(String name) {
         fieldSpecialObjects.remove(name);
     }
-    
+
     private void clearLocalObjects() {
-    	for (LocalUse lu : localSpecialObjects.values()) {
-    		lu.setUsed(true);
-    	}
+        for (LocalUse lu : localSpecialObjects.values()) {
+            lu.setUsed(true);
+        }
     }
 
     protected abstract BugInstance makeFieldBugInstance();
@@ -489,46 +485,48 @@ public abstract class MissingMethodsDetector extends BytecodeScanningDetector {
 
     protected abstract boolean doesObjectNeedToBeWatched(@DottedClassName String type);
 
-    protected abstract boolean doesStaticFactoryReturnNeedToBeWatched(String clsName, String methodName,
-            String signature);
+    protected abstract boolean doesStaticFactoryReturnNeedToBeWatched(String clsName, String methodName, String signature);
 
     protected abstract boolean isMethodThatShouldBeCalled(String methodName);
-    
+
     private static class LocalUse {
-    	int pc;
-    	boolean used;
-    	
-		public LocalUse(int pc) {
-			this.pc = pc;
-		}
-		
-		public int getPc() {
-			return pc;
-		}
+        int pc;
+        boolean used;
 
-		public void setPc(int pc) {
-			this.pc = pc;
-		}
+        public LocalUse(int pc) {
+            this.pc = pc;
+        }
 
-		public boolean isUsed() {
-			return used;
-		}
-		public void setUsed(boolean used) {
-			this.used = used;
-		}
-    	
-    	public int hashCode() {
-    		return pc | (used ? 1 : 2);
-    	}
-    	
-    	public boolean equals(Object o) {
-    		if (o instanceof LocalUse) {
-    			LocalUse that = (LocalUse) o;
-    			return pc == that.pc && used == that.used;
-    		}
-    		
-    		return false;
-    	}
+        public int getPc() {
+            return pc;
+        }
+
+        public void setPc(int pc) {
+            this.pc = pc;
+        }
+
+        public boolean isUsed() {
+            return used;
+        }
+
+        public void setUsed(boolean used) {
+            this.used = used;
+        }
+
+        @Override
+        public int hashCode() {
+            return pc | (used ? 1 : 2);
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (o instanceof LocalUse) {
+                LocalUse that = (LocalUse) o;
+                return pc == that.pc && used == that.used;
+            }
+
+            return false;
+        }
     }
 
 }

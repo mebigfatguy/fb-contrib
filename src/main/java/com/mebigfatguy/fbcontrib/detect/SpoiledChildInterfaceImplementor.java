@@ -46,15 +46,14 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  */
 public class SpoiledChildInterfaceImplementor implements Detector {
 
-    private static final Set<String> IGNORED_SUPERCLASSES = UnmodifiableSet.create(Values.DOTTED_JAVA_LANG_OBJECT,
-            Values.DOTTED_JAVA_LANG_ENUM);
+    private static final Set<String> IGNORED_SUPERCLASSES = UnmodifiableSet.create(Values.DOTTED_JAVA_LANG_OBJECT, Values.DOTTED_JAVA_LANG_ENUM);
 
     private static final Set<QMethod> OBJECT_METHODS = UnmodifiableSet.create(
-            // @formatter:off
-            new QMethod("equals", SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
+    // @formatter:off
+            new QMethod(Values.EQUALS, SignatureBuilder.SIG_OBJECT_TO_BOOLEAN),
             new QMethod(Values.HASHCODE, SignatureBuilder.SIG_VOID_TO_INT),
             new QMethod(Values.TOSTRING, SignatureBuilder.SIG_VOID_TO_STRING),
-            new QMethod("clone", SignatureBuilder.SIG_VOID_TO_OBJECT),
+            new QMethod(Values.CLONE, SignatureBuilder.SIG_VOID_TO_OBJECT),
             new QMethod("notify", SignatureBuilder.SIG_VOID_TO_VOID),
             new QMethod("notifyAll", SignatureBuilder.SIG_VOID_TO_VOID),
             new QMethod("wait", SignatureBuilder.SIG_LONG_TO_VOID), new QMethod("wait", "(JI)V"),
@@ -102,13 +101,9 @@ public class SpoiledChildInterfaceImplementor implements Detector {
                             JavaClass superCls = cls.getSuperClass();
                             filterSuperInterfaceMethods(inf, infMethods, superCls);
                             if (!infMethods.isEmpty() && !superCls.implementationOf(inf)) {
-                                int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls)
-                                        ? NORMAL_PRIORITY
-                                        : LOW_PRIORITY;
-                                BugInstance bi = new BugInstance(this,
-                                        BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
-                                                .addString("Implementing interface: " + inf.getClassName())
-                                                .addString("Methods:");
+                                int priority = AnalysisContext.currentAnalysisContext().isApplicationClass(superCls) ? NORMAL_PRIORITY : LOW_PRIORITY;
+                                BugInstance bi = new BugInstance(this, BugType.SCII_SPOILED_CHILD_INTERFACE_IMPLEMENTOR.name(), priority).addClass(cls)
+                                        .addString("Implementing interface: " + inf.getClassName()).addString("Methods:");
                                 for (QMethod methodInfo : infMethods) {
                                     bi.addString('\t' + methodInfo.toString());
                                 }

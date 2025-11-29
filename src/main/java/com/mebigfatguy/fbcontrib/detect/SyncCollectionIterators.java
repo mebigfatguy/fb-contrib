@@ -50,10 +50,10 @@ import edu.umd.cs.findbugs.ba.XField;
  * manually.
  */
 public class SyncCollectionIterators extends BytecodeScanningDetector {
-    private static final Set<String> synchCollectionNames = UnmodifiableSet.create("synchronizedSet", "synchronizedMap",
-            "synchronizedList", "synchronizedSortedSet", "synchronizedSortedMap");
+    private static final Set<String> synchCollectionNames = UnmodifiableSet.create("synchronizedSet", "synchronizedMap", "synchronizedList",
+            "synchronizedSortedSet", "synchronizedSortedMap");
 
-    private static final Set<String> mapToSetMethods = UnmodifiableSet.create("keySet", "entrySet", "values");
+    private static final Set<String> mapToSetMethods = UnmodifiableSet.create("keySet", "entrySet", Values.VALUES);
 
     enum State {
         SEEN_NOTHING, SEEN_SYNC, SEEN_LOAD
@@ -192,11 +192,9 @@ public class SyncCollectionIterators extends BytecodeScanningDetector {
         } else if (calledClass.startsWith("java/util/")) {
             if ("iterator".equals(getNameConstantOperand())) {
                 state = State.SEEN_NOTHING;
-                if (monitorObjects.isEmpty()
-                        || !syncIsMap(monitorObjects.get(monitorObjects.size() - 1), collectionInfo)) {
-                    bugReporter
-                            .reportBug(new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this));
+                if (monitorObjects.isEmpty() || !syncIsMap(monitorObjects.get(monitorObjects.size() - 1), collectionInfo)) {
+                    bugReporter.reportBug(
+                            new BugInstance(this, "SCI_SYNCHRONIZED_COLLECTION_ITERATORS", NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                 }
             }
             /* don't change state at this point */

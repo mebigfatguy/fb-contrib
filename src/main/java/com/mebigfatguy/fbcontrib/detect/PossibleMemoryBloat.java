@@ -60,28 +60,24 @@ import edu.umd.cs.findbugs.ba.XMethod;
 @CustomUserValue
 public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
-    private static final Set<String> bloatableSigs = UnmodifiableSet.create("Ljava/util/concurrent/ArrayBlockingQueue;",
-            "Ljava/util/ArrayList;", "Ljava/util/concurrent/BlockingQueue;", "Ljava/util/Collection;",
-            "Ljava/util/concurrent/ConcurrentHashMap;", "Ljava/util/concurrent/ConcurrentSkipListMap;",
-            "Ljava/util/concurrent/ConcurrentSkipListSet;", "Ljava/util/concurrent/CopyOnWriteArraySet;",
-            "Ljava/util/EnumSet;", "Ljava/util/EnumMap;", "Ljava/util/HashMap;", "Ljava/util/HashSet;",
-            "Ljava/util/Hashtable;", "Ljava/util/IdentityHashMap;", "Ljava/util/concurrent/LinkedBlockingQueue;",
-            "Ljava/util/LinkedHashMap;", "Ljava/util/LinkedHashSet;", "Ljava/util/LinkedList;", "Ljava/util/List;",
-            "Ljava/util/concurrent/PriorityBlockingQueue;", "Ljava/util/PriorityQueue;", "Ljava/util/Map;",
-            "Ljava/util/Queue;", "Ljava/util/Set;", "Ljava/util/SortedSet;", "Ljava/util/SortedMap;",
-            "Ljava/util/Stack;", Values.SIG_JAVA_UTIL_STRINGBUFFER, Values.SIG_JAVA_UTIL_STRINGBUILDER,
-            "Ljava/util/TreeMap;", "Ljava/util/TreeSet;", "Ljava/util/Vector;");
+    private static final Set<String> bloatableSigs = UnmodifiableSet.create("Ljava/util/concurrent/ArrayBlockingQueue;", "Ljava/util/ArrayList;",
+            "Ljava/util/concurrent/BlockingQueue;", "Ljava/util/Collection;", "Ljava/util/concurrent/ConcurrentHashMap;",
+            "Ljava/util/concurrent/ConcurrentSkipListMap;", "Ljava/util/concurrent/ConcurrentSkipListSet;", "Ljava/util/concurrent/CopyOnWriteArraySet;",
+            "Ljava/util/EnumSet;", "Ljava/util/EnumMap;", "Ljava/util/HashMap;", "Ljava/util/HashSet;", "Ljava/util/Hashtable;", "Ljava/util/IdentityHashMap;",
+            "Ljava/util/concurrent/LinkedBlockingQueue;", "Ljava/util/LinkedHashMap;", "Ljava/util/LinkedHashSet;", "Ljava/util/LinkedList;",
+            "Ljava/util/List;", "Ljava/util/concurrent/PriorityBlockingQueue;", "Ljava/util/PriorityQueue;", "Ljava/util/Map;", "Ljava/util/Queue;",
+            "Ljava/util/Set;", "Ljava/util/SortedSet;", "Ljava/util/SortedMap;", "Ljava/util/Stack;", Values.SIG_JAVA_UTIL_STRINGBUFFER,
+            Values.SIG_JAVA_UTIL_STRINGBUILDER, "Ljava/util/TreeMap;", "Ljava/util/TreeSet;", "Ljava/util/Vector;");
 
     private static final Set<String> nonBloatableSigs = UnmodifiableSet.create("Ljava/util/WeakHashMap;");
 
-    private static final Set<String> decreasingMethods = UnmodifiableSet.create("clear", "delete", "deleteCharAt",
-            "drainTo", "poll", "pollFirst", "pollLast", "pop", "remove", "removeAll", "removeAllElements",
-            "removeElementAt", "removeRange", "setLength", "take");
+    private static final Set<String> decreasingMethods = UnmodifiableSet.create("clear", "delete", "deleteCharAt", "drainTo", "poll", "pollFirst", "pollLast",
+            "pop", "remove", "removeAll", "removeAllElements", "removeElementAt", "removeRange", "setLength", "take");
 
-    private static final Set<String> increasingMethods = UnmodifiableSet.create("add", "addAll", "addElement",
-            "addFirst", "addLast", "append", "insertElementAt", "offer", "put");
+    private static final Set<String> increasingMethods = UnmodifiableSet.create("add", "addAll", "addElement", "addFirst", "addLast", "append",
+            "insertElementAt", "offer", "put");
 
-    private static final Set<String> mapSubsets = UnmodifiableSet.create("keySet", "entrySet", "values");
+    private static final Set<String> mapSubsets = UnmodifiableSet.create("keySet", "entrySet", Values.VALUES);
 
     private static final FQMethod javaxJaxbNewInstance = new FQMethod("javax/xml/bind/JAXBContext", "newInstance",
             "([Ljava/lang/Class;)Ljavax/xml/bind/JAXBContext;");
@@ -89,7 +85,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             "([Ljava/lang/Class;)Ljakarta/xml/bind/JAXBContext;");
 
     private static final Set<String> specialAnnotations = UnmodifiableSet.create("Ljavax/annotation/PostConstruct;", "Ljakarta/annotation/PostConstruct;");
-    
+
     private final BugReporter bugReporter;
     private Map<XField, FieldAnnotation> bloatableCandidates;
     private Map<XField, FieldAnnotation> bloatableFields;
@@ -145,8 +141,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
     private void reportThreadLocalBugs() {
         for (FieldAnnotation fieldAn : threadLocalNonStaticFields) {
-            bugReporter.reportBug(new BugInstance(this, BugType.PMB_INSTANCE_BASED_THREAD_LOCAL.name(), NORMAL_PRIORITY)
-                    .addClass(this).addField(fieldAn));
+            bugReporter.reportBug(new BugInstance(this, BugType.PMB_INSTANCE_BASED_THREAD_LOCAL.name(), NORMAL_PRIORITY).addClass(this).addField(fieldAn));
         }
 
     }
@@ -155,8 +150,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         for (Entry<XField, FieldAnnotation> entry : bloatableFields.entrySet()) {
             FieldAnnotation fieldAn = entry.getValue();
             if (fieldAn != null) {
-                bugReporter.reportBug(new BugInstance(this, BugType.PMB_POSSIBLE_MEMORY_BLOAT.name(), NORMAL_PRIORITY)
-                        .addClass(this).addField(fieldAn));
+                bugReporter.reportBug(new BugInstance(this, BugType.PMB_POSSIBLE_MEMORY_BLOAT.name(), NORMAL_PRIORITY).addClass(this).addField(fieldAn));
             }
         }
     }
@@ -168,8 +162,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
             String sig = f.getSignature();
             if (f.isStatic()) {
                 if (bloatableSigs.contains(sig)) {
-                    bloatableCandidates.put(
-                            XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()),
+                    bloatableCandidates.put(XFactory.createXField(cls.getClassName(), f.getName(), f.getSignature(), f.isStatic()),
                             FieldAnnotation.fromBCELField(cls, f));
                 }
             } else if ("Ljava/lang/ThreadLocal;".equals(sig)) {
@@ -204,13 +197,13 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         if (Values.STATIC_INITIALIZER.equals(methodName) || Values.CONSTRUCTOR.equals(methodName)) {
             return;
         }
-        
+
         super.visitCode(obj);
 
         for (Integer pc : jaxbContextRegs.values()) {
             bugReporter.reportBug(new BugInstance(this, BugType.PMB_LOCAL_BASED_JAXB_CONTEXT.name(),
-            		Values.STATIC_INITIALIZER.equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
-                            .addSourceLine(this, pc.intValue()));
+                    Values.STATIC_INITIALIZER.equals(getMethodName()) ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
+                    .addSourceLine(this, pc.intValue()));
         }
     }
 
@@ -248,8 +241,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
                         if (field != null) {
                             if (mapSubsets.contains(calledMethod)) {
                                 userValue = field;
-                            } else if ("remove".equals(calledMethod)
-                                    && "java/util/Iterator".equals(getClassConstantOperand())) {
+                            } else if ("remove".equals(calledMethod) && "java/util/Iterator".equals(getClassConstantOperand())) {
                                 bloatableCandidates.remove(field);
                                 bloatableFields.remove(field);
                             }
@@ -289,8 +281,7 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
 
                     XMethod xm = itm.getReturnValueOf();
                     if (xm != null) {
-                        FQMethod calledMethod = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(),
-                                xm.getSignature());
+                        FQMethod calledMethod = new FQMethod(xm.getClassName().replace('.', '/'), xm.getName(), xm.getSignature());
                         if (javaxJaxbNewInstance.equals(calledMethod) || jakartaJaxbNewInstance.equals(calledMethod)) {
                             jaxbContextRegs.put(RegisterUtils.getAStoreReg(this, seen), getPC());
                         }
@@ -325,33 +316,33 @@ public class PossibleMemoryBloat extends BytecodeScanningDetector {
         } else if (increasingMethods.contains(mName) && !isPrivateMethod) {
             FieldAnnotation fieldAn = bloatableCandidates.get(field);
             if (fieldAn != null) {
-            	if (!specialAnnotationMethod()) {
-            		bloatableFields.put(field, fieldAn);
-            	}
+                if (!specialAnnotationMethod()) {
+                    bloatableFields.put(field, fieldAn);
+                }
             }
         }
     }
-    
+
     private boolean specialAnnotationMethod() {
-    	if (isSpecialAnnotationMethod != null) {
-    		return isSpecialAnnotationMethod.booleanValue();
-    	}
-    	
-    	AnnotationEntry[] entries = getMethod().getAnnotationEntries();
-    	if (entries == null || entries.length == 0) {
-    		isSpecialAnnotationMethod = Boolean.FALSE;
-    		return false;
-    	}
-    	
-    	for (AnnotationEntry entry : entries) {
-    		String type = entry.getAnnotationType();
-    		isSpecialAnnotationMethod = Boolean.valueOf(specialAnnotations.contains(type));
-    		if (isSpecialAnnotationMethod.booleanValue()) {
-    			return true;
-    		}
-    	}
-    	
+        if (isSpecialAnnotationMethod != null) {
+            return isSpecialAnnotationMethod.booleanValue();
+        }
+
+        AnnotationEntry[] entries = getMethod().getAnnotationEntries();
+        if (entries == null || entries.length == 0) {
+            isSpecialAnnotationMethod = Boolean.FALSE;
+            return false;
+        }
+
+        for (AnnotationEntry entry : entries) {
+            String type = entry.getAnnotationType();
+            isSpecialAnnotationMethod = Boolean.valueOf(specialAnnotations.contains(type));
+            if (isSpecialAnnotationMethod.booleanValue()) {
+                return true;
+            }
+        }
+
         isSpecialAnnotationMethod = Boolean.FALSE;
-    	return false;
+        return false;
     }
 }
