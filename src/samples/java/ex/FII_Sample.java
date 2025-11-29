@@ -153,6 +153,15 @@ public class FII_Sample {
     public void put(Function<Map<String, Object>, Map<String, Object>> updateFunction) {
     }
 
+    public class Issue503<P, T> {
+
+        private Function<P, T> valueFunction;
+
+        public T get(P parameter) {
+            return get(() -> valueFunction.apply(parameter));
+        }
+    }
+
     public static class Bauble {
 
         public String getName() {
