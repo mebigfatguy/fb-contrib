@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -153,14 +154,18 @@ public class FII_Sample {
     public void put(Function<Map<String, Object>, Map<String, Object>> updateFunction) {
     }
 
-    /*
-     * public class Issue503<P, T> {
-     * 
-     * private Function<P, T> valueFunction;
-     * 
-     * public T get(P parameter) { return get(() -> valueFunction.apply(parameter));
-     * } }
-     */
+    public class Issue503<P, T> {
+
+        private Function<P, T> valueFunction;
+
+        public T get(P parameter) {
+            return get(() -> valueFunction.apply(parameter));
+        }
+
+        protected T get(Supplier<T> valueSupplier) {
+            return null;
+        }
+    }
 
     public static class Bauble {
 
