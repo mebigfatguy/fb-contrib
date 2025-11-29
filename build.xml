@@ -122,6 +122,8 @@
 			<pathelement location="${lib.dir}/jaxen-${jaxen.version}.jar" />
 			<pathelement location="${lib.dir}/slf4j-api-${slf4j-api.version}.jar" />
 			<pathelement location="${lib.dir}/slf4j-simple-${slf4j-simple.version}.jar" />
+            <pathelement location="${lib.dir}/commons-lang3-${commons-lang3.version}.jar" />
+            <pathelement location="${lib.dir}/commons-io-${commons-io.version}.jar" />
 		</path>
 		<path id="sb-contrib.samples.classpath">
             <pathelement location="${lib.dir}/akka-actor_2.12-${akka-actor_2.12.version}.jar" />
