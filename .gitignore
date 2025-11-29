@@ -15,6 +15,7 @@ samples/*.class
 javadoc
 version.properties
 .metadata/
+test-output/
 .~lock.yank.*
 /classes
 user.properties

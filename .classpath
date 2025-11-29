@@ -58,5 +58,6 @@
 	<classpathentry kind="lib" path="lib/spotbugs-ant-4.9.8.jar"/>
 	<classpathentry kind="lib" path="lib/spotbugs-annotations-4.9.8.jar"/>
 	<classpathentry kind="lib" path="lib/guava-33.5.0-jre.jar"/>
+	<classpathentry kind="lib" path="lib/slf4j-simple-2.0.16.jar"/>
 	<classpathentry kind="output" path="target/classes/main"/>
 </classpath>

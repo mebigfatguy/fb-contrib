@@ -118,9 +118,10 @@
             <pathelement location="${lib.dir}/byte-buddy-agent-${byte-buddy-agent.version}.jar" />
             <pathelement location="${lib.dir}/objenesis-${objenesis.version}.jar" />
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
-			<pathelement location="${lib.dir}/dom4j-${dom4j-version}.jar" />
+			<pathelement location="${lib.dir}/dom4j-${dom4j.version}.jar" />
 			<pathelement location="${lib.dir}/jaxen-${jaxen.version}.jar" />
 			<pathelement location="${lib.dir}/slf4j-api-${slf4j-api.version}.jar" />
+			<pathelement location="${lib.dir}/slf4j-simple-${slf4j-api.version}.jar" />
 		</path>
 		<path id="sb-contrib.samples.classpath">
             <pathelement location="${lib.dir}/akka-actor_2.12-${akka-actor_2.12.version}.jar" />
