@@ -28,6 +28,8 @@ import org.apache.bcel.classfile.ConstantString;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 
+import com.mebigfatguy.fbcontrib.collect.MethodInfo;
+import com.mebigfatguy.fbcontrib.collect.Statistics;
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.QMethod;
 import com.mebigfatguy.fbcontrib.utils.Values;
@@ -107,8 +109,15 @@ public class AbstractClassEmptyMethods extends BytecodeScanningDetector {
         }
 
         Method m = getMethod();
-        if (m.isSynthetic() || m.isFinal()) {
+        if (m.isSynthetic()) {
             return;
+        }
+
+        if (m.isFinal()) {
+            MethodInfo mi = Statistics.getStatistics().getMethodStatistics(getClassName(), getMethodName(), getMethodSig());
+            if (mi == null || mi.isDerived()) {
+                return;
+            }
         }
 
         if (!interfaceMethods.contains(new QMethod(methodName, m.getSignature()))) {

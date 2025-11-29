@@ -16,10 +16,16 @@ public abstract class ACEM_Sample implements Foo {
     public void doFPFoo() {
     }
 
-    public final void finalIssue504() {
+    @Override
+    public final void finalIssueDerived504() {
+    }
+
+    public final void finalIssueNonDerived504() {
     }
 }
 
 interface Foo {
     void doFPFoo();
+
+    void finalIssueDerived504();
 }
