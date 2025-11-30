@@ -3,6 +3,7 @@ package ex;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -221,4 +222,18 @@ public class FII_Sample {
     abstract class Foo363 {
         public abstract void foo(String string);
     }
+
+    @FunctionalInterface
+    interface Triad {
+        long fork(String x, Long y, List<String> z);
+    }
+
+    public long neptune(Triad t) {
+        return t.fork("Hello", Long.valueOf(1), Collections.singletonList("foo"));
+    }
+
+    public void summonNeptune() {
+        neptune((a, b, c) -> a.length() + b.longValue() + c.size());
+    }
+
 }

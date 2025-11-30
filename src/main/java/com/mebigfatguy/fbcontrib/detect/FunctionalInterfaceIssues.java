@@ -36,8 +36,10 @@ import org.apache.bcel.classfile.Constant;
 import org.apache.bcel.classfile.ConstantCP;
 import org.apache.bcel.classfile.ConstantInvokeDynamic;
 import org.apache.bcel.classfile.ConstantMethodHandle;
+import org.apache.bcel.classfile.ConstantMethodType;
 import org.apache.bcel.classfile.ConstantNameAndType;
 import org.apache.bcel.classfile.ConstantPool;
+import org.apache.bcel.classfile.ConstantUtf8;
 import org.apache.bcel.classfile.JavaClass;
 import org.apache.bcel.classfile.Method;
 import org.apache.bcel.generic.Type;
@@ -333,20 +335,25 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
                 case Const.INVOKEDYNAMIC: {
                     ConstantInvokeDynamic cid = (ConstantInvokeDynamic) getConstantRefOperand();
 
-                    ConstantMethodHandle cmh = getMethodHandle(cid.getBootstrapMethodAttrIndex());
+                    int bsAttId = cid.getBootstrapMethodAttrIndex();
+                    ConstantMethodHandle cmh = getMethodHandle(bsAttId);
                     String anonName = getAnonymousName(cmh);
                     if (anonName != null) {
 
-                        List<FIInfo> fiis = functionalInterfaceInfo.get(anonName);
-                        if (fiis == null) {
-                            fiis = new ArrayList<>();
-                            functionalInterfaceInfo.put(anonName, fiis);
-                        }
+                        String sig = getBootstrapSig(bsAttId);
+                        if ((sig != null) && SignatureUtils.getNumParameters(sig) == 1) {
 
-                        int lastOp = getPrevOpcode(1);
-                        FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this),
-                                (lastOp == Const.GETFIELD) || (lastOp == Const.GETSTATIC) || OpcodeUtils.isALoad(lastOp), cmh.getReferenceKind());
-                        fiis.add(fii);
+                            List<FIInfo> fiis = functionalInterfaceInfo.get(anonName);
+                            if (fiis == null) {
+                                fiis = new ArrayList<>();
+                                functionalInterfaceInfo.put(anonName, fiis);
+                            }
+
+                            int lastOp = getPrevOpcode(1);
+                            FIInfo fii = new FIInfo(getMethod(), SourceLineAnnotation.fromVisitedInstruction(this),
+                                    (lastOp == Const.GETFIELD) || (lastOp == Const.GETSTATIC) || OpcodeUtils.isALoad(lastOp), cmh.getReferenceKind());
+                            fiis.add(fii);
+                        }
                     }
                     break;
                 }
@@ -588,6 +595,23 @@ public class FunctionalInterfaceIssues extends BytecodeScanningDetector {
             Constant c = getConstantPool().getConstant(arg);
             if (c instanceof ConstantMethodHandle) {
                 return (ConstantMethodHandle) c;
+            }
+        }
+
+        return null;
+    }
+
+    @Nullable
+    private String getBootstrapSig(int bootstrapIndex) {
+        BootstrapMethod bsMethod = bootstrapAtt.getBootstrapMethods()[bootstrapIndex];
+        ConstantPool cp = getConstantPool();
+        for (int arg : bsMethod.getBootstrapArguments()) {
+            Constant c = cp.getConstant(arg);
+            if (c instanceof ConstantMethodType) {
+                c = cp.getConstant(((ConstantMethodType) c).getDescriptorIndex());
+                if (c instanceof ConstantUtf8) {
+                    return ((ConstantUtf8) c).getBytes();
+                }
             }
         }
 
