@@ -30,8 +30,8 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.annotation.Nullable;
-import org.apache.bcel.Const;
 
+import org.apache.bcel.Const;
 import org.apache.bcel.Repository;
 import org.apache.bcel.classfile.Code;
 import org.apache.bcel.classfile.CodeException;
@@ -51,6 +51,7 @@ import com.mebigfatguy.fbcontrib.utils.SignatureUtils;
 import com.mebigfatguy.fbcontrib.utils.ToString;
 import com.mebigfatguy.fbcontrib.utils.Values;
 
+import aj.org.objectweb.asm.Opcodes;
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
@@ -139,8 +140,8 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
                     if (!hasValidFalseReturn && (catchFalseReturnPC >= 0) && !method.getName().startsWith("is")) {
                         bugReporter.reportBug(new BugInstance(this, BugType.EXS_EXCEPTION_SOFTENING_RETURN_FALSE.name(),
-                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this,
-                                        catchFalseReturnPC));
+                                (method.getAccessFlags() & Opcodes.ACC_PRIVATE) != 0 ? LOW_PRIORITY : NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                .addSourceLine(this, catchFalseReturnPC));
                     }
                 }
             }
@@ -183,8 +184,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
 
             if (seen == Const.ATHROW) {
                 processThrow();
-            } else if ((seen == Const.IRETURN) && isBooleanMethod && !hasValidFalseReturn
-                    && (stack.getStackDepth() > 0)) {
+            } else if ((seen == Const.IRETURN) && isBooleanMethod && !hasValidFalseReturn && (stack.getStackDepth() > 0)) {
                 processBooleanReturn();
             }
 
@@ -214,8 +214,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
                             if (!anyRuntimes) {
 
                                 if (constrainingInfo == null) {
-                                    constrainingInfo = getConstrainingInfo(getClassContext().getJavaClass(),
-                                            getMethod());
+                                    constrainingInfo = getConstrainingInfo(getClassContext().getJavaClass(), getMethod());
                                 }
 
                                 BugType bug = null;
@@ -249,8 +248,7 @@ public class ExceptionSoftening extends BytecodeScanningDetector {
                                 }
 
                                 if (bug != null) {
-                                    bugReporter.reportBug(new BugInstance(this, bug.name(), priority).addClass(this)
-                                            .addMethod(this).addSourceLine(this));
+                                    bugReporter.reportBug(new BugInstance(this, bug.name(), priority).addClass(this).addMethod(this).addSourceLine(this));
                                 }
                             }
                         }

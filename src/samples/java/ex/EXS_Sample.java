@@ -115,7 +115,7 @@ class Issue505 {
     public void athrower() throws Exception {
     }
 
-    public void catchInSynthetic() {
+    private void catchInSynthetic() {
         java.util.Collections.emptyList().forEach(c -> {
             try {
                 athrower();
@@ -129,7 +129,7 @@ class Issue505 {
         java.util.Collections.emptyList().forEach(c -> catchNotInSynthetic());
     }
 
-    public void catchNotInSynthetic() {
+    private void catchNotInSynthetic() {
         try {
             athrower();
         } catch (Exception e) {
