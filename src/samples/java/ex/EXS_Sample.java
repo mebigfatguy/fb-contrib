@@ -84,34 +84,59 @@ public class EXS_Sample extends Super {
             return false;
         }
     }
-    
+
     public long fpRTToRT447(String s) {
-    	try {
-    		throw new MyRTE447();
-    	} catch (MyRTE447 r) {
-    		MyRTE447 rr = r.embellish("important!");
-    		if (s == null) {
-    			throw r;
-    		} else {
-    			throw rr;
-    		}
-    	}
+        try {
+            throw new MyRTE447();
+        } catch (MyRTE447 r) {
+            MyRTE447 rr = r.embellish("important!");
+            if (s == null) {
+                throw r;
+            } else {
+                throw rr;
+            }
+        }
     }
 }
 
 class MyRTE447 extends RuntimeException {
-	String data;
+    String data;
 
-	public MyRTE447() {
-	}
+    public MyRTE447() {
+    }
 
-	MyRTE447 embellish(String s) {
-		data = s;
-		return this;
-	}
+    MyRTE447 embellish(String s) {
+        data = s;
+        return this;
+    }
 }
 
+class Issue505 {
+    public void athrower() throws Exception {
+    }
 
+    public void catchInSynthetic() {
+        java.util.Collections.emptyList().forEach(c -> {
+            try {
+                athrower();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+    }
+
+    public void callUsesSynthetic() {
+        java.util.Collections.emptyList().forEach(c -> catchNotInSynthetic());
+    }
+
+    public void catchNotInSynthetic() {
+        try {
+            athrower();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
+}
 
 class Super {
     public void constrainedNone() {
