@@ -156,6 +156,12 @@ public class MockitoIssues extends BytecodeScanningDetector {
                             bugReporter.reportBug(new BugInstance(this, BugType.MK_UNNEEDED_OPENMOCKS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                     .addSourceLine(this));
                         }
+                    } else if ("org/mockito/Mockito".equals(clsName)) {
+                        String methodName = getNameConstantOperand();
+                        if ("validateMockitoUsage".equals(methodName)) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.MK_UNNEEDED_VALIDATEMOCKITOUSAGE.name(), NORMAL_PRIORITY).addClass(this)
+                                    .addMethod(this).addSourceLine(this));
+                        }
                     }
                 }
                 String methodName = getNameConstantOperand();

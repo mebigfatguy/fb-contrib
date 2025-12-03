@@ -6939,6 +6939,19 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details> 
     </BugPattern>
     
+    <BugPattern type="MK_UNNEEDED_VALIDATEMOCKITOUSAGE">
+        <ShortDescription>Class uses MockitoExtension so doesn't need to validateMockitoUsage</ShortDescription>
+        <LongDescription>Class {0} uses MockitoExtension so doesn't need to validateMockitoUsage</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class defines that it uses 
+            <code>@ExtendWith(MockitoExtension.class)</code>
+            therefore there is no need to use
+            <code>Mockito.validateMockitoUsage()</code>
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
     
 
 	<!-- BugCode -->

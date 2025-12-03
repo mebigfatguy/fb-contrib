@@ -340,7 +340,7 @@
     
 
     
-    <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues" speed="fast" reports="MK_CAPTOR_IN_WHEN,MK_MOCKED_FIELD_REASSIGNED,MK_SPIED_FIELD_REASSIGNED,MK_UNNEEDED_OPENMOCKS,MK_MOCKED_FIELD_IN_CODE,MK_SPIED_FIELD_IN_CODE,MK_USE_DORETURN" />
+    <Detector class="com.mebigfatguy.fbcontrib.detect.MockitoIssues" speed="fast" reports="MK_CAPTOR_IN_WHEN,MK_MOCKED_FIELD_REASSIGNED,MK_SPIED_FIELD_REASSIGNED,MK_UNNEEDED_OPENMOCKS,MK_MOCKED_FIELD_IN_CODE,MK_SPIED_FIELD_IN_CODE,MK_USE_DORETURN,MK_UNNEEDED_VALIDATEMOCKITOUSAGE" />
 
     <!-- COMMENT OUT FOR POINT RELEASE -->
 
@@ -679,4 +679,5 @@
     <BugPattern abbrev="MK" type="MK_SPIED_FIELD_REASSIGNED" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_UNNEEDED_OPENMOCKS" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_USE_DORETURN" category="CORRECTNESS" />
+    <BugPattern abbrev="MK" type="MK_UNNEEDED_VALIDATEMOCKITOUSAGE" category="CORRECTNESS" />
 </FindbugsPlugin>
