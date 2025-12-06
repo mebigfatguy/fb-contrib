@@ -6,7 +6,7 @@
 		<ShortDescription>fb-contrib plugin</ShortDescription>
 		<Details>
 			<![CDATA[
-			<p>This plugin contains FindBugs detectors from the fb-contrib project</p>
+			<p>This plugin contains SpotBugs detectors from the sb-contrib project</p>
 			]]>
 		</Details>
 		<BugsUrl>http://fb-contrib.sourceforge.net/bugdescriptions.html</BugsUrl>
@@ -93,7 +93,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ListIndexedIterating">
 		<Details>
 			<![CDATA[
-			<p>Looks for for loops that iterate over a java.util.List using an integer index, and get,
+			<p>Looks for for-loops that iterate over a java.util.List using an integer index, and get,
 			rather than using an Iterator. An iterator may perform better depending on List implementation,
 			but more importantly will allow the code to be converted to other collection types.</p>
 			<p>It is a moderately fast detector.</p>
@@ -6515,7 +6515,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <![CDATA[
         <p>This method uses a suboptimal way of determinng whether there are any items in a stream that match some value.
         Either it uses collect(), and checks the size, or uses the count() stream action. Either way, it is simpler and
-        economical to just use anyMatch, as as soon as an item is found, you can stop the stream.
+        economical to just use anyMatch, as, as soon as an item is found, you can stop the stream.
         </p>
         <p>
         Instead of
