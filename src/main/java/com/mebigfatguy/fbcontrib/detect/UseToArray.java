@@ -106,8 +106,8 @@ public class UseToArray extends AbstractCollectionScanningDetector {
                             sawAlias = true;
                         }
                     }
-                } else if (("keySet".equals(methodName) || "values".equals(methodName) || "iterator".equals(methodName)
-                        || "next".equals(methodName)) && (stack.getStackDepth() > 0)) {
+                } else if (("keySet".equals(methodName) || Values.VALUES.equals(methodName) || "iterator".equals(methodName) || "next".equals(methodName))
+                        && (stack.getStackDepth() > 0)) {
                     OpcodeStack.Item itm = stack.getStackItem(0);
                     reg = isLocalCollection(itm);
                     if (reg >= 0) {
@@ -146,8 +146,8 @@ public class UseToArray extends AbstractCollectionScanningDetector {
                     OpcodeStack.Item valueItem = stack.getStackItem(0);
                     reg = isLocalCollection(arItem);
                     if ((reg >= 0) && (idxItem.getUserValue() != null) && (valueItem.getUserValue() != null)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.UTA_USE_TO_ARRAY.name(), NORMAL_PRIORITY)
-                                .addClass(this).addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(
+                                new BugInstance(this, BugType.UTA_USE_TO_ARRAY.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
                     }
                 }
             } else if ((seen == Const.CHECKCAST) && (stack.getStackDepth() > 0)) {

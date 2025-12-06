@@ -7,7 +7,7 @@
 
     <groupId>com.mebigfatguy.fb-contrib</groupId>
     <artifactId>fb-contrib</artifactId>
-    <version>7.7.1</version>
+    <version>7.7.2</version>
 
 
     <!-- TODO: Oss parent is obsolete, define items directly for releasing -->

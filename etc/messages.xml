@@ -93,7 +93,7 @@
 	<Detector class="com.mebigfatguy.fbcontrib.detect.ListIndexedIterating">
 		<Details>
 			<![CDATA[
-			<p>Looks for for loops that iterate over a java.util.List using an integer index, and get,
+			<p>Looks for for-loops that iterate over a java.util.List using an integer index, and get,
 			rather than using an Iterator. An iterator may perform better depending on List implementation,
 			but more importantly will allow the code to be converted to other collection types.</p>
 			<p>It is a moderately fast detector.</p>
@@ -6495,9 +6495,9 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <code></pre>
         baubles.stream().map(Bauble::getName).collect(Collectors.toSet())
         </pre></code>
-        or if the lambda expression is a where the parameter is passed a method reference like
+        or if the lambda expression is one where the parameter is passed to a method of a field, like
         <code><pre>
-        baubles.stream().map(b -> magic.getSpell(bauble)).collect(Collectors.toSet())
+        baubles.stream().map(b -> magic.getSpell(b)).collect(Collectors.toSet())
         </pre></code>
         do
         <code></pre>
@@ -6515,7 +6515,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         <![CDATA[
         <p>This method uses a suboptimal way of determinng whether there are any items in a stream that match some value.
         Either it uses collect(), and checks the size, or uses the count() stream action. Either way, it is simpler and
-        economical to just use anyMatch, as as soon as an item is found, you can stop the stream.
+        economical to just use anyMatch, as, as soon as an item is found, you can stop the stream.
         </p>
         <p>
         Instead of
@@ -6939,6 +6939,19 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details> 
     </BugPattern>
     
+    <BugPattern type="MK_UNNEEDED_VALIDATEMOCKITOUSAGE">
+        <ShortDescription>Class uses MockitoExtension so doesn't need to validateMockitoUsage</ShortDescription>
+        <LongDescription>Class {0} uses MockitoExtension so doesn't need to validateMockitoUsage</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This class defines that it uses 
+            <code>@ExtendWith(MockitoExtension.class)</code>
+            therefore there is no need to use
+            <code>Mockito.validateMockitoUsage()</code>
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
     
 
 	<!-- BugCode -->

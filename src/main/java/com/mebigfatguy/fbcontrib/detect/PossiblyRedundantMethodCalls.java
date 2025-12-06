@@ -102,7 +102,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
         riskyMethodNameContents.add("pop");
         riskyMethodNameContents.add("scan");
         riskyMethodNameContents.add("skip");
-        riskyMethodNameContents.add("clone");
+        riskyMethodNameContents.add(Values.CLONE);
         riskyMethodNameContents.add("close");
         riskyMethodNameContents.add("copy");
         riskyMethodNameContents.add("currentTimeMillis");
@@ -331,8 +331,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                         }
                     }
                 }
-            } else if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE)
-                    || (seen == Const.INVOKESTATIC)) {
+            } else if ((seen == Const.INVOKEVIRTUAL) || (seen == Const.INVOKEINTERFACE) || (seen == Const.INVOKESTATIC)) {
 
                 String className = getClassConstantOperand();
                 String methodName = getNameConstantOperand();
@@ -356,8 +355,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
 
                     if (reg >= 0) {
                         mc = localMethodCalls.get(Integer.valueOf(reg));
-                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className,
-                                getNameConstantOperand(), signature);
+                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, getNameConstantOperand(), signature);
                         if ((mi != null) && mi.getModifiesState()) {
                             clearFieldMethods(String.valueOf(reg));
                             return;
@@ -368,8 +366,7 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                             fieldSource = "";
                         }
                         mc = fieldMethodCalls.get(new FieldInfo(fieldSource, field.getName()));
-                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className,
-                                getNameConstantOperand(), signature);
+                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(className, getNameConstantOperand(), signature);
                         if ((mi != null) && mi.getModifiesState()) {
                             clearFieldMethods(fieldSource);
                             return;
@@ -406,9 +403,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                     }
 
                     if (mc != null) {
-                        if (!signature.endsWith(Values.SIG_VOID) && methodName.equals(mc.getName())
-                                && signature.equals(mc.getSignature()) && !isRiskyName(className, methodName)
-                                && !commonMethods.contains(new FQMethod(className, methodName, signature))) {
+                        if (!signature.endsWith(Values.SIG_VOID) && methodName.equals(mc.getName()) && signature.equals(mc.getSignature())
+                                && !isRiskyName(className, methodName) && !commonMethods.contains(new FQMethod(className, methodName, signature))) {
                             Object[] parms = mc.getParms();
                             if (Arrays.equals(parms, parmConstants)) {
                                 int ln = getLineNumber(pc);
@@ -418,9 +414,8 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                                     MethodInfo mi = statistics.getMethodStatistics(className, methodName, signature);
 
                                     bugReporter.reportBug(
-                                            new BugInstance(this, BugType.PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS.name(),
-                                                    getBugPriority(methodName, mi)).addClass(this).addMethod(this)
-                                                            .addSourceLine(this).addString(methodName + signature));
+                                            new BugInstance(this, BugType.PRMC_POSSIBLY_REDUNDANT_METHOD_CALLS.name(), getBugPriority(methodName, mi))
+                                                    .addClass(this).addMethod(this).addSourceLine(this).addString(methodName + signature));
                                 }
                             }
                         }
@@ -437,20 +432,17 @@ public class PossiblyRedundantMethodCalls extends BytecodeScanningDetector {
                     } else {
                         int ln = getLineNumber(pc);
                         if (seen == Const.INVOKESTATIC) {
-                            staticMethodCalls.put(className,
-                                    new MethodCall(methodName, signature, parmConstants, pc, ln));
+                            staticMethodCalls.put(className, new MethodCall(methodName, signature, parmConstants, pc, ln));
                         } else {
                             if (reg >= 0) {
-                                localMethodCalls.put(Integer.valueOf(reg),
-                                        new MethodCall(methodName, signature, parmConstants, pc, ln));
+                                localMethodCalls.put(Integer.valueOf(reg), new MethodCall(methodName, signature, parmConstants, pc, ln));
                             } else if (field != null) {
                                 OpcodeStack.Item obj = stack.getStackItem(parmCount);
                                 fieldSource = (String) obj.getUserValue();
                                 if (fieldSource == null) {
                                     fieldSource = "";
                                 }
-                                fieldMethodCalls.put(new FieldInfo(fieldSource, field.getName()),
-                                        new MethodCall(methodName, signature, parmConstants, pc, ln));
+                                fieldMethodCalls.put(new FieldInfo(fieldSource, field.getName()), new MethodCall(methodName, signature, parmConstants, pc, ln));
                             }
                         }
                     }

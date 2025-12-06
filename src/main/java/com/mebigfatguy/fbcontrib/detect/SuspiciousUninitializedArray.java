@@ -119,7 +119,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
             return;
         }
 
-        if (isEnum && "values".equals(m.getName())) {
+        if (isEnum && Values.VALUES.equals(m.getName())) {
             return;
         }
 
@@ -166,8 +166,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
             case Const.NEWARRAY: {
                 if (!isTOS0()) {
                     int typeCode = getIntConstant();
-                    if ((typeCode != Const.T_BYTE) && returnArraySig
-                            .equals(SignatureUtils.toArraySignature(SignatureUtils.getTypeCodeSignature(typeCode)))) {
+                    if ((typeCode != Const.T_BYTE) && returnArraySig.equals(SignatureUtils.toArraySignature(SignatureUtils.getTypeCodeSignature(typeCode)))) {
                         userValue = SUAUserValue.UNINIT_ARRAY;
                     }
                 }
@@ -200,8 +199,7 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                 List<String> types = SignatureUtils.getParameterSignatures(methodSig);
                 for (int t = 0; t < types.size(); t++) {
                     String parmSig = types.get(t);
-                    if (returnArraySig.equals(parmSig) || Values.SIG_JAVA_LANG_OBJECT.equals(parmSig)
-                            || SignatureBuilder.SIG_OBJECT_ARRAY.equals(parmSig)) {
+                    if (returnArraySig.equals(parmSig) || Values.SIG_JAVA_LANG_OBJECT.equals(parmSig) || SignatureBuilder.SIG_OBJECT_ARRAY.equals(parmSig)) {
                         int parmIndex = types.size() - t - 1;
                         if (stack.getStackDepth() > parmIndex) {
                             OpcodeStack.Item item = stack.getStackItem(parmIndex);
@@ -324,8 +322,8 @@ public class SuspiciousUninitializedArray extends BytecodeScanningDetector {
                     OpcodeStack.Item item = stack.getStackItem(0);
                     SUAUserValue uv = (SUAUserValue) item.getUserValue();
                     if ((uv != null) && (uv.isUnitializedArray())) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.SUA_SUSPICIOUS_UNINITIALIZED_ARRAY.name(),
-                                NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.SUA_SUSPICIOUS_UNINITIALIZED_ARRAY.name(), NORMAL_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
                     }
                 }
             }

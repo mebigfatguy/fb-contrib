@@ -52,18 +52,20 @@ import edu.umd.cs.findbugs.ba.SignatureParser;
  */
 public class CollectStatistics extends BytecodeScanningDetector implements NonReportingDetector {
     private static final Set<String> COMMON_METHOD_SIG_PREFIXES = UnmodifiableSet.create(
-            // @formatter:off
+    // @formatter:off
             new SignatureBuilder().withMethodName(Values.CONSTRUCTOR).toString(),
             new SignatureBuilder().withMethodName(Values.TOSTRING).withReturnType(Values.SLASHED_JAVA_LANG_STRING)
                     .toString(),
             new SignatureBuilder().withMethodName(Values.HASHCODE).withReturnType(Values.SIG_PRIMITIVE_INT).toString(),
-            "clone()", "values()",
-            new SignatureBuilder().withMethodName("main").withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString()
+            new SignatureBuilder().withMethodName(Values.EQUALS).withParamTypes(Values.SLASHED_JAVA_LANG_OBJECT).withReturnType(Values.SIG_PRIMITIVE_BOOLEAN).toString(),
+            new SignatureBuilder().withMethodName("main").withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString(),
+            "clone()",
+            "values()"
     // @formatter:on
     );
 
     private static final Set<String> BEAN_ANNOTATIONS = UnmodifiableSet.create(
-            // @formatter:off
+    // @formatter:off
             "Lorg/springframework/stereotype/Component;", "Lorg/springframework/stereotype/Controller;",
             "Lorg/springframework/stereotype/Repository;", "Lorg/springframework/stereotype/Service;"
     // @formatter:on
@@ -150,10 +152,9 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
             isDerived = isConstrained(qm);
         }
 
-        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(),
-                accessFlags, code.length, numMethodCalls, isDerived);
-        if (clsName.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0
-                || (accessFlags & (Const.ACC_ABSTRACT | Const.ACC_INTERFACE | Const.ACC_ANNOTATION)) != 0) {
+        MethodInfo mi = Statistics.getStatistics().addMethodStatistics(clsName, getMethodName(), getMethodSig(), accessFlags, code.length, numMethodCalls,
+                isDerived);
+        if (clsName.indexOf(Values.INNER_CLASS_SEPARATOR) >= 0 || (accessFlags & (Const.ACC_ABSTRACT | Const.ACC_INTERFACE | Const.ACC_ANNOTATION)) != 0) {
             mi.addCallingAccess(Const.ACC_PUBLIC);
         } else if ((accessFlags & Const.ACC_PRIVATE) == 0) {
             if (isAssociationedWithAnnotations(method)) {
@@ -198,9 +199,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                                 calledMethods = selfCallTree.get(curMethod);
                             }
 
-                            calledMethods.add(
-                                    new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()),
-                                            seen == Const.INVOKESPECIAL));
+                            calledMethods.add(new CalledMethod(new QMethod(getNameConstantOperand(), getSigConstantOperand()), seen == Const.INVOKESPECIAL));
                         }
                     }
                 }
@@ -232,8 +231,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                 Map.Entry<QMethod, Set<CalledMethod>> callerEntry = callerIt.next();
                 QMethod caller = callerEntry.getKey();
 
-                MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(),
-                        caller.getSignature());
+                MethodInfo callerMi = statistics.getMethodStatistics(clsName, caller.getMethodName(), caller.getSignature());
                 if (callerMi == null) {
                     // odd, shouldn't happen
                     foundNewCall = true;
@@ -248,8 +246,7 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                             foundNewCall = true;
                             break;
                         }
-                        MethodInfo calleeMi = statistics.getMethodStatistics(clsName,
-                                calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
+                        MethodInfo calleeMi = statistics.getMethodStatistics(clsName, calledMethod.callee.getMethodName(), calledMethod.callee.getSignature());
                         if (calleeMi == null) {
                             // a super or sub class probably implements this method so just assume it
                             // modifies state

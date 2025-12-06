@@ -3,6 +3,7 @@ package ex;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.BitSet;
+import java.util.Collections;
 import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -153,6 +155,19 @@ public class FII_Sample {
     public void put(Function<Map<String, Object>, Map<String, Object>> updateFunction) {
     }
 
+    public class Issue503<P, T> {
+
+        private Function<P, T> valueFunction;
+
+        public T get(P parameter) {
+            return get(() -> valueFunction.apply(parameter));
+        }
+
+        protected T get(Supplier<T> valueSupplier) {
+            return null;
+        }
+    }
+
     public static class Bauble {
 
         public String getName() {
@@ -207,4 +222,18 @@ public class FII_Sample {
     abstract class Foo363 {
         public abstract void foo(String string);
     }
+
+    @FunctionalInterface
+    interface Triad {
+        long fork(String x, Long y, List<String> z);
+    }
+
+    public long neptune(Triad t) {
+        return t.fork("Hello", Long.valueOf(1), Collections.singletonList("foo"));
+    }
+
+    public void summonNeptune() {
+        neptune((a, b, c) -> a.length() + b.longValue() + c.size());
+    }
+
 }

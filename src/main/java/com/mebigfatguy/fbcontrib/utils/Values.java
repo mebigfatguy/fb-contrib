@@ -18,16 +18,16 @@
  */
 package com.mebigfatguy.fbcontrib.utils;
 
-import edu.umd.cs.findbugs.BytecodeScanningDetector;
-import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
-import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
-
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.bcel.Const;
 import org.apache.bcel.generic.Type;
+
+import edu.umd.cs.findbugs.BytecodeScanningDetector;
+import edu.umd.cs.findbugs.internalAnnotations.DottedClassName;
+import edu.umd.cs.findbugs.internalAnnotations.SlashedClassName;
 
 /**
  * a class holding common Const used throughout fb-contrib
@@ -49,6 +49,9 @@ public final class Values {
     public static final String STATIC_INITIALIZER = "<clinit>";
     public static final String TOSTRING = "toString";
     public static final String HASHCODE = "hashCode";
+    public static final String EQUALS = "equals";
+    public static final String CLONE = "clone";
+    public static final String VALUES = "values";
 
     public static final String SIG_PRIMITIVE_BOOLEAN = Type.BOOLEAN.getSignature();
     public static final String SIG_PRIMITIVE_CHAR = Type.CHAR.getSignature();
@@ -94,16 +97,13 @@ public final class Values {
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_OBJECT = "java/lang/Object";
-    public static final String SIG_JAVA_LANG_OBJECT = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_OBJECT
-            + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_OBJECT = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_OBJECT + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRING = "java/lang/String";
-    public static final String SIG_JAVA_LANG_STRING = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_STRING
-            + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_STRING = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_STRING + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_VOID = "java/lang/Void";
-    public static final String SIG_JAVA_LANG_VOID = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_VOID
-            + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_VOID = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_VOID + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
 
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_STRINGBUILDER = "java/lang/StringBuilder";
@@ -137,8 +137,7 @@ public final class Values {
     public static final String SLASHED_JAVA_LANG_CHARACTER = "java/lang/Character";
     @SlashedClassName
     public static final String SLASHED_JAVA_LANG_BOOLEAN = "java/lang/Boolean";
-    public static final String SIG_JAVA_LANG_BOOLEAN = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_BOOLEAN
-            + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
+    public static final String SIG_JAVA_LANG_BOOLEAN = SIG_QUALIFIED_CLASS_PREFIX + SLASHED_JAVA_LANG_BOOLEAN + SIG_QUALIFIED_CLASS_SUFFIX_CHAR;
     @SlashedClassName
     public static final String SLASHED_JAVA_UTIL_COMPARATOR = "java/util/Comparator";
     @SlashedClassName

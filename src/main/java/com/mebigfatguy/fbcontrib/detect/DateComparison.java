@@ -27,6 +27,7 @@ import org.apache.bcel.classfile.Method;
 
 import com.mebigfatguy.fbcontrib.utils.OpcodeUtils;
 import com.mebigfatguy.fbcontrib.utils.RegisterUtils;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -115,7 +116,7 @@ public class DateComparison extends BytecodeScanningDetector {
                 String cls = getDottedClassConstantOperand();
                 if (dateClasses.contains(cls)) {
                     String methodName = getNameConstantOperand();
-                    if ("equals".equals(methodName) || "after".equals(methodName) || "before".equals(methodName)) {
+                    if (Values.EQUALS.equals(methodName) || "after".equals(methodName) || "before".equals(methodName)) {
                         state = State.SAW_CMP1;
                     }
                 }
@@ -150,8 +151,8 @@ public class DateComparison extends BytecodeScanningDetector {
                 register2_2 = RegisterUtils.getALoadReg(this, seen);
             }
 
-            if ((register2_2 > -1) && (((register1_1 == register2_1) && (register1_2 == register2_2))
-                    || ((register1_1 == register2_2) && (register1_2 == register2_1)))) {
+            if ((register2_2 > -1)
+                    && (((register1_1 == register2_1) && (register1_2 == register2_2)) || ((register1_1 == register2_2) && (register1_2 == register2_1)))) {
                 state = State.SAW_LOAD2_2;
             } else {
                 state = State.SAW_NOTHING;
@@ -163,7 +164,7 @@ public class DateComparison extends BytecodeScanningDetector {
                 String cls = getDottedClassConstantOperand();
                 if (dateClasses.contains(cls)) {
                     String methodName = getNameConstantOperand();
-                    if ("equals".equals(methodName) || "after".equals(methodName) || "before".equals(methodName)) {
+                    if (Values.EQUALS.equals(methodName) || "after".equals(methodName) || "before".equals(methodName)) {
                         state = State.SAW_CMP2;
                     }
                 }
@@ -175,8 +176,7 @@ public class DateComparison extends BytecodeScanningDetector {
 
         case SAW_CMP2:
             if (seen == Const.IFEQ) {
-                bugReporter.reportBug(new BugInstance("DDC_DOUBLE_DATE_COMPARISON", NORMAL_PRIORITY)
-                        .addClassAndMethod(this).addSourceLine(this));
+                bugReporter.reportBug(new BugInstance("DDC_DOUBLE_DATE_COMPARISON", NORMAL_PRIORITY).addClassAndMethod(this).addSourceLine(this));
             }
             state = State.SAW_NOTHING;
             break;

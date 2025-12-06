@@ -103,21 +103,19 @@ public class CloneUsability extends BytecodeScanningDetector {
     public void visitCode(Code obj) {
         try {
             Method m = getMethod();
-            if (m.isPublic() && !m.isSynthetic() && "clone".equals(m.getName()) && (m.getArgumentTypes().length == 0)) {
+            if (m.isPublic() && !m.isSynthetic() && Values.CLONE.equals(m.getName()) && (m.getArgumentTypes().length == 0)) {
 
                 String returnClsName = m.getReturnType().getSignature();
                 returnClsName = SignatureUtils.stripSignature(returnClsName);
                 if (!clsName.equals(returnClsName)) {
                     if (Values.DOTTED_JAVA_LANG_OBJECT.equals(returnClsName)) {
                         bugReporter.reportBug(
-                                new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this));
+                                new BugInstance(this, BugType.CU_CLONE_USABILITY_OBJECT_RETURN.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                     } else {
                         JavaClass clonedClass = Repository.lookupClass(returnClsName);
                         if (!cls.instanceOf(clonedClass)) {
                             bugReporter.reportBug(
-                                    new BugInstance(this, BugType.CU_CLONE_USABILITY_MISMATCHED_RETURN.name(),
-                                            HIGH_PRIORITY).addClass(this).addMethod(this));
+                                    new BugInstance(this, BugType.CU_CLONE_USABILITY_MISMATCHED_RETURN.name(), HIGH_PRIORITY).addClass(this).addMethod(this));
                         }
                     }
                 }
@@ -133,9 +131,7 @@ public class CloneUsability extends BytecodeScanningDetector {
                     }
 
                     if (!throwsCNFE) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, BugType.CU_CLONE_USABILITY_THROWS.name(), NORMAL_PRIORITY)
-                                        .addClass(this).addMethod(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.CU_CLONE_USABILITY_THROWS.name(), NORMAL_PRIORITY).addClass(this).addMethod(this));
                     }
                 }
             }

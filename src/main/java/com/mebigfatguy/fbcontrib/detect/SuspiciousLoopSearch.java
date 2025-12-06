@@ -143,7 +143,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
     }
 
     private void sawOpcodeAfterNothing(int seen) {
-        if ((seen == Const.INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand())
+        if ((seen == Const.INVOKEVIRTUAL) && Values.EQUALS.equals(getNameConstantOperand())
                 && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
             state = State.SAW_EQUALS;
         } else if (seen == Const.IF_ICMPNE) {
@@ -188,8 +188,7 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                     // ignore boolean flag stores, as this is a
                     // relatively normal occurrence
                     if (!Values.SIG_PRIMITIVE_BOOLEAN.equals(sig) && !Values.SIG_JAVA_LANG_BOOLEAN.equals(sig)) {
-                        block.storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)),
-                                Integer.valueOf(getPC()));
+                        block.storeRegs.put(Integer.valueOf(RegisterUtils.getStoreReg(this, seen)), Integer.valueOf(getPC()));
                     }
                 }
             } else if (OpcodeUtils.isReturn(seen)) {
@@ -240,10 +239,8 @@ public class SuspiciousLoopSearch extends BytecodeScanningDetector {
                 Integer pc = loadedRegs.get(block.storeRegs.entrySet().iterator().next().getKey());
                 if ((pc == null) || (pc.intValue() < target)) {
 
-                    bugReporter
-                            .reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this,
-                                            blocksInLoop.get(0).storeRegs.values().iterator().next().intValue()));
+                    bugReporter.reportBug(new BugInstance(this, BugType.SLS_SUSPICIOUS_LOOP_SEARCH.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this, blocksInLoop.get(0).storeRegs.values().iterator().next().intValue()));
                 }
             }
 

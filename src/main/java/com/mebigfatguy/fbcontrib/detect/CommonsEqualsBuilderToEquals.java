@@ -25,6 +25,7 @@ import org.apache.bcel.classfile.LocalVariableTable;
 
 import com.mebigfatguy.fbcontrib.utils.BugType;
 import com.mebigfatguy.fbcontrib.utils.SignatureBuilder;
+import com.mebigfatguy.fbcontrib.utils.Values;
 
 import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
@@ -77,13 +78,11 @@ public class CommonsEqualsBuilderToEquals extends BytecodeScanningDetector {
         try {
             if (seen == Const.INVOKEVIRTUAL) {
                 String methodName = getNameConstantOperand();
-                if ("equals".equals(methodName)
-                        && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())
-                        && (stack.getStackDepth() > 1)) {
+                if (Values.EQUALS.equals(methodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand()) && (stack.getStackDepth() > 1)) {
                     String calledClass = stack.getStackItem(1).getSignature();
                     if (LANG3_EQUALS_BUILDER.equals(calledClass) || LANG_EQUALS_BUILDER.equals(calledClass)) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS.name(),
-                                HIGH_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        bugReporter.reportBug(new BugInstance(this, BugType.CEBE_COMMONS_EQUALS_BUILDER_ISEQUALS.name(), HIGH_PRIORITY).addClass(this)
+                                .addMethod(this).addSourceLine(this));
                     }
                 }
             }

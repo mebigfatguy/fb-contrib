@@ -126,22 +126,17 @@ public class LiteralStringComparison extends BytecodeScanningDetector {
                     String calledMethodName = getNameConstantOperand();
                     String calledMethodSig = getSigConstantOperand();
 
-                    if (("equals".equals(calledMethodName)
-                            && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(calledMethodSig))
-                            || ("compareTo".equals(calledMethodName)
-                                    && SignatureBuilder.SIG_STRING_TO_INT.equals(calledMethodSig))
-                            || ("equalsIgnoreCase".equals(calledMethodName)
-                                    && SignatureBuilder.SIG_STRING_TO_BOOLEAN.equals(calledMethodSig))) {
+                    if ((Values.EQUALS.equals(calledMethodName) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(calledMethodSig))
+                            || ("compareTo".equals(calledMethodName) && SignatureBuilder.SIG_STRING_TO_INT.equals(calledMethodSig))
+                            || ("equalsIgnoreCase".equals(calledMethodName) && SignatureBuilder.SIG_STRING_TO_BOOLEAN.equals(calledMethodSig))) {
 
                         if (stack.getStackDepth() > 0) {
                             OpcodeStack.Item itm = stack.getStackItem(0);
                             Object constant = itm.getConstant();
-                            if ((constant != null) && constant.getClass().equals(String.class)
-                                    && !lookupSwitchOnString()) {
-                                bugReporter
-                                        .reportBug(new BugInstance(this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY) // very
-                                                                                                                         // confident
-                                                .addClass(this).addMethod(this).addSourceLine(this));
+                            if ((constant != null) && constant.getClass().equals(String.class) && !lookupSwitchOnString()) {
+                                bugReporter.reportBug(new BugInstance(this, "LSC_LITERAL_STRING_COMPARISON", HIGH_PRIORITY) // very
+                                                                                                                            // confident
+                                        .addClass(this).addMethod(this).addSourceLine(this));
                             }
                         }
                     } else if (Values.HASHCODE.equals(calledMethodName) && (stack.getStackDepth() > 0)) {

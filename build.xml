@@ -32,7 +32,7 @@
 	<property name="javac.debug" value="on" />
 	<property name="test_reports.dir" value="${target.dir}/reports/test"/>
 
-	<property name="contrib.version" value="7.7.1" />
+	<property name="contrib.version" value="7.7.2" />
 
 
 	<property name="sonatype.dir" value="${user.home}/.${ant.project.name}-${contrib.version}-sonatype" />
@@ -118,9 +118,12 @@
             <pathelement location="${lib.dir}/byte-buddy-agent-${byte-buddy-agent.version}.jar" />
             <pathelement location="${lib.dir}/objenesis-${objenesis.version}.jar" />
 			<pathelement location="${lib.dir}/hamcrest-core-${hamcrest-core.version}.jar" />
-			<pathelement location="${lib.dir}/dom4j-${dom4j-version}.jar" />
+			<pathelement location="${lib.dir}/dom4j-${dom4j.version}.jar" />
 			<pathelement location="${lib.dir}/jaxen-${jaxen.version}.jar" />
 			<pathelement location="${lib.dir}/slf4j-api-${slf4j-api.version}.jar" />
+			<pathelement location="${lib.dir}/slf4j-simple-${slf4j-simple.version}.jar" />
+            <pathelement location="${lib.dir}/commons-lang3-${commons-lang3.version}.jar" />
+            <pathelement location="${lib.dir}/commons-io-${commons-io.version}.jar" />
 		</path>
 		<path id="fb-contrib.samples.classpath">
             <pathelement location="${lib.dir}/akka-actor_2.12-${akka-actor_2.12.version}.jar" />
@@ -211,7 +214,7 @@
 	
 	<target name="test" depends="compile_test" unless="no.test" description="runs unit tests">
 		<mkdir dir="${test_reports.dir}" />
-		<taskdef resource="testngtasks" classpath="${lib.dir}/testng-${testng.version}.jar:${lib.dir}/testng-ant-${testng-ant.version}.jar:${lib.dir}/slf4j-api-${slf4j-api.version}.jar"/>
+		<taskdef resource="testngtasks" classpath="${lib.dir}/testng-${testng.version}.jar:${lib.dir}/testng-ant-${testng-ant.version}.jar:${lib.dir}/slf4j-api-${slf4j-api.version}.jar:${lib.dir}/slf4j-simple-${slf4j-simple.version}.jar"/>
 
 		<testng outputDir="${test_reports.dir}">
 			<classfileset dir="${test.classes.dir}" includes="**/*.class"/>

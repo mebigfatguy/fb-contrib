@@ -135,8 +135,8 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                     }
                 } else {
                     if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(),
-                                priority(conditionCount)).addClass(this).addMethod(this).addSourceLine(this, bugPC));
+                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
+                                .addMethod(this).addSourceLine(this, bugPC));
                     }
                 }
                 break;
@@ -177,7 +177,7 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                 break;
 
             case SAW_CONST:
-                if ((seen == Const.INVOKEVIRTUAL) && "equals".equals(getNameConstantOperand())
+                if ((seen == Const.INVOKEVIRTUAL) && Values.EQUALS.equals(getNameConstantOperand())
                         && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())) {
                     state = State.SAW_EQUALS;
                 } else if (seen == Const.IF_ICMPEQ) {
@@ -186,8 +186,8 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                 } else if (seen == Const.IF_ICMPNE) {
                     conditionCount++;
                     if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(),
-                                priority(conditionCount)).addClass(this).addMethod(this).addSourceLine(this, bugPC));
+                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
+                                .addMethod(this).addSourceLine(this, bugPC));
                     }
                     state = State.SAW_NOTHING;
                 } else {
@@ -202,8 +202,8 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
                 } else if (seen == Const.IFEQ) {
                     conditionCount++;
                     if (conditionCount >= LOW_CONDITIONAL_COUNT) {
-                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(),
-                                priority(conditionCount)).addClass(this).addMethod(this).addSourceLine(this, bugPC));
+                        bugReporter.reportBug(new BugInstance(this, BugType.CBC_CONTAINS_BASED_CONDITIONAL.name(), priority(conditionCount)).addClass(this)
+                                .addMethod(this).addSourceLine(this, bugPC));
                     }
                     state = State.SAW_NOTHING;
                 } else {
@@ -223,7 +223,6 @@ public class ContainsBasedConditional extends BytecodeScanningDetector {
     }
 
     private static int priority(int conditionCount) {
-        return (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY
-                : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY;
+        return (conditionCount < NORMAL_CONDITIONAL_COUNT) ? LOW_PRIORITY : (conditionCount < HIGH_CONDITIONAL_COUNT) ? NORMAL_PRIORITY : HIGH_PRIORITY;
     }
 }

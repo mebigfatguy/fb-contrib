@@ -73,21 +73,18 @@ public class CompareClassNameEquals extends OpcodeStackDetector {
     @Override
     public void sawOpcode(int seen) {
         if (seen == Const.INVOKEVIRTUAL) {
-            if ("getName".equals(getNameConstantOperand())
-                    && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())
+            if ("getName".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_STRING.equals(getSigConstantOperand())
                     && Values.SLASHED_JAVA_LANG_CLASS.equals(getClassConstantOperand())) {
                 flag = true;
-            } else if ("equals".equals(getNameConstantOperand())
-                    && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())
+            } else if (Values.EQUALS.equals(getNameConstantOperand()) && SignatureBuilder.SIG_OBJECT_TO_BOOLEAN.equals(getSigConstantOperand())
                     && Values.SLASHED_JAVA_LANG_STRING.equals(getClassConstantOperand())) {
                 Item item = stack.getItemMethodInvokedOn(this);
                 Object srcValue = item.getUserValue();
                 item = stack.getStackItem(0);
                 Object dstValue = item.getUserValue();
                 if (Boolean.TRUE.equals(srcValue) && Boolean.TRUE.equals(dstValue)) {
-                    bugReporter.reportBug(
-                            new BugInstance(this, BugType.CCNE_COMPARE_CLASS_EQUALS_NAME.name(), NORMAL_PRIORITY)
-                                    .addClass(this).addMethod(this).addSourceLine(this));
+                    bugReporter.reportBug(new BugInstance(this, BugType.CCNE_COMPARE_CLASS_EQUALS_NAME.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                            .addSourceLine(this));
                 }
             }
         }
