@@ -22,6 +22,10 @@ public abstract class ACEM_Sample implements Foo {
 
     public final void finalIssueNonDerived504() {
     }
+
+    @Override
+    public final void finalize() {
+    }
 }
 
 interface Foo {

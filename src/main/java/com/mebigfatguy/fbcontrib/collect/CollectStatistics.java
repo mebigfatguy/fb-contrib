@@ -281,8 +281,12 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
     }
 
     private Set<QMethod> buildConstrainingMethods(JavaClass cls, Set<String> visitedClasses) {
-
         Set<QMethod> constraints = new HashSet<>();
+
+        if (Values.DOTTED_JAVA_LANG_OBJECT.equals(cls.getClassName())) {
+            return constraints;
+        }
+
         try {
             for (JavaClass inf : cls.getInterfaces()) {
                 String infName = inf.getClassName();
@@ -299,12 +303,10 @@ public class CollectStatistics extends BytecodeScanningDetector implements NonRe
                 // If 'clsName' exists in visitedClasses, this check will be 'false'
                 if (visitedClasses.add(clsName)) {
 
-                    if (!Values.DOTTED_JAVA_LANG_OBJECT.equals(parent.getClassName())) {
-                        for (Method m : parent.getMethods()) {
-                            constraints.add(new QMethod(m.getName(), m.getSignature()));
-                        }
-                        constraints.addAll(buildConstrainingMethods(parent, visitedClasses));
+                    for (Method m : parent.getMethods()) {
+                        constraints.add(new QMethod(m.getName(), m.getSignature()));
                     }
+                    constraints.addAll(buildConstrainingMethods(parent, visitedClasses));
                 }
             }
         } catch (ClassNotFoundException e) {
