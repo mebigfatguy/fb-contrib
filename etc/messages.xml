@@ -4897,7 +4897,7 @@ if (name != null) {
 		</Details>
 	</BugPattern>
 	
-		<BugPattern type="UVA_REMOVE_NULL_ARG">
+	<BugPattern type="UVA_REMOVE_NULL_ARG">
 		<ShortDescription>Method passes explicit null value to var arg parameter</ShortDescription>
 		<LongDescription>Method {1} passes explicit null value to var arg parameter</LongDescription>
 		<Details>
@@ -4908,6 +4908,28 @@ if (name != null) {
 			]]>
 		</Details>
 	</BugPattern>
+
+    <BugPattern type="UVA_POSSIBLE_EXCESS_NULL">
+        <ShortDescription>Method potentially passes unexpected null to first var args parameter</ShortDescription>
+        <LongDescription>Method {1} potentially passes unexpected null to first var args parameter</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method calls a var arg method, and passes an explicit null value as the first argument in the list of 
+            var args. This may be perfectly fine, but can be a sign that the number of parameters passed to the method is incorrect.</p>
+            For instance, the method
+            
+            <code><pre>
+                void processFamily(String primary, Long age, String... dependents)
+            </pre></code>
+            might be called accidentally like
+            <code><pre>
+                processFamily("John Doe", null, null, "Jane Doe", "Mary Doe", "Bob Doe")
+            </code></pre>
+            because the method originally had a weight parameter after the age. Now that null goes to the var arg instead.
+            </p>
+            ]]>
+        </Details>
+    </BugPattern>	
 	
 	<BugPattern type="PUS_POSSIBLE_UNSUSPECTED_SERIALIZATION">
 		<ShortDescription>Method serializes an instance of a non-static inner class</ShortDescription>

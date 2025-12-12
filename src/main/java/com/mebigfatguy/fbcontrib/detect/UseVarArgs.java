@@ -37,6 +37,7 @@ import edu.umd.cs.findbugs.BugInstance;
 import edu.umd.cs.findbugs.BugReporter;
 import edu.umd.cs.findbugs.BytecodeScanningDetector;
 import edu.umd.cs.findbugs.OpcodeStack;
+import edu.umd.cs.findbugs.OpcodeStack.CustomUserValue;
 import edu.umd.cs.findbugs.ba.ClassContext;
 
 /**
@@ -45,231 +46,274 @@ import edu.umd.cs.findbugs.ba.ClassContext;
  * flexible for clients of this method to define this parameter as a vararg
  * parameter.
  */
+@CustomUserValue
 public class UseVarArgs extends BytecodeScanningDetector {
 
-	public static final String SIG_STRING_ARRAY_TO_VOID = new SignatureBuilder()
-			.withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString();
+    public static final String SIG_STRING_ARRAY_TO_VOID = new SignatureBuilder().withParamTypes(SignatureBuilder.SIG_STRING_ARRAY).toString();
+    public static final String NULL = "NULL";
 
-	private final BugReporter bugReporter;
-	private JavaClass javaClass;
-	private OpcodeStack stack;
+    private final BugReporter bugReporter;
+    private JavaClass javaClass;
+    private OpcodeStack stack;
 
-	public UseVarArgs(BugReporter bugReporter) {
-		this.bugReporter = bugReporter;
-	}
+    public UseVarArgs(BugReporter bugReporter) {
+        this.bugReporter = bugReporter;
+    }
 
-	/**
-	 * overrides the visitor to make sure that the class was compiled by java 1.5 or
-	 * later.
-	 *
-	 * @param classContext the context object of the currently parsed class
-	 */
-	@Override
-	public void visitClassContext(ClassContext classContext) {
-		try {
-			javaClass = classContext.getJavaClass();
-			if (javaClass.getMajor() >= Const.MAJOR_1_5) {
-				try {
-					stack = new OpcodeStack();
-					super.visitClassContext(classContext);
-				} finally {
-					stack = null;
-				}
-			}
-		} finally {
-			javaClass = null;
-		}
-	}
+    /**
+     * overrides the visitor to make sure that the class was compiled by java 1.5 or
+     * later.
+     *
+     * @param classContext the context object of the currently parsed class
+     */
+    @Override
+    public void visitClassContext(ClassContext classContext) {
+        try {
+            javaClass = classContext.getJavaClass();
+            if (javaClass.getMajor() >= Const.MAJOR_1_5) {
+                try {
+                    stack = new OpcodeStack();
+                    super.visitClassContext(classContext);
+                } finally {
+                    stack = null;
+                }
+            }
+        } finally {
+            javaClass = null;
+        }
+    }
 
-	/**
-	 * overrides the visitor to look for methods that has an array as a last
-	 * parameter of an array type, where the base type is not like the previous
-	 * parameter nor something like a char or byte array.
-	 *
-	 * @param obj the currently parse method
-	 */
-	@Override
-	public void visitMethod(Method obj) {
-		try {
-			if (obj.isSynthetic()) {
-				return;
-			}
+    /**
+     * overrides the visitor to look for methods that has an array as a last
+     * parameter of an array type, where the base type is not like the previous
+     * parameter nor something like a char or byte array.
+     *
+     * @param obj the currently parse method
+     */
+    @Override
+    public void visitMethod(Method obj) {
+        try {
+            if (obj.isSynthetic()) {
+                return;
+            }
 
-			super.visitMethod(obj);
+            super.visitMethod(obj);
 
-			boolean isVarMethod = (obj.getAccessFlags() & Const.ACC_VARARGS) != 0;
+            boolean isVarMethod = (obj.getAccessFlags() & Const.ACC_VARARGS) != 0;
 
-			boolean isConvertable = !isVarMethod && methodHasConvertableLastParam(obj);
+            boolean isConvertable = !isVarMethod && methodHasConvertableLastParam(obj);
 
-			super.visitMethod(obj);
+            super.visitMethod(obj);
 
-			if (isConvertable) {
-				bugReporter.reportBug(new BugInstance(this, BugType.UVA_USE_VAR_ARGS.name(), LOW_PRIORITY)
-						.addClass(this).addMethod(this));
-			}
+            if (isConvertable) {
+                bugReporter.reportBug(new BugInstance(this, BugType.UVA_USE_VAR_ARGS.name(), LOW_PRIORITY).addClass(this).addMethod(this));
+            }
 
-		} catch (ClassNotFoundException cnfe) {
-			bugReporter.reportMissingClass(cnfe);
-		}
-	}
+        } catch (ClassNotFoundException cnfe) {
+            bugReporter.reportMissingClass(cnfe);
+        }
+    }
 
-	@Override
-	public void visitCode(Code obj) {
-		stack.resetForMethodEntry(this);
-		super.visitCode(obj);
-	}
+    @Override
+    public void visitCode(Code obj) {
+        stack.resetForMethodEntry(this);
+        super.visitCode(obj);
+    }
 
-	@Override
-	public void sawOpcode(int seen) {
-		try {
-			stack.precomputation(this);
-			switch (seen) {
-			case Const.INVOKEINTERFACE:
-			case Const.INVOKEVIRTUAL:
-			case Const.INVOKESTATIC:
-				String clsName = getClassConstantOperand();
-				String methodName = getNameConstantOperand();
-				String methodSig = getSigConstantOperand();
-				int numParms = SignatureUtils.getNumParameters(methodSig);
-				if (numParms > 0 && stack.getStackDepth() >= numParms) {
-					OpcodeStack.Item item = stack.getStackItem(0);
-					if (item.isNull()) {
-						MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName.replace('.', '/'),
-								methodName, methodSig);
-						if (mi != null && mi.isVarArg()) {
-							bugReporter.reportBug(
-									new BugInstance(this, BugType.UVA_REMOVE_NULL_ARG.name(), NORMAL_PRIORITY)
-											.addClass(this).addMethod(this).addSourceLine(this));
-						}
-					}
-				}
-			}
-		} finally {
-			TernaryPatcher.pre(stack, seen);
-			stack.sawOpcode(this, seen);
-			TernaryPatcher.post(stack, seen);
-		}
-	}
+    @Override
+    public void sawOpcode(int seen) {
+        String userValue = null;
 
-	private boolean methodHasConvertableLastParam(Method method) throws ClassNotFoundException {
-		if (Values.CONSTRUCTOR.equals(getMethodName()) && javaClass.getClassName().contains("$")) {
-			return false;
-		}
-		List<String> types = SignatureUtils.getParameterSignatures(method.getSignature());
-		if ((types.isEmpty()) || (types.size() > 2)) {
-			return false;
-		}
+        try {
+            stack.precomputation(this);
+            switch (seen) {
+            case Const.INVOKEINTERFACE:
+            case Const.INVOKEVIRTUAL:
+            case Const.INVOKESTATIC:
+                String clsName = getClassConstantOperand();
+                String methodName = getNameConstantOperand();
+                String methodSig = getSigConstantOperand();
+                int numParms = SignatureUtils.getNumParameters(methodSig);
+                if (numParms > 0 && stack.getStackDepth() >= numParms) {
+                    OpcodeStack.Item item = stack.getStackItem(0);
+                    if (item.isNull()) {
+                        MethodInfo mi = Statistics.getStatistics().getMethodStatistics(clsName.replace('.', '/'), methodName, methodSig);
+                        if (mi != null && mi.isVarArg()) {
+                            bugReporter.reportBug(new BugInstance(this, BugType.UVA_REMOVE_NULL_ARG.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
+                                    .addSourceLine(this));
+                        }
+                    } else {
+                        if (item.getUserValue() instanceof VarArgs) {
+                            VarArgs va = (VarArgs) item.getUserValue();
+                            if (va != null && va.firstIsNull()) {
+                                bugReporter.reportBug(new BugInstance(this, BugType.UVA_POSSIBLE_EXCESS_NULL.name(), NORMAL_PRIORITY).addClass(this)
+                                        .addMethod(this).addSourceLine(this));
 
-		String lastParmSig = types.get(types.size() - 1);
-		if (!lastParmSig.startsWith(Values.SIG_ARRAY_PREFIX)
-				|| lastParmSig.startsWith(Values.SIG_ARRAY_OF_ARRAYS_PREFIX)) {
-			return false;
-		}
+                            }
+                        }
+                    }
+                }
+                break;
 
-		if (SignatureBuilder.SIG_BYTE_ARRAY.equals(lastParmSig)
-				|| SignatureBuilder.SIG_CHAR_ARRAY.equals(lastParmSig)) {
-			return false;
-		}
+            case Const.ACONST_NULL: {
+                userValue = NULL;
+                break;
 
-		if (hasSimilarParms(types)) {
-			return false;
-		}
+            }
 
-		if (method.isStatic() && "main".equals(method.getName())
-				&& SIG_STRING_ARRAY_TO_VOID.equals(method.getSignature())) {
-			return false;
-		}
+            case Const.AASTORE: {
+                if (stack.getStackDepth() >= 3) {
+                    OpcodeStack.Item value = stack.getStackItem(0);
+                    OpcodeStack.Item index = stack.getStackItem(1);
+                    OpcodeStack.Item array = stack.getStackItem(2);
+                    if (index.hasConstantValue(0)) {
+                        array.setUserValue(new VarArgs(NULL.equals(value.getUserValue())));
+                    }
+                }
+                break;
+            }
+            }
 
-		if (!method.isPrivate() && !method.isStatic() && isInherited(method)) {
-			return false;
-		}
+        } finally {
+            TernaryPatcher.pre(stack, seen);
+            stack.sawOpcode(this, seen);
+            TernaryPatcher.post(stack, seen);
 
-		return true;
-	}
+            if (userValue != null && stack.getStackDepth() > 0) {
+                OpcodeStack.Item nullItem = stack.getStackItem(0);
+                nullItem.setUserValue(userValue);
+            }
+        }
+    }
 
-	/**
-	 * overrides the visitor, but not used
-	 */
-	@Override
-	public void report() {
-		// needed by Detector interface but not used
-	}
+    private boolean methodHasConvertableLastParam(Method method) throws ClassNotFoundException {
+        if (Values.CONSTRUCTOR.equals(getMethodName()) && javaClass.getClassName().contains("$")) {
+            return false;
+        }
+        List<String> types = SignatureUtils.getParameterSignatures(method.getSignature());
+        if ((types.isEmpty()) || (types.size() > 2)) {
+            return false;
+        }
 
-	/**
-	 * determines whether a bunch of types are similar and thus would be confusing
-	 * to have one be a varargs.
-	 *
-	 * @param argTypes the parameter signatures to check
-	 * @return whether the parameter are similar
-	 */
-	@edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "LII_LIST_INDEXED_ITERATING", justification = "this doesn't iterate over every element, so we can't use a for-each loop")
-	private static boolean hasSimilarParms(List<String> argTypes) {
+        String lastParmSig = types.get(types.size() - 1);
+        if (!lastParmSig.startsWith(Values.SIG_ARRAY_PREFIX) || lastParmSig.startsWith(Values.SIG_ARRAY_OF_ARRAYS_PREFIX)) {
+            return false;
+        }
 
-		for (int i = 0; i < (argTypes.size() - 1); i++) {
-			if (argTypes.get(i).startsWith(Values.SIG_ARRAY_PREFIX)) {
-				return true;
-			}
-		}
+        if (SignatureBuilder.SIG_BYTE_ARRAY.equals(lastParmSig) || SignatureBuilder.SIG_CHAR_ARRAY.equals(lastParmSig)) {
+            return false;
+        }
 
-		String baseType = argTypes.get(argTypes.size() - 1);
-		while (baseType.startsWith(Values.SIG_ARRAY_PREFIX)) {
-			baseType = baseType.substring(1);
-		}
+        if (hasSimilarParms(types)) {
+            return false;
+        }
 
-		for (int i = 0; i < (argTypes.size() - 1); i++) {
-			if (argTypes.get(i).equals(baseType)) {
-				return true;
-			}
-		}
+        if (method.isStatic() && "main".equals(method.getName()) && SIG_STRING_ARRAY_TO_VOID.equals(method.getSignature())) {
+            return false;
+        }
 
-		return false;
-	}
+        if (!method.isPrivate() && !method.isStatic() && isInherited(method)) {
+            return false;
+        }
 
-	/**
-	 * looks to see if this method is derived from a super class. If it is we don't
-	 * want to report on it, as that would entail changing a whole hierarchy
-	 *
-	 * @param m the current method
-	 * @return if the method is inherited
-	 *
-	 * @throws ClassNotFoundException if the super class(s) aren't found
-	 */
-	private boolean isInherited(Method m) throws ClassNotFoundException {
-		JavaClass[] infs = javaClass.getAllInterfaces();
-		for (JavaClass inf : infs) {
-			if (hasMethod(inf, m)) {
-				return true;
-			}
-		}
+        return true;
+    }
 
-		JavaClass[] sups = javaClass.getSuperClasses();
-		for (JavaClass sup : sups) {
-			if (hasMethod(sup, m)) {
-				return true;
-			}
-		}
+    /**
+     * overrides the visitor, but not used
+     */
+    @Override
+    public void report() {
+        // needed by Detector interface but not used
+    }
 
-		return false;
-	}
+    /**
+     * determines whether a bunch of types are similar and thus would be confusing
+     * to have one be a varargs.
+     *
+     * @param argTypes the parameter signatures to check
+     * @return whether the parameter are similar
+     */
+    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings(value = "LII_LIST_INDEXED_ITERATING", justification = "this doesn't iterate over every element, so we can't use a for-each loop")
+    private static boolean hasSimilarParms(List<String> argTypes) {
 
-	/**
-	 * looks to see if a class has a method with a specific name and signature
-	 *
-	 * @param c               the class to check
-	 * @param candidateMethod the method to look for
-	 *
-	 * @return whether this class has the exact method
-	 */
-	private static boolean hasMethod(JavaClass c, Method candidateMethod) {
-		String name = candidateMethod.getName();
-		String sig = candidateMethod.getSignature();
+        for (int i = 0; i < (argTypes.size() - 1); i++) {
+            if (argTypes.get(i).startsWith(Values.SIG_ARRAY_PREFIX)) {
+                return true;
+            }
+        }
 
-		for (Method method : c.getMethods()) {
-			if (!method.isStatic() && method.getName().equals(name) && method.getSignature().equals(sig)) {
-				return true;
-			}
-		}
+        String baseType = argTypes.get(argTypes.size() - 1);
+        while (baseType.startsWith(Values.SIG_ARRAY_PREFIX)) {
+            baseType = baseType.substring(1);
+        }
 
-		return false;
-	}
+        for (int i = 0; i < (argTypes.size() - 1); i++) {
+            if (argTypes.get(i).equals(baseType)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * looks to see if this method is derived from a super class. If it is we don't
+     * want to report on it, as that would entail changing a whole hierarchy
+     *
+     * @param m the current method
+     * @return if the method is inherited
+     *
+     * @throws ClassNotFoundException if the super class(s) aren't found
+     */
+    private boolean isInherited(Method m) throws ClassNotFoundException {
+        JavaClass[] infs = javaClass.getAllInterfaces();
+        for (JavaClass inf : infs) {
+            if (hasMethod(inf, m)) {
+                return true;
+            }
+        }
+
+        JavaClass[] sups = javaClass.getSuperClasses();
+        for (JavaClass sup : sups) {
+            if (hasMethod(sup, m)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * looks to see if a class has a method with a specific name and signature
+     *
+     * @param c               the class to check
+     * @param candidateMethod the method to look for
+     *
+     * @return whether this class has the exact method
+     */
+    private static boolean hasMethod(JavaClass c, Method candidateMethod) {
+        String name = candidateMethod.getName();
+        String sig = candidateMethod.getSignature();
+
+        for (Method method : c.getMethods()) {
+            if (!method.isStatic() && method.getName().equals(name) && method.getSignature().equals(sig)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static class VarArgs {
+        boolean firstIsNull;
+
+        VarArgs(boolean firstIsNull) {
+            this.firstIsNull = firstIsNull;
+        }
+
+        boolean firstIsNull() {
+            return firstIsNull;
+        }
+    }
 }
