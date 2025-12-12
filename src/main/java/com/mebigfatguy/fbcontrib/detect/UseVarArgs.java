@@ -142,7 +142,7 @@ public class UseVarArgs extends BytecodeScanningDetector {
                             bugReporter.reportBug(new BugInstance(this, BugType.UVA_REMOVE_NULL_ARG.name(), NORMAL_PRIORITY).addClass(this).addMethod(this)
                                     .addSourceLine(this));
                         }
-                    } else {
+                    } else if (numParms > 2) {
                         if (item.getUserValue() instanceof VarArgs) {
                             VarArgs va = (VarArgs) item.getUserValue();
                             if (va != null && va.getSize() > 1 && va.isFirstIsNull()) {
