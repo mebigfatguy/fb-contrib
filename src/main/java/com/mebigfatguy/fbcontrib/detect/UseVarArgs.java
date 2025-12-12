@@ -122,7 +122,7 @@ public class UseVarArgs extends BytecodeScanningDetector {
 
     @Override
     public void sawOpcode(int seen) {
-        String userValue = null;
+        Object userValue = null;
 
         try {
             stack.precomputation(this);
@@ -145,7 +145,7 @@ public class UseVarArgs extends BytecodeScanningDetector {
                     } else {
                         if (item.getUserValue() instanceof VarArgs) {
                             VarArgs va = (VarArgs) item.getUserValue();
-                            if (va != null && va.firstIsNull()) {
+                            if (va != null && va.getSize() > 1 && va.isFirstIsNull()) {
                                 bugReporter.reportBug(new BugInstance(this, BugType.UVA_POSSIBLE_EXCESS_NULL.name(), NORMAL_PRIORITY).addClass(this)
                                         .addMethod(this).addSourceLine(this));
 
@@ -154,6 +154,19 @@ public class UseVarArgs extends BytecodeScanningDetector {
                     }
                 }
                 break;
+
+            case Const.ANEWARRAY: {
+                if (stack.getStackDepth() >= 1) {
+                    OpcodeStack.Item size = stack.getStackItem(0);
+                    if (size.getConstant() instanceof Integer) {
+                        Integer sz = (Integer) size.getConstant();
+                        if (sz != null) {
+                            userValue = new VarArgs(sz, false);
+                        }
+                    }
+                }
+                break;
+            }
 
             case Const.ACONST_NULL: {
                 userValue = NULL;
@@ -166,8 +179,12 @@ public class UseVarArgs extends BytecodeScanningDetector {
                     OpcodeStack.Item value = stack.getStackItem(0);
                     OpcodeStack.Item index = stack.getStackItem(1);
                     OpcodeStack.Item array = stack.getStackItem(2);
-                    if (index.hasConstantValue(0)) {
-                        array.setUserValue(new VarArgs(NULL.equals(value.getUserValue())));
+
+                    if (array.getUserValue() instanceof VarArgs) {
+                        VarArgs va = (VarArgs) array.getUserValue();
+                        if (index.hasConstantValue(0)) {
+                            va.setFirstIsNull(NULL.equals(value.getUserValue()));
+                        }
                     }
                 }
                 break;
@@ -306,14 +323,29 @@ public class UseVarArgs extends BytecodeScanningDetector {
     }
 
     private static class VarArgs {
+        int size;
         boolean firstIsNull;
 
-        VarArgs(boolean firstIsNull) {
+        VarArgs(int size, boolean firstIsNull) {
+            this.size = size;
             this.firstIsNull = firstIsNull;
         }
 
-        boolean firstIsNull() {
+        public int getSize() {
+            return size;
+        }
+
+        public void setSize(int size) {
+            this.size = size;
+        }
+
+        public boolean isFirstIsNull() {
             return firstIsNull;
         }
+
+        public void setFirstIsNull(boolean firstIsNull) {
+            this.firstIsNull = firstIsNull;
+        }
+
     }
 }
