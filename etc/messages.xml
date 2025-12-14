@@ -1804,6 +1804,16 @@ a[0] = new A(); // results in ArrayStoreException (Runtime)
             ]]>
         </Details>
     </Detector>
+    
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SwitchIssues">
+        <Details>
+            <![CDATA[
+            <p>Looks for various issues with switch usage.
+            </p>
+            <p>It is a fast detector</p>
+            ]]>
+        </Details>
+    </Detector>
 	
 	<Detector class="com.mebigfatguy.fbcontrib.debug.OCSDebugger">
 		<Details></Details>
@@ -6975,6 +6985,17 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
         </Details> 
     </BugPattern>
     
+    <BugPattern type="SI_USE_NULL_CASE">
+        <ShortDescription>Method checks a switch variable for null outside of the switch itself</ShortDescription>
+        <LongDescription>Method {1} checks a switch variable for null outside of the switch itself</LongDescription>
+        <Details>
+            <![CDATA[
+            <p>This method checks to see that a switch variable is not null before entering the switch. This 
+            was required before Java 17, however, now it is cleaner just to add a case null for it.
+            </p>
+            ]]>
+        </Details> 
+    </BugPattern>
 
 	<!-- BugCode -->
 
@@ -7129,4 +7150,5 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
     <BugCode abbrev="AKI">Akka Issues</BugCode>
     <BugCode abbrev="PKI">Pekko Issues</BugCode>
     <BugCode abbrev="MK">Mockito Issues</BugCode>
+    <BugCode abbrev="SI">Switch Issues</BugCode>>
 </MessageCollection>

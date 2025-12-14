@@ -344,6 +344,8 @@
 
     <!-- COMMENT OUT FOR POINT RELEASE -->
 
+    <Detector class="com.mebigfatguy.fbcontrib.detect.SwitchIssues" speed="fast" reports="SI_USE_NULL_CASE" />
+
     <!-- COMMENT OUT FOR POINT RELEASE -->
     
 	<!-- BugPattern -->
@@ -681,4 +683,5 @@
     <BugPattern abbrev="MK" type="MK_UNNEEDED_OPENMOCKS" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_USE_DORETURN" category="CORRECTNESS" />
     <BugPattern abbrev="MK" type="MK_UNNEEDED_VALIDATEMOCKITOUSAGE" category="CORRECTNESS" />
+    <BugPattern abbrev="SI" type="SI_USE_NULL_CASE" category="STYLE" />
 </FindbugsPlugin>
