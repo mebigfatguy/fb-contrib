@@ -6992,6 +6992,7 @@ if (shouldCalcHalting && (calculateHaltingProbability() &gt; 0) { }
             <![CDATA[
             <p>This method checks to see that a switch variable is not null before entering the switch. This 
             was required before Java 17, however, now it is cleaner just to add a case null for it.
+            If you are using jdk's below 21, you would need to specify --enable-preview on the command line.
             </p>
             ]]>
         </Details> 
