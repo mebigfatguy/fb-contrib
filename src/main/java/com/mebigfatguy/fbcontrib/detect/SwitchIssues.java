@@ -17,10 +17,19 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 
 public class SwitchIssues extends BytecodeScanningDetector {
 
+    private enum State {
+        NOTHING, ALOAD_1STA, IFNULL, ALOAD_1STB, ASTORE_2ND, ICONST, ISTORE_3RD, ALOAD_2ND, HASHCODE
+    }
+
     private BugReporter bugReporter;
     private JavaClass cls;
     private OpcodeStack stack;
     private int ifNullReg;
+    private State state;
+    private int aReg1;
+    private int aReg2;
+    private int iReg3;
+    private int aReg4;
 
     /**
      * constructs a SI detector given the reporter to report bugs on
@@ -50,7 +59,7 @@ public class SwitchIssues extends BytecodeScanningDetector {
     @Override
     public void visitCode(Code obj) {
         stack.resetForMethodEntry(this);
-        ifNullReg = -1;
+        reset();
         super.visitCode(obj);
     }
 
@@ -58,20 +67,42 @@ public class SwitchIssues extends BytecodeScanningDetector {
     public void sawOpcode(int seen) {
         try {
             switch (seen) {
-            case Const.IFNULL: {
-                if (stack.getStackDepth() > 0) {
-                    ifNullReg = stack.getStackItem(0).getRegisterNumber();
-                }
-                break;
-            }
             case Const.ALOAD_0:
             case Const.ALOAD_1:
             case Const.ALOAD_2:
             case Const.ALOAD_3:
             case Const.ALOAD: {
                 int reg = RegisterUtils.getALoadReg(this, seen);
-                if (reg != ifNullReg) {
-                    ifNullReg = -1;
+                if (reg == -1) {
+                    reset();
+                } else if (state == State.NOTHING) {
+                    aReg1 = reg;
+                    state = State.ALOAD_1STA;
+                } else if (state == State.IFNULL) {
+                    if (reg == aReg1) {
+                        state = State.ALOAD_1STB;
+                    } else {
+                        reset();
+                    }
+                } else if (state == State.ISTORE_3RD) {
+                    aReg2 = reg;
+                    state = State.ALOAD_2ND;
+                } else {
+                    reset();
+                }
+                break;
+            }
+
+            case Const.IFNULL: {
+                if (state == State.ALOAD_1STA && stack.getStackDepth() > 0) {
+                    ifNullReg = stack.getStackItem(0).getRegisterNumber();
+                    if (ifNullReg >= 0) {
+                        state = State.IFNULL;
+                    } else {
+                        reset();
+                    }
+                } else {
+                    reset();
                 }
                 break;
             }
@@ -81,44 +112,94 @@ public class SwitchIssues extends BytecodeScanningDetector {
             case Const.ASTORE_2:
             case Const.ASTORE_3:
             case Const.ASTORE: {
+                int reg = RegisterUtils.getAStoreReg(this, seen);
+                if (reg == -1) {
+                    reset();
+                } else if (state == State.ALOAD_1STB) {
+                    aReg2 = reg;
+                    state = State.ASTORE_2ND;
+                }
                 break;
             }
 
-            case Const.DUP: {
+            case Const.ICONST_M1:
+            case Const.ICONST_0:
+            case Const.ICONST_1:
+            case Const.ICONST_2:
+            case Const.ICONST_3: {
+                if (state == State.ASTORE_2ND) {
+                    state = State.ICONST;
+                } else {
+                    reset();
+                }
+                break;
+            }
+
+            case Const.ISTORE_0:
+            case Const.ISTORE_1:
+            case Const.ISTORE_2:
+            case Const.ISTORE_3:
+            case Const.ISTORE: {
+                int reg = RegisterUtils.getStoreReg(this, seen);
+                if (reg == -1) {
+                    reset();
+                } else if (state == State.ICONST) {
+                    iReg3 = reg;
+                    state = State.ISTORE_3RD;
+                } else {
+                    reset();
+                }
                 break;
             }
 
             case Const.INVOKEVIRTUAL: {
-                if (!Values.HASHCODE.equals(getNameConstantOperand()) || !SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand())) {
-                    ifNullReg = -1;
-                } else {
-                    if (ifNullReg >= 0 && stack.getStackDepth() > 0) {
-                        OpcodeStack.Item item = stack.getStackItem(0);
-                        if (item.getRegisterNumber() != ifNullReg) {
-                            ifNullReg = -1;
+                if (state == State.ALOAD_2ND) {
+                    if (!Values.HASHCODE.equals(getNameConstantOperand()) || !SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand())) {
+                        reset();
+                    } else {
+                        if (ifNullReg >= 0 && stack.getStackDepth() > 0) {
+                            OpcodeStack.Item item = stack.getStackItem(0);
+                            if (item.getRegisterNumber() != ifNullReg) {
+                                reset();
+                            } else {
+                                state = State.HASHCODE;
+                            }
                         }
                     }
+                } else {
+                    reset();
                 }
                 break;
             }
 
             case Const.LOOKUPSWITCH: {
-                if (ifNullReg != -1 && stack.getStackDepth() > 0) {
-                    if (cls.getMajor() >= Const.MAJOR_17) {
-                        bugReporter.reportBug(
-                                new BugInstance(this, BugType.SI_USE_NULL_CASE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                if (state == State.HASHCODE) {
+                    if (ifNullReg != -1 && stack.getStackDepth() > 0) {
+                        if (cls.getMajor() >= Const.MAJOR_17) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.SI_USE_NULL_CASE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        }
                     }
                 }
-                ifNullReg = -1;
+                reset();
                 break;
             }
             default: {
-                ifNullReg = -1;
+                reset();
                 break;
             }
             }
         } finally {
             stack.sawOpcode(this, seen);
         }
+    }
+
+    private void reset() {
+        state = State.NOTHING;
+        aReg1 = -1;
+        aReg2 = -1;
+        iReg3 = -1;
+        aReg4 = -1;
+        ifNullReg = -1;
     }
 }
