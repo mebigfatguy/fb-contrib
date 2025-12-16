@@ -18,7 +18,10 @@ import edu.umd.cs.findbugs.ba.ClassContext;
 public class SwitchIssues extends BytecodeScanningDetector {
 
     private enum State {
-        NOTHING, ALOAD_1STA, IFNULL, ALOAD_1STB, ASTORE_2ND, ICONST, ISTORE_3RD, ALOAD_2ND, HASHCODE
+        // @formatter:off
+        NOTHING, ALOAD_1STA, IFNULL, ALOAD_1STB, ASTORE_2ND, ICONST, ISTORE_3RD, ALOAD_2ND, HASHCODE, 
+        INVOKE_ST, INVOKE_ORDINAL, IALOAD
+        // @formatter:on
     }
 
     private BugReporter bugReporter;
@@ -27,9 +30,6 @@ public class SwitchIssues extends BytecodeScanningDetector {
     private int ifNullReg;
     private State state;
     private int aReg1;
-    private int aReg2;
-    private int iReg3;
-    private int aReg4;
 
     /**
      * constructs a SI detector given the reporter to report bugs on
@@ -78,15 +78,12 @@ public class SwitchIssues extends BytecodeScanningDetector {
                 } else if (state == State.NOTHING) {
                     aReg1 = reg;
                     state = State.ALOAD_1STA;
-                } else if (state == State.IFNULL) {
-                    if (reg == aReg1) {
-                        state = State.ALOAD_1STB;
-                    } else {
-                        reset();
-                    }
+                } else if (state == State.IFNULL && (reg == aReg1)) {
+                    state = State.ALOAD_1STB;
                 } else if (state == State.ISTORE_3RD) {
-                    aReg2 = reg;
                     state = State.ALOAD_2ND;
+                } else if (state == State.INVOKE_ST && (reg == aReg1)) {
+                    state = State.ALOAD_1STB;
                 } else {
                     reset();
                 }
@@ -116,8 +113,9 @@ public class SwitchIssues extends BytecodeScanningDetector {
                 if (reg == -1) {
                     reset();
                 } else if (state == State.ALOAD_1STB) {
-                    aReg2 = reg;
                     state = State.ASTORE_2ND;
+                } else {
+                    reset();
                 }
                 break;
             }
@@ -144,7 +142,6 @@ public class SwitchIssues extends BytecodeScanningDetector {
                 if (reg == -1) {
                     reset();
                 } else if (state == State.ICONST) {
-                    iReg3 = reg;
                     state = State.ISTORE_3RD;
                 } else {
                     reset();
@@ -154,9 +151,7 @@ public class SwitchIssues extends BytecodeScanningDetector {
 
             case Const.INVOKEVIRTUAL: {
                 if (state == State.ALOAD_2ND) {
-                    if (!Values.HASHCODE.equals(getNameConstantOperand()) || !SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand())) {
-                        reset();
-                    } else {
+                    if (Values.HASHCODE.equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand())) {
                         if (ifNullReg >= 0 && stack.getStackDepth() > 0) {
                             OpcodeStack.Item item = stack.getStackItem(0);
                             if (item.getRegisterNumber() != ifNullReg) {
@@ -165,6 +160,14 @@ public class SwitchIssues extends BytecodeScanningDetector {
                                 state = State.HASHCODE;
                             }
                         }
+                    } else {
+                        reset();
+                    }
+                } else if (state == State.ALOAD_1STB) {
+                    if ("ordinal".equals(getNameConstantOperand()) && SignatureBuilder.SIG_VOID_TO_INT.equals(getSigConstantOperand())) {
+                        state = State.INVOKE_ORDINAL;
+                    } else {
+                        reset();
                     }
                 } else {
                     reset();
@@ -184,6 +187,37 @@ public class SwitchIssues extends BytecodeScanningDetector {
                 reset();
                 break;
             }
+
+            case Const.INVOKESTATIC: {
+                if (getNameConstantOperand().startsWith("$SWITCH_TABLE")) {
+                    state = State.INVOKE_ST;
+                } else {
+                    reset();
+                }
+                break;
+            }
+
+            case Const.IALOAD: {
+                if (state == State.INVOKE_ORDINAL) {
+                    state = State.IALOAD;
+                } else {
+                    reset();
+                }
+                break;
+            }
+
+            case Const.TABLESWITCH: {
+                if (state == State.IALOAD || (state == State.INVOKE_ORDINAL)) {
+                    if (ifNullReg != -1 && stack.getStackDepth() > 0) {
+                        if (cls.getMajor() >= Const.MAJOR_17) {
+                            bugReporter.reportBug(
+                                    new BugInstance(this, BugType.SI_USE_NULL_CASE.name(), NORMAL_PRIORITY).addClass(this).addMethod(this).addSourceLine(this));
+                        }
+                    }
+                }
+                reset();
+            }
+
             default: {
                 reset();
                 break;
@@ -197,9 +231,6 @@ public class SwitchIssues extends BytecodeScanningDetector {
     private void reset() {
         state = State.NOTHING;
         aReg1 = -1;
-        aReg2 = -1;
-        iReg3 = -1;
-        aReg4 = -1;
         ifNullReg = -1;
     }
 }
